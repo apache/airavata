@@ -3,7 +3,9 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from urllib.parse import quote
 
+import requests
 from airavata.model.appcatalog.computeresource.ttypes import (
     CloudJobSubmission,
     GlobusJobSubmission,
@@ -24,12 +26,16 @@ from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import user_storage
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from rest_framework import mixins
-from rest_framework.decorators import action, detail_route, list_route
+from rest_framework.decorators import (
+    action,
+    api_view,
+    detail_route,
+    list_route
+)
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -185,13 +191,12 @@ class ProjectViewSet(APIBackedViewSet):
         prefs.save()
 
 
-class ExperimentViewSet(APIBackedViewSet):
+class ExperimentViewSet(mixins.CreateModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.UpdateModelMixin,
+                        GenericAPIBackedViewSet):
     serializer_class = serializers.ExperimentSerializer
     lookup_field = 'experiment_id'
-
-    def get_list(self):
-        return self.request.airavata_client.getUserExperiments(
-            self.authz_token, self.gateway_id, self.username, -1, 0)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getExperiment(
@@ -278,15 +283,31 @@ class ExperimentViewSet(APIBackedViewSet):
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
         try:
-            experiment = request.airavata_client.getExperiment(
-                self.authz_token, experiment_id)
-            self._set_storage_id_and_data_dir(experiment)
-            self._move_tmp_input_file_uploads_to_data_dir(experiment)
-            request.airavata_client.updateExperiment(
-                self.authz_token, experiment_id, experiment)
-            request.airavata_client.launchExperiment(
-                request.authz_token, experiment_id, self.gateway_id)
-            return Response({'success': True})
+            if getattr(
+                settings,
+                'GATEWAY_DATA_STORE_REMOTE_API',
+                    None) is not None:
+                # Proxy the launch/ request to the remote Django portal
+                # instance since it must setup the experiment data directory
+                # which is only on the remote Django portal instance
+                headers = {
+                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
+                r = requests.post(
+                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/launch/',
+                    headers=headers,
+                )
+                r.raise_for_status()
+                return Response(r.json())
+            else:
+                experiment = request.airavata_client.getExperiment(
+                    self.authz_token, experiment_id)
+                self._set_storage_id_and_data_dir(experiment)
+                self._move_tmp_input_file_uploads_to_data_dir(experiment)
+                request.airavata_client.updateExperiment(
+                    self.authz_token, experiment_id, experiment)
+                request.airavata_client.launchExperiment(
+                    request.authz_token, experiment_id, self.gateway_id)
+                return Response({'success': True})
         except Exception as e:
             return Response({'success': False, 'errorMessage': e.message})
 
@@ -300,31 +321,46 @@ class ExperimentViewSet(APIBackedViewSet):
 
     @detail_route(methods=['post'])
     def clone(self, request, experiment_id=None):
+        if getattr(
+            settings,
+            'GATEWAY_DATA_STORE_REMOTE_API',
+                None) is not None:
+            # Proxy the clone/ request to the remote Django portal instance
+            # since it must locally copy input files, which are only on the
+            # remote Django portal instance
+            headers = {
+                'Authorization': f'Bearer {request.authz_token.accessToken}'}
+            r = requests.post(
+                f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/clone/',
+                headers=headers,
+            )
+            r.raise_for_status()
+            return Response(r.json())
+        else:
+            # figure what project to clone into
+            experiment = self.request.airavata_client.getExperiment(
+                self.authz_token, experiment_id)
+            project_id = self._get_writeable_project(experiment)
 
-        # figure what project to clone into
-        experiment = self.request.airavata_client.getExperiment(
-            self.authz_token, experiment_id)
-        project_id = self._get_writeable_project(experiment)
+            # clone experiment
+            cloned_experiment_id = request.airavata_client.cloneExperiment(
+                self.authz_token, experiment_id,
+                "Clone of {}".format(experiment.experimentName), project_id)
+            cloned_experiment = request.airavata_client.getExperiment(
+                self.authz_token, cloned_experiment_id)
 
-        # clone experiment
-        cloned_experiment_id = request.airavata_client.cloneExperiment(
-            self.authz_token, experiment_id,
-            "Clone of {}".format(experiment.experimentName), project_id)
-        cloned_experiment = request.airavata_client.getExperiment(
-            self.authz_token, cloned_experiment_id)
+            # Create a copy of the experiment input files
+            self._copy_cloned_experiment_input_uris(cloned_experiment)
 
-        # Create a copy of the experiment input files
-        self._copy_cloned_experiment_input_uris(cloned_experiment)
-
-        # Null out experimentDataDir so a new one will get created at launch
-        # time
-        cloned_experiment.userConfigurationData.experimentDataDir = None
-        request.airavata_client.updateExperiment(
-            self.authz_token, cloned_experiment.experimentId, cloned_experiment
-        )
-        serializer = self.serializer_class(
-            cloned_experiment, context={'request': request})
-        return Response(serializer.data)
+            # Null out experimentDataDir so a new one will get created at launch
+            # time
+            cloned_experiment.userConfigurationData.experimentDataDir = None
+            request.airavata_client.updateExperiment(
+                self.authz_token, cloned_experiment.experimentId, cloned_experiment
+            )
+            serializer = self.serializer_class(
+                cloned_experiment, context={'request': request})
+            return Response(serializer.data)
 
     @detail_route(methods=['post'])
     def cancel(self, request, experiment_id=None):
@@ -940,7 +976,7 @@ class DataProductView(APIView):
         return Response(serializer.data)
 
 
-@login_required
+@api_view(http_method_names=['POST'])
 def upload_input_file(request):
     try:
         input_file = request.FILES['file']
@@ -957,7 +993,7 @@ def upload_input_file(request):
         return resp
 
 
-@login_required
+@api_view(http_method_names=['POST'])
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
@@ -974,7 +1010,7 @@ def tus_upload_finish(request):
         return exceptions.generic_json_exception_response(e, status=400)
 
 
-@login_required
+@api_view()
 def download_file(request):
     # TODO check that user has access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1001,13 +1037,13 @@ def download_file(request):
             response['Content-Disposition'] = ('attachment; filename="{}"'
                                                .format(file_name))
         else:
-            response['Content-Disposition'] = f'filename="{file_name}"'
+            response['Content-Disposition'] = f'inline; filename="{file_name}"'
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
 
 
-@login_required
+@api_view(http_method_names=['DELETE'])
 def delete_file(request):
     # TODO check that user has write access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1527,14 +1563,9 @@ class UserStoragePathView(APIView):
         # Replace the file if the request has a file upload.
         if 'file' in request.FILES:
             self.delete(request=request, path=path, format=format)
-            dir_path, file_name = split_dir_path_and_file_name(path=path)
-            self.post(
-                request=request,
-                path=dir_path,
-                format=format,
-                file_name=file_name)
-        # Replace only the file content if the request body has the
-        # `fileContentText`
+            dir_path, file_name = os.path.split(path)
+            self.post(request=request, path=dir_path, format=format, file_name=file_name)
+        # Replace only the file content if the request body has the `fileContentText`
         elif request.data and "fileContentText" in request.data:
             user_storage.update_file_content(
                 request=request,
@@ -1580,8 +1611,6 @@ class UserStoragePathView(APIView):
             serializer = self.serializer_class(
                 data, context={'request': request})
             return Response(serializer.data)
-        user_storage.delete_dir(request, path)
-        return Response(status=204)
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
@@ -1882,7 +1911,7 @@ class APIServerStatusCheckView(APIView):
         return Response(data)
 
 
-@login_required
+@api_view()
 def notebook_output_view(request):
     provider_id = request.GET['provider-id']
     experiment_id = request.GET['experiment-id']
@@ -1894,13 +1923,13 @@ def notebook_output_view(request):
     return HttpResponse(data['output'])
 
 
-@login_required
+@api_view()
 def html_output_view(request):
     data = _generate_output_view_data(request)
     return JsonResponse(data)
 
 
-@login_required
+@api_view()
 def image_output_view(request):
     data = _generate_output_view_data(request)
     # data should contain 'image' as a file-like object or raw bytes with the
@@ -1909,6 +1938,7 @@ def image_output_view(request):
     return JsonResponse(data)
 
 
+@api_view()
 def link_output_view(request):
     data = _generate_output_view_data(request)
     return JsonResponse(data)

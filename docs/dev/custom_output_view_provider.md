@@ -15,7 +15,7 @@ output view provider will be invoked and it should return image data.
 ## Getting started
 
 See the
-[Gateways 2019 tutorial](../tutorial/gateways2019_tutorial.md#tutorial-exercise-create-a-custom-output-viewer-for-an-output-file)
+[Gateways tutorial](../tutorial/gateways_tutorial.md#tutorial-exercise-create-a-custom-output-viewer-for-an-output-file)
 for help on setting up a development environment and implementing a simple
 output view provider.
 
@@ -54,6 +54,20 @@ environment using:
 python setup.py develop
 ```
 
+### Setting up remote data access
+
+To access the files in the remote deployed Django portal instance in your local
+development environment you need to configure a setting so that your local
+Django instance knows at what URL is the remote deployed Django portal REST API.
+The remote API will be used for accessing data, making your local instance
+behave just like the remote instance. Set the GATEWAY_DATA_STORE_REMOTE_API in
+settings_local.py to have the domain of the remote deployed Django portal:
+
+```
+# Change this to match your remote Django portal instance
+GATEWAY_DATA_STORE_REMOTE_API = 'https://testdrive.airavata.org/api'
+```
+
 ## Reference
 
 ### Output View Provider interface
@@ -63,12 +77,6 @@ the following attributes:
 
 -   `display_type`: this should be one of _link_, _image_ or _html_.
 -   `name`: this is the name of the output view provider displayed to the user.
--   `test_output_file`: (optional) the path to a file to use for testing
-    purposes. This file will be passed to the `generate_data` function as the
-    `output_file` parameter when the output file isn't available and the Django
-    server is running in DEBUG mode. This is helpful when developing a custom
-    output view provider in a local Django instance that doesn't have access to
-    the output files.
 
 The output view provider class should define the following method:
 
@@ -193,6 +201,26 @@ output-view-providers and place it second. For example:
 
 would make the `gaussian-eigenvalues-plot` the initial output view provider. The
 user can access the default output view provider from the drop down menu.
+
+### Accessing additional experiment output files
+
+The output view provider is associated with a particular output file, but your
+output view provider can access other files in the experiment data directory. To
+access those files use the `list_experiment_dir` of the
+[user_storage module](https://airavata-django-portal-sdk.readthedocs.io/en/latest/#module-user_storage)
+in the Airavata Django Portal SDK.
+
+```python
+from airavata_django_portal_sdk import user_storage
+def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
+
+    dirs, files = user_storage.list_experiment_dir(request, experiment.experimentId)
+    # ...
+```
+
+`list_experiment_dir` returns a tuple of directories and files in the experiment
+data directory. Each entry is a dictionary of metadata about the directory/file.
+See the SDK documentation for more information.
 
 ### Interactive parameters
 

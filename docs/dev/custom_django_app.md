@@ -202,7 +202,7 @@ in the `scripts` block:
 For more information on the AiravataAPI library:
 
 -   see the
-    [Gateways 2019 tutorial](../tutorial/gateways2019_tutorial.md#tutorial-exercise-create-a-custom-django-app)
+    [Gateways tutorial](../tutorial/gateways_tutorial.md#tutorial-exercise-create-a-custom-django-app)
 -   see the
     [index.js](https://github.com/apache/airavata-django-portal/blob/master/django_airavata/apps/api/static/django_airavata_api/js/index.js)
     file in the AiravataAPI to see what models and services are provided by the

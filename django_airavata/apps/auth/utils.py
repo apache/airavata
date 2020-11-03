@@ -14,15 +14,17 @@ from requests_oauthlib import OAuth2Session
 from . import models
 
 
-def get_authz_token(request):
+def get_authz_token(request, user=None, access_token=None):
     """Construct AuthzToken instance from session; refresh token if needed."""
-    if not is_access_token_expired(request):
-        return _create_authz_token(request)
+    if access_token is not None:
+        return _create_authz_token(request, user=user, access_token=access_token)
+    elif not is_access_token_expired(request):
+        return _create_authz_token(request, user=user, access_token=access_token)
     elif not is_refresh_token_expired(request):
         # Have backend reauthenticate the user with the refresh token
         user = authenticate(request)
         if user:
-            return _create_authz_token(request)
+            return _create_authz_token(request, user=user)
     return None
 
 
@@ -49,17 +51,32 @@ def get_service_account_authz_token():
         claimsMap={'gatewayID': settings.GATEWAY_ID})
 
 
-def _create_authz_token(request):
-    access_token = request.session['ACCESS_TOKEN']
-    username = request.user.username
+def _create_authz_token(request, user=None, access_token=None):
+    if access_token is None:
+        access_token = _get_access_token(request)
+    if user is None:
+        user = request.user
+    username = user.username
     gateway_id = settings.GATEWAY_ID
     return AuthzToken(accessToken=access_token,
                       claimsMap={'gatewayID': gateway_id,
                                  'userName': username})
 
 
+def _get_access_token(request):
+    if hasattr(request, 'auth') and request.auth is not None:
+        return request.auth
+    else:
+        return request.session['ACCESS_TOKEN']
+
+
 def is_access_token_expired(request):
     """Return True if access_token is not available or is expired."""
+    # If access token not stored in session, then token expiration/refreshing
+    # isn't supported. When token is provided by REST API client it is expected
+    # that the client will manage the token lifetime.
+    if 'ACCESS_TOKEN' not in request.session:
+        return False
     now = time.time()
     return not request.user.is_authenticated \
         or 'ACCESS_TOKEN' not in request.session \

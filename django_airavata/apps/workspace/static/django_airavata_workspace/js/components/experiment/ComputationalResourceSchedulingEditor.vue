@@ -255,7 +255,6 @@ export default {
         !newOptions.find((opt) => opt.value === this.resourceHostId)
       ) {
         this.resourceHostId = null;
-        this.computeResourceChanged(null);
       }
       // Apply preferred (most recently used) compute resource
       if (
@@ -268,12 +267,12 @@ export default {
         )
       ) {
         this.resourceHostId = this.workspacePreferences.most_recent_compute_resource_id;
-        this.computeResourceChanged(null);
       }
       // If none selected, just pick the first one
       if (this.resourceHostId === null && newOptions.length > 0) {
         this.resourceHostId = newOptions[0].value;
       }
+      this.computeResourceChanged(this.resourceHostId);
     },
     groupResourceProfileId: function (newGroupResourceProfileId) {
       this.loadApplicationDeployments(

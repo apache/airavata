@@ -63,6 +63,7 @@ from django.urls import reverse
 from rest_framework import serializers
 
 from . import models, thrift_utils
+import requests
 
 log = logging.getLogger(__name__)
 
@@ -456,11 +457,26 @@ class ExperimentSerializer(
             ResourcePermissionType.WRITE)
 
     def get_relativeExperimentDataDir(self, experiment):
+
         if (experiment.userConfigurationData and
                 experiment.userConfigurationData.experimentDataDir):
             request = self.context['request']
             data_dir = experiment.userConfigurationData.experimentDataDir
-            if user_storage.dir_exists(request, data_dir):
+            if getattr(
+                settings,
+                'GATEWAY_DATA_STORE_REMOTE_API',
+                    None) is not None:
+                # Load the relativeExperimentDataDir from the remote Django
+                # portal instance
+                headers = {
+                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
+                r = requests.get(
+                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment.experimentId)}/',
+                    headers=headers,
+                )
+                r.raise_for_status()
+                return r.json()['relativeExperimentDataDir']
+            elif user_storage.dir_exists(request, data_dir):
                 return user_storage.get_rel_path(request, data_dir)
             else:
                 return None
@@ -672,7 +688,8 @@ class SharedEntitySerializer(serializers.Serializer):
         raise Exception("Not implemented")
 
     def update(self, instance, validated_data):
-        # Compute lists of ids to grant/revoke READ/WRITE/MANAGE_SHARING permission
+        # Compute lists of ids to grant/revoke READ/WRITE/MANAGE_SHARING
+        # permission
         existing_user_permissions = {
             user['user'].airavataInternalUserId: user['permissionType']
             for user in instance['userPermissions']}
@@ -681,10 +698,15 @@ class SharedEntitySerializer(serializers.Serializer):
             user['permissionType']
                 for user in validated_data['userPermissions']}
 
-        (user_grant_read_permission, user_grant_write_permission, user_grant_manage_sharing_permission,
-         user_revoke_read_permission, user_revoke_write_permission, user_revoke_manage_sharing_permission) = \
-            self._compute_all_revokes_and_grants(existing_user_permissions,
-                                                 new_user_permissions)
+        (
+            user_grant_read_permission,
+            user_grant_write_permission,
+            user_grant_manage_sharing_permission,
+            user_revoke_read_permission,
+            user_revoke_write_permission,
+            user_revoke_manage_sharing_permission) = self._compute_all_revokes_and_grants(
+            existing_user_permissions,
+            new_user_permissions)
 
         existing_group_permissions = {
             group['group'].id: group['permissionType']
@@ -693,10 +715,15 @@ class SharedEntitySerializer(serializers.Serializer):
             group['group']['id']: group['permissionType']
             for group in validated_data['groupPermissions']}
 
-        (group_grant_read_permission, group_grant_write_permission, group_grant_manage_sharing_permission,
-         group_revoke_read_permission, group_revoke_write_permission, group_revoke_manage_sharing_permission) = \
-            self._compute_all_revokes_and_grants(existing_group_permissions,
-                                                 new_group_permissions)
+        (
+            group_grant_read_permission,
+            group_grant_write_permission,
+            group_grant_manage_sharing_permission,
+            group_revoke_read_permission,
+            group_revoke_write_permission,
+            group_revoke_manage_sharing_permission) = self._compute_all_revokes_and_grants(
+            existing_group_permissions,
+            new_group_permissions)
 
         instance['_user_grant_read_permission'] = user_grant_read_permission
         instance['_user_grant_write_permission'] = user_grant_write_permission
@@ -748,8 +775,13 @@ class SharedEntitySerializer(serializers.Serializer):
                 grant_write_permission.append(id)
             if ResourcePermissionType.MANAGE_SHARING in grants:
                 grant_manage_sharing_permission.append(id)
-        return (grant_read_permission, grant_write_permission, grant_manage_sharing_permission,
-                revoke_read_permission, revoke_write_permission, revoke_manage_sharing_permission)
+        return (
+            grant_read_permission,
+            grant_write_permission,
+            grant_manage_sharing_permission,
+            revoke_read_permission,
+            revoke_write_permission,
+            revoke_manage_sharing_permission)
 
     def _compute_revokes_and_grants(self, current_permission=None,
                                     new_permission=None):
@@ -757,7 +789,9 @@ class SharedEntitySerializer(serializers.Serializer):
         write_permissions = set((ResourcePermissionType.READ,
                                  ResourcePermissionType.WRITE))
         manage_share_permissions = set(
-            (ResourcePermissionType.READ, ResourcePermissionType.WRITE, ResourcePermissionType.MANAGE_SHARING))
+            (ResourcePermissionType.READ,
+             ResourcePermissionType.WRITE,
+             ResourcePermissionType.MANAGE_SHARING))
         current_permissions_set = set()
         new_permissions_set = set()
         if current_permission == ResourcePermissionType.READ:
