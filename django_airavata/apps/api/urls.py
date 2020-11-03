@@ -8,45 +8,45 @@ from . import views
 logger = logging.getLogger(__name__)
 
 router = routers.DefaultRouter()
-router.register(r'projects', views.ProjectViewSet, base_name='project')
+router.register(r'projects', views.ProjectViewSet, basename='project')
 router.register(r'experiments', views.ExperimentViewSet,
-                base_name='experiment')
+                basename='experiment')
 router.register(r'full-experiments', views.FullExperimentViewSet,
-                base_name='full-experiment')
+                basename='full-experiment')
 router.register(r'experiment-search', views.ExperimentSearchViewSet,
-                base_name='experiment-search')
-router.register(r'groups', views.GroupViewSet, base_name='group')
+                basename='experiment-search')
+router.register(r'groups', views.GroupViewSet, basename='group')
 router.register(r'application-interfaces', views.ApplicationInterfaceViewSet,
-                base_name='application-interface')
+                basename='application-interface')
 router.register(r'applications', views.ApplicationModuleViewSet,
-                base_name='application')
+                basename='application')
 router.register(r'application-deployments', views.ApplicationDeploymentViewSet,
-                base_name='application-deployment')
+                basename='application-deployment')
 router.register(r'user-profiles', views.UserProfileViewSet,
-                base_name='user-profile')
+                basename='user-profile')
 router.register(r'group-resource-profiles', views.GroupResourceProfileViewSet,
-                base_name='group-resource-profile')
+                basename='group-resource-profile')
 router.register(r'shared-entities', views.SharedEntityViewSet,
-                base_name='shared-entity')
+                basename='shared-entity')
 router.register(r'compute-resources', views.ComputeResourceViewSet,
-                base_name='compute-resource')
+                basename='compute-resource')
 router.register(r'storage-resources', views.StorageResourceViewSet,
-                base_name='storage-resource')
+                basename='storage-resource')
 router.register(r'credential-summaries', views.CredentialSummaryViewSet,
-                base_name='credential-summary')
+                basename='credential-summary')
 router.register(r'gateway-resource-profiles',
                 views.GatewayResourceProfileViewSet,
-                base_name='gateway-resource-profile')
+                basename='gateway-resource-profile')
 router.register(r'storage-preferences',
                 views.StoragePreferenceViewSet,
-                base_name='storage-preference')
-router.register(r'parsers', views.ParserViewSet, base_name='parser')
+                basename='storage-preference')
+router.register(r'parsers', views.ParserViewSet, basename='parser')
 router.register(r'manage-notifications', views.ManageNotificationViewSet,
-                base_name='manage-notifications')
+                basename='manage-notifications')
 router.register(r'iam-user-profiles', views.IAMUserViewSet,
-                base_name='iam-user-profile')
+                basename='iam-user-profile')
 router.register(r'unverified-email-users', views.UnverifiedEmailUserViewSet,
-                base_name='unverified-email-user-profile')
+                basename='unverified-email-user-profile')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
