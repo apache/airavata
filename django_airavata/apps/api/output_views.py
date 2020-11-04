@@ -123,7 +123,7 @@ def _get_output_view_providers(experiment_output, application_interface):
             if 'output-view-providers' in output_metadata:
                 output_view_providers.extend(
                     output_metadata['output-view-providers'])
-        except Exception as e:
+        except Exception:
             logger.exception(
                 "Failed to parse metadata for output {}".format(
                     experiment_output.name))
@@ -153,7 +153,7 @@ def _get_application_output_view_providers(application_interface, output_name):
             output_metadata = json.loads(app_output.metaData)
             if 'output-view-providers' in output_metadata:
                 return output_metadata['output-view-providers']
-        except Exception as e:
+        except Exception:
             logger.exception(
                 "Failed to parse metadata for output {}".format(
                     app_output.name))

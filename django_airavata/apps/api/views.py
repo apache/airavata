@@ -506,7 +506,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
         try:
             applicationInterface = self.request.airavata_client \
                 .getApplicationInterface(self.authz_token, appInterfaceId)
-        except Exception as e:
+        except Exception:
             log.exception("Failed to load app interface")
             applicationInterface = None
         exp_output_views = output_views.get_output_views(
@@ -535,7 +535,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             else:
                 log.warning(
                     "Cannot log application model since app interface failed to load")
-        except Exception as e:
+        except Exception:
             log.exception("Failed to load app interface/module")
             applicationModule = None
 
@@ -548,7 +548,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             compute_resource = self.request.airavata_client.getComputeResource(
                 self.authz_token, compute_resource_id) \
                 if compute_resource_id else None
-        except Exception as e:
+        except Exception:
             log.exception("Failed to load compute resource for {}".format(
                 compute_resource_id))
             compute_resource = None

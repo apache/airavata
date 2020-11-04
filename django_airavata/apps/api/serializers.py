@@ -77,7 +77,7 @@ class FullyEncodedHyperlinkedIdentityField(
             lookup_value = obj.get(self.lookup_field)
         try:
             encoded_lookup_value = quote(lookup_value, safe="")
-        except Exception as e:
+        except Exception:
             log.warning(
                 "Failed to encode lookup_value [{}] for lookup_field "
                 "[{}] of object [{}]".format(

@@ -96,10 +96,10 @@ def create_experiment(request, app_module_id):
                             request.authz_token, dp_uri)
                         if user_storage_sdk.exists(request, data_product):
                             user_input_values[app_input['name']] = dp_uri
-                    except Exception as e:
+                    except Exception:
                         logger.exception(
                             f"Failed checking data product uri: {dp_uri}")
-            except ValueError as e:
+            except ValueError:
                 logger.exception(f"Invalid user file value: {user_file_value}")
         elif (app_input['type'] == DataType.STRING and
               app_input['name'] in request.GET):

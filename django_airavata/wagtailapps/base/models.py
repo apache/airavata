@@ -391,8 +391,8 @@ class ExtraWebResources(ClusterableModel):
     def __str__(self):
         try:
             return "Extra Web Resources: {}".format(", ".join(
-                [os.path.basename(l.url) for l in self.css_links.all()] +
-                [os.path.basename(l.url) for l in self.js_links.all()]))
+                [os.path.basename(link.url) for link in self.css_links.all()] +
+                [os.path.basename(link.url) for link in self.js_links.all()]))
         except Exception:
             return "Extra Web Resources"
 

@@ -24,7 +24,7 @@ def get_notifications(request):
         try:
             notifications = request.airavata_client.getAllNotifications(
                 request.authz_token, settings.GATEWAY_ID)
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to load notifications")
             notifications = []
         current_time = datetime.datetime.utcnow()
