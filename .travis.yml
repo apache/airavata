@@ -3,9 +3,9 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-node_js:
-  - lts/*
 install:
+  - nvm install lts/*
+  - nvm use lts/*
   - pip install -r requirements-dev.txt
 script:
   - cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
