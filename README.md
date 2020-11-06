@@ -45,7 +45,8 @@ PROJECT_DIR/modules/distribution/target.
 ```
     git clone https://github.com/apache/airavata.git
     cd airavata
-    mvn clean install docker:build
+    mvn clean install 
+    mvn docker:build -pl modules/distribution
 ```
 * Start supporting services and Airavata miroservices (API Server, Helix Components and the Job Monitors)
 ```
