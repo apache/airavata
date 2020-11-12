@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HTCondorOutputParser implements OutputParser {
-    private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
+    private static final Logger log = LoggerFactory.getLogger(HTCondorOutputParser.class);
     public static final int JOB_NAME_OUTPUT_LENGTH = 8;
     public static final String STATUS = "status";
     public static final String JOBID = "jobId";
@@ -47,11 +47,9 @@ public class HTCondorOutputParser implements OutputParser {
     public String parseJobSubmission(String rawOutput) throws Exception {
         log.info(rawOutput);
         if (rawOutput != null && !rawOutput.isEmpty()) {
-            String[] output = rawOutput.split("\n");
-            String dataLine = output[output.length - 1];
 
-            Pattern pattern = Pattern.compile("submitted to cluster (?<" + JOBID + ">[^\\s]*)");
-            Matcher matcher = pattern.matcher(dataLine);
+            Pattern pattern = Pattern.compile("\\d+ job\\(s\\) submitted to cluster (?<" + JOBID + ">\\d+)");
+            Matcher matcher = pattern.matcher(rawOutput);
 
             if (matcher.find()) {
                 return matcher.group(JOBID);
@@ -80,18 +78,17 @@ public class HTCondorOutputParser implements OutputParser {
      */
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws Exception {
         log.info(rawOutput);
+        if (rawOutput != null && !rawOutput.isEmpty()) {
+            Pattern pattern = Pattern.compile("\\s+" + jobID + ".\\d+(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
+            Matcher matcher = pattern.matcher(rawOutput);
 
-        String[] output = rawOutput.split("\n");
-        String dataLine = output[output.length - 1];
-
-        Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
-        Matcher matcher = pattern.matcher(rawOutput);
-        if (matcher.find()) {
-            if (matcher.group(STATUS) == "E") {
-                log.info("parsing the job status returned : " + STATUS);
-                return new JobStatus(JobState.FAILED);
+            if (matcher.find()) {
+                if (matcher.group(STATUS).equals("E")) {
+                    log.info("parsing the job status returned : " + STATUS);
+                    return new JobStatus(JobState.FAILED);
+                }
+                return new JobStatus(JobUtil.getJobState(matcher.group(STATUS)));
             }
-            return new JobStatus(JobUtil.getJobState(matcher.group(STATUS)));
         }
         return null;
     }

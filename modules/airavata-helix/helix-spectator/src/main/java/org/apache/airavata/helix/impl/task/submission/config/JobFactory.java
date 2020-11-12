@@ -122,7 +122,7 @@ public class JobFactory {
                 return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new ForkOutputParser());
             case HTCONDOR:
-                return new SlurmJobConfiguration(templateFileName, ".submit", resourceJobManager
+                return new HTCondorJobConfiguration(templateFileName, ".submit", resourceJobManager
                         .getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), new HTCondorOutputParser());
             // We don't have a job configuration manager for CLOUD type
             default:
