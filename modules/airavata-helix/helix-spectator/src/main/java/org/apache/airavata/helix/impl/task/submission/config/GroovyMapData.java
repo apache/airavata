@@ -87,6 +87,9 @@ public class GroovyMapData {
     @ScriptTag(name = "inputs")
     private List<String> inputs;
 
+    @ScriptTag(name = "inputFiles")
+    private List<String> inputFiles;
+
     @ScriptTag(name = "inputsAll")
     private List<String> inputsAll;
 
@@ -312,6 +315,15 @@ public class GroovyMapData {
 
     public GroovyMapData setInputs(List<String> inputs) {
         this.inputs = inputs;
+        return this;
+    }
+
+    public List<String> getInputFiles() {
+        return inputFiles;
+    }
+
+    public GroovyMapData setInputFiles(List<String> inputFiles) {
+        this.inputFiles = inputFiles;
         return this;
     }
 

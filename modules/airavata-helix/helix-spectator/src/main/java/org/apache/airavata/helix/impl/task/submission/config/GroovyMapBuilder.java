@@ -94,9 +94,12 @@ public class GroovyMapBuilder {
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));
         mapData.setInputs(inputValues);
 
+        List<String> inputFiles = getProcessInputFiles(taskContext.getProcessModel().getProcessInputs(), false);
+
         List<String> inputValuesAll = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), false);
         inputValuesAll.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), false));
         mapData.setInputsAll(inputValuesAll);
+
 
         mapData.setUserName(taskContext.getComputeResourceLoginUserName());
         mapData.setShellName("/bin/bash");
@@ -336,6 +339,55 @@ public class GroovyMapBuilder {
         return inputValues;
     }
 
+    private static List<String> getProcessInputFiles(List<InputDataObjectType> processInputs, boolean commandLineOnly) {
+        List<String> inputFiles = new ArrayList<String>();
+        if (processInputs != null) {
+
+            // sort the inputs first and then build the command ListR
+            Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+                @Override
+                public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                    return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+                }
+            };
+            Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+            for (InputDataObjectType input : processInputs) {
+                sortedInputSet.add(input);
+            }
+            for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+                if (!inputDataObjectType.isIsRequired() &&
+                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
+                    // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
+                    continue;
+                }
+
+                if (inputDataObjectType.getValue() != null
+                        && !inputDataObjectType.getValue().equals("")) {
+                    if (inputDataObjectType.getType() == DataType.URI) {
+                        if (inputDataObjectType.getOverrideFilename() != null) {
+                            inputFiles.add(inputDataObjectType.getOverrideFilename());
+                        } else {
+                            // set only the relative path
+                            String filePath = inputDataObjectType.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputFiles.add(filePath);
+                        }
+                    } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
+                        String filePaths = inputDataObjectType.getValue();
+                        String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
+
+                        for (int i = 0; i < paths.length; i++) {
+                            paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
+                        }
+
+                        inputFiles.add(String.join(" ", paths));
+                    }
+                }
+            }
+        }
+        return inputFiles;
+    }
+
     static String getQoS(String qualityOfService, String preferredBatchQueue) {
         if(preferredBatchQueue == null  || preferredBatchQueue.isEmpty()
                 ||  qualityOfService == null  || qualityOfService.isEmpty()) return null;
@@ -449,5 +501,4 @@ public class GroovyMapBuilder {
 
         return sb.toString();
     }
-
 }
