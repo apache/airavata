@@ -366,6 +366,10 @@ def listdir(request, path):
         files_data = []
         for f in files:
             user_rel_path = os.path.join(path, f)
+            if not datastore.exists(request.user.username, user_rel_path):
+                logger.warning(f"listdir skipping {request.user.username}:{user_rel_path}, "
+                               "does not exist (broken symlink?)")
+                continue
             created_time = datastore.get_created_time(
                 request.user.username, user_rel_path
             )
@@ -430,6 +434,11 @@ def list_experiment_dir(request, experiment_id, path=None):
         files_data = []
         for f in files:
             user_rel_path = os.path.join(path, f)
+            if not datastore.exists(exp_owner, user_rel_path):
+                logger.warning(
+                    f"list_experiment_dir skipping {exp_owner}:{user_rel_path}, "
+                    "does not exist (broken symlink?)")
+                continue
             created_time = datastore.get_created_time(
                 exp_owner, user_rel_path
             )

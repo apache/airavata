@@ -180,3 +180,54 @@ class CopyInputFileUploadTests(BaseTestCase):
                 os.path.dirname(replica_copy_filepath),
                 os.path.join(tmpdirname, self.user.username, "tmp"),
                 msg="Verify input file copied to user's tmp dir")
+
+
+class ListDirTests(BaseTestCase):
+    def test_listdir(self):
+        "Verify basic listdir functionality"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(GATEWAY_DATA_STORE_DIR=tmpdirname,
+                              GATEWAY_DATA_STORE_HOSTNAME="gateway.com"):
+            # create test file
+            test_file_path = os.path.join(
+                tmpdirname, self.user.username, "foo.ext")
+            os.makedirs(os.path.dirname(test_file_path))
+            with open(test_file_path, 'wb') as f:
+                f.write(b"123")
+            # create test directory
+            os.makedirs(os.path.join(tmpdirname, self.user.username, "testdir"))
+
+            dirs, files = user_storage.listdir(self.request, "")
+            self.assertEqual(len(dirs), 1)
+            self.assertEqual("testdir", dirs[0]["name"])
+            self.assertEqual(len(files), 1)
+            self.assertEqual("foo.ext", files[0]["name"])
+            
+    def test_listdir_broken_symlink(self):
+        "Test that broken symlinks are ignored"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(GATEWAY_DATA_STORE_DIR=tmpdirname,
+                              GATEWAY_DATA_STORE_HOSTNAME="gateway.com"):
+            # create test file
+            test_file_path = os.path.join(
+                tmpdirname, self.user.username, "foo.ext")
+            os.makedirs(os.path.dirname(test_file_path))
+            with open(test_file_path, 'wb') as f:
+                f.write(b"123")
+            # create test directory
+            os.makedirs(os.path.join(tmpdirname, self.user.username, "testdir"))
+            # create broken symlink
+            not_existent = os.path.join("path", "does", "not", "exist")
+            self.assertFalse(os.path.exists(not_existent))
+            os.symlink(not_existent, os.path.join(tmpdirname, self.user.username, "broken-symlink"))
+            self.assertIn("broken-symlink", os.listdir(os.path.join(tmpdirname, self.user.username)))
+            # os.path.exists returns False for broken symbolic link
+            self.assertFalse(os.path.exists(os.path.join(tmpdirname, self.user.username, "broken-symlink")))
+
+            dirs, files = user_storage.listdir(self.request, "")
+            # verify test file and directory are returned, but not broken-symlink
+            self.assertEqual(len(dirs), 1)
+            self.assertEqual("testdir", dirs[0]["name"])
+            self.assertEqual(len(files), 1)
+            self.assertEqual("foo.ext", files[0]["name"])
+        pass
