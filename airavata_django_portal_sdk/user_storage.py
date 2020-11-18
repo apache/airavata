@@ -5,6 +5,7 @@ import logging
 import mimetypes
 import os
 import shutil
+from http import HTTPStatus
 from urllib.parse import quote, unquote, urlparse
 
 import requests
@@ -13,7 +14,6 @@ from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 DataReplicaLocationModel,
                                                 ReplicaLocationCategory,
                                                 ReplicaPersistentType)
-from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from django.core.files import File
@@ -204,7 +204,16 @@ def dir_exists(request, path):
 
 def user_file_exists(request, path):
     """If file exists, return data product URI, else None."""
-    if _Datastore().exists(request.user.username, path):
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                raise_for_status=False)
+        if resp.status_code == HTTPStatus.NOT_FOUND or resp.json()['isDir']:
+            return None
+        resp.raise_for_status()
+        return resp.json()['files'][0]['dataProductURI']
+    elif _Datastore().exists(request.user.username, path):
         full_path = _Datastore().path(request.user.username, path)
         data_product_uri = _get_data_product_uri(request, full_path)
         return data_product_uri
