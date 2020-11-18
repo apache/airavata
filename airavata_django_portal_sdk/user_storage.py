@@ -194,10 +194,10 @@ def dir_exists(request, path):
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
                                 raise_for_status=False)
-        if resp.status_code != 200:
+        if resp.status_code == HTTPStatus.NOT_FOUND:
             return False
-        else:
-            return resp.json()['isDir']
+        resp.raise_for_status()
+        return resp.json()['isDir']
     else:
         return _Datastore().dir_exists(request.user.username, path)
 
