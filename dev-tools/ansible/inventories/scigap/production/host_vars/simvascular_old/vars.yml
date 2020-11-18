@@ -19,15 +19,15 @@
 #
 
 ---
-vhost_servername: "django.simvascular.scigap.org"
+vhost_servername: "gateway.simvascular.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.simvascular.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.simvascular.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.simvascular.org/privkey.pem"
 django_database_name: "django_simvascular"
 
 django_file_upload_max_file_size_mb: 2000
-django_pga_url: "https://gateway.simvascular.org"
+#django_pga_url: "https://gateway.simvascular.org"
 
 ## Keycloak related variables
 tenant_domain: "simvascular"
