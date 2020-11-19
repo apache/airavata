@@ -1,11 +1,11 @@
 <template>
   <div class="file-input-editor">
     <div class="d-flex" v-if="isDataProductURI && dataProduct">
-      <data-product-viewer
+      <user-storage-link
         class="mr-auto"
-        :data-product="dataProduct"
-        :input-file="true"
-        :open-in-new-window="true"
+        :data-product-uri="dataProduct.productUri"
+        :mime-type="dataProduct.mimeType"
+        :file-name="dataProduct.productName"
       />
       <b-modal :title="dataProduct.productName" ref="modal" scrollable size="lg">
         <user-storage-edit-viewer
@@ -54,12 +54,13 @@ import {InputEditorMixin} from "django-airavata-workspace-plugin-api";
 import {components} from "django-airavata-common-ui";
 import InputFileSelector from "./InputFileSelector";
 import UserStorageEditViewer from "../../storage/storage-edit/UserStorageEditViewer";
+import UserStorageLink from "../../storage/storage-edit/UserStorageLink";
 
 export default {
   name: "file-input-editor",
   mixins: [InputEditorMixin],
   components: {
-    "data-product-viewer": components.DataProductViewer,
+    UserStorageLink,
     "delete-link": components.DeleteLink,
     InputFileSelector,
     UserStorageEditViewer

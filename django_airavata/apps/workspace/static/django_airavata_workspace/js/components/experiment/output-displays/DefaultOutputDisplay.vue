@@ -6,7 +6,11 @@
         class="image-preview rounded"
         :src="dp.downloadURL"
       />
-      <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
+      <user-storage-link
+        :data-product-uri="dp.productUri"
+        :mime-type="fileMimeType"
+        :file-name="dp.filename"
+      />
     </div>
   </div>
 </template>
@@ -14,6 +18,7 @@
 <script>
 import { models } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
+import UserStorageLink from "../../storage/storage-edit/UserStorageLink";
 
 export default {
   name: "default-output-viewer",
@@ -28,7 +33,7 @@ export default {
     },
   },
   components: {
-    "data-product-viewer": components.DataProductViewer,
+    UserStorageLink
   },
   computed: {
     fileMimeType() {

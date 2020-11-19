@@ -35,12 +35,9 @@
           @click="directorySelected(data.item)"
         >
           <i class="fa fa-folder-open"></i> {{ data.item.name }}
-        </b-link
-        >
-        <b-link v-else :href="storageFileViewRouteUrl(data.item)">
-          {{ data.item.name }}
-        </b-link
-        >
+        </b-link>
+        <user-storage-link v-else :data-product-uri="data.item.dataProductURI" :mime-type="data.item.mimeType"
+                           :file-name="data.item.name"/>
       </template>
       <template slot="createdTimestamp" slot-scope="data">
         <human-date :date="data.item.createdTime"/>
@@ -69,6 +66,7 @@ import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
 import {components} from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
 import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
+import UserStorageLink from "./storage-edit/UserStorageLink";
 
 export default {
   name: "user-storage-path-viewer",
@@ -101,6 +99,7 @@ export default {
     },
   },
   components: {
+    UserStorageLink,
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
@@ -161,6 +160,7 @@ export default {
         const files = this.userStoragePath.files.map((f) => {
           return {
             name: f.name,
+            mimeType: f.mimeType,
             type: "file",
             dataProductURI: f.dataProductURI,
             downloadURL: f.downloadURL,
