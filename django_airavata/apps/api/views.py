@@ -970,6 +970,16 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
+    def put(self, request, format=None):
+        data_product_uri = request.query_params['product-uri']
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
+
+        return UserStoragePathView().put(
+            request=request,
+            path=data_product.replicaLocations[0].filePath.replace("file://localhost:/tmp/default-admin/", "")
+        )
+
 
 @api_view(http_method_names=['POST'])
 def upload_input_file(request):
