@@ -3,7 +3,7 @@
     <div class="user-storage-file-edit-viewer-status">
       <div class="user-storage-file-edit-viewer-status-message"></div>
       <div class="user-storage-file-edit-viewer-status-actions">
-        <user-storage-download-button :file="file" />
+        <user-storage-download-button :data-product-uri="dataProductUri" :file-name="fileName"/>
       </div>
     </div>
     <div class="user-storage-file-edit-viewer-no-preview">
@@ -18,9 +18,18 @@ import UserStorageDownloadButton from "./UserStorageDownloadButton";
 export default {
   name: "user-storage-default-file-edit-viewer",
   props: {
-    file: {
+    fileName: {
       required: true,
     },
+    dataProductUri: {
+      required: true,
+    },
+    mimeType: {
+      required: true,
+    },
+    downloadUrl: {
+      required: true,
+    }
   },
   components: {
     UserStorageDownloadButton: UserStorageDownloadButton,

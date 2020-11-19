@@ -11,8 +11,18 @@
         View File <i class="fa fa-eye"></i>
         <span class="sr-only">View file</span>
       </b-link>
-      <b-modal :title="dataProduct.productName" ref="modal" ok-only scrollable>
-        <pre>{{ fileContent }}</pre>
+      <b-modal :title="dataProduct.productName" ref="modal" scrollable size="lg">
+        <user-storage-edit-viewer
+          :file-name="dataProduct.name"
+          :data-product-uri="dataProduct.productUri"
+          :mime-type="dataProduct.mimeType"
+          @file-content-changed="
+            (fileContent) => $emit('file-content-changed', fileContent)
+          "
+        />
+        <template slot="modal-footer">
+          <a>Open in a new window</a>
+        </template>
       </b-modal>
       <delete-link
         v-if="!readOnly && dataProduct.isInputFileUpload"
@@ -43,10 +53,11 @@
 </template>
 
 <script>
-import { models, services, utils } from "django-airavata-api";
-import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
-import { components } from "django-airavata-common-ui";
+import {models, services, utils} from "django-airavata-api";
+import {InputEditorMixin} from "django-airavata-workspace-plugin-api";
+import {components} from "django-airavata-common-ui";
 import InputFileSelector from "./InputFileSelector";
+import UserStorageEditViewer from "../../storage/storage-edit/UserStorageEditViewer";
 
 export default {
   name: "file-input-editor",
@@ -55,6 +66,7 @@ export default {
     "data-product-viewer": components.DataProductViewer,
     "delete-link": components.DeleteLink,
     InputFileSelector,
+    UserStorageEditViewer
   },
   computed: {
     isDataProductURI() {
@@ -96,7 +108,7 @@ export default {
   },
   methods: {
     loadDataProduct(dataProductURI) {
-      services.DataProductService.retrieve({ lookup: dataProductURI })
+      services.DataProductService.retrieve({lookup: dataProductURI})
         .then((dataProduct) => (this.dataProduct = dataProduct))
         .catch(() => {
           // If we're unable to load data product, reset data to null
@@ -107,7 +119,7 @@ export default {
     deleteDataProduct() {
       utils.FetchUtils.delete(
         "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value),
-        { ignoreErrors: true }
+        {ignoreErrors: true}
       )
         .then(() => {
           this.data = null;

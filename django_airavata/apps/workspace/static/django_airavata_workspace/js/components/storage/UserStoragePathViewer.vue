@@ -15,7 +15,9 @@
 
     <user-storage-edit-viewer
       v-if="userStoragePath && isFile"
-      :file="file"
+      :file-name="file.name"
+      :data-product-uri="file.dataProductURI"
+      :mime-type="file.mimeType"
       @file-content-changed="
         (fileContent) => $emit('file-content-changed', fileContent)
       "
@@ -32,14 +34,16 @@
           v-if="data.item.type === 'dir'"
           @click="directorySelected(data.item)"
         >
-          <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link
+          <i class="fa fa-folder-open"></i> {{ data.item.name }}
+        </b-link
         >
         <b-link v-else :href="storageFileViewRouteUrl(data.item)">
-          {{ data.item.name }}</b-link
+          {{ data.item.name }}
+        </b-link
         >
       </template>
       <template slot="createdTimestamp" slot-scope="data">
-        <human-date :date="data.item.createdTime" />
+        <human-date :date="data.item.createdTime"/>
       </template>
       <template slot="actions" slot-scope="data">
         <b-button
@@ -54,8 +58,7 @@
           v-if="includeDeleteAction"
           @delete="deleteItem(data.item)"
         >
-          Are you sure you want to delete <strong>{{ data.item.name }}</strong
-          >?
+          Are you sure you want to delete <strong>{{ data.item.name }}</strong>?
         </delete-button>
       </template>
     </b-table>
@@ -63,7 +66,7 @@
 </template>
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
-import { components } from "django-airavata-common-ui";
+import {components} from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
 import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
 

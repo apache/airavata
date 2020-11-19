@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { services, utils } from "django-airavata-api";
-import { notifications } from "django-airavata-common-ui";
+import {services, utils} from "django-airavata-api";
+import {notifications} from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
@@ -45,8 +45,8 @@ export default {
   methods: {
     loadUserStoragePath(path) {
       return services.UserStoragePathService.get(
-        { path },
-        { ignoreErrors: true }
+        {path},
+        {ignoreErrors: true}
       )
         .then((result) => {
           this.userStoragePath = result;
@@ -84,14 +84,8 @@ export default {
         });
       }
     },
-    fileContentChanged(fileContent) {
-      if (fileContent) {
-        utils.FetchUtils.put("/api/user-storage/" + this.storagePath, {
-          fileContentText: fileContent,
-        }).then(() => {
-          this.loadUserStoragePath(this.storagePath);
-        });
-      }
+    fileContentChanged() {
+      this.loadUserStoragePath(this.storagePath);
     },
     uploadSuccess() {
       this.loadUserStoragePath(this.storagePath);
@@ -116,7 +110,7 @@ export default {
     deleteFile(dataProductURI) {
       utils.FetchUtils.delete(
         "/api/delete-file?data-product-uri=" +
-          encodeURIComponent(dataProductURI)
+        encodeURIComponent(dataProductURI)
       ).then(() => {
         this.loadUserStoragePath(this.storagePath);
       });
