@@ -10,6 +10,7 @@
       @delete-file="deleteFile"
       @directory-selected="directorySelected"
       @file-content-changed="fileContentChanged"
+      :allow-preview="false"
     ></router-view>
   </div>
 </template>
@@ -20,13 +21,36 @@ import {notifications} from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
-  computed: {
-    storagePath() {
-      let _storagePath = /~.*$/.exec(this.$route.fullPath);
-      if (_storagePath && _storagePath.length > 0) {
-        _storagePath = _storagePath[0];
+  computed: {},
+  data() {
+    return {
+      dataProductUri: null,
+      storagePath: null,
+      userStoragePath: null
+    };
+  },
+  methods: {
+    setDataProductUri() {
+      let _dataProductUri = /\?.*dataProductUri=(.*)/.exec(window.location.href);
+      if (_dataProductUri) {
+        _dataProductUri = _dataProductUri[1];
+      }
+
+      this.dataProductUri = _dataProductUri
+    },
+    async setStoragePath() {
+      this.setDataProductUri();
+      let _storagePath = null;
+      if (this.dataProductUri) {
+        const dataProduct = await utils.FetchUtils.get(`/api/data-products?product-uri=${this.dataProductUri}`);
+        _storagePath = dataProduct.replicaLocations[0].filePath.replace("file://localhost:/tmp/default-admin/", "~/")
       } else {
-        _storagePath = this.$route.path;
+        _storagePath = /~.*$/.exec(this.$route.fullPath);
+        if (_storagePath && _storagePath.length > 0) {
+          _storagePath = _storagePath[0];
+        } else {
+          _storagePath = this.$route.path;
+        }
       }
 
       // Validate to have the ending slash.
@@ -34,15 +58,8 @@ export default {
         _storagePath += "/";
       }
 
-      return _storagePath;
+      this.storagePath = _storagePath;
     },
-  },
-  data() {
-    return {
-      userStoragePath: null,
-    };
-  },
-  methods: {
     loadUserStoragePath(path) {
       return services.UserStoragePathService.get(
         {path},
@@ -119,16 +136,18 @@ export default {
       this.$router.push("/~/" + path);
     },
   },
-  created() {
+  async created() {
     if (this.$route.path === "/") {
-      this.$router.replace("/~/");
+      await this.$router.replace("/~/");
     } else {
-      this.loadUserStoragePath(this.storagePath);
+      await this.setStoragePath();
+      await this.loadUserStoragePath(this.storagePath);
     }
   },
   watch: {
-    $route() {
-      this.loadUserStoragePath(this.storagePath);
+    async $route() {
+      await this.setStoragePath();
+      await this.loadUserStoragePath(this.storagePath);
     },
   },
 };

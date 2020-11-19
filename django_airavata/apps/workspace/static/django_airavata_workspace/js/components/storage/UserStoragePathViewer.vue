@@ -37,7 +37,7 @@
           <i class="fa fa-folder-open"></i> {{ data.item.name }}
         </b-link>
         <user-storage-link v-else :data-product-uri="data.item.dataProductURI" :mime-type="data.item.mimeType"
-                           :file-name="data.item.name"/>
+                           :file-name="data.item.name" :allow-preview="allowPreview"/>
       </template>
       <template slot="createdTimestamp" slot-scope="data">
         <human-date :date="data.item.createdTime"/>
@@ -71,6 +71,10 @@ import UserStorageLink from "./storage-edit/UserStorageLink";
 export default {
   name: "user-storage-path-viewer",
   props: {
+    allowPreview: {
+      default: true,
+      required: false
+    },
     userStoragePath: {
       required: true,
     },

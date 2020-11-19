@@ -1,5 +1,5 @@
 <template>
-  <b-link @click="showFilePreview($event)">
+  <b-link :href="storageFileViewRouteUrl()" @click="showFilePreview($event)">
     {{ fileName }}
     <b-modal :title="fileName" ref="modal" scrollable size="lg">
       <user-storage-file-edit-viewer
@@ -7,11 +7,11 @@
         :data-product-uri="dataProductUri"
         :mime-type="mimeType"
         @file-content-changed="
-            (fileContent) => $emit('file-content-changed', fileContent)
-          "
+          (fileContent) => $emit('file-content-changed', fileContent)
+        "
       />
       <template slot="modal-footer">
-        <a>Open in a new window</a>
+        <a :href="storageFileViewRouteUrl()">Open in a new window</a>
       </template>
     </b-modal>
   </b-link>
@@ -32,13 +32,23 @@ export default {
     },
     mimeType: {
       required: true
+    },
+    allowPreview: {
+      default: true,
+      required: true
     }
   },
   methods: {
     showFilePreview(event) {
-      this.$refs.modal.show();
-      event.preventDefault();
+      if (this.allowPreview) {
+        this.$refs.modal.show();
+        event.preventDefault();
+      }
     },
+    storageFileViewRouteUrl() {
+      // This endpoint can handle XHR upload or a TUS uploadURL
+      return `/workspace/storage/~?dataProductUri=${this.dataProductUri}`;
+    }
   }
 };
 </script>
