@@ -1,10 +1,10 @@
 <template>
   <span v-if="downloadURL">
     <a :href="downloadURL" class="action-link" :target="linkTarget">
-      {{ linkLabel }}
+      {{ filename }}
     </a>
   </span>
-  <span v-else>{{ linkLabel }}</span>
+  <span v-else>{{ filename }}</span>
 </template>
 
 <script>
@@ -27,10 +27,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    label: {
-      type: String,
-      default: null,
-    }
   },
   computed: {
     filename() {
@@ -57,13 +53,6 @@ export default {
     linkTarget() {
       return this.openInNewWindow ? "_blank" : "_self";
     },
-    linkLabel() {
-      if (this.label === undefined || this.label === null) {
-        return this.filename;
-      } else {
-        return this.label;
-      }
-    }
   },
 };
 </script>
