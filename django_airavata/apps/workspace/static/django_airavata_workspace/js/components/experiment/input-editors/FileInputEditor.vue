@@ -7,10 +7,6 @@
         :input-file="true"
         :open-in-new-window="true"
       />
-      <b-link @click="viewFile" v-if="isViewable">
-        View File <i class="fa fa-eye"></i>
-        <span class="sr-only">View file</span>
-      </b-link>
       <b-modal :title="dataProduct.productName" ref="modal" scrollable size="lg">
         <user-storage-edit-viewer
           :file-name="dataProduct.name"
