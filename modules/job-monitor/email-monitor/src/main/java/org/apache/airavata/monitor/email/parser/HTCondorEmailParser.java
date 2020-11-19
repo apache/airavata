@@ -83,7 +83,7 @@ public class HTCondorEmailParser implements EmailParser {
         if(matcher.find()) {
            String status = matcher.group();
 
-           if (status == "0") {
+           if (status.equals("0")) {
                jobStatusResult.setState(JobState.COMPLETE);
            }else {
                jobStatusResult.setState(JobState.FAILED);
