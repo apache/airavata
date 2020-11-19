@@ -7,19 +7,6 @@
         :mime-type="dataProduct.mimeType"
         :file-name="dataProduct.productName"
       />
-      <b-modal :title="dataProduct.productName" ref="modal" scrollable size="lg">
-        <user-storage-edit-viewer
-          :file-name="dataProduct.name"
-          :data-product-uri="dataProduct.productUri"
-          :mime-type="dataProduct.mimeType"
-          @file-content-changed="
-            (fileContent) => $emit('file-content-changed', fileContent)
-          "
-        />
-        <template slot="modal-footer">
-          <a>Open in a new window</a>
-        </template>
-      </b-modal>
       <delete-link
         v-if="!readOnly && dataProduct.isInputFileUpload"
         class="ml-2"
@@ -146,17 +133,6 @@ export default {
         this.dataProduct = dataProduct;
       }
       this.valueChanged();
-    },
-    viewFile() {
-      this.fileContent = null;
-      fetch(this.dataProduct.downloadURL, {
-        credentials: "same-origin",
-      })
-        .then((result) => result.text())
-        .then((text) => {
-          this.fileContent = text;
-          this.$refs.modal.show();
-        });
     },
     uploadStart() {
       this.uploading = true;
