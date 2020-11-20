@@ -13,10 +13,7 @@ import org.apache.custos.group.management.client.GroupManagementClient;
 import org.apache.custos.iam.service.GroupRepresentation;
 import org.apache.custos.iam.service.GroupsResponse;
 import org.apache.custos.iam.service.OperationStatus;
-import org.apache.custos.user.profile.service.DefaultGroupMembershipTypes;
-import org.apache.custos.user.profile.service.GetAllGroupsResponse;
-import org.apache.custos.user.profile.service.GetAllUserProfilesResponse;
-import org.apache.custos.user.profile.service.Group;
+import org.apache.custos.user.profile.service.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,17 +48,17 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            GroupRepresentation groupRepresentation = GroupRepresentation
-                    .newBuilder()
+            Group group = Group.newBuilder()
                     .setName(groupModel.getName())
-                    .setDescription(groupModel.getDescription())
-                    .setOwnerId(getUserId(authzToken))
+                    .setOwnerId(groupModel.getOwnerId())
                     .build();
 
-            GroupRepresentation[] representations = {groupRepresentation};
+            if (groupModel.getDescription() != null) {
+               group = group.toBuilder().setDescription(groupModel.getDescription()).build();
+            }
 
-            GroupsResponse response = groupManagementClient.createGroup(custosId, representations);
-            String groupId = response.getGroupsList().get(0).getId();
+            Group response = groupManagementClient.createGroup(custosId, group);
+            String groupId = response.getId();
 
             for (String id : groupModel.getMembers()) {
                 groupManagementClient.addUserToGroup(custosId, id, groupId, DefaultGroupMembershipTypes.MEMBER.name());
@@ -89,23 +86,25 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupModel.getId(), userId,
+            Status status = groupManagementClient.hasAccess(custosId, groupModel.getId(), userId,
                     DefaultGroupMembershipTypes.OWNER.name());
 
-            OperationStatus exStatus = groupManagementClient.hasAccess(custosId, groupModel.getId(), userId,
+            Status exStatus = groupManagementClient.hasAccess(custosId, groupModel.getId(), userId,
                     DefaultGroupMembershipTypes.ADMIN.name());
 
             if (!(status.getStatus() || exStatus.getStatus())) {
                 throw new GroupManagerServiceException("User does not have access to update the group");
             }
 
-            GroupRepresentation groupRepresentation = GroupRepresentation
+            Group groupRepresentation = Group
                     .newBuilder()
                     .setName(groupModel.getName())
-                    .setDescription(groupModel.getDescription())
                     .setId(groupModel.getId())
                     .setOwnerId(groupModel.getOwnerId())
                     .build();
+            if (groupModel.getDescription() != null) {
+                groupRepresentation = groupRepresentation.toBuilder().setDescription(groupModel.getDescription()).build();
+            }
 
             groupManagementClient.updateGroup(custosId, groupRepresentation);
 
@@ -127,16 +126,16 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
             String userId = getUserId(authzToken);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId,
+            Status status = groupManagementClient.hasAccess(custosId, groupId, userId,
                     DefaultGroupMembershipTypes.OWNER.name());
 
             if (!status.getStatus()) {
                 throw new GroupManagerServiceException("User does not have access to delete group");
             }
 
-            GroupRepresentation groupRepresentation = GroupRepresentation.newBuilder().setId(groupId).build();
+            Group groupRepresentation = Group.newBuilder().setId(groupId).build();
 
-            OperationStatus st = groupManagementClient.deleteGroup(custosId, groupRepresentation);
+            Status st = groupManagementClient.deleteGroup(custosId, groupRepresentation);
 
             return st.getStatus();
 
@@ -156,7 +155,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            GroupRepresentation groupRepresentation = groupManagementClient.findGroup(custosId, null, groupId);
+            Group groupRepresentation = groupManagementClient.findGroup(custosId, null, groupId);
 
             GroupModel groupModel = convertToAiravataGroupModel(custosId, groupRepresentation);
 
@@ -178,9 +177,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
         try {
 
-            GroupsResponse response = groupManagementClient.getAllGroups(custosId);
+            GetAllGroupsResponse response = groupManagementClient.getAllGroups(custosId);
 
-            List<GroupRepresentation> groupRepresentations = response.getGroupsList();
+            List<Group> groupRepresentations = response.getGroupsList();
 
             return convertToAiravataGroupModels(custosId, groupRepresentations);
         } catch (Exception e) {
@@ -222,9 +221,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
             String userId = getUserId(authzToken);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId, "OWNER");
+            Status status = groupManagementClient.hasAccess(custosId, groupId, userId, "OWNER");
 
-            OperationStatus exStatus = groupManagementClient.hasAccess(custosId, groupId, userId, "ADMIN");
+            Status exStatus = groupManagementClient.hasAccess(custosId, groupId, userId, "ADMIN");
 
             if (!(status.getStatus() || exStatus.getStatus())) {
                 throw new GroupManagerServiceException("User does not have access to add users to the group");
@@ -252,10 +251,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId, "OWNER");
+            Status status = groupManagementClient.hasAccess(custosId, groupId, userId, "OWNER");
 
 
-            OperationStatus exStatus = groupManagementClient.hasAccess(custosId, groupId, userId, "ADMIN");
+            Status exStatus = groupManagementClient.hasAccess(custosId, groupId, userId, "ADMIN");
 
             if (!(status.getStatus() || exStatus.getStatus())) {
                 throw new GroupManagerServiceException("User does not have access to remove users to the group");
@@ -282,13 +281,13 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId,
+            Status status = groupManagementClient.hasAccess(custosId, groupId, userId,
                     DefaultGroupMembershipTypes.OWNER.name());
 
             if (!status.getStatus()) {
                 throw new GroupManagerServiceException("User does not have access to transfer ownership group");
             }
-            OperationStatus st = groupManagementClient.changeUserMembershipType(custosId, newOwnerId, groupId,
+            Status st = groupManagementClient.changeUserMembershipType(custosId, newOwnerId, groupId,
                     DefaultGroupMembershipTypes.OWNER.name());
             return st.getStatus();
         } catch (Exception e) {
@@ -308,7 +307,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId,
+            Status status = groupManagementClient.hasAccess(custosId, groupId, userId,
                     DefaultGroupMembershipTypes.OWNER.name());
 
             if (!status.getStatus()) {
@@ -354,7 +353,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, userId,
+            Status status = groupManagementClient.hasAccess(custosId, groupId, userId,
                     DefaultGroupMembershipTypes.OWNER.name());
 
             if (!status.getStatus()) {
@@ -382,7 +381,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, adminId,
+            Status status = groupManagementClient.hasAccess(custosId, groupId, adminId,
                     DefaultGroupMembershipTypes.ADMIN.name());
 
             return status.getStatus();
@@ -403,7 +402,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             String userId = getUserId(authzToken);
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
 
-            OperationStatus status = groupManagementClient.hasAccess(custosId, groupId, ownerId,
+            Status status = groupManagementClient.hasAccess(custosId, groupId, ownerId,
                     DefaultGroupMembershipTypes.OWNER.name());
 
             return status.getStatus();
@@ -433,13 +432,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         if (userGroups != null && !userGroups.isEmpty()) {
 
             for (Object userGroup : userGroups) {
-                GroupModel groupModel = null;
-                if (userGroup instanceof GroupRepresentation) {
-                    groupModel = convertToAiravataGroupModel(custosId, (GroupRepresentation) userGroup);
-                } else {
-                    groupModel = convertToAiravataGroupModel(custosId, (Group) userGroup);
-                }
-
+                GroupModel groupModel = convertToAiravataGroupModel(custosId, (Group) userGroup);
                 groupModels.add(groupModel);
             }
         }
@@ -447,34 +440,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
 
-    private GroupModel convertToAiravataGroupModel(String cutosId, GroupRepresentation userGroup) throws TException {
-        GroupModel groupModel = new GroupModel();
-        groupModel.setId(userGroup.getId());
-        groupModel.setName(userGroup.getName());
-        groupModel.setDescription(userGroup.getDescription());
-        groupModel.setOwnerId(userGroup.getOwnerId());
 
-        GetAllUserProfilesResponse response = groupManagementClient.getAllChildUsers(cutosId, userGroup.getId());
-        List<String> admins = new ArrayList<>();
-        List<String> member = new ArrayList<>();
-
-        if (response.getProfilesList() != null && !response.getProfilesList().isEmpty()) {
-            for (org.apache.custos.user.profile.service.UserProfile profile : response.getProfilesList()) {
-                if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.ADMIN)) {
-                    admins.add(profile.getUsername());
-                    member.add(profile.getUsername());
-                } else if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.MEMBER)) {
-                    member.add(profile.getUsername());
-                }
-            }
-        }
-
-        member.add(userGroup.getOwnerId());
-        groupModel.setAdmins(admins);
-        groupModel.setMembers(member);
-
-        return groupModel;
-    }
 
 
     private GroupModel convertToAiravataGroupModel(String custosId, Group userGroup) throws TException {
@@ -493,6 +459,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             for (org.apache.custos.user.profile.service.UserProfile profile : response.getProfilesList()) {
                 if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.ADMIN)) {
                     admins.add(profile.getUsername());
+                    member.add(profile.getUsername());
                 } else if (profile.getMembershipType().equals(DefaultGroupMembershipTypes.MEMBER)) {
                     member.add(profile.getUsername());
                 }

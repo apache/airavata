@@ -204,7 +204,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             log.error("Custos Id "+ custosId);
 
             org.apache.custos.resource.secret.service.SSHCredential custosSSHCredential = resourceSecretManagementClient
-                    .getSSHCredential(custosId, tokenId);
+                    .getSSHCredential(custosId, tokenId, false);
 
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setUsername(custosSSHCredential.getMetadata().getOwnerId());

@@ -46,4 +46,7 @@
             </modules>
         </profile>
     </profiles>
+    <modules>
+        <module>custos-data-migrator</module>
+    </modules>
 </project>

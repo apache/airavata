@@ -37,6 +37,7 @@ import org.apache.custos.iam.service.GroupsResponse;
 import org.apache.custos.resource.secret.management.client.ResourceSecretManagementClient;
 import org.apache.custos.tenant.management.service.GetTenantResponse;
 import org.apache.custos.tenant.manamgement.client.TenantManagementClient;
+import org.apache.custos.user.profile.service.Group;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,18 +131,16 @@ public class GatewayGroupsInitializer {
         userGroup.setOwnerId(ownerId);
         userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
 
-        GroupRepresentation groupRepresentation = GroupRepresentation
+        org.apache.custos.user.profile.service.Group groupRepresentation = org.apache.custos.user.profile.service.Group
                 .newBuilder()
                 .setName(groupName)
                 .setDescription(groupDescription)
                 .setOwnerId(ownerId)
                 .build();
 
-        GroupRepresentation[] representations = {groupRepresentation};
+        Group groupsResponse = groupManagementClient.createGroup(custosId, groupRepresentation);
 
-        GroupsResponse groupsResponse = groupManagementClient.createGroup(custosId, representations);
-
-        String groupId = groupsResponse.getGroupsList().get(0).getId();
+        String groupId = groupsResponse.getId();
         userGroup.setGroupId(groupId);
         return userGroup;
     }

@@ -835,7 +835,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             CredentialSummary summary =  CustosToAiravataDataModelMapper.transform(secretMetadata, gatewayId);
 
             if (secretMetadata.getType().equals(ResourceSecretType.SSH)) {
-               SSHCredential sshCredential =  resourceSecretClient.getSSHCredential(custosId,tokenId);
+               SSHCredential sshCredential =  resourceSecretClient.getSSHCredential(custosId,tokenId, false);
                summary.setPublicKey(sshCredential.getPublicKey());
             }
 
@@ -891,7 +891,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
                 CredentialSummary summary = CustosToAiravataDataModelMapper.transform(metadata, gatewayId);
                 if (metadata.getType().equals(ResourceSecretType.SSH)) {
-                    SSHCredential sshCredential =  resourceSecretClient.getSSHCredential(custosId,metadata.getToken());
+                    SSHCredential sshCredential =  resourceSecretClient.getSSHCredential(custosId,metadata.getToken(), false);
                     summary.setPublicKey(sshCredential.getPublicKey());
                 }
 
@@ -4784,7 +4784,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         org.apache.airavata.model.credential.store.SSHCredential sshCredential1 = null;
         try {
 
-            SSHCredential sshCredential = resourceSecretClient.getSSHCredential(custosId, airavataCredStoreToken);
+            SSHCredential sshCredential = resourceSecretClient.getSSHCredential(custosId, airavataCredStoreToken, false);
 
             sshCredential1 =
                     CustosToAiravataDataModelMapper.transform(sshCredential, gatewayId);
@@ -4818,7 +4818,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         logger.info("Calling #########  setupUserComputeResourcePreferencesForSSH");
         org.apache.airavata.model.credential.store.SSHCredential sshCredential1 = null;
         try {
-            SSHCredential sshCredential = resourceSecretClient.getSSHCredential(custosId, airavataCredStoreToken);
+            SSHCredential sshCredential = resourceSecretClient.getSSHCredential(custosId, airavataCredStoreToken, false);
             sshCredential1 = CustosToAiravataDataModelMapper.transform(sshCredential, gatewayId);
         } catch (Exception e) {
             logger.error("Error occurred while retrieving SSH Credential", e);
