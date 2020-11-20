@@ -70,4 +70,12 @@
   command: firewall-cmd --zone=public --permanent --add-port=22/tcp
   become: yes
   when: ansible_os_family == "Debian"
+
+- name: allow all networks to access zabbix
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    port: 10050/tcp
+  become: yes
 ...
