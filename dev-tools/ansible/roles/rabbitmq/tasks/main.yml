@@ -35,6 +35,7 @@
     permanent: yes
     state: enabled
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ rabbitmq_port }}" protocol=tcp accept
+    immediate: yes
   with_items:
     - "{{ rabbitmq_subnets }}"
   become: yes
@@ -44,6 +45,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ management_plugin_port }}" protocol=tcp accept
   with_items:
     - "{{ rabbitmq_subnets }}"
