@@ -34,6 +34,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port=2181 protocol=tcp accept
   with_items:
     - "{{ zk_subnets }}"

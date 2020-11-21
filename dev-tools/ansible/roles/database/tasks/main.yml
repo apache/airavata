@@ -143,11 +143,12 @@
   when: "'keycloak' in groups"
 
 - name: allow only selected networks to access DB
-    firewalld:
-      zone: public
-      permanent: yes
-      state: enabled
-      rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ db_server_port }}" protocol=tcp accept
-    with_items:
-      - "{{ db_subnets }}"
-    become_user: root
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ db_server_port }}" protocol=tcp accept
+  with_items:
+    - "{{ db_subnets }}"
+  become_user: root
