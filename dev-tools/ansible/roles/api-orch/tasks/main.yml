@@ -86,6 +86,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ sharing_registry_port }}" protocol=tcp accept
   with_items:
     - "{{ sharing_subnets }}"
@@ -96,6 +97,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ registry_port }}" protocol=tcp accept
   with_items:
     - "{{ registry_subnets }}"
@@ -106,6 +108,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ cred_store_port }}" protocol=tcp accept
   with_items:
     - "{{ credential_store_subnets }}"
@@ -116,6 +119,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     port: "{{ api_server_tls_port }}/tcp"
   become_user: root
 
@@ -124,6 +128,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     port: "{{ profile_service_port }}/tcp"
   become_user: root
 
