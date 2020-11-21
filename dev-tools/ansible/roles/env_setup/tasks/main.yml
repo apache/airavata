@@ -77,5 +77,6 @@
     permanent: yes
     state: enabled
     port: 10050/tcp
+    immediate: yes
   become: yes
 ...

@@ -74,6 +74,7 @@
     zone: public
     permanent: yes
     state: enabled
+    immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port={{ kafka_listener_port }} protocol=tcp accept
   with_items:
     - "{{ kafka_subnets }}"
