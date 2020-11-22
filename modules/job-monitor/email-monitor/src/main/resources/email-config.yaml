@@ -19,3 +19,8 @@ config:
      emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
      resourceEmailAddresses:
        - ls4.tacc.utexas.edu # contain Lonestar
+
+   - jobManagerType: HTCondor
+     emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
+     resourceEmailAddresses:
+       - condor@login.crane.hcc.unl.edu # UNL Crane Email Address

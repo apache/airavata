@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 public class HTCondorEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(HTCondorEmailParser.class);
 
+    // Regex used to match desired information
     private static final String JOBID_REGEX = "(\\d+(?:\\.\\d+)?)";  // Regex pattern to match a Job ID from an HTCondor email
     private static final String CONTENTS_REGEX = "(\\d+)";           // Regex pattern to match a Job Status
 
@@ -42,12 +43,21 @@ public class HTCondorEmailParser implements EmailParser {
     private static final Pattern statusPattern = Pattern.compile(CONTENTS_REGEX);
 
 
+    /*
+     * Name    : JobStatusResult
+     * Params  : Message message : The email message that was received
+     * Returns : JobStatusResult
+     * Purpose : Responsible for parsing the email to access an HTCondor job status
+     */
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         // Job Status Results
         JobStatusResult jobStatusResult = new JobStatusResult();
 
         try {
+            // Parse the Subject Line to get the job ID
             parseSubject(message.getSubject(), jobStatusResult);
+
+            // Parse the email contents to get the job state
             parseJobState((String) message.getContent(), jobStatusResult);
         } catch (IOException e) {
             throw new AiravataException("[EJM]: There was an error while parsing the content of the HTCondor email -> " + e);
@@ -57,9 +67,18 @@ public class HTCondorEmailParser implements EmailParser {
     }
 
 
+    /*
+     * Name    : parseSubject
+     * Params  : String subject : The email's subject line
+     *           JobStatusResult jobStatusResult : The JobStatusResult to fill out
+     * Returns : None
+     * Purpose : To parse the HTCondor email subject line for the job ID
+     */
     private void parseSubject(String subject, JobStatusResult jobStatusResult) {
+        // Create a new Matcher object to use for parsing the subject line
         Matcher matcher = jobIdPattern.matcher(subject);
 
+        // Parse the job ID if the Job ID is available in the subject line
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group());
             jobStatusResult.setJobName(matcher.group());
@@ -69,6 +88,15 @@ public class HTCondorEmailParser implements EmailParser {
     }
 
 
+    /*
+     * Name    : parseJobState
+     * Params  : String content : The email's message content
+     *           JobStatusResult jobStatusResult : The JobStatusResult to fill out
+     * Returns : None
+     * Purpose : To parse the HTCondor email for the job status.
+     *           [NOTE] Due to the limited information available in the HTCondor status emails, the only
+     *                  statuses that may be parsed are FAILURE and COMPLETE
+     */
     private void parseJobState(String content, JobStatusResult jobStatusResult) {
         // Split message content into an array of lines
         String[] messageArray = content.split("\n");
@@ -85,8 +113,10 @@ public class HTCondorEmailParser implements EmailParser {
 
            if (status.equals("0")) {
                jobStatusResult.setState(JobState.COMPLETE);
-           }else {
+           }else if (status.equals("1")) {
                jobStatusResult.setState(JobState.FAILED);
+           } else {
+               log.error("[EJM] An unknown job status result was found in the content of the HTCondor email. Status found: " + status);
            }
         }else{
             log.error("[EJM]: The Job Status was not found in the content of the HTCondor email.");
