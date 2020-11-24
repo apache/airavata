@@ -98,6 +98,7 @@ public class GroovyMapBuilder {
         mapData.setInputs(inputValues);
 
         List<String> inputFiles = getProcessInputFiles(taskContext.getProcessModel().getProcessInputs(), false);
+        mapData.setInputFiles(inputFiles);
 
         List<String> inputValuesAll = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), false);
         inputValuesAll.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), false));
