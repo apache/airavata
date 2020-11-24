@@ -34,9 +34,13 @@ import java.util.regex.Pattern;
 public class HTCondorEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(HTCondorEmailParser.class);
 
+    // Group matterns to match against
+    private static final String JOBID = "jobid";
+    private static final String STATUS = "status";
+
     // Regex used to match desired information
-    private static final String JOBID_REGEX = "(\\d+(?:\\.\\d+)?)";  // Regex pattern to match a Job ID from an HTCondor email
-    private static final String CONTENTS_REGEX = "(\\d+)";           // Regex pattern to match a Job Status
+    private static final String JOBID_REGEX = "(?<" + JOBID + ">\\d+)\\.\\d+";  // Regex pattern to match a Job ID from an HTCondor email
+    private static final String CONTENTS_REGEX = "\\s*(?=exited\\s+\\S+\\s+with status\\s+(?<" + STATUS + ">-?\\d+\\.?\\d*))"; // Regex pattern to match a Job Status
 
     // Regex Patterns
     private static final Pattern jobIdPattern = Pattern.compile(JOBID_REGEX);
@@ -80,8 +84,8 @@ public class HTCondorEmailParser implements EmailParser {
 
         // Parse the job ID if the Job ID is available in the subject line
         if (matcher.find()) {
-            jobStatusResult.setJobId(matcher.group());
-            jobStatusResult.setJobName(matcher.group());
+            jobStatusResult.setJobId(matcher.group(JOBID));
+            jobStatusResult.setJobName(matcher.group(JOBID));
         } else {
             log.error("[EJM]: The Job ID was not found in the HTCondor email subject -> " + subject);
         }
@@ -99,21 +103,21 @@ public class HTCondorEmailParser implements EmailParser {
      */
     private void parseJobState(String content, JobStatusResult jobStatusResult) {
         // Split message content into an array of lines
-        String[] messageArray = content.split("\n");
+//        String[] messageArray = content.split("\n");
 
         // Access the line of the email with the status result
-        String statusLine = messageArray[5];
+//        String statusLine = messageArray[5];
 
         // Match the job status in the status line
-        Matcher matcher = statusPattern.matcher(statusLine);
+        Matcher matcher = statusPattern.matcher(content);
 
         // Determine the state that the job is in
         if(matcher.find()) {
-           String status = matcher.group();
+           String status = matcher.group(STATUS);
 
            if (status.equals("0")) {
                jobStatusResult.setState(JobState.COMPLETE);
-           }else if (status.equals("1")) {
+           }else if (!status.isEmpty()) {
                jobStatusResult.setState(JobState.FAILED);
            } else {
                log.error("[EJM] An unknown job status result was found in the content of the HTCondor email. Status found: " + status);
