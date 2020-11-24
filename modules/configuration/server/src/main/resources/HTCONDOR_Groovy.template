@@ -17,5 +17,8 @@
    if (standardOutFile != null && standardOutFile != "")  out.print 'output = ' + standardOutFile + '\n'
    if (standardErrorFile != null && standardErrorFile != "")  out.print 'error = ' + standardErrorFile + '\n'
    out.print 'should_transfer_files = Yes\nwhen_to_transfer_output = ON_EXIT\n'
+   if (inputFiles != null && inputFiles.size() > 0) out.print 'transfer_input_files = '
+   if (inputFiles != null && inputFiles.size() > 0) for(file in inputFiles) out.print file + ', '
+   if (inputFiles != null && inputFiles.size() > 0) out.print '\n'
    out.print 'queue\n'
 %>
