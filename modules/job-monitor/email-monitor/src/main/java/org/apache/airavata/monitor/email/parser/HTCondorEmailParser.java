@@ -85,7 +85,7 @@ public class HTCondorEmailParser implements EmailParser {
         // Parse the job ID if the Job ID is available in the subject line
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
-            jobStatusResult.setJobName(matcher.group(JOBID));
+            jobStatusResult.setJobName("HTCondor");
         } else {
             log.error("[EJM]: The Job ID was not found in the HTCondor email subject -> " + subject);
         }
