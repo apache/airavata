@@ -290,7 +290,7 @@ public class GroovyMapBuilder {
                         } else {
                             // set only the relative path
                             String filePath = inputDataObjectType.getValue();
-                            filePath = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length());
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
                             inputValues.add(filePath);
                         }
                     } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
@@ -298,7 +298,7 @@ public class GroovyMapBuilder {
                         String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
 
                         for (int i = 0; i < paths.length; i++) {
-                            paths[i] = paths[i].substring(paths[i].lastIndexOf('/') + 1);
+                            paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
                         }
 
                         inputValues.add(String.join(" ", paths));
@@ -324,7 +324,7 @@ public class GroovyMapBuilder {
                     if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
                         if (output.getType() == DataType.URI) {
                             String filePath = output.getValue();
-                            filePath = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length());
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
                             inputValues.add(filePath);
                         }
                     }
@@ -332,7 +332,7 @@ public class GroovyMapBuilder {
                     if (output.getValue() != null && !output.getValue().equals("")) {
                         if (output.getType() == DataType.URI) {
                             String filePath = output.getValue();
-                            filePath = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length());
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
                             inputValues.add(filePath);
                         }
                     }
@@ -373,7 +373,7 @@ public class GroovyMapBuilder {
                         } else {
                             // set only the relative path
                             String filePath = inputDataObjectType.getValue();
-                            filePath = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
                             inputFiles.add(filePath);
                         }
                     } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
@@ -381,7 +381,7 @@ public class GroovyMapBuilder {
                         String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
 
                         for (int i = 0; i < paths.length; i++) {
-                            paths[i] = paths[i].substring(paths[i].lastIndexOf("/") + 1);
+                            paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
                         }
 
                         inputFiles.add(String.join(" ", paths));
