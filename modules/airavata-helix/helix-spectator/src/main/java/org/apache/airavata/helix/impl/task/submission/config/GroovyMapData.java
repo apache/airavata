@@ -23,11 +23,13 @@ import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -548,23 +550,15 @@ public class GroovyMapData {
         URL templateUrl = ApplicationSettings.loadFile(templateName);
         if (templateUrl == null) {
             String error = "Template file '" + templateName + "' not found";
+            logger.error(error);
             throw new Exception(error);
         }
-        //File template = new File(templateUrl.getPath());
-        TemplateEngine engine = new GStringTemplateEngine();
-        Writable make;
+
         try {
-            make = engine.createTemplate(templateUrl).make(toImmutableMap());
-            String intermediateOut = make.toString();
-            make = engine.createTemplate(intermediateOut).make(toImmutableMap()); // Parsing through the map to resolve parameters in the map values (AIRAVATA-3391)
+            String templateStr = IOUtils.toString(templateUrl.openStream(), Charset.defaultCharset());
+            return loadFromString(templateStr);
         } catch (Exception e) {
             throw new Exception("Error while generating script using groovy map for template " + templateUrl.getPath(), e);
         }
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("Groovy map as string for template " + templateName);
-            logger.trace(make.toString());
-        }
-        return make.toString();
     }
 }
