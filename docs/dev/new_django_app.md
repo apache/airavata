@@ -106,6 +106,7 @@ to WEBPACK_LOADER in settings.py:
       'django_airavata_myapp',
       'dist',
       'webpack-stats.json'),
+  'TIMEOUT': 60,
 },
 ...
 ```
