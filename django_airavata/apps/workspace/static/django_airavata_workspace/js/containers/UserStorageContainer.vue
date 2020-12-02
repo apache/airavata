@@ -31,19 +31,14 @@ export default {
   },
   methods: {
     setDataProductUri() {
-      let _dataProductUri = /\?.*dataProductUri=(.*)/.exec(window.location.href);
-      if (_dataProductUri) {
-        _dataProductUri = _dataProductUri[1];
-      }
-
-      this.dataProductUri = _dataProductUri
+      this.dataProductUri = this.$route.query.dataProductUri;
     },
     async setStoragePath() {
       this.setDataProductUri();
       let _storagePath = null;
       if (this.dataProductUri) {
         const dataProduct = await utils.FetchUtils.get(`/api/data-products?product-uri=${this.dataProductUri}`);
-        _storagePath = dataProduct.replicaLocations[0].filePath.replace("file://localhost:/tmp/default-admin/", "~/")
+        _storagePath = `~/${dataProduct.path}`
       } else {
         _storagePath = /~.*$/.exec(this.$route.fullPath);
         if (_storagePath && _storagePath.length > 0) {

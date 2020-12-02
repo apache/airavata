@@ -62,6 +62,7 @@ from airavata_django_portal_sdk import user_storage
 from django.conf import settings
 from django.urls import reverse
 from rest_framework import serializers
+import re
 
 from . import models, thrift_utils
 
@@ -497,6 +498,7 @@ class DataProductSerializer(
     replicaLocations = DataReplicaLocationSerializer(many=True)
     downloadURL = serializers.SerializerMethodField()
     isInputFileUpload = serializers.SerializerMethodField()
+    path = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
@@ -512,6 +514,13 @@ class DataProductSerializer(
         """Return True if this is an uploaded input file."""
         request = self.context['request']
         return user_storage.is_input_file(request, data_product)
+
+    def get_path(self, data_product):
+        """Getter for path field."""
+        if len(data_product.replicaLocations) > 0:
+            return re.sub(r'.*/tmp/[^/]*/', "", data_product.replicaLocations[0].filePath)
+        else:
+            return None
 
 
 # TODO move this into airavata_sdk?

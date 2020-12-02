@@ -974,10 +974,12 @@ class DataProductView(APIView):
         data_product_uri = request.query_params['product-uri']
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, data_product_uri)
+        serializer = self.serializer_class(
+            data_product, context={'request': request})
 
         return UserStoragePathView().put(
             request=request,
-            path=data_product.replicaLocations[0].filePath.replace("file://localhost:/tmp/default-admin/", "")
+            path=serializer.data["path"]
         )
 
 
