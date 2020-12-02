@@ -11,7 +11,7 @@
         "
       />
       <template slot="modal-footer">
-        <a :href="storageFileViewRouteUrl()">Open in a new window</a>
+        <a :href="storageFileViewRouteUrl()" target="_blank">Open in a new window</a>
       </template>
     </b-modal>
   </b-link>
