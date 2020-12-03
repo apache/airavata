@@ -533,8 +533,8 @@ public class GroovyMapData {
         Writable make;
         try {
             make = engine.createTemplate(templateStr).make(toImmutableMap());
-            String intermediateOut = make.toString();
-            make = engine.createTemplate(intermediateOut).make(toImmutableMap()); // Parsing through the map to resolve parameters in the map values (AIRAVATA-3391)
+            //String intermediateOut = make.toString();
+            //make = engine.createTemplate(intermediateOut).make(toImmutableMap()); // Parsing through the map to resolve parameters in the map values (AIRAVATA-3391)
         } catch (Exception e) {
             throw new Exception("Error while generating script using groovy map for string " + templateStr, e);
         }
