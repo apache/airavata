@@ -136,6 +136,16 @@ encounter bugs or would like to request a new feature you can do so in the
 [Airavata Jira project](https://issues.apache.org/jira/projects/AIRAVATA) (just
 select the _Django Portal_ component when you make your issue).
 
+## Customization
+
+See the Customization Guide in the
+[documentation](https://apache-airavata-django-portal.readthedocs.io/en/latest/)
+for information on how to customize the Airavata Django Portal user interface.
+To get started we recommend going through the
+[Gateways Tutorial](https://apache-airavata-django-portal.readthedocs.io/en/latest/tutorial/gateways_tutorial/).
+This tutorial covers the different ways that the user interface can be
+customized.
+
 ## Contributing
 
 For general information on how to contribute, please see the
