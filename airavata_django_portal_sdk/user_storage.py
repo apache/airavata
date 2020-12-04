@@ -265,6 +265,15 @@ def update_file_content(request, path, fileContentText):
             myfile.write(fileContentText)
 
 
+def update_data_product_content(request, data_product, fileContentText):
+    # TODO: implement remote api support (DataProductView.put())
+    path = _get_replica_filepath(data_product)
+    full_path = _Datastore().path(request.user.username, path)
+    with open(full_path, 'w') as f:
+        myfile = File(f)
+        myfile.write(fileContentText)
+
+
 def get_file(request, path):
     if _is_remote_api():
         resp = _call_remote_api(request,
