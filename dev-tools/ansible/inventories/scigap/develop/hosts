@@ -2,7 +2,7 @@
 # inventory file : scigap develop deployment
 
 [zookeeper]
-149.165.156.195
+149.165.157.37
 
 [rabbitmq]
 149.165.156.195

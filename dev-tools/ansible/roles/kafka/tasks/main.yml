@@ -69,12 +69,24 @@
   notify: restart kafka-rest-proxy
   become: yes
 
-# Open kafka port to be accessible from outside
-- name: Open firwall ports
-  firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
+- name: open kafka port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port={{ kafka_listener_port }} protocol=tcp accept
   with_items:
-    - "{{ kafka_listener_port }}/tcp"
-    - "{{ kafka_rest_proxy_listener_port }}/tcp"
+    - "{{ kafka_subnets }}"
+  become: yes
+
+- name: open kafka rest proxy port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    port: "{{ kafka_rest_proxy_listener_port }}/tcp"
+    immediate: yes
   become: yes
 
 - name: systemd install kafka service script

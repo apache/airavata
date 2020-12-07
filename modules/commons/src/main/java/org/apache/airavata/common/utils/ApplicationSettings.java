@@ -20,6 +20,7 @@
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -328,14 +329,47 @@ public class ApplicationSettings {
 
     public static String getSetting(String key, String defaultValue) {
     	return getInstance().getSettingImpl(key,defaultValue);
-
     }
     
     public static void setSetting(String key, String value) throws ApplicationSettingsException{
-    	getInstance().properties.setProperty(key, value);
-    	getInstance().saveProperties();
+        getInstance().properties.setProperty(key, value);
+        getInstance().saveProperties();
     }
-    
+
+
+    public static int getIntSetting(String key) throws ApplicationSettingsException {
+        String val = getInstance().getSettingImpl(key);
+        try {
+            return Integer.parseInt(val);
+        } catch (NumberFormatException e) {
+            throw new ApplicationSettingsException("Value can not be parsed to int", e);
+        }
+    }
+
+    public static boolean getBooleanSetting(String key) throws ApplicationSettingsException {
+        String val = getInstance().getSettingImpl(key);
+        return Optional.ofNullable(BooleanUtils.toBooleanObject(val))
+                .orElseThrow(() -> new ApplicationSettingsException("Value can not be parsed to Boolean"));
+    }
+
+    public static long getLongSetting(String key) throws ApplicationSettingsException {
+        String val = getInstance().getSettingImpl(key);
+        try {
+            return Long.parseLong(val);
+        } catch (NumberFormatException e) {
+            throw new ApplicationSettingsException("Value can not be parsed to long", e);
+        }
+    }
+
+    public static double getDoubleSetting(String key) throws ApplicationSettingsException {
+        String val = getInstance().getSettingImpl(key);
+        try {
+            return Double.parseDouble(val);
+        } catch (NumberFormatException e) {
+            throw new ApplicationSettingsException("Value can not be parsed to double", e);
+        }
+    }
+
     public static boolean isSettingDefined(String key) throws ApplicationSettingsException{
     	return getInstance().properties.containsKey(key);
     }

@@ -20,8 +20,10 @@
 package org.apache.airavata.helix.impl.participant;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
+import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,15 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
             for (String taskClassName : TASK_CLASS_NAMES) {
                 logger.debug("Adding task class: " + taskClassName + " to the global participant");
                 taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+            }
+
+            if (ServerSettings.getBooleanSetting("participant.monitoring.enabled")) {
+                MonitoringServer monitoringServer = new MonitoringServer(
+                        ServerSettings.getSetting("participant.monitoring.host"),
+                        ServerSettings.getIntSetting("participant.monitoring.port"));
+                monitoringServer.start();
+
+                Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
             }
 
             GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
