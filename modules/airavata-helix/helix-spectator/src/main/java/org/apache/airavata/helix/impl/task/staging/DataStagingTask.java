@@ -31,6 +31,7 @@ import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ import java.util.concurrent.*;
 public abstract class DataStagingTask extends AiravataTask {
 
     private final static Logger logger = LoggerFactory.getLogger(DataStagingTask.class);
+    private final static CountMonitor transferSizeTaskCounter = new CountMonitor("transfer_data_size_counter");
 
     private final static ExecutorService PASS_THROUGH_EXECUTOR =
             new ThreadPoolExecutor(10, 60, 0L, TimeUnit.MILLISECONDS,
@@ -161,6 +163,8 @@ public abstract class DataStagingTask extends AiravataTask {
             if (!localFile.exists()) {
                 throw new TaskOnFailException("Local file does not exist at " + tempFile, false, null);
             }
+
+            transferSizeTaskCounter.inc(localFile.length());
 
             try {
                 logger.info("Uploading file form local temp file " + tempFile + " to " + destFile);
