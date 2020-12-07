@@ -47,6 +47,11 @@
             <artifactId>sshj-agent</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>platform-monitoring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <!--<build>

@@ -783,6 +783,7 @@
                 <module>modules/airavata-helix</module>
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
+                <module>modules/platform-monitoring</module>
                 <module>modules/distribution</module>
                 <module>tools</module>
                 <module>modules/ide-integration</module>
