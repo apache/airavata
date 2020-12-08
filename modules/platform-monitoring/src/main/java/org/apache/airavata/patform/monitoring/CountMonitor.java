@@ -29,11 +29,23 @@ public class CountMonitor {
         counter = Counter.build().name(monitorName).help(monitorName).register();
     }
 
+    public CountMonitor(String monitorName, String... labelNames) {
+        counter = Counter.build().name(monitorName).help(monitorName).labelNames(labelNames).register();
+    }
+
     public void inc() {
         counter.inc();
     }
 
+    public void inc(String... labelValues) {
+        counter.labels(labelValues).inc();
+    }
+
     public void inc(double amount) {
         counter.inc(amount);
+    }
+
+    public void inc(double amount, String... labelValues) {
+        counter.labels(labelValues).inc(amount);
     }
 }

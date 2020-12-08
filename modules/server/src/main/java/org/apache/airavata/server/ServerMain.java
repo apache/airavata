@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
+import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.commons.cli.ParseException;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.ILoggerFactory;
@@ -172,6 +173,15 @@ public class ServerMain {
 	public static void main(String args[]) throws ParseException, IOException, AiravataException {
 		ServerSettings.mergeSettingsCommandLineArgs(args);
 		ServerSettings.setServerRoles(ApplicationSettings.getSetting(SERVERS_KEY, "all").split(","));
+
+		if (ServerSettings.getBooleanSetting("api.server.monitoring.enabled")) {
+			MonitoringServer monitoringServer = new MonitoringServer(
+					ServerSettings.getSetting("api.server.monitoring.host"),
+					ServerSettings.getIntSetting("api.server.monitoring.port"));
+			monitoringServer.start();
+
+			Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+		}
 
 		if (ServerSettings.isEnabledKafkaLogging()) {
 			final ILoggerFactory iLoggerFactory = LoggerFactory.getILoggerFactory();
