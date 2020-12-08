@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.service.security.AiravataSecurityManager;
 import org.apache.airavata.service.security.IdentityContext;
@@ -41,14 +42,17 @@ import java.util.Map;
  */
 public class SecurityInterceptor implements MethodInterceptor {
     private final static Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
+    private final static CountMonitor apiRequestCounter = new CountMonitor("api_server_request_counter", "method");
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
+
         //obtain the authz token from the input parameters
         AuthzToken authzToken = (AuthzToken) invocation.getArguments()[0];
         //authorize the API call
         HashMap<String, String> metaDataMap = new HashMap();
         metaDataMap.put(Constants.API_METHOD_NAME, invocation.getMethod().getName());
+        apiRequestCounter.inc(invocation.getMethod().getName());
         authorize(authzToken, metaDataMap);
         //set the user identity info in a thread local to be used in downstream execution.
         IdentityContext.set(authzToken);

@@ -102,6 +102,11 @@
             <artifactId>json</artifactId>
             <version>20131018</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>platform-monitoring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
     <plugins>
