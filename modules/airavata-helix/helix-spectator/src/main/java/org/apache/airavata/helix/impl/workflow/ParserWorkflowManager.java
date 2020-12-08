@@ -35,6 +35,8 @@ import org.apache.airavata.model.appcatalog.parser.*;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
@@ -54,6 +56,7 @@ import java.util.*;
 public class ParserWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
+    private final static CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
     private String parserStorageResourceId = ServerSettings.getSetting("parser.storage.resource.id");
 
@@ -63,6 +66,16 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     public static void main(String[] args) throws Exception {
+
+        if (ServerSettings.getBooleanSetting("parser.workflow.manager.monitoring.enabled")) {
+            MonitoringServer monitoringServer = new MonitoringServer(
+                    ServerSettings.getSetting("parser.workflow.manager.monitoring.host"),
+                    ServerSettings.getIntSetting("parser.workflow.manager.monitoring.port"));
+            monitoringServer.start();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+        }
+
         ParserWorkflowManager manager = new ParserWorkflowManager();
         manager.init();
         manager.runConsumer();
@@ -162,6 +175,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                 // TODO: figure out processId and register
                 // registerWorkflowForProcess(processId, workflow, "PARSER");
                 logger.info("Launched workflow " + workflow);
+                parserwfCounter.inc();
             }
 
             getRegistryClientPool().returnResource(registryClient);

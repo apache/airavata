@@ -159,6 +159,12 @@
                 <include>org.apache.zookeeper:zookeeper:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
+
+                <include>org.apache.airavata:platform-monitoring:jar</include>
+                <include>io.prometheus:simpleclient:jar</include>
+                <include>io.prometheus:simpleclient_httpserver:jar</include>
+                <include>io.prometheus:simpleclient_common:jar</include>
+                <include>org.apache.commons:commons-lang3</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
