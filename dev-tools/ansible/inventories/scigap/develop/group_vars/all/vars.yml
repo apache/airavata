@@ -198,6 +198,10 @@ parser_workflow_manager_monitoring_enabled: true
 parser_workflow_manager_monitoring_host: "0.0.0.0"
 parser_workflow_manager_monitoring_port: 9095
 
+api_server_monitoring_enabled: true
+api_server_monitoring_host: "0.0.0.0"
+api_server_monitoring_port: 9097
+
 # Subnet definitions
 iu_subnets:
   - "149.163.0.0/16"
