@@ -144,8 +144,8 @@
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ participant_monitoring_port }}" protocol=tcp accept
   with_items:
-    - "{{ zk_subnets }}"
-  become: yes
+    - "{{ monitoring_subnets }}"
+  become_user: root
 
 - name: Openning Pre Workflow Manager Monitoring Port
   firewalld:
@@ -155,8 +155,8 @@
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ pre_workflow_manager_monitoring_port }}" protocol=tcp accept
   with_items:
-    - "{{ zk_subnets }}"
-  become: yes
+    - "{{ monitoring_subnets }}"
+  become_user: root
 
 - name: Openning Post Workflow Manager Monitoring Port
   firewalld:
@@ -166,8 +166,8 @@
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ post_workflow_manager_monitoring_port }}" protocol=tcp accept
   with_items:
-    - "{{ zk_subnets }}"
-  become: yes
+    - "{{ monitoring_subnets }}"
+  become_user: root
 
 - name: Openning Parser Workflow Manager Monitoring Port
   firewalld:
@@ -177,8 +177,8 @@
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ parser_workflow_manager_monitoring_port }}" protocol=tcp accept
   with_items:
-    - "{{ zk_subnets }}"
-  become: yes
+    - "{{ monitoring_subnets }}"
+  become_user: root
 
 #- name: systemd install helix setup service scripts
 #  template: src={{ item.template }}
