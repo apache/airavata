@@ -132,6 +132,17 @@
     port: "{{ profile_service_port }}/tcp"
   become_user: root
 
+- name: Openning API Server Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ api_server_monitoring_port }}" protocol=tcp accept
+  with_items:
+    - "{{ monitoring_subnets }}"
+  become_user: root
+
 - name: Install api-orch systemd script
   template: src=apiorch.service.j2
             dest="{{ api_orch_systemd_unit_file }}"

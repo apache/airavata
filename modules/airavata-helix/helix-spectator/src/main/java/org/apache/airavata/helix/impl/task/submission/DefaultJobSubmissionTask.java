@@ -32,6 +32,7 @@ import org.apache.airavata.model.commons.ErrorModel;
  import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +47,14 @@ import java.util.*;
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
     private final static Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
+    private final static CountMonitor defaultJSTaskCounter = new CountMonitor("default_js_task_counter");
 
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
+        defaultJSTaskCounter.inc();
         String jobId = null;
         AgentAdaptor adaptor;
 

@@ -182,6 +182,26 @@ thrift_client_pool_abandoned_removal_logged: true
 
 usage_reporting_key: "{{ vault_usage_reporting_key }}"
 
+participant_monitoring_enabled: true
+participant_monitoring_host: "0.0.0.0"
+participant_monitoring_port: 9096
+
+pre_workflow_manager_monitoring_enabled: true
+pre_workflow_manager_monitoring_host: "0.0.0.0"
+pre_workflow_manager_monitoring_port: 9093
+
+post_workflow_manager_monitoring_enabled: true
+post_workflow_manager_monitoring_host: "0.0.0.0"
+post_workflow_manager_monitoring_port: 9094
+
+parser_workflow_manager_monitoring_enabled: true
+parser_workflow_manager_monitoring_host: "0.0.0.0"
+parser_workflow_manager_monitoring_port: 9095
+
+api_server_monitoring_enabled: true
+api_server_monitoring_host: "0.0.0.0"
+api_server_monitoring_port: 9097
+
 # Subnet definitions
 iu_subnets:
   - "149.163.0.0/16"
@@ -205,3 +225,4 @@ credential_store_subnets: "{{ iu_subnets }}"
 rabbitmq_subnets: "{{ iu_subnets }}"
 db_subnets: "{{ iu_subnets }}"
 zabbix_subnets: "{{ iu_subnets }}"
+monitoring_subnets: "{{ iu_subnets }}"
