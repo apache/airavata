@@ -36,7 +36,7 @@
     ProxyPassReverse / "http://localhost:8080/"
     ProxyPreserveHost On
     # See https://issues.redhat.com/browse/KEYCLOAK-3067 for more info
-    LimitRequestFieldSize 32768
+    LimitRequestFieldSize 65536
 
     ErrorLog /var/log/httpd/keycloak.error.log
     CustomLog /var/log/httpd/keycloak.requests.log combined
