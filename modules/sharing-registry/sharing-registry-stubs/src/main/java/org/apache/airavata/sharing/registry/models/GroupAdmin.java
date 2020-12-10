@@ -35,9 +35,9 @@ public class GroupAdmin implements org.apache.thrift.TBase<GroupAdmin, GroupAdmi
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GroupAdminStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GroupAdminTupleSchemeFactory();
 
-  private java.lang.String groupId; // optional
-  private java.lang.String domainId; // optional
-  private java.lang.String adminId; // optional
+  public java.lang.String groupId; // optional
+  public java.lang.String domainId; // optional
+  public java.lang.String adminId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -151,8 +151,9 @@ public class GroupAdmin implements org.apache.thrift.TBase<GroupAdmin, GroupAdmi
     return this.groupId;
   }
 
-  public void setGroupId(java.lang.String groupId) {
+  public GroupAdmin setGroupId(java.lang.String groupId) {
     this.groupId = groupId;
+    return this;
   }
 
   public void unsetGroupId() {
@@ -174,8 +175,9 @@ public class GroupAdmin implements org.apache.thrift.TBase<GroupAdmin, GroupAdmi
     return this.domainId;
   }
 
-  public void setDomainId(java.lang.String domainId) {
+  public GroupAdmin setDomainId(java.lang.String domainId) {
     this.domainId = domainId;
+    return this;
   }
 
   public void unsetDomainId() {
@@ -197,8 +199,9 @@ public class GroupAdmin implements org.apache.thrift.TBase<GroupAdmin, GroupAdmi
     return this.adminId;
   }
 
-  public void setAdminId(java.lang.String adminId) {
+  public GroupAdmin setAdminId(java.lang.String adminId) {
     this.adminId = adminId;
+    return this;
   }
 
   public void unsetAdminId() {
@@ -501,6 +504,8 @@ public class GroupAdmin implements org.apache.thrift.TBase<GroupAdmin, GroupAdmi
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
+
+      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

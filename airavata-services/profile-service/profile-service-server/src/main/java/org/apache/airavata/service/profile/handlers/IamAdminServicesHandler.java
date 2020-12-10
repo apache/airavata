@@ -19,21 +19,28 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.CustosToAiravataDataModelMapper;
-import org.apache.airavata.common.utils.CustosUtils;
-import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.common.utils.*;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.custos.iam.service.FindUsersResponse;
 import org.apache.custos.iam.service.OperationStatus;
@@ -60,6 +67,9 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private UserManagementClient userManagementClient;
     private TenantManagementClient tenantManagementClient;
     private ResourceSecretManagementClient resourceSecretManagementClient;
+
+
+    private UserProfileRepository userProfileRepository = new UserProfileRepository();
 
     public IamAdminServicesHandler() {
         try {
@@ -401,6 +411,60 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     }
 
+
+    @Override
+    public boolean synchronizeWithCustos(String gatewayId, String custosId) throws TException {
+        try {
+            logger.info("Synchronizing groups gateway Id " + gatewayId + " custos Id" + custosId);
+
+            TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+
+            try {
+                PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                List<UserProfile> usersInGateway = userProfileRepository.getAllUserProfilesInGateway(gatewayId, 0, -1);
+
+                for (UserProfile userProfile : usersInGateway) {
+                    logger.info("Username " + userProfile.getUserId());
+//                    List<String> userRoles = keycloakclient.getUserRoles(isRealmAdminCredentials,
+//                            gatewayId, userProfile.getUserId());
+//
+//                    for (String userRole : userRoles) {
+//                        logger.info("User Role " + userRole);
+//                    }
+
+                    try {
+                        if (!isRealmAdminCredentials.getLoginUserName().equals(userProfile.getUserId())) {
+                            RegisterUserResponse response = userManagementClient.registerUser(userProfile.getUserId(),
+                                    userProfile.getFirstName(), userProfile.getLastName(), "changeme",
+                                    userProfile.getEmails().get(0), true, custosId);
+                            if (response.getIsRegistered()) {
+                                userManagementClient.enableUser(userProfile.getUserId(), custosId);
+                            }
+                        } else if (isRealmAdminCredentials.getLoginUserName().equals(userProfile.getUserId())) {
+                            userManagementClient.updateUserProfile(userProfile.getUserId(),
+                                    userProfile.getFirstName(),
+                                    userProfile.getLastName(),
+                                    userProfile.getEmails().get(0),
+                                    custosId);
+                        }
+
+                    } catch (Exception ex) {
+                        logger.error("Exception while registering user " + userProfile.getUserId(), ex);
+                    }
+
+                }
+            } catch (Exception ex) {
+                String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
+                logger.error(msg, ex);
+                throw new IamAdminServicesException(msg);
+            }
+
+        } catch (Exception ex) {
+            logger.error("", ex);
+        }
+        return true;
+    }
+
     private String getAdminPassword(AuthzToken authzToken, Gateway gateway) throws TException, ApplicationSettingsException {
         try {
             String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
@@ -434,6 +498,34 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Unable to save admin password credential, reason: " + ex.getMessage());
             throw exception;
+        }
+    }
+
+    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
+
+        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
+
+        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+    }
+
+    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
         }
     }
 

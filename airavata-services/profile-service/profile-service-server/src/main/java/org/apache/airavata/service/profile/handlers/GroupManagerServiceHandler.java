@@ -1,7 +1,9 @@
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.CustosUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
@@ -9,10 +11,12 @@ import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.User;
+import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.custos.group.management.client.GroupManagementClient;
-import org.apache.custos.iam.service.GroupRepresentation;
-import org.apache.custos.iam.service.GroupsResponse;
-import org.apache.custos.iam.service.OperationStatus;
 import org.apache.custos.user.profile.service.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -54,7 +58,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
                     .build();
 
             if (groupModel.getDescription() != null) {
-               group = group.toBuilder().setDescription(groupModel.getDescription()).build();
+                group = group.toBuilder().setDescription(groupModel.getDescription()).build();
             }
 
             Group response = groupManagementClient.createGroup(custosId, group);
@@ -415,6 +419,60 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
     }
 
+    @Override
+    public boolean synchronizeWithCustos(String gatewayId, String custosId) throws TException {
+        try {
+            logger.info("Syncronizing groups gateway Id " + gatewayId + " custos Id" + custosId);
+            SharingRegistryService.Client sharingClient = getSharingRegistryService();
+            List<UserGroup> groups = sharingClient.getGroups(gatewayId, 0, -1);
+            logger.info("Groups size " + groups.size());
+            for (UserGroup group : groups) {
+                logger.info("#####################################");
+                logger.info("group name" + group.getName());
+                String ownerId = group.getOwnerId().split("@" + gatewayId)[0];
+                logger.info("owner Id " + group.getOwnerId().split("@" + gatewayId)[0]);
+
+                Group cusgroup = Group.newBuilder()
+                        .setName(group.getName())
+                        .setOwnerId(ownerId)
+                        .setId(group.getGroupId())
+                        .build();
+                if (group.getDescription() != null) {
+                    cusgroup = cusgroup.toBuilder().setDescription(group.getDescription()).build();
+                }
+                GetAllGroupsResponse response = groupManagementClient.getAllGroups(custosId);
+                List<Group> groupList = response.getGroupsList();
+                boolean create = true;
+                for (Group ex : groupList) {
+                    if (ex.getId().equals(group.getGroupId())) {
+                        create = false;
+                        break;
+                    }
+                }
+                if (create) {
+                    groupManagementClient.createGroup(custosId, cusgroup);
+
+                    List<User> members = sharingClient.getGroupMembersOfTypeUser(gatewayId, group.getGroupId(), 0, -1);
+
+                    for (User user : members) {
+                        String userId = user.getUserId().split("@" + gatewayId)[0];
+                        logger.info("User Id " + userId);
+                        if (sharingClient.hasOwnerAccess(gatewayId, group.getGroupId(), user.getUserId())) {
+
+                        } else if (sharingClient.hasAdminAccess(gatewayId, group.getGroupId(), user.getUserId())) {
+                            groupManagementClient.addUserToGroup(custosId, userId, group.getGroupId(), DefaultGroupMembershipTypes.ADMIN.name());
+                        } else {
+                            groupManagementClient.addUserToGroup(custosId, userId, group.getGroupId(), DefaultGroupMembershipTypes.MEMBER.name());
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+            logger.error("Error", ex);
+        }
+        return true;
+    }
 
     private String getDomainId(AuthzToken authzToken) {
         return authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -438,9 +496,6 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
         return groupModels;
     }
-
-
-
 
 
     private GroupModel convertToAiravataGroupModel(String custosId, Group userGroup) throws TException {
@@ -471,5 +526,14 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         return groupModel;
     }
 
+    private SharingRegistryService.Client getSharingRegistryService() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
+        final String serverHost = ServerSettings.getSharingRegistryHost();
+        try {
+            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
+        } catch (SharingRegistryException e) {
+            throw new TException("Unable to create shairng registry client...", e);
+        }
+    }
 
 }

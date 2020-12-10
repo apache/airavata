@@ -20,6 +20,7 @@ package org.apache.airavata.credential.store.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
@@ -201,7 +202,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
             String custosId = result.getOauthClientId();
 
-            log.error("Custos Id "+ custosId);
+            log.error("Custos Id " + custosId);
 
             org.apache.custos.resource.secret.service.SSHCredential custosSSHCredential = resourceSecretManagementClient
                     .getSSHCredential(custosId, tokenId, false);
@@ -505,6 +506,72 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         } catch (CredentialStoreException e) {
             log.error("Error occurred while deleting PWD credential for token - " + tokenId + " and gateway id - " + gatewayId, e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while deleting PWD credential for token - " + tokenId + " and gateway id - " + gatewayId);
+        }
+    }
+
+    @Override
+    public boolean synchronizeWithCustos(String gatewayId, String custosId) throws TException {
+        try {
+
+            log.info("Synchronized with custos");
+
+            CredentialStoreService.Client client = getCredentialStoreServiceClient();
+            List<CredentialSummary> SSHSummaries = client.getAllCredentialSummaryForGateway(SummaryType.SSH, gatewayId);
+            Map<String, String> passwordSummaries = client.getAllPWDCredentialsForGateway(gatewayId);
+            //List<CredentialSummary> certificates = client.getAllCredentialSummaryForGateway(SummaryType.CERT, gatewayId);
+
+            for (CredentialSummary summary : SSHSummaries) {
+                log.info(" Summary info " + summary.getToken());
+                SSHCredential sshCredential = client.getSSHCredential(summary.getToken(), gatewayId);
+                log.info("Private key" + sshCredential.getPrivateKey());
+                log.info("Public key" + sshCredential.getPublicKey());
+                log.info("Passphrase " + sshCredential.getPassphrase());
+
+                resourceSecretManagementClient.addSSHCredential(summary.getToken(),
+                        sshCredential.getPassphrase(), sshCredential.getPrivateKey(), sshCredential.getPublicKey(),
+                        custosId, sshCredential.getDescription(), sshCredential.getUsername());
+
+                log.info("Successfully migrated  " + sshCredential.getToken());
+
+            }
+            for (String summary : passwordSummaries.keySet()) {
+                log.info(" Summary info " + summary);
+                PasswordCredential sshCredential = client.getPasswordCredential(summary, gatewayId);
+                log.info("Username " + sshCredential.getLoginUserName());
+                log.info("Password" + sshCredential.getPassword());
+                log.info("Description " + sshCredential.getDescription());
+                log.info("Portal username " + sshCredential.getPortalUserName());
+                resourceSecretManagementClient.addPasswordCredential(summary,
+                        custosId, sshCredential.getDescription(), sshCredential.getLoginUserName(),
+                        sshCredential.getPassword());
+
+                log.info("Successfully migrated  " + sshCredential.getToken());
+
+            }
+
+//            for (CredentialSummary summary : certificates) {
+//                log.info(" Summary info " + summary.getToken());
+//                CertificateCredential sshCredential =  client.getCertificateCredential(summary.getToken(), gatewayId);
+//                log.info("Cert "+ sshCredential.getX509Cert());
+//                log.info("Commmunity user" + sshCredential.getCommunityUser());
+//                log.info("Private key "+ sshCredential.getPrivateKey());
+//            }
+//
+
+
+        } catch (Exception ex) {
+            log.error("Error occurred while transferring data to custos", ex);
+        }
+        return true;
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = "apidev.scigap.org";
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
         }
     }
 

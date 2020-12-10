@@ -19,8 +19,16 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.CustosUtils;
+import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
@@ -36,9 +44,7 @@ import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstant
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.custos.resource.secret.management.client.ResourceSecretManagementClient;
-import org.apache.custos.resource.secret.service.AddResourceCredentialResponse;
 import org.apache.custos.tenant.management.service.CreateTenantResponse;
-import org.apache.custos.tenant.management.service.GetTenantResponse;
 import org.apache.custos.tenant.manamgement.client.TenantManagementClient;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -143,7 +149,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
             updatedGateway.setAiravataInternalGatewayId(updatedGateway.getGatewayId());
 
-           if (updatedGateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.DEACTIVATED)) {
+            if (updatedGateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.DEACTIVATED)) {
                 tenantManagementClient.deleteTenant(updatedGateway.getOauthClientId());
             }
 
@@ -280,6 +286,78 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         }
     }
 
+    @Override
+    public String synchronizeWithCustos(String gatewayId) throws TException {
+        RegistryService.Client registryClient = registryClientPool.getResource();
+        try {
+            logger.info("Creating custos tenant for gateway Id " + gatewayId);
+
+            Gateway gateway = registryClient.getGateway(gatewayId);
+            if (gateway != null) {
+
+                String[] contacts = {gateway.getEmailAddress()};
+                String comment = "Airavata gateway internal id " + gateway.getGatewayId();
+
+                String domain = gateway.getDomain();
+                if (gateway.getDomain() == null || gateway.getDomain().trim().equals("")) {
+                    String gatewayURL = gateway.getGatewayURL();
+                    domain = gatewayURL.substring(gatewayURL.lastIndexOf("://"), gatewayURL.lastIndexOf("/"));
+                }
+                PasswordCredential passwordCredential = getTenantAdminPasswordCredential(gatewayId);
+
+                String[] redirectURLS = {gateway.getGatewayURL(), gateway.getGatewayURL() + "/auth/callback*"};
+
+                String scope = "openid profile email org.cilogon.userinfo";
+
+                logger.info("Admin username " + passwordCredential.getLoginUserName());
+                logger.info("Admin password " + passwordCredential.getPassword());
+
+                CreateTenantResponse response = tenantManagementClient.registerTenant(gateway.getGatewayName(),
+                        gateway.getRequesterUsername(),
+                        gateway.getGatewayAdminFirstName(),
+                        gateway.getGatewayAdminLastName(),
+                        gateway.getEmailAddress(),
+                        passwordCredential.getLoginUserName(),
+                        passwordCredential.getPassword(),
+                        contacts,
+                        redirectURLS,
+                        gateway.getGatewayURL(),
+                        scope,
+                        domain,
+                        gateway.getGatewayURL(),
+                        comment);
+
+                String custosId = response.getClientId();
+                String custosSec = response.getClientSecret();
+                logger.info("CustosId " + custosId);
+                logger.info("CustosSec " + custosSec);
+                String returnedString = custosId + ":" + custosSec;
+                return returnedString;
+
+            }
+
+        } catch (Exception ex) {
+
+        }
+        return null;
+    }
+
+    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
+        RegistryService.Client registryClient = registryClientPool.getResource();
+        GatewayResourceProfile gwrp = registryClient.getGatewayResourceProfile(tenantId);
+
+        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+    }
 
 
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
+        }
+    }
 }

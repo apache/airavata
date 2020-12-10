@@ -56,6 +56,7 @@ import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,7 +66,7 @@ import java.util.stream.Collectors;
 
 public class AiravataDataMigrator {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, TException, ApplicationSettingsException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, TException, ApplicationSettingsException, IOException {
         String gatewayId = null;
         if (args.length > 0) {
             gatewayId = args[0];

@@ -75,4 +75,6 @@ service TenantProfileService extends base_api.BaseAPI {
                                                          2: required string requesterUsername)
                                                throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                                                        2: airavata_errors.AuthorizationException ae)
+
+     string synchronizeWithCustos(1: required string gatewayId);
 }

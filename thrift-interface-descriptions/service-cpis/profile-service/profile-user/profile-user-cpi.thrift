@@ -87,4 +87,8 @@ service UserProfileService extends base_api.BaseAPI {
                   throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
                           2: airavata_errors.AuthorizationException ae);
 
+
+
+ bool synchronizeWithCustos(1: required string gatewayId, 2: required string custosId);
+
 }

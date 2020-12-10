@@ -56,7 +56,7 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
         return getAccessibleUsersInternal(domainId, entityId, permissionTypeId, SharingType.DIRECT_CASCADING, SharingType.DIRECT_NON_CASCADING);
     }
 
-    private List<User> getAccessibleUsersInternal(String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes) throws SharingRegistryException {
+    public List<User> getAccessibleUsersInternal(String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes) throws SharingRegistryException {
         Map<String,Object> queryParameters = new HashMap<>();
         String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";

@@ -125,4 +125,6 @@ service IamAdminServices extends base_api.BaseAPI {
                                 2: required string roleName)
                                 throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                             2: airavata_errors.AuthorizationException ae)
+
+    bool synchronizeWithCustos(1: required string gatewayId, 2: required string custosId);
 }

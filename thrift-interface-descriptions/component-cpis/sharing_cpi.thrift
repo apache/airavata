@@ -267,4 +267,6 @@ service SharingRegistryService extends base_api.BaseAPI {
      <p>API method to check whether a user has access to a specific entity</p>
     */
     bool userHasAccess(1: required string domainId, 2: required string userId, 3: required string entityId, 4: required string permissionTypeId) throws (1: sharing_models.SharingRegistryException sre)
+
+    bool synchronizeWithCustos(1: required string gatewayId, 2: required string custosId);
 }

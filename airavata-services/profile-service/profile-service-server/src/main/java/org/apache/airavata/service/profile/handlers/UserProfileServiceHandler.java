@@ -246,4 +246,14 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
 
+    @Override
+    public boolean synchronizeWithCustos(String gatewayId, String custosId) throws TException {
+        try{
+            logger.info("Syncronizing groups gateway Id "+ gatewayId+ " custos Id"+ custosId);
+
+        }catch (Exception ex){
+
+        }
+        return true;
+    }
 }

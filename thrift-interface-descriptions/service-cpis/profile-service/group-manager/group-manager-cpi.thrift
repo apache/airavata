@@ -93,6 +93,8 @@ service GroupManagerService  extends base_api.BaseAPI {
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
 
+    bool synchronizeWithCustos(1: required string gatewayId, 2: required string custosId);
+
 }
 
 

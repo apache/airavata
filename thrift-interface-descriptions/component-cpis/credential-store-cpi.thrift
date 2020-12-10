@@ -83,4 +83,6 @@ service CredentialStoreService extends base_api.BaseAPI {
   bool deleteSSHCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deletePWDCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
+
+  bool synchronizeWithCustos(1: required string gatewayId, 2: required string custosId);
 }
