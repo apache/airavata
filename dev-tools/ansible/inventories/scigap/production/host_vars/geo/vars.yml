@@ -44,10 +44,10 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Geo Gateway"
-#  external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "geo"
 experiment_data_dir: "{{ user_data_dir }}/geo"
