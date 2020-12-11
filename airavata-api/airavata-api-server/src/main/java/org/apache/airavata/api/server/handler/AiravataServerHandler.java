@@ -889,13 +889,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             for (SecretMetadata metadata : metadataList) {
 
-                CredentialSummary summary = CustosToAiravataDataModelMapper.transform(metadata, gatewayId);
-                if (metadata.getType().equals(ResourceSecretType.SSH)) {
-                    SSHCredential sshCredential =  resourceSecretClient.getSSHCredential(custosId,metadata.getToken(), false);
-                    summary.setPublicKey(sshCredential.getPublicKey());
+                if (metadata.getType().name().equals(type.name())) {
+                    CredentialSummary summary = CustosToAiravataDataModelMapper.transform(metadata, gatewayId);
+                    if (metadata.getType().equals(ResourceSecretType.SSH)) {
+                        SSHCredential sshCredential = resourceSecretClient.getSSHCredential(custosId, metadata.getToken(), false);
+                        summary.setPublicKey(sshCredential.getPublicKey());
+                    }
+                    credentialSummaries.add(summary);
                 }
-
-                credentialSummaries.add(summary);
 
             }
 
