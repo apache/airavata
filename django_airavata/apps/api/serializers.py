@@ -518,7 +518,7 @@ class DataProductSerializer(
     def get_path(self, data_product):
         """Getter for path field."""
         if len(data_product.replicaLocations) > 0:
-            return re.sub(r'.*/tmp/[^/]*/', "", data_product.replicaLocations[0].filePath)
+            return re.sub(r'.*/tmp/[^/]*/', "", user_storage._get_replica_filepath(data_product))
         else:
             return None
 
