@@ -22,22 +22,15 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-airavata_django_extra_dependencies:
-  - "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
-
-
-vhost_servername: "geo-gateway.scigap.org"
+vhost_servername: "geoact.sdsc.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/geo-gateway.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/geo-gateway.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/geo-gateway.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/geoact.sdsc.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/geoact.sdsc.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/geoact.sdsc.edu/privkey.pem"
 
-
-django_extra_settings:
-  LOGIN_REDIRECT_URL: "/geogateway_django_app/"
 
 ## Keycloak related variables
-tenant_domain: "geo"
+tenant_domain: "covid-geoact"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
