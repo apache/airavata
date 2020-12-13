@@ -36,18 +36,18 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "Geo Gateway"
-  external:
-    - name: "Existing Institution Credentials"
-      idp_alias: "cilogon"
-      logo: "images/cilogon-logo-24x24-b.png"
+    name: "Covid GeoAct Gateway"
+#  external:
+#    - name: "Existing Institution Credentials"
+#      idp_alias: "cilogon"
+#      logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "geo"
-experiment_data_dir: "{{ user_data_dir }}/geo"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZyps8huDQdr9ZJARtF0RcbyOD3FqMZZKldhW7soaWvOn7ev5rMgpto+TI/YQ8w5lWwWsqtxOByxJaGFgAkwI9+/vr0MPsMz/gmHi2NaEOYm+AA25ozPW9aMWRkaeAlK9sLWI85Cg6owozZngXV745R1LjtxhGO4/sOJLBIZxndLuaIlV1th2yontOsjv5CLr525mc8+0keViSWf7agdqTI7hN51fyyDM1KucwLfXXZZd4vQRJ68o9A6INH66KAbx54u6dd7PBKrJQC63RsPZG6i9jn6qBaLv7xkGH2iM7HfVy8ywMlyvQRb3DJdxG0AUXlZuxOHRH95hdBlgiSsTl"
+gateway_id: "covid-geoact"
+experiment_data_dir: "{{ user_data_dir }}/covid-geoact"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZyps8huDQdr9ZJARtF0RcbyOD3FqMZZKldhW7soaWvOn7ev5rMgpto+TI/YQ8w5lWwWsqtxOByxJaGFgAkwI9+/vr0MPsMz/gmHi2NaEOYm+AA25ozPW9aMWRkaeAlK9sLWI85Cg6owozZngXV745R1LjtxhGO4/sOJLBIZxndLuaIlV1th2yontOsjv5CLr525mc8+0keViSWf7agdqTI7hN51fyyDM1KucwLfXXZZd4vQRJ68o9A6INH66KAbx54u6dd7PBKrJQC63RsPZG6i9jn6qBaLv7xkGH2iM7HfVy8ywMlyvQRb3DJdxG0AUXlZuxOHRH95hdBlgiSsTl"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
-portal_title: "Geo Gateway"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'), ('Ilya Zaslavsky', 'zaslavsk@sdsc.edu'), ('Kaushik Ganapathy', 'krganapa@ucsd.edu'), ('Johnny Lei', 'jil1119@ucsd.edu')]"
+portal_title: "Covid GeoAct Gateway"
 
 #django_google_analytics_tracking_id: "UA-178055994-1"
 ...
