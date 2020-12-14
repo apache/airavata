@@ -100,7 +100,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
-            logger.info("Adding gateway ###########");
 
             gateway.setAiravataInternalGatewayId(gateway.getGatewayId());
 
@@ -139,7 +138,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         try {
 
             // if admin password token changes then copy the admin password and store under this gateway id and then update the admin password token
-            logger.info("Updating  gateway ###########");
 
             updatedGateway.setAiravataInternalGatewayId(updatedGateway.getGatewayId());
 
@@ -166,7 +164,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
-            logger.info("get gateway ###########" + airavataInternalGatewayId);
+
             Gateway gateway = registryClient.getGateway(airavataInternalGatewayId);
             if (gateway == null) {
                 throw new Exception("Could not find Gateway with internal ID: " + airavataInternalGatewayId);
@@ -187,7 +185,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public boolean deleteGateway(AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
-            logger.info("Deleting Airavata gateway-profile with ID: " + gatewayId + "Internal ID: " + airavataInternalGatewayId);
+
             Gateway gateway = registryClient.getGateway(airavataInternalGatewayId);
 
             tenantManagementClient.deleteTenant(gateway.getOauthClientId());
@@ -214,7 +212,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
-            logger.info("get all gateways ###########");
+
             List<Gateway> gateways = registryClient.getAllGateways();
             if (gateways != null && !gateways.isEmpty()) {
                 for (Gateway gateway : gateways) {
@@ -237,7 +235,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
-            logger.info("is gateway exisit ###########");
+
             boolean status = registryClient.isGatewayExist(gatewayId);
             registryClientPool.returnResource(registryClient);
             return status;
@@ -256,7 +254,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         RegistryService.Client registryClient = registryClientPool.getResource();
         try {
 
-            logger.info("getAllGatewaysForUser ###########");
             List<Gateway> gateways = registryClient.getAllGateways();
             List<Gateway> selectedGateways = new ArrayList<>();
 
