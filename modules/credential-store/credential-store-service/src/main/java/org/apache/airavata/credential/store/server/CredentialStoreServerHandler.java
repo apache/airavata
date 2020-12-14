@@ -201,8 +201,6 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
             String custosId = result.getOauthClientId();
 
-            log.error("Custos Id "+ custosId);
-
             org.apache.custos.resource.secret.service.SSHCredential custosSSHCredential = resourceSecretManagementClient
                     .getSSHCredential(custosId, tokenId, false);
 
