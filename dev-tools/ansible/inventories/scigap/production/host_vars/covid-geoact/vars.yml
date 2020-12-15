@@ -23,6 +23,7 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 vhost_servername: "geoact.sdsc.edu"
+vhost_server_redirect: "geoact.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/geoact.sdsc.edu/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/geoact.sdsc.edu/fullchain.pem"
