@@ -56,5 +56,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZyps8
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "Geo Gateway"
 
-#django_google_analytics_tracking_id: "UA-178055994-1"
+django_google_analytics_tracking_id: "UA-66348921-1"
 ...
