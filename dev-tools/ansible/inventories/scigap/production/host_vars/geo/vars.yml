@@ -26,11 +26,11 @@ airavata_django_extra_dependencies:
   - "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
 
 
-vhost_servername: "geo-gateway.scigap.org"
+vhost_servername: "geo-gateway.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/geo-gateway.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/geo-gateway.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/geo-gateway.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/geo-gateway.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/geo-gateway.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/geo-gateway.org/privkey.pem"
 
 
 django_extra_settings:
