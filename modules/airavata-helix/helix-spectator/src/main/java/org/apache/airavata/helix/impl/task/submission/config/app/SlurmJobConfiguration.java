@@ -30,15 +30,15 @@ import java.util.Map;
 
 public class SlurmJobConfiguration implements JobManagerConfiguration {
 	private final Map<JobManagerCommand, String> jMCommands;
-    private String jobDescriptionTemplateName;
+    private String jobDescriptionTemplateAsStr;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public SlurmJobConfiguration(String jobDescriptionTemplateName,
+    public SlurmJobConfiguration(String jobDescriptionTemplateAsStr,
                                  String scriptExtension, String installedPath, Map<JobManagerCommand, String>
 		                                 jobManagerCommands, OutputParser parser) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+        this.jobDescriptionTemplateAsStr = jobDescriptionTemplateAsStr;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
 	    installedPath = installedPath.trim();
@@ -54,12 +54,9 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
         return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.DELETION).trim() + " " + jobID);
     }
 
-    public String getJobDescriptionTemplateName() {
-        return jobDescriptionTemplateName;
-    }
-
-    public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+    @Override
+    public String getJobDescriptionTemplateAsStr() {
+        return jobDescriptionTemplateAsStr;
     }
 
     public RawCommandInfo getMonitorCommand(String jobID) {

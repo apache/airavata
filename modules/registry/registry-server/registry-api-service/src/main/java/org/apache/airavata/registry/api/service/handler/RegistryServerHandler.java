@@ -24,14 +24,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -150,6 +143,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
     private GatewayUsageReportingCommandRepository usageReportingCommandRepository = new GatewayUsageReportingCommandRepository();
+    private GroovyTemplateRepository groovyTemplateRepository = new GroovyTemplateRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -5118,6 +5112,71 @@ public class RegistryServerHandler implements RegistryService.Iface {
         } catch (Exception e) {
             String message = "Failed to add the reporting information for the gateway " + gatewayId +
                                 " and compute resource " + computeResourceId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public String addGroovyTemplate(GroovyTemplate template) throws RegistryServiceException, TException {
+        try {
+            return groovyTemplateRepository.addGroovyTemplate(template);
+        } catch (Exception e) {
+            String message = "Failed to add the groovy template";
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public String updateGroovyTemplate(GroovyTemplate template) throws RegistryServiceException, TException {
+        try {
+            return groovyTemplateRepository.updateGroovyTemplate(template);
+        } catch (Exception e) {
+            String message = "Failed to update the groovy template with id " + template.getTemplateId();
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public void removeGroovyTemplate(String templateId) throws RegistryServiceException, TException {
+        try {
+            groovyTemplateRepository.removeGroovyTemplate(templateId);
+        } catch (Exception e) {
+            String message = "Failed to remove the groovy template with id " + templateId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public GroovyTemplate getGroovyTemplate(String templateId) throws RegistryServiceException, TException {
+        try {
+            return groovyTemplateRepository.getGroovyTemplate(templateId);
+        } catch (Exception e) {
+            String message = "Failed to fetch the groovy template with id " + templateId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public List<GroovyTemplate> getGroovyTemplatesByResourceJobManager(ResourceJobManagerType resourceJobManagerType) throws RegistryServiceException, TException {
+        try {
+            return groovyTemplateRepository.getGroovyTemplatesForResourceJobManager(resourceJobManagerType.name());
+        } catch (Exception e) {
+            String message = "Failed to fetch the groovy templates with resource job manager type " + resourceJobManagerType.name();
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + ". More info " + e.getMessage());

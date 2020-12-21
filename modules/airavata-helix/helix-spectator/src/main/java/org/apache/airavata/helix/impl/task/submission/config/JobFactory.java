@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.helix.impl.task.submission.config;
 
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.helix.impl.task.submission.config.app.*;
 import org.apache.airavata.helix.impl.task.submission.config.app.parser.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -97,27 +99,38 @@ public class JobFactory {
         }
     }
 
-    public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws Exception {
+    public static JobManagerConfiguration getJobManagerConfiguration(RegistryService.Client registryClient,
+                                                                ResourceJobManager resourceJobManager) throws Exception {
         if(resourceJobManager == null) {
             throw new Exception("Resource job manager can not be null");
         }
 
-        String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType());
+        String templateAsStr = null;
+        if (resourceJobManager.getPreferredGroovyTemplateId() != null) {
+            logger.info("Reading the template {} from registry", resourceJobManager.getPreferredGroovyTemplateId());
+            registryClient.getGroovyTemplate(resourceJobManager.getPreferredGroovyTemplateId());
+
+        } else {
+            String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType());
+            logger.info("Reading the template file {} from class path", templateFileName);
+            templateAsStr = IOUtil.readFileFromClassPath(templateFileName);
+        }
+
         switch (resourceJobManager.getResourceJobManagerType()) {
             case PBS:
-                return new PBSJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
+                return new PBSJobConfiguration(templateAsStr, ".pbs", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new PBSOutputParser());
             case SLURM:
-                return new SlurmJobConfiguration(templateFileName, ".slurm", resourceJobManager
+                return new SlurmJobConfiguration(templateAsStr, ".slurm", resourceJobManager
                         .getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), new SlurmOutputParser());
             case LSF:
-                return new LSFJobConfiguration(templateFileName, ".lsf", resourceJobManager.getJobManagerBinPath(),
+                return new LSFJobConfiguration(templateAsStr, ".lsf", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new LSFOutputParser());
             case UGE:
-                return new UGEJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
+                return new UGEJobConfiguration(templateAsStr, ".pbs", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new UGEOutputParser());
             case FORK:
-                return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
+                return new ForkJobConfiguration(templateAsStr, ".sh", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new ForkOutputParser());
             // We don't have a job configuration manager for CLOUD type
             default:

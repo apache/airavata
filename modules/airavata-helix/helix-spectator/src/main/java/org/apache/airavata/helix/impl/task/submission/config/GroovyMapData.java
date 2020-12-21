@@ -545,20 +545,4 @@ public class GroovyMapData {
         }
         return make.toString();
     }
-
-    public String loadFromFile(String templateName) throws Exception {
-        URL templateUrl = ApplicationSettings.loadFile(templateName);
-        if (templateUrl == null) {
-            String error = "Template file '" + templateName + "' not found";
-            logger.error(error);
-            throw new Exception(error);
-        }
-
-        try {
-            String templateStr = IOUtils.toString(templateUrl.openStream(), Charset.defaultCharset());
-            return loadFromString(templateStr);
-        } catch (Exception e) {
-            throw new Exception("Error while generating script using groovy map for template " + templateUrl.getPath(), e);
-        }
-    }
 }

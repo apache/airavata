@@ -144,12 +144,15 @@ class JobSubmissionInterface;
 
 class ComputeResourceDescription;
 
+class GroovyTemplate;
+
 typedef struct _ResourceJobManager__isset {
-  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false), parallelismPrefix(false) {}
+  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false), parallelismPrefix(false), preferredGroovyTemplateId(false) {}
   bool pushMonitoringEndpoint :1;
   bool jobManagerBinPath :1;
   bool jobManagerCommands :1;
   bool parallelismPrefix :1;
+  bool preferredGroovyTemplateId :1;
 } _ResourceJobManager__isset;
 
 class ResourceJobManager : public virtual ::apache::thrift::TBase {
@@ -157,7 +160,7 @@ class ResourceJobManager : public virtual ::apache::thrift::TBase {
 
   ResourceJobManager(const ResourceJobManager&);
   ResourceJobManager& operator=(const ResourceJobManager&);
-  ResourceJobManager() : resourceJobManagerId("DO_NOT_SET_AT_CLIENTS"), resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath() {
+  ResourceJobManager() : resourceJobManagerId("DO_NOT_SET_AT_CLIENTS"), resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath(), preferredGroovyTemplateId() {
   }
 
   virtual ~ResourceJobManager() throw();
@@ -167,6 +170,7 @@ class ResourceJobManager : public virtual ::apache::thrift::TBase {
   std::string jobManagerBinPath;
   std::map<JobManagerCommand::type, std::string>  jobManagerCommands;
   std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string>  parallelismPrefix;
+  std::string preferredGroovyTemplateId;
 
   _ResourceJobManager__isset __isset;
 
@@ -181,6 +185,8 @@ class ResourceJobManager : public virtual ::apache::thrift::TBase {
   void __set_jobManagerCommands(const std::map<JobManagerCommand::type, std::string> & val);
 
   void __set_parallelismPrefix(const std::map< ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type, std::string> & val);
+
+  void __set_preferredGroovyTemplateId(const std::string& val);
 
   bool operator == (const ResourceJobManager & rhs) const
   {
@@ -203,6 +209,10 @@ class ResourceJobManager : public virtual ::apache::thrift::TBase {
     if (__isset.parallelismPrefix != rhs.__isset.parallelismPrefix)
       return false;
     else if (__isset.parallelismPrefix && !(parallelismPrefix == rhs.parallelismPrefix))
+      return false;
+    if (__isset.preferredGroovyTemplateId != rhs.__isset.preferredGroovyTemplateId)
+      return false;
+    else if (__isset.preferredGroovyTemplateId && !(preferredGroovyTemplateId == rhs.preferredGroovyTemplateId))
       return false;
     return true;
   }
@@ -900,6 +910,66 @@ class ComputeResourceDescription : public virtual ::apache::thrift::TBase {
 void swap(ComputeResourceDescription &a, ComputeResourceDescription &b);
 
 inline std::ostream& operator<<(std::ostream& out, const ComputeResourceDescription& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class GroovyTemplate : public virtual ::apache::thrift::TBase {
+ public:
+
+  GroovyTemplate(const GroovyTemplate&);
+  GroovyTemplate& operator=(const GroovyTemplate&);
+  GroovyTemplate() : templateId("DO_NOT_SET_AT_CLIENTS"), templateName(), templateBody(), readOnly(0), resourceJobManagerType((ResourceJobManagerType::type)0) {
+  }
+
+  virtual ~GroovyTemplate() throw();
+  std::string templateId;
+  std::string templateName;
+  std::string templateBody;
+  bool readOnly;
+  ResourceJobManagerType::type resourceJobManagerType;
+
+  void __set_templateId(const std::string& val);
+
+  void __set_templateName(const std::string& val);
+
+  void __set_templateBody(const std::string& val);
+
+  void __set_readOnly(const bool val);
+
+  void __set_resourceJobManagerType(const ResourceJobManagerType::type val);
+
+  bool operator == (const GroovyTemplate & rhs) const
+  {
+    if (!(templateId == rhs.templateId))
+      return false;
+    if (!(templateName == rhs.templateName))
+      return false;
+    if (!(templateBody == rhs.templateBody))
+      return false;
+    if (!(readOnly == rhs.readOnly))
+      return false;
+    if (!(resourceJobManagerType == rhs.resourceJobManagerType))
+      return false;
+    return true;
+  }
+  bool operator != (const GroovyTemplate &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GroovyTemplate & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GroovyTemplate &a, GroovyTemplate &b);
+
+inline std::ostream& operator<<(std::ostream& out, const GroovyTemplate& obj)
 {
   obj.printTo(out);
   return out;

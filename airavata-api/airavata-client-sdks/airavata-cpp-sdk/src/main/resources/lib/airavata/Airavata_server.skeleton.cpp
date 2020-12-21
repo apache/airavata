@@ -3583,6 +3583,31 @@ class AiravataHandler : virtual public AiravataIf {
     printf("listAllParsingTemplates\n");
   }
 
+  void addGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template) {
+    // Your implementation goes here
+    printf("addGroovyTemplate\n");
+  }
+
+  void updateGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template) {
+    // Your implementation goes here
+    printf("updateGroovyTemplate\n");
+  }
+
+  void removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId) {
+    // Your implementation goes here
+    printf("removeGroovyTemplate\n");
+  }
+
+  void getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId) {
+    // Your implementation goes here
+    printf("getGroovyTemplate\n");
+  }
+
+  void getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType) {
+    // Your implementation goes here
+    printf("getGroovyTemplatesByResourceJobManager\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

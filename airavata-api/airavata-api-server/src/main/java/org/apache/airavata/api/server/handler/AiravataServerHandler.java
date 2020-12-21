@@ -6081,6 +6081,90 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public String addGroovyTemplate(AuthzToken authzToken, GroovyTemplate template) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            String templateId = regClient.addGroovyTemplate(template);
+            registryClientPool.returnResource(regClient);
+            return templateId;
+        } catch (Exception e) {
+            String msg = "Error while adding the Groovy Template";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public String updateGroovyTemplate(AuthzToken authzToken, GroovyTemplate template) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            String templateId = regClient.updateGroovyTemplate(template);
+            registryClientPool.returnResource(regClient);
+            return templateId;
+        } catch (Exception e) {
+            String msg = "Error while updating the Groovy Template with id " + template.getTemplateId();
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public void removeGroovyTemplate(AuthzToken authzToken, String templateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            regClient.removeGroovyTemplate(templateId);
+            registryClientPool.returnResource(regClient);
+        } catch (Exception e) {
+            String msg = "Error while removing the Groovy Template with id " + templateId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public GroovyTemplate getGroovyTemplate(AuthzToken authzToken, String templateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            GroovyTemplate template = regClient.getGroovyTemplate(templateId);
+            registryClientPool.returnResource(regClient);
+            return template;
+        } catch (Exception e) {
+            String msg = "Error while fetching the Groovy Template with id " + templateId;
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<GroovyTemplate> getGroovyTemplatesByResourceJobManager(AuthzToken authzToken, ResourceJobManagerType resourceJobManagerType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            List<GroovyTemplate> templates = regClient.getGroovyTemplatesByResourceJobManager(resourceJobManagerType);
+            registryClientPool.returnResource(regClient);
+            return templates;
+        } catch (Exception e) {
+            String msg = "Error while fetching the Groovy Templates for job manager type " + resourceJobManagerType.name();
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
     private void submitExperiment(String gatewayId, String experimentId) throws AiravataException {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);

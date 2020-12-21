@@ -178,4 +178,7 @@ public interface QueryConstants {
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
+
+    String FIND_ALL_GROOVY_TEMPLATES_FOR_RESOURCE_JOB_MANAGER = "SELECT GT FROM " + GroovyTemplateEntity.class.getSimpleName() + " GT " +
+            "WHERE GT.resourceJobManagerType = :" + DBConstants.GroovyTemplate.RESOURCE_JOB_MANAGER_TYPE;
 }

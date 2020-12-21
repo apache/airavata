@@ -117,6 +117,7 @@ struct ResourceJobManager {
     4: optional string jobManagerBinPath,
     5: optional map<JobManagerCommand, string> jobManagerCommands,
     6: optional map<parallelism_model.ApplicationParallelismType, string> parallelismPrefix
+    7: optional string preferredGroovyTemplateId
 }
 
 /**
@@ -364,4 +365,12 @@ struct ComputeResourceDescription {
     16: optional i32 defaultNodeCount,
     17: optional i32 defaultCPUCount,
     18: optional i32 defaultWalltime,
+}
+
+struct GroovyTemplate {
+    1: required string templateId = airavata_commons.DEFAULT_ID,
+    2: required string templateName,
+    3: required string templateBody,
+    4: required bool readOnly
+    5: required ResourceJobManagerType resourceJobManagerType
 }

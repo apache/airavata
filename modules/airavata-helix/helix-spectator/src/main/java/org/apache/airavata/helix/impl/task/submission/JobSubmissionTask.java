@@ -34,6 +34,7 @@ import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
 import org.apache.thrift.TException;
@@ -56,12 +57,16 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                                getRegistryServiceClient(),
+                                JobFactory.getResourceJobManager(
+                                        getRegistryServiceClient(),
+                                        getTaskContext().getJobSubmissionProtocol(),
+                                        getTaskContext().getPreferredJobSubmissionInterface()));
 
         addMonitoringCommands(groovyMapData);
 
-        String scriptAsString = groovyMapData.loadFromFile(jobManagerConfiguration.getJobDescriptionTemplateName());
+        String scriptAsString = groovyMapData.loadFromString(jobManagerConfiguration.getJobDescriptionTemplateAsStr());
         logger.info("Generated job submission script : " + scriptAsString);
 
         int number = new SecureRandom().nextInt();
@@ -155,8 +160,12 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                getRegistryServiceClient(),
+                JobFactory.getResourceJobManager(
+                    getRegistryServiceClient(),
+                    getTaskContext().getJobSubmissionProtocol(),
+                    getTaskContext().getPreferredJobSubmissionInterface()));
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getCancelCommand(jobId).getRawCommand(), null);
         return commandOutput.getExitCode() == 0;
     }
@@ -171,7 +180,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             throw new Exception("Resource job manager can not be null for protocol " + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
         }
 
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(getRegistryServiceClient(), resourceJobManager);
 
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
 
@@ -190,7 +199,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                     + " and job name " + jobName + " and user " + userName);
         }
 
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(getRegistryServiceClient(), resourceJobManager);
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);

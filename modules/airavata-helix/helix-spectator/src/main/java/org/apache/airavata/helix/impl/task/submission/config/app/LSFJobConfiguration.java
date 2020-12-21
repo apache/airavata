@@ -33,15 +33,15 @@ import java.util.Map;
 public class LSFJobConfiguration implements JobManagerConfiguration {
     private final static Logger logger = LoggerFactory.getLogger(LSFJobConfiguration.class);
 	private final Map<JobManagerCommand, String> jobMangerCommands;
-    private String jobDescriptionTemplateName;
+    private String jobDescriptionTemplateAsStr;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public LSFJobConfiguration(String jobDescriptionTemplateName,
+    public LSFJobConfiguration(String jobDescriptionTemplateAsStr,
                                String scriptExtension, String installedPath, Map<JobManagerCommand, String>
 		                               jobManagerCommands, OutputParser parser) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+        this.jobDescriptionTemplateAsStr = jobDescriptionTemplateAsStr;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
         if (installedPath.endsWith("/") || installedPath.isEmpty()) {
@@ -58,8 +58,8 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
     }
 
     @Override
-    public String getJobDescriptionTemplateName() {
-        return jobDescriptionTemplateName;
+    public String getJobDescriptionTemplateAsStr() {
+        return jobDescriptionTemplateAsStr;
     }
 
     @Override

@@ -30,14 +30,14 @@ import java.util.Map;
 
 public class ForkJobConfiguration implements JobManagerConfiguration {
     private final Map<JobManagerCommand, String> jobManagerCommands;
-    private String jobDescriptionTemplateName;
+    private String jobDescriptionTemplateAsStr;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public ForkJobConfiguration (String jobDescriptionTemplateName, String scriptExtension, String installedPath,
+    public ForkJobConfiguration (String jobDescriptionTemplateAsStr, String scriptExtension, String installedPath,
                                  Map<JobManagerCommand, String> jobManagerCommands, OutputParser parser){
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+        this.jobDescriptionTemplateAsStr = jobDescriptionTemplateAsStr;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
 	    installedPath = installedPath.trim();
@@ -56,8 +56,8 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
     }
 
     @Override
-    public String getJobDescriptionTemplateName() {
-        return jobDescriptionTemplateName;
+    public String getJobDescriptionTemplateAsStr() {
+        return jobDescriptionTemplateAsStr;
     }
 
     @Override

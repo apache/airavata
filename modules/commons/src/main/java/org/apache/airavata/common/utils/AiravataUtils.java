@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.common.utils;
 
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.UUID;

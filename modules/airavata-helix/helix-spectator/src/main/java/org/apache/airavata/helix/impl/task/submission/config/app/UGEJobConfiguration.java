@@ -30,15 +30,15 @@ import java.util.Map;
 
 public class UGEJobConfiguration implements JobManagerConfiguration {
 	private final Map<JobManagerCommand, String> jobManagerCommands;
-    private String jobDescriptionTemplateName;
+    private String jobDescriptionTemplateAsStr;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public UGEJobConfiguration(String jobDescriptionTemplateName,
+    public UGEJobConfiguration(String jobDescriptionTemplateAsStr,
                                String scriptExtension, String installedPath, Map<JobManagerCommand, String>
 		                               jobManagerCommands, OutputParser parser) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+        this.jobDescriptionTemplateAsStr = jobDescriptionTemplateAsStr;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
         if (installedPath.endsWith("/")) {
@@ -53,12 +53,9 @@ public class UGEJobConfiguration implements JobManagerConfiguration {
         return new RawCommandInfo(this.installedPath + "qdel " + jobID);
     }
 
-    public String getJobDescriptionTemplateName() {
-        return jobDescriptionTemplateName;
-    }
-
-    public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+    @Override
+    public String getJobDescriptionTemplateAsStr() {
+        return jobDescriptionTemplateAsStr;
     }
 
     public RawCommandInfo getMonitorCommand(String jobID) {

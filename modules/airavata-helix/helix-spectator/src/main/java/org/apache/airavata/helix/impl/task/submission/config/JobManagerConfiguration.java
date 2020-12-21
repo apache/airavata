@@ -23,7 +23,7 @@ public interface JobManagerConfiguration {
 
     public RawCommandInfo getCancelCommand(String jobID);
 
-    public String getJobDescriptionTemplateName();
+    public String getJobDescriptionTemplateAsStr();
 
     public RawCommandInfo getMonitorCommand(String jobID);
 

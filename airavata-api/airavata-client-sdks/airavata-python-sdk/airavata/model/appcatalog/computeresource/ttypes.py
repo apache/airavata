@@ -303,6 +303,7 @@ class ResourceJobManager(object):
      - jobManagerBinPath
      - jobManagerCommands
      - parallelismPrefix
+     - preferredGroovyTemplateId
     """
 
     thrift_spec = (
@@ -313,15 +314,17 @@ class ResourceJobManager(object):
         (4, TType.STRING, 'jobManagerBinPath', 'UTF8', None, ),  # 4
         (5, TType.MAP, 'jobManagerCommands', (TType.I32, None, TType.STRING, 'UTF8', False), None, ),  # 5
         (6, TType.MAP, 'parallelismPrefix', (TType.I32, None, TType.STRING, 'UTF8', False), None, ),  # 6
+        (7, TType.STRING, 'preferredGroovyTemplateId', 'UTF8', None, ),  # 7
     )
 
-    def __init__(self, resourceJobManagerId=thrift_spec[1][4], resourceJobManagerType=None, pushMonitoringEndpoint=None, jobManagerBinPath=None, jobManagerCommands=None, parallelismPrefix=None,):
+    def __init__(self, resourceJobManagerId=thrift_spec[1][4], resourceJobManagerType=None, pushMonitoringEndpoint=None, jobManagerBinPath=None, jobManagerCommands=None, parallelismPrefix=None, preferredGroovyTemplateId=None,):
         self.resourceJobManagerId = resourceJobManagerId
         self.resourceJobManagerType = resourceJobManagerType
         self.pushMonitoringEndpoint = pushMonitoringEndpoint
         self.jobManagerBinPath = jobManagerBinPath
         self.jobManagerCommands = jobManagerCommands
         self.parallelismPrefix = parallelismPrefix
+        self.preferredGroovyTemplateId = preferredGroovyTemplateId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -374,6 +377,11 @@ class ResourceJobManager(object):
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.STRING:
+                    self.preferredGroovyTemplateId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -415,6 +423,10 @@ class ResourceJobManager(object):
                 oprot.writeI32(kiter16)
                 oprot.writeString(viter17.encode('utf-8') if sys.version_info[0] == 2 else viter17)
             oprot.writeMapEnd()
+            oprot.writeFieldEnd()
+        if self.preferredGroovyTemplateId is not None:
+            oprot.writeFieldBegin('preferredGroovyTemplateId', TType.STRING, 7)
+            oprot.writeString(self.preferredGroovyTemplateId.encode('utf-8') if sys.version_info[0] == 2 else self.preferredGroovyTemplateId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1673,6 +1685,124 @@ class ComputeResourceDescription(object):
             raise TProtocolException(message='Required field computeResourceId is unset!')
         if self.hostName is None:
             raise TProtocolException(message='Required field hostName is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GroovyTemplate(object):
+    """
+    Attributes:
+     - templateId
+     - templateName
+     - templateBody
+     - readOnly
+     - resourceJobManagerType
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'templateId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+        (2, TType.STRING, 'templateName', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'templateBody', 'UTF8', None, ),  # 3
+        (4, TType.BOOL, 'readOnly', None, None, ),  # 4
+        (5, TType.I32, 'resourceJobManagerType', None, None, ),  # 5
+    )
+
+    def __init__(self, templateId=thrift_spec[1][4], templateName=None, templateBody=None, readOnly=None, resourceJobManagerType=None,):
+        self.templateId = templateId
+        self.templateName = templateName
+        self.templateBody = templateBody
+        self.readOnly = readOnly
+        self.resourceJobManagerType = resourceJobManagerType
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.templateId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.templateName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.templateBody = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.BOOL:
+                    self.readOnly = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I32:
+                    self.resourceJobManagerType = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('GroovyTemplate')
+        if self.templateId is not None:
+            oprot.writeFieldBegin('templateId', TType.STRING, 1)
+            oprot.writeString(self.templateId.encode('utf-8') if sys.version_info[0] == 2 else self.templateId)
+            oprot.writeFieldEnd()
+        if self.templateName is not None:
+            oprot.writeFieldBegin('templateName', TType.STRING, 2)
+            oprot.writeString(self.templateName.encode('utf-8') if sys.version_info[0] == 2 else self.templateName)
+            oprot.writeFieldEnd()
+        if self.templateBody is not None:
+            oprot.writeFieldBegin('templateBody', TType.STRING, 3)
+            oprot.writeString(self.templateBody.encode('utf-8') if sys.version_info[0] == 2 else self.templateBody)
+            oprot.writeFieldEnd()
+        if self.readOnly is not None:
+            oprot.writeFieldBegin('readOnly', TType.BOOL, 4)
+            oprot.writeBool(self.readOnly)
+            oprot.writeFieldEnd()
+        if self.resourceJobManagerType is not None:
+            oprot.writeFieldBegin('resourceJobManagerType', TType.I32, 5)
+            oprot.writeI32(self.resourceJobManagerType)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.templateId is None:
+            raise TProtocolException(message='Required field templateId is unset!')
+        if self.templateName is None:
+            raise TProtocolException(message='Required field templateName is unset!')
+        if self.templateBody is None:
+            raise TProtocolException(message='Required field templateBody is unset!')
+        if self.readOnly is None:
+            raise TProtocolException(message='Required field readOnly is unset!')
+        if self.resourceJobManagerType is None:
+            raise TProtocolException(message='Required field resourceJobManagerType is unset!')
         return
 
     def __repr__(self):

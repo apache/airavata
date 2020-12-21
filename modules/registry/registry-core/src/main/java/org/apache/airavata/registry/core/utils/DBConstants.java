@@ -180,5 +180,8 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
+    public static class GroovyTemplate {
+        public static final String RESOURCE_JOB_MANAGER_TYPE = "resourceJobManagerType";
+    }
 
 }

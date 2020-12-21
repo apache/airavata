@@ -2959,6 +2959,11 @@ class AiravataIf : virtual public  ::apache::airavata::base::api::BaseAPIIf {
   virtual void saveParsingTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::parser::ParsingTemplate& parsingTemplate) = 0;
   virtual bool removeParsingTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId, const std::string& gatewayId) = 0;
   virtual void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+  virtual void addGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template) = 0;
+  virtual void updateGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template) = 0;
+  virtual void removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId) = 0;
+  virtual void getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId) = 0;
+  virtual void getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType) = 0;
 };
 
 class AiravataIfFactory : virtual public  ::apache::airavata::base::api::BaseAPIIfFactory {
@@ -3627,6 +3632,21 @@ class AiravataNull : virtual public AiravataIf , virtual public  ::apache::airav
     return _return;
   }
   void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
+    return;
+  }
+  void addGroovyTemplate(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& /* template */) {
+    return;
+  }
+  void updateGroovyTemplate(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& /* template */) {
+    return;
+  }
+  void removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* templateId */) {
+    return;
+  }
+  void getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* templateId */) {
+    return;
+  }
+  void getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type /* resourceJobManagerType */) {
     return;
   }
 };
@@ -30560,6 +30580,678 @@ class Airavata_listAllParsingTemplates_presult {
 
 };
 
+
+class Airavata_addGroovyTemplate_args {
+ public:
+
+  Airavata_addGroovyTemplate_args(const Airavata_addGroovyTemplate_args&);
+  Airavata_addGroovyTemplate_args& operator=(const Airavata_addGroovyTemplate_args&);
+  Airavata_addGroovyTemplate_args() {
+  }
+
+  virtual ~Airavata_addGroovyTemplate_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate template;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_template(const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& val);
+
+  bool operator == (const Airavata_addGroovyTemplate_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(template == rhs.template))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGroovyTemplate_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGroovyTemplate_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addGroovyTemplate_pargs {
+ public:
+
+
+  virtual ~Airavata_addGroovyTemplate_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate* template;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGroovyTemplate_result__isset {
+  _Airavata_addGroovyTemplate_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_addGroovyTemplate_result__isset;
+
+class Airavata_addGroovyTemplate_result {
+ public:
+
+  Airavata_addGroovyTemplate_result(const Airavata_addGroovyTemplate_result&);
+  Airavata_addGroovyTemplate_result& operator=(const Airavata_addGroovyTemplate_result&);
+  Airavata_addGroovyTemplate_result() : success() {
+  }
+
+  virtual ~Airavata_addGroovyTemplate_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_addGroovyTemplate_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_addGroovyTemplate_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGroovyTemplate_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGroovyTemplate_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGroovyTemplate_presult__isset {
+  _Airavata_addGroovyTemplate_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_addGroovyTemplate_presult__isset;
+
+class Airavata_addGroovyTemplate_presult {
+ public:
+
+
+  virtual ~Airavata_addGroovyTemplate_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_addGroovyTemplate_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateGroovyTemplate_args {
+ public:
+
+  Airavata_updateGroovyTemplate_args(const Airavata_updateGroovyTemplate_args&);
+  Airavata_updateGroovyTemplate_args& operator=(const Airavata_updateGroovyTemplate_args&);
+  Airavata_updateGroovyTemplate_args() {
+  }
+
+  virtual ~Airavata_updateGroovyTemplate_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate template;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_template(const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& val);
+
+  bool operator == (const Airavata_updateGroovyTemplate_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(template == rhs.template))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGroovyTemplate_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGroovyTemplate_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateGroovyTemplate_pargs {
+ public:
+
+
+  virtual ~Airavata_updateGroovyTemplate_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate* template;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGroovyTemplate_result__isset {
+  _Airavata_updateGroovyTemplate_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_updateGroovyTemplate_result__isset;
+
+class Airavata_updateGroovyTemplate_result {
+ public:
+
+  Airavata_updateGroovyTemplate_result(const Airavata_updateGroovyTemplate_result&);
+  Airavata_updateGroovyTemplate_result& operator=(const Airavata_updateGroovyTemplate_result&);
+  Airavata_updateGroovyTemplate_result() : success() {
+  }
+
+  virtual ~Airavata_updateGroovyTemplate_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_updateGroovyTemplate_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_updateGroovyTemplate_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGroovyTemplate_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGroovyTemplate_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGroovyTemplate_presult__isset {
+  _Airavata_updateGroovyTemplate_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_updateGroovyTemplate_presult__isset;
+
+class Airavata_updateGroovyTemplate_presult {
+ public:
+
+
+  virtual ~Airavata_updateGroovyTemplate_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_updateGroovyTemplate_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_removeGroovyTemplate_args {
+ public:
+
+  Airavata_removeGroovyTemplate_args(const Airavata_removeGroovyTemplate_args&);
+  Airavata_removeGroovyTemplate_args& operator=(const Airavata_removeGroovyTemplate_args&);
+  Airavata_removeGroovyTemplate_args() : templateId() {
+  }
+
+  virtual ~Airavata_removeGroovyTemplate_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string templateId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_templateId(const std::string& val);
+
+  bool operator == (const Airavata_removeGroovyTemplate_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(templateId == rhs.templateId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_removeGroovyTemplate_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_removeGroovyTemplate_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_removeGroovyTemplate_pargs {
+ public:
+
+
+  virtual ~Airavata_removeGroovyTemplate_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* templateId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_removeGroovyTemplate_result__isset {
+  _Airavata_removeGroovyTemplate_result__isset() : ire(false), ace(false), ase(false), ae(false) {}
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_removeGroovyTemplate_result__isset;
+
+class Airavata_removeGroovyTemplate_result {
+ public:
+
+  Airavata_removeGroovyTemplate_result(const Airavata_removeGroovyTemplate_result&);
+  Airavata_removeGroovyTemplate_result& operator=(const Airavata_removeGroovyTemplate_result&);
+  Airavata_removeGroovyTemplate_result() {
+  }
+
+  virtual ~Airavata_removeGroovyTemplate_result() throw();
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_removeGroovyTemplate_result__isset __isset;
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_removeGroovyTemplate_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_removeGroovyTemplate_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_removeGroovyTemplate_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_removeGroovyTemplate_presult__isset {
+  _Airavata_removeGroovyTemplate_presult__isset() : ire(false), ace(false), ase(false), ae(false) {}
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_removeGroovyTemplate_presult__isset;
+
+class Airavata_removeGroovyTemplate_presult {
+ public:
+
+
+  virtual ~Airavata_removeGroovyTemplate_presult() throw();
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_removeGroovyTemplate_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getGroovyTemplate_args {
+ public:
+
+  Airavata_getGroovyTemplate_args(const Airavata_getGroovyTemplate_args&);
+  Airavata_getGroovyTemplate_args& operator=(const Airavata_getGroovyTemplate_args&);
+  Airavata_getGroovyTemplate_args() : templateId() {
+  }
+
+  virtual ~Airavata_getGroovyTemplate_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string templateId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_templateId(const std::string& val);
+
+  bool operator == (const Airavata_getGroovyTemplate_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(templateId == rhs.templateId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGroovyTemplate_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGroovyTemplate_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getGroovyTemplate_pargs {
+ public:
+
+
+  virtual ~Airavata_getGroovyTemplate_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* templateId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGroovyTemplate_result__isset {
+  _Airavata_getGroovyTemplate_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getGroovyTemplate_result__isset;
+
+class Airavata_getGroovyTemplate_result {
+ public:
+
+  Airavata_getGroovyTemplate_result(const Airavata_getGroovyTemplate_result&);
+  Airavata_getGroovyTemplate_result& operator=(const Airavata_getGroovyTemplate_result&);
+  Airavata_getGroovyTemplate_result() {
+  }
+
+  virtual ~Airavata_getGroovyTemplate_result() throw();
+   ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getGroovyTemplate_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getGroovyTemplate_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGroovyTemplate_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGroovyTemplate_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGroovyTemplate_presult__isset {
+  _Airavata_getGroovyTemplate_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getGroovyTemplate_presult__isset;
+
+class Airavata_getGroovyTemplate_presult {
+ public:
+
+
+  virtual ~Airavata_getGroovyTemplate_presult() throw();
+   ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getGroovyTemplate_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getGroovyTemplatesByResourceJobManager_args {
+ public:
+
+  Airavata_getGroovyTemplatesByResourceJobManager_args(const Airavata_getGroovyTemplatesByResourceJobManager_args&);
+  Airavata_getGroovyTemplatesByResourceJobManager_args& operator=(const Airavata_getGroovyTemplatesByResourceJobManager_args&);
+  Airavata_getGroovyTemplatesByResourceJobManager_args() : resourceJobManagerType(( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type)0) {
+  }
+
+  virtual ~Airavata_getGroovyTemplatesByResourceJobManager_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+   ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_resourceJobManagerType(const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type val);
+
+  bool operator == (const Airavata_getGroovyTemplatesByResourceJobManager_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(resourceJobManagerType == rhs.resourceJobManagerType))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGroovyTemplatesByResourceJobManager_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGroovyTemplatesByResourceJobManager_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getGroovyTemplatesByResourceJobManager_pargs {
+ public:
+
+
+  virtual ~Airavata_getGroovyTemplatesByResourceJobManager_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type* resourceJobManagerType;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGroovyTemplatesByResourceJobManager_result__isset {
+  _Airavata_getGroovyTemplatesByResourceJobManager_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getGroovyTemplatesByResourceJobManager_result__isset;
+
+class Airavata_getGroovyTemplatesByResourceJobManager_result {
+ public:
+
+  Airavata_getGroovyTemplatesByResourceJobManager_result(const Airavata_getGroovyTemplatesByResourceJobManager_result&);
+  Airavata_getGroovyTemplatesByResourceJobManager_result& operator=(const Airavata_getGroovyTemplatesByResourceJobManager_result&);
+  Airavata_getGroovyTemplatesByResourceJobManager_result() {
+  }
+
+  virtual ~Airavata_getGroovyTemplatesByResourceJobManager_result() throw();
+  std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getGroovyTemplatesByResourceJobManager_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getGroovyTemplatesByResourceJobManager_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGroovyTemplatesByResourceJobManager_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGroovyTemplatesByResourceJobManager_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGroovyTemplatesByResourceJobManager_presult__isset {
+  _Airavata_getGroovyTemplatesByResourceJobManager_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getGroovyTemplatesByResourceJobManager_presult__isset;
+
+class Airavata_getGroovyTemplatesByResourceJobManager_presult {
+ public:
+
+
+  virtual ~Airavata_getGroovyTemplatesByResourceJobManager_presult() throw();
+  std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getGroovyTemplatesByResourceJobManager_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf, public  ::apache::airavata::base::api::BaseAPIClient {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -31144,6 +31836,21 @@ class AiravataClient : virtual public AiravataIf, public  ::apache::airavata::ba
   void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_listAllParsingTemplates(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return);
+  void addGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  void send_addGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  void recv_addGroovyTemplate(std::string& _return);
+  void updateGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  void send_updateGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  void recv_updateGroovyTemplate(std::string& _return);
+  void removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  void send_removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  void recv_removeGroovyTemplate();
+  void getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  void send_getGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  void recv_getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return);
+  void getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType);
+  void send_getGroovyTemplatesByResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType);
+  void recv_getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return);
 };
 
 class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcessor {
@@ -31345,6 +32052,11 @@ class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcesso
   void process_saveParsingTemplate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_removeParsingTemplate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_listAllParsingTemplates(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addGroovyTemplate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateGroovyTemplate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_removeGroovyTemplate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGroovyTemplate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGroovyTemplatesByResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
      ::apache::airavata::base::api::BaseAPIProcessor(iface),
@@ -31540,6 +32252,11 @@ class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcesso
     processMap_["saveParsingTemplate"] = &AiravataProcessor::process_saveParsingTemplate;
     processMap_["removeParsingTemplate"] = &AiravataProcessor::process_removeParsingTemplate;
     processMap_["listAllParsingTemplates"] = &AiravataProcessor::process_listAllParsingTemplates;
+    processMap_["addGroovyTemplate"] = &AiravataProcessor::process_addGroovyTemplate;
+    processMap_["updateGroovyTemplate"] = &AiravataProcessor::process_updateGroovyTemplate;
+    processMap_["removeGroovyTemplate"] = &AiravataProcessor::process_removeGroovyTemplate;
+    processMap_["getGroovyTemplate"] = &AiravataProcessor::process_getGroovyTemplate;
+    processMap_["getGroovyTemplatesByResourceJobManager"] = &AiravataProcessor::process_getGroovyTemplatesByResourceJobManager;
   }
 
   virtual ~AiravataProcessor() {}
@@ -33408,6 +34125,55 @@ class AiravataMultiface : virtual public AiravataIf, public  ::apache::airavata:
     return;
   }
 
+  void addGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addGroovyTemplate(_return, authzToken, template);
+    }
+    ifaces_[i]->addGroovyTemplate(_return, authzToken, template);
+    return;
+  }
+
+  void updateGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateGroovyTemplate(_return, authzToken, template);
+    }
+    ifaces_[i]->updateGroovyTemplate(_return, authzToken, template);
+    return;
+  }
+
+  void removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->removeGroovyTemplate(authzToken, templateId);
+    }
+    ifaces_[i]->removeGroovyTemplate(authzToken, templateId);
+  }
+
+  void getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGroovyTemplate(_return, authzToken, templateId);
+    }
+    ifaces_[i]->getGroovyTemplate(_return, authzToken, templateId);
+    return;
+  }
+
+  void getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGroovyTemplatesByResourceJobManager(_return, authzToken, resourceJobManagerType);
+    }
+    ifaces_[i]->getGroovyTemplatesByResourceJobManager(_return, authzToken, resourceJobManagerType);
+    return;
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -33997,6 +34763,21 @@ class AiravataConcurrentClient : virtual public AiravataIf, public  ::apache::ai
   void listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_listAllParsingTemplates(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_listAllParsingTemplates(std::vector< ::apache::airavata::model::appcatalog::parser::ParsingTemplate> & _return, const int32_t seqid);
+  void addGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  int32_t send_addGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  void recv_addGroovyTemplate(std::string& _return, const int32_t seqid);
+  void updateGroovyTemplate(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  int32_t send_updateGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& template);
+  void recv_updateGroovyTemplate(std::string& _return, const int32_t seqid);
+  void removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  int32_t send_removeGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  void recv_removeGroovyTemplate(const int32_t seqid);
+  void getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  int32_t send_getGroovyTemplate(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& templateId);
+  void recv_getGroovyTemplate( ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate& _return, const int32_t seqid);
+  void getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType);
+  int32_t send_getGroovyTemplatesByResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManagerType::type resourceJobManagerType);
+  void recv_getGroovyTemplatesByResourceJobManager(std::vector< ::apache::airavata::model::appcatalog::computeresource::GroovyTemplate> & _return, const int32_t seqid);
 };
 
 #ifdef _WIN32

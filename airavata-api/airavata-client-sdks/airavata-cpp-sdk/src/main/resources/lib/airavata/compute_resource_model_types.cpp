@@ -179,6 +179,11 @@ void ResourceJobManager::__set_parallelismPrefix(const std::map< ::apache::airav
 __isset.parallelismPrefix = true;
 }
 
+void ResourceJobManager::__set_preferredGroovyTemplateId(const std::string& val) {
+  this->preferredGroovyTemplateId = val;
+__isset.preferredGroovyTemplateId = true;
+}
+
 uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -286,6 +291,14 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->preferredGroovyTemplateId);
+          this->__isset.preferredGroovyTemplateId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -353,6 +366,11 @@ uint32_t ResourceJobManager::write(::apache::thrift::protocol::TProtocol* oprot)
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.preferredGroovyTemplateId) {
+    xfer += oprot->writeFieldBegin("preferredGroovyTemplateId", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->preferredGroovyTemplateId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -366,6 +384,7 @@ void swap(ResourceJobManager &a, ResourceJobManager &b) {
   swap(a.jobManagerBinPath, b.jobManagerBinPath);
   swap(a.jobManagerCommands, b.jobManagerCommands);
   swap(a.parallelismPrefix, b.parallelismPrefix);
+  swap(a.preferredGroovyTemplateId, b.preferredGroovyTemplateId);
   swap(a.__isset, b.__isset);
 }
 
@@ -376,6 +395,7 @@ ResourceJobManager::ResourceJobManager(const ResourceJobManager& other19) {
   jobManagerBinPath = other19.jobManagerBinPath;
   jobManagerCommands = other19.jobManagerCommands;
   parallelismPrefix = other19.parallelismPrefix;
+  preferredGroovyTemplateId = other19.preferredGroovyTemplateId;
   __isset = other19.__isset;
 }
 ResourceJobManager& ResourceJobManager::operator=(const ResourceJobManager& other20) {
@@ -385,6 +405,7 @@ ResourceJobManager& ResourceJobManager::operator=(const ResourceJobManager& othe
   jobManagerBinPath = other20.jobManagerBinPath;
   jobManagerCommands = other20.jobManagerCommands;
   parallelismPrefix = other20.parallelismPrefix;
+  preferredGroovyTemplateId = other20.preferredGroovyTemplateId;
   __isset = other20.__isset;
   return *this;
 }
@@ -397,6 +418,7 @@ void ResourceJobManager::printTo(std::ostream& out) const {
   out << ", " << "jobManagerBinPath="; (__isset.jobManagerBinPath ? (out << to_string(jobManagerBinPath)) : (out << "<null>"));
   out << ", " << "jobManagerCommands="; (__isset.jobManagerCommands ? (out << to_string(jobManagerCommands)) : (out << "<null>"));
   out << ", " << "parallelismPrefix="; (__isset.parallelismPrefix ? (out << to_string(parallelismPrefix)) : (out << "<null>"));
+  out << ", " << "preferredGroovyTemplateId="; (__isset.preferredGroovyTemplateId ? (out << to_string(preferredGroovyTemplateId)) : (out << "<null>"));
   out << ")";
 }
 
@@ -2350,6 +2372,186 @@ void ComputeResourceDescription::printTo(std::ostream& out) const {
   out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
   out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
   out << ", " << "defaultWalltime="; (__isset.defaultWalltime ? (out << to_string(defaultWalltime)) : (out << "<null>"));
+  out << ")";
+}
+
+
+GroovyTemplate::~GroovyTemplate() throw() {
+}
+
+
+void GroovyTemplate::__set_templateId(const std::string& val) {
+  this->templateId = val;
+}
+
+void GroovyTemplate::__set_templateName(const std::string& val) {
+  this->templateName = val;
+}
+
+void GroovyTemplate::__set_templateBody(const std::string& val) {
+  this->templateBody = val;
+}
+
+void GroovyTemplate::__set_readOnly(const bool val) {
+  this->readOnly = val;
+}
+
+void GroovyTemplate::__set_resourceJobManagerType(const ResourceJobManagerType::type val) {
+  this->resourceJobManagerType = val;
+}
+
+uint32_t GroovyTemplate::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_templateId = false;
+  bool isset_templateName = false;
+  bool isset_templateBody = false;
+  bool isset_readOnly = false;
+  bool isset_resourceJobManagerType = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->templateId);
+          isset_templateId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->templateName);
+          isset_templateName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->templateBody);
+          isset_templateBody = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->readOnly);
+          isset_readOnly = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast96;
+          xfer += iprot->readI32(ecast96);
+          this->resourceJobManagerType = (ResourceJobManagerType::type)ecast96;
+          isset_resourceJobManagerType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_templateId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_templateName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_templateBody)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_readOnly)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_resourceJobManagerType)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t GroovyTemplate::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("GroovyTemplate");
+
+  xfer += oprot->writeFieldBegin("templateId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->templateId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("templateName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->templateName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("templateBody", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->templateBody);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("readOnly", ::apache::thrift::protocol::T_BOOL, 4);
+  xfer += oprot->writeBool(this->readOnly);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("resourceJobManagerType", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32((int32_t)this->resourceJobManagerType);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(GroovyTemplate &a, GroovyTemplate &b) {
+  using ::std::swap;
+  swap(a.templateId, b.templateId);
+  swap(a.templateName, b.templateName);
+  swap(a.templateBody, b.templateBody);
+  swap(a.readOnly, b.readOnly);
+  swap(a.resourceJobManagerType, b.resourceJobManagerType);
+}
+
+GroovyTemplate::GroovyTemplate(const GroovyTemplate& other97) {
+  templateId = other97.templateId;
+  templateName = other97.templateName;
+  templateBody = other97.templateBody;
+  readOnly = other97.readOnly;
+  resourceJobManagerType = other97.resourceJobManagerType;
+}
+GroovyTemplate& GroovyTemplate::operator=(const GroovyTemplate& other98) {
+  templateId = other98.templateId;
+  templateName = other98.templateName;
+  templateBody = other98.templateBody;
+  readOnly = other98.readOnly;
+  resourceJobManagerType = other98.resourceJobManagerType;
+  return *this;
+}
+void GroovyTemplate::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "GroovyTemplate(";
+  out << "templateId=" << to_string(templateId);
+  out << ", " << "templateName=" << to_string(templateName);
+  out << ", " << "templateBody=" << to_string(templateBody);
+  out << ", " << "readOnly=" << to_string(readOnly);
+  out << ", " << "resourceJobManagerType=" << to_string(resourceJobManagerType);
   out << ")";
 }
 

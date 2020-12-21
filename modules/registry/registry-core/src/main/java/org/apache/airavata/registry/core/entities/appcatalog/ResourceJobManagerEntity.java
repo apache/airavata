@@ -55,6 +55,13 @@ public class ResourceJobManagerEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @ManyToOne(targetEntity = GroovyTemplateEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PREFERRED_GROOVY_TEMPLATE_ID", referencedColumnName = "PREFERRED_GROOVY_TEMPLATE_ID", nullable = true)
+    private GroovyTemplateEntity preferredGroovyTemplate;
+
+    @Column(name = "PREFERRED_GROOVY_TEMPLATE_ID")
+    private String preferredGroovyTemplateId;
+
     public ResourceJobManagerEntity() {
     }
 
@@ -104,5 +111,23 @@ public class ResourceJobManagerEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public GroovyTemplateEntity getPreferredGroovyTemplate() {
+        return preferredGroovyTemplate;
+    }
+
+    public ResourceJobManagerEntity setPreferredGroovyTemplate(GroovyTemplateEntity preferredGroovyTemplate) {
+        this.preferredGroovyTemplate = preferredGroovyTemplate;
+        return this;
+    }
+
+    public String getPreferredGroovyTemplateId() {
+        return preferredGroovyTemplateId;
+    }
+
+    public ResourceJobManagerEntity setPreferredGroovyTemplateId(String preferredGroovyTemplateId) {
+        this.preferredGroovyTemplateId = preferredGroovyTemplateId;
+        return this;
     }
 }

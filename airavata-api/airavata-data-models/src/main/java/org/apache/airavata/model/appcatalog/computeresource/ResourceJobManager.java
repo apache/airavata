@@ -51,6 +51,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
   private static final org.apache.thrift.protocol.TField JOB_MANAGER_BIN_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerBinPath", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField JOB_MANAGER_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerCommands", org.apache.thrift.protocol.TType.MAP, (short)5);
   private static final org.apache.thrift.protocol.TField PARALLELISM_PREFIX_FIELD_DESC = new org.apache.thrift.protocol.TField("parallelismPrefix", org.apache.thrift.protocol.TType.MAP, (short)6);
+  private static final org.apache.thrift.protocol.TField PREFERRED_GROOVY_TEMPLATE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredGroovyTemplateId", org.apache.thrift.protocol.TType.STRING, (short)7);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ResourceJobManagerStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ResourceJobManagerTupleSchemeFactory();
@@ -61,6 +62,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
   private java.lang.String jobManagerBinPath; // optional
   private java.util.Map<JobManagerCommand,java.lang.String> jobManagerCommands; // optional
   private java.util.Map<org.apache.airavata.model.parallelism.ApplicationParallelismType,java.lang.String> parallelismPrefix; // optional
+  private java.lang.String preferredGroovyTemplateId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -73,7 +75,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     PUSH_MONITORING_ENDPOINT((short)3, "pushMonitoringEndpoint"),
     JOB_MANAGER_BIN_PATH((short)4, "jobManagerBinPath"),
     JOB_MANAGER_COMMANDS((short)5, "jobManagerCommands"),
-    PARALLELISM_PREFIX((short)6, "parallelismPrefix");
+    PARALLELISM_PREFIX((short)6, "parallelismPrefix"),
+    PREFERRED_GROOVY_TEMPLATE_ID((short)7, "preferredGroovyTemplateId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -100,6 +103,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           return JOB_MANAGER_COMMANDS;
         case 6: // PARALLELISM_PREFIX
           return PARALLELISM_PREFIX;
+        case 7: // PREFERRED_GROOVY_TEMPLATE_ID
+          return PREFERRED_GROOVY_TEMPLATE_ID;
         default:
           return null;
       }
@@ -140,7 +145,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.PUSH_MONITORING_ENDPOINT,_Fields.JOB_MANAGER_BIN_PATH,_Fields.JOB_MANAGER_COMMANDS,_Fields.PARALLELISM_PREFIX};
+  private static final _Fields optionals[] = {_Fields.PUSH_MONITORING_ENDPOINT,_Fields.JOB_MANAGER_BIN_PATH,_Fields.JOB_MANAGER_COMMANDS,_Fields.PARALLELISM_PREFIX,_Fields.PREFERRED_GROOVY_TEMPLATE_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -160,6 +165,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.parallelism.ApplicationParallelismType.class), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.PREFERRED_GROOVY_TEMPLATE_ID, new org.apache.thrift.meta_data.FieldMetaData("preferredGroovyTemplateId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ResourceJobManager.class, metaDataMap);
   }
@@ -224,6 +231,9 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       }
       this.parallelismPrefix = __this__parallelismPrefix;
     }
+    if (other.isSetPreferredGroovyTemplateId()) {
+      this.preferredGroovyTemplateId = other.preferredGroovyTemplateId;
+    }
   }
 
   public ResourceJobManager deepCopy() {
@@ -239,6 +249,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     this.jobManagerBinPath = null;
     this.jobManagerCommands = null;
     this.parallelismPrefix = null;
+    this.preferredGroovyTemplateId = null;
   }
 
   public java.lang.String getResourceJobManagerId() {
@@ -409,6 +420,29 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     }
   }
 
+  public java.lang.String getPreferredGroovyTemplateId() {
+    return this.preferredGroovyTemplateId;
+  }
+
+  public void setPreferredGroovyTemplateId(java.lang.String preferredGroovyTemplateId) {
+    this.preferredGroovyTemplateId = preferredGroovyTemplateId;
+  }
+
+  public void unsetPreferredGroovyTemplateId() {
+    this.preferredGroovyTemplateId = null;
+  }
+
+  /** Returns true if field preferredGroovyTemplateId is set (has been assigned a value) and false otherwise */
+  public boolean isSetPreferredGroovyTemplateId() {
+    return this.preferredGroovyTemplateId != null;
+  }
+
+  public void setPreferredGroovyTemplateIdIsSet(boolean value) {
+    if (!value) {
+      this.preferredGroovyTemplateId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case RESOURCE_JOB_MANAGER_ID:
@@ -459,6 +493,14 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       }
       break;
 
+    case PREFERRED_GROOVY_TEMPLATE_ID:
+      if (value == null) {
+        unsetPreferredGroovyTemplateId();
+      } else {
+        setPreferredGroovyTemplateId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -481,6 +523,9 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
 
     case PARALLELISM_PREFIX:
       return getParallelismPrefix();
+
+    case PREFERRED_GROOVY_TEMPLATE_ID:
+      return getPreferredGroovyTemplateId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -505,6 +550,8 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       return isSetJobManagerCommands();
     case PARALLELISM_PREFIX:
       return isSetParallelismPrefix();
+    case PREFERRED_GROOVY_TEMPLATE_ID:
+      return isSetPreferredGroovyTemplateId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -578,6 +625,15 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
         return false;
     }
 
+    boolean this_present_preferredGroovyTemplateId = true && this.isSetPreferredGroovyTemplateId();
+    boolean that_present_preferredGroovyTemplateId = true && that.isSetPreferredGroovyTemplateId();
+    if (this_present_preferredGroovyTemplateId || that_present_preferredGroovyTemplateId) {
+      if (!(this_present_preferredGroovyTemplateId && that_present_preferredGroovyTemplateId))
+        return false;
+      if (!this.preferredGroovyTemplateId.equals(that.preferredGroovyTemplateId))
+        return false;
+    }
+
     return true;
   }
 
@@ -608,6 +664,10 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     hashCode = hashCode * 8191 + ((isSetParallelismPrefix()) ? 131071 : 524287);
     if (isSetParallelismPrefix())
       hashCode = hashCode * 8191 + parallelismPrefix.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetPreferredGroovyTemplateId()) ? 131071 : 524287);
+    if (isSetPreferredGroovyTemplateId())
+      hashCode = hashCode * 8191 + preferredGroovyTemplateId.hashCode();
 
     return hashCode;
   }
@@ -676,6 +736,16 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
     }
     if (isSetParallelismPrefix()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parallelismPrefix, other.parallelismPrefix);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetPreferredGroovyTemplateId()).compareTo(other.isSetPreferredGroovyTemplateId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPreferredGroovyTemplateId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.preferredGroovyTemplateId, other.preferredGroovyTemplateId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -752,6 +822,16 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
         sb.append("null");
       } else {
         sb.append(this.parallelismPrefix);
+      }
+      first = false;
+    }
+    if (isSetPreferredGroovyTemplateId()) {
+      if (!first) sb.append(", ");
+      sb.append("preferredGroovyTemplateId:");
+      if (this.preferredGroovyTemplateId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.preferredGroovyTemplateId);
       }
       first = false;
     }
@@ -878,6 +958,14 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PREFERRED_GROOVY_TEMPLATE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.preferredGroovyTemplateId = iprot.readString();
+              struct.setPreferredGroovyTemplateIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -945,6 +1033,13 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           oprot.writeFieldEnd();
         }
       }
+      if (struct.preferredGroovyTemplateId != null) {
+        if (struct.isSetPreferredGroovyTemplateId()) {
+          oprot.writeFieldBegin(PREFERRED_GROOVY_TEMPLATE_ID_FIELD_DESC);
+          oprot.writeString(struct.preferredGroovyTemplateId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -977,7 +1072,10 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       if (struct.isSetParallelismPrefix()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetPreferredGroovyTemplateId()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetPushMonitoringEndpoint()) {
         oprot.writeString(struct.pushMonitoringEndpoint);
       }
@@ -1004,6 +1102,9 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           }
         }
       }
+      if (struct.isSetPreferredGroovyTemplateId()) {
+        oprot.writeString(struct.preferredGroovyTemplateId);
+      }
     }
 
     @Override
@@ -1013,7 +1114,7 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
       struct.setResourceJobManagerIdIsSet(true);
       struct.resourceJobManagerType = org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType.findByValue(iprot.readI32());
       struct.setResourceJobManagerTypeIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(4);
+      java.util.BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.pushMonitoringEndpoint = iprot.readString();
         struct.setPushMonitoringEndpointIsSet(true);
@@ -1051,6 +1152,10 @@ public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobMa
           }
         }
         struct.setParallelismPrefixIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.preferredGroovyTemplateId = iprot.readString();
+        struct.setPreferredGroovyTemplateIdIsSet(true);
       }
     }
   }

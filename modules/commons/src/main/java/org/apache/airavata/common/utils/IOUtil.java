@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,6 +168,26 @@ public class IOUtil {
             byteArrayStream.write(buf, 0, len);
         }
         return byteArrayStream.toByteArray();
+    }
+
+    /**
+     * Reads the content of a file in class path into a string
+     * @param fileName name of the file
+     * @return
+     * @throws Exception
+     */
+    public static String readFileFromClassPath(String fileName) throws Exception {
+        URL fileUrl = ApplicationSettings.loadFile(fileName);
+        if (fileUrl == null) {
+            String error = "File '" + fileName + "' not found";
+            throw new Exception(error);
+        }
+
+        try {
+            return readToString(fileUrl.openStream());
+        } catch (Exception e) {
+            throw new Exception("Error while reading the file from " + fileUrl.getPath(), e);
+        }
     }
 
     /**

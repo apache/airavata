@@ -31,14 +31,14 @@ import java.util.Map;
 public class PBSJobConfiguration implements JobManagerConfiguration {
 
 	private final Map<JobManagerCommand, String> jobManagerCommands;
-	private String jobDescriptionTemplateName;
+	private String jobDescriptionTemplateAsStr;
 	private String scriptExtension;
 	private String installedPath;
 	private OutputParser parser;
 
-	public PBSJobConfiguration(String jobDescriptionTemplateName, String scriptExtension, String installedPath,
+	public PBSJobConfiguration(String jobDescriptionTemplateAsStr, String scriptExtension, String installedPath,
 	                           Map<JobManagerCommand, String> jobManagerCommands, OutputParser parser) {
-		this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+		this.jobDescriptionTemplateAsStr = jobDescriptionTemplateAsStr;
 		this.scriptExtension = scriptExtension;
 		this.parser = parser;
 		installedPath = installedPath.trim();
@@ -55,12 +55,9 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 				jobID);
 	}
 
-	public String getJobDescriptionTemplateName() {
-		return jobDescriptionTemplateName;
-	}
-
-	public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
-		this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+	@Override
+	public String getJobDescriptionTemplateAsStr() {
+		return jobDescriptionTemplateAsStr;
 	}
 
 	public RawCommandInfo getMonitorCommand(String jobID) {

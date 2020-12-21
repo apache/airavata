@@ -2686,4 +2686,16 @@ service RegistryService extends base_api.BaseAPI {
             throws (1: registry_api_errors.RegistryServiceException rse);
     void removeGatewayUsageReportingCommand(1: required string gatewayId, 2: required string computeResourceId)
             throws (1: registry_api_errors.RegistryServiceException rse);
+
+    string addGroovyTemplate(1: required compute_resource_model.GroovyTemplate template)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    string updateGroovyTemplate(1: required compute_resource_model.GroovyTemplate template)
+                throws (1: registry_api_errors.RegistryServiceException rse)
+    void removeGroovyTemplate(1: required string templateId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    compute_resource_model.GroovyTemplate getGroovyTemplate(1: required string templateId)
+            throws (1: registry_api_errors.RegistryServiceException rse)
+    list<compute_resource_model.GroovyTemplate> getGroovyTemplatesByResourceJobManager(
+            1: required compute_resource_model.ResourceJobManagerType resourceJobManagerType)
+                throws (1: registry_api_errors.RegistryServiceException rse)
 }

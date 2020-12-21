@@ -258,6 +258,10 @@ class ResourceJobManager {
    * @var array
    */
   public $parallelismPrefix = null;
+  /**
+   * @var string
+   */
+  public $preferredGroovyTemplateId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -302,6 +306,10 @@ class ResourceJobManager {
             'type' => TType::STRING,
             ),
           ),
+        7 => array(
+          'var' => 'preferredGroovyTemplateId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -322,6 +330,9 @@ class ResourceJobManager {
       }
       if (isset($vals['parallelismPrefix'])) {
         $this->parallelismPrefix = $vals['parallelismPrefix'];
+      }
+      if (isset($vals['preferredGroovyTemplateId'])) {
+        $this->preferredGroovyTemplateId = $vals['preferredGroovyTemplateId'];
       }
     }
   }
@@ -413,6 +424,13 @@ class ResourceJobManager {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 7:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->preferredGroovyTemplateId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -480,6 +498,11 @@ class ResourceJobManager {
         }
         $output->writeMapEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->preferredGroovyTemplateId !== null) {
+      $xfer += $output->writeFieldBegin('preferredGroovyTemplateId', TType::STRING, 7);
+      $xfer += $output->writeString($this->preferredGroovyTemplateId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -2499,6 +2522,173 @@ class ComputeResourceDescription {
     if ($this->defaultWalltime !== null) {
       $xfer += $output->writeFieldBegin('defaultWalltime', TType::I32, 18);
       $xfer += $output->writeI32($this->defaultWalltime);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GroovyTemplate {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $templateId = "DO_NOT_SET_AT_CLIENTS";
+  /**
+   * @var string
+   */
+  public $templateName = null;
+  /**
+   * @var string
+   */
+  public $templateBody = null;
+  /**
+   * @var bool
+   */
+  public $readOnly = null;
+  /**
+   * @var int
+   */
+  public $resourceJobManagerType = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'templateId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'templateName',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'templateBody',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'readOnly',
+          'type' => TType::BOOL,
+          ),
+        5 => array(
+          'var' => 'resourceJobManagerType',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['templateId'])) {
+        $this->templateId = $vals['templateId'];
+      }
+      if (isset($vals['templateName'])) {
+        $this->templateName = $vals['templateName'];
+      }
+      if (isset($vals['templateBody'])) {
+        $this->templateBody = $vals['templateBody'];
+      }
+      if (isset($vals['readOnly'])) {
+        $this->readOnly = $vals['readOnly'];
+      }
+      if (isset($vals['resourceJobManagerType'])) {
+        $this->resourceJobManagerType = $vals['resourceJobManagerType'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GroovyTemplate';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->templateId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->templateName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->templateBody);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->readOnly);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->resourceJobManagerType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GroovyTemplate');
+    if ($this->templateId !== null) {
+      $xfer += $output->writeFieldBegin('templateId', TType::STRING, 1);
+      $xfer += $output->writeString($this->templateId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->templateName !== null) {
+      $xfer += $output->writeFieldBegin('templateName', TType::STRING, 2);
+      $xfer += $output->writeString($this->templateName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->templateBody !== null) {
+      $xfer += $output->writeFieldBegin('templateBody', TType::STRING, 3);
+      $xfer += $output->writeString($this->templateBody);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->readOnly !== null) {
+      $xfer += $output->writeFieldBegin('readOnly', TType::BOOL, 4);
+      $xfer += $output->writeBool($this->readOnly);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->resourceJobManagerType !== null) {
+      $xfer += $output->writeFieldBegin('resourceJobManagerType', TType::I32, 5);
+      $xfer += $output->writeI32($this->resourceJobManagerType);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -3555,7 +3555,34 @@ service Airavata extends base_api.BaseAPI {
                                                                                           3: airavata_errors.AiravataSystemException ase,
                                                                                           4: airavata_errors.AuthorizationException ae);
 
-  list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+ list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+
+ string addGroovyTemplate(1: required security_model.AuthzToken authzToken, 2: required compute_resource_model.GroovyTemplate template)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+ string updateGroovyTemplate(1: required security_model.AuthzToken authzToken, 2: required compute_resource_model.GroovyTemplate template)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+ void removeGroovyTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+ compute_resource_model.GroovyTemplate getGroovyTemplate(1: required security_model.AuthzToken authzToken, 2: required string templateId)
+                                                                                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                          2: airavata_errors.AiravataClientException ace,
+                                                                                          3: airavata_errors.AiravataSystemException ase,
+                                                                                          4: airavata_errors.AuthorizationException ae);
+ list<compute_resource_model.GroovyTemplate> getGroovyTemplatesByResourceJobManager(
+             1: required security_model.AuthzToken authzToken, 2: required compute_resource_model.ResourceJobManagerType resourceJobManagerType)
                                                                                   throws (1: airavata_errors.InvalidRequestException ire,
                                                                                           2: airavata_errors.AiravataClientException ace,
                                                                                           3: airavata_errors.AiravataSystemException ase,
