@@ -299,6 +299,7 @@ WEBPACK_LOADER = {
             'common',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'ADMIN': {
         'BUNDLE_DIR_NAME': 'django_airavata_admin/dist/',
@@ -311,6 +312,7 @@ WEBPACK_LOADER = {
             'django_airavata_admin',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'DATAPARSERS': {
         'BUNDLE_DIR_NAME': 'django_airavata_dataparsers/dist/',
@@ -323,6 +325,7 @@ WEBPACK_LOADER = {
             'django_airavata_dataparsers',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'GROUPS': {
         'BUNDLE_DIR_NAME': 'django_airavata_groups/dist/',
@@ -335,6 +338,7 @@ WEBPACK_LOADER = {
             'django_airavata_groups',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'WORKSPACE': {
         'BUNDLE_DIR_NAME': 'django_airavata_workspace/dist/',
@@ -347,6 +351,7 @@ WEBPACK_LOADER = {
             'django_airavata_workspace',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
 }
 

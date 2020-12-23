@@ -1,7 +1,8 @@
 import logging
 
-from django.conf.urls import include, url
+from django.conf.urls import url
 from rest_framework import routers
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
@@ -50,7 +51,6 @@ router.register(r'unverified-email-users', views.UnverifiedEmailUserViewSet,
 
 app_name = 'django_airavata_api'
 urlpatterns = [
-    url(r'^', include(router.urls)),
     url(r'^upload$', views.upload_input_file, name='upload_input_file'),
     url(r'^tus-upload-finish$', views.tus_upload_finish,
         name='tus_upload_finish'),
@@ -106,6 +106,8 @@ urlpatterns = [
     url(r'^link-output',
         views.link_output_view, name="link-output"),
 ]
+
+urlpatterns = router.urls + format_suffix_patterns(urlpatterns)
 
 if logger.isEnabledFor(logging.DEBUG):
     for router_url in router.urls:
