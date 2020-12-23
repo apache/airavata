@@ -40,7 +40,6 @@ import {models, services, utils} from "django-airavata-api";
 import {InputEditorMixin} from "django-airavata-workspace-plugin-api";
 import {components} from "django-airavata-common-ui";
 import InputFileSelector from "./InputFileSelector";
-import UserStorageEditViewer from "../../storage/storage-edit/UserStorageEditViewer";
 import UserStorageLink from "../../storage/storage-edit/UserStorageLink";
 
 export default {
@@ -49,8 +48,7 @@ export default {
   components: {
     UserStorageLink,
     "delete-link": components.DeleteLink,
-    InputFileSelector,
-    UserStorageEditViewer
+    InputFileSelector
   },
   computed: {
     isDataProductURI() {

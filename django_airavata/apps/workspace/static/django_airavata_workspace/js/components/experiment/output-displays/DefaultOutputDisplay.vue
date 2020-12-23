@@ -17,7 +17,6 @@
 
 <script>
 import { models } from "django-airavata-api";
-import { components } from "django-airavata-common-ui";
 import UserStorageLink from "../../storage/storage-edit/UserStorageLink";
 
 export default {
