@@ -8,25 +8,25 @@
    def rmQueue = checkCommand(preJobCommands, 'RM #SBATCH -p')
    preJobCommands = preJobCommands - extQueue
    preJobCommands = preJobCommands - rmQueue
-   if (queueName != null && queueName != "" && rmQueue == null) out.print extQueue ? extQueue + '\n' : '#SBATCH -p ' + queueName + '\n'
+   if (extQueue) out.print extQueue + '\n' else if (queueName != null && queueName != "" && rmQueue == null) out.print '#SBATCH -p ' + queueName + '\n'
 
    def extNodes = checkCommand(preJobCommands, '#SBATCH -N')
    def rmNodes = checkCommand(preJobCommands, 'RM #SBATCH -N')
    preJobCommands = preJobCommands - extNodes
    preJobCommands = preJobCommands - rmNodes
-   if (nodes != null && nodes != "" && rmNodes == null) out.print extNodes? extNodes + '\n' : '#SBATCH -N ' + nodes + '\n'
+   if (extNodes) out.print extNodes + '\n' else if (nodes != null && nodes != "" && rmNodes == null) out.print '#SBATCH -N ' + nodes + '\n'
 
    def extCpu = checkCommand(preJobCommands, '#SBATCH -n')
    def rmCpu = checkCommand(preJobCommands, 'RM #SBATCH -n')
    preJobCommands = preJobCommands - extCpu
    preJobCommands = preJobCommands - rmCpu
-   if (cpuCount != null && cpuCount != "" && rmCpu == null) out.print extCpu? extCpu + '\n' : '#SBATCH -n ' + cpuCount + '\n'
+   if (extCpu) out.print extCpu + '\n' else if (cpuCount != null && cpuCount != "" && rmCpu == null) out.print '#SBATCH -n ' + cpuCount + '\n'
 
    def extMem = checkCommand(preJobCommands, '#SBATCH --mem=')
    def rmMem = checkCommand(preJobCommands, 'RM #SBATCH --mem=')
    preJobCommands = preJobCommands - extMem
    preJobCommands = preJobCommands - rmMem
-   if (usedMem != null && usedMem != "" && rmMem == null) out.print extMem ? extMem + '\n': '#SBATCH --mem=' + usedMem + 'M\n'
+   if (extMem) out.print extMem + '\n' else if (usedMem != null && usedMem != "" && rmMem == null) out.print '#SBATCH --mem=' + usedMem + 'M\n'
 
    if (mailAddress != null && mailAddress != "") out.print '#SBATCH --mail-user=' + mailAddress + '\n'
    if (accountString != null && accountString != "" ) out.print '#SBATCH -A ' + accountString + '\n'
