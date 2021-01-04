@@ -370,6 +370,10 @@ public class ApplicationSettings {
     	return getInstance().properties.containsKey(key);
     }
 
+    public static boolean isTrustStorePathDefined() throws ApplicationSettingsException {
+        return ApplicationSettings.isSettingDefined(TRUST_STORE_PATH);
+    }
+
     public static String getTrustStorePath() throws ApplicationSettingsException {
         return getSetting(TRUST_STORE_PATH);
     }

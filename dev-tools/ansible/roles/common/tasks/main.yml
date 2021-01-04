@@ -92,3 +92,4 @@
   copy: src={{ client_truststore_src_path }}
         dest="{{ keystores_location }}/{{ client_truststore_src_path | basename }}"
         owner={{ user }} group={{ group }}
+  when: client_truststore_src_path is defined

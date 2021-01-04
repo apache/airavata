@@ -62,10 +62,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
-        ResteasyClient resteasyClient = new ResteasyClientBuilder()
-                .connectionPoolSize(10)
-                .trustStore(loadKeyStore())
-                .build();
+        ResteasyClient resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
                 .serverUrl(adminUrl)
                 .realm(realm)
@@ -78,16 +75,26 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static Keycloak getClient(String adminUrl, String realm, String accessToken) {
 
-        ResteasyClient resteasyClient = new ResteasyClientBuilder()
-                .connectionPoolSize(10)
-                .trustStore(loadKeyStore())
-                .build();
+        ResteasyClient resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
                 .serverUrl(adminUrl)
                 .realm(realm)
                 .authorization(accessToken)
                 .resteasyClient(resteasyClient)
                 .build();
+    }
+
+    private static ResteasyClient getResteasyClient() {
+
+        ResteasyClientBuilder builder = new ResteasyClientBuilder().connectionPoolSize(10);
+        try {
+            if (ServerSettings.isTrustStorePathDefined()) {
+                builder.trustStore(loadKeyStore());
+            }
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException("Failed to read application settings", e);
+        }
+        return builder.build();
     }
 
     private static KeyStore loadKeyStore() {
@@ -833,8 +840,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     public static void main(String[] args) throws IamAdminServicesException, ApplicationSettingsException {
         TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
-        ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
-        ServerSettings.setSetting("trust.store.password", "airavata");
+        // If testing with self-signed certificate, load certificate into modules/configuration/server/src/main/resources/client_truststore.jks and uncomment the following
+        // ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
+        // ServerSettings.setSetting("trust.store.password", "airavata");
         ServerSettings.setSetting("iam.server.url", "");
         String accessToken = "";
         String tenantId = "";
