@@ -203,10 +203,12 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     @Override
     public void initializeSecurityInfra() throws AiravataSecurityException {
         try {
-            //initialize SSL context with the trust store that contains the public cert of WSO2 Identity Server.
-            TrustStoreManager trustStoreManager = new TrustStoreManager();
-            trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
-                    ServerSettings.getTrustStorePassword());
+            //initialize SSL context with the trust store (if defined) that contains the public cert of WSO2 Identity Server.
+            if (ServerSettings.isTrustStorePathDefined()) {
+                TrustStoreManager trustStoreManager = new TrustStoreManager();
+                trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
+                        ServerSettings.getTrustStorePassword());
+            }
         } catch (Exception e) {
             throw new AiravataSecurityException(e.getMessage(), e);
         }
@@ -540,8 +542,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     }
 
     public static void main(String[] args) throws AiravataSecurityException, ApplicationSettingsException {
-        ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
-        ServerSettings.setSetting("trust.store.password", "airavata");
+        // If testing with self-signed certificate, load certificate into modules/configuration/server/src/main/resources/client_truststore.jks and uncomment the following
+        // ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
+        // ServerSettings.setSetting("trust.store.password", "airavata");
         KeyCloakSecurityManager keyCloakSecurityManager = new KeyCloakSecurityManager();
         final String tokenURL = "...";
         final String clientId = "...";
