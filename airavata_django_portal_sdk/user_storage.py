@@ -416,7 +416,7 @@ def listdir(request, path):
         raise ObjectDoesNotExist("User storage path does not exist")
 
 
-def list_experiment_dir(request, experiment_id, path=None):
+def list_experiment_dir(request, experiment_id, path=""):
     """
     List files, directories in experiment data directory. Returns a tuple,
     see `listdir`.
@@ -428,15 +428,14 @@ def list_experiment_dir(request, experiment_id, path=None):
             request.authz_token, experiment_id)
     datastore = _Datastore()
     exp_data_path = experiment.userConfigurationData.experimentDataDir
-    if path is not None:
-        exp_data_path = os.path.join(exp_data_path, path)
+    exp_data_path = os.path.join(exp_data_path, path)
     exp_owner = experiment.userName
     if datastore.dir_exists(exp_owner, exp_data_path):
         directories, files = datastore.list_user_dir(
             exp_owner, exp_data_path)
         directories_data = []
         for d in directories:
-            dpath = os.path.join(path, d)
+            dpath = os.path.join(exp_data_path, d)
             created_time = datastore.get_created_time(
                 exp_owner, dpath)
             size = datastore.size(exp_owner, dpath)
@@ -451,7 +450,7 @@ def list_experiment_dir(request, experiment_id, path=None):
             )
         files_data = []
         for f in files:
-            user_rel_path = os.path.join(path, f)
+            user_rel_path = os.path.join(exp_data_path, f)
             if not datastore.exists(exp_owner, user_rel_path):
                 logger.warning(
                     f"list_experiment_dir skipping {exp_owner}:{user_rel_path}, "
@@ -483,6 +482,20 @@ def list_experiment_dir(request, experiment_id, path=None):
         return directories_data, files_data
     else:
         raise ObjectDoesNotExist("Experiment data directory does not exist")
+
+
+def experiment_dir_exists(request, experiment_id, path=""):
+
+    if _is_remote_api():
+        raise NotImplementedError()
+    experiment = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+    datastore = _Datastore()
+    exp_data_path = experiment.userConfigurationData.experimentDataDir
+    exp_data_path = os.path.join(exp_data_path, path)
+    exp_owner = experiment.userName
+    return datastore.dir_exists(exp_owner, exp_data_path)
+
 
 def get_experiment_dir(
         request,
