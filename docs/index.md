@@ -6,6 +6,11 @@ custom Django app extensions to the
 
 ## API Documentation
 
+### module urls
+
+::: airavata_django_portal_sdk.urls.get_download_url
+    :docstring:
+
 ### module user_storage
 
 ::: airavata_django_portal_sdk.user_storage.save
