@@ -163,7 +163,7 @@ public class PoolingSSHJClient extends SSHClient {
 
                         SSHClientWrapper sshClient = minEntry.getKey();
 
-                        if (!sshClient.isConnected() || !sshClient.isAuthenticated() || !sshClient.isErrored()) {
+                        if (!sshClient.isConnected() || !sshClient.isAuthenticated() || sshClient.isErrored()) {
                             logger.warn("Client for host {} is not connected or not authenticated. Creating a new client", host);
                             removeDisconnectedClients(sshClient, true);
                             return newClientWithSessionValidation();
