@@ -1,11 +1,17 @@
+import logging
+
 from django.conf import settings
+from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 from django.shortcuts import reverse
 from django.template import Context
 
 from django_airavata.apps.api.signals import user_added_to_group
+from django_airavata.utils import user_profile_client_pool
 
 from . import models, utils
+
+log = logging.getLogger(__name__)
 
 
 @receiver(user_added_to_group, dispatch_uid="auth_email_user_added_to_group")
@@ -23,3 +29,25 @@ def email_user_added_to_group(sender, user, groups, request, **kwargs):
         "group_names": [g.name for g in groups]
     })
     utils.send_email_to_user(models.USER_ADDED_TO_GROUP_TEMPLATE, context)
+
+
+@receiver(user_logged_in, dispatch_uid="auth_initialize_user_profile")
+def initialize_user_profile(sender, request, user, **kwargs):
+    """Initialize user profile in Airavata in case this is a new user."""
+    # NOTE: if the user verified their email address then they should already
+    # have an Airavata user profile (See IAMAdminServices.enableUser). The
+    # following is necessary for users coming from federated login who don't
+    # need to verify their email.
+    authz_token = utils.get_authz_token(request)
+    if authz_token is not None:
+        if not user_profile_client_pool.doesUserExist(authz_token,
+                                                      user.username,
+                                                      settings.GATEWAY_ID):
+            user_profile_client_pool.initializeUserProfile(authz_token)
+            log.info("initialized user profile for {}".format(user.username))
+            # Since user profile created, inform admins of new user
+            utils.send_new_user_email(
+                request, user.username, user.email, user.first_name, user.last_name)
+            log.info("sent new user email for user {}".format(user.username))
+    else:
+        log.warning(f"Logged in user {user.username} has no access token")
