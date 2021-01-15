@@ -436,16 +436,16 @@ def list_experiment_dir(request, experiment_id, path=""):
         directories_data = []
         for d in directories:
             dpath = os.path.join(exp_data_path, d)
+            rel_path = os.path.join(path, d)
             created_time = datastore.get_created_time(
                 exp_owner, dpath)
             size = datastore.size(exp_owner, dpath)
             directories_data.append(
                 {
                     "name": d,
-                    "path": dpath,
+                    "path": rel_path,
                     "created_time": created_time,
                     "size": size,
-                    "hidden": dpath == TMP_INPUT_FILE_UPLOAD_DIR,
                 }
             )
         files_data = []
