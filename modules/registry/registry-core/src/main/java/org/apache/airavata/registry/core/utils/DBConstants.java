@@ -116,7 +116,6 @@ public class DBConstants {
         public static final String CREATION_TIME = "creationTime";
         public static final String RESOURCE_HOST_ID = "resourceHostId";
         public static final String ACCESSIBLE_EXPERIMENT_IDS = "accessibleExperimentIds";
-        public static final String EXPERIMENT_STATE = "experimentState";
     }
 
     public final class ExperimentStatus {
@@ -140,6 +139,7 @@ public class DBConstants {
     }
 
     public static class ExperimentSummary {
+        public static final String EXPERIMENT_STATUS = "experimentStatus";
         public static final String FROM_DATE = "fromDate";
         public static final String TO_DATE = "toDate";
     }
