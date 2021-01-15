@@ -55,6 +55,15 @@
     </Directory>
     {% endfor %}
 
+    {# Custom redirects #}
+    {% for redirect in vhost_redirects %}
+    {% if redirect.regex is defined and redirect.regex %}
+    RedirectMatch "{{ redirect.from }}" "{{ redirect.to }}"
+    {% else %}
+    Redirect "{{ redirect.from }}" "{{ redirect.to }}"
+    {% endif %}
+    {% endfor %}
+
     WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
     WSGIProcessGroup {{ vhost_servername }}
 

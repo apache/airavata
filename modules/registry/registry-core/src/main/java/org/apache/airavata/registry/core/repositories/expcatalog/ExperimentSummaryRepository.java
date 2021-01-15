@@ -103,11 +103,11 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
         }
 
-        if (filters.get(DBConstants.ExperimentStatus.STATE) != null) {
+        if (filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS) != null) {
             logger.debug("Filter Experiments by State");
-            String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentStatus.STATE)).toString();
-            queryParameters.put(DBConstants.ExperimentStatus.STATE, state);
-            query += "ES.experimentStatus LIKE :" + DBConstants.ExperimentStatus.STATE + " AND ";
+            String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS)).toString();
+            queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, state);
+            query += "ES.experimentStatus LIKE :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
         }
 
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
@@ -260,8 +260,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
         if (experimentState != null) {
             logger.debug("Filter Experiments by Experiment State");
-            queryParameters.put(DBConstants.Experiment.EXPERIMENT_STATE, experimentState);
-            query += "ES.experimentStatus LIKE :" + DBConstants.Experiment.EXPERIMENT_STATE + " AND ";
+            queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, experimentState);
+            query += "ES.experimentStatus LIKE :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
         }
 
         if (gatewayId != null) {

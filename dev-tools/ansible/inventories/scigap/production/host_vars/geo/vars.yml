@@ -28,6 +28,10 @@ airavata_django_extra_dependencies:
 
 vhost_servername: "geo-gateway.org"
 vhost_ssl: True
+vhost_redirects:
+  - from: "^/$"
+    to: "/geogateway_django_app/#/maptools"
+    regex: true
 ssl_certificate_file: "/etc/letsencrypt/live/geo-gateway.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/geo-gateway.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/geo-gateway.org/privkey.pem"
