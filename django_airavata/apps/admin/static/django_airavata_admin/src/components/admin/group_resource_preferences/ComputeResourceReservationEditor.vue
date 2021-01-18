@@ -31,7 +31,7 @@
           day: 'numeric',
           hour: 'numeric',
           minute: '2-digit',
-          timeZoneName: 'short'
+          timeZoneName: 'short',
         }"
         :phrases="{ ok: 'Continue', cancel: 'Exit' }"
         :hour-step="1"
@@ -54,7 +54,7 @@
         :value="endTimeAsString"
         :input-class="{
           'form-control': true,
-          'is-invalid': getValidationState('endTime')
+          'is-invalid': getValidationState('endTime'),
         }"
         :format="{
           year: 'numeric',
@@ -62,7 +62,7 @@
           day: 'numeric',
           hour: 'numeric',
           minute: '2-digit',
-          timeZoneName: 'short'
+          timeZoneName: 'short',
         }"
         :phrases="{ ok: 'Continue', cancel: 'Exit' }"
         :hour-step="1"
@@ -99,17 +99,17 @@ export default {
   name: "compute-resource-reservation-editor",
   mixins: [mixins.VModelMixin],
   components: {
-    datetime: Datetime
+    datetime: Datetime,
   },
   props: {
     queues: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      nameInputBegins: false
+      nameInputBegins: false,
     };
   },
   created() {
@@ -133,16 +133,16 @@ export default {
     },
     queueNameOptions() {
       return this.queues.slice().sort();
-    }
+    },
   },
   methods: {
     stringToDate(datetimeString) {
       return new Date(datetimeString);
     },
-    getValidationFeedback: function(properties) {
+    getValidationFeedback: function (properties) {
       return utils.getProperty(this.data.validate(), properties);
     },
-    getValidationState: function(properties) {
+    getValidationState: function (properties) {
       return this.getValidationFeedback(properties) ? "invalid" : null;
     },
     valuesChanged() {
@@ -152,7 +152,7 @@ export default {
       } else {
         this.$emit("invalid");
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -8,8 +8,8 @@ export default {
   props: {
     dirty: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   mounted() {
     window.addEventListener("beforeunload", this.onBeforeUnload);
@@ -23,8 +23,7 @@ export default {
         event.preventDefault();
         return "You have unsaved changes. Are you sure that you want to leave this page?";
       }
-    }
-  }
+    },
+  },
 };
 </script>
-

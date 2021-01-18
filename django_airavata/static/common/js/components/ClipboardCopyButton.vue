@@ -1,12 +1,17 @@
 <template>
-  <b-button ref="copyButton" :variant="variant" :disabled="disabled" :data-clipboard-text="text">
+  <b-button
+    ref="copyButton"
+    :variant="variant"
+    :disabled="disabled"
+    :data-clipboard-text="text"
+  >
     <slot></slot>
     <slot name="icon">
       <i class="far fa-clipboard"></i>
     </slot>
     <b-tooltip :show="show" :disabled="!show" :target="() => $refs.copyButton">
       <slot name="tooltip">Copied!</slot>
-     </b-tooltip>
+    </b-tooltip>
   </b-button>
 </template>
 
@@ -21,18 +26,18 @@ export default {
     },
     variant: {
       type: String,
-      default: "secondary"
+      default: "secondary",
     },
   },
   data() {
     return {
-      show: false
+      show: false,
     };
   },
   computed: {
     disabled() {
       return !this.text;
-    }
+    },
   },
   mounted() {
     let clipboard = new ClipboardJS(this.$refs.copyButton);
@@ -46,8 +51,7 @@ export default {
     onCopySuccess() {
       this.show = true;
       setTimeout(() => (this.show = false), 2000);
-    }
-  }
+    },
+  },
 };
 </script>
-

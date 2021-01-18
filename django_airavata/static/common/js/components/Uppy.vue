@@ -26,21 +26,21 @@ export default {
   props: {
     xhrUploadEndpoint: {
       type: String,
-      required: true
+      required: true,
     },
     // endpoint should accept POST request. Request will include form data with
     // the key uploadURL.
     tusUploadFinishEndpoint: {
       type: String,
-      required: false
+      required: false,
     },
     multiple: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   mounted() {
-    services.SettingsService.get().then(s => {
+    services.SettingsService.get().then((s) => {
       this.settings = s;
       this.initUppy();
     });
@@ -54,7 +54,7 @@ export default {
     return {
       uppy: null,
       restrictionFailedMessage: null,
-      settings: null
+      settings: null,
     };
   },
   computed: {
@@ -76,7 +76,7 @@ export default {
     },
     restrictionFailed() {
       return this.restrictionFailedMessage != null;
-    }
+    },
   },
   methods: {
     initUppy() {
@@ -85,17 +85,17 @@ export default {
         debug: true,
         restrictions: {
           maxNumberOfFiles: this.multiple ? null : 1,
-          maxFileSize: this.settings.fileUploadMaxFileSize
-        }
+          maxFileSize: this.settings.fileUploadMaxFileSize,
+        },
       });
       this.uppy.use(DragDrop, {
         target: this.$refs.dragDrop,
-        note: this.maxFileUploadSizeMessage
+        note: this.maxFileUploadSizeMessage,
       });
       this.uppy.use(StatusBar, {
         target: this.$refs.statusBar,
         hideUploadButton: true,
-        hideAfterFinish: false
+        hideAfterFinish: false,
       });
       if (this.settings.tusEndpoint) {
         this.uppy.use(Tus, { endpoint: this.settings.tusEndpoint });
@@ -103,8 +103,8 @@ export default {
           const data = new FormData();
           data.append("uploadURL", response.uploadURL);
           utils.FetchUtils.post(this.tusUploadFinishEndpoint, data, "", {
-            showSpinner: false
-          }).then(result => {
+            showSpinner: false,
+          }).then((result) => {
             this.$emit("upload-success", result);
           });
         });
@@ -113,9 +113,9 @@ export default {
           endpoint: this.xhrUploadEndpoint,
           withCredentials: true,
           headers: {
-            "X-CSRFToken": utils.FetchUtils.getCSRFToken()
+            "X-CSRFToken": utils.FetchUtils.getCSRFToken(),
           },
-          fieldName: "file"
+          fieldName: "file",
         });
         this.uppy.on("upload-success", (file, response) => {
           this.$emit("upload-success", response.body);
@@ -134,18 +134,18 @@ export default {
     },
     reset() {
       this.uppy.reset();
-    }
+    },
   },
   watch: {
     xhrUploadEndpoint(val) {
       // Update the xhrUploadEndpoint configuration on XHRUpload whenever it changes
       if (this.uppy && this.settings && !this.settings.tusEndpoint) {
         this.uppy.getPlugin("XHRUpload").setOptions({
-          endpoint: val
+          endpoint: val,
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

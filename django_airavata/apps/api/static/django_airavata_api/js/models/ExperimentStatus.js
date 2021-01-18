@@ -4,14 +4,14 @@ import ExperimentState from "./ExperimentState";
 const FIELDS = [
   {
     name: "state",
-    type: ExperimentState
+    type: ExperimentState,
   },
   {
     name: "timeOfStateChange",
-    type: "date"
+    type: "date",
   },
   "reason",
-  "statusId"
+  "statusId",
 ];
 
 export default class ExperimentStatus extends BaseModel {

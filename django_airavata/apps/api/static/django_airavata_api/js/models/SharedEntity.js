@@ -10,20 +10,20 @@ const FIELDS = [
     name: "userPermissions",
     type: UserPermission,
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "groupPermissions",
     type: GroupPermission,
     list: true,
-    default: BaseModel.defaultNewInstance(Array)
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "owner",
-    type: UserProfile
+    type: UserProfile,
   },
   "isOwner",
-  "hasSharingPermission"
+  "hasSharingPermission",
 ];
 
 export default class SharedEntity extends BaseModel {
@@ -37,13 +37,13 @@ export default class SharedEntity extends BaseModel {
     }
     if (
       !this.userPermissions.find(
-        up => up.user.airavataInternalUserId === user.airavataInternalUserId
+        (up) => up.user.airavataInternalUserId === user.airavataInternalUserId
       )
     ) {
       this.userPermissions.push(
         new UserPermission({
           user: user,
-          permissionType: ResourcePermissionType.READ
+          permissionType: ResourcePermissionType.READ,
         })
       );
     }
@@ -51,21 +51,21 @@ export default class SharedEntity extends BaseModel {
 
   removeUser(user) {
     this.userPermissions = this.userPermissions.filter(
-      userPermission =>
+      (userPermission) =>
         userPermission.user.airavataInternalUserId !==
         user.airavataInternalUserId
     );
   }
 
-  addGroup({group, permissionType = ResourcePermissionType.READ}) {
+  addGroup({ group, permissionType = ResourcePermissionType.READ }) {
     if (!this.groupPermissions) {
       this.groupPermissions = [];
     }
-    if (!this.groupPermissions.find(gp => gp.group.id === group.id)) {
+    if (!this.groupPermissions.find((gp) => gp.group.id === group.id)) {
       this.groupPermissions.push(
         new GroupPermission({
           group: group,
-          permissionType: permissionType
+          permissionType: permissionType,
         })
       );
     }
@@ -73,14 +73,14 @@ export default class SharedEntity extends BaseModel {
 
   removeGroup(group) {
     this.groupPermissions = this.groupPermissions.filter(
-      groupPermission => groupPermission.group.id !== group.id
+      (groupPermission) => groupPermission.group.id !== group.id
     );
   }
 
   get nonAdminGroupPermissions() {
     if (this.groupPermissions) {
       return this.groupPermissions.filter(
-        groupPermission => !groupPermission.group.isAdminGroup
+        (groupPermission) => !groupPermission.group.isAdminGroup
       );
     } else {
       return [];

@@ -1,14 +1,14 @@
 # Getting started with Vue.js development
 
-Make sure you have [the latest version of Node.js LTS
-installed](https://nodejs.org/en/download/). You also need to install [the
-Yarn package manager](https://yarnpkg.com).
+Make sure you have
+[the latest version of Node.js LTS installed](https://nodejs.org/en/download/).
+You also need to install [the Yarn package manager](https://yarnpkg.com).
 
 Start the Django portal (`python manage.py runserver`). Navigate to the Django
-app directory and run `yarn` and then `yarn` to start up the dev
-server. Now you can load the Django app in your browser and as you make code
-changes they should automatically be hot-reloaded in the browser. For example,
-if you wanted to work on the _workspace_ app's frontend code, you could do
+app directory and run `yarn` and then `yarn` to start up the dev server. Now you
+can load the Django app in your browser and as you make code changes they should
+automatically be hot-reloaded in the browser. For example, if you wanted to work
+on the _workspace_ app's frontend code, you could do
 
 ```
 cd django_airavata/apps/workspace
@@ -53,9 +53,9 @@ entry point will generally have the following structure:
 import { components, entry } from "django-airavata-common-ui";
 import SomethingListContainer from "./containers/SomethingListContainer.vue";
 
-entry(Vue => {
+entry((Vue) => {
     new Vue({
-        render: h => h(components.MainLayout, [h(SomethingListContainer)])
+        render: (h) => h(components.MainLayout, [h(SomethingListContainer)]),
     }).$mount("#something-list");
 });
 ```
@@ -133,25 +133,33 @@ the Vue.js app container via a property:
 import { components, entry } from "django-airavata-common-ui";
 import ViewSomethingContainer from "./containers/ViewSomethingContainer.vue";
 
-entry(Vue => {
+entry((Vue) => {
     new Vue({
         render(h) {
             return h(components.MainLayout, [
                 h(ViewSomethingContainer, {
                     props: {
-                        somethingId: this.somethingId
-                    }
-                })
+                        somethingId: this.somethingId,
+                    },
+                }),
             ]);
         },
         data() {
             return {
-                somethingId: null
+                somethingId: null,
             };
         },
         beforeMount() {
             this.somethingId = this.$el.dataset.somethingId;
-        }
+        },
     }).$mount("#view-something");
 });
+```
+
+## Automatically formatting source code
+
+Run `prettier --write .` with the following:
+
+```
+yarn format
 ```

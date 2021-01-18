@@ -1,7 +1,10 @@
 <template>
   <div class="has-fixed-footer">
     <unsaved-changes-guard :dirty="isDirty" />
-    <confirmation-dialog ref="unsavedChangesDialog" title="You have unsaved changes">
+    <confirmation-dialog
+      ref="unsavedChangesDialog"
+      title="You have unsaved changes"
+    >
       You have unsaved changes. Are you sure you want to leave this page?
     </confirmation-dialog>
     <div class="row">
@@ -14,36 +17,95 @@
     <div class="row">
       <div class="col">
         <b-nav tabs class="mb-3">
-          <b-nav-item exact-active-class="active" exact :to="{name: id ? 'application_module' : 'new_application_module', params: {id: id}}">Details</b-nav-item>
-          <b-nav-item exact-active-class="active" exact :to="{name: 'application_interface', params: {id: id}}" :disabled="!id">Interface</b-nav-item>
-          <b-nav-item active-class="active" :to="{name: 'application_deployments', params: {id: id}}" :disabled="!id">Deployments</b-nav-item>
+          <b-nav-item
+            exact-active-class="active"
+            exact
+            :to="{
+              name: id ? 'application_module' : 'new_application_module',
+              params: { id: id },
+            }"
+            >Details</b-nav-item
+          >
+          <b-nav-item
+            exact-active-class="active"
+            exact
+            :to="{ name: 'application_interface', params: { id: id } }"
+            :disabled="!id"
+            >Interface</b-nav-item
+          >
+          <b-nav-item
+            active-class="active"
+            :to="{ name: 'application_deployments', params: { id: id } }"
+            :disabled="!id"
+            >Deployments</b-nav-item
+          >
         </b-nav>
-        <router-view name="module" v-if="appModule" v-model="appModule" @input="appModuleIsDirty = true" :readonly="!appModule.userHasWriteAccess"
-          :validation-errors="appModuleValidationErrors" />
-        <router-view name="interface" v-if="appInterface" v-model="appInterface" @input="appInterfaceIsDirty = true" :readonly="!appInterface.userHasWriteAccess"
+        <router-view
+          name="module"
+          v-if="appModule"
+          v-model="appModule"
+          @input="appModuleIsDirty = true"
+          :readonly="!appModule.userHasWriteAccess"
+          :validation-errors="appModuleValidationErrors"
         />
-        <router-view name="deployments" v-if="appModule && appDeployments" :deployments="appDeployments" @new="createNewDeployment" @delete="deleteApplicationDeployment" :readonly="!appModule.userHasWriteAccess"
+        <router-view
+          name="interface"
+          v-if="appInterface"
+          v-model="appInterface"
+          @input="appInterfaceIsDirty = true"
+          :readonly="!appInterface.userHasWriteAccess"
         />
-        <router-view name="deployment" v-if="currentDeployment && currentDeploymentSharedEntity" v-model="currentDeployment" :shared-entity="currentDeploymentSharedEntity"
-          @sharing-changed="deploymentSharingChanged" @input="currentDeploymentChanged" />
+        <router-view
+          name="deployments"
+          v-if="appModule && appDeployments"
+          :deployments="appDeployments"
+          @new="createNewDeployment"
+          @delete="deleteApplicationDeployment"
+          :readonly="!appModule.userHasWriteAccess"
+        />
+        <router-view
+          name="deployment"
+          v-if="currentDeployment && currentDeploymentSharedEntity"
+          v-model="currentDeployment"
+          :shared-entity="currentDeploymentSharedEntity"
+          @sharing-changed="deploymentSharingChanged"
+          @input="currentDeploymentChanged"
+        />
       </div>
     </div>
     <div class="fixed-footer">
-        <b-button class="editor-button" variant="primary" @click="saveAll" :disabled="readonly || !isDirty">
-          Save
-        </b-button>
-        <delete-button class="editor-button" v-if="id" :disabled="readonly" @delete="deleteApplication">
-          Are you sure you want to delete the <strong>{{ appModule ? appModule.appModuleName : "" }}</strong> application?
-        </delete-button>
-        <b-button class="editor-button" variant="secondary" @click="cancel">
-          Cancel
-        </b-button>
+      <b-button
+        class="editor-button"
+        variant="primary"
+        @click="saveAll"
+        :disabled="readonly || !isDirty"
+      >
+        Save
+      </b-button>
+      <delete-button
+        class="editor-button"
+        v-if="id"
+        :disabled="readonly"
+        @delete="deleteApplication"
+      >
+        Are you sure you want to delete the
+        <strong>{{ appModule ? appModule.appModuleName : "" }}</strong>
+        application?
+      </delete-button>
+      <b-button class="editor-button" variant="secondary" @click="cancel">
+        Cancel
+      </b-button>
     </div>
   </div>
 </template>
 
 <script>
-import { errors, models, services, utils as apiUtils } from "django-airavata-api";
+import {
+  errors,
+  models,
+  services,
+  utils as apiUtils,
+} from "django-airavata-api";
 import { components, notifications } from "django-airavata-common-ui";
 
 export default {
@@ -51,14 +113,14 @@ export default {
   props: {
     id: String,
     deploymentId: String,
-    hostId: String
+    hostId: String,
   },
   components: {
     "unsaved-changes-guard": components.UnsavedChangesGuard,
     "confirmation-dialog": components.ConfirmationDialog,
-    "delete-button": components.DeleteButton
+    "delete-button": components.DeleteButton,
   },
-  data: function() {
+  data: function () {
     return {
       appModule: null,
       appInterface: null,
@@ -71,11 +133,11 @@ export default {
       appInterfaceIsDirty: false,
       dirtyAppDeploymentComputeHostIds: [],
       dirtyAppDeploymentSharedEntityComputeHostIds: [],
-      appModuleValidationErrors: null
+      appModuleValidationErrors: null,
     };
   },
   computed: {
-    title: function() {
+    title: function () {
       if (this.id) {
         return this.appModule && this.appModule.appModuleName
           ? this.appModule.appModuleName
@@ -94,7 +156,7 @@ export default {
     },
     readonly() {
       return this.appModule && !this.appModule.userHasWriteAccess;
-    }
+    },
   },
   created() {
     this.initialize();
@@ -109,7 +171,7 @@ export default {
         });
       } else {
         this.appModule = new models.ApplicationModule({
-          userHasWriteAccess: true
+          userHasWriteAccess: true,
         });
       }
     },
@@ -121,21 +183,23 @@ export default {
       }
     },
     startEditingExistingDeployment(deploymentId) {
-      this.setCurrentDeploymentFromAppDeploymentId(deploymentId).then(
-        appDeployment =>
-          this.setCurrentApplicationDeploymentSharedEntity(appDeployment)
+      this.setCurrentDeploymentFromAppDeploymentId(
+        deploymentId
+      ).then((appDeployment) =>
+        this.setCurrentApplicationDeploymentSharedEntity(appDeployment)
       );
     },
     startEditingNewDeployment(computeHostId) {
-      this.setCurrentDeploymentFromComputeHostId(computeHostId).then(
-        appDeployment =>
-          this.setCurrentApplicationDeploymentSharedEntity(appDeployment)
+      this.setCurrentDeploymentFromComputeHostId(
+        computeHostId
+      ).then((appDeployment) =>
+        this.setCurrentApplicationDeploymentSharedEntity(appDeployment)
       );
     },
     loadApplicationModule(appModuleId) {
       return services.ApplicationModuleService.retrieve({
-        lookup: appModuleId
-      }).then(appModule => {
+        lookup: appModuleId,
+      }).then((appModule) => {
         this.appModuleIsDirty = false;
         this.appModule = appModule;
       });
@@ -150,7 +214,7 @@ export default {
       return services.ApplicationModuleService.update(
         {
           lookup: appModule.appModuleId,
-          data: appModule
+          data: appModule,
         },
         { ignoreErrors: true }
       );
@@ -160,13 +224,13 @@ export default {
         ? this.updateApplicationModule(appModule)
         : this.createApplicationModule(appModule)
       )
-        .then(appModule => {
+        .then((appModule) => {
           this.appModuleValidationErrors = null;
           this.appModuleIsDirty = false;
           this.appModule = appModule;
           return appModule;
         })
-        .catch(error => {
+        .catch((error) => {
           if (errors.ErrorUtils.isValidationError(error)) {
             this.appModuleValidationErrors = error.details.response;
           } else {
@@ -179,7 +243,7 @@ export default {
     deleteApplicationModule() {
       const deleteModule = this.id
         ? services.ApplicationModuleService.delete({
-            lookup: this.id
+            lookup: this.id,
           })
         : Promise.resolve(null);
       return deleteModule.then(() => {
@@ -192,16 +256,16 @@ export default {
         { lookup: appModuleId },
         { ignoreErrors: true }
       )
-        .then(appInterface => {
+        .then((appInterface) => {
           this.appInterfaceIsDirty = false;
           this.appInterface = appInterface;
           return appInterface;
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.details.status === 404) {
             // If there is no interface, just create a new instance
             const appInterface = new models.ApplicationInterfaceDefinition({
-              userHasWriteAccess: true
+              userHasWriteAccess: true,
             });
             appInterface.addStandardOutAndStandardErrorOutputs();
             this.appInterface = appInterface;
@@ -215,8 +279,8 @@ export default {
     },
     createApplicationInterface(appInterface) {
       return services.ApplicationInterfaceService.create({
-        data: appInterface
-      }).then(appInterface => {
+        data: appInterface,
+      }).then((appInterface) => {
         this.appInterfaceIsDirty = false;
         this.appInterface = appInterface;
         return appInterface;
@@ -225,8 +289,8 @@ export default {
     updateApplicationInterface(appInterface) {
       return services.ApplicationInterfaceService.update({
         lookup: appInterface.applicationInterfaceId,
-        data: appInterface
-      }).then(appInterface => {
+        data: appInterface,
+      }).then((appInterface) => {
         this.appInterfaceIsDirty = false;
         this.appInterface = appInterface;
         return appInterface;
@@ -243,7 +307,7 @@ export default {
     deleteApplicationInterface(appInterface) {
       if (appInterface.applicationInterfaceId) {
         return services.ApplicationInterfaceService.delete({
-          lookup: appInterface.applicationInterfaceId
+          lookup: appInterface.applicationInterfaceId,
         }).then(() => (this.appInterfaceIsDirty = false));
       } else {
         this.appInterfaceIsDirty = false;
@@ -253,8 +317,8 @@ export default {
     },
     loadApplicationDeployments(appModuleId) {
       return services.ApplicationModuleService.getApplicationDeployments({
-        lookup: appModuleId
-      }).then(appDeployments => {
+        lookup: appModuleId,
+      }).then((appDeployments) => {
         this.dirtyAppDeploymentComputeHostIds = [];
         this.appDeployments = appDeployments;
         return appDeployments;
@@ -262,16 +326,16 @@ export default {
     },
     loadApplicationDeployment(appDeploymentId) {
       return services.ApplicationDeploymentService.retrieve({
-        lookup: appDeploymentId
-      }).then(appDeployment => {
+        lookup: appDeploymentId,
+      }).then((appDeployment) => {
         this.currentDeployment = appDeployment;
         return appDeployment;
       });
     },
     createApplicationDeployment(appDeployment) {
       return services.ApplicationDeploymentService.create({
-        data: appDeployment
-      }).then(appDeployment => {
+        data: appDeployment,
+      }).then((appDeployment) => {
         this.removeDirtyAppDeploymentComputeHostId(appDeployment);
         this.replaceAppDeployment(appDeployment);
         return appDeployment;
@@ -280,8 +344,8 @@ export default {
     updateApplicationDeployment(appDeployment) {
       return services.ApplicationDeploymentService.update({
         lookup: appDeployment.appDeploymentId,
-        data: appDeployment
-      }).then(appDeployment => {
+        data: appDeployment,
+      }).then((appDeployment) => {
         this.removeDirtyAppDeploymentComputeHostId(appDeployment);
         this.replaceAppDeployment(appDeployment);
         return appDeployment;
@@ -295,14 +359,14 @@ export default {
     deleteApplicationDeployment(appDeployment) {
       if (appDeployment.appDeploymentId) {
         return services.ApplicationDeploymentService.delete({
-          lookup: appDeployment.appDeploymentId
+          lookup: appDeployment.appDeploymentId,
         }).then(() => {
           this.removeDirtyAppDeploymentComputeHostId(appDeployment);
           return this.loadApplicationDeployments(this.id);
         });
       } else {
         const depIndex = this.appDeployments.findIndex(
-          dep => dep.computeHostId === appDeployment.computeHostId
+          (dep) => dep.computeHostId === appDeployment.computeHostId
         );
         this.appDeployments.splice(depIndex, 1);
         this.removeDirtyAppDeploymentComputeHostId(appDeployment);
@@ -315,7 +379,7 @@ export default {
     },
     replaceAppDeployment(appDeployment) {
       const depIndex = this.appDeployments.findIndex(
-        dep => dep.computeHostId === appDeployment.computeHostId
+        (dep) => dep.computeHostId === appDeployment.computeHostId
       );
       this.appDeployments.splice(depIndex, 1, appDeployment);
     },
@@ -339,13 +403,13 @@ export default {
     createNewDeployment(computeHostId) {
       this.$router.push({
         name: "new_application_deployment",
-        params: { id: this.id, hostId: computeHostId }
+        params: { id: this.id, hostId: computeHostId },
       });
     },
     loadApplicationDeploymentSharedEntity(appDeployment) {
       return services.SharedEntityService.retrieve({
-        lookup: appDeployment.appDeploymentId
-      }).then(sharedEntity => {
+        lookup: appDeployment.appDeploymentId,
+      }).then((sharedEntity) => {
         this.appDeploymentsSharedEntities[
           appDeployment.computeHostId
         ] = sharedEntity;
@@ -361,7 +425,7 @@ export default {
         return Promise.resolve(this.currentDeploymentSharedEntity);
       } else if (appDeployment.appDeploymentId) {
         return this.loadApplicationDeploymentSharedEntity(appDeployment).then(
-          sharedEntity => (this.currentDeploymentSharedEntity = sharedEntity)
+          (sharedEntity) => (this.currentDeploymentSharedEntity = sharedEntity)
         );
       } else {
         throw new Error(
@@ -390,8 +454,8 @@ export default {
     mergeSharedEntity(sharedEntity, appDeployment) {
       return services.SharedEntityService.merge({
         data: sharedEntity,
-        lookup: appDeployment.appDeploymentId
-      }).then(sharedEntity => {
+        lookup: appDeployment.appDeploymentId,
+      }).then((sharedEntity) => {
         this.replaceAppDeploymentSharedEntity(sharedEntity, appDeployment);
         this.removeAppDeploymentSharedEntityDirty(sharedEntity, appDeployment);
         return sharedEntity;
@@ -400,8 +464,8 @@ export default {
     updateSharedEntity(sharedEntity, appDeployment) {
       return services.SharedEntityService.update({
         data: sharedEntity,
-        lookup: appDeployment.appDeploymentId
-      }).then(sharedEntity => {
+        lookup: appDeployment.appDeploymentId,
+      }).then((sharedEntity) => {
         this.replaceAppDeploymentSharedEntity(sharedEntity, appDeployment);
         this.removeAppDeploymentSharedEntityDirty(sharedEntity, appDeployment);
         return sharedEntity;
@@ -441,7 +505,7 @@ export default {
     },
     setCurrentDeploymentFromAppDeploymentId(appDeploymentId) {
       this.currentDeployment = this.appDeployments.find(
-        dep => dep.appDeploymentId === appDeploymentId
+        (dep) => dep.appDeploymentId === appDeploymentId
       );
       if (!this.currentDeployment) {
         throw new Error(
@@ -452,12 +516,12 @@ export default {
     },
     setCurrentDeploymentFromComputeHostId(computeHostId) {
       this.currentDeployment = this.appDeployments.find(
-        dep => dep.computeHostId === computeHostId
+        (dep) => dep.computeHostId === computeHostId
       );
       if (!this.currentDeployment) {
         // Create a new deployment
         const deployment = new models.ApplicationDeploymentDescription({
-          userHasWriteAccess: true
+          userHasWriteAccess: true,
         });
         deployment.appModuleId = this.id;
         deployment.computeHostId = computeHostId;
@@ -472,83 +536,85 @@ export default {
     },
     saveAll() {
       const moduleSave = this.appModuleIsDirty
-        ? this.saveApplicationModule(this.appModule).catch(error => {
+        ? this.saveApplicationModule(this.appModule).catch((error) => {
             // Navigate to the route that has the error
             this.$router.push({
-              name: this.id ? "application_module" : "new_application_module"
+              name: this.id ? "application_module" : "new_application_module",
             });
             // Cancel the chain of promises
             return Promise.reject(error);
           })
         : Promise.resolve(this.appModule);
-      const interfaceSave = moduleSave.then(
-        () =>
-          this.appInterfaceIsDirty
-            ? this.saveApplicationInterface(this.appInterface).catch(error => {
-                // Navigate to the route that has the error
-                this.$router.push({
-                  name: "application_interface"
-                });
-                // Cancel the chain of promises
-                return Promise.reject(error);
-              })
-            : Promise.resolve(this.appInterface)
-      );
-      interfaceSave.then(() => {
-          return Promise.all(
-            this.dirtyAppDeploymentComputeHostIds.map(computeHostId => {
-              const deployment = this.appDeployments.find(
-                dep => dep.computeHostId === computeHostId
-              );
-              return this.saveApplicationDeployment(deployment).catch(error => {
-                // Navigate to the route that has the error
-                if (deployment.appDeploymentId) {
-                  this.$router.push({
-                    name: "application_deployment",
-                    params: {
-                      id: this.id,
-                      deploymentId: deployment.appDeploymentId
-                    }
-                  });
-                } else {
-                  this.$router.push({
-                    name: "new_application_deployment",
-                    params: { id: this.id, hostId: deployment.computeHostId }
-                  });
-                }
-                return Promise.reject(error);
+      const interfaceSave = moduleSave.then(() =>
+        this.appInterfaceIsDirty
+          ? this.saveApplicationInterface(this.appInterface).catch((error) => {
+              // Navigate to the route that has the error
+              this.$router.push({
+                name: "application_interface",
               });
+              // Cancel the chain of promises
+              return Promise.reject(error);
+            })
+          : Promise.resolve(this.appInterface)
+      );
+      interfaceSave
+        .then(() => {
+          return Promise.all(
+            this.dirtyAppDeploymentComputeHostIds.map((computeHostId) => {
+              const deployment = this.appDeployments.find(
+                (dep) => dep.computeHostId === computeHostId
+              );
+              return this.saveApplicationDeployment(deployment).catch(
+                (error) => {
+                  // Navigate to the route that has the error
+                  if (deployment.appDeploymentId) {
+                    this.$router.push({
+                      name: "application_deployment",
+                      params: {
+                        id: this.id,
+                        deploymentId: deployment.appDeploymentId,
+                      },
+                    });
+                  } else {
+                    this.$router.push({
+                      name: "new_application_deployment",
+                      params: { id: this.id, hostId: deployment.computeHostId },
+                    });
+                  }
+                  return Promise.reject(error);
+                }
+              );
             })
           );
         })
         .then(() => {
           return Promise.all(
             this.dirtyAppDeploymentSharedEntityComputeHostIds.map(
-              computeHostId => {
+              (computeHostId) => {
                 const sharedEntity = this.appDeploymentsSharedEntities[
                   computeHostId
                 ];
                 const deployment = this.appDeployments.find(
-                  dep => dep.computeHostId === computeHostId
+                  (dep) => dep.computeHostId === computeHostId
                 );
                 return this.saveSharedEntity(sharedEntity, deployment).catch(
-                  error => {
+                  (error) => {
                     // Navigate to the route that has the error
                     if (deployment.appDeploymentId) {
                       this.$router.push({
                         name: "application_deployment",
                         params: {
                           id: this.id,
-                          deploymentId: deployment.appDeploymentId
-                        }
+                          deploymentId: deployment.appDeploymentId,
+                        },
                       });
                     } else {
                       this.$router.push({
                         name: "new_application_deployment",
                         params: {
                           id: this.id,
-                          hostId: deployment.computeHostId
-                        }
+                          hostId: deployment.computeHostId,
+                        },
                       });
                     }
                     return Promise.reject(error);
@@ -563,7 +629,7 @@ export default {
             new notifications.Notification({
               type: "SUCCESS",
               message: "Application saved successfully",
-              duration: 5
+              duration: 5,
             })
           );
           if (!this.id && this.appModule.appModuleId) {
@@ -571,14 +637,14 @@ export default {
             // that we have an id
             this.$router.push({
               name: "application_module",
-              params: { id: this.appModule.appModuleId }
+              params: { id: this.appModule.appModuleId },
             });
           }
           if (this.hostId) {
             // If creating a new deployment, navigate to the deployments list
             this.$router.push({
               name: "application_deployments",
-              params: { id: this.appModule.appModuleId }
+              params: { id: this.appModule.appModuleId },
             });
           } else {
             // Reinitialize deployment editing so that deployment being edited is
@@ -591,7 +657,7 @@ export default {
       this.$router.push({ path: "/applications" });
     },
     deleteApplication() {
-      const deleteAllDeployments = this.appDeployments.map(dep =>
+      const deleteAllDeployments = this.appDeployments.map((dep) =>
         this.deleteApplicationDeployment(dep)
       );
       return Promise.all(deleteAllDeployments)
@@ -600,15 +666,15 @@ export default {
         .then(() => {
           this.$router.push({ path: "/applications" });
         });
-    }
+    },
   },
   watch: {
-    $route: function(to, from) {
+    $route: function (to, from) {
       if (to.params.id !== from.params.id) {
         this.initialize();
       }
       this.initializeDeploymentEditing();
-    }
+    },
   },
   beforeRouteLeave(to, from, next) {
     if (this.isDirty) {
@@ -617,7 +683,7 @@ export default {
     } else {
       next();
     }
-  }
+  },
 };
 </script>
 
@@ -630,4 +696,3 @@ export default {
   margin-left: 0.25em;
 }
 </style>
-

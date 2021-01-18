@@ -13,7 +13,7 @@ export default class BaseModel {
    * - data: a data object, typically a deserialized JSON response
    */
   constructor(fields, data = {}) {
-    fields.forEach(fieldDefinition => {
+    fields.forEach((fieldDefinition) => {
       if (typeof fieldDefinition === "string") {
         this[fieldDefinition] = this.convertSimpleField(
           data[fieldDefinition],
@@ -34,7 +34,7 @@ export default class BaseModel {
         let fieldValue = data[fieldName];
         if (fieldIsList) {
           this[fieldName] = fieldValue
-            ? fieldValue.map(item =>
+            ? fieldValue.map((item) =>
                 this.convertField(fieldType, item, fieldDefault)
               )
             : fieldDefault;

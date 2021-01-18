@@ -1,7 +1,6 @@
-
 import BaseModel from "./BaseModel";
-import ParserInputFile from "./ParserInput"
-import ParserOutputFile from "./ParserOutput"
+import ParserInputFile from "./ParserInput";
+import ParserOutputFile from "./ParserOutput";
 
 const FIELDS = [
   "id",
@@ -12,14 +11,14 @@ const FIELDS = [
   {
     name: "inputFiles",
     list: true,
-    type: ParserInputFile
+    type: ParserInputFile,
   },
   {
     name: "outputFiles",
     list: true,
-    type: ParserOutputFile
+    type: ParserOutputFile,
   },
-  "gatewayId"
+  "gatewayId",
 ];
 
 export default class Parser extends BaseModel {

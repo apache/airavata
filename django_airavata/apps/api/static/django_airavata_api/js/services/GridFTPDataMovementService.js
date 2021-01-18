@@ -1,10 +1,10 @@
-import DataMovementService from './DataMovementService'
+import DataMovementService from "./DataMovementService";
 
 class GridFTPDataMovementService extends DataMovementService {
-    constructor() {
-        super();
-        this.retrieveUrl = "/api/data/movement/gridftp"
-    }
+  constructor() {
+    super();
+    this.retrieveUrl = "/api/data/movement/gridftp";
+  }
 }
 
-export default new GridFTPDataMovementService()
+export default new GridFTPDataMovementService();

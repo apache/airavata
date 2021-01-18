@@ -64,9 +64,7 @@
                       nullOptionLabelScope.defaultCredentialSummary.description
                     }})
                   </span>
-                  <span v-else>
-                    Select a SSH credential
-                  </span>
+                  <span v-else> Select a SSH credential </span>
                 </template>
               </ssh-credential-selector>
             </b-form-group>
@@ -169,7 +167,7 @@ import {
   mixins,
   notifications,
   errors as uiErrors,
-  components
+  components,
 } from "django-airavata-common-ui";
 
 export default {
@@ -178,31 +176,31 @@ export default {
     "delete-button": components.DeleteButton,
     "ssh-credential-selector": SSHCredentialSelector,
     ComputeResourceReservationList,
-    ComputeResourcePolicyEditor
+    ComputeResourcePolicyEditor,
   },
   props: {
     id: {
-      type: String
+      type: String,
     },
     host_id: {
       type: String,
-      required: true
+      required: true,
     },
     groupResourceProfile: {
-      type: models.GroupResourceProfile
+      type: models.GroupResourceProfile,
     },
     computeResourcePolicy: {
-      type: models.ComputeResourcePolicy
+      type: models.ComputeResourcePolicy,
     },
     batchQueueResourcePolicies: {
-      type: Array
-    }
+      type: Array,
+    },
   },
-  mounted: function() {
+  mounted: function () {
     const computeResourcePromise = this.fetchComputeResource(this.host_id);
     if (!this.value && this.id && this.host_id) {
       services.GroupResourceProfileService.retrieve({ lookup: this.id }).then(
-        groupResourceProfile => {
+        (groupResourceProfile) => {
           this.localGroupResourceProfile = groupResourceProfile;
           const computeResourcePreference = groupResourceProfile.getComputePreference(
             this.host_id
@@ -228,12 +226,12 @@ export default {
     }
     this.$on("input", this.validate);
   },
-  data: function() {
+  data: function () {
     return {
       data: this.value
         ? this.value.clone()
         : new models.GroupComputeResourcePreference({
-            computeResourceId: this.host_id
+            computeResourceId: this.host_id,
           }),
       localGroupResourceProfile: this.groupResourceProfile
         ? this.groupResourceProfile.clone()
@@ -242,15 +240,15 @@ export default {
         ? this.computeResourcePolicy.clone()
         : null,
       localBatchQueueResourcePolicies: this.batchQueueResourcePolicies
-        ? this.batchQueueResourcePolicies.map(pol => pol.clone())
+        ? this.batchQueueResourcePolicies.map((pol) => pol.clone())
         : [],
       computeResource: {
         batchQueues: [],
-        jobSubmissionInterfaces: []
+        jobSubmissionInterfaces: [],
       },
       validationErrors: null,
       reservationsInvalid: false,
-      computeResourcePolicyInvalid: false
+      computeResourcePolicyInvalid: false,
     };
   },
   computed: {
@@ -271,19 +269,19 @@ export default {
       );
     },
     queueNames() {
-      return this.computeResource.batchQueues.map(bq => bq.queueName);
-    }
+      return this.computeResource.batchQueues.map((bq) => bq.queueName);
+    },
   },
   mixins: [mixins.VModelMixin],
   methods: {
-    fetchComputeResource: function(id) {
+    fetchComputeResource: function (id) {
       return DjangoAiravataAPI.utils.FetchUtils.get(
         "/api/compute-resources/" + encodeURIComponent(id) + "/"
-      ).then(value => {
+      ).then((value) => {
         return (this.computeResource = value);
       });
     },
-    save: function() {
+    save: function () {
       let groupResourceProfile = this.localGroupResourceProfile.clone();
       groupResourceProfile.mergeComputeResourcePreference(
         this.data,
@@ -291,23 +289,23 @@ export default {
         this.localBatchQueueResourcePolicies
       );
       return this.saveOrUpdate(groupResourceProfile)
-        .then(groupResourceProfile => {
+        .then((groupResourceProfile) => {
           // Navigate back to GroupResourceProfile with success message
           this.$router.push({
             name: "group_resource_preference",
             params: {
               value: groupResourceProfile,
-              id: groupResourceProfile.groupResourceProfileId
-            }
+              id: groupResourceProfile.groupResourceProfileId,
+            },
           });
         })
-        .catch(error => {
+        .catch((error) => {
           if (
             errors.ErrorUtils.isValidationError(error) &&
             "computePreferences" in error.details.response
           ) {
             const computePreferencesIndex = groupResourceProfile.computePreferences.findIndex(
-              cp => cp.computeResourceId === this.host_id
+              (cp) => cp.computeResourceId === this.host_id
             );
             this.validationErrors =
               error.details.response.computePreferences[
@@ -332,7 +330,7 @@ export default {
         );
       }
     },
-    remove: function() {
+    remove: function () {
       let groupResourceProfile = this.localGroupResourceProfile.clone();
       const removedChildren = groupResourceProfile.removeComputeResource(
         this.host_id
@@ -340,15 +338,15 @@ export default {
       if (removedChildren) {
         DjangoAiravataAPI.services.GroupResourceProfileService.update({
           data: groupResourceProfile,
-          lookup: this.id
-        }).then(groupResourceProfile => {
+          lookup: this.id,
+        }).then((groupResourceProfile) => {
           // Navigate back to GroupResourceProfile with success message
           this.$router.push({
             name: "group_resource_preference",
             params: {
               value: groupResourceProfile,
-              id: this.id
-            }
+              id: this.id,
+            },
           });
         });
       } else {
@@ -356,26 +354,26 @@ export default {
         this.cancel();
       }
     },
-    cancel: function() {
+    cancel: function () {
       if (this.id) {
         this.$router.push({
           name: "group_resource_preference",
-          params: { id: this.id }
+          params: { id: this.id },
         });
       } else {
         this.$router.push({
           name: "new_group_resource_preference",
-          params: { value: this.localGroupResourceProfile }
+          params: { value: this.localGroupResourceProfile },
         });
       }
     },
-    createDefaultComputeResourcePolicy: function(computeResourcePromise) {
-      computeResourcePromise.then(computeResource => {
+    createDefaultComputeResourcePolicy: function (computeResourcePromise) {
+      computeResourcePromise.then((computeResource) => {
         const defaultComputeResourcePolicy = new models.ComputeResourcePolicy();
         defaultComputeResourcePolicy.computeResourceId = this.host_id;
         defaultComputeResourcePolicy.groupResourceProfileId = this.id;
         defaultComputeResourcePolicy.allowedBatchQueues = computeResource.batchQueues.map(
-          queue => queue.queueName
+          (queue) => queue.queueName
         );
         this.localComputeResourcePolicy = defaultComputeResourcePolicy;
       });
@@ -395,18 +393,18 @@ export default {
     },
     deleteReservation(reservation) {
       const reservationIndex = this.data.reservations.findIndex(
-        r => r.key === reservation.key
+        (r) => r.key === reservation.key
       );
       this.data.reservations.splice(reservationIndex, 1);
     },
     updateReservation(reservation) {
       const reservationIndex = this.data.reservations.findIndex(
-        r => r.key === reservation.key
+        (r) => r.key === reservation.key
       );
       this.data.reservations.splice(reservationIndex, 1, reservation);
-    }
+    },
   },
-  beforeRouteEnter: function(to, from, next) {
+  beforeRouteEnter: function (to, from, next) {
     // If we don't have the Group Resource Profile id or instance, then the
     // Group Resource Profile wasn't created and we need to just go back to
     // the dashboard
@@ -415,7 +413,7 @@ export default {
     } else {
       next();
     }
-  }
+  },
 };
 </script>
 

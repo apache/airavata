@@ -1,11 +1,10 @@
-import JobSubmissionService from './JobSubmissionService'
+import JobSubmissionService from "./JobSubmissionService";
 
-class GlobusJobSubmissionService extends JobSubmissionService{
-    constructor() {
-        super();
-        this.retrieveUrl="/api/job/submission/globus";
-    }
-
+class GlobusJobSubmissionService extends JobSubmissionService {
+  constructor() {
+    super();
+    this.retrieveUrl = "/api/job/submission/globus";
+  }
 }
 
-export default new GlobusJobSubmissionService()
+export default new GlobusJobSubmissionService();

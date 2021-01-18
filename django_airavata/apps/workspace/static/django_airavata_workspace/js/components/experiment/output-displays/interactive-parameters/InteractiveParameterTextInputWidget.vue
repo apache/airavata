@@ -20,18 +20,18 @@ export default {
   props: {
     value: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      currentValue: this.value
+      currentValue: this.value,
     };
   },
   computed: {
     disabled() {
       return this.currentValue === this.value;
-    }
+    },
   },
   methods: {
     submit() {
@@ -42,7 +42,7 @@ export default {
         this.$refs.textInput.blur();
         this.submit();
       }
-    }
-  }
+    },
+  },
 };
 </script>

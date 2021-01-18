@@ -21,50 +21,50 @@ export default {
   props: {
     experimentId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       experiment: null,
-      appModule: null
+      appModule: null,
     };
   },
   components: {
-    "experiment-editor": ExperimentEditor
+    "experiment-editor": ExperimentEditor,
   },
   methods: {
-    handleSavedExperiment: function() {
+    handleSavedExperiment: function () {
       // Redirect to experiments list view
       urls.navigateToExperimentsList();
     },
-    handleSavedAndLaunchedExperiment: function(experiment) {
+    handleSavedAndLaunchedExperiment: function (experiment) {
       // Redirect to experiment view
       urls.navigateToViewExperiment(experiment, { launching: true });
-    }
+    },
   },
   computed: {},
-  mounted: function() {
+  mounted: function () {
     services.ExperimentService.retrieve({ lookup: this.experimentId })
-      .then(experiment => {
+      .then((experiment) => {
         this.experiment = experiment;
         const appInterfaceId = experiment.executionId;
         return services.ApplicationInterfaceService.retrieve(
           {
-            lookup: appInterfaceId
+            lookup: appInterfaceId,
           },
           {
-            ignoreErrors: true
+            ignoreErrors: true,
           }
         );
       })
-      .then(appInterface => {
+      .then((appInterface) => {
         const appModuleId = appInterface.applicationModules[0];
         return services.ApplicationModuleService.retrieve({
-          lookup: appModuleId
+          lookup: appModuleId,
         });
       })
-      .then(appModule => {
+      .then((appModule) => {
         this.appModule = appModule;
       })
       .catch(() => {
@@ -74,11 +74,11 @@ export default {
             message:
               "Unable to load application interface (" +
               this.experiment.executionId +
-              ") or module. If it has been deleted then you won't be able to edit this experiment."
+              ") or module. If it has been deleted then you won't be able to edit this experiment.",
           })
         );
       });
-  }
+  },
 };
 </script>
 <style>

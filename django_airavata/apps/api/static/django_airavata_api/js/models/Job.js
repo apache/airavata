@@ -8,19 +8,19 @@ const FIELDS = [
   "jobDescription",
   {
     name: "creationTime",
-    type: "date"
+    type: "date",
   },
   {
     name: "jobStatuses",
     type: JobStatus,
-    list: true
+    list: true,
   },
   "computeResourceConsumed",
   "jobName",
   "workingDir",
   "stdOut",
   "stdErr",
-  "exitCode"
+  "exitCode",
 ];
 
 export default class Job extends BaseModel {

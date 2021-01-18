@@ -24,22 +24,22 @@ export default {
   props: {
     value: {
       type: Number,
-      required: true
+      required: true,
     },
     parameter: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
       currentValue: parseFloat(this.value),
-      valid: false
+      valid: false,
     };
   },
   computed: {
     disabled() {
       return !this.valid || this.currentValue === parseFloat(this.value);
-    }
+    },
   },
   methods: {
     updateValue(newValue) {
@@ -68,7 +68,7 @@ export default {
         this.$refs.textInput.blur();
         this.submit();
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -7,20 +7,20 @@ import VueRouter from "vue-router";
 const routes = [
   {
     path: "*",
-    component: UserStoragePathViewer
-  }
+    component: UserStoragePathViewer,
+  },
 ];
 const router = new VueRouter({
   mode: "history",
   base: "/workspace/storage",
-  routes: routes
+  routes: routes,
 });
-entry(Vue => {
+entry((Vue) => {
   Vue.use(VueRouter);
   new Vue({
     render(h) {
       return h(components.MainLayout, [h(UserStorageContainer)]);
     },
-    router
+    router,
   }).$mount("#user-storage");
 });

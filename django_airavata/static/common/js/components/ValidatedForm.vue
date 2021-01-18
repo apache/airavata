@@ -11,7 +11,7 @@
         <slot
           :item="item.item"
           :valid="() => setValid(item.key)"
-          :invalid="messages => setInvalid(item.key, messages)"
+          :invalid="(messages) => setInvalid(item.key, messages)"
         />
       </validated-form-group>
     </template>
@@ -26,22 +26,22 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
-    ValidatedFormGroup
+    ValidatedFormGroup,
   },
   data() {
     return {
       invalidFormItems: [],
-      feedbackMessages: {}
+      feedbackMessages: {},
     };
   },
   computed: {
     valid() {
       return this.invalidFormItems.length === 0;
-    }
+    },
   },
   methods: {
     setValid(key) {
@@ -51,7 +51,7 @@ export default {
         this.invalidFormItems.splice(index, 1);
       }
       if (!wasValid && this.valid) {
-        this.$emit('valid');
+        this.$emit("valid");
       }
     },
     setInvalid(key, messages) {
@@ -65,7 +65,7 @@ export default {
         this.feedbackMessages[key] = messages;
       }
       if (wasValid) {
-        this.$emit('invalid');
+        this.$emit("invalid");
       }
     },
     isValid(key) {
@@ -77,7 +77,7 @@ export default {
       } else {
         return [];
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -7,7 +7,7 @@ const FIELDS = [
   "queuename",
   "maxAllowedNodes",
   "maxAllowedCores",
-  "maxAllowedWalltime"
+  "maxAllowedWalltime",
 ];
 
 export default class BatchQueueResourcePolicy extends BaseModel {

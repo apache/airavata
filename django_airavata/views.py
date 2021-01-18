@@ -15,7 +15,7 @@ def error500(request):
                   })
 
 
-def error400(request):
+def error400(request, exception):
     return render(request, 'django_airavata/error_page.html', status=400,
                   context={
                       'title': 'Bad Request',
@@ -24,7 +24,7 @@ def error400(request):
                   })
 
 
-def error404(request):
+def error404(request, exception):
     return render(request, 'django_airavata/error_page.html', status=404,
                   context={
                       'title': 'Page Not Found',
@@ -32,7 +32,7 @@ def error404(request):
                   })
 
 
-def error403(request):
+def error403(request, exception):
     return render(request, 'django_airavata/error_page.html', status=403,
                   context={
                       'title': 'Permission Denied',

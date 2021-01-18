@@ -1,31 +1,87 @@
 <template>
   <div>
-    <list-layout @add-new-item="newApplicationDeployment" :items="deployments" title="Application Deployments" new-item-button-text="New Deployment" :new-button-disabled="readonly">
+    <list-layout
+      @add-new-item="newApplicationDeployment"
+      :items="deployments"
+      title="Application Deployments"
+      new-item-button-text="New Deployment"
+      :new-button-disabled="readonly"
+    >
       <template slot="item-list" slot-scope="slotProps">
-
-        <b-table striped hover :fields="fields" :items="slotProps.items" sort-by="computeHostId">
+        <b-table
+          striped
+          hover
+          :fields="fields"
+          :items="slotProps.items"
+          sort-by="computeHostId"
+        >
           <template slot="action" slot-scope="data">
-            <router-link class="action-link" v-if="!data.item.userHasWriteAccess" :to="{name: 'application_deployment', params: {id: id, deploymentId: data.item.appDeploymentId, readonly: true}}">
+            <router-link
+              class="action-link"
+              v-if="!data.item.userHasWriteAccess"
+              :to="{
+                name: 'application_deployment',
+                params: {
+                  id: id,
+                  deploymentId: data.item.appDeploymentId,
+                  readonly: true,
+                },
+              }"
+            >
               View
               <i class="fa fa-eye" aria-hidden="true"></i>
             </router-link>
-            <router-link class="action-link" v-if="data.item.userHasWriteAccess && data.item.appDeploymentId" :to="{name: 'application_deployment', params: {id: id, deploymentId: data.item.appDeploymentId, readonly: false}}">
+            <router-link
+              class="action-link"
+              v-if="data.item.userHasWriteAccess && data.item.appDeploymentId"
+              :to="{
+                name: 'application_deployment',
+                params: {
+                  id: id,
+                  deploymentId: data.item.appDeploymentId,
+                  readonly: false,
+                },
+              }"
+            >
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <router-link class="action-link" v-if="data.item.userHasWriteAccess && !data.item.appDeploymentId" :to="{name: 'new_application_deployment', params: {id: id, hostId: data.item.computeHostId, readonly: false}}">
+            <router-link
+              class="action-link"
+              v-if="data.item.userHasWriteAccess && !data.item.appDeploymentId"
+              :to="{
+                name: 'new_application_deployment',
+                params: {
+                  id: id,
+                  hostId: data.item.computeHostId,
+                  readonly: false,
+                },
+              }"
+            >
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            <delete-link v-if="data.item.userHasWriteAccess" @delete="removeApplicationDeployment(data.item)" class="action-link">
-              Are you sure you want to remove the <strong>{{ getComputeResourceName(data.item.computeHostId) }}</strong> deployment?
+            <delete-link
+              v-if="data.item.userHasWriteAccess"
+              @delete="removeApplicationDeployment(data.item)"
+              class="action-link"
+            >
+              Are you sure you want to remove the
+              <strong>{{
+                getComputeResourceName(data.item.computeHostId)
+              }}</strong>
+              deployment?
             </delete-link>
           </template>
         </b-table>
       </template>
     </list-layout>
-    <compute-resources-modal ref="modalSelectComputeResource" @selected="onSelectComputeResource" :compute-resource-names="selectableComputeResourceNames"
-      :excluded-resource-ids="excludedComputeResourceIds" />
+    <compute-resources-modal
+      ref="modalSelectComputeResource"
+      @selected="onSelectComputeResource"
+      :compute-resource-names="selectableComputeResourceNames"
+      :excluded-resource-ids="excludedComputeResourceIds"
+    />
   </div>
 </template>
 
@@ -39,27 +95,27 @@ export default {
   components: {
     "list-layout": layouts.ListLayout,
     ComputeResourcesModal,
-    "delete-link": components.DeleteLink
+    "delete-link": components.DeleteLink,
   },
   props: {
     deployments: {
       type: Array,
-      required: true
+      required: true,
     },
     id: {
       // app module id
       type: String,
-      required: true
+      required: true,
     },
     readonly: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   data() {
     return {
       computeResourceNames: null,
-      groupResourceProfiles: null
+      groupResourceProfiles: null,
     };
   },
   computed: {
@@ -69,16 +125,16 @@ export default {
           label: "Compute Resource",
           key: "computeHostId",
           sortable: true,
-          formatter: value => this.getComputeResourceName(value)
+          formatter: (value) => this.getComputeResourceName(value),
         },
         {
           label: "Description",
-          key: "appDeploymentDescription"
+          key: "appDeploymentDescription",
         },
         {
           label: "Action",
-          key: "action"
-        }
+          key: "action",
+        },
       ];
     },
     selectableComputeResourceNames() {
@@ -106,7 +162,7 @@ export default {
             ];
             result.push({
               host_id: computeResourceId,
-              host: computeResourceName
+              host: computeResourceName,
             });
           }
         }
@@ -116,15 +172,15 @@ export default {
       }
     },
     excludedComputeResourceIds() {
-      return this.deployments.map(dep => dep.computeHostId);
-    }
+      return this.deployments.map((dep) => dep.computeHostId);
+    },
   },
   mounted() {
     services.ComputeResourceService.names().then(
-      names => (this.computeResourceNames = names)
+      (names) => (this.computeResourceNames = names)
     );
     services.GroupResourceProfileService.list().then(
-      groupResourceProfiles =>
+      (groupResourceProfiles) =>
         (this.groupResourceProfiles = groupResourceProfiles)
     );
   },
@@ -147,8 +203,7 @@ export default {
     },
     removeApplicationDeployment(deployment) {
       this.$emit("delete", deployment);
-    }
-  }
+    },
+  },
 };
 </script>
-

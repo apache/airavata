@@ -2,10 +2,9 @@
 
 import logging
 
+from airavata_django_portal_sdk import user_storage
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import Signal, receiver
-
-from airavata_django_portal_sdk import user_storage
 
 log = logging.getLogger(__name__)
 

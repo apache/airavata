@@ -3,7 +3,7 @@ import { models } from "django-airavata-api";
 export default {
   watch: {
     data: {
-      handler: function(newValue, oldValue) {
+      handler: function (newValue, oldValue) {
         // Only emit 'input' for objects when one of their deep properties has
         // changed to prevent infinite loop since 'data' is recloned whenever
         // 'value' changes
@@ -16,19 +16,19 @@ export default {
           this.$emit("input", newValue);
         }
       },
-      deep: true
+      deep: true,
     },
     value: {
-      handler: function(newValue) {
+      handler: function (newValue) {
         this.data = this.copyValue(newValue);
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     copyValue(value) {
       if (value instanceof Array) {
-        return value.map(item => this.copyValue(item));
+        return value.map((item) => this.copyValue(item));
       } else {
         if (value === null) {
           return null;
@@ -41,16 +41,16 @@ export default {
           return value;
         }
       }
-    }
+    },
   },
-  data: function() {
+  data: function () {
     return {
-      data: this.copyValue(this.value)
+      data: this.copyValue(this.value),
     };
   },
   props: {
     value: {
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 };

@@ -1,9 +1,6 @@
 <template>
   <span>
-    <gateway-groups-badge
-      v-if="adminsGroup"
-      :group="adminsGroup"
-    />
+    <gateway-groups-badge v-if="adminsGroup" :group="adminsGroup" />
     <gateway-groups-badge
       v-else-if="readOnlyAdminsGroup"
       :group="readOnlyAdminsGroup"
@@ -12,10 +9,9 @@
       v-else-if="defaultUsersGroup"
       :group="defaultUsersGroup"
     />
-    <b-badge
-      v-for="group in nonGatewayGroups"
-      :key="group.id"
-    >{{ group.name }}</b-badge>
+    <b-badge v-for="group in nonGatewayGroups" :key="group.id">{{
+      group.name
+    }}</b-badge>
   </span>
 </template>
 
@@ -26,24 +22,24 @@ export default {
   props: {
     groups: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
-    "gateway-groups-badge": components.GatewayGroupsBadge
+    "gateway-groups-badge": components.GatewayGroupsBadge,
   },
   computed: {
     adminsGroup() {
-      return this.groups.find(g => g.isGatewayAdminsGroup);
+      return this.groups.find((g) => g.isGatewayAdminsGroup);
     },
     readOnlyAdminsGroup() {
-      return this.groups.find(g => g.isReadOnlyGatewayAdminsGroup);
+      return this.groups.find((g) => g.isReadOnlyGatewayAdminsGroup);
     },
     defaultUsersGroup() {
-      return this.groups.find(g => g.isDefaultGatewayUsersGroup);
+      return this.groups.find((g) => g.isDefaultGatewayUsersGroup);
     },
     nonGatewayGroups() {
-      return this.groups.filter(g => {
+      return this.groups.filter((g) => {
         return (
           !g.isGatewayAdminsGroup &&
           !g.isReadOnlyGatewayAdminsGroup &&
@@ -52,9 +48,8 @@ export default {
       });
     },
     nonGatewayGroupNames() {
-      return this.nonGatewayGroups.map(g => g.name).join(", ");
-    }
-  }
+      return this.nonGatewayGroups.map((g) => g.name).join(", ");
+    },
+  },
 };
 </script>
-

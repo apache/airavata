@@ -4,30 +4,19 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <b-table
-              hover
-              :fields="fields"
-              :items="items"
-              fixed="true"
-            >
-              <template
-                slot="creationTime"
-                slot-scope="data"
-              >
+            <b-table hover :fields="fields" :items="items" fixed="true">
+              <template slot="creationTime" slot-scope="data">
                 <human-date :date="data.value" />
               </template>
-              <template
-                slot="action"
-                slot-scope="data"
-              >
-                <b-button v-if="data.item.userHasWriteAccess" @click="toggleDetails(data)">
+              <template slot="action" slot-scope="data">
+                <b-button
+                  v-if="data.item.userHasWriteAccess"
+                  @click="toggleDetails(data)"
+                >
                   Edit
                 </b-button>
               </template>
-              <template
-                slot="row-details"
-                slot-scope="data"
-              >
+              <template slot="row-details" slot-scope="data">
                 <enable-user-panel
                   v-if="!data.item.enabled && !data.item.emailVerified"
                   :username="data.item.userId"
@@ -63,18 +52,18 @@ export default {
   data() {
     return {
       usersPaginator: null,
-      showingDetails: {}
+      showingDetails: {},
     };
   },
   components: {
     pager: components.Pager,
     "human-date": components.HumanDate,
     EnableUserPanel,
-    DeleteUserPanel
+    DeleteUserPanel,
   },
   created() {
     services.UnverifiedEmailUserProfileService.list({ limit: 10 }).then(
-      users => (this.usersPaginator = users)
+      (users) => (this.usersPaginator = users)
     );
   },
   computed: {
@@ -82,37 +71,37 @@ export default {
       return [
         {
           label: "First Name",
-          key: "firstName"
+          key: "firstName",
         },
         {
           label: "Last Name",
-          key: "lastName"
+          key: "lastName",
         },
         {
           label: "Username",
-          key: "userId"
+          key: "userId",
         },
         {
           label: "Email",
-          key: "email"
+          key: "email",
         },
         {
           label: "Email Verified",
-          key: "emailVerified"
+          key: "emailVerified",
         },
         {
           label: "Created",
-          key: "creationTime"
+          key: "creationTime",
         },
         {
           label: "Action",
-          key: "action"
-        }
+          key: "action",
+        },
       ];
     },
     items() {
       return this.usersPaginator ? this.usersPaginator.results : [];
-    }
+    },
   },
   methods: {
     next() {
@@ -133,16 +122,15 @@ export default {
     },
     loadUnverifiedEmailUsers() {
       return services.UnverifiedEmailUserProfileService.list({
-        limit: 10
-      }).then(users => (this.usersPaginator = users));
+        limit: 10,
+      }).then((users) => (this.usersPaginator = users));
     },
     toggleDetails(row) {
       row.toggleDetails();
       this.showingDetails[row.item.userId] = !this.showingDetails[
         row.item.userId
       ];
-    }
-  }
+    },
+  },
 };
 </script>
-

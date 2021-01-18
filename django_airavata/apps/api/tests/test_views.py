@@ -1,14 +1,14 @@
 from unittest.mock import MagicMock, call, patch
 
+from airavata.model.appcatalog.gatewaygroups.ttypes import GatewayGroups
+from airavata.model.group.ttypes import GroupModel
+from airavata.model.user.ttypes import UserProfile
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.urls import reverse
 # from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from airavata.model.appcatalog.gatewaygroups.ttypes import GatewayGroups
-from airavata.model.group.ttypes import GroupModel
-from airavata.model.user.ttypes import UserProfile
 from django_airavata.apps.api import signals, views
 
 GATEWAY_ID = "test-gateway"

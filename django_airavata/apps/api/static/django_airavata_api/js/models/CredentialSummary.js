@@ -4,18 +4,18 @@ import SummaryType from "./SummaryType";
 const FIELDS = [
   {
     name: "type",
-    type: SummaryType
+    type: SummaryType,
   },
   "gatewayId",
   "username",
   "publicKey",
   {
     name: "persistedTime",
-    type: Date
+    type: Date,
   },
   "token",
   "description",
-  "userHasWriteAccess"
+  "userHasWriteAccess",
 ];
 
 export default class CredentialSummary extends BaseModel {

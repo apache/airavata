@@ -1,39 +1,38 @@
 <template>
-    <group-editor v-if="group" :group="group" @saved="handleSaved"></group-editor>
+  <group-editor v-if="group" :group="group" @saved="handleSaved"></group-editor>
 </template>
 
 <script>
+import GroupEditor from "../group_components/GroupEditor.vue";
 
-import GroupEditor from '../group_components/GroupEditor.vue';
-
-import { services } from 'django-airavata-api'
+import { services } from "django-airavata-api";
 
 export default {
-    name: 'group-edit-container',
-    props: {
-        groupId: {
-            type: String,
-            required: true,
-        }
+  name: "group-edit-container",
+  props: {
+    groupId: {
+      type: String,
+      required: true,
     },
-    data () {
-        return {
-            group: null,
-        }
+  },
+  data() {
+    return {
+      group: null,
+    };
+  },
+  components: {
+    GroupEditor,
+  },
+  methods: {
+    handleSaved: function () {
+      window.location.assign("/groups/");
     },
-    components: {
-        GroupEditor,
-    },
-    methods: {
-        handleSaved: function() {
-            window.location.assign("/groups/");
-        }
-    },
-    computed: {
-    },
-    mounted: function () {
-        services.GroupService.retrieve({lookup: this.groupId})
-            .then(group => this.group = group);
-    },
-}
+  },
+  computed: {},
+  mounted: function () {
+    services.GroupService.retrieve({ lookup: this.groupId }).then(
+      (group) => (this.group = group)
+    );
+  },
+};
 </script>

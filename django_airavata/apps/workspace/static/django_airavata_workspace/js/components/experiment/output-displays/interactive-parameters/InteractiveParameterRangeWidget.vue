@@ -21,15 +21,15 @@ export default {
   props: {
     value: {
       type: Number,
-      required: true
+      required: true,
     },
     parameter: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
-      currentValue: parseFloat(this.value)
+      currentValue: parseFloat(this.value),
     };
   },
   computed: {
@@ -41,7 +41,7 @@ export default {
     },
     roundedValue() {
       return this.currentValue ? this.currentValue.toFixed(2) : null;
-    }
+    },
   },
   methods: {
     updateValue(newValue) {
@@ -56,7 +56,7 @@ export default {
         this.submit();
       }
     },
-    keyUp() {}
-  }
+    keyUp() {},
+  },
 };
 </script>

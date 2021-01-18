@@ -10,8 +10,8 @@ export default {
   props: {
     group: {
       type: models.Group,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     variant() {
@@ -35,8 +35,7 @@ export default {
       } else {
         return this.group.name;
       }
-    }
-  }
+    },
+  },
 };
 </script>
-

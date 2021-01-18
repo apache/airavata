@@ -5,10 +5,9 @@
     v-b-tooltip
     :title="titleText"
   >
-    <i
-      class="fa fa-star favorite-toggle"
-      :class="classes"
-    ><span class="sr-only">Toggle favorite</span></i>
+    <i class="fa fa-star favorite-toggle" :class="classes"
+      ><span class="sr-only">Toggle favorite</span></i
+    >
   </b-link>
 </template>
 
@@ -18,8 +17,8 @@ export default {
   props: {
     favorite: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   methods: {
     toggleFavorite() {
@@ -28,7 +27,7 @@ export default {
       } else {
         this.$emit("favorite");
       }
-    }
+    },
   },
   computed: {
     classes() {
@@ -44,8 +43,8 @@ export default {
       } else {
         return "Mark as favorite";
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -57,5 +56,3 @@ export default {
   color: inherit;
 }
 </style>
-
-

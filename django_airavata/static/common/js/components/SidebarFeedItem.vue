@@ -1,23 +1,16 @@
 <template>
   <li class="feed__list-item">
-    <span
-      v-if="feedItem.type"
-      class="feed__label text-secondary"
-    >{{ feedItem.type }}</span>
+    <span v-if="feedItem.type" class="feed__label text-secondary">{{
+      feedItem.type
+    }}</span>
     <h2 class="feed__title mb-2">
-      <a
-        v-if="feedItem.url"
-        :href="feedItem.url"
-      >{{ feedItem.title }}</a>
+      <a v-if="feedItem.url" :href="feedItem.url">{{ feedItem.title }}</a>
       <span v-else>{{ feedItem.title }}</span>
     </h2>
     <slot v-bind:feedItem="feedItem">
       <div v-if="feedItem.description">{{ feedItem.description }}</div>
     </slot>
-    <div
-      v-if="timestamp"
-      class="feed__item-meta text-secondary mt-1"
-    >
+    <div v-if="timestamp" class="feed__item-meta text-secondary mt-1">
       <span>Updated </span> <time>{{ timestamp }}</time>
     </div>
   </li>
@@ -37,7 +30,7 @@ export default {
      * - timestamp (Date, Optional) timestamp of when feed item was created/updated
      * - description (String, Optional) description of feed item. Displayed when no slot is provided.
      */
-    feedItem: Object
+    feedItem: Object,
   },
   computed: {
     timestamp() {
@@ -46,8 +39,7 @@ export default {
       } else {
         return null;
       }
-    }
-  }
+    },
+  },
 };
 </script>
-

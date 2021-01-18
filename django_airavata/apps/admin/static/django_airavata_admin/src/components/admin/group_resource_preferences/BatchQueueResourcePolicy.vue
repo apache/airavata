@@ -77,28 +77,28 @@ export default {
   props: {
     value: {
       required: false,
-      type: models.BatchQueueResourcePolicy
+      type: models.BatchQueueResourcePolicy,
     },
     batchQueue: {
       required: true,
-      type: models.BatchQueue
-    }
+      type: models.BatchQueue,
+    },
   },
   created() {
     this.$on("input", this.validate);
     this.validate();
   },
-  data: function() {
+  data: function () {
     const localValue = this.value
       ? this.value.clone()
       : new models.BatchQueueResourcePolicy();
     localValue.queuename = this.batchQueue.queueName;
     return {
-      data: localValue
+      data: localValue,
     };
   },
   methods: {
-    policyUpdated: function() {
+    policyUpdated: function () {
       if (
         this.data.maxAllowedNodes ||
         this.data.maxAllowedCores ||
@@ -109,7 +109,7 @@ export default {
         this.$emit("input", null);
       }
     },
-    numberFormatter: function(value) {
+    numberFormatter: function (value) {
       const num = parseInt(value);
       return !isNaN(num) ? "" + num : value;
     },
@@ -119,7 +119,7 @@ export default {
       } else {
         this.$emit("invalid");
       }
-    }
+    },
   },
   computed: {
     valid() {
@@ -133,7 +133,7 @@ export default {
         this.data,
         this.validation
       );
-    }
-  }
+    },
+  },
 };
 </script>

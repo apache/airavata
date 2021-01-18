@@ -12,7 +12,7 @@ export default class DataType extends BaseEnum {
         DataType.URI,
         DataType.URI_COLLECTION,
         DataType.STDOUT,
-        DataType.STDERR
+        DataType.STDERR,
       ].indexOf(this) >= 0
     );
   }
@@ -24,5 +24,5 @@ DataType.init([
   "URI",
   "URI_COLLECTION",
   "STDOUT",
-  "STDERR"
+  "STDERR",
 ]);

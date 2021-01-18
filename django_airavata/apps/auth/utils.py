@@ -2,6 +2,7 @@
 
 import time
 
+from airavata.model.security.ttypes import AuthzToken
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.mail import EmailMessage
@@ -9,8 +10,6 @@ from django.http.request import split_domain_port
 from django.template import Context, Template
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
-
-from airavata.model.security.ttypes import AuthzToken
 
 from . import models
 

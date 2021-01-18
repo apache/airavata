@@ -1,6 +1,15 @@
 <template>
-  <b-modal :title="title" ref="modal" @ok="$emit('ok')" @cancel="$emit('cancel')" no-close-on-backdrop no-close-on-esc hide-header-close
-    ok-title="Confirm" ok-variant="danger">
+  <b-modal
+    :title="title"
+    ref="modal"
+    @ok="$emit('ok')"
+    @cancel="$emit('cancel')"
+    no-close-on-backdrop
+    no-close-on-esc
+    hide-header-close
+    ok-title="Confirm"
+    ok-variant="danger"
+  >
     <slot></slot>
   </b-modal>
 </template>
@@ -11,8 +20,8 @@ export default {
   props: {
     title: {
       type: String,
-      default: "Please confirm"
-    }
+      default: "Please confirm",
+    },
   },
   methods: {
     show() {
@@ -20,8 +29,7 @@ export default {
     },
     hide() {
       this.$refs.modal.hide();
-    }
-  }
+    },
+  },
 };
 </script>
-

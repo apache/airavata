@@ -9,24 +9,24 @@ export default {
   props: {
     experimentOutput: {
       type: models.OutputDataObjectType,
-      required: true
+      required: true,
     },
     dataProducts: {
       type: Array,
-      required: true
+      required: true,
     },
     experimentId: {
       type: String,
-      required: true
+      required: true,
     },
     providerId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      rawOutput: null
+      rawOutput: null,
     };
   },
   computed: {
@@ -37,9 +37,10 @@ export default {
         encodeURIComponent(this.experimentId) +
         "&experiment-output-name=" +
         encodeURIComponent(this.experimentOutput.name) +
-        "&provider-id=" + encodeURIComponent(this.providerId)
+        "&provider-id=" +
+        encodeURIComponent(this.providerId)
       );
-    }
+    },
   },
 };
 </script>

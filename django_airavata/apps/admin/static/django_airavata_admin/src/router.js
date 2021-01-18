@@ -13,7 +13,7 @@ import GroupComputeResourcePreference from "./components/admin/group_resource_pr
 import IdentityServiceUserManagementContainer from "./components/users/IdentityServiceUserManagementContainer.vue";
 import UnverifiedEmailUserManagementContainer from "./components/users/UnverifiedEmailUserManagementContainer.vue";
 import UserManagementContainer from "./components/users/UserManagementContainer.vue";
-import NoticesManagementContainer from "./components/notices/NoticesManagementContainer.vue"
+import NoticesManagementContainer from "./components/notices/NoticesManagementContainer.vue";
 import VueRouter from "vue-router";
 
 const routes = [
@@ -27,11 +27,11 @@ const routes = [
       {
         path: "",
         components: {
-          module: ApplicationModuleEditor
+          module: ApplicationModuleEditor,
         },
-        name: "new_application_module"
-      }
-    ]
+        name: "new_application_module",
+      },
+    ],
   },
   {
     path: "/applications/:id",
@@ -42,113 +42,116 @@ const routes = [
       {
         path: "",
         components: {
-          module: ApplicationModuleEditor
+          module: ApplicationModuleEditor,
         },
-        name: "application_module"
+        name: "application_module",
       },
       {
         path: "interface",
         components: {
-          interface: ApplicationInterfaceEditor
+          interface: ApplicationInterfaceEditor,
         },
-        name: "application_interface"
+        name: "application_interface",
       },
       {
         path: "deployments",
         components: {
-          deployments: ApplicationDeploymentsList
+          deployments: ApplicationDeploymentsList,
         },
         name: "application_deployments",
         props: {
-          deployments: true
-        }
+          deployments: true,
+        },
       },
       {
         path: "deployments/new/:hostId",
         components: {
-          deployment: ApplicationDeploymentEditor
+          deployment: ApplicationDeploymentEditor,
         },
-        name: "new_application_deployment"
+        name: "new_application_deployment",
       },
       {
         path: "deployments/:deploymentId",
         components: {
-          deployment: ApplicationDeploymentEditor
+          deployment: ApplicationDeploymentEditor,
         },
         name: "application_deployment",
         props: {
-          deployment: true
-        }
-      }
-    ]
+          deployment: true,
+        },
+      },
+    ],
   },
   { path: "/applications", component: ApplicationsDashboard },
   {
     path: "/group-resource-profiles/new",
     component: GroupComputeResourcePreference,
     name: "new_group_resource_preference",
-    props: true
+    props: true,
   },
   {
     path: "/group-resource-profiles/:id",
     component: GroupComputeResourcePreference,
     name: "group_resource_preference",
-    props: true
+    props: true,
   },
   {
     path: "/group-resource-profiles/new/compute-preferences/:host_id",
     component: ComputePreference,
     name: "compute_preference_for_new_group_resource_profile",
-    props: true
+    props: true,
   },
   {
     path: "/group-resource-profiles/:id/compute-preferences/:host_id",
     component: ComputePreference,
     name: "compute_preference",
-    props: true
+    props: true,
   },
   {
     path: "/group-resource-profiles",
     component: ComputeResourcePreferenceDashboard,
-    name: "group_resource_preference_dashboard"
+    name: "group_resource_preference_dashboard",
   },
   {
     path: "/credentials",
     component: CredentialStoreDashboard,
-    name: "credential_store"
+    name: "credential_store",
   },
   {
     path: "/gateway-resource-profile",
     component: GatewayResourceProfileEditorContainer,
-    name: "gateway-resource-profile"
+    name: "gateway-resource-profile",
   },
   {
     path: "/users",
     component: UserManagementContainer,
     name: "users",
     children: [
-      { path: "", component: IdentityServiceUserManagementContainer, name: "identity-service-users" },
+      {
+        path: "",
+        component: IdentityServiceUserManagementContainer,
+        name: "identity-service-users",
+      },
       {
         path: "unverified-email",
         component: UnverifiedEmailUserManagementContainer,
-        name: "unverified-email-users"
-      }
-    ]
+        name: "unverified-email-users",
+      },
+    ],
   },
   {
     path: "/notices",
     component: NoticesManagementContainer,
-    name: "notices"
+    name: "notices",
   },
   {
     path: "/experiment-statistics",
     component: ExperimentStatisticsContainer,
-    name: "experiment-statistics"
-  }
-
+    name: "experiment-statistics",
+  },
 ];
 export default new VueRouter({
   mode: "history",
   base: "/admin/",
-  routes: routes
+  routes: routes,
 });

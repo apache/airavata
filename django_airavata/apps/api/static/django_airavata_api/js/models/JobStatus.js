@@ -4,14 +4,14 @@ import JobState from "./JobState";
 const FIELDS = [
   {
     name: "jobState",
-    type: JobState
+    type: JobState,
   },
   {
     name: "timeOfStateChange",
-    type: "date"
+    type: "date",
   },
   "reason",
-  "statusId"
+  "statusId",
 ];
 
 export default class JobStatus extends BaseModel {

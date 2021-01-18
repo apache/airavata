@@ -1,5 +1,5 @@
 <template>
-  <span :class="{'font-italic': notAvailable}">{{ applicationName }}</span>
+  <span :class="{ 'font-italic': notAvailable }">{{ applicationName }}</span>
 </template>
 <script>
 import { services } from "django-airavata-api";
@@ -8,13 +8,13 @@ export default {
   props: {
     applicationInterfaceId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       applicationInterface: null,
-      notAvailable: false
+      notAvailable: false,
     };
   },
   created() {
@@ -22,7 +22,7 @@ export default {
       { lookup: this.applicationInterfaceId },
       { ignoreErrors: true, cache: true }
     )
-      .then(appInterface => (this.applicationInterface = appInterface))
+      .then((appInterface) => (this.applicationInterface = appInterface))
       .catch(() => (this.notAvailable = true));
   },
   computed: {
@@ -34,7 +34,7 @@ export default {
           ? this.applicationInterface.applicationName
           : "";
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -7,5 +7,5 @@ TaskTypes.init([
   "JOB_SUBMISSION",
   "ENV_CLEANUP",
   "MONITORING",
-  "OUTPUT_FETCHING"
+  "OUTPUT_FETCHING",
 ]);

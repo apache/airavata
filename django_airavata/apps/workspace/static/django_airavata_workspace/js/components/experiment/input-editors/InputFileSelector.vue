@@ -6,14 +6,10 @@
       :selected-data-product-uris="selectedDataProductURIs"
     />
   </div>
-  <div
-    class="d-flex align-items-center"
-    v-else
-  >
-    <b-button
-      @click="isSelectingFile=true"
-      class="input-file-option"
-    >Select file from storage</b-button>
+  <div class="d-flex align-items-center" v-else>
+    <b-button @click="isSelectingFile = true" class="input-file-option"
+      >Select file from storage</b-button
+    >
     <span class="text-muted mx-3">OR</span>
     <uppy
       class="input-file-option"
@@ -38,21 +34,21 @@ export default {
   props: {
     multiple: {
       type: Boolean,
-      default: false
+      default: false,
     },
     selectedDataProductURIs: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   components: {
     UserStorageFileSelectionContainer,
-    uppy: components.Uppy
+    uppy: components.Uppy,
   },
   computed: {},
   data() {
     return {
-      isSelectingFile: false
+      isSelectingFile: false,
     };
   },
   created() {},
@@ -75,8 +71,8 @@ export default {
     uploadFinished() {
       this.$emit("uploadend");
       this.$refs.uppy.reset();
-    }
-  }
+    },
+  },
 };
 </script>
 

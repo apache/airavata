@@ -3,12 +3,12 @@ import json
 import logging
 from urllib.parse import urlparse
 
+from airavata.model.application.io.ttypes import DataType
+from airavata_django_portal_sdk import user_storage as user_storage_sdk
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
-from airavata.model.application.io.ttypes import DataType
-from airavata_django_portal_sdk import user_storage as user_storage_sdk
 from django_airavata.apps.api.views import (
     ApplicationModuleViewSet,
     ExperimentSearchViewSet,
@@ -27,7 +27,7 @@ def experiments_list(request):
     if response.status_code != 200:
         raise Exception("Failed to load experiments list: {}".format(
             response.data['detail']))
-    experiments_json = JSONRenderer().render(response.data)
+    experiments_json = JSONRenderer().render(response.data).decode('utf-8')
     return render(request, 'django_airavata_workspace/experiments_list.html', {
         'bundle_name': 'experiment-list',
         'experiments_data': experiments_json
@@ -51,7 +51,7 @@ def projects_list(request):
     if response.status_code != 200:
         raise Exception("Failed to load projects list: {}".format(
             response.data['detail']))
-    projects_json = JSONRenderer().render(response.data)
+    projects_json = JSONRenderer().render(response.data).decode('utf-8')
 
     return render(request, 'django_airavata_workspace/projects_list.html', {
         'bundle_name': 'project-list',
@@ -96,10 +96,10 @@ def create_experiment(request, app_module_id):
                             request.authz_token, dp_uri)
                         if user_storage_sdk.exists(request, data_product):
                             user_input_values[app_input['name']] = dp_uri
-                    except Exception as e:
+                    except Exception:
                         logger.exception(
                             f"Failed checking data product uri: {dp_uri}")
-            except ValueError as e:
+            except ValueError:
                 logger.exception(f"Invalid user file value: {user_file_value}")
         elif (app_input['type'] == DataType.STRING and
               app_input['name'] in request.GET):
@@ -138,7 +138,7 @@ def view_experiment(request, experiment_id):
     if response.status_code != 200:
         raise Exception("Failed to load experiment data: {}".format(
             response.data['detail']))
-    full_experiment_json = JSONRenderer().render(response.data)
+    full_experiment_json = JSONRenderer().render(response.data).decode('utf-8')
 
     return render(request, 'django_airavata_workspace/view_experiment.html', {
         'bundle_name': 'view-experiment',

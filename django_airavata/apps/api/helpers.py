@@ -1,9 +1,8 @@
 import logging
 
+from airavata.model.group.ttypes import ResourcePermissionType
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-
-from airavata.model.group.ttypes import ResourcePermissionType
 
 from . import models
 
@@ -17,7 +16,7 @@ class WorkspacePreferencesHelper:
             workspace_preferences = models.WorkspacePreferences.objects.get(
                 username=request.user.username)
             self._check(request, workspace_preferences)
-        except ObjectDoesNotExist as e:
+        except ObjectDoesNotExist:
             workspace_preferences = self._create_default(request)
             workspace_preferences.save()
         return workspace_preferences

@@ -7,13 +7,18 @@
         :editable-groups="editableGroups"
         :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
       />
-      <b-button @click="groupsUpdated" variant="primary" :disabled="!areGroupsUpdated">Save</b-button>
+      <b-button
+        @click="groupsUpdated"
+        variant="primary"
+        :disabled="!areGroupsUpdated"
+        >Save</b-button
+      >
     </b-card>
     <activate-user-panel
       v-if="
         iamUserProfile.enabled &&
-          iamUserProfile.emailVerified &&
-          !iamUserProfile.airavataUserProfileExists
+        iamUserProfile.emailVerified &&
+        !iamUserProfile.airavataUserProfileExists
       "
       :username="iamUserProfile.userId"
       @activate-user="$emit('enable-user', $event)"
@@ -43,42 +48,42 @@ export default {
   props: {
     iamUserProfile: {
       type: models.IAMUserProfile,
-      required: true
+      required: true,
     },
     editableGroups: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
     UserGroupMembershipEditor,
     EnableUserPanel,
     DeleteUserPanel,
-    ActivateUserPanel
+    ActivateUserPanel,
   },
   data() {
     return {
-      localIAMUserProfile: this.iamUserProfile.clone()
+      localIAMUserProfile: this.iamUserProfile.clone(),
     };
   },
   watch: {
     iamUserProfile(newValue) {
       this.localIAMUserProfile = newValue.clone();
-    }
+    },
   },
   methods: {
     groupsUpdated() {
       this.$emit("groups-updated", this.localIAMUserProfile);
-    }
+    },
   },
   computed: {
     currentGroupIds() {
-      const groupIds = this.iamUserProfile.groups.map(g => g.id);
+      const groupIds = this.iamUserProfile.groups.map((g) => g.id);
       groupIds.sort();
       return groupIds;
     },
     updatedGroupIds() {
-      const groupIds = this.localIAMUserProfile.groups.map(g => g.id);
+      const groupIds = this.localIAMUserProfile.groups.map((g) => g.id);
       groupIds.sort();
       return groupIds;
     },
@@ -96,7 +101,7 @@ export default {
         }
       }
       return false;
-    }
-  }
+    },
+  },
 };
 </script>

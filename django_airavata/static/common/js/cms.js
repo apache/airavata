@@ -4,6 +4,6 @@ import $ from "jquery";
 import "bootstrap/dist/css/bootstrap.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 
-$(function() {
+$(function () {
   $('[data-toggle="tooltip"]').tooltip();
 });

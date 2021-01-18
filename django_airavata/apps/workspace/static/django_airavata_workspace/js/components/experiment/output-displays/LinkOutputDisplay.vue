@@ -8,8 +8,8 @@ export default {
   props: {
     viewData: {
       type: Object,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 };
 </script>

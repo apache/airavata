@@ -248,7 +248,7 @@ def verify_email(request, code):
                 "Your account has been successfully created. "
                 "Please log in now.")
             return redirect(login_url)
-    except ObjectDoesNotExist as e:
+    except ObjectDoesNotExist:
         # if doesn't exist, give user a form where they can enter their
         # username to resend verification code
         logger.exception("EmailVerification object doesn't exist for "
@@ -258,7 +258,7 @@ def verify_email(request, code):
             "Email verification failed. Please enter your username and we "
             "will send you another email verification link.")
         return redirect(reverse('django_airavata_auth:resend_email_link'))
-    except Exception as e:
+    except Exception:
         logger.exception("Email verification processing failed!")
         messages.error(
             request,
@@ -403,7 +403,7 @@ def reset_password(request, code):
     try:
         password_reset_request = models.PasswordResetRequest.objects.get(
             reset_code=code)
-    except ObjectDoesNotExist as e:
+    except ObjectDoesNotExist:
         messages.error(
             request,
             "Reset password link is invalid. Please try again.")

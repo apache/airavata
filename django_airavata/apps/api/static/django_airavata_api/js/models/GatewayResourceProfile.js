@@ -8,11 +8,11 @@ const FIELDS = [
   {
     name: "storagePreferences",
     type: StoragePreference,
-    list: true
+    list: true,
   },
   "identityServerTenant",
   "identityServerPwdCredToken",
-  "userHasWriteAccess"
+  "userHasWriteAccess",
 ];
 
 export default class GatewayResourceProfile extends BaseModel {

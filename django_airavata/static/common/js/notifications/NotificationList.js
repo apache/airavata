@@ -14,7 +14,7 @@ class NotificationList {
     this.notifications.push(
       new Notification({
         type: "ERROR",
-        message: error.message
+        message: error.message,
       })
     );
   }

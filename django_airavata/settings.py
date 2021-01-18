@@ -100,7 +100,8 @@ CUSTOM_DJANGO_APPS = []
 #
 for entry_point in iter_entry_points(group='airavata.djangoapp'):
     custom_app_class = entry_point.load()
-    custom_app_instance = custom_app_class(entry_point.name, import_module(entry_point.module_name))
+    custom_app_instance = custom_app_class(
+        entry_point.name, import_module(entry_point.module_name))
     CUSTOM_DJANGO_APPS.append(custom_app_instance)
     # Create path to AppConfig class (otherwise the ready() method doesn't get
     # called)
@@ -298,6 +299,7 @@ WEBPACK_LOADER = {
             'common',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'ADMIN': {
         'BUNDLE_DIR_NAME': 'django_airavata_admin/dist/',
@@ -310,6 +312,7 @@ WEBPACK_LOADER = {
             'django_airavata_admin',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'DATAPARSERS': {
         'BUNDLE_DIR_NAME': 'django_airavata_dataparsers/dist/',
@@ -322,6 +325,7 @@ WEBPACK_LOADER = {
             'django_airavata_dataparsers',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'GROUPS': {
         'BUNDLE_DIR_NAME': 'django_airavata_groups/dist/',
@@ -334,6 +338,7 @@ WEBPACK_LOADER = {
             'django_airavata_groups',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
     'WORKSPACE': {
         'BUNDLE_DIR_NAME': 'django_airavata_workspace/dist/',
@@ -346,6 +351,7 @@ WEBPACK_LOADER = {
             'django_airavata_workspace',
             'dist',
             'webpack-stats.json'),
+        'TIMEOUT': 60,
     },
 }
 

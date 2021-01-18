@@ -1,8 +1,8 @@
 <template>
   <b-card header="Enable User">
     <p class="card-text">
-      Enable user {{ username }} to log in. By clicking <b>Enable</b> you are verifying that the user's email address
-      is {{ email }}
+      Enable user {{ username }} to log in. By clicking <b>Enable</b> you are
+      verifying that the user's email address is {{ email }}
     </p>
     <b-button @click="enable">Enable</b-button>
   </b-card>
@@ -14,18 +14,17 @@ export default {
   props: {
     username: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     enable() {
       this.$emit("enable-user", this.username);
-    }
-  }
+    },
+  },
 };
 </script>
-

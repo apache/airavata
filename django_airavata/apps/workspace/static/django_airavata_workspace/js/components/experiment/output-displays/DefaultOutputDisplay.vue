@@ -20,15 +20,15 @@ export default {
   props: {
     experimentOutput: {
       type: models.OutputDataObjectType,
-      required: true
+      required: true,
     },
     dataProducts: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
-    "data-product-viewer": components.DataProductViewer
+    "data-product-viewer": components.DataProductViewer,
   },
   computed: {
     fileMimeType() {
@@ -42,8 +42,8 @@ export default {
       } else {
         return null;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

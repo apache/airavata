@@ -8,14 +8,14 @@ class UnhandledErrorDispatcher {
     error = null,
     details = null,
     suppressDisplay = false,
-    suppressLogging = false
+    suppressLogging = false,
   }) {
     const unhandledError = new UnhandledError({
       message,
       error,
       details,
       suppressDisplay,
-      suppressLogging
+      suppressLogging,
     });
     this.reportUnhandledError(unhandledError);
   }
