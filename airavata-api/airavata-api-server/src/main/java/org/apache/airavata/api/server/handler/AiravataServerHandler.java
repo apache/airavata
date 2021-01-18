@@ -5081,9 +5081,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
                 else if(userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
-                    if (userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                    if (userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(sharingClient, gatewayId);
                         sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                                 Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING", true);
+                    }
                     else
                         throw new AuthorizationException("User is not allowed to grant sharing permission because the user is not the resource owner.");
                 }
@@ -5126,9 +5128,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                     sharingClient.shareEntityWithGroups(gatewayId, resourceId,
                             Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
                 else if(groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
-                    if(userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                    if(userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(sharingClient, gatewayId);
                         sharingClient.shareEntityWithGroups(gatewayId, resourceId,
                                 Arrays.asList(groupPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING", true);
+                    }
                     else
                         throw new AuthorizationException("User is not allowed to grant sharing permission because the user is not the resource owner.");
                 }
@@ -5170,9 +5174,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
                 else if(userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
-                    if (userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                    if (userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(sharingClient, gatewayId);
                         sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                                 Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "MANAGE_SHARING");
+                    }
                     else
                         throw new AuthorizationException("User is not allowed to change sharing permission because the user is not the resource owner.");
                 }
@@ -5213,7 +5219,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     ResourceType.EXPERIMENT, ResourceType.APPLICATION_DEPLOYMENT, ResourceType.GROUP_RESOURCE_PROFILE
             ));
             if (adminRestrictedResourceTypes.contains(resourceType)) {
-                // Prevent removing Admins WRITE access and Read Only Admins READ access
+                // Prevent removing Admins WRITE/MANAGE_SHARING access and Read Only Admins READ access
                 GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, gatewayId);
                 if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
                         && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.WRITE)) {
@@ -5224,8 +5230,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                     throw new Exception("Not allowed to remove Read Only Admins group's READ access.");
                 }
                 if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
+                        && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.READ)) {
+                    throw new Exception("Not allowed to remove Admins group's READ access.");
+                }
+                if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
                         && groupPermissionList.get(gatewayGroups.getAdminsGroupId()).equals(ResourcePermissionType.MANAGE_SHARING)) {
-                    throw new Exception("Not allowed to remove Admins group's SHARING access.");
+                    throw new Exception("Not allowed to remove Admins group's MANAGE_SHARING access.");
                 }
             }
             for(Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()){
@@ -5236,9 +5246,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "READ");
                 else if(groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)){
-                    if(userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER))
+                    if(userHasAccessInternal(sharingClient, authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(sharingClient, gatewayId);
                         sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                                 Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "MANAGE_SHARING");
+                    }
                     else
                         throw new AuthorizationException("User is not allowed to change sharing because the user is not the resource owner");
                 }
@@ -6098,6 +6110,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     private void shareEntityWithAdminGatewayGroups(RegistryService.Client regClient, SharingRegistryService.Client sharingClient, Entity entity) throws TException {
         final String domainId = entity.getDomainId();
         GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, domainId);
+        createManageSharingPermissionTypeIfMissing(sharingClient, domainId);
+        sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":MANAGE_SHARING", true);
         sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
         sharingClient.shareEntityWithGroups(domainId, entity.getEntityId(), Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()), domainId + ":READ", true);
     }
@@ -6131,6 +6145,20 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
         }
         throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
+    }
+
+    private void createManageSharingPermissionTypeIfMissing(SharingRegistryService.Client sharingClient, String domainId) throws TException {
+        // AIRAVATA-3297 Some gateways were created without the MANAGE_SHARING permission, so add it if missing
+        String permissionTypeId = domainId + ":MANAGE_SHARING";
+        if (!sharingClient.isPermissionExists(domainId, permissionTypeId)) {
+            PermissionType permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(permissionTypeId);
+            permissionType.setDomainId(domainId);
+            permissionType.setName("MANAGE_SHARING");
+            permissionType.setDescription("Manage sharing permission type");
+            sharingClient.createPermissionType(permissionType);
+            logger.info("Created MANAGE_SHARING permission type for domain " + domainId);
+        }
     }
 
     private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {
