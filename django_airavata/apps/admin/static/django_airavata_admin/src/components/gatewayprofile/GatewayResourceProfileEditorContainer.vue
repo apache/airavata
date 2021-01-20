@@ -61,7 +61,7 @@ export default {
     };
   },
   created() {
-    services.GatewayResourceProfileService.current().then((gwp) => {
+    services.GatewayResourceProfileService.get().then((gwp) => {
       this.gatewayResourceProfile = gwp;
       this.gatewayResourceProfileClone = gwp.clone();
     });
@@ -69,7 +69,6 @@ export default {
   methods: {
     save() {
       services.GatewayResourceProfileService.update({
-        lookup: this.gatewayResourceProfile.gatewayID,
         data: this.gatewayResourceProfile,
       }).then((gwp) => {
         this.gatewayResourceProfile = gwp;
