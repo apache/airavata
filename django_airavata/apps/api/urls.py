@@ -35,9 +35,6 @@ router.register(r'storage-resources', views.StorageResourceViewSet,
                 basename='storage-resource')
 router.register(r'credential-summaries', views.CredentialSummaryViewSet,
                 basename='credential-summary')
-router.register(r'gateway-resource-profiles',
-                views.GatewayResourceProfileViewSet,
-                basename='gateway-resource-profile')
 router.register(r'storage-preferences',
                 views.StoragePreferenceViewSet,
                 basename='storage-preference')
@@ -77,7 +74,7 @@ urlpatterns = [
     url(r'^data/movement/scp', views.ScpDataMovementView.as_view(),
         name="scp_ftp_data_movement"),
     url(r'^gateway-resource-profile',
-        views.GetCurrentGatewayResourceProfile.as_view(),
+        views.CurrentGatewayResourceProfile.as_view(),
         name="current_gateway_resource_profile"),
     url(r'^workspace-preferences',
         views.WorkspacePreferencesView.as_view(),
