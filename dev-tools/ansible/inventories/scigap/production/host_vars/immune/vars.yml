@@ -37,14 +37,14 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Immune Portal"
-#  external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "immune"
 experiment_data_dir: "{{ user_data_dir }}/immune"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZyps8huDQdr9ZJARtF0RcbyOD3FqMZZKldhW7soaWvOn7ev5rMgpto+TI/YQ8w5lWwWsqtxOByxJaGFgAkwI9+/vr0MPsMz/gmHi2NaEOYm+AA25ozPW9aMWRkaeAlK9sLWI85Cg6owozZngXV745R1LjtxhGO4/sOJLBIZxndLuaIlV1th2yontOsjv5CLr525mc8+0keViSWf7agdqTI7hN51fyyDM1KucwLfXXZZd4vQRJ68o9A6INH66KAbx54u6dd7PBKrJQC63RsPZG6i9jn6qBaLv7xkGH2iM7HfVy8ywMlyvQRb3DJdxG0AUXlZuxOHRH95hdBlgiSsTl"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCntbE2GLI5S2QNRlruR8vjmLHUbpePz9NBcSJuvffOT+R75nsWlyjVEI7Tn43qvJMPR7SpOy5W5u7mmjLYx0lphMv5RJ64Hy5tIK39RlXya3s/+0gyA//I9tS4BAt7NKmGItvIZI/JLGxyUY8ZTnkRofAbEHJy3KtW1lBWUHKNsJfXyR7KJwmEkOVMU8x4fC/C/OyfsofsipG82fYJlfAgpJc+kODAgJBZI90h9pisOmfk2Wkiqt6aC3JHUZmIF2x3w5eXyhTc6RCBgNNQUy88KPOp5neMnCEbrCMx0aZGqLZFb9Q+4DVdnsmS+QvCEEpI8eFiceSN0D1Yo5IC9bvh"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Chuanpeng Dong','cpdong@iu.edu')]"
 portal_title: "Immune Portal"
