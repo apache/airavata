@@ -37,14 +37,14 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "RegSNPs Gateway"
-#  external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "regsnps"
 experiment_data_dir: "{{ user_data_dir }}/regsnps"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZyps8huDQdr9ZJARtF0RcbyOD3FqMZZKldhW7soaWvOn7ev5rMgpto+TI/YQ8w5lWwWsqtxOByxJaGFgAkwI9+/vr0MPsMz/gmHi2NaEOYm+AA25ozPW9aMWRkaeAlK9sLWI85Cg6owozZngXV745R1LjtxhGO4/sOJLBIZxndLuaIlV1th2yontOsjv5CLr525mc8+0keViSWf7agdqTI7hN51fyyDM1KucwLfXXZZd4vQRJ68o9A6INH66KAbx54u6dd7PBKrJQC63RsPZG6i9jn6qBaLv7xkGH2iM7HfVy8ywMlyvQRb3DJdxG0AUXlZuxOHRH95hdBlgiSsTl"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAlldWcIK6yNgrj8Firns6JzHVv7iHEdj+VRe6GBIbPSsvY70dx6wfxxCaQvaEvfbXasdPsteTGxjYZ1qSiFQ5XWbX0azThxtMpz/ycQ0V9npsEhRMQ7dzRCI/r5RJOMryVK8KeHRxKJC3SUg4NkDqQ9TFkxYv0vWdsuhPFflpR2QvacD4kfh7nBvVhjxLqSlyDYJEJkKBuvx2n6p+Kx9sr9V1UXDZl22TXyTIHGdVwcTS6nhItqMeSCtBDsofv7U1xvKCb3u4D0tXlSAgLv7Anc+CQmJlj6QJQV4U2fsRy0eW+kkn5U3Dza9km0aXdAo+VHuBXdCGTG13e7yTgRRr"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "RegSNPs Gateway"
