@@ -112,7 +112,7 @@ const services = {
   ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
-    "GatewayResourceProfiles"
+    "GatewayResourceProfile"
   ),
   GlobusJobSubmissionService,
   GridFTPDataMovementService,

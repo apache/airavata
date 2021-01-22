@@ -231,13 +231,19 @@ export default {
     ],
     modelClass: FullExperiment,
   },
-  GatewayResourceProfiles: {
-    url: "/api/gateway-resource-profiles/",
-    viewSet: true,
+  GatewayResourceProfile: {
+    url: "/api/gateway-resource-profile/",
     methods: {
-      current: {
+      get: {
         url: "/api/gateway-resource-profile/",
         requestType: "get",
+        modelClass: GatewayResourceProfile,
+      },
+      update: {
+        requestType: "put",
+        bodyParams: {
+          name: "data",
+        },
         modelClass: GatewayResourceProfile,
       },
     },

@@ -855,11 +855,7 @@ class StoragePreferenceSerializer(
 
 
 class GatewayResourceProfileSerializer(
-    thrift_utils.create_serializer_class(GatewayResourceProfile)):
-    url = FullyEncodedHyperlinkedIdentityField(
-        view_name='django_airavata_api:gateway-resource-profile-detail',
-        lookup_field='gatewayID',
-        lookup_url_kwarg='gateway_id')
+        thrift_utils.create_serializer_class(GatewayResourceProfile)):
     storagePreferences = StoragePreferenceSerializer(many=True)
     userHasWriteAccess = serializers.SerializerMethodField()
 
