@@ -251,6 +251,16 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
+# some Python libraries want to write files to /tmp and execute them, see
+# https://bugzilla.redhat.com/show_bug.cgi?id=645193 for more details
+- name: Allow Django code to exec in tmp directory
+  seboolean:
+    name: httpd_tmp_exec
+    state: yes
+    persistent: yes
+  become: yes
+  when: ansible_os_family == "RedHat"
+
 - name: run restorecon on those directories
   command: restorecon -F -R {{ doc_root_dir }}
   become: yes
