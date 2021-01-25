@@ -780,10 +780,10 @@
                 <module>modules/cluster-monitoring</module>
                 <module>airavata-services</module>
                 <module>modules/db-event-manager</module>
+                <module>modules/platform-monitoring</module>
                 <module>modules/airavata-helix</module>
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
-                <module>modules/platform-monitoring</module>
                 <module>modules/distribution</module>
                 <module>tools</module>
                 <module>modules/ide-integration</module>

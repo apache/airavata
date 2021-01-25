@@ -326,34 +326,36 @@ public abstract class DataStagingTask extends AiravataTask {
                                                                                             TaskOnFailException {
 
         destPath = destPath + new File(sourcePath).getName();
-        String sourceId = "STORAGE:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId() + ":" + getTaskContext().getStorageResourceLoginUserName();
+        String sourceId = "STORAGE:" + getGatewayId() + ":" + getTaskContext().getStorageResourceId() + ":" + getTaskContext().getStorageResourceLoginUserName();
         String sourceToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getGatewayId();
 
-        String destId = "CLUSTER:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId() + ":" + getTaskContext().getComputeResourceLoginUserName();
+        String destId = "CLUSTER:" + getGatewayId() + ":" + getTaskContext().getComputeResourceId() + ":" + getTaskContext().getComputeResourceLoginUserName();
         String destToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getGatewayId();
 
-        return transferThroughMFT(sourceId, sourceToken, destId, destToken);
+        return transferThroughMFT(sourceId, sourcePath, sourceToken, destId, destPath, destToken);
     }
 
     protected boolean transferFileToStorageThroughMFT(String sourcePath, String destPath) throws TaskOnFailException,
                                                                                             ApplicationSettingsException {
 
-        String sourceId = "CLUSTER:" + sourcePath + ":" + getGatewayId() + ":" + getTaskContext().getComputeResourceId() + ":" + getTaskContext().getComputeResourceLoginUserName();
+        String sourceId = "CLUSTER:" + getGatewayId() + ":" + getTaskContext().getComputeResourceId() + ":" + getTaskContext().getComputeResourceLoginUserName();
         String sourceToken = getTaskContext().getComputeResourceCredentialToken() + ":" + getGatewayId();
 
-        String destId = "STORAGE:" + destPath + ":" + getGatewayId() + ":" + getTaskContext().getStorageResourceId() + ":" + getTaskContext().getStorageResourceLoginUserName();
+        String destId = "STORAGE:" + getGatewayId() + ":" + getTaskContext().getStorageResourceId() + ":" + getTaskContext().getStorageResourceLoginUserName();
         String destToken = getTaskContext().getStorageResourceCredentialToken() + ":" + getGatewayId();
 
-        return transferThroughMFT(sourceId, sourceToken, destId, destToken);
+        return transferThroughMFT(sourceId, sourcePath, sourceToken, destId, destPath, destToken);
     }
 
-    private boolean transferThroughMFT(String sourceId, String sourceToken, String destId, String destToken) throws ApplicationSettingsException, TaskOnFailException {
+    private boolean transferThroughMFT(String sourceStorageId, String sourcePath, String sourceToken,
+                                       String destStorageId, String destPath, String destToken) throws
+                                                        ApplicationSettingsException, TaskOnFailException {
         MFTApiServiceGrpc.MFTApiServiceBlockingStub mftClient = MFTApiClient.buildClient(
                 ServerSettings.getSetting("mft.server.host"),
                 Integer.parseInt(ServerSettings.getSetting("mft.server.port")));
 
         ResourceAvailabilityResponse resourceAvailability = mftClient.getResourceAvailability(ResourceAvailabilityRequest.newBuilder()
-                .setResourceId(sourceId)
+                .setResourceId(sourceStorageId)
                 .setResourceToken(sourceToken)
                 .setResourceType("SCP")
                 .setResourceBackend("AIRAVATA")
@@ -361,10 +363,12 @@ public abstract class DataStagingTask extends AiravataTask {
 
         if (resourceAvailability.getAvailable()) {
             TransferApiRequest request = TransferApiRequest.newBuilder()
-                    .setSourceId(sourceId)
+                    .setSourceStorageId(sourceStorageId)
+                    .setSourcePath(sourcePath)
                     .setSourceToken(sourceToken)
                     .setSourceType("SCP")
-                    .setDestinationId(destId)
+                    .setDestinationStorageId(destStorageId)
+                    .setDestinationPath(destPath)
                     .setDestinationToken(destToken)
                     .setDestinationType("SCP")
                     .setSourceResourceBackend("AIRAVATA")
@@ -379,7 +383,7 @@ public abstract class DataStagingTask extends AiravataTask {
             TransferModel transferModel = new TransferModel();
             transferModel.setTaskId(getTaskId());
             transferModel.setTransferId(response.getTransferId());
-            transferModel.setFilePath(sourceId);
+            transferModel.setFilePath(sourcePath);
 
             try {
                 getRegistryServiceClient().saveTransfer(transferModel);
@@ -410,7 +414,7 @@ public abstract class DataStagingTask extends AiravataTask {
                 }
             }
         } else {
-            logger.warn("Resource " + sourceId + " is not available. So ignoring");
+            logger.warn("Resource {} in storage {} is not available. So ignoring", sourcePath, sourceStorageId);
             return false;
         }
     }
