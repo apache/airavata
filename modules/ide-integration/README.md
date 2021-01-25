@@ -51,10 +51,16 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
   127.0.0.1 airavata.host
   ```
 
-* Go to src/main/resources directory and run 
+* Go to src/main/containers directory and run 
 
   ```
   docker-compose up
+  ```
+
+* Apply any database migrations. Go to src/main/containers directory and run
+
+  ```
+  cat ./database_scripts/init/*-migrations.sql | docker exec -i resources_db_1 mysql -p123456
   ```
 
 * Wait until all the services come up. This will initialize all utilities required to start Airavata server
@@ -135,7 +141,7 @@ https://support.google.com/accounts/answer/6010255?hl=en
 
 * This portal is required when you are going to register new compute resources or storage resources into the gateway
 
-* Go to src/main/resources/pga directory and run 
+* Go to src/main/containers/pga directory and run 
 
   ```
   docker-compose up -d
@@ -143,10 +149,16 @@ https://support.google.com/accounts/answer/6010255?hl=en
 
 * Run following command to get the ip address of host machine
 
-  This command is for docker containers deployed on Mac OSX  
+  For Mac OSX  
 
   ```
   docker-compose exec pga getent hosts docker.for.mac.host.internal | awk '{ print $1 }'
+  ```
+  
+  For Windows
+  
+  ```
+  docker-compose exec pga getent hosts host.docker.internal
   ```
 
 * Update the host entries of pga container with above ip address
@@ -170,3 +182,44 @@ https://support.google.com/accounts/answer/6010255?hl=en
   ```
   docker-compose rm
   ```
+  
+### NOTE: (Optional) Creating certificates if expired 
+  
+  * This is required only when the self signed certificate for keycloak is expired
+  * Go to src/main/resources/keystores
+  * Provide password as airavata for all key stores
+
+  ```  
+  rm airavata.jks
+  
+  rm client_truststore.jks
+  
+  keytool -genkey -keyalg RSA -alias selfsigned -keystore keystore.jks -storepass airavata -validity 360 -keysize 2048
+  What is your first and last name?
+    [Unknown]:  airavata.host
+  What is the name of your organizational unit?
+    [Unknown]:  airavata.host
+  What is the name of your organization?
+    [Unknown]:  airavata.host
+  What is the name of your City or Locality?
+    [Unknown]:  airavata.host
+  What is the name of your State or Province?
+    [Unknown]:  airavata.host
+  What is the two-letter country code for this unit?
+    [Unknown]:  airavata.host
+  Is CN=airavata.host, OU=airavata.host, O=airavata.host, L=airavata.host, ST=airavata.host, C=airavata.host correct?
+    [no]:  yes
+
+
+  keytool -importkeystore -srckeystore keystore.jks -destkeystore airavata.jks -deststoretype pkcs12
+
+  rm keystore.jks
+
+  keytool  -export -alias selfsigned -file root.cer -keystore airavata.jks -storepass airavata
+
+  keytool -import -alias mykey -file root.cer -keystore client_truststore.jks -storepass airavata
+
+  rm root.cer
+
+```
+

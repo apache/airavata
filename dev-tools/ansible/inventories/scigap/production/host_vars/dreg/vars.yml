@@ -28,6 +28,9 @@ django_tus_endpoint: "https://tus.dreg.scigap.org/files/"
 # Increase max upload size to 1GB
 django_file_upload_max_file_size_mb: 1024
 
+# TODO: while testing dreg-djangoapp, turn off SELinux, but turn it back on
+# once it is installed for real
+httpd_selinux_mode: "permissive"
 # airavata_django_extra_dependencies:
 #   - git+https://github.com/SciGaP/dreg-djangoapp.git@gbrowser#egg=dreg-djangoapp
 

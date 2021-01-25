@@ -1,0 +1,15 @@
+version: '3'
+services:
+  db:
+    image: mariadb:10.4.13
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=airavata
+      - MYSQL_PASSWORD=123456
+    volumes:
+      - ./docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+    ports:
+        - "13306:3306"
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=']
+# Connect to database with:
+# $ docker run --network mysql_default -it --rm mariadb:10 mysql -h mysql_db_1 -u airavata -p123456

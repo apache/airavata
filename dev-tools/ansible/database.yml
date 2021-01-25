@@ -22,7 +22,6 @@
 # Gather facts on the following
 - hosts: api-orch
 - hosts: helix
-- hosts: django
 
 - hosts: database
   tags: mysql , airavata

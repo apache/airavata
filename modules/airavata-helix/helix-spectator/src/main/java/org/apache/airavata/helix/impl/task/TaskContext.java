@@ -21,6 +21,7 @@ package org.apache.airavata.helix.impl.task;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -651,11 +652,6 @@ public class TaskContext {
             reservation = userComputeResourcePreference.getReservation();
             start = userComputeResourcePreference.getReservationStartTime();
             end = userComputeResourcePreference.getReservationEndTime();
-        } else {
-            // TODO: remove this once we've migrated to groupComputeResourcePreference.getReservations()
-            reservation = groupComputeResourcePreference.getReservation();
-            start = groupComputeResourcePreference.getReservationStartTime();
-            end = groupComputeResourcePreference.getReservationEndTime();
         }
         if (reservation != null && start > 0 && start < end) {
             long now = Calendar.getInstance().getTimeInMillis();
@@ -856,7 +852,7 @@ public class TaskContext {
                     if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
                             String stdOut = (ctx.getWorkingDir().endsWith(File.separator) ? ctx.getWorkingDir() : ctx.getWorkingDir() + File.separator)
-                                    + ctx.getApplicationInterfaceDescription().getApplicationName() + ".stdout";
+                                    + TaskUtil.replaceSpecialCharacters(ctx.getApplicationInterfaceDescription().getApplicationName(), "_") + ".stdout";
                             outputDataObjectType.setValue(stdOut);
                             ctx.setStdoutLocation(stdOut);
                         } else {
@@ -866,7 +862,7 @@ public class TaskContext {
                     if (outputDataObjectType.getType().equals(DataType.STDERR)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
                             String stderrLocation = (ctx.getWorkingDir().endsWith(File.separator) ? ctx.getWorkingDir() : ctx.getWorkingDir() + File.separator)
-                                    + ctx.getApplicationInterfaceDescription().getApplicationName() + ".stderr";
+                                    + TaskUtil.replaceSpecialCharacters(ctx.getApplicationInterfaceDescription().getApplicationName(), "_") + ".stderr";
                             outputDataObjectType.setValue(stderrLocation);
                             ctx.setStderrLocation(stderrLocation);
                         } else {

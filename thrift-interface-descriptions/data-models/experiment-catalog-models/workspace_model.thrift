@@ -94,6 +94,12 @@ struct Gateway {
     20: optional string requesterUsername
 }
 
+struct GatewayUsageReportingCommand {
+    1: required string gatewayId,
+    2: required string computeResourceId,
+    3: required string command
+}
+
 enum NotificationPriority {
     LOW,
     NORMAL,

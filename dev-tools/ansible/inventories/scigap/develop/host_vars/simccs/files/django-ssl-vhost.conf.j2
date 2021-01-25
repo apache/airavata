@@ -60,10 +60,21 @@
         Require all granted
     </Directory>
 
+    {# Additional aliases #}
+    {% for alias in vhost_aliases %}
+    Alias "{{ alias.url }}" "{{ alias.path }}"
+    <Directory "{{ alias.path }}">
+        Require all granted
+    </Directory>
+    {% endfor %}
+
     WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
     WSGIProcessGroup {{ vhost_servername }}
 
     WSGIScriptAlias / {{ doc_root_dir }}/airavata-django-portal/django_airavata/wsgi.py
+    WSGIApplicationGroup %{GLOBAL}
+    # To allow bearer token based authorization, pass 'Authorization' through to Django process
+    WSGIPassAuthorization On
 
     <Directory {{ doc_root_dir }}/airavata-django-portal/django_airavata>
         <Files wsgi.py>

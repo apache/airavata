@@ -131,7 +131,7 @@ public interface QueryConstants {
             "WHERE E.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID;
 
     String GET_PROCESS_FOR_EXPERIMENT_ID = "SELECT P FROM " + ProcessEntity.class.getSimpleName() + " P " +
-            "WHERE P.experimentId LIKE :" + DBConstants.Process.EXPERIMENT_ID;
+            "WHERE P.experimentId = :" + DBConstants.Process.EXPERIMENT_ID;
 
     String GET_TASK_FOR_PARENT_PROCESS_ID = "SELECT T FROM " + TaskEntity.class.getSimpleName() + " T " +
             "WHERE T.parentProcessId LIKE :" + DBConstants.Task.PARENT_PROCESS_ID;

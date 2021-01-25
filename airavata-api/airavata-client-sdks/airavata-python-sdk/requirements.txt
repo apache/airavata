@@ -5,3 +5,4 @@ thrift==0.10.0
 thrift_connector==0.24
 paramiko
 scp
+pysftp

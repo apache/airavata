@@ -19,14 +19,25 @@
 #
 
 ---
-vhost_servername: "django.simvascular.scigap.org"
+
+# Simvascular is deployed on its own server at simvascular.stanford.edu
+
+django_tus_endpoint: "https://tus.simvascular.scigap.org/files/"
+# configure user_data_dir and real_user_data_dir
+user_data_dir: "/var/www/portals/gateway-user-data"
+real_user_data_dir: "/home/www-shared/gateway-user-data"
+django_database_host_ip_address: "localhost"
+django_database_hosts:
+  # Database is installed on the same host as the Django server
+  - simvascular
+
+vhost_servername: "new.django.simvascular.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.simvascular.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 django_file_upload_max_file_size_mb: 2000
-django_pga_url: "https://gateway.simvascular.org"
 
 ## Keycloak related variables
 tenant_domain: "simvascular"
@@ -43,9 +54,11 @@ auth_options:
 
 gateway_id: "simvascular"
 experiment_data_dir: "{{ user_data_dir }}/simvascular"
+gateway_data_store_hostname: "simvascular.stanford.edu"
+gateway_data_store_resource_id: "simvascular.stanford.edu_758fc879-e037-4a10-980f-3566ac7cab1b"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNdivlUyLh11poF2vufwa8pCjVY0/fkvym9qdpEeu6nS55CVZe5VXqA1NZ+IwVDabAFwoLrUvaWt7eE8POEZNiBgtonZ21x6KIK5/HilSM6jHds1u6NY436AiHqmcybO/u+NkUI8gUjWTbs4S/i/2WfvAHZc3dbcCHls3QgG55TqOdNnh2pjFLSA1wu0d1qRnrPwnje/yC4GD+3XU1HPLHb9FXLHO4umswKq8sDk2lOIN7u08pCF8Y+BPYfmEdvY8oFwdVsj3OoA3fWEE42xTjb3g65X2oCbhco1g1ya0cfJMgSUbHCcOc2D//rXD+L4/z0/A2VCiEFJtTllrws609"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Alison Marsden', 'amarsden@stanford.edu'), ('Nathan Wilson', 'nwilson@osmsc.com'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'), ('Alison Marsden', 'amarsden@stanford.edu'), ('Nathan Wilson', 'nwilson@osmsc.com'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Martin Pfaller','pfaller@stanford.edu'), ('Weiguang Yang','wgyang@stanford.edu'), ('David W. Parker','davep@stanford.edu')]"
 portal_title: "SimVascular Gateway Portal"
 
 django_google_analytics_tracking_id: "UA-111528347-7"

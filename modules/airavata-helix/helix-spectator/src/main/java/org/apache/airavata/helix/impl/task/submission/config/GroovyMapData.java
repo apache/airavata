@@ -23,11 +23,13 @@ import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +80,9 @@ public class GroovyMapData {
     @ScriptTag(name = "jobName")
     private String jobName;
 
+    @ScriptTag(name = "jobId")
+    private String jobId;
+
     @ScriptTag(name = "workingDirectory")
     private String workingDirectory;
 
@@ -87,8 +92,12 @@ public class GroovyMapData {
     @ScriptTag(name = "inputsAll")
     private List<String> inputsAll;
 
+    // This is username of the airavata tries to talk to compute resources
     @ScriptTag(name = "userName")
     private String userName;
+
+    @ScriptTag(name = "currentTime")
+    private String currentTime;
 
     @ScriptTag(name = "shellName")
     private String shellName;
@@ -140,6 +149,10 @@ public class GroovyMapData {
 
     @ScriptTag(name = "experimentDataDir")
     private String experimentDataDir;
+
+    @ScriptTag(name = "computeHostName")
+    private String computeHostName;
+
 
     public Map<String, Object> getMap() {
 
@@ -473,6 +486,30 @@ public class GroovyMapData {
         this.experimentDataDir = experimentDataDir;
     }
 
+    public String getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(String currentTime) {
+        this.currentTime = currentTime;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getComputeHostName() {
+        return computeHostName;
+    }
+
+    public void setComputeHostName(String computeHostName) {
+        this.computeHostName = computeHostName;
+    }
+
     public Map toImmutableMap() {
 
         Map<String, Object> dataMap = new HashMap<>();
@@ -491,26 +528,37 @@ public class GroovyMapData {
         return dataMap;
     }
 
-    public String getAsString(String templateName) throws Exception {
-        URL templateUrl = ApplicationSettings.loadFile(templateName);
-        if (templateUrl == null) {
-            String error = "Template file '" + templateName + "' not found";
-            throw new Exception(error);
-        }
-        //File template = new File(templateUrl.getPath());
+    public String loadFromString(String templateStr) throws Exception {
         TemplateEngine engine = new GStringTemplateEngine();
         Writable make;
         try {
-
-            make = engine.createTemplate(templateUrl).make(toImmutableMap());
+            make = engine.createTemplate(templateStr).make(toImmutableMap());
+            //String intermediateOut = make.toString();
+            //make = engine.createTemplate(intermediateOut).make(toImmutableMap()); // Parsing through the map to resolve parameters in the map values (AIRAVATA-3391)
         } catch (Exception e) {
-            throw new Exception("Error while generating script using groovy map for template " + templateUrl.getPath(), e);
+            throw new Exception("Error while generating script using groovy map for string " + templateStr, e);
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Groovy map as string for template " + templateName);
+            logger.trace("Groovy map as string for template string " + templateStr);
             logger.trace(make.toString());
         }
         return make.toString();
+    }
+
+    public String loadFromFile(String templateName) throws Exception {
+        URL templateUrl = ApplicationSettings.loadFile(templateName);
+        if (templateUrl == null) {
+            String error = "Template file '" + templateName + "' not found";
+            logger.error(error);
+            throw new Exception(error);
+        }
+
+        try {
+            String templateStr = IOUtils.toString(templateUrl.openStream(), Charset.defaultCharset());
+            return loadFromString(templateStr);
+        } catch (Exception e) {
+            throw new Exception("Error while generating script using groovy map for template " + templateUrl.getPath(), e);
+        }
     }
 }

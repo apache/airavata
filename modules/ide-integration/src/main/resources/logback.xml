@@ -41,8 +41,8 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ch.qos.logback" level="WARN"/>
-    <logger name="org.apache.helix" level="WARN"/>
+    <logger name="ch.qos.logback" level="ERROR"/>
+    <logger name="org.apache.helix" level="ERROR"/>
     <logger name="org.apache.zookeeper" level="ERROR"/>
     <logger name="org.apache.airavata" level="INFO"/>
     <logger name="org.hibernate" level="ERROR"/>

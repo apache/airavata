@@ -26,12 +26,15 @@ gateway_data_store_hostname: "delta-topology.org"
 gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07ea-41fc-9f2e-104bc3061318"
 #django_tus_endpoint: "https://tus.scigap.org/files/" this requires manual installation steps outside of Ansible.
 django_tus_endpoint:
+airavata_django_git_branch: "delta-topology-workshop"
 
 vhost_servername: "delta-topology.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/delta-topology.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/delta-topology.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/delta-topology.org/privkey.pem"
+
+django_file_upload_max_file_size_mb: 10000
 
 ## Keycloak related variables
 tenant_domain: "delta"
@@ -53,4 +56,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLjM9L
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aurora Clark','auclark@wsu.edu'),('Sudhakar Pamidighantam','pamidigs@iu.edu')]"
 portal_title: "DELTA Gateway"
 
+django_google_analytics_tracking_id: "UA-178024455-1"
 ...

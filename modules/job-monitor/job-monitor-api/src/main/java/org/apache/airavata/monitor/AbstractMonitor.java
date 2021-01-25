@@ -55,6 +55,7 @@ public class AbstractMonitor {
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
         boolean validated = true;
         try {
+            log.info("Fetching matching jobs for job id {} from registry", jobStatusResult.getJobId());
             List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
 
             if (jobs.size() > 0) {

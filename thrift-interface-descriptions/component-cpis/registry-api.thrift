@@ -373,7 +373,7 @@ service RegistryService extends base_api.BaseAPI {
                                     4: string userName,
                                     5: string applicationName,
                                     6: string resourceHostName,
-                                    7: required list<string> accessibleExpIds)
+                                    7: list<string> accessibleExpIds)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
@@ -2677,6 +2677,15 @@ service RegistryService extends base_api.BaseAPI {
     list<parser_model.ParsingTemplate> listAllParsingTemplates(1: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);
     void removeParsingTemplate(1: required string templateId, 2: required string gatewayId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+
+    bool isGatewayUsageReportingAvailable(1: required string gatewayId, 2: required string computeResourceId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    workspace_model.GatewayUsageReportingCommand getGatewayReportingCommand(1: required string gatewayId, 2: required string computeResourceId)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    void addGatewayUsageReportingCommand(1: workspace_model.GatewayUsageReportingCommand command)
+            throws (1: registry_api_errors.RegistryServiceException rse);
+    void removeGatewayUsageReportingCommand(1: required string gatewayId, 2: required string computeResourceId)
             throws (1: registry_api_errors.RegistryServiceException rse);
 
     void saveTransfer(1: required transfer_model.TransferModel transferModel)

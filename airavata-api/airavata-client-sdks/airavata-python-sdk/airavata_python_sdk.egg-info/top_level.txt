@@ -1,4 +1,0 @@
-airavata
-clients
-samples
-transport

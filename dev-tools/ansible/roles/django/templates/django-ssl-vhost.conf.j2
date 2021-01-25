@@ -68,6 +68,9 @@
     WSGIProcessGroup {{ vhost_servername }}
 
     WSGIScriptAlias / {{ doc_root_dir }}/airavata-django-portal/django_airavata/wsgi.py
+    WSGIApplicationGroup %{GLOBAL}
+    # To allow bearer token based authorization, pass 'Authorization' through to Django process
+    WSGIPassAuthorization On
 
     <Directory {{ doc_root_dir }}/airavata-django-portal/django_airavata>
         <Files wsgi.py>

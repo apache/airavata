@@ -47,6 +47,8 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
@@ -55,11 +57,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class PostWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
+    private final static CountMonitor postwfCounter = new CountMonitor("post_wf_counter");
+
+    private ExecutorService processingPool = Executors.newFixedThreadPool(10);
 
     public PostWorkflowManager() throws ApplicationSettingsException {
         super(ServerSettings.getSetting("post.workflow.manager.name"),
@@ -195,6 +201,7 @@ public class PostWorkflowManager extends WorkflowManager {
 
     private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
+        postwfCounter.inc();
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
         ProcessModel processModel;
@@ -305,22 +312,39 @@ public class PostWorkflowManager extends WorkflowManager {
         new Thread(() -> {
 
             while (true) {
+
                 final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+                CompletionService<Boolean> executorCompletionService= new ExecutorCompletionService<>(processingPool);
+                List<Future<Boolean>> processingFutures = new ArrayList<>();
 
                 for (TopicPartition partition : consumerRecords.partitions()) {
                     List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
+                    logger.info("Received job records {}", partitionRecords.size());
+
                     for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
-                        boolean success = process(record.value());
-                        logger.info("Status of processing " + record.value().getJobId() + " : " + success);
-                        if (success) {
-                            consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
-                        }
+                        logger.info("Submitting {} to process in thread pool", record.value().getJobId());
+
+                        // This avoids kafka read thread to wait until processing is completed before committing
+                        // There is a risk of missing 20 messages in case of a restart but this improves the robustness
+                        // of the kafka read thread by avoiding wait timeouts
+                        processingFutures.add(executorCompletionService.submit(() -> {
+                            boolean success = process(record.value());
+                            logger.info("Status of processing " + record.value().getJobId() + " : " + success);
+                            return success;
+                        }));
+
+                        consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
                     }
                 }
 
-                consumerRecords.forEach(record -> process(record.value()));
-
-                consumer.commitAsync();
+                for (Future<Boolean> f: processingFutures) {
+                    try {
+                        executorCompletionService.take().get();
+                    } catch (Exception e) {
+                        logger.error("Failed processing job", e);
+                    }
+                }
+                logger.info("All messages processed. Moving to next round");
             }
         }).start();
     }
@@ -369,6 +393,15 @@ public class PostWorkflowManager extends WorkflowManager {
     }
 
     public static void main(String[] args) throws Exception {
+
+        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
+            MonitoringServer monitoringServer = new MonitoringServer(
+                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
+                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
+            monitoringServer.start();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+        }
 
         PostWorkflowManager postManager = new PostWorkflowManager();
         postManager.startServer();

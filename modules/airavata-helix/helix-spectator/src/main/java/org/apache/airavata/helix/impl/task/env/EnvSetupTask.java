@@ -25,6 +25,7 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +34,12 @@ import org.slf4j.LoggerFactory;
 public class EnvSetupTask extends AiravataTask {
 
     private final static Logger logger = LoggerFactory.getLogger(EnvSetupTask.class);
+    private final static CountMonitor envSetupTaskCounter = new CountMonitor("env_setup_task_counter");
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         try {
+            envSetupTaskCounter.inc();
             saveAndPublishProcessStatus(ProcessState.CONFIGURING_WORKSPACE);
             AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
                     getTaskContext().getGatewayId(),

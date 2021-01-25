@@ -24,7 +24,7 @@
     <parent>
         <artifactId>airavata-helix</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.19-SNAPSHOT</version>
+        <version>${project.version}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>task-core</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>registry-api-service</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId> com.google.guava</groupId>
@@ -72,17 +72,17 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-core</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>profile-service-stubs</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>services-security</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -93,12 +93,12 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messaging-core</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>workflow-impl</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -113,17 +113,22 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>job-monitor-api</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>profile-service-stubs</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>services-security</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messaging-core</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

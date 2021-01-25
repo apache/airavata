@@ -30,7 +30,14 @@
   become: yes
 
 - name: open zookeeper port
-  firewalld: port=2181/tcp zone=public permanent=true state=enabled immediate=yes
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port=2181 protocol=tcp accept
+  with_items:
+    - "{{ zk_subnets }}"
   become: yes
 
 - name: Copy zoo.cfg file

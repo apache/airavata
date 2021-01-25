@@ -27,6 +27,7 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +41,13 @@ public class ArchiveTask extends DataStagingTask {
 
     private final static Logger logger = LoggerFactory.getLogger(ArchiveTask.class);
     private final static long MAX_ARCHIVE_SIZE = 1024L * 1024L * 1024L * 20L; // 20GB
+    private final static CountMonitor archiveTaskCounter = new CountMonitor("archive_task_counter");
+
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting archival task " + getTaskId() + " in experiment " + getExperimentId());
+        archiveTaskCounter.inc();
         saveAndPublishProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
 
         try {
@@ -112,7 +116,7 @@ public class ArchiveTask extends DataStagingTask {
 
                     String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
                     final String storageArchiveDir = "ARCHIVE";
-                    String unArchiveTarCommand = "rm -rf " + storageArchiveDir + " && mkdir " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
+                    String unArchiveTarCommand = "rm -rf " + storageArchiveDir + " && mkdir -p " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
                             + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -f -R " + storageArchiveDir + "/*";
                     logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
 

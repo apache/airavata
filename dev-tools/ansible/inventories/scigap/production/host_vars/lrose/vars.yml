@@ -1,0 +1,52 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+#gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
+
+vhost_servername: "gateway.lrose.net"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.lrose.net/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.lrose.net/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.lrose.net/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "lrose"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "LROSE Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "lrose"
+experiment_data_dir: "{{ user_data_dir }}/lrose"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBRVHtPN6m/9VUXuYK6+92BSWR65D7+8Y+HAwevv1teLTuaZutyvysbQDPeKYMpqj+z3GMPo0E86zIoXXFHKXS6assBsvpQNNXBfIl91J0b3gUD3SukBbShPyhTawIi7za6VPMvUSa3koC/52Ihbz8VQLNc0xCxnSWHhgc1bIBMoA1JsXOnKPAQZvjkBwXAZUeDXLyS3koE9WNnbRoqOUkqs0MO8tKCvfaVTqILHToOSvgaXrXbEEpND9dCvIuer6tREgakoig+1ck9t9VzPLb/1FsaWGA/V/0WKHcsGvfDmIZcjtdL+eUhVJIJif3BCXDeQJJVap7smll3DXmkgKb"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Brenda Javornik', 'brenda@ucar.edu'),('Mike Dixon', 'dixon@ucar.edu'),('Ting-Yu Cha', 'tingyu@rams.colostate.edu'),('Jen DeHart', 'jcdehart@colostate.edu')]"
+portal_title: "LROSE Gateway"
+
+django_google_analytics_tracking_id: "UA-178055994-1"
+...

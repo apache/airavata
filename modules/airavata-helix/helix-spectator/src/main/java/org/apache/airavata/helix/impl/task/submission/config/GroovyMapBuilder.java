@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,6 +81,10 @@ public class GroovyMapBuilder {
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
 
+        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
+        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+        mapData.setCurrentTime(gmtDateFormat.format(new Date()));
+
         //List<String> emails = taskContext.getUserProfile().getEmails();
         //if (emails != null && emails.size() > 0) {
         //    mapData.setGatewayUserEmail(emails.get(0));
@@ -95,6 +100,13 @@ public class GroovyMapBuilder {
 
         mapData.setUserName(taskContext.getComputeResourceLoginUserName());
         mapData.setShellName("/bin/bash");
+
+        String hostName = taskContext.getComputeResourceDescription().getHostName();
+        List<String> hostAliases = taskContext.getComputeResourceDescription().getHostAliases();
+        if (hostAliases != null && hostAliases.size() > 0) {
+            hostName = hostAliases.get(0);
+        }
+        mapData.setComputeHostName(hostName);
 
         if (taskContext != null) {
             try {
@@ -181,7 +193,7 @@ public class GroovyMapBuilder {
         if (moduleCmds != null) {
             List<String> modulesCmdCollect = moduleCmds.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                    .map(map -> map.getCommand())
+                    .map(map -> parseCommands(map.getCommand(), mapData))
                     .collect(Collectors.toList());
             mapData.setModuleCommands(modulesCmdCollect);
         }

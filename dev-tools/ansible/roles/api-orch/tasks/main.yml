@@ -81,16 +81,66 @@
           owner={{ user }}
           group={{ group }}
 
-- name: Open firwall ports
-  firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
+- name: allow only selected networks to access Airavata Sharing Registry
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ sharing_registry_port }}" protocol=tcp accept
   with_items:
-    - "{{ api_server_port }}/tcp"
-    - "{{ api_server_tls_port }}/tcp"
-    - "{{ orchestrator_port }}/tcp"
-    - "{{ cred_store_port }}/tcp"
-    - "{{ registry_port }}/tcp"
-    - "{{ profile_service_port }}/tcp"
-    - "{{ sharing_registry_port }}/tcp"
+    - "{{ sharing_subnets }}"
+  become_user: root
+
+- name: allow only selected networks to access Airavata Registry
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ registry_port }}" protocol=tcp accept
+  with_items:
+    - "{{ registry_subnets }}"
+  become_user: root
+
+- name: allow only selected networks to access Airavata Credential Store
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ cred_store_port }}" protocol=tcp accept
+  with_items:
+    - "{{ credential_store_subnets }}"
+  become_user: root
+
+- name: allow all networks to access Airavata API Server over TLS
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    port: "{{ api_server_tls_port }}/tcp"
+  become_user: root
+
+- name: allow all networks to access Airavata Profile service
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    port: "{{ profile_service_port }}/tcp"
+  become_user: root
+
+- name: Openning API Server Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ api_server_monitoring_port }}" protocol=tcp accept
+  with_items:
+    - "{{ monitoring_subnets }}"
   become_user: root
 
 - name: Install api-orch systemd script

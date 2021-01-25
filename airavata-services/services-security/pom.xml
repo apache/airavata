@@ -27,7 +27,7 @@
     <parent>
         <artifactId>airavata-services</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.19-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -101,6 +101,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20131018</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>platform-monitoring</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <build>

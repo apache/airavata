@@ -1,4 +1,6 @@
 venv
-airavata_custos.egg-info
+airavata_python_sdk.egg-info
 *.pyc
 .tox
+dist
+build

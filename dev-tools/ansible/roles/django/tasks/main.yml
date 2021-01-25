@@ -27,6 +27,14 @@
   with_items:
   - "{{ groups['database'] }}"
 
+- name: Run tasks to setup Django database
+  include: database.yml
+  delegate_to: "{{ item }}"
+  become: yes
+  become_user: "{{ hostvars[item]['user'] }}"
+  with_items:
+  - "{{ django_database_hosts }}"
+
 - name: Create root directory
   file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
@@ -261,6 +269,13 @@
   notify:
     - restart httpd
   when: vhost_ssl
+
+- name: Enable site in Apache (Debian)
+  command: a2ensite {{ django_vhost_conf_name }}
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "Debian"
 
 - name: copy user's SSH key for the gateway data store
   authorized_key:

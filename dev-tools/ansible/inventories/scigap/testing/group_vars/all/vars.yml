@@ -182,3 +182,27 @@ usage_reporting_key: "NONE"
 mft_api_service_host: "{{ groups['mft'][0] }}"
 mft_api_service_grpc_port: 7004
 mft_api_service_http_port: 8088
+
+# Subnet definitions
+iu_subnets:
+  - "149.163.0.0/16"
+  - "140.182.0.0/16"
+  - "149.165.0.0/16"
+  - "192.68.133.0/24"
+  - "192.12.206.0/24"
+  - "149.159.0.0/16"
+  - "156.56.0.0/16"
+  - "149.161.0.0/16"
+  - "149.160.0.0/16"
+  - "149.166.0.0/16"
+  - "134.68.0.0/16"
+  - "129.79.0.0/16"
+
+zk_subnets: "{{ iu_subnets }}"
+kafka_subnets: "{{ iu_subnets }}"
+sharing_subnets: "{{ iu_subnets }}"
+registry_subnets: "{{ iu_subnets }}"
+credential_store_subnets: "{{ iu_subnets }}"
+rabbitmq_subnets: "{{ iu_subnets }}"
+db_subnets: "{{ iu_subnets }}"
+zabbix_subnets: "{{ iu_subnets }}"
