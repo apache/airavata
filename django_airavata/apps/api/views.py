@@ -980,7 +980,7 @@ class DataProductView(APIView):
                 fileContentText=request.data["fileContentText"])
             return self.get(request=request, format=format)
         else:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(http_method_names=['POST'])

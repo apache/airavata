@@ -69,7 +69,7 @@ log = logging.getLogger(__name__)
 
 
 class FullyEncodedHyperlinkedIdentityField(
-    serializers.HyperlinkedIdentityField):
+        serializers.HyperlinkedIdentityField):
     def get_url(self, obj, view_name, request, format):
         if hasattr(obj, self.lookup_field):
             lookup_value = getattr(obj, self.lookup_field)
@@ -176,7 +176,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
     def create(self, validated_data):
         group = super().create(validated_data)
         group.ownerId = self.context['request'].user.username + \
-                        "@" + settings.GATEWAY_ID
+            "@" + settings.GATEWAY_ID
         return group
 
     def update(self, instance, validated_data):
@@ -243,7 +243,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
 
 
 class ProjectSerializer(
-    thrift_utils.create_serializer_class(Project)):
+        thrift_utils.create_serializer_class(Project)):
     class Meta:
         required = ('name',)
         read_only = ('owner', 'gatewayId')
@@ -281,7 +281,7 @@ class ProjectSerializer(
 
 
 class ApplicationModuleSerializer(
-    thrift_utils.create_serializer_class(ApplicationModule)):
+        thrift_utils.create_serializer_class(ApplicationModule)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:application-detail',
         lookup_field='appModuleId',
@@ -305,7 +305,7 @@ class ApplicationModuleSerializer(
 
 
 class InputDataObjectTypeSerializer(
-    thrift_utils.create_serializer_class(InputDataObjectType)):
+        thrift_utils.create_serializer_class(InputDataObjectType)):
     metaData = StoredJSONField(required=False, allow_null=True)
 
     class Meta:
@@ -313,7 +313,7 @@ class InputDataObjectTypeSerializer(
 
 
 class OutputDataObjectTypeSerializer(
-    thrift_utils.create_serializer_class(OutputDataObjectType)):
+        thrift_utils.create_serializer_class(OutputDataObjectType)):
     metaData = StoredJSONField(required=False, allow_null=True)
 
     class Meta:
@@ -321,7 +321,7 @@ class OutputDataObjectTypeSerializer(
 
 
 class ApplicationInterfaceDescriptionSerializer(
-    thrift_utils.create_serializer_class(ApplicationInterfaceDescription)):
+        thrift_utils.create_serializer_class(ApplicationInterfaceDescription)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:application-interface-detail',
         lookup_field='applicationInterfaceId',
@@ -339,12 +339,12 @@ class ApplicationInterfaceDescriptionSerializer(
 
 
 class CommandObjectSerializer(
-    thrift_utils.create_serializer_class(CommandObject)):
+        thrift_utils.create_serializer_class(CommandObject)):
     pass
 
 
 class SetEnvPathsSerializer(
-    thrift_utils.create_serializer_class(SetEnvPaths)):
+        thrift_utils.create_serializer_class(SetEnvPaths)):
     pass
 
 
@@ -395,7 +395,7 @@ class ApplicationDeploymentDescriptionSerializer(
 
 
 class ComputeResourceDescriptionSerializer(
-    thrift_utils.create_serializer_class(ComputeResourceDescription)):
+        thrift_utils.create_serializer_class(ComputeResourceDescription)):
     pass
 
 
@@ -404,12 +404,12 @@ class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):
 
 
 class ExperimentStatusSerializer(
-    thrift_utils.create_serializer_class(ExperimentStatus)):
+        thrift_utils.create_serializer_class(ExperimentStatus)):
     timeOfStateChange = UTCPosixTimestampDateTimeField()
 
 
 class ExperimentSerializer(
-    thrift_utils.create_serializer_class(ExperimentModel)):
+        thrift_utils.create_serializer_class(ExperimentModel)):
     class Meta:
         required = ('projectId', 'experimentType', 'experimentName')
         read_only = ('userName', 'gatewayId')
@@ -453,14 +453,13 @@ class ExperimentSerializer(
 
     def get_relativeExperimentDataDir(self, experiment):
 
-        if (experiment.userConfigurationData and
-            experiment.userConfigurationData.experimentDataDir):
+        if (experiment.userConfigurationData and experiment.userConfigurationData.experimentDataDir):
             request = self.context['request']
             data_dir = experiment.userConfigurationData.experimentDataDir
             if getattr(
                 settings,
                 'GATEWAY_DATA_STORE_REMOTE_API',
-                None) is not None:
+                    None) is not None:
                 # Load the relativeExperimentDataDir from the remote Django
                 # portal instance
                 headers = {
@@ -480,13 +479,13 @@ class ExperimentSerializer(
 
 
 class DataReplicaLocationSerializer(
-    thrift_utils.create_serializer_class(DataReplicaLocationModel)):
+        thrift_utils.create_serializer_class(DataReplicaLocationModel)):
     creationTime = UTCPosixTimestampDateTimeField()
     lastModifiedTime = UTCPosixTimestampDateTimeField()
 
 
 class DataProductSerializer(
-    thrift_utils.create_serializer_class(DataProductModel)):
+        thrift_utils.create_serializer_class(DataProductModel)):
     creationTime = UTCPosixTimestampDateTimeField()
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
@@ -499,9 +498,7 @@ class DataProductSerializer(
         request = self.context['request']
         if user_storage.exists(request, data_product):
             return (request.build_absolute_uri(
-                reverse('django_airavata_api:download_file')) +
-                    '?' +
-                    urlencode({'data-product-uri': data_product.productUri}))
+                reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': data_product.productUri}))
         return None
 
     def get_isInputFileUpload(self, data_product):
@@ -561,7 +558,7 @@ class FullExperimentSerializer(serializers.Serializer):
 
 
 class ExperimentSummarySerializer(
-    thrift_utils.create_serializer_class(ExperimentSummaryModel)):
+        thrift_utils.create_serializer_class(ExperimentSummaryModel)):
     creationTime = UTCPosixTimestampDateTimeField()
     statusUpdateTime = UTCPosixTimestampDateTimeField()
     url = FullyEncodedHyperlinkedIdentityField(
@@ -582,24 +579,24 @@ class ExperimentSummarySerializer(
 
 
 class UserProfileSerializer(
-    thrift_utils.create_serializer_class(UserProfile)):
+        thrift_utils.create_serializer_class(UserProfile)):
     creationTime = UTCPosixTimestampDateTimeField()
     lastAccessTime = UTCPosixTimestampDateTimeField()
 
 
 class ComputeResourceReservationSerializer(
-    thrift_utils.create_serializer_class(ComputeResourceReservation)):
+        thrift_utils.create_serializer_class(ComputeResourceReservation)):
     startTime = UTCPosixTimestampDateTimeField(allow_null=True)
     endTime = UTCPosixTimestampDateTimeField(allow_null=True)
 
 
 class GroupComputeResourcePreferenceSerializer(
-    thrift_utils.create_serializer_class(GroupComputeResourcePreference)):
+        thrift_utils.create_serializer_class(GroupComputeResourcePreference)):
     reservations = ComputeResourceReservationSerializer(many=True)
 
 
 class GroupResourceProfileSerializer(
-    thrift_utils.create_serializer_class(GroupResourceProfile)):
+        thrift_utils.create_serializer_class(GroupResourceProfile)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:group-resource-profile-detail',
         lookup_field='groupResourceProfileId',
@@ -826,7 +823,7 @@ class SharedEntitySerializer(serializers.Serializer):
 
 
 class CredentialSummarySerializer(
-    thrift_utils.create_serializer_class(CredentialSummary)):
+        thrift_utils.create_serializer_class(CredentialSummary)):
     type = thrift_utils.ThriftEnumField(SummaryType)
     persistedTime = UTCPosixTimestampDateTimeField()
     userHasWriteAccess = serializers.SerializerMethodField()
@@ -839,7 +836,7 @@ class CredentialSummarySerializer(
 
 
 class StoragePreferenceSerializer(
-    thrift_utils.create_serializer_class(StoragePreference)):
+        thrift_utils.create_serializer_class(StoragePreference)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:storage-preference-detail',
         lookup_field='storageResourceId',
@@ -864,7 +861,7 @@ class GatewayResourceProfileSerializer(
 
 
 class StorageResourceSerializer(
-    thrift_utils.create_serializer_class(StorageResourceDescription)):
+        thrift_utils.create_serializer_class(StorageResourceDescription)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:storage-resource-detail',
         lookup_field='storageResourceId',
@@ -893,9 +890,7 @@ class UserStorageFileSerializer(serializers.Serializer):
         """Getter for downloadURL field."""
         request = self.context['request']
         return (request.build_absolute_uri(
-            reverse('django_airavata_api:download_file')) +
-                '?' +
-                urlencode({'data-product-uri': file['data-product-uri']}))
+            reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': file['data-product-uri']}))
 
 
 class UserStorageDirectorySerializer(serializers.Serializer):
@@ -973,7 +968,7 @@ class AckNotificationSerializer(serializers.ModelSerializer):
 
 
 class NotificationSerializer(
-    thrift_utils.create_serializer_class(Notification)):
+        thrift_utils.create_serializer_class(Notification)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:manage-notifications-detail',
         lookup_field='notificationId',
@@ -990,7 +985,7 @@ class NotificationSerializer(
 
 
 class ExperimentStatisticsSerializer(
-    thrift_utils.create_serializer_class(ExperimentStatistics)):
+        thrift_utils.create_serializer_class(ExperimentStatistics)):
     allExperiments = ExperimentSummarySerializer(many=True)
     completedExperiments = ExperimentSummarySerializer(many=True)
     failedExperiments = ExperimentSummarySerializer(many=True)
