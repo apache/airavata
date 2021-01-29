@@ -37,14 +37,14 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Global Flood Assessment Gateway"
-#  external:
-#   - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+   - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "global-flood"
 experiment_data_dir: "{{ user_data_dir }}/global-flood"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCntbE2GLI5S2QNRlruR8vjmLHUbpePz9NBcSJuvffOT+R75nsWlyjVEI7Tn43qvJMPR7SpOy5W5u7mmjLYx0lphMv5RJ64Hy5tIK39RlXya3s/+0gyA//I9tS4BAt7NKmGItvIZI/JLGxyUY8ZTnkRofAbEHJy3KtW1lBWUHKNsJfXyR7KJwmEkOVMU8x4fC/C/OyfsofsipG82fYJlfAgpJc+kODAgJBZI90h9pisOmfk2Wkiqt6aC3JHUZmIF2x3w5eXyhTc6RCBgNNQUy88KPOp5neMnCEbrCMx0aZGqLZFb9Q+4DVdnsmS+QvCEEpI8eFiceSN0D1Yo5IC9bvh"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPuGmLPwwXu15TCdLwsE9dFoWJu1kzQzdLukslMKjVCf05Fe+MyCP7EG5n1psGigSORGm0bo/9t9fPQGyPRUR2jIBI5lR2bE5JJ8XNotf+Gdv45FXhXHTIPSeb1bAymEQVghALxqeYOWnnP+6aL61Zy6nAokMJdkdRXFRxr0paYLbH3oaCAVdp2ggMXP+KMvkKHjMSa9aZFK/V/YrIRONKDrdK+DV7D0xk4XGplRAsw8UpS8GJipfq8uTM23Tr/UMCYUCbW8qqf0HYFohY+51lT/1JjYb+cBWjy1iuNGVQVnQsuNSOoDnW1C07V6VFzwKZJOv+rYhw6iL5rcq3fzDD"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Wang Jun','wang208@iu.edu')]"
 portal_title: "Global Flood Assessment Gateway"
