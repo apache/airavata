@@ -38,7 +38,7 @@ auth_options:
   password:
     name: "Global Flood Assessment Gateway"
   external:
-   - name: "Existing Institution Credentials"
+    - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
