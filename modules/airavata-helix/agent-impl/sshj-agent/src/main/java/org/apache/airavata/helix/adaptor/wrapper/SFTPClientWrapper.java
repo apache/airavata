@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public class SFTPClientWrapper extends SFTPClient {
-    private SFTPClient sftpClient;
     private Consumer<Integer> onCloseFunction;
     private SSHClientWrapper originalSSHClient;
 

@@ -27,6 +27,7 @@ real_user_data_dir: "{{ user_data_dir }}"
 vhost_servername: "{{ groups['django'][0] }}"
 vhost_ssl: False
 vhost_aliases: []
+vhost_redirects: []
 vhost_timeout: 60
 django_vhost_conf_name: "django-{{ gateway_id }}"
 httpd_confd_file_location:
