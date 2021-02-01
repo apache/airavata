@@ -207,6 +207,24 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         assertTrue(experimentStatistics.getCreatedExperimentCount() == 1);
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
 
+        // Test searchAllAccessibleExperiments with status filtering
+        // Only CREATED status
+        filters = new HashMap<>();
+        filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+        filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.CREATED.name());
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, -1, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return only one CREATED exp", 1, experimentSummaryModelList.size());
+        assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
+        // Only EXECUTING status
+        filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.EXECUTING.name());
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, -1, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return only one EXECUTING exp", 1, experimentSummaryModelList.size());
+        assertEquals(experimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
+
         // Experiment 2 is EXECUTING and should be the only one returned
         experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(Collections.singletonList(experimentIdTwo), filters);
         assertTrue(experimentStatistics.getAllExperimentCount() == 1);

@@ -193,7 +193,7 @@ public class GroovyMapBuilder {
         if (moduleCmds != null) {
             List<String> modulesCmdCollect = moduleCmds.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                    .map(map -> map.getCommand())
+                    .map(map -> parseCommands(map.getCommand(), mapData))
                     .collect(Collectors.toList());
             mapData.setModuleCommands(modulesCmdCollect);
         }

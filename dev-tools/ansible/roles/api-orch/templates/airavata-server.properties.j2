@@ -285,9 +285,11 @@ TLS.client.timeout=10000
 #### keystore configuration ####
 keystore.path={{ keystores_location }}/{{ keystore_src_path | basename }}
 keystore.password={{ keystore_passwd }}
+{% if client_truststore_src_path is defined %}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password={{ client_truststore_passwd }}
+{% endif %}
 #### authorization cache related configuration ####
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
