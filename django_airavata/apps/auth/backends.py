@@ -77,9 +77,9 @@ class KeycloakBackend(object):
                 request.authz_token = get_authz_token(
                     request, user=user, access_token=access_token)
             return user
-        except Exception:
-            logger.exception("login failed")
-            return None
+        except Exception as e:
+            logger.warning("login failed", exc_info=e)
+            raise
 
     def get_user(self, user_id):
         try:
