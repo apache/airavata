@@ -367,7 +367,7 @@ if you are interested).
 cd $HOME
 git clone https://github.com/machristie/gateways19-tutorial.git
 cd gateways19-tutorial
-docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PWD/settings_local.py:/code/django_airavata/settings_local.py machristie/airavata-django-portal
+docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
 ```
 
 !!! note "For remote Docker host users"
