@@ -522,6 +522,29 @@ def get_rel_path(request, path):
     return _Datastore().rel_path(request.user.username, path)
 
 
+def get_rel_experiment_dir(request, experiment_id):
+    """Return experiment data dir path relative to user's directory."""
+    if _is_remote_api():
+        resp = _call_remote_api(request,
+                                "/experiments/{experimentId}/",
+                                path_params={"experimentId": experiment_id})
+        resp.raise_for_status()
+        return resp.json()['relativeExperimentDataDir']
+
+    experiment = request.airavata_client.getExperiment(
+        request.authz_token, experiment_id)
+    if (experiment.userConfigurationData and
+            experiment.userConfigurationData.experimentDataDir):
+        datastore = _Datastore()
+        data_dir = experiment.userConfigurationData.experimentDataDir
+        if datastore.dir_exists(request.user.username, data_dir):
+            return datastore.rel_path(request.user.username, data_dir)
+        else:
+            return None
+    else:
+        return None
+
+
 def _get_data_product_uri(request, full_path, owner=None):
 
     from airavata_django_portal_sdk import models
