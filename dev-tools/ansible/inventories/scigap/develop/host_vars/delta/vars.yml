@@ -22,7 +22,7 @@
 gateway_data_store_hostname: "delta-topology.jetstream-cloud.org"
 gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_a272f087-f733-433c-a32c-745577ed6067"
 #django_tus_endpoint: "https://tus.scigap.org/files/" this requires manual installation steps outside of Ansible.
-#django_tus_endpoint:
+django_tus_endpoint:
 
 # No symlink, user_data_dir is same as real_user_data_dir
 user_data_dir: "{{ real_user_data_dir }}"

@@ -45,6 +45,8 @@ public class JobFactory {
                 return "LSF_Groovy.template";
             case CLOUD:
                 return "CLOUD_Groovy.template";
+            case HTCONDOR:
+                return "HTCONDOR_Groovy.template";
             default:
                 return null;
         }
@@ -119,6 +121,9 @@ public class JobFactory {
             case FORK:
                 return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(), new ForkOutputParser());
+            case HTCONDOR:
+                return new HTCondorJobConfiguration(templateFileName, ".submit", resourceJobManager
+                        .getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), new HTCondorOutputParser());
             // We don't have a job configuration manager for CLOUD type
             default:
                 throw new Exception("Could not find a job manager configuration for job manager type "
