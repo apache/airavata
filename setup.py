@@ -36,8 +36,5 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-    ],
-    dependency_links = [
-        # "git+https://github.com/apache/airavata.git@develop#egg=airavata-python-sdk&subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk",
     ]
 )

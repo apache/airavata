@@ -9,11 +9,13 @@ from http import HTTPStatus
 from urllib.parse import quote, unquote, urlparse
 
 import requests
-from airavata.model.data.replica.ttypes import (DataProductModel,
-                                                DataProductType,
-                                                DataReplicaLocationModel,
-                                                ReplicaLocationCategory,
-                                                ReplicaPersistentType)
+from airavata.model.data.replica.ttypes import (
+    DataProductModel,
+    DataProductType,
+    DataReplicaLocationModel,
+    ReplicaLocationCategory,
+    ReplicaPersistentType
+)
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from django.core.files import File
@@ -251,12 +253,12 @@ def delete_user_file(request, path):
 
 def update_file_content(request, path, fileContentText):
     if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                method="put",
-                                data={"fileContentText": fileContentText}
-                                )
+        _call_remote_api(request,
+                         "/user-storage/~/{path}",
+                         path_params={"path": path},
+                         method="put",
+                         data={"fileContentText": fileContentText}
+                         )
         return
     else:
         full_path = _Datastore().path(request.user.username, path)
@@ -332,7 +334,7 @@ def delete(request, data_product):
         try:
             _Datastore().delete(data_product.ownerName, path)
             _delete_data_product(data_product.ownerName, path)
-        except Exception as e:
+        except Exception:
             logger.exception(
                 "Unable to delete file {} for data product uri {}".format(
                     path, data_product.productUri
@@ -425,7 +427,7 @@ def list_experiment_dir(request, experiment_id, path=""):
         raise NotImplementedError()
 
     experiment = request.airavata_client.getExperiment(
-            request.authz_token, experiment_id)
+        request.authz_token, experiment_id)
     datastore = _Datastore()
     exp_data_path = experiment.userConfigurationData.experimentDataDir
     exp_data_path = os.path.join(exp_data_path, path)
@@ -489,7 +491,7 @@ def experiment_dir_exists(request, experiment_id, path=""):
     if _is_remote_api():
         raise NotImplementedError()
     experiment = request.airavata_client.getExperiment(
-            request.authz_token, experiment_id)
+        request.authz_token, experiment_id)
     datastore = _Datastore()
     exp_data_path = experiment.userConfigurationData.experimentDataDir
     exp_data_path = os.path.join(exp_data_path, path)

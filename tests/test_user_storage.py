@@ -5,15 +5,15 @@ import uuid
 from unittest.mock import MagicMock
 from urllib.parse import urlparse
 
-from django.contrib.auth.models import User
-from django.test import RequestFactory, TestCase, override_settings
-
 from airavata.model.data.replica.ttypes import (
     DataProductModel,
     DataProductType,
     DataReplicaLocationModel,
     ReplicaLocationCategory
 )
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase, override_settings
+
 from airavata_django_portal_sdk import user_storage
 
 GATEWAY_ID = 'test-gateway'
@@ -202,7 +202,7 @@ class ListDirTests(BaseTestCase):
             self.assertEqual("testdir", dirs[0]["name"])
             self.assertEqual(len(files), 1)
             self.assertEqual("foo.ext", files[0]["name"])
-            
+
     def test_listdir_broken_symlink(self):
         "Test that broken symlinks are ignored"
         with tempfile.TemporaryDirectory() as tmpdirname, \

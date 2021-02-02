@@ -46,3 +46,31 @@ then:
 pip install -r requirements-dev.txt
 mkdocs serve
 ```
+
+## Developing
+
+### Setting up dev environment
+
+```
+source venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+### Running tests
+
+```
+./runtests.py
+```
+
+### Running flake8
+
+```
+flake8 .
+```
+
+### Automatically formatting Python code
+
+```
+autopep8 -i -aaa -r .
+isort .
+```
