@@ -1,5 +1,7 @@
 # Airavata Django Portal SDK
 
+[![Build Status](https://travis-ci.com/apache/airavata-django-portal-sdk.svg?branch=master)](https://travis-ci.com/apache/airavata-django-portal-sdk)
+
 The Airavata Django Portal SDK provides libraries that assist in developing
 custom Django app extensions to the
 [Airavata Django Portal](https://github.com/apache/airavata-django-portal).
