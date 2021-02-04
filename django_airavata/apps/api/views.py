@@ -469,7 +469,8 @@ class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
                     view.authz_token, view.gateway_id, view.username, filters,
                     limit, offset)
 
-        return ExperimentSearchResultIterator()
+        # Preserve query parameters when moving to next and previous links
+        return ExperimentSearchResultIterator(query_params=self.request.query_params.copy())
 
     def get_instance(self, lookup_value):
         raise NotImplementedError()
@@ -1676,7 +1677,7 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
             def get_results(self, limit=-1, offset=0):
                 return map(convert_user_profile,
                            iam_admin_client.get_users(offset, limit, search))
-        return IAMUsersResultIterator()
+        return IAMUsersResultIterator(query_params=self.request.query_params.copy())
 
     def get_instance(self, lookup_value):
         return self._convert_user_profile(
