@@ -105,6 +105,7 @@ public class SFTPFileHandler extends Connector {
                     sftp.cd(folder);
                 } catch (SftpException e) {
                     sftp.mkdir(folder);
+                    sftp.chmod(0777,folder);
                     sftp.cd(folder);
                 }
             }
