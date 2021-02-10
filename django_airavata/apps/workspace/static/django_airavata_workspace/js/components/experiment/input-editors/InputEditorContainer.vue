@@ -30,7 +30,9 @@ import FileInputEditor from "./FileInputEditor.vue";
 import InputEditorFormGroup from "./InputEditorFormGroup.vue";
 import MultiFileInputEditor from "./MultiFileInputEditor.vue";
 import RadioButtonInputEditor from "./RadioButtonInputEditor.vue";
+import RangeSliderInputEditor from "./RangeSliderInputEditor.vue";
 import SelectInputEditor from "./SelectInputEditor.vue";
+import SliderInputEditor from "./SliderInputEditor.vue";
 import StringInputEditor from "./StringInputEditor.vue";
 import TextareaInputEditor from "./TextareaInputEditor.vue";
 
@@ -57,7 +59,9 @@ export default {
     InputEditorFormGroup,
     MultiFileInputEditor,
     RadioButtonInputEditor,
+    RangeSliderInputEditor,
     SelectInputEditor,
+    SliderInputEditor,
     StringInputEditor,
     TextareaInputEditor,
     UserFileInputEditor,
