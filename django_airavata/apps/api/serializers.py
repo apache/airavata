@@ -2,7 +2,6 @@ import copy
 import datetime
 import json
 import logging
-import re
 from urllib.parse import quote, urlencode
 
 import requests
