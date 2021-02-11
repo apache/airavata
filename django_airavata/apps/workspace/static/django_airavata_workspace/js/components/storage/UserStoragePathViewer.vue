@@ -8,7 +8,7 @@
       @add-directory="(dirName) => $emit('add-directory', dirName)"
     />
     <user-storage-path-breadcrumb
-      v-if="userStoragePath"
+      v-if="userStoragePath && isDir"
       :parts="userStoragePath.parts"
       @directory-selected="$emit('directory-selected', $event)"
     />

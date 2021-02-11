@@ -21,24 +21,26 @@ import {notifications} from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
-  computed: {},
+  computed: {
+    dataProductUri() {
+      return this.$route.query.dataProductUri;
+    }
+  },
   data() {
     return {
-      dataProductUri: null,
       storagePath: null,
       userStoragePath: null
     };
   },
   methods: {
-    setDataProductUri() {
-      this.dataProductUri = this.$route.query.dataProductUri;
-    },
     async setStoragePath() {
-      this.setDataProductUri();
       let _storagePath = null;
       if (this.dataProductUri) {
-        const dataProduct = await utils.FetchUtils.get(`/api/data-products?product-uri=${this.dataProductUri}`);
-        _storagePath = `~/${dataProduct.path}`
+        /**
+         * TODO fix: storage path is set to home when it's a file referenced by dataProductUri because
+         * there's no way of retrieving the path and this is to be fixed once a workaround is found.
+         */
+        _storagePath = "~/"
       } else {
         _storagePath = /~.*$/.exec(this.$route.fullPath);
         if (_storagePath && _storagePath.length > 0) {
@@ -56,20 +58,43 @@ export default {
       this.storagePath = _storagePath;
     },
     loadUserStoragePath(path) {
-      return services.UserStoragePathService.get(
-        {path},
-        {ignoreErrors: true}
-      )
-        .then((result) => {
-          this.userStoragePath = result;
-        })
-        .catch((err) => {
-          if (err.details.status === 404) {
-            this.handleMissingPath(path);
-          } else {
-            utils.FetchUtils.reportError(err);
+      const _catch = (err) => {
+        if (err.details.status === 404) {
+          this.handleMissingPath(path);
+        } else {
+          utils.FetchUtils.reportError(err);
+        }
+      };
+
+      if (this.dataProductUri) {
+        /**
+         * TODO fix: userStoragePath is set manually when it's a file referenced by dataProductUri because
+         * there's no way of retrieving the path and this is to be fixed once a workaround is found.
+         */
+        return utils.FetchUtils.get(`/api/data-products?product-uri=${this.dataProductUri}`).then((dataProduct) => {
+          this.userStoragePath = {
+            isDir: false,
+            directories: [],
+            files: [{
+              createdTime: dataProduct.creationTime,
+              dataProductURI: this.dataProductUri,
+              downloadURL: dataProduct.downloadURL,
+              mimeType: dataProduct.productMetadata["mime-type"],
+              name: dataProduct.productName,
+              size: dataProduct.productSize
+            }],
+            parts: []
           }
-        });
+        }).catch(_catch);
+      } else {
+        return services.UserStoragePathService.get(
+          {path},
+          {ignoreErrors: true}
+        )
+          .then((result) => {
+            this.userStoragePath = result;
+          }).catch(_catch);
+      }
     },
     handleMissingPath(path) {
       this.$router.replace("/~/");
