@@ -89,6 +89,20 @@ def generate_data(self, request, experiment_output, experiment, output_file=None
     }
 ```
 
+For the output view provider to work with experiment outputs of type
+URI_COLLECTION, add `output_files=None` to the function signature and get the
+output as a list of file objects.
+
+```python
+# For URI_COLLECTION, add output_files=None to signature
+def generate_data(self, request, experiment_output, experiment, output_files=None, **kwargs):
+
+    # Return a dictionary
+    return {
+        #...
+    }
+```
+
 The required contents of the dictionary varies based on the _display type_.
 
 #### Display type link

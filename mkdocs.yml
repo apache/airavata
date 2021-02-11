@@ -25,3 +25,5 @@ theme: readthedocs
 markdown_extensions:
   - sane_lists # allow restarting numbering of ordered lists
   - admonition
+  - toc:
+      permalink: true

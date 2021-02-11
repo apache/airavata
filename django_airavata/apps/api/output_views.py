@@ -3,6 +3,7 @@ import inspect
 import json
 import logging
 import os
+from functools import partial
 
 import nbformat
 import papermill as pm
@@ -26,7 +27,8 @@ class DefaultViewProvider:
             request,
             experiment_output,
             experiment,
-            output_file=None):
+            output_file=None,
+            **kwargs):
         return {
         }
 
@@ -191,28 +193,32 @@ def _generate_data(request,
                    **kwargs):
     # TODO: handle URI_COLLECTION also
     logger.debug("getting data product for {}".format(experiment_output.value))
-    output_file = None
-    test_output_file = getattr(output_view_provider,
-                               'test_output_file',
-                               None)
+    output_files = []
     if (experiment_output.value and
         experiment_output.type in (DataType.URI,
+                                   DataType.URI_COLLECTION,
                                    DataType.STDOUT,
                                    DataType.STDERR) and
             experiment_output.value.startswith("airavata-dp")):
-        data_product = request.airavata_client.getDataProduct(
-            request.authz_token, experiment_output.value)
-        if user_storage.exists(request, data_product):
-            output_file = user_storage.open_file(request, data_product)
-        elif settings.DEBUG and test_output_file is not None:
-            output_file = open(test_output_file, 'rb')
-    # TODO: change interface to provide output_file as a path
+        data_product_uris = experiment_output.value.split(",")
+        data_products = map(lambda dpid:
+                            request.airavata_client.getDataProduct(request.authz_token,
+                                                                   dpid),
+                            data_product_uris)
+        for data_product in data_products:
+            if user_storage.exists(request, data_product):
+                output_file = user_storage.open_file(request, data_product)
+                output_files.append(output_file)
+    generate_data_func = output_view_provider.generate_data
+    method_sig = inspect.signature(generate_data_func)
+    if 'output_files' in method_sig.parameters:
+        generate_data_func = partial(generate_data_func, output_files=output_files)
     # TODO: convert experiment and experiment_output to dict/JSON
-    data = output_view_provider.generate_data(request,
-                                              experiment_output,
-                                              experiment,
-                                              output_file=output_file,
-                                              **kwargs)
+    data = generate_data_func(request,
+                              experiment_output,
+                              experiment,
+                              output_file=output_files[0] if len(output_files) > 0 else None,
+                              **kwargs)
     _process_interactive_params(data)
     return data
 

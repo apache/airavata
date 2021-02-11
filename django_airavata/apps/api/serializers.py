@@ -452,8 +452,13 @@ class ExperimentSerializer(
             ResourcePermissionType.WRITE)
 
     def get_relativeExperimentDataDir(self, experiment):
+        request = self.context['request']
+        if hasattr(user_storage, "get_rel_experiment_dir"):
+            return user_storage.get_rel_experiment_dir(request, experiment.experimentId)
 
-        if (experiment.userConfigurationData and experiment.userConfigurationData.experimentDataDir):
+        # TODO: remove this older implementation
+        if (experiment.userConfigurationData and
+                experiment.userConfigurationData.experimentDataDir):
             request = self.context['request']
             data_dir = experiment.userConfigurationData.experimentDataDir
             if getattr(

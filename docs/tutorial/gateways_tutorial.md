@@ -367,7 +367,7 @@ if you are interested).
 cd $HOME
 git clone https://github.com/machristie/gateways19-tutorial.git
 cd gateways19-tutorial
-docker run -d --name gateways19-tutorial -p 8000:8000 -v $PWD:/extensions -v $PWD/settings_local.py:/code/django_airavata/settings_local.py machristie/airavata-django-portal
+docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
 ```
 
 !!! note "For remote Docker host users"
@@ -444,7 +444,7 @@ class GaussianEigenvaluesViewProvider:
    which should be the image's mime type. Here's the `generate_data` function:
 
 ```python
-    def generate_data(self, request, experiment_output, experiment, output_file=None):
+    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
         # Parse output_file
         output_text = io.TextIOWrapper(output_file)
         gaussian = ccopen(output_text)
@@ -512,7 +512,7 @@ class GaussianEigenvaluesViewProvider:
     display_type = 'image'
     name = "Gaussian Eigenvalues"
 
-    def generate_data(self, request, experiment_output, experiment, output_file=None):
+    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
 
         # Parse output_file
         output_text = io.TextIOWrapper(output_file)
@@ -636,7 +636,7 @@ grid as an example.
    parameter with a default value of `False`:
 
 ```python
-    def generate_data(self, request, experiment_output, experiment, output_file=None, show_grid=False):
+    def generate_data(self, request, experiment_output, experiment, output_file=None, show_grid=False, **kwargs):
 ```
 
 2. Add the following `.grid()` lines to the matplotlib code:

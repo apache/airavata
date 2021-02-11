@@ -36,13 +36,14 @@ def get_service_account_authz_token():
 
     client = BackendApplicationClient(client_id=client_id)
     oauth = OAuth2Session(client=client)
-    if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-        oauth.verify = settings.KEYCLOAK_CA_CERTFILE
+    verify = verify_ssl
+    if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+        verify = settings.KEYCLOAK_CA_CERTFILE
     token = oauth.fetch_token(
         token_url=token_url,
         client_id=client_id,
         client_secret=client_secret,
-        verify=verify_ssl)
+        verify=verify)
 
     access_token = token.get('access_token')
     return AuthzToken(
