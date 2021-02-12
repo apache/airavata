@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package org.apache.airavata.resource.profile.service.s3;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "storage/s3/stubs.proto";
+import "common.proto";
+
+/// S3Storage ///
+
+message S3StorageCreateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.s3.S3Storage s3Storage = 2;
+}
+
+message S3StorageCreateResponse {
+    org.apache.airavata.resource.profile.stubs.s3.S3Storage s3Storage = 1;
+}
+
+message S3StorageUpdateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.s3.S3Storage s3Storage = 2;
+}
+
+message S3StorageRemoveRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string s3StorageId = 2;
+}
+
+message S3StorageFetchRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string s3StorageId = 2;
+}
+
+message S3StorageFetchResponse {
+    org.apache.airavata.resource.profile.stubs.s3.S3Storage s3Storage = 1;
+}
+
+message S3StorageListRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string filterQuery = 2;
+}
+
+message S3StorageListResponse {
+    repeated org.apache.airavata.resource.profile.stubs.s3.S3Storage s3Storages = 1;
+}
+
+/// S3StoGroupPreference ///
+
+message S3StoGroupPreferenceCreateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupPreference s3StoGroupPreference = 2;
+}
+
+message S3StoGroupPreferenceCreateResponse {
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupPreference s3StoGroupPreference = 1;
+}
+
+message S3StoGroupPreferenceUpdateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupPreference s3StoGroupPreference = 2;
+}
+
+message S3StoGroupPreferenceRemoveRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string s3StorageId = 2;
+    string s3GroupResourceProfileId = 3;
+}
+
+message S3StoGroupPreferenceFetchRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string s3StorageId = 2;
+    string s3GroupResourceProfileId = 3;
+}
+
+message S3StoGroupPreferenceFetchResponse {
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupPreference s3StoGroupPreference = 1;
+}
+
+/// S3StoGroupResourceProfile ///
+
+message S3StoGroupResourceProfileCreateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupResourceProfile s3StoGroupResourceProfile = 2;
+}
+
+message S3StoGroupResourceProfileCreateResponse {
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupResourceProfile s3StoGroupResourceProfile = 1;
+}
+
+message S3StoGroupResourceProfileUpdateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupResourceProfile s3StoGroupResourceProfile = 2;
+}
+
+message S3StoGroupResourceProfileRemoveRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string s3StoGroupResourceProfileId = 2;
+}
+
+message S3StoGroupResourceProfileFetchRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string s3StoGroupResourceProfileId = 2;
+}
+
+message S3StoGroupResourceProfileFetchResponse {
+    org.apache.airavata.resource.profile.stubs.s3.S3StoGroupResourceProfile s3StoGroupResourceProfile = 1;
+}
+
+message S3StoGroupResourceProfileListRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string filterQuery = 2;
+}
+
+message S3StoGroupResourceProfileListResponse {
+    repeated org.apache.airavata.resource.profile.stubs.s3.S3StoGroupResourceProfile s3StoGroupResourceProfiles = 1;
+}
+
+service S3StorageService {
+
+    /// S3Storage ///
+
+    rpc createS3Storage (S3StorageCreateRequest) returns (S3StorageCreateResponse) {};
+
+    rpc updateS3Storage (S3StorageUpdateRequest) returns (google.protobuf.Empty) {};
+
+    rpc removeS3Storage (S3StorageRemoveRequest) returns (google.protobuf.Empty) {};
+
+    rpc fetchS3Storage (S3StorageFetchRequest) returns (S3StorageFetchResponse) {};
+
+    rpc listS3Storage (S3StorageListRequest) returns (S3StorageListResponse) {};
+
+    /// S3StoGroupPreference ///
+
+    rpc createS3StoGroupPreference (S3StoGroupPreferenceCreateRequest) returns (S3StoGroupPreferenceCreateResponse) {};
+
+    rpc updateS3StoGroupPreference (S3StoGroupPreferenceUpdateRequest) returns (google.protobuf.Empty) {};
+
+    rpc removeS3StoGroupPreference (S3StoGroupPreferenceRemoveRequest) returns (google.protobuf.Empty) {};
+
+    rpc fetchS3StoGroupPreference (S3StoGroupPreferenceFetchRequest) returns (S3StoGroupPreferenceFetchResponse) {};
+
+    /// S3StoGroupResourceProfile ///
+
+    rpc createS3StoGroupResourceProfile (S3StoGroupResourceProfileCreateRequest) returns (S3StoGroupResourceProfileCreateResponse) {};
+
+    rpc updateS3StoGroupResourceProfile (S3StoGroupResourceProfileUpdateRequest) returns (google.protobuf.Empty) {};
+
+    rpc removeS3StoGroupResourceProfile (S3StoGroupResourceProfileRemoveRequest) returns (google.protobuf.Empty) {};
+
+    rpc fetchS3StoGroupResourceProfile (S3StoGroupResourceProfileFetchRequest) returns (S3StoGroupResourceProfileFetchResponse) {};
+
+    rpc listS3StoGroupResourceProfile (S3StoGroupResourceProfileListRequest) returns (S3StoGroupResourceProfileListResponse) {};
+}
+
+

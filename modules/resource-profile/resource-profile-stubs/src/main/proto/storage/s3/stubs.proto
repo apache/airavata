@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package org.apache.airavata.resource.profile.stubs.s3;
+
+message S3Storage {
+    optional string s3StorageId = 1;
+    string region = 2;
+    string bucketName = 3;
+}
+
+message S3StoGroupPreference {
+    string s3StorageId = 1;
+    string s3GroupResourceProfileId = 2;
+    string resourceSpecificCredentialToken = 3;
+}
+
+message S3StoGroupResourceProfile {
+    string s3GroupResourceProfileId = 1;
+    string gatewayId = 2;
+    string s3GroupResourceProfileName = 3;
+    int64 creationTime = 4;
+    int64 updatedTime = 5;
+    string defaultS3CredentialStoreToken = 6;
+    repeated S3StoGroupPreference s3StoragePreferences = 7;
+}

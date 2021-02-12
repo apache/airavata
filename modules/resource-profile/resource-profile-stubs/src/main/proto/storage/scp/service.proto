@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package org.apache.airavata.resource.profile.service.scp;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "storage/scp/stubs.proto";
+import "common.proto";
+
+/// SCPStorage ///
+
+message SCPStorageCreateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.scp.SCPStorage scpStorage = 2;
+}
+
+message SCPStorageCreateResponse {
+    org.apache.airavata.resource.profile.stubs.scp.SCPStorage scpStorage = 1;
+}
+
+message SCPStorageUpdateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.scp.SCPStorage scpStorage = 2;
+}
+
+message SCPStorageRemoveRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string scpStorageId = 2;
+}
+
+message SCPStorageFetchRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string scpStorageId = 2;
+}
+
+message SCPStorageFetchResponse {
+    org.apache.airavata.resource.profile.stubs.scp.SCPStorage scpStorage = 1;
+}
+
+message SCPStorageListRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string filterQuery = 2;
+}
+
+message SCPStorageListResponse {
+    repeated org.apache.airavata.resource.profile.stubs.scp.SCPStorage scpStorages = 1;
+}
+
+/// SCPStoGroupPreference ///
+
+message SCPStoGroupPreferenceCreateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupPreference scpStoGroupPreference = 2;
+}
+
+message SCPStoGroupPreferenceCreateResponse {
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupPreference scpStoGroupPreference = 1;
+}
+
+message SCPStoGroupPreferenceUpdateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupPreference scpStoGroupPreference = 2;
+}
+
+message SCPStoGroupPreferenceRemoveRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string scpStorageId = 2;
+    string scpGroupResourceProfileId = 3;
+}
+
+message SCPStoGroupPreferenceFetchRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string scpStorageId = 2;
+    string scpGroupResourceProfileId = 3;
+}
+
+message SCPStoGroupPreferenceFetchResponse {
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupPreference scpStoGroupPreference = 1;
+}
+
+/// SCPStoGroupResourceProfile ///
+
+message SCPStoGroupResourceProfileCreateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupResourceProfile scpStoGroupResourceProfile = 2;
+}
+
+message SCPStoGroupResourceProfileCreateResponse {
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupResourceProfile scpStoGroupResourceProfile = 1;
+}
+
+message SCPStoGroupResourceProfileUpdateRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupResourceProfile scpStoGroupResourceProfile = 2;
+}
+
+message SCPStoGroupResourceProfileRemoveRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string scpStoGroupResourceProfileId = 2;
+}
+
+message SCPStoGroupResourceProfileFetchRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string scpStoGroupResourceProfileId = 2;
+}
+
+message SCPStoGroupResourceProfileFetchResponse {
+    org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupResourceProfile scpStoGroupResourceProfile = 1;
+}
+
+message SCPStoGroupResourceProfileListRequest {
+    org.apache.airavata.resource.profile.stubs.common.AuthzToken authzToken = 1;
+    string filterQuery = 2;
+}
+
+message SCPStoGroupResourceProfileListResponse {
+    repeated org.apache.airavata.resource.profile.stubs.scp.SCPStoGroupResourceProfile scpStoGroupResourceProfiles = 1;
+}
+
+service SCPStorageService {
+
+    /// SCPStorage ///
+
+    rpc createSCPStorage (SCPStorageCreateRequest) returns (SCPStorageCreateResponse) {};
+
+    rpc updateSCPStorage (SCPStorageUpdateRequest) returns (google.protobuf.Empty) {};
+
+    rpc removeSCPStorage (SCPStorageRemoveRequest) returns (google.protobuf.Empty) {};
+
+    rpc fetchSCPStorage (SCPStorageFetchRequest) returns (SCPStorageFetchResponse) {};
+
+    rpc listSCPStorage (SCPStorageListRequest) returns (SCPStorageListResponse) {};
+
+    /// SCPStoGroupPreference ///
+
+    rpc createSCPStoGroupPreference (SCPStoGroupPreferenceCreateRequest) returns (SCPStoGroupPreferenceCreateResponse) {};
+
+    rpc updateSCPStoGroupPreference (SCPStoGroupPreferenceUpdateRequest) returns (google.protobuf.Empty) {};
+
+    rpc removeSCPStoGroupPreference (SCPStoGroupPreferenceRemoveRequest) returns (google.protobuf.Empty) {};
+
+    rpc fetchSCPStoGroupPreference (SCPStoGroupPreferenceFetchRequest) returns (SCPStoGroupPreferenceFetchResponse) {};
+
+    /// SCPStoGroupResourceProfile ///
+
+    rpc createSCPStoGroupResourceProfile (SCPStoGroupResourceProfileCreateRequest) returns (SCPStoGroupResourceProfileCreateResponse) {};
+
+    rpc updateSCPStoGroupResourceProfile (SCPStoGroupResourceProfileUpdateRequest) returns (google.protobuf.Empty) {};
+
+    rpc removeSCPStoGroupResourceProfile (SCPStoGroupResourceProfileRemoveRequest) returns (google.protobuf.Empty) {};
+
+    rpc fetchSCPStoGroupResourceProfile (SCPStoGroupResourceProfileFetchRequest) returns (SCPStoGroupResourceProfileFetchResponse) {};
+
+    rpc listSCPStoGroupResourceProfile (SCPStoGroupResourceProfileListRequest) returns (SCPStoGroupResourceProfileListResponse) {};
+}
+
+

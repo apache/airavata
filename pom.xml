@@ -590,13 +590,7 @@
                             </execution>
                         </executions>
                     </plugin>
-		    <plugin>
-		       <groupId>org.apache.maven.plugins</groupId>
-		       <artifactId>maven-jar-plugins</artifactId>
-		       <version>${openjpa.version}</version>
-		    </plugin>
-		    
-		    <plugin>
+		            <plugin>
                         <groupId>com.lukegb.mojo</groupId>
                         <artifactId>gitdescribe-maven-plugin</artifactId>
                         <version>3.0</version>
@@ -784,6 +778,7 @@
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
                 <module>modules/platform-monitoring</module>
+                <module>modules/resource-profile</module>
                 <module>modules/distribution</module>
                 <module>tools</module>
                 <module>modules/ide-integration</module>
