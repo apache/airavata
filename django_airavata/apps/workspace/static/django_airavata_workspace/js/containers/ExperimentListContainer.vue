@@ -8,6 +8,80 @@
     <div class="row">
       <div class="col">
         <div class="card">
+          <div class = "card-body">
+            <b-input-group class="w-100 mb-2">
+              <b-form-input v-if="defaultOptionSelected" v-model="search" 
+                placeholder="Search Experiments"
+                @keydown.native.enter="searchExperiments"
+              />
+              <b-form-select v-if="applicationSelected" v-model="applicationSelect" 
+              :options="applicationNameOptions"
+              >
+                <template slot="first">
+                  <option :value="null" disabled>Select an application to search by</option>
+                </template>
+              </b-form-select>
+              <b-form-select v-if="projectSelected" v-model="projectSelect" 
+              :options="projectNameOptions"
+              >
+                <template slot="first">
+                  <option :value="null" disabled>Select a project to search by</option>
+                </template>
+              </b-form-select>
+              <b-form-select v-model="experimentAttributeSelect" 
+              @input="checkSearchOptions"
+              >
+                <template slot="first">
+                  <option :value="null" disabled>Select an attribute to search by</option>
+                </template>
+                <option value="USER_NAME">User Name</option>
+                <option value="EXPERIMENT_NAME">Experiment Name</option>
+                <option value="EXPERIMENT_DESC">Experiment Description</option>
+                <option value="APPLICATION_ID">Application</option>
+                <option value="PROJECT_ID">Project</option>
+              </b-form-select>
+              <b-form-select v-model="experimentStatusSelect">
+                <template slot="first">
+                  <option :value="null" disabled>Select an experiment status to filter by</option>
+                </template>
+                <option value="CREATED">Created</option>
+                <option value="VALIDATED">Validated</option>
+                <option value="SCHEDULED">Scheduled</option>
+                <option value="LAUNCHED">Launched</option>
+                <option value="EXECUTING">Executing</option>
+                <option value="CANCELED">Cancled</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="FAILED">Failed</option>
+              </b-form-select>
+              <b-input-group-append>
+                <b-button @click="resetSearch">Reset</b-button>
+                <b-button
+                  variant="primary"
+                  @click="searchExperiments"
+                >Search</b-button>
+              </b-input-group-append>
+            </b-input-group>
+            <b-input-group class="w-100 mb-2">
+            <b-input-group-prepend is-text >
+                    <i
+                      class="fa fa-calendar-week"
+                      aria-hidden="true"
+                    ></i>
+                  </b-input-group-prepend>
+                  <flat-pickr v-model="dateSelect"          
+                    :config="dateConfig"
+                    placeholder="Select a date range to filter by"
+                    @on-change="dateRangeChanged"
+                    class="form-control"
+                  />            
+            </b-input-group>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <table class="table table-hover">
               <thead>
@@ -84,7 +158,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { models, services, utils } from "django-airavata-api";
 import { components as comps } from "django-airavata-common-ui";
 
 import moment from "moment";
@@ -97,6 +171,25 @@ export default {
     return {
       experimentsPaginator: null,
       applicationInterfaces: {},
+      search: null, 
+      applicationSelect: null, 
+      projectSelect: null,
+      dateSelect : null,
+      experimentAttributeSelect: null, 
+      experimentStatusSelect: null, 
+      appInterfaces: null,
+      projectInterfaces: null,
+      fromDate: null,
+      toDate: null,
+      applicationSelected: false,
+      projectSelected: false, 
+      defaultOptionSelected: true,
+      dateConfig: {
+        mode: "range",
+        wrap: true,
+        dateFormat: "Y-m-d",
+        maxDate: new Date().fp_incr(1),
+      },
     };
   },
   components: {
@@ -104,6 +197,78 @@ export default {
     "experiment-status-badge": comps.ExperimentStatusBadge,
   },
   methods: {
+    searchExperiments: function(){
+      this.experimentsPaginator = null;
+      this.reloadExperiments();
+    },
+    resetSearch: function(){
+      this.experimentsPaginator = null;
+      this.search = null;
+      this.experimentAttributeSelect = null;
+      this.experimentStatusSelect = null;
+      this.applicationSelect = null;
+      this.projectSelect = null;
+      this.dateSelect = null;
+      this.toDate = null;
+      this.fromDate = null;
+      this.checkSearchOptions();
+      this.reloadExperiments();
+    },
+    reloadExperiments: function(){
+      const searchParams = {};
+      if (this.experimentAttributeSelect) {
+        if (this.experimentAttributeSelect=="APPLICATION_ID"&& this.applicationSelect){
+          searchParams["APPLICATION_ID"] = this.applicationSelect;
+        }
+        else if (this.experimentAttributeSelect=="PROJECT_ID"&& this.projectSelect){
+          searchParams["PROJECT_ID"] = this.projectSelect;
+        }
+        else if (this.search){
+          searchParams[this.experimentAttributeSelect] = this.search;
+        }
+      }
+      if (this.experimentStatusSelect){
+        searchParams["STATUS"]= this.experimentStatusSelect;
+      }
+      if (this.fromDate && this.toDate){
+        searchParams["FROM_DATE"] = this.fromDate.getTime();
+        searchParams["TO_DATE"] = this.toDate.getTime();
+      }
+
+      services.ExperimentSearchService.list(searchParams).then(
+        result => (this.experimentsPaginator = result)
+        );
+    },
+    checkSearchOptions: function(){
+      this.applicationSelected = false;
+      this.projectSelected = false;
+      this.defaultOptionSelected = false;
+      if(this.experimentAttributeSelect == "APPLICATION_ID"){
+        this.applicationSelected = true;
+      }
+      else if( this.experimentAttributeSelect == "PROJECT_ID"){
+        this.projectSelected=true;
+      }
+      else{
+        this.defaultOptionSelected = true;
+      }
+    },
+    loadApplicationInterfaces: function() {
+      return services.ApplicationInterfaceService.list().then(
+        (appInterfaces) => (this.appInterfaces = appInterfaces)
+      );
+    },
+    loadProjectInterfaces: function(){
+      return services.ProjectService.listAll().then(
+        (projectInterfaces) => (this.projectInterfaces = projectInterfaces)
+      );
+    },
+    dateRangeChanged: function(selectedDates) {
+      [this.fromDate, this.toDate] = selectedDates;
+      if (this.fromDate && this.toDate) {
+        this.reloadExperiments();
+      }
+    },
     nextExperiments: function () {
       this.experimentsPaginator.next();
     },
@@ -170,8 +335,36 @@ export default {
         ? this.experimentsPaginator.results
         : null;
     },
+    applicationNameOptions() {
+      if (this.appInterfaces) {
+        const options = this.appInterfaces.map((appInterface) => {
+          return {
+            value: appInterface.applicationInterfaceId,
+            text: appInterface.applicationName,
+          };
+        });
+        return utils.StringUtils.sortIgnoreCase(options, (o) => o.text);
+      } else {
+        return [];
+      }
+    },
+    projectNameOptions() {
+      if (this.projectInterfaces){
+        const options = this.projectInterfaces.map((projectInterface) => {
+          return {
+            value: projectInterface.projectID,
+            text: projectInterface.name,
+          };
+        });
+        return utils.StringUtils.sortIgnoreCase(options, (o) => o.text);
+      } else{
+        return [];
+      }
+    },
   },
   beforeMount: function () {
+    this.loadApplicationInterfaces();
+    this.loadProjectInterfaces();
     services.ExperimentSearchService.list({
       initialData: this.initialExperimentsData,
     }).then((result) => (this.experimentsPaginator = result));
