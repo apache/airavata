@@ -1,4 +1,4 @@
-import { components, entry } from "django-airavata-common-ui";
+import {components, entry} from "django-airavata-common-ui";
 import UserStorageContainer from "./containers/UserStorageContainer.vue";
 import UserStoragePathViewer from "./components/storage/UserStoragePathViewer.vue";
 

@@ -247,11 +247,12 @@
                         <template v-if="input.type.isSimpleValueType">
                           <span class="text-break">{{ input.value }}</span>
                         </template>
-                        <data-product-viewer
+                        <user-storage-link
                           v-for="dp in inputDataProducts[input.name]"
                           v-else-if="input.type.isFileValueType"
-                          :data-product="dp"
-                          :input-file="true"
+                          :data-product-uri="dp.productUri"
+                          :mime-type="dp.mimeType"
+                          :file-name="dp.productName"
                           :key="dp.productUri"
                         />
                       </li>
@@ -286,6 +287,7 @@ import OutputDisplayContainer from "./output-displays/OutputDisplayContainer";
 import urls from "../../utils/urls";
 
 import moment from "moment";
+import UserStorageLink from "../storage/storage-edit/UserStorageLink";
 
 export default {
   name: "experiment-summary",
@@ -305,7 +307,7 @@ export default {
     };
   },
   components: {
-    "data-product-viewer": components.DataProductViewer,
+    UserStorageLink,
     "clipboard-copy-link": components.ClipboardCopyLink,
     "share-button": components.ShareButton,
     OutputDisplayContainer,

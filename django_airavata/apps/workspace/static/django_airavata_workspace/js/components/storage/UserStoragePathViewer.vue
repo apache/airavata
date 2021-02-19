@@ -8,14 +8,16 @@
       @add-directory="(dirName) => $emit('add-directory', dirName)"
     />
     <user-storage-path-breadcrumb
-      v-if="userStoragePath"
+      v-if="userStoragePath && isDir"
       :parts="userStoragePath.parts"
       @directory-selected="$emit('directory-selected', $event)"
     />
 
     <user-storage-edit-viewer
       v-if="userStoragePath && isFile"
-      :file="file"
+      :file-name="file.name"
+      :data-product-uri="file.dataProductURI"
+      :mime-type="file.mimeType"
       @file-content-changed="
         (fileContent) => $emit('file-content-changed', fileContent)
       "
@@ -32,14 +34,13 @@
           v-if="data.item.type === 'dir'"
           @click="directorySelected(data.item)"
         >
-          <i class="fa fa-folder-open"></i> {{ data.item.name }}</b-link
-        >
-        <b-link v-else :href="storageFileViewRouteUrl(data.item)">
-          {{ data.item.name }}</b-link
-        >
+          <i class="fa fa-folder-open"></i> {{ data.item.name }}
+        </b-link>
+        <user-storage-link v-else :data-product-uri="data.item.dataProductURI" :mime-type="data.item.mimeType"
+                           :file-name="data.item.name" :allow-preview="allowPreview"/>
       </template>
       <template slot="createdTimestamp" slot-scope="data">
-        <human-date :date="data.item.createdTime" />
+        <human-date :date="data.item.createdTime"/>
       </template>
       <template slot="actions" slot-scope="data">
         <b-button
@@ -54,8 +55,7 @@
           v-if="includeDeleteAction"
           @delete="deleteItem(data.item)"
         >
-          Are you sure you want to delete <strong>{{ data.item.name }}</strong
-          >?
+          Are you sure you want to delete <strong>{{ data.item.name }}</strong>?
         </delete-button>
       </template>
     </b-table>
@@ -63,13 +63,18 @@
 </template>
 <script>
 import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
-import { components } from "django-airavata-common-ui";
+import {components} from "django-airavata-common-ui";
 import UserStorageCreateView from "./UserStorageCreateView";
 import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
+import UserStorageLink from "./storage-edit/UserStorageLink";
 
 export default {
   name: "user-storage-path-viewer",
   props: {
+    allowPreview: {
+      default: true,
+      required: false
+    },
     userStoragePath: {
       required: true,
     },
@@ -98,6 +103,7 @@ export default {
     },
   },
   components: {
+    UserStorageLink,
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
@@ -158,6 +164,7 @@ export default {
         const files = this.userStoragePath.files.map((f) => {
           return {
             name: f.name,
+            mimeType: f.mimeType,
             type: "file",
             dataProductURI: f.dataProductURI,
             downloadURL: f.downloadURL,

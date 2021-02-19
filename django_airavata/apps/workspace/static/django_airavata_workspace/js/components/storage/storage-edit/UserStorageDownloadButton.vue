@@ -1,14 +1,22 @@
 <template>
-  <b-button :href="file.downloadURL" :download="file.name">Download</b-button>
+  <b-button :href="downloadUrl" :download="fileName">Download</b-button>
 </template>
 
 <script>
 export default {
   name: "user-storage-download-button",
   props: {
-    file: {
+    fileName: {
       required: true,
     },
+    dataProductUri: {
+      required: true,
+    }
   },
+  computed: {
+    downloadUrl() {
+      return `/api/download?data-product-uri=${this.dataProductUri}`;
+    }
+  }
 };
 </script>

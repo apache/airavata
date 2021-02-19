@@ -10,23 +10,44 @@
       @delete-file="deleteFile"
       @directory-selected="directorySelected"
       @file-content-changed="fileContentChanged"
+      :allow-preview="false"
     ></router-view>
   </div>
 </template>
 
 <script>
-import { services, utils } from "django-airavata-api";
-import { notifications } from "django-airavata-common-ui";
+import {services, utils} from "django-airavata-api";
+import {notifications} from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
   computed: {
-    storagePath() {
-      let _storagePath = /~.*$/.exec(this.$route.fullPath);
-      if (_storagePath && _storagePath.length > 0) {
-        _storagePath = _storagePath[0];
+    dataProductUri() {
+      return this.$route.query.dataProductUri;
+    }
+  },
+  data() {
+    return {
+      storagePath: null,
+      userStoragePath: null
+    };
+  },
+  methods: {
+    async setStoragePath() {
+      let _storagePath = null;
+      if (this.dataProductUri) {
+        /**
+         * TODO fix: storage path is set to home when it's a file referenced by dataProductUri because
+         * there's no way of retrieving the path and this is to be fixed once a workaround is found.
+         */
+        _storagePath = "~/"
       } else {
-        _storagePath = this.$route.path;
+        _storagePath = /~.*$/.exec(this.$route.fullPath);
+        if (_storagePath && _storagePath.length > 0) {
+          _storagePath = _storagePath[0];
+        } else {
+          _storagePath = this.$route.path;
+        }
       }
 
       // Validate to have the ending slash.
@@ -34,30 +55,46 @@ export default {
         _storagePath += "/";
       }
 
-      return _storagePath;
+      this.storagePath = _storagePath;
     },
-  },
-  data() {
-    return {
-      userStoragePath: null,
-    };
-  },
-  methods: {
     loadUserStoragePath(path) {
-      return services.UserStoragePathService.get(
-        { path },
-        { ignoreErrors: true }
-      )
-        .then((result) => {
-          this.userStoragePath = result;
-        })
-        .catch((err) => {
-          if (err.details.status === 404) {
-            this.handleMissingPath(path);
-          } else {
-            utils.FetchUtils.reportError(err);
+      const _catch = (err) => {
+        if (err.details.status === 404) {
+          this.handleMissingPath(path);
+        } else {
+          utils.FetchUtils.reportError(err);
+        }
+      };
+
+      if (this.dataProductUri) {
+        /**
+         * TODO fix: userStoragePath is set manually when it's a file referenced by dataProductUri because
+         * there's no way of retrieving the path and this is to be fixed once a workaround is found.
+         */
+        return utils.FetchUtils.get(`/api/data-products?product-uri=${this.dataProductUri}`).then((dataProduct) => {
+          this.userStoragePath = {
+            isDir: false,
+            directories: [],
+            files: [{
+              createdTime: dataProduct.creationTime,
+              dataProductURI: this.dataProductUri,
+              downloadURL: dataProduct.downloadURL,
+              mimeType: dataProduct.productMetadata["mime-type"],
+              name: dataProduct.productName,
+              size: dataProduct.productSize
+            }],
+            parts: []
           }
-        });
+        }).catch(_catch);
+      } else {
+        return services.UserStoragePathService.get(
+          {path},
+          {ignoreErrors: true}
+        )
+          .then((result) => {
+            this.userStoragePath = result;
+          }).catch(_catch);
+      }
     },
     handleMissingPath(path) {
       this.$router.replace("/~/");
@@ -84,14 +121,8 @@ export default {
         });
       }
     },
-    fileContentChanged(fileContent) {
-      if (fileContent) {
-        utils.FetchUtils.put("/api/user-storage/" + this.storagePath, {
-          fileContentText: fileContent,
-        }).then(() => {
-          this.loadUserStoragePath(this.storagePath);
-        });
-      }
+    fileContentChanged() {
+      this.loadUserStoragePath(this.storagePath);
     },
     uploadSuccess() {
       this.loadUserStoragePath(this.storagePath);
@@ -116,7 +147,7 @@ export default {
     deleteFile(dataProductURI) {
       utils.FetchUtils.delete(
         "/api/delete-file?data-product-uri=" +
-          encodeURIComponent(dataProductURI)
+        encodeURIComponent(dataProductURI)
       ).then(() => {
         this.loadUserStoragePath(this.storagePath);
       });
@@ -125,16 +156,18 @@ export default {
       this.$router.push("/~/" + path);
     },
   },
-  created() {
+  async created() {
     if (this.$route.path === "/") {
-      this.$router.replace("/~/");
+      await this.$router.replace("/~/");
     } else {
-      this.loadUserStoragePath(this.storagePath);
+      await this.setStoragePath();
+      await this.loadUserStoragePath(this.storagePath);
     }
   },
   watch: {
-    $route() {
-      this.loadUserStoragePath(this.storagePath);
+    async $route() {
+      await this.setStoragePath();
+      await this.loadUserStoragePath(this.storagePath);
     },
   },
 };

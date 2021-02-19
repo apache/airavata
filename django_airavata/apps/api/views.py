@@ -970,6 +970,19 @@ class DataProductView(APIView):
             data_product, context={'request': request})
         return Response(serializer.data)
 
+    def put(self, request, format=None):
+        data_product_uri = request.query_params['product-uri']
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
+        if request.data and "fileContentText" in request.data:
+            user_storage.update_data_product_content(
+                request=request,
+                data_product=data_product,
+                fileContentText=request.data["fileContentText"])
+            return self.get(request=request, format=format)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(http_method_names=['POST'])
 def upload_input_file(request):
