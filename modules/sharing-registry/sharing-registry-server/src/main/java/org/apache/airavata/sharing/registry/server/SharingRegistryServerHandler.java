@@ -70,6 +70,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             domain.setUpdatedTime(System.currentTimeMillis());
             (new DomainRepository()).create(domain);
 
+
+
             //create the global permission for the domain
             PermissionType permissionType = new PermissionType();
             permissionType.setPermissionTypeId(domain.getDomainId() + ":" + OWNER_PERMISSION_NAME);
@@ -174,6 +176,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
             (new UserGroupRepository()).create(userGroup);
+
+            Domain domain = new DomainRepository().get(user.getDomainId());
+            if (domain.getInitialUserGroupId() != null) {
+                addUsersToGroup(user.getDomainId(), Collections.singletonList(user.getUserId()),
+                        domain.getInitialUserGroupId());
+            }
 
             return user.getUserId();
         }catch (Throwable ex) {

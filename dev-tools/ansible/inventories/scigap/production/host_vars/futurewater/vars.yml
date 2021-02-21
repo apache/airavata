@@ -1,0 +1,57 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# NOTE: futurewater is deployed to a Jetstream VM
+
+gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
+gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
+django_tus_endpoint: "https://tus.scigap.org/files/"
+
+vhost_servername: "gateway.futurewater.indiana.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/privkey.pem"
+
+django_file_upload_max_file_size_mb: 6000
+
+## Keycloak related variables
+tenant_domain: "pfec-hydro"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Future Water Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "pfec-hydro"
+experiment_data_dir: "{{ user_data_dir }}/pfec-hydro"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9qczDIVUhTxPmMsvF2J/NGIWo35HDgm3IUL41w1bUi5FX3CzuKwWtBh6IGoY4l+ibvWiRw2w9+MLWPhAWglLjXXekHCc/C5LuU8qi6zGZgQfD6U4yFpHXmkZLUHt30iKbLJXgypy7MaQ4n3sWDXJe2Dbsc4FMSK+KXFQ5KNZ/meOCCurEswcDyz4Mrvf9ZSZWzq6vPTXtdHo+/oRMmiGNZqhcBkqIWfz5alzyq4HTAidz5uc6fD8mqj1hg87qywv6OwMUAxB84S8glcLs5ZzuTbpGl3sdftVH9zqabx6eAGXX9V389qdLp1k//u45ph+INOk11HFCCxmh/YmqQM9f"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Jen Brand','jbrand@uwsp.edu'),('Chen Zhu','chenzhu@indiana.edu'),('Lei Gong','lgong@indiana.edu'),('Bidisha Faruque','bidabesh@iu.edu')]"
+portal_title: "Future Water Gateway"
+
+...

@@ -36,6 +36,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
@@ -122,7 +123,7 @@ public class SharingRegistryServer implements IServer {
 
                             logger.info("Start sharing service DB Event subscriber");
                             SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
-                        } catch (AiravataException | SharingRegistryException e) {
+                        } catch (AiravataException | SharingRegistryException | IOException e) {
                             logger.error("Error starting sharing service. Error setting up DB event services.");
                             server.stop();
                         }

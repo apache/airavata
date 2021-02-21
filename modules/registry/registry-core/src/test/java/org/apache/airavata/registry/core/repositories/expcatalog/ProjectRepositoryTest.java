@@ -66,11 +66,18 @@ public class ProjectRepositoryTest extends TestBase {
         String projectId = projectRepository.addProject(project, gatewayId);
         assertTrue(projectId != null);
 
-        project.setDescription("projectDescription");
-        projectRepository.updateProject(project, null);
+        Project updatedProject = project.deepCopy();
+        // Simulate clients that may or may not set projectId but will pass
+        // projectId as an argument to updateProject
+        updatedProject.unsetProjectID();
+        updatedProject.setName("updated projectName");
+        updatedProject.setDescription("projectDescription");
+        projectRepository.updateProject(updatedProject, projectId);
 
         Project retrievedProject = projectRepository.getProject(projectId);
         assertEquals(gatewayId, retrievedProject.getGatewayId());
+        assertEquals("updated projectName", retrievedProject.getName());
+        assertEquals("projectDescription", retrievedProject.getDescription());
 
         assertTrue(projectRepository.getProjectIDs(Constants.FieldConstants.ProjectConstants.OWNER, "user").contains(projectId));
 

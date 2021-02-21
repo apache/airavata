@@ -33,6 +33,7 @@ public class DomainEntity {
     private String description;
     private Long createdTime;
     private Long updatedTime;
+    private String initialUserGroupId;
 
     @Id
     @Column(name = "DOMAIN_ID")
@@ -82,6 +83,16 @@ public class DomainEntity {
 
     public void setUpdatedTime(Long updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    @Basic
+    @Column(name = "INITIAL_USER_GROUP_ID")
+    public String getInitialUserGroupId() {
+        return initialUserGroupId;
+    }
+
+    public void setInitialUserGroupId(String initialUserGroupId) {
+        this.initialUserGroupId = initialUserGroupId;
     }
 
     @Override

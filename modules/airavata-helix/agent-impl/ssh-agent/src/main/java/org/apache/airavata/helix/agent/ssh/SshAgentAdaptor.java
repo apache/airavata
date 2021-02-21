@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -176,7 +178,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
-    public void copyFileTo(String localFile, String remoteFile) throws AgentException {
+    public void uploadFile(String localFile, String remoteFile) throws AgentException {
 
         FileInputStream fis;
         boolean ptimestamp = true;
@@ -282,8 +284,13 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
+    @Override
+    public void uploadFile(InputStream localInStream, FileMetadata metadata, String remoteFile) throws AgentException {
+        throw new AgentException("Operation not implemented");
+    }
+
     // TODO file not found does not return exception
-    public void copyFileFrom(String remoteFile, String localFile) throws AgentException {
+    public void downloadFile(String remoteFile, String localFile) throws AgentException {
         FileOutputStream fos = null;
         ChannelExec channelExec = null;
         try {
@@ -414,6 +421,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
+    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata) throws AgentException {
+        throw new AgentException("Operation not implemented");
+    }
+
+    @Override
     public List<String> listDirectory(String path) throws AgentException {
         String command = "ls " + path;
         ChannelExec channelExec = null;
@@ -512,6 +524,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     @Override
     public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException {
+        throw new AgentException("Operation not implemented");
+    }
+
+    @Override
+    public FileMetadata getFileMetadata(String remoteFile) throws AgentException {
         throw new AgentException("Operation not implemented");
     }
 

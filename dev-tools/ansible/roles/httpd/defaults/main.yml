@@ -19,19 +19,43 @@
 #
 
 ---
+doc_root_dir: "/var/www/{{ gateway_id }}"
+user_data_dir: "/var/www/user_data"
+# real_user_data_dir is the same as user_data_dir but without symbolic links in it
+real_user_data_dir: "{{ user_data_dir }}"
 httpd_default_conf_file_location:
- RedHat: "/etc/httpd/conf.d/default.conf"
- Debian: "/etc/apache2/sites-available/default.conf"
+ RedHat: "/etc/httpd/conf.d/000-default.conf"
+ Debian: "/etc/apache2/sites-available/000-default.conf"
 httpd_ssl_conf_file_location:
  RedHat: "/etc/httpd/conf.d/ssl.conf"
  # TODO: Debian file layout is different, so we really need a different ssl.conf for Debian
  Debian: "/etc/apache2/mods-available/ssl.conf"
+httpd_default_ssl_vhost_certificate_dir:
+ RedHat: "/etc/httpd/ssl"
+ Debian: "/etc/apache2/ssl"
+httpd_default_ssl_vhost_certificate_location:
+ RedHat: "/etc/httpd/ssl/default_vhost.crt"
+ Debian: "/etc/apache2/ssl/default_vhost.crt"
+httpd_default_ssl_vhost_certificate_key_dir:
+ RedHat: "/etc/httpd/ssl/private"
+ Debian: "/etc/apache2/ssl/private"
+httpd_default_ssl_vhost_certificate_key_location:
+ RedHat: "/etc/httpd/ssl/private/default_vhost.key"
+ Debian: "/etc/apache2/ssl/private/default_vhost.key"
+httpd_name:
+ Debian: apache2
+ RedHat: httpd
 
 httpd_default_conf_template: "default.conf.j2"
 httpd_ssl_conf_template: "ssl.conf.j2"
 
-gateway_data_store_ssh_public_key: ""
-
 httpd_default_http_port: 80
 httpd_default_https_port: 443
+
+# httpd_selinux_mode allowed values:
+# - disabled
+# - enforcing
+# - permissive
+# https://docs.ansible.com/ansible/latest/modules/selinux_module.html#parameter-state
+httpd_selinux_mode: "enforcing"
 ...

@@ -55,11 +55,17 @@ public class ParserWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
 
-    private String parserStorageResourceId = "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e";
+    private String parserStorageResourceId = ServerSettings.getSetting("parser.storage.resource.id");
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(ServerSettings.getSetting("parser.workflow.manager.name"),
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
+    }
+
+    public static void main(String[] args) throws Exception {
+        ParserWorkflowManager manager = new ParserWorkflowManager();
+        manager.init();
+        manager.runConsumer();
     }
 
     private void init() throws Exception {
@@ -87,7 +93,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(completionMessage.getExperimentId(),
                     completionMessage.getGatewayId());
 
-            logger.info("Found " + parsingTemplates.size() + " parsing templated for experiment " + completionMessage.getExperimentId());
+            logger.info("Found " + parsingTemplates.size() + " parsing template for experiment " + completionMessage.getExperimentId());
 
             Map<String, Map<String, Set<ParserConnector>>> parentToChildParsers = new HashMap<>();
 
@@ -117,19 +123,23 @@ public class ParserWorkflowManager extends WorkflowManager {
             for (ParsingTemplate template : parsingTemplates) {
 
                 logger.info("Launching parsing template " + template.getId());
-                String parentParserId = null;
-                for (String parentId : parentToChildParsers.get(template.getId()).keySet()) {
-                    boolean found = false;
-                    for (Set<ParserConnector> dagElements : parentToChildParsers.get(template.getId()).values()) {
-                        Optional<ParserConnector> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
-                        if (first.isPresent()) {
-                            found = true;
+                ParserInput parserInput = registryClient.getParserInput(template.getInitialInputs().get(0).getTargetInputId(), template.getGatewayId());
+                String parentParserId = parserInput.getParserId();
+
+                if (!parentToChildParsers.isEmpty()) {
+                    for (String parentId : parentToChildParsers.get(template.getId()).keySet()) {
+                        boolean found = false;
+                        for (Set<ParserConnector> dagElements : parentToChildParsers.get(template.getId()).values()) {
+                            Optional<ParserConnector> first = dagElements.stream().filter(dagElement -> dagElement.getChildParserId().equals(parentId)).findFirst();
+                            if (first.isPresent()) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            parentParserId = parentId;
                             break;
                         }
-                    }
-                    if (!found) {
-                        parentParserId = parentId;
-                        break;
                     }
                 }
 
@@ -143,8 +153,10 @@ public class ParserWorkflowManager extends WorkflowManager {
 
                 List<AbstractTask> allTasks = new ArrayList<>();
                 allTasks.add(parentParserTask);
-                createParserDagRecursively(allTasks, parentParser, parentParserTask, parentToChildParsers.get(template.getId()), completionMessage, registryClient);
 
+                if (parentToChildParsers.containsKey(template.getId())) {
+                    createParserDagRecursively(allTasks, parentParser, parentParserTask, parentToChildParsers.get(template.getId()), completionMessage, registryClient);
+                }
                 String workflow = getWorkflowOperator().launchWorkflow("Parser-" + completionMessage.getProcessId() + UUID.randomUUID().toString(),
                     allTasks, true, false);
                 // TODO: figure out processId and register
@@ -200,9 +212,14 @@ public class ParserWorkflowManager extends WorkflowManager {
                 String applicationOutputName = templateInput.getApplicationOutputName();
                 try {
                     ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
-                    Optional<OutputDataObjectType> expOutputData = experiment.getExperimentOutputs().stream()
-                            .filter(outputDataObjectType -> outputDataObjectType.getName().equals(applicationOutputName)).findFirst();
-
+                    Optional<OutputDataObjectType> expOutputData;
+                    if (applicationOutputName.contains("*")) {
+                        expOutputData = experiment.getExperimentOutputs().stream()
+                                .filter(outputDataObjectType -> isWildcardMatch(outputDataObjectType.getName(),applicationOutputName)).findFirst();
+                    } else {
+                        expOutputData = experiment.getExperimentOutputs().stream()
+                                .filter(outputDataObjectType -> outputDataObjectType.getName().equals(applicationOutputName)).findFirst();
+                    }
                     if (expOutputData.isPresent()) {
                         input.setValue(expOutputData.get().getValue());
                     } else {
@@ -234,20 +251,60 @@ public class ParserWorkflowManager extends WorkflowManager {
         return parsingTask;
     }
 
-    private String processExpression(String expression, ProcessCompletionMessage completionMessage) {
-        if (expression != null) {
-            if (expression.startsWith("{{") && expression.endsWith("}}")) {
-                switch (expression) {
-                    case "{{experimentId}}":
-                        return completionMessage.getExperimentId();
-                    case "{{processId}}":
-                        return completionMessage.getProcessId();
-                    case "{{gateway}}":
-                        return completionMessage.getGatewayId();
-                }
+    private boolean isWildcardMatch(String s, String p) {
+        int i = 0;
+        int j = 0;
+        int starIndex = -1;
+        int iIndex = -1;
+
+        while (i < s.length()) {
+            if (j < p.length() && (p.charAt(j) == '?' || p.charAt(j) == s.charAt(i))) {
+                ++i;
+                ++j;
+            } else if (j < p.length() && p.charAt(j) == '*') {
+                starIndex = j;
+                iIndex = i;
+                j++;
+            } else if (starIndex != -1) {
+                j = starIndex + 1;
+                i = iIndex+1;
+                iIndex++;
+            } else {
+                return false;
             }
         }
-        return expression;
+        while (j < p.length() && p.charAt(j) == '*') {
+            ++j;
+        }
+        return j == p.length();
+    }
+
+    private String processExpression(String expression, ProcessCompletionMessage completionMessage) throws Exception {
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+        try {
+            if (expression != null) {
+                if (expression.startsWith("{{") && expression.endsWith("}}")) {
+                    switch (expression) {
+                        case "{{experiment}}":
+                            return completionMessage.getExperimentId();
+                        case "{{process}}":
+                            return completionMessage.getProcessId();
+                        case "{{gateway}}":
+                            return completionMessage.getGatewayId();
+                        case "{{user}}":
+                            return registryClient.getProcess(completionMessage.getProcessId()).getUserName();
+                        case "{{project}}":
+                            return registryClient.getExperiment(completionMessage.getExperimentId()).getProjectId();
+                    }
+                }
+            }
+            getRegistryClientPool().returnResource(registryClient);
+            return expression;
+        } catch (Exception e) {
+            getRegistryClientPool().returnBrokenResource(registryClient);
+            throw new Exception("Failed to resolve expression " + expression, e);
+        }
     }
 
     private void createParserDagRecursively(List<AbstractTask> allTasks, Parser parentParserInfo, DataParsingTask parentTask, Map<String, Set<ParserConnector>> parentToChild,

@@ -24,6 +24,9 @@ public class JPAUtils {
         properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
+        // use the following to enable logging of all SQL statements
+        // properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO,
+        // SQL=TRACE");
         properties.put("openjpa.jdbc.SynchronizeMappings", "validate");
         properties.put("openjpa.jdbc.QuerySQLCache", "false");
         properties.put("openjpa.DetachState", "all");
@@ -34,23 +37,27 @@ public class JPAUtils {
 
     /**
      * Create an {@link EntityManagerFactory} with the default settings.
+     * 
      * @param persistenceUnitName
      * @param jdbcConfig
      * @return {@link EntityManagerFactory}
      */
-    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig){
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig) {
 
         return getEntityManagerFactory(persistenceUnitName, jdbcConfig, Collections.emptyMap());
     }
 
     /**
-     * Create an {@link EntityManagerFactory}. The given properties will override the default properties.
+     * Create an {@link EntityManagerFactory}. The given properties will override
+     * the default properties.
+     * 
      * @param persistenceUnitName
      * @param jdbcConfig
      * @param properties
      * @return {@link EntityManagerFactory}
      */
-    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig, Map<String, String> properties) {
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig,
+            Map<String, String> properties) {
 
         Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
         finalProperties.putAll(createConnectionProperties(jdbcConfig));
@@ -58,7 +65,7 @@ public class JPAUtils {
         return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
     }
 
-    private static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
+    public static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
         String connectionProperties = "DriverClassName=" + jdbcConfig.getDriver() + "," + "Url=" + jdbcConfig.getURL()
                 + "?autoReconnect=true," + "Username=" + jdbcConfig.getUser() + "," + "Password="
                 + jdbcConfig.getPassword() + ",validationQuery=" + jdbcConfig.getValidationQuery();

@@ -1,5 +1,4 @@
 /**
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -35,6 +34,7 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_GATEWAY_CUSTOS_CLIENT_ID = "default.gateway.custos.id";
     private static final String ENABLE_SHARING = "enable.sharing";
 
     public static final String IP = "ip";
@@ -64,10 +64,10 @@ public class ServerSettings extends ApplicationSettings {
 
     // Aurora Scheduler Constants
     public static final String AURORA_SCHEDULER_HOSTS = "aurora.scheduler.hosts";
-	public static final String AURORA_EXECUTOR_NAME = "aurora.executor.name";
-	public static final String MESOS_CLUSTER_NAME = "mesos.cluster.name";
-	public static final String AURORA_SCHEDULER_CONNECT_TIMEOUT_MS = "aurora.scheduler.timeoutms";
-	public static final String AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE = "aurora.executor.config.template.filename";
+    public static final String AURORA_EXECUTOR_NAME = "aurora.executor.name";
+    public static final String MESOS_CLUSTER_NAME = "mesos.cluster.name";
+    public static final String AURORA_SCHEDULER_CONNECT_TIMEOUT_MS = "aurora.scheduler.timeoutms";
+    public static final String AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE = "aurora.executor.config.template.filename";
 
     private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
     private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
@@ -97,8 +97,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment.exchange.name";
     public static final String RABBITMQ_PROCESS_LAUNCH_QUEUE_NAME = "process.launch.queue.name";
     public static final String RABBITMQ_EXPERIMENT_LAUNCH_QUEUE_NAME = "experiment.launch.queue.name";
-    public static final String RABBITMQ_DURABLE_QUEUE="durable.queue";
-    public static final String RABBITMQ_PREFETCH_COUNT="prefetch.count";
+    public static final String RABBITMQ_DURABLE_QUEUE = "durable.queue";
+    public static final String RABBITMQ_PREFETCH_COUNT = "prefetch.count";
 
 
     //    Workflow Enactment Service component configuration.
@@ -136,6 +136,13 @@ public class ServerSettings extends ApplicationSettings {
     public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
 
 
+    //Custos Server Settings
+    public static final String CUSTOS_SERVER_HOST = "custos.server.host";
+    public static final String CUSTOS_SERVER_PORT = "custos.server.port";
+    public static final String CUSTOS_CLIENT_ID = "custos.client.id";
+    public static final String CUSTOS_CLIENT_SEC = "custos.client.sec";
+
+
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
 
@@ -162,11 +169,11 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(RABBITMQ_BROKER_URL, "amqp://localhost:5672");
     }
 
-    public static String getRabbitmqStatusExchangeName(){
+    public static String getRabbitmqStatusExchangeName() {
         return getSetting(RABBITMQ_STATUS_EXCHANGE_NAME, "status_exchange");
     }
 
-    public static String getRabbitmqProcessExchangeName(){
+    public static String getRabbitmqProcessExchangeName() {
         return getSetting(RABBITMQ_PROCESS_EXCHANGE_NAME, "process_exchange");
     }
 
@@ -174,11 +181,11 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment_exchange");
     }
 
-    public static boolean getRabbitmqDurableQueue(){
+    public static boolean getRabbitmqDurableQueue() {
         return Boolean.valueOf(getSetting(RABBITMQ_DURABLE_QUEUE, "false"));
     }
 
-    public static int getRabbitmqPrefetchCount(){
+    public static int getRabbitmqPrefetchCount() {
         return Integer.valueOf(getSetting(RABBITMQ_PREFETCH_COUNT, "200"));
     }
 
@@ -231,11 +238,11 @@ public class ServerSettings extends ApplicationSettings {
         }
     }
 
-    public static String getApiServerKeystorePasswd() throws ApplicationSettingsException{
+    public static String getApiServerKeystorePasswd() throws ApplicationSettingsException {
         return getSetting(API_SERVER_KEYSTORE_PASSWD);
     }
 
-    public static String getApiServerKeystore() throws ApplicationSettingsException{
+    public static String getApiServerKeystore() throws ApplicationSettingsException {
         return getSetting(API_SERVER_KEYSTORE);
     }
 
@@ -348,6 +355,28 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(ServerSettings.IAM_SERVER_SUPER_ADMIN_PASSWORD);
     }
 
+
+    public static String getCustosServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.CUSTOS_SERVER_HOST);
+    }
+
+    public static int getCustosServerPort() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(ServerSettings.CUSTOS_SERVER_PORT));
+    }
+
+    public static String getCustosClientId() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.CUSTOS_CLIENT_ID);
+    }
+
+    public static String getCustosClientSec() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.CUSTOS_CLIENT_SEC);
+    }
+
+    public static String getDefaultGatewayCustosClientId() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.DEFAULT_GATEWAY_CUSTOS_CLIENT_ID);
+    }
+
+
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
     }
@@ -447,6 +476,7 @@ public class ServerSettings extends ApplicationSettings {
     public static Boolean isEnableSharing() throws ApplicationSettingsException {
         return Boolean.parseBoolean(getSetting(ENABLE_SHARING));
     }
+
     public static boolean isRunningOnAws() {
         return Boolean.valueOf(getSetting(IS_RUNNING_ON_AWS, "false"));
     }
@@ -470,25 +500,25 @@ public class ServerSettings extends ApplicationSettings {
     public static String[] getServerRoles() {
         return listConfigurations.get(SERVER_ROLES);
     }
-    
+
     public static String getAuroraSchedulerHosts() throws ApplicationSettingsException {
-    	return getSetting(AURORA_SCHEDULER_HOSTS);
+        return getSetting(AURORA_SCHEDULER_HOSTS);
     }
-    
+
     public static String getMesosClusterName() throws ApplicationSettingsException {
-    	return getSetting(MESOS_CLUSTER_NAME);
+        return getSetting(MESOS_CLUSTER_NAME);
     }
-    
+
     public static String getAuroraExecutorName() throws ApplicationSettingsException {
-    	return getSetting(AURORA_EXECUTOR_NAME);
+        return getSetting(AURORA_EXECUTOR_NAME);
     }
-    
+
     public static String getAuroraExecutorConfigTemplateFileName() throws ApplicationSettingsException {
-    	return getSetting(AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE);
+        return getSetting(AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE);
     }
-    
+
     public static int getAuroraSchedulerTimeout() throws ApplicationSettingsException {
-    	return Integer.valueOf(getSetting(AURORA_SCHEDULER_CONNECT_TIMEOUT_MS));
+        return Integer.valueOf(getSetting(AURORA_SCHEDULER_CONNECT_TIMEOUT_MS));
     }
 
     public static int getSessionCacheAccessTimeout() {
@@ -501,5 +531,9 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getSharingRegistryHost() {
         return getSetting(SHARING_REGISTRY_HOST, "localhost");
+    }
+
+    public static Boolean isSteamingEnabled() {
+        return Boolean.valueOf(getSetting(Constants.ENABLE_STREAMING_TRANSFER, "True"));
     }
 }

@@ -35,6 +35,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -81,15 +82,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Column(name = "QUALITY_OF_SERVICE")
     private String qualityOfService;
 
-    @Column(name = "RESERVATION")
-    private String reservation;
-
-    @Column(name = "RESERVATION_END_TIME")
-    private Timestamp reservationEndTime;
-
-    @Column(name = "RESERVATION_START_TIME")
-    private Timestamp reservationStartTime;
-
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceSpecificCredentialStoreToken;
 
@@ -108,7 +100,11 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @OneToMany(targetEntity = GroupSSHAccountProvisionerConfig.class, mappedBy = "groupComputeResourcePref", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
+    @OneToMany(targetEntity = ComputeResourceReservationEntity.class, mappedBy = "groupComputeResourcePref", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OrderBy("startTime ASC")
+    private List<ComputeResourceReservationEntity> reservations;
+
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
     @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private  GroupResourceProfileEntity groupResourceProfile;
@@ -188,30 +184,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
         this.qualityOfService = qualityOfService;
     }
 
-    public String getReservation() {
-        return reservation;
-    }
-
-    public void setReservation(String reservation) {
-        this.reservation = reservation;
-    }
-
-    public Timestamp getReservationEndTime() {
-        return reservationEndTime;
-    }
-
-    public void setReservationEndTime(Timestamp reservationEndTime) {
-        this.reservationEndTime = reservationEndTime;
-    }
-
-    public Timestamp getReservationStartTime() {
-        return reservationStartTime;
-    }
-
-    public void setReservationStartTime(Timestamp reservationStartTime) {
-        this.reservationStartTime = reservationStartTime;
-    }
-
     public String getResourceSpecificCredentialStoreToken() {
         return resourceSpecificCredentialStoreToken;
     }
@@ -258,6 +230,14 @@ public class GroupComputeResourcePrefEntity implements Serializable {
 
     public void setGroupSSHAccountProvisionerConfigs(List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs) {
         this.groupSSHAccountProvisionerConfigs = groupSSHAccountProvisionerConfigs;
+    }
+
+    public List<ComputeResourceReservationEntity> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<ComputeResourceReservationEntity> reservations) {
+        this.reservations = reservations;
     }
 
     public GroupResourceProfileEntity getGroupResourceProfile() {

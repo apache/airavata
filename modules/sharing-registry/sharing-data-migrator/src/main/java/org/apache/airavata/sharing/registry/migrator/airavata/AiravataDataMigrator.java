@@ -38,12 +38,22 @@ import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.Status;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.security.AiravataSecurityException;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.security.AiravataSecurityManager;
+import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 
 import java.sql.Connection;
@@ -72,6 +82,7 @@ public class AiravataDataMigrator {
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
         CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
+        IamAdminServices.Client iamAdminServiceClient = getIamAdminServiceClient();
 
         String query = "SELECT * FROM GATEWAY" + gatewayWhereClause;
         Statement statement = expCatConnection.createStatement();
@@ -204,17 +215,19 @@ public class AiravataDataMigrator {
             } else {
                 continue;
             }
-
             if (registryServiceClient.isGatewayGroupsExists(domain.getDomainId())) {
                 GatewayGroups gatewayGroups = registryServiceClient.getGatewayGroups(domain.getDomainId());
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
             } else {
-
                 GatewayGroups gatewayGroups = migrateRolesToGatewayGroups(domain, ownerId, sharingRegistryServerHandler, registryServiceClient);
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
             }
+            //find all the active users in keycloak that do not exist in sharing registry service and migrate them to the database
+            AuthzToken authzToken_of_management_user = getManagementUsersAccessToken(domain.getDomainId());
+            List<UserProfile> missingUsers = getUsersToMigrate(sharingRegistryServerHandler, iamAdminServiceClient, authzToken_of_management_user, null, domain.getDomainId());
+            migrateKeycloakUsersToGateway(iamAdminServiceClient, authzToken_of_management_user, missingUsers);
+            addUsersToGroups(sharingRegistryServerHandler, missingUsers, gatewayGroupsMap.get(domain.getDomainId()), domain.getDomainId());
         }
-
         //Creating project entries
         query = "SELECT * FROM PROJECT" + gatewayWhereClause;
         statement = expCatConnection.createStatement();
@@ -323,7 +336,7 @@ public class AiravataDataMigrator {
         // Migrating from GatewayResourceProfile to GroupResourceProfile
         for (String domainID : domainOwnerMap.keySet()) {
             GatewayGroups gatewayGroups = gatewayGroupsMap.get(domainID);
-            if (needsGroupResourceProfileMigration(domainID, registryServiceClient)) {
+            if (needsGroupResourceProfileMigration(domainID, domainOwnerMap.get(domainID), registryServiceClient, sharingRegistryServerHandler)) {
 
                 GroupResourceProfile groupResourceProfile = migrateGatewayResourceProfileToGroupResourceProfile(domainID, registryServiceClient);
 
@@ -352,7 +365,7 @@ public class AiravataDataMigrator {
                 entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                 entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(credentialSummary.getToken());
-                entity.setDescription(credentialSummary.getDescription());
+                entity.setDescription(maxLengthString(credentialSummary.getDescription(), 255));
                 if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                     sharingRegistryServerHandler.createEntity(entity);
                 if (gatewayGroupsMap.containsKey(entity.getDomainId())) {
@@ -367,8 +380,7 @@ public class AiravataDataMigrator {
             for (User sharingUser : sharingUsers) {
 
                 String userId = sharingUser.getUserId();
-                int index = userId.lastIndexOf("@");
-                if (index <= 0) {
+                if (!userId.endsWith("@" + domainID)) {
                     System.out.println("Skipping credentials for user " + userId + " since sharing user id is improperly formed");
                     continue;
                 }
@@ -381,7 +393,8 @@ public class AiravataDataMigrator {
                     entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                     entity.setOwnerId(userId);
                     entity.setName(credentialSummary.getToken());
-                    entity.setDescription(credentialSummary.getDescription());
+                    // Cap description length at max 255 characters
+                    entity.setDescription(maxLengthString(credentialSummary.getDescription(), 255));
                     if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                         sharingRegistryServerHandler.createEntity(entity);
                     // Don't need to share USER SSH tokens with any group
@@ -398,7 +411,7 @@ public class AiravataDataMigrator {
                 entity.setEntityTypeId(entity.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
                 entity.setOwnerId(domainOwnerMap.get(domainID));
                 entity.setName(gatewayPasswordEntry.getKey());
-                entity.setDescription(gatewayPasswordEntry.getValue());
+                entity.setDescription(maxLengthString(gatewayPasswordEntry.getValue(), 255));
                 if (!sharingRegistryServerHandler.isEntityExists(entity.getDomainId(), entity.getEntityId()))
                     sharingRegistryServerHandler.createEntity(entity);
                 if (gatewayGroupsMap.containsKey(entity.getDomainId())) {
@@ -432,6 +445,89 @@ public class AiravataDataMigrator {
                 entity.getDomainId() + ":" + ResourcePermissionType.WRITE, cascadePermission);
     }
 
+    private static List<UserProfile> getUsersToMigrate(SharingRegistryServerHandler sharingRegistryServerHandler, IamAdminServices.Client adminServiceClient, AuthzToken authzToken, String search, String domainId) throws TException {
+
+        List<UserProfile> missingUsers = new ArrayList<>();
+        List<UserProfile> keycloakUsers = adminServiceClient.getUsers(authzToken, 0, -1, search);
+
+        for (UserProfile profile : keycloakUsers) {
+            if (profile.getState().equals(Status.ACTIVE) && !sharingRegistryServerHandler.isUserExists(domainId, profile.getAiravataInternalUserId())) {
+                missingUsers.add(profile);
+            }
+        }
+        return missingUsers;
+    }
+
+    private static boolean migrateKeycloakUsersToGateway(IamAdminServices.Client adminServiceClient,AuthzToken authzToken, List<UserProfile> missingUsers) throws TException{
+
+        boolean allUsersUpdated = true;
+        for(UserProfile profile: missingUsers) {
+                allUsersUpdated &= adminServiceClient.enableUser(authzToken, profile.getUserId());
+            }
+        return allUsersUpdated;
+    }
+    private static void checkUsersInSharingRegistryService(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId) throws TException{
+        System.out.println("Waiting for " + missingUsers.size() + " missing users to be propogated to sharing db");
+        int waitCount = 0;
+        // Wait up to 10 seconds for event based replication to complete, then
+        // add missing users to sharing registry
+        while (waitCount < 10) {
+            boolean missingInSharing = false;
+            for (UserProfile users : missingUsers) {
+                if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
+                    missingInSharing = true;
+                    break;
+                }
+            }
+            if (!missingInSharing) {
+                break;
+            }
+            try {
+                System.out.print(".");
+                // wait for 1 second
+                Thread.sleep(1000);
+                waitCount++;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (UserProfile users : missingUsers) {
+            if (!sharingRegistryServerHandler.isUserExists(domainId, users.getAiravataInternalUserId())) {
+                sharingRegistryServerHandler.createUser(ThriftDataModelConversion.getUser(users));
+            }
+        }
+    }
+    private static boolean addUsersToGroups(SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, GatewayGroups gatewayGroups, String domainId) throws TException, ApplicationSettingsException{
+        //before adding to groups make sure sharing registry has the user otherwise add it
+        checkUsersInSharingRegistryService(sharingRegistryServerHandler, missingUsers, domainId);
+        boolean updatedAllUsers = true;
+        Map<String, List<String>> roleMap = loadRolesForUsers(domainId, missingUsers
+                .stream()
+                .map(user -> user.getAiravataInternalUserId().substring(0, user.getAiravataInternalUserId().lastIndexOf("@")))
+                .collect(Collectors.toList()));
+        if(roleMap.containsKey("gateway-user")){
+            List<String> userIds = roleMap.get("gateway-user").stream()
+                    .map(username -> username + "@" + domainId)
+                    .collect(Collectors.toList());
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, userIds, gatewayGroups.getDefaultGatewayUsersGroupId());
+        }
+        if(roleMap.containsKey("admin")){
+            List<String> userIds = roleMap.get("admin").stream()
+                    .map(username -> username + "@" + domainId)
+                    .collect(Collectors.toList());
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, userIds, gatewayGroups.getAdminsGroupId());
+        }
+        if(roleMap.containsKey("admin-read-only")){
+            List<String> userIds = roleMap.get("admin-read-only").stream()
+                    .map(username -> username + "@" + domainId)
+                    .collect(Collectors.toList());
+            updatedAllUsers &= sharingRegistryServerHandler.addUsersToGroup(domainId, userIds, gatewayGroups.getReadOnlyAdminsGroupId());
+        }
+
+        return updatedAllUsers;
+    }
+
     private static GatewayGroups migrateRolesToGatewayGroups(Domain domain, String ownerId, SharingRegistryServerHandler sharingRegistryServerHandler, RegistryService.Client registryServiceClient) throws TException, ApplicationSettingsException {
         GatewayGroups gatewayGroups = new GatewayGroups();
         gatewayGroups.setGatewayId(domain.getDomainId());
@@ -439,8 +535,8 @@ public class AiravataDataMigrator {
         // Migrate roles to groups
         List<String> usernames = sharingRegistryServerHandler.getUsers(domain.getDomainId(), 0, -1)
                 .stream()
-                // Filter out bad ids that don't have an "@" in them
-                .filter(user -> user.getUserId().lastIndexOf("@") > 0)
+                // Filter out bad user ids that don't end in "@" + domainId
+                .filter(user -> user.getUserId().endsWith("@" + domain.getDomainId()))
                 .map(user -> user.getUserId().substring(0, user.getUserId().lastIndexOf("@")))
                 .collect(Collectors.toList());
         Map<String, List<String>> roleMap = loadRolesForUsers(domain.getDomainId(), usernames);
@@ -553,10 +649,19 @@ public class AiravataDataMigrator {
         return userGroup;
     }
 
-    private static boolean needsGroupResourceProfileMigration(String gatewayId, RegistryService.Client registryServiceClient) throws TException {
+    private static boolean needsGroupResourceProfileMigration(String gatewayId, String domainOwnerId, RegistryService.Client registryServiceClient, SharingRegistryServerHandler sharingRegistryServerHandler)
+            throws TException {
         // Return true if GatewayResourceProfile has at least one ComputeResourcePreference and there is no GroupResourceProfile
         List<ComputeResourcePreference> computeResourcePreferences = registryServiceClient.getAllGatewayComputeResourcePreferences(gatewayId);
-        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, Collections.emptyList());
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+        searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+        searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+        List<String> accessibleGRPIds = sharingRegistryServerHandler.searchEntities(gatewayId, domainOwnerId, Collections.singletonList(searchCriteria), 0, -1)
+                .stream()
+                .map(p -> p.getEntityId())
+                .collect(Collectors.toList());
+        List<GroupResourceProfile> groupResourceProfiles = registryServiceClient.getGroupResourceList(gatewayId, accessibleGRPIds);
         return !computeResourcePreferences.isEmpty() && groupResourceProfiles.isEmpty();
     }
 
@@ -636,6 +741,15 @@ public class AiravataDataMigrator {
         return s != null && !"".equals(s.trim());
     }
 
+    private static String maxLengthString(String s, int maxLength) {
+
+        if (s != null) {
+            return s.substring(0, Math.min(maxLength, s.length()));
+        } else {
+            return null;
+        }
+    }
+
     private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
         final String serverHost = ServerSettings.getCredentialStoreServerHost();
@@ -656,4 +770,24 @@ public class AiravataDataMigrator {
         }
     }
 
+    private static IamAdminServices.Client getIamAdminServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+        final String serverHost = ServerSettings.getProfileServiceServerHost();
+        try {
+            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
+        } catch (IamAdminServicesException e) {
+            throw new TException("Unable to create i am admin service client...", e);
+        }
+    }
+
+    private static AuthzToken getManagementUsersAccessToken(String tenantId) throws TException{
+        try {
+            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+            AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
+            return authzToken;
+        } catch (AiravataSecurityException e){
+            throw new TException("Unable to fetch access token for management user for tenant: " + tenantId, e);
+        }
+
+    }
 }

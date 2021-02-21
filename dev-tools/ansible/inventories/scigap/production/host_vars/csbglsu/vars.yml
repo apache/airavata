@@ -1,0 +1,51 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "sciencegateway.brylinski.org"
+vhost_server_redirect: "www.sciencegateway.brylinski.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.brylinski.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "lsu-computational-sys-biology"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "LSU Computational Sys Biology"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "lsu-computational-sys-biology"
+experiment_data_dir: "{{ user_data_dir }}/lsu-computational-sys-biology"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDc/WQnD40zGuO+bIMsWc0ey8oxDzEj/dPFPg8LN7oNn/V7pi74mF2D57wgA8KsxcpsNydcReSXZhx6FynlK6iABDZP5QdREmhm87gkrMQUA/ZI7R2q7ekchbRtCnrGwU/pdHBh4penaiScs08o7OPfqJJp/TfgwH92dA9dThqGf9hD1Y0nmWECfvX56rXAggcgZl+Q6IFD0VFinFMkqZRWFFi4Zm7yiKCNWYXvXlIGjFOlDp0/ONGg5wjpCFivhI934Uk6Y69hSMhnFJc6g1JHD4PLaBILlUjwEikmH6KL3ii6Wt30pou+tIihBDBv0ODR4jDiOeBJGkcisWeh3Uzj"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Michal Brylinski', 'mbrylinski@lsu.edu')]"
+portal_title: "LSU Computational Sys Biology"
+
+django_google_analytics_tracking_id: "UA-117484529-1"
+
+...

@@ -1,5 +1,4 @@
 /**
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,60 +20,102 @@ package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.common.utils.CustosToAiravataDataModelMapper;
+import org.apache.airavata.common.utils.CustosUtils;
+import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
+import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.custos.iam.service.FindUsersResponse;
+import org.apache.custos.iam.service.OperationStatus;
+import org.apache.custos.iam.service.RegisterUserResponse;
+import org.apache.custos.iam.service.UserRepresentation;
+import org.apache.custos.resource.secret.management.client.ResourceSecretManagementClient;
+import org.apache.custos.resource.secret.service.AddResourceCredentialResponse;
+import org.apache.custos.tenant.management.service.CreateTenantResponse;
+import org.apache.custos.tenant.manamgement.client.TenantManagementClient;
+import org.apache.custos.user.management.client.UserManagementClient;
+import org.apache.custos.user.profile.service.GetAllUserProfilesResponse;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
+    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
+
+    private UserManagementClient userManagementClient;
+    private TenantManagementClient tenantManagementClient;
+    private ResourceSecretManagementClient resourceSecretManagementClient;
+
+    public IamAdminServicesHandler() {
+        try {
+            userManagementClient = CustosUtils.getCustosClientProvider().getUserManagementClient();
+            tenantManagementClient = CustosUtils.getCustosClientProvider().getTenantManagementClient();
+            resourceSecretManagementClient = CustosUtils.getCustosClientProvider().getResourceSecretManagementClient();
+
+        } catch (Exception ex) {
+            logger.error("Error while initiating Custos User management client ");
+        }
+    }
 
     @Override
     public String getAPIVersion() throws TException {
         return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
+
     @Override
     @SecurityCheck
-    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
+    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException, TException {
         try {
-            keycloakclient.addTenant(isSuperAdminCredentials, gateway);
+            String[] contacts = {gateway.getEmailAddress()};
+            String comment = "Airavata gateway internal id " + gateway.getGatewayId();
 
-            // Load the tenant admin password stored in gateway request
-            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
-            // Admin password token should already be stored under requested gateway's gatewayId
-            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
-
-            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway, tenantAdminPasswordCredential.getPassword())) {
-                logger.error("Admin account creation failed !!, please refer error logs for reason");
+            String domain = gateway.getDomain();
+            if (gateway.getDomain() == null || gateway.getDomain().trim().equals("")) {
+                String gatewayURL = gateway.getGatewayURL();
+                domain = gatewayURL.substring(gatewayURL.lastIndexOf("://"), gatewayURL.lastIndexOf("/"));
             }
-            Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
-            return gatewayWithIdAndSecret;
-        } catch (TException|ApplicationSettingsException ex) {
-            logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
+            String adminPassword = getAdminPassword(authzToken, gateway);
+            CreateTenantResponse response = tenantManagementClient.registerTenant(gateway.getGatewayName(),
+                    gateway.getRequesterUsername(),
+                    gateway.getGatewayAdminFirstName(),
+                    gateway.getGatewayAdminLastName(),
+                    gateway.getEmailAddress(),
+                    gateway.getIdentityServerUserName(),
+                    adminPassword,
+                    contacts,
+                    gateway.getRedirectURLs().toArray(new String[gateway.getRedirectURLs().size()]),
+                    gateway.getGatewayURL(),
+                    gateway.getScope(),
+                    domain,
+                    gateway.getGatewayURL(),
+                    comment);
+
+            copyAdminPasswordToGateway(authzToken, gateway, response.getClientId());
+            gateway.setOauthClientId(response.getClientId());
+            gateway.setOauthClientSecret(response.getClientSecret());
+
+            dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, gateway);
+
+            return gateway;
+        } catch (Exception e) {
+            logger.error("Gateway creating error, reason: " + e.getMessage(), e);
+            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(e.getMessage());
             throw iamAdminServicesException;
         }
     }
@@ -82,24 +123,32 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public boolean isUsernameAvailable(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
+        try {
+            String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+            OperationStatus status =
+                    userManagementClient.isUsernameAvailable(username, custosId);
+            return status.getStatus();
+        } catch (Exception e) {
+            logger.error("Username checking error, reason: " + e.getMessage(), e);
+            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(e.getMessage());
+            throw iamAdminServicesException;
+        }
     }
 
     //ToDo: Will only be secure when using SSL between PGA and Airavata
     @Override
     @SecurityCheck
     public boolean registerUser(AuthzToken authzToken, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException, AuthorizationException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
         try {
-            if (keycloakclient.createUser(authzToken.getAccessToken(), gatewayId, username, emailAddress, firstName, lastName, newPassword))
-                return true;
-            else
-                return false;
-        } catch (TException ex) {
-            String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
+            RegisterUserResponse response = userManagementClient.registerUser(username,
+                    firstName, lastName, newPassword, emailAddress, false, custosId);
+
+            return response.getIsRegistered();
+
+        } catch (Exception ex) {
+            String msg = "Error while registering user into Custos Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
         }
@@ -108,16 +157,24 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username))
+            UserRepresentation representation = userManagementClient.enableUser(username, custosId);
+            if (representation != null && representation.getUsername() != null && !
+                    representation.getUsername().trim().equals("")) {
+
+                UserProfile profile = CustosToAiravataDataModelMapper.transform(representation, gatewayId);
+                profile.setAiravataInternalUserId(profile.getUserId() + "@" + gatewayId);
+                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, profile);
                 return true;
-            else
-                return false;
-        } catch (TException ex) {
-            String msg = "Error while enabling user account, reason: " + ex.getMessage();
-            logger.error(msg, ex);
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            String msg = "Error while enabling user account, reason: " + e.getMessage();
+            logger.error(msg, e);
             throw new IamAdminServicesException(msg);
         }
     }
@@ -125,10 +182,10 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public boolean isUserEnabled(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         try {
-            return keycloakclient.isUserAccountEnabled(authzToken.getAccessToken(), gatewayId, username);
+            OperationStatus status = userManagementClient.isUserEnabled(username, custosId);
+            return status.getStatus();
         } catch (Exception ex) {
             String msg = "Error while checking if user account is enabled, reason: " + ex.getMessage();
             logger.error(msg, ex);
@@ -139,10 +196,16 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public boolean isUserExist(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
         try {
-            return keycloakclient.isUserExist(authzToken.getAccessToken(), gatewayId, username);
+            FindUsersResponse response = userManagementClient.
+                    findUsers(null, username, null, null, null, 0, 1, custosId);
+            if (!response.getUsersList().isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception ex) {
             String msg = "Error while checking if user account exists, reason: " + ex.getMessage();
             logger.error(msg, ex);
@@ -153,10 +216,12 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public UserProfile getUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            return keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
+            UserRepresentation userRepresentation = userManagementClient.getUser(username, custosId);
+            return CustosToAiravataDataModelMapper.transform(userRepresentation, gatewayId);
+
         } catch (Exception ex) {
             String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
             logger.error(msg, ex);
@@ -169,10 +234,18 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @SecurityCheck
     public List<UserProfile> getUsers(AuthzToken authzToken, int offset, int limit, String search)
             throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            return keycloakclient.getUsers(authzToken.getAccessToken(), gatewayId, offset, limit, search);
+            FindUsersResponse response = userManagementClient.findUsers(search, null,
+                    null, null, null, offset, limit, custosId);
+            List<UserProfile> userProfiles = new ArrayList<>();
+            if (response.getUsersList() != null && !response.getUsersList().isEmpty()) {
+                for (UserRepresentation representation : response.getUsersList()) {
+                    userProfiles.add(CustosToAiravataDataModelMapper.transform(representation, gatewayId));
+                }
+            }
+            return userProfiles;
         } catch (Exception ex) {
             String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
             logger.error(msg, ex);
@@ -183,14 +256,12 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         try {
-            if (keycloakclient.resetUserPassword(authzToken.getAccessToken(), gatewayId, username, newPassword))
-                return true;
-            else
-                return false;
-        } catch (TException ex) {
+            OperationStatus status = userManagementClient.resetUserPassword(username, newPassword, custosId);
+            return status.getStatus();
+
+        } catch (Exception ex) {
             String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -200,11 +271,19 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public List<UserProfile> findUsers(AuthzToken authzToken, String email, String userId) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            return keycloakclient.findUser(authzToken.getAccessToken(), gatewayId, email, userId);
-        } catch (TException ex) {
+            FindUsersResponse response = userManagementClient.findUsers(null, userId,
+                    null, null, email, 0, -1, custosId);
+            List<UserProfile> userProfiles = new ArrayList<>();
+            if (response.getUsersList() != null && !response.getUsersList().isEmpty()) {
+                for (UserRepresentation representation : response.getUsersList()) {
+                    userProfiles.add(CustosToAiravataDataModelMapper.transform(representation, gatewayId));
+                }
+            }
+            return userProfiles;
+        } catch (Exception ex) {
             String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -214,109 +293,148 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails) throws IamAdminServicesException, AuthorizationException, TException {
-
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String username = userDetails.getUserId();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-
-        keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        try {
+            userManagementClient.updateUserProfile(userDetails.getUserId(),
+                    userDetails.getFirstName(),
+                    userDetails.getLastName(),
+                    userDetails.getEmails().get(0),
+                    custosId);
+        } catch (Exception ex) {
+            String msg = "Error while updating user profile in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
     }
 
     @Override
     @SecurityCheck
     public boolean deleteUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
-
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-
-        return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
-    }
-
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         try {
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            return keycloakclient.addRoleToUser(isRealmAdminCredentials, gatewayId, username, roleName);
-        } catch (TException | ApplicationSettingsException ex) {
-            String msg = "Error while adding role to user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
-    }
 
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            return keycloakclient.removeRoleFromUser(isRealmAdminCredentials, gatewayId, username, roleName);
-        } catch (TException | ApplicationSettingsException ex) {
-            String msg = "Error while removing role from user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
-
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            return keycloakclient.getUsersWithRole(isRealmAdminCredentials, gatewayId, roleName);
+            OperationStatus status = userManagementClient.deleteUser(username, custosId, authzToken.getAccessToken());
+            return status.getStatus();
         } catch (Exception ex) {
-            String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
         }
     }
 
-    private PasswordCredential getSuperAdminPasswordCredential() {
-        PasswordCredential isSuperAdminCredentials = new PasswordCredential();
+    @Override
+    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         try {
-            isSuperAdminCredentials.setLoginUserName(ServerSettings.getIamServerSuperAdminUsername());
-            isSuperAdminCredentials.setPassword(ServerSettings.getIamServerSuperAdminPassword());
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to get settings for IAM super admin username/password", e);
-        }
-        return isSuperAdminCredentials;
-    }
+            String[] usernames = {username};
+            String[] roles = {roleName};
 
-    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
 
-        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
+            OperationStatus status = userManagementClient.addRolesToUsers(roles, usernames, false, custosId, authzToken.getAccessToken());
 
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
-    }
-
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
+            return status.getStatus();
+        } catch (Exception ex) {
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
         }
     }
 
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+    @Override
+    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
         try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
+            String[] roles = {roleName};
+            String[] clientRoles = {};
+
+            OperationStatus status = userManagementClient.deleteUserRoles(clientRoles, roles, username, custosId, authzToken.getAccessToken());
+
+            return status.getStatus();
+        } catch (Exception ex) {
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
         }
     }
+
+    @Override
+    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+        String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+
+            GetAllUserProfilesResponse response = userManagementClient.getAllUserProfiles(custosId);
+
+            List<org.apache.custos.user.profile.service.UserProfile> userProfileList = response.getProfilesList();
+
+            List<org.apache.custos.user.profile.service.UserProfile> selectedList = new ArrayList<>();
+
+            List<UserProfile> profiles = new ArrayList<>();
+
+            if (userProfileList != null && !userProfileList.isEmpty()) {
+
+                for (org.apache.custos.user.profile.service.UserProfile profile : userProfileList) {
+                    if (profile.getRealmRolesList() != null && !profile.getRealmRolesList().isEmpty()) {
+                        for (String realmRole : profile.getRealmRolesList()) {
+                            if (realmRole.equals(roleName)) {
+                                selectedList.add(profile);
+                            }
+                        }
+                    }
+
+                }
+
+                for (org.apache.custos.user.profile.service.UserProfile profile : selectedList) {
+                    profiles.add(CustosToAiravataDataModelMapper.transform(profile, gatewayId));
+                }
+
+
+            }
+
+            return profiles;
+        } catch (Exception ex) {
+            String msg = "Error while deleting user  in Identity Server, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+
+
+    }
+
+    private String getAdminPassword(AuthzToken authzToken, Gateway gateway) throws TException, ApplicationSettingsException {
+        try {
+            String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
+            org.apache.custos.resource.secret.service.PasswordCredential passwordCredential =
+                    resourceSecretManagementClient.getPasswordCredential(custosId, gateway.getIdentityServerPasswordToken());
+
+            return passwordCredential.getPassword();
+        } catch (Exception ex) {
+            logger.error("Unable to fetch admin password credential, reason: " + ex.getMessage(), ex);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage("Unable to fetch admin password credential, reason: " + ex.getMessage());
+            throw exception;
+        }
+    }
+
+    private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway, String createdGatewayCustosId) throws TException, ApplicationSettingsException {
+        try {
+            String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
+
+            org.apache.custos.resource.secret.service.PasswordCredential passwordCredential =
+                    resourceSecretManagementClient.getPasswordCredential(custosId, gateway.getIdentityServerPasswordToken());
+
+            AddResourceCredentialResponse response = resourceSecretManagementClient.addPasswordCredential(createdGatewayCustosId,
+                    passwordCredential.getMetadata().getDescription(),
+                    gateway.getIdentityServerUserName(),
+                    passwordCredential.getPassword());
+            gateway.setIdentityServerPasswordToken(response.getToken());
+        } catch (Exception ex) {
+            logger.error("Unable to save admin password credential, reason: " + ex.getMessage(), ex);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage("Unable to save admin password credential, reason: " + ex.getMessage());
+            throw exception;
+        }
+    }
+
 }

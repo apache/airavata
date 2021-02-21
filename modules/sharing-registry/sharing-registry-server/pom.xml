@@ -25,7 +25,7 @@
         <artifactId>airavata-sharing-registry</artifactId>
         <groupId>org.apache.airavata</groupId>
         <relativePath>../pom.xml</relativePath>
-        <version>0.19-SNAPSHOT</version>
+        <version>0.20-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
-            <version>5.4.0</version>
+            <version>${dozer.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -89,8 +89,21 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messaging-core</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.custos</groupId>
+            <artifactId>custos-java-sdk</artifactId>
+            <version>${org.apache.custos.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -98,10 +111,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>11</release>
+                    <source>9</source>
+                    <target>9</target>
+                    <!--<compilerArgs>-->
+                        <!--<arg>&#45;&#45;add-opens=java.base/java.lang=ALL-UNNAMED</arg>-->
+                    <!--</compilerArgs>-->
+                    <!--<fork>true</fork>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -128,6 +146,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.openjpa</groupId>
+                        <artifactId>openjpa</artifactId>
+                        <version>${openjpa.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

@@ -27,6 +27,7 @@ regserver.server.port={{ registry_port }}
 ###########################################################################
 credential.store.server.host={{ cred_store_server_host }}
 credential.store.server.port={{ cred_store_port }}
+security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
 
 ###########################################################################
 # Profile Server Configuration
@@ -80,4 +81,29 @@ kafka.parsing.broker.publisher.id={{ parser_broker_publisher_id }}
 ###########################################################################
 # Job Submission Task Level Configurations
 ###########################################################################
-enable.realtime.monitor=False
+enable.realtime.monitor=true
+
+local.data.location={{ local_data_location }}
+
+###########################################################################
+# Data Parsing Task Level Configurations
+###########################################################################
+data.parser.delete.container=True
+
+###########################################################################
+# Data Staging Task Level Configurations
+###########################################################################
+enable.streaming.transfer=False
+
+###########################################################################
+# ThriftClientPool Configuration
+###########################################################################
+thrift.client.pool.abandoned.removal.enabled={{ thrift_client_pool_abandoned_removal_enabled }}
+thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_removal_logged }}
+
+###########################################################################
+# Usage Reporting Configuration
+###########################################################################
+
+usage.reporting.key={{ usage_reporting_key }}
+usage.reporting.endpoint=https://xsede-xdcdb-api.xsede.org/gateway/v2/job_attributes

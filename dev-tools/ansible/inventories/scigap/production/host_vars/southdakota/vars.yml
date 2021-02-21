@@ -1,0 +1,49 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "sciencegateway.usd.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/sciencegateway.usd.edu.key"
+
+## Keycloak related variables
+tenant_domain: "southdakota"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Created Gateway Account (Users without University Account)"
+  external:
+    - name: "University Account"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "southdakota"
+experiment_data_dir: "{{ user_data_dir }}/southdakota"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIUqpKWHwawFHnbWvs6pie+fDA9NlqMZNvzil7e8FQz7543+FOzdTl/octACjGnSTwHewpyTe9sAUVcnq6VJ5XYtApR68zMasEzyCZUMWhMqEuxopRZcUGDJVcq5hD4RZcer3aMPWSVmXVCNJeT4EsB52Zp2DfDVgfaOOfY8Ga4mcR2IdOyizV8HWXTH6vWFK+dD1GoPY0ECikwlsF1QA0vzqAcb1NYOTc70hZ9Pb0/78XF790joZ80hRsHGIc7IfncoLgRUkKSkMaoXbfy/tbqf76V0ZxaQOgayaLGF19oBlREO6ZQ3rDCOWgVJC32dCwAsaL9qWd0IZrprUEUQOd"
+
+admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Adison Kleinsasser','Adison.Kleinsasser@usd.edu'),('Bill James','CBill.Conn@usd.edu'),('Luke Gassman','luke.gassman@sdstate.edu')]"
+portal_title: "University of South Dakota Gateway"
+
+django_google_analytics_tracking_id: "UA-111528347-1"
+...

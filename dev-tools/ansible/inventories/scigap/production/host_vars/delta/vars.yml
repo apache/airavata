@@ -1,0 +1,56 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# NOTE: Delta gateway is deployed to a Jetstream VM
+
+gateway_data_store_hostname: "delta-topology.org"
+gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07ea-41fc-9f2e-104bc3061318"
+#django_tus_endpoint: "https://tus.scigap.org/files/" this requires manual installation steps outside of Ansible.
+django_tus_endpoint:
+
+vhost_servername: "delta-topology.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/delta-topology.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/delta-topology.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/delta-topology.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "delta"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "DELTA Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "delta"
+experiment_data_dir: "{{ user_data_dir }}/delta"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLjM9LkUfp7WEBCAOKn4+2JmOHqCNnOt8ZKa5LZYi6DerREMH1oaiDBwrOd8LEL6bC1Ac6X7aA7tz6Z3F8rM6czVKUVeGcfUglPFj7fNqetIY4R5hkidLBkXrOiR9fPFDyiBJnG+/WIlJm4HJN3dM2jzlcGcx5O0syXdgDY5lM2mgKCmhG/Q6qt3/GxZ/DtG2QV5tV3cLTaufncFoyNtBthnVzVagnJ+4tnWsEEv/S2RZDA09LHALH/51zrcLIyRRMD/qNSTf6hPMOAM2+90naVALy84qbTfdcEsATQU9eOyUZ/qb8kc78CM0tmz37e9xlH30W/E2a8lr+qRBxSLPD"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aurora Clark','auclark@wsu.edu'),('Sudhakar Pamidighantam','pamidigs@iu.edu')]"
+portal_title: "DELTA Gateway"
+
+...

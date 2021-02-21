@@ -48,6 +48,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_SECRET_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientSecret", org.apache.thrift.protocol.TType.STRING, (short)18);
   private static final org.apache.thrift.protocol.TField REQUEST_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("requestCreationTime", org.apache.thrift.protocol.TType.I64, (short)19);
   private static final org.apache.thrift.protocol.TField REQUESTER_USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("requesterUsername", org.apache.thrift.protocol.TType.STRING, (short)20);
+  private static final org.apache.thrift.protocol.TField REDIRECT_URLS_FIELD_DESC = new org.apache.thrift.protocol.TField("redirectURLs", org.apache.thrift.protocol.TType.LIST, (short)21);
+  private static final org.apache.thrift.protocol.TField SCOPE_FIELD_DESC = new org.apache.thrift.protocol.TField("scope", org.apache.thrift.protocol.TType.STRING, (short)22);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GatewayStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GatewayTupleSchemeFactory();
@@ -72,6 +74,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private java.lang.String oauthClientSecret; // optional
   private long requestCreationTime; // optional
   private java.lang.String requesterUsername; // optional
+  private java.util.List<java.lang.String> redirectURLs; // optional
+  private java.lang.String scope; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -98,7 +102,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     OAUTH_CLIENT_ID((short)17, "oauthClientId"),
     OAUTH_CLIENT_SECRET((short)18, "oauthClientSecret"),
     REQUEST_CREATION_TIME((short)19, "requestCreationTime"),
-    REQUESTER_USERNAME((short)20, "requesterUsername");
+    REQUESTER_USERNAME((short)20, "requesterUsername"),
+    REDIRECT_URLS((short)21, "redirectURLs"),
+    SCOPE((short)22, "scope");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -153,6 +159,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           return REQUEST_CREATION_TIME;
         case 20: // REQUESTER_USERNAME
           return REQUESTER_USERNAME;
+        case 21: // REDIRECT_URLS
+          return REDIRECT_URLS;
+        case 22: // SCOPE
+          return SCOPE;
         default:
           return null;
       }
@@ -195,7 +205,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   // isset id assignments
   private static final int __REQUESTCREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.AIRAVATA_INTERNAL_GATEWAY_ID,_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET,_Fields.REQUEST_CREATION_TIME,_Fields.REQUESTER_USERNAME};
+  private static final _Fields optionals[] = {_Fields.AIRAVATA_INTERNAL_GATEWAY_ID,_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET,_Fields.REQUEST_CREATION_TIME,_Fields.REQUESTER_USERNAME,_Fields.REDIRECT_URLS,_Fields.SCOPE};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -238,6 +248,11 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     tmpMap.put(_Fields.REQUEST_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("requestCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.REQUESTER_USERNAME, new org.apache.thrift.meta_data.FieldMetaData("requesterUsername", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.REDIRECT_URLS, new org.apache.thrift.meta_data.FieldMetaData("redirectURLs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.SCOPE, new org.apache.thrift.meta_data.FieldMetaData("scope", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Gateway.class, metaDataMap);
@@ -318,6 +333,13 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     if (other.isSetRequesterUsername()) {
       this.requesterUsername = other.requesterUsername;
     }
+    if (other.isSetRedirectURLs()) {
+      java.util.List<java.lang.String> __this__redirectURLs = new java.util.ArrayList<java.lang.String>(other.redirectURLs);
+      this.redirectURLs = __this__redirectURLs;
+    }
+    if (other.isSetScope()) {
+      this.scope = other.scope;
+    }
   }
 
   public Gateway deepCopy() {
@@ -347,6 +369,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     setRequestCreationTimeIsSet(false);
     this.requestCreationTime = 0;
     this.requesterUsername = null;
+    this.redirectURLs = null;
+    this.scope = null;
   }
 
   public java.lang.String getAiravataInternalGatewayId() {
@@ -816,6 +840,67 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
   }
 
+  public int getRedirectURLsSize() {
+    return (this.redirectURLs == null) ? 0 : this.redirectURLs.size();
+  }
+
+  public java.util.Iterator<java.lang.String> getRedirectURLsIterator() {
+    return (this.redirectURLs == null) ? null : this.redirectURLs.iterator();
+  }
+
+  public void addToRedirectURLs(java.lang.String elem) {
+    if (this.redirectURLs == null) {
+      this.redirectURLs = new java.util.ArrayList<java.lang.String>();
+    }
+    this.redirectURLs.add(elem);
+  }
+
+  public java.util.List<java.lang.String> getRedirectURLs() {
+    return this.redirectURLs;
+  }
+
+  public void setRedirectURLs(java.util.List<java.lang.String> redirectURLs) {
+    this.redirectURLs = redirectURLs;
+  }
+
+  public void unsetRedirectURLs() {
+    this.redirectURLs = null;
+  }
+
+  /** Returns true if field redirectURLs is set (has been assigned a value) and false otherwise */
+  public boolean isSetRedirectURLs() {
+    return this.redirectURLs != null;
+  }
+
+  public void setRedirectURLsIsSet(boolean value) {
+    if (!value) {
+      this.redirectURLs = null;
+    }
+  }
+
+  public java.lang.String getScope() {
+    return this.scope;
+  }
+
+  public void setScope(java.lang.String scope) {
+    this.scope = scope;
+  }
+
+  public void unsetScope() {
+    this.scope = null;
+  }
+
+  /** Returns true if field scope is set (has been assigned a value) and false otherwise */
+  public boolean isSetScope() {
+    return this.scope != null;
+  }
+
+  public void setScopeIsSet(boolean value) {
+    if (!value) {
+      this.scope = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case AIRAVATA_INTERNAL_GATEWAY_ID:
@@ -978,6 +1063,22 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       }
       break;
 
+    case REDIRECT_URLS:
+      if (value == null) {
+        unsetRedirectURLs();
+      } else {
+        setRedirectURLs((java.util.List<java.lang.String>)value);
+      }
+      break;
+
+    case SCOPE:
+      if (value == null) {
+        unsetScope();
+      } else {
+        setScope((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -1043,6 +1144,12 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     case REQUESTER_USERNAME:
       return getRequesterUsername();
 
+    case REDIRECT_URLS:
+      return getRedirectURLs();
+
+    case SCOPE:
+      return getScope();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1094,6 +1201,10 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       return isSetRequestCreationTime();
     case REQUESTER_USERNAME:
       return isSetRequesterUsername();
+    case REDIRECT_URLS:
+      return isSetRedirectURLs();
+    case SCOPE:
+      return isSetScope();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1293,6 +1404,24 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         return false;
     }
 
+    boolean this_present_redirectURLs = true && this.isSetRedirectURLs();
+    boolean that_present_redirectURLs = true && that.isSetRedirectURLs();
+    if (this_present_redirectURLs || that_present_redirectURLs) {
+      if (!(this_present_redirectURLs && that_present_redirectURLs))
+        return false;
+      if (!this.redirectURLs.equals(that.redirectURLs))
+        return false;
+    }
+
+    boolean this_present_scope = true && this.isSetScope();
+    boolean that_present_scope = true && that.isSetScope();
+    if (this_present_scope || that_present_scope) {
+      if (!(this_present_scope && that_present_scope))
+        return false;
+      if (!this.scope.equals(that.scope))
+        return false;
+    }
+
     return true;
   }
 
@@ -1379,6 +1508,14 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     hashCode = hashCode * 8191 + ((isSetRequesterUsername()) ? 131071 : 524287);
     if (isSetRequesterUsername())
       hashCode = hashCode * 8191 + requesterUsername.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetRedirectURLs()) ? 131071 : 524287);
+    if (isSetRedirectURLs())
+      hashCode = hashCode * 8191 + redirectURLs.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetScope()) ? 131071 : 524287);
+    if (isSetScope())
+      hashCode = hashCode * 8191 + scope.hashCode();
 
     return hashCode;
   }
@@ -1591,6 +1728,26 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetRedirectURLs()).compareTo(other.isSetRedirectURLs());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRedirectURLs()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.redirectURLs, other.redirectURLs);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetScope()).compareTo(other.isSetScope());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetScope()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.scope, other.scope);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1799,6 +1956,26 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         sb.append("null");
       } else {
         sb.append(this.requesterUsername);
+      }
+      first = false;
+    }
+    if (isSetRedirectURLs()) {
+      if (!first) sb.append(", ");
+      sb.append("redirectURLs:");
+      if (this.redirectURLs == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.redirectURLs);
+      }
+      first = false;
+    }
+    if (isSetScope()) {
+      if (!first) sb.append(", ");
+      sb.append("scope:");
+      if (this.scope == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.scope);
       }
       first = false;
     }
@@ -2015,6 +2192,32 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 21: // REDIRECT_URLS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                struct.redirectURLs = new java.util.ArrayList<java.lang.String>(_list16.size);
+                java.lang.String _elem17;
+                for (int _i18 = 0; _i18 < _list16.size; ++_i18)
+                {
+                  _elem17 = iprot.readString();
+                  struct.redirectURLs.add(_elem17);
+                }
+                iprot.readListEnd();
+              }
+              struct.setRedirectURLsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 22: // SCOPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.scope = iprot.readString();
+              struct.setScopeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2162,6 +2365,27 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           oprot.writeFieldEnd();
         }
       }
+      if (struct.redirectURLs != null) {
+        if (struct.isSetRedirectURLs()) {
+          oprot.writeFieldBegin(REDIRECT_URLS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.redirectURLs.size()));
+            for (java.lang.String _iter19 : struct.redirectURLs)
+            {
+              oprot.writeString(_iter19);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.scope != null) {
+        if (struct.isSetScope()) {
+          oprot.writeFieldBegin(SCOPE_FIELD_DESC);
+          oprot.writeString(struct.scope);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2236,7 +2460,13 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetRequesterUsername()) {
         optionals.set(17);
       }
-      oprot.writeBitSet(optionals, 18);
+      if (struct.isSetRedirectURLs()) {
+        optionals.set(18);
+      }
+      if (struct.isSetScope()) {
+        optionals.set(19);
+      }
+      oprot.writeBitSet(optionals, 20);
       if (struct.isSetAiravataInternalGatewayId()) {
         oprot.writeString(struct.airavataInternalGatewayId);
       }
@@ -2291,6 +2521,18 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetRequesterUsername()) {
         oprot.writeString(struct.requesterUsername);
       }
+      if (struct.isSetRedirectURLs()) {
+        {
+          oprot.writeI32(struct.redirectURLs.size());
+          for (java.lang.String _iter20 : struct.redirectURLs)
+          {
+            oprot.writeString(_iter20);
+          }
+        }
+      }
+      if (struct.isSetScope()) {
+        oprot.writeString(struct.scope);
+      }
     }
 
     @Override
@@ -2300,7 +2542,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       struct.setGatewayIdIsSet(true);
       struct.gatewayApprovalStatus = org.apache.airavata.model.workspace.GatewayApprovalStatus.findByValue(iprot.readI32());
       struct.setGatewayApprovalStatusIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(18);
+      java.util.BitSet incoming = iprot.readBitSet(20);
       if (incoming.get(0)) {
         struct.airavataInternalGatewayId = iprot.readString();
         struct.setAiravataInternalGatewayIdIsSet(true);
@@ -2372,6 +2614,23 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (incoming.get(17)) {
         struct.requesterUsername = iprot.readString();
         struct.setRequesterUsernameIsSet(true);
+      }
+      if (incoming.get(18)) {
+        {
+          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.redirectURLs = new java.util.ArrayList<java.lang.String>(_list21.size);
+          java.lang.String _elem22;
+          for (int _i23 = 0; _i23 < _list21.size; ++_i23)
+          {
+            _elem22 = iprot.readString();
+            struct.redirectURLs.add(_elem22);
+          }
+        }
+        struct.setRedirectURLsIsSet(true);
+      }
+      if (incoming.get(19)) {
+        struct.scope = iprot.readString();
+        struct.setScopeIsSet(true);
       }
     }
   }

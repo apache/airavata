@@ -183,7 +183,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					//FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
 					//FIXME replica resolving logic should come here
 					processModel.getProcessInputs().stream().forEach(pi -> {
-						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
+						if (pi.getType().equals(DataType.URI) && pi.getValue() != null && pi.getValue().startsWith("airavata-dp://")) {
 							try {
 								DataProductModel dataProductModel = registryClient.getDataProduct(pi.getValue());
 								Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
@@ -200,7 +200,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             } catch (TException e) {
 								throw new RuntimeException("Error while launching experiment", e);
                             }
-                        } else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
+                        } else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue() != null && pi.getValue().contains("airavata-dp://")) {
 							try {
 								String[] uriList = pi.getValue().split(",");
 								final ArrayList<String> filePathList = new ArrayList<>();

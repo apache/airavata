@@ -768,16 +768,12 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
-            List<UserRepresentation> userRepresentationList = client.realm(tenantId).users().search(username,
-                    null,
-                    null,
-                    null,
-                    0, 1);
-            if (userRepresentationList.isEmpty()) {
+            UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
+            if (userRepresentation == null) {
                 logger.warn("No Keycloak user found for username [" + username + "] in tenant [" + tenantId + "].");
                 return null;
             }
-            UserResource retrievedUser = client.realm(tenantId).users().get(userRepresentationList.get(0).getId());
+            UserResource retrievedUser = client.realm(tenantId).users().get(userRepresentation.getId());
             return retrievedUser.roles().realmLevel().listAll()
                     .stream()
                     .map(roleRepresentation -> roleRepresentation.getName())

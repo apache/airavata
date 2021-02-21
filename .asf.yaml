@@ -1,0 +1,13 @@
+github:
+  description: "A general purpose Distributed Systems Framework"
+  homepage: https://airavata.apache.org/
+  labels:
+    - airavata
+    - sciencegateways
+    - gateways
+    - cloudnative
+    - microservices
+    - java
+    - workfloworchestrator
+    - workflow
+    - bigdata

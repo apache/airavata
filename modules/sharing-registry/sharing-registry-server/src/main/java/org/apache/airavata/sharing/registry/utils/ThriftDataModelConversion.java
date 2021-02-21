@@ -36,10 +36,11 @@ public class ThriftDataModelConversion {
      */
     public static User getUser(UserProfile userProfile){
         User user = new User();
-        user.setUserId(userProfile.getUserId());
+        user.setUserId(userProfile.getAiravataInternalUserId());
         user.setDomainId(userProfile.getGatewayId());
-        // TODO: should set username to getUserId, but see SharingServiceDBEventHandler which overrides userId (see AIRAVATA-2788)
-        user.setUserName(userProfile.getFirstName() + " " + userProfile.getLastName());
+        user.setUserName(userProfile.getUserId());
+        user.setFirstName(userProfile.getFirstName());
+        user.setLastName(userProfile.getLastName());
         user.setEmail(userProfile.getEmails().get(0));
         return user;
     }

@@ -33,6 +33,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -53,6 +54,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.security.AiravataSecurityManager;
@@ -645,16 +647,18 @@ public class TaskContext {
             reservation = userComputeResourcePreference.getReservation();
             start = userComputeResourcePreference.getReservationStartTime();
             end = userComputeResourcePreference.getReservationEndTime();
-        } else {
-            reservation = groupComputeResourcePreference.getReservation();
-            start = groupComputeResourcePreference.getReservationStartTime();
-            end = groupComputeResourcePreference.getReservationEndTime();
         }
         if (reservation != null && start > 0 && start < end) {
             long now = Calendar.getInstance().getTimeInMillis();
             if (now > start && now < end) {
                 return reservation;
             }
+        }
+        String queueName = getQueueName();
+        ComputeResourceReservation computeResourceReservation = GroupComputeResourcePreferenceUtil
+                .getActiveReservationForQueue(groupComputeResourcePreference, queueName);
+        if (computeResourceReservation != null) {
+            return computeResourceReservation.getReservationName();
         }
         return null;
     }
@@ -798,27 +802,32 @@ public class TaskContext {
                     Optional.ofNullable(registryClient.getGatewayResourceProfile(gatewayId))
                             .orElseThrow(() -> new Exception("Invalid GatewayResourceProfile")));
 
+            logger.debug("Using storage resource preference for storage " + processModel.getStorageResourceId());
             ctx.setGatewayStorageResourcePreference(
                     Optional.ofNullable(registryClient.getGatewayStoragePreference(
                             gatewayId,
                             processModel.getStorageResourceId()))
                             .orElseThrow(() -> new Exception("Invalid Gateway StoragePreference")));
 
+            logger.debug("Using application deployment " + processModel.getApplicationDeploymentId());
             ctx.setApplicationDeploymentDescription(
                     Optional.ofNullable(registryClient.getApplicationDeployment(
                             processModel.getApplicationDeploymentId()))
                             .orElseThrow(() -> new Exception("Invalid Application Deployment")));
 
+            logger.debug("Using application interface " + processModel.getApplicationInterfaceId());
             ctx.setApplicationInterfaceDescription(
                     Optional.ofNullable(registryClient.getApplicationInterface(
                             processModel.getApplicationInterfaceId()))
                             .orElseThrow(() -> new Exception("Invalid Application Interface")));
 
+            logger.debug("Using compute resource " + ctx.getComputeResourceId());
             ctx.setComputeResourceDescription(
                     Optional.ofNullable(registryClient.getComputeResource(
                             ctx.getComputeResourceId()))
                             .orElseThrow(() -> new Exception("Invalid Compute Resource Description")));
 
+            logger.debug("Using storage resource " + ctx.getStorageResourceId());
             ctx.setStorageResourceDescription(
                     Optional.ofNullable(registryClient.getStorageResource(
                             ctx.getStorageResourceId()))

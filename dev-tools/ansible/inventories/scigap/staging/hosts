@@ -1,27 +1,35 @@
 # inventory file : scigap staging deployment
 
 [zookeeper]
-api.staging.scigap.org
-#helix.staging.scigap.org
-#pga.staging.scigap.org
+scigap02.sciencegateways.iu.edu
 
 [rabbitmq]
-api.staging.scigap.org
+scigap02.sciencegateways.iu.edu
 
 [database]
-db.staging.scigap.org
+scigap01.sciencegateways.iu.edu
 
 [api-orch]
-api.staging.scigap.org
+scigap02.sciencegateways.iu.edu
 
 [helix]
-helix.staging.scigap.org ansible_user=root
+scigap03.sciencegateways.iu.edu
 
 [kafka]
-helix.staging.scigap.org ansible_user=root
+scigap03.sciencegateways.iu.edu
 
 [pga]
-pga.staging.scigap.org
+scigap08.sciencegateways.iu.edu
+
+[django]
+seagrid ansible_host=156.56.104.18
+ultrascan ansible_host=156.56.104.18
+testdrive ansible_host=156.56.104.18
+pearc19 ansible_host=156.56.104.18
+dreg ansible_host=156.56.104.18
+searchsra ansible_host=156.56.104.18
+gateways19 ansible_host=156.56.104.18
+simccs ansible_host=156.56.104.18
 
 # Using the same keycloak as production
 #[keycloak]

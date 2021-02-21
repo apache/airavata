@@ -1,0 +1,48 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "nanoshape.sciencegateways.iu.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/nanoshape.sciencegateways.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/nanoshape.sciencegateways.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/nanoshape.sciencegateways.iu.edu/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "nano-shape"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Nano Shape Science Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "nano-shape"
+experiment_data_dir: "{{ user_data_dir }}/nanoshape"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdnkbcATgISewsDfUJaDwsQSswt7cWM//ONfTLhxlvFHe1NFdVk65of/tOwXIjp+037tpMMv8Pi3bc4OUmdlv3P9tPOBoDNoOb+CUpJ/6skEkiH+zgO+zLetVHLIS/UdgcSL7xdbj5RfoT13ksyRvdVYLGLq2S1t7p0s//FKcw7qdw/S2N3YiCQPpHq45C/r4GTHzRaIksiE2WnsuRbk0CmazIQDXwedFadJCUqM4SrFOdxGos9b++d1yS+I9GrVya/xDRtpDzWCpUrNPJc0BzRp1qIkUnmh52uApKyfJX82gMbAn62xmTZytdgk6BA3Za96lVvjJQ4CsD2wpS7qpp"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Jadhao, Vikram','vjadhao@iu.edu')]"
+portal_title: "Nano Shape Science Gateway"
+
+...

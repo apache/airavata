@@ -19,18 +19,21 @@
  */
 package org.apache.airavata.registry.core.utils.JPAUtil;
 
-import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.JPAUtils;
-import org.apache.airavata.registry.core.utils.AppCatalogJDBCConfig;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.utils.JPAUtils;
+import org.apache.airavata.registry.core.utils.AppCatalogJDBCConfig;
+
 public class AppCatalogJPAUtils {
 
-    // TODO: we can rename this back to appcatalog_data once we completely replace the other appcatalog_data persistence context in airavata-registry-core
-    private static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
+    // TODO: we can rename this back to appcatalog_data once we completely replace
+    // the other appcatalog_data persistence context in airavata-registry-core
+    public static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
     private static final JDBCConfig JDBC_CONFIG = new AppCatalogJDBCConfig();
-    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME,
+            JDBC_CONFIG);
 
     public static EntityManager getEntityManager() {
         return factory.createEntityManager();

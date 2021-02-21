@@ -73,7 +73,7 @@ public class ProcessEntity implements Serializable {
 
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
-    private List<String> emailAddresses;
+    private String emailAddresses;
 
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
@@ -220,11 +220,11 @@ public class ProcessEntity implements Serializable {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    public List<String> getEmailAddresses() {
+    public String getEmailAddresses() {
         return emailAddresses;
     }
 
-    public void setEmailAddresses(List<String> emailAddresses) {
+    public void setEmailAddresses(String emailAddresses) {
         this.emailAddresses = emailAddresses;
     }
 

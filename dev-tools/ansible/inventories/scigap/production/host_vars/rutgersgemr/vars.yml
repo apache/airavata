@@ -1,0 +1,48 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "gemr.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/gemr.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gemr.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gemr.scigap.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "prostate-cancer-prediction"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Prostate Cancer Prediction Gateway"
+  # external:
+  #  - name: "existing institution credentials"
+  #    idp_alias: "cilogon"
+  #    logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "prostate-cancer-prediction"
+experiment_data_dir: "{{ user_data_dir }}/prostate-cancer-prediction"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCaSojVxYa+6AS+jf+AyUnD0YqWisUeyiqjJ1Bi0p+d0FCAgxk2xyOX1m1eVvOLlxoL1KYzHV6cBqLyhSMMRsp1qiDrWkq9UdJiSywO/KvgjKfMrOrsgSj84BRo7ceJK5irAqeGIdAgDhGTJFuV+OEm+iDaRK1Om2QvkuGwEYQ1EZLY9H7JpGgU6Fw0Aoh4e2wYwp/RQ2QGNjc5EGddZJZil8W3NlibKJ+5Yl90kyX3s2tEUjQSBNYXcokUvc01ZdfAY3TUwQlTlMyJpjZyuTF8Ea4fw3p9sVHRNrLIyCmYHrMxGTNVapV5bk1NZd1LxhqRjhKvIP4kFNd7lW30k/sT"
+
+admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Kristina Plazonic','kp807@oarc.rutgers.edu')]"
+portal_title: "Prostate Cancer Prediction Gateway"
+
+...

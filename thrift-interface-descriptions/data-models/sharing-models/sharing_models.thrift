@@ -33,13 +33,15 @@ const string DO_NOT_SET_AT_CLIENTS_ID = "DO_NOT_SET_AT_CLIENTS_ID"
 * <li>description : A short description for the domain</li>
 * <li>createdTime : Will be set by the system</li>
 * <li>updatedTime : Will be set by the system</li>
+* <li>initialUserGroupId : New users will automatically be added to this group</li>
 **/
 struct Domain {
     1: optional string domainId = DO_NOT_SET_AT_CLIENTS_ID,
     2: optional string name,
     3: optional string description,
     4: optional i64 createdTime,
-    5: optional i64 updatedTime
+    5: optional i64 updatedTime,
+    6: optional string initialUserGroupId
 }
 
 /**

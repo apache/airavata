@@ -89,7 +89,8 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
         DataReplicaLocationModel retrievedDataReplicaLocationModel = dataReplicaLocationRepository.getReplicaLocation(replicaId1);
         assertTrue(retrievedDataReplicaLocationModel.getReplicaMetadata().size() == 2);
         assertEquals(retrievedDataReplicaLocationModel.getReplicaPersistentType(), testDataReplicaLocationModel1.getReplicaPersistentType());
-        assertFalse(retrievedDataReplicaLocationModel.isSetValidUntilTime());
+        // validUntilTime has a default value
+        assertEquals(0, retrievedDataReplicaLocationModel.getValidUntilTime());
 
         testDataProductModel.setReplicaLocations(Arrays.asList(testDataReplicaLocationModel1, testDataReplicaLocationModel2));
         dataProductRepository.updateDataProduct(testDataProductModel);

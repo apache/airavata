@@ -1,0 +1,51 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+airavata_django_extra_dependencies:
+  - git+https://github.com/machristie/gateways19-tutorial.git@solution#egg=gateways19-tutorial
+vhost_servername: "testdrive.airavata.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/testdrive.airavata.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/testdrive.airavata.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/testdrive.airavata.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "default"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Airavata Test Drive Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "default"
+experiment_data_dir: "{{ user_data_dir }}/testdrive"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUF51b2cYYqqadLHL9M/oPY0ZHZlWbdOdaIgjpzIzMnO7M9hKrHVY2pqyLPvqCLzaunxITPWsTqw0E8hwub4ttGLAx/O4kIf+BgyZK7iuwXWhI7u85/o58IfrD4B+jVCYKRNayuLR+lJWsiOeS6HSlunpTKTEhFGeOHn2UzdbLfgWYQ3VUFDtKN1oDPDT78ml5c2RCibJ21jltpevVfEtCUctERpTfniWSuQZggP1qiLNa1+PfiJ3mGsEzJFDntQvQetdinaAbEaT7+sctS8nBNjapkmYMf6tBl3S0bLttYPH51f8lUQAFaAzrestO1JpJNnIeY01/S3MWIlAWASnn"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
+portal_title: "Airavata Test Drive Gateway"
+
+django_google_analytics_tracking_id: "UA-111528347-2"
+...

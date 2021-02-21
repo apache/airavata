@@ -1,0 +1,51 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+airavata_django_extra_dependencies:
+  - git+https://github.com/SciGaP/amp-gateway-django-app.git#egg=amp_gateway_django_app
+
+vhost_servername: "ampgateway.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/ampgateway.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/ampgateway.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/ampgateway.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "amp"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Atomic and Molecular Physics and Optics Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "amp"
+experiment_data_dir: "{{ user_data_dir }}/amp"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCAfFAdLrGC/om63ipx9RhuzcGnMlVQkKsuy5NtUgK7I4OdTJ1Ck1H/ARBwiWNQy08GO2HETfM7StCROwW+tlZ6n+THBkbei4G8q6xV6UXlC3BJxuDlwkxnyOFSYEt8Qd2g8IC/X0qo9/m5Ea9Z5axzTk+n2OZlV87DrLheV+OVhgf+yYGVo9egTZ7Kg/TV/Hl1xeU5JgRcPPrLrWYn8vEQo7xT5boS3X9y2o7FgNTdUf5K10ZJ37RWcLQpzZ+7zEKs/P/I/QU+BUhxRRfnEf/4e4L3OFE36SQ4DSFmu3lKU4BcQQb3A6SfQGC1PwQdD5y9MUkpit4hMCSJLjVBTN3H"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Barry Schneider', '	bis@nist.gov')]"
+portal_title: "Atomic and Molecular Physics and Optics Gateway"
+
+...

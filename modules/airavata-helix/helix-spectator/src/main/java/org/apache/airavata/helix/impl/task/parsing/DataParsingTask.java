@@ -112,6 +112,7 @@ public class DataParsingTask extends AbstractTask {
 
             Parser parser = getRegistryServiceClient().getParser(parserId, gatewayId);
             String containerId = getTaskId() + "_PARSER_"+ parser.getId();
+            containerId = containerId.replace(" ", "-");
 
             String localInputDir = createLocalInputDir(containerId);
             String localOutDir= createLocalOutputDir(containerId);
@@ -228,7 +229,7 @@ public class DataParsingTask extends AbstractTask {
 
     }
 
-    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir, Map<String, String> properties) {
+    private void runContainer(Parser parser, String containerId, String localInputDir, String localOutputDir, Map<String, String> properties) throws ApplicationSettingsException {
         DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
@@ -256,7 +257,7 @@ public class DataParsingTask extends AbstractTask {
 
         final StringBuilder dockerLogs = new StringBuilder();
 
-        if (containerResponse.getWarnings() != null) {
+        if (containerResponse.getWarnings() != null && containerResponse.getWarnings().length > 0) {
             StringBuilder warningStr = new StringBuilder();
             for (String w : containerResponse.getWarnings()) {
                 warningStr.append(w).append(",");
@@ -287,8 +288,12 @@ public class DataParsingTask extends AbstractTask {
             logger.info("Container logs " + dockerLogs.toString());
         }
 
-        dockerClient.removeContainerCmd(containerResponse.getId()).exec();
-        logger.info("Successfully removed container with id " + containerResponse.getId());
+        if (ServerSettings.isSettingDefined("data.parser.delete.container") &&
+                Boolean.parseBoolean(ServerSettings.getSetting("data.parser.delete.container"))) {
+            dockerClient.removeContainerCmd(containerResponse.getId()).exec();
+            logger.info("Successfully removed container with id " + containerResponse.getId());
+        }
+
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport) throws TaskOnFailException, TException, AgentException {

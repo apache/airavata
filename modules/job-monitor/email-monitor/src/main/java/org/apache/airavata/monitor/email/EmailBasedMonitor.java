@@ -235,9 +235,11 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         List<Message> unreadMessages = new ArrayList<>();
         for (Message message : searchMessages) {
             try {
+                log.info("Parsing the job status message");
                 JobStatusResult jobStatusResult = parse(message);
-                log.info(jobStatusResult.getJobId() + ", " + jobStatusResult.getJobName() + ", " + jobStatusResult.getState().getValue());
+                log.info("Job message parsed. Job Id " + jobStatusResult.getJobId() + ", Job Name " + jobStatusResult.getJobName() + ", Job State " + jobStatusResult.getState().getValue());
                 submitJobStatus(jobStatusResult);
+                log.info("Submitted the job {} status to queue", jobStatusResult.getJobId());
                 processedMessages.add(message);
             } catch (Exception e) {
                 log.error("Error in submitting job status to queue", e);

@@ -45,6 +45,10 @@ public class ExperimentRepositoryTest extends TestBase {
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
 
+    private String gatewayId;
+
+    private String projectId;
+
     public ExperimentRepositoryTest() {
         super(Database.EXP_CATALOG);
         gatewayRepository = new GatewayRepository();
@@ -52,20 +56,26 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentRepository = new ExperimentRepository();
     }
 
-    @Test
-    public void ExperimentRepositoryTest() throws RegistryException {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        gatewayId = gatewayRepository.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        projectId = projectRepository.addProject(project, gatewayId);
+    }
+
+    @Test
+    public void ExperimentRepositoryTest() throws RegistryException {
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -77,8 +87,11 @@ public class ExperimentRepositoryTest extends TestBase {
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId != null);
+        assertEquals(0, experimentRepository.getExperiment(experimentId).getEmailAddressesSize());
 
         experimentModel.setDescription("description");
+        experimentModel.addToEmailAddresses("notify@example.com");
+        experimentModel.addToEmailAddresses("notify2@example.com");
         experimentRepository.updateExperiment(experimentModel, experimentId);
 
         ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
@@ -87,6 +100,9 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
         assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
         assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        assertEquals(2, retrievedExperimentModel.getEmailAddressesSize());
+        assertEquals("notify@example.com", retrievedExperimentModel.getEmailAddresses().get(0));
+        assertEquals("notify2@example.com", retrievedExperimentModel.getEmailAddresses().get(1));
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
@@ -127,26 +143,10 @@ public class ExperimentRepositoryTest extends TestBase {
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));
-
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
     }
 
     @Test
     public void testExperimentInputs() throws RegistryException {
-
-        Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
-
-        Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
-        project.setGatewayId(gatewayId);
-
-        String projectId = projectRepository.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -170,6 +170,7 @@ public class ExperimentRepositoryTest extends TestBase {
         input1.setStorageResourceId("storageResourceId");
         input1.setUserFriendlyDescription("First argument");
         input1.setValue("value1");
+        input1.setOverrideFilename("gaussian.com");
         experimentModel.addToExperimentInputs(input1);
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
@@ -191,6 +192,7 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("storageResourceId", retrievedInput1.getStorageResourceId());
         assertEquals("First argument", retrievedInput1.getUserFriendlyDescription());
         assertEquals("value1", retrievedInput1.getValue());
+        assertEquals("gaussian.com", retrievedInput1.getOverrideFilename());
 
         // Update values of the input
         retrievedInput1.setIsRequired(false);
@@ -205,6 +207,7 @@ public class ExperimentRepositoryTest extends TestBase {
         retrievedInput1.setStorageResourceId("storageResourceId2");
         retrievedInput1.setUserFriendlyDescription("First argument~");
         retrievedInput1.setValue("value1a");
+        retrievedInput1.setOverrideFilename("gaussian.com-updated");
 
         experimentRepository.updateExperiment(retrievedExperimentModel, experimentId);
 
@@ -223,12 +226,38 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("storageResourceId2", retrievedInput1.getStorageResourceId());
         assertEquals("First argument~", retrievedInput1.getUserFriendlyDescription());
         assertEquals("value1a", retrievedInput1.getValue());
+        assertEquals("gaussian.com-updated", retrievedInput1.getOverrideFilename());
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));
-
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
     }
 
+    /**
+     * Verify that slashes (forward and backward) are replaced with underscores.
+     */
+    @Test
+    public void testSlashesInExperimentName() throws RegistryException {
+
+        // Forward slashes
+        ExperimentModel experimentModel = new ExperimentModel();
+        experimentModel.setProjectId(projectId);
+        experimentModel.setGatewayId(gatewayId);
+        experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+        experimentModel.setUserName("user");
+        experimentModel.setExperimentName("name/forward-slash//a");
+
+        String experimentId = experimentRepository.addExperiment(experimentModel);
+        assertTrue(experimentId.startsWith("name_forward-slash__a"));
+
+        // Backward slashes
+        experimentModel = new ExperimentModel();
+        experimentModel.setProjectId(projectId);
+        experimentModel.setGatewayId(gatewayId);
+        experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+        experimentModel.setUserName("user");
+        experimentModel.setExperimentName("name\\backward-slash\\\\a");
+
+        experimentId = experimentRepository.addExperiment(experimentModel);
+        assertTrue(experimentId.startsWith("name_backward-slash__a"));
+    }
 }

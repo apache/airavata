@@ -150,6 +150,7 @@ public class ProfileServiceServer implements IServer {
             }.start();
         } catch (TTransportException e) {
             setStatus(ServerStatus.FAILED);
+            logger.error("Error while starting the Profile Service Server : "+ e.getMessage());
             throw new Exception("Error while starting the Profile Service Server", e);
         }
     }

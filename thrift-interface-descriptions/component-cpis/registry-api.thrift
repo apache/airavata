@@ -372,7 +372,7 @@ service RegistryService extends base_api.BaseAPI {
                                     4: string userName,
                                     5: string applicationName,
                                     6: string resourceHostName,
-                                    7: required list<string> accessibleExpIds)
+                                    7: list<string> accessibleExpIds)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
@@ -2662,6 +2662,10 @@ service RegistryService extends base_api.BaseAPI {
             throws (1: registry_api_errors.RegistryServiceException rse);
     void removeParser(1: required string parserId, 2: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);
+    parser_model.ParserInput getParserInput(1: required string parserInputId, 2: required string gatewayId)
+                throws (1: registry_api_errors.RegistryServiceException rse);
+    parser_model.ParserOutput getParserOutput(1: required string parserOutputId, 2: required string gatewayId)
+                    throws (1: registry_api_errors.RegistryServiceException rse);
 
     parser_model.ParsingTemplate getParsingTemplate(1: required string templateId, 2: required string gatewayId)
             throws (1: registry_api_errors.RegistryServiceException rse);

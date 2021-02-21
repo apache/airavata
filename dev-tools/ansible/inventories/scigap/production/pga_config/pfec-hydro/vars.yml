@@ -23,7 +23,7 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "futurewater.indiana.edu"
+#vhost_servername: "futurewater.indiana.edu"
 #vhost_serveralias: "www.mines.scigap.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well

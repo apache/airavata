@@ -293,9 +293,13 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         }
 
         if (experimentIds != null) {
-            logger.debug("Filter Experiments by experimentIds");
-            queryParameters.put(DBConstants.Experiment.EXPERIMENT_ID, experimentIds);
-            query += "ES.experimentId IN :" + DBConstants.Experiment.EXPERIMENT_ID + " AND ";
+            if (!experimentIds.isEmpty()) {
+                logger.debug("Filter Experiments by experimentIds");
+                queryParameters.put(DBConstants.Experiment.EXPERIMENT_ID, experimentIds);
+                query += "ES.experimentId IN :" + DBConstants.Experiment.EXPERIMENT_ID + " AND ";
+            } else {
+                return new ArrayList<ExperimentSummaryModel>();
+            }
         }
 
         if (resourceHostName != null) {
@@ -310,7 +314,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         }
 
         query += "ORDER BY ES.creationTime DESC";
-        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, -1, 0, queryParameters);
+        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, Integer.MAX_VALUE, 0, queryParameters);
         return experimentSummaryModelList;
     }
 

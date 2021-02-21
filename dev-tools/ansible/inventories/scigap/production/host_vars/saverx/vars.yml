@@ -1,0 +1,50 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "singlecellgateway.wharton.upenn.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/singlecellgateway.wharton.upenn.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/singlecellgateway.wharton.upenn.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/singlecellgateway.wharton.upenn.edu/privkey.pem"
+
+django_file_upload_max_file_size_mb: 2500
+
+## Keycloak related variables
+tenant_domain: "saverx"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Saver-X Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "saverx"
+experiment_data_dir: "{{ user_data_dir }}/saverx"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCN80RHzcW1GuYt8e1G4XJJmufZ4QBq5XRJB17jsIhuNcpCishLXiaL7eR0qnkPPi8vyuU0MqZ7R81IV9lSp1nnYOxge7DSTAzt+mo1Sfmg/sgeClo+RhH3ZDxsya4nTrVzkYvKzJsu2dD1o7TBZnfKSvq8EhwaYbO7+OgvGc21ZJQYDSq02HrRE4p7toTMNptQEPZTCFalppEMzljvnn5VNOiH9PJyxwSjUFcR7+PTCR0v0m0bkP9nCOz+orIYSrf+Jw1UJJJ6AE26vmeKfMsJjkhmM+cNUEiPiVm8ZoE8IM2tl4BcKofA5JxciH33jG9FH04qmahq4jtAScJS8ty/"
+
+admin_emails: "[('SGRC','sgrc-iu-group@iu.edu'),('Bowei Kang','kbw@uchicago.edu'), ('Jingshu Wang','jingshuw@uchicago.edu'), ('Nancy Zhang','nzh@wharton.upenn.edu')]"
+portal_title: "Saver-X Gateway"
+
+...

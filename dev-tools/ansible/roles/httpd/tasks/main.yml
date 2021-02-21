@@ -1,9 +1,11 @@
 
 # SELinux configuration
 - name: set selinux to enforcing
-  selinux: state=enforcing policy=targeted
+  selinux: state={{ httpd_selinux_mode }} policy=targeted
   become: yes
   when: ansible_os_family == "RedHat"
+
+- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 - name: allow httpd to connect out to the network
   seboolean:
@@ -14,6 +16,29 @@
   notify:
     - restart httpd
   when: ansible_os_family == "RedHat"
+
+- name: Create directory for default ssl vhost certificate public cert
+  file: path="{{ httpd_default_ssl_vhost_certificate_dir[ansible_os_family] }}" state=directory owner="root" group="root" mode="755"
+  become: yes
+
+- name: Create directory for default ssl vhost certificate private key
+  file: path="{{ httpd_default_ssl_vhost_certificate_key_dir[ansible_os_family] }}" state=directory owner="root" group="root" mode="700"
+  become: yes
+
+- name: check default ssl vhost certificate for expiration in next 90 days (7776000s = 90d)
+  command: openssl x509 -checkend 7776000 -noout -in {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}}
+  become: yes
+  register: default_vhost_ssl_cert_check
+  ignore_errors: yes
+
+- name: create default ssl vhost certificate
+  command: openssl req -x509 -sha256 -newkey rsa:2048 -keyout {{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family]}} -out {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}} -days 1024 -nodes -subj '/CN={{ ansible_host }}'
+  become: yes
+  when: default_vhost_ssl_cert_check|failed
+
+- name: Change permissions for default ssl vhost certificate private key
+  file: path="{{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family] }}" state=file owner="root" group="root" mode="600"
+  become: yes
 
 - name: copy default virtual host file
   template: src={{ httpd_default_conf_template }} dest={{ httpd_default_conf_file_location[ansible_os_family] }} backup=yes
@@ -34,10 +59,10 @@
   file: path="{{ real_user_data_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
-- name: Symlink user data dir {{ user_data_dir }} to {{ real_user_data_dir }}
-  file: src="{{ real_user_data_dir }}" dest="{{ user_data_dir }}" state=link owner="{{user}}" group="{{group}}"
-  become: yes
-  when: user_data_dir != real_user_data_dir
+#- name: Symlink user data dir {{ user_data_dir }} to {{ real_user_data_dir }}
+#  file: src="{{ real_user_data_dir }}" dest="{{ user_data_dir }}" state=link owner="{{user}}" group="{{group}}"
+#  become: yes
+#  when: user_data_dir != real_user_data_dir
 
 - name: set selinux context to allow read/write on the user data directory
   sefcontext:
@@ -54,13 +79,6 @@
   command: restorecon -F -R {{ user_data_dir }}
   become: yes
   when: ansible_os_family == "RedHat"
-
-- name: copy pga user's SSH key for the gateway data store
-  authorized_key:
-    user: "{{user}}"
-    key: "{{ gateway_data_store_ssh_public_key }}"
-  become: yes
-  when: gateway_data_store_ssh_public_key != ""
 
 # Firewall settings
 - name: Enable https and http service on public zone

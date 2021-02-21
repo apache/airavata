@@ -31,6 +31,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.sdstate.edu/cert.pem
 ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.sdstate.edu/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.sdstate.edu/privkey.pem"
 
+php_upload_max_filesize: "500M"
+php_post_max_size: "1000M"
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 admin_username: "admin"

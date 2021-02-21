@@ -39,27 +39,30 @@ import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AiravataTask extends AbstractTask {
@@ -168,12 +171,32 @@ public abstract class AiravataTask extends AbstractTask {
                 logger.error("Failed to delete task specific nodes but continuing", e);
             }
 
+            cleanup();
+
             return onFail(errorMessage, fatal);
         } else {
             return onFail("Handover back to helix engine to retry", fatal);
         }
     }
 
+    protected void cleanup() {
+
+        try {
+            // cleaning up local data directory
+            String localDataPath = ServerSettings.getLocalDataLocation();
+            localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);
+            localDataPath = localDataPath + getProcessId();
+
+            try {
+                FileUtils.deleteDirectory(new File(localDataPath));
+            } catch (IOException e) {
+                logger.error("Failed to delete local data directory " + localDataPath, e);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to clean up", e);
+        }
+
+    }
     protected void saveAndPublishProcessStatus(ProcessState state) {
         ProcessStatus processStatus = new ProcessStatus(state);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -243,21 +266,7 @@ public abstract class AiravataTask extends AbstractTask {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
                     if (expOutput.getName().equals(outputName)) {
-                        DataProductModel dataProductModel = new DataProductModel();
-                        dataProductModel.setGatewayId(getGatewayId());
-                        dataProductModel.setOwnerName(getProcessModel().getUserName());
-                        dataProductModel.setProductName(outputName);
-                        dataProductModel.setDataProductType(DataProductType.FILE);
-
-                        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
-                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResourceDescription().getStorageResourceId());
-                        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
-                        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
-                        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
-                        replicaLocationModel.setFilePath(outputVal);
-                        dataProductModel.addToReplicaLocations(replicaLocationModel);
-
-                        String productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
+                        String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
                         expOutput.setValue(productUri);
                         getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
                                 Collections.singletonList(expOutput), experimentId);
@@ -269,6 +278,64 @@ public abstract class AiravataTask extends AbstractTask {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
             throw new TaskOnFailException(msg, true, e);
         }
+    }
+    public void saveExperimentOutputCollection(String outputName, List<String> outputVals) throws TaskOnFailException {
+        try {
+            ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
+                for (OutputDataObjectType expOutput : experimentOutputs) {
+                    if (expOutput.getName().equals(outputName)) {
+                        List<String> productUris = new ArrayList<String>();
+                        for (String outputVal : outputVals) {
+                            String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
+                            productUris.add(productUri);
+                        }
+                        expOutput.setValue(String.join(",", productUris));
+                        getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
+                                Collections.singletonList(expOutput), experimentId);
+                    }
+                }
+            }
+
+        } catch (TException e) {
+            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
+            throw new TaskOnFailException(msg, true, e);
+        }
+    }
+
+    private String saveDataProduct(String outputName, String outputVal, String outputMetadata) throws TException {
+
+        DataProductModel dataProductModel = new DataProductModel();
+        dataProductModel.setGatewayId(getGatewayId());
+        dataProductModel.setOwnerName(getProcessModel().getUserName());
+        dataProductModel.setProductName(outputName);
+        dataProductModel.setDataProductType(DataProductType.FILE);
+        // Copy experiment output's file-metadata to data product's metadata
+        if (outputMetadata != null) {
+            try {
+                JSONObject outputMetadataJSON = new JSONObject(outputMetadata);
+                if (outputMetadataJSON.has("file-metadata")) {
+                    JSONObject fileMetadata = outputMetadataJSON.getJSONObject("file-metadata");
+                    for (Object key : fileMetadata.keySet()) {
+                        String k = key.toString();
+                        dataProductModel.putToProductMetadata(k, fileMetadata.getString(k));
+                    }
+                }
+            } catch (JSONException e) {
+                logger.warn("Failed to parse output metadata: [" + outputMetadata + "]", e);
+            }
+        }
+
+        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResourceDescription().getStorageResourceId());
+        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
+        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
+        replicaLocationModel.setFilePath(outputVal);
+        dataProductModel.addToReplicaLocations(replicaLocationModel);
+
+        return getRegistryServiceClient().registerDataProduct(dataProductModel);
     }
 
     @SuppressWarnings("WeakerAccess")

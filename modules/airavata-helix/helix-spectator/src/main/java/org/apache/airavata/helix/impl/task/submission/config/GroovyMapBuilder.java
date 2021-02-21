@@ -80,10 +80,10 @@ public class GroovyMapBuilder {
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
 
-        List<String> emails = taskContext.getUserProfile().getEmails();
-        if (emails != null && emails.size() > 0) {
-            mapData.setGatewayUserEmail(emails.get(0));
-        }
+        //List<String> emails = taskContext.getUserProfile().getEmails();
+        //if (emails != null && emails.size() > 0) {
+        //    mapData.setGatewayUserEmail(emails.get(0));
+        //}
 
         List<String> inputValues = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), true);
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));
@@ -251,6 +251,13 @@ public class GroovyMapBuilder {
                 if (commandLineOnly && !inputDataObjectType.isRequiredToAddedToCommandLine()) {
                     continue;
                 }
+
+                if (!inputDataObjectType.isIsRequired() &&
+                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
+                    // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
+                    continue;
+                }
+
                 if (inputDataObjectType.getApplicationArgument() != null
                         && !inputDataObjectType.getApplicationArgument().equals("")) {
                     inputValues.add(inputDataObjectType.getApplicationArgument());
@@ -259,24 +266,23 @@ public class GroovyMapBuilder {
                 if (inputDataObjectType.getValue() != null
                         && !inputDataObjectType.getValue().equals("")) {
                     if (inputDataObjectType.getType() == DataType.URI) {
-                        // set only the relative path
-                        String filePath = inputDataObjectType.getValue();
-                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                        inputValues.add(filePath);
+                        if (inputDataObjectType.getOverrideFilename() != null) {
+                            inputValues.add(inputDataObjectType.getOverrideFilename());
+                        } else {
+                            // set only the relative path
+                            String filePath = inputDataObjectType.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputValues.add(filePath);
+                        }
                     } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
                         String filePaths = inputDataObjectType.getValue();
                         String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
-                        String filePath;
-                        String inputs = "";
-                        int i = 0;
-                        for (; i < paths.length - 1; i++) {
-                            filePath = paths[i];
-                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                            // File names separate by a space
-                            inputs += filePath + " ";
+
+                        for (int i = 0; i < paths.length; i++) {
+                            paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
                         }
-                        inputs += paths[i];
-                        inputValues.add(inputs);
+
+                        inputValues.add(String.join(" ", paths));
                     } else {
                         inputValues.add(inputDataObjectType.getValue());
                     }
@@ -383,6 +389,9 @@ public class GroovyMapBuilder {
             }
             if (processModel.isEnableEmailNotification()) {
                 List<String> emailList = processModel.getEmailAddresses();
+                if (emailList == null) {
+                    throw new TaskOnFailException("At least one email should be provided as the email notification is turned on", false, null);
+                }
                 String elist = listToCsv(emailList, ',');
                 if (elist != null && !elist.isEmpty()) {
                     if (emailIds != null && !emailIds.isEmpty()) {

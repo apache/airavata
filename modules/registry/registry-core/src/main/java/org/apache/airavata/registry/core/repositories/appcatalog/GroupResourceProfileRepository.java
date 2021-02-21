@@ -19,11 +19,14 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -60,6 +63,13 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
                 if (groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs() != null) {
                     groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs().forEach(gssh -> gssh.setGroupResourceProfileId(groupResourceProfileId));
                 }
+                if (groupComputeResourcePreference.getReservations() != null) {
+                    groupComputeResourcePreference.getReservations().forEach(reservation -> {
+                        if (reservation.getReservationId().trim().isEmpty() || reservation.getReservationId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                            reservation.setReservationId(AiravataUtils.getId(reservation.getReservationName()));
+                        }
+                    });
+                }
             }
         }
         if (groupResourceProfile.getBatchQueueResourcePolicies() != null) {
@@ -84,8 +94,25 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
 
         updatedGroupResourceProfile.setUpdatedTime(System.currentTimeMillis());
         updateChildren(updatedGroupResourceProfile, updatedGroupResourceProfile.getGroupResourceProfileId());
-        GroupResourceProfile groupResourceProfile = update(updatedGroupResourceProfile);
+        GroupResourceProfileEntity groupResourceProfileEntity = mapToEntity(updatedGroupResourceProfile);
+        updateChildrenEntities(groupResourceProfileEntity);
+        GroupResourceProfile groupResourceProfile = mergeEntity(groupResourceProfileEntity);
         return groupResourceProfile.getGroupResourceProfileId();
+    }
+
+    private void updateChildrenEntities(GroupResourceProfileEntity groupResourceProfileEntity) {
+        if (groupResourceProfileEntity.getComputePreferences() != null) {
+            for (GroupComputeResourcePrefEntity groupComputeResourcePrefEntity : groupResourceProfileEntity.getComputePreferences()) {
+                // For some reason next line is needed to get OpenJPA to persist
+                // GroupResourceProfileEntity before GroupComputeResourcePrefEntity
+                groupComputeResourcePrefEntity.setGroupResourceProfile(groupResourceProfileEntity);
+                if (groupComputeResourcePrefEntity.getReservations() != null) {
+                    for (ComputeResourceReservationEntity reservationEntity : groupComputeResourcePrefEntity.getReservations()) {
+                        reservationEntity.setGroupComputeResourcePref(groupComputeResourcePrefEntity);
+                    }
+                }
+            }
+        }
     }
 
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) {

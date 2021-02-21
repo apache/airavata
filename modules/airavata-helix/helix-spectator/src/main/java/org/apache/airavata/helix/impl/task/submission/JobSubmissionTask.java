@@ -31,12 +31,8 @@ import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
-import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.messaging.event.JobIdentifier;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
@@ -77,7 +73,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         logger.info("Copying file form " + tempJobFile.getAbsolutePath() + " to remote path " + workingDirectory +
                 " of compute resource " + getTaskContext().getComputeResourceId());
-        agentAdaptor.copyFileTo(tempJobFile.getAbsolutePath(), workingDirectory);
+        agentAdaptor.uploadFile(tempJobFile.getAbsolutePath(), workingDirectory);
 
         RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
 

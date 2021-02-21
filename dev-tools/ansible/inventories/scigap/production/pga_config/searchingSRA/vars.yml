@@ -23,13 +23,13 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "www.searchsra.org"
-vhost_serveralias: "sciencegateway.searchsra.org"
+vhost_servername: "pga.searchsra.scigap.org"
+#vhost_serveralias: "sciencegateway.searchsra.org"
 vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/www.searchsra.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/pga.searchsra.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/pga.searchsra.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/pga.searchsra.scigap.org/privkey.pem"
 
 php_upload_max_filesize: "10M"
 php_post_max_size: "60M"
@@ -56,6 +56,7 @@ gateway_id: "searching-sra"
 experiment_data_dir: "{{ user_data_dir }}/searching-sra"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx981DispO1AnkOAwq1oJ3iaYUW6KT4jn4OPSrvIb1fJyjkNdBK8KQUTviBMgqLH9+FlIx/FYjN7sVLelGUmfOgguIWB4Ea2epAyvGFfrVeF83w5A4uILfrd5AJQuk0sZkNjnnGmmpx6z60IThaof2f14uD7JPcn5Kf0xnfmhJGIo2DYJRp8DYJ4Upd1ENu4p3CqylZGBFTx0ROe3hCNj28BxCY+kTgKTQJQHdwuHK9WxovQHdv2ZrN9GeSyIPUX8W1PpYKqM2i8xGaagPUamHON9TonHyuAdd84CagonwuaG54+jbFbB9uW/zhhnP5vNRxK8aSNIhszOucE2g8xzL"
+group_resource_profile_id: "f75b313c-aaad-4ab8-8089-ea042929aa7e"
 
 ## Portal related variables
 super_admin_portal: "false"
@@ -65,4 +66,6 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "searchingsra-gateway-theme"
 #portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
 portal_title: "Searching SRA"
+pga_airavata_django_url: "https://www.searchsra.org"
+pga_reroute_to_django: true
 ...

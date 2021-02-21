@@ -20,13 +20,14 @@
 
 ---
 doc_root_dir: "/var/www/django-{{ gateway_id }}"
-static_root_dir: "{{ doc_root_dir }}/static/"
 user_data_dir: "/var/www/user_data"
 django_venv_dir: "{{ doc_root_dir }}/venv"
 # real_user_data_dir is the same as user_data_dir but without symbolic links in it
 real_user_data_dir: "{{ user_data_dir }}"
 vhost_servername: "{{ groups['django'][0] }}"
 vhost_ssl: False
+vhost_aliases: []
+vhost_timeout: 60
 httpd_confd_file_location:
  RedHat: "/etc/httpd/conf.d/django-{{ gateway_id }}.conf"
  Debian: "/etc/apache2/sites-available/django-{{ gateway_id }}.conf"
@@ -42,12 +43,32 @@ django_ssl_vhost_template: "django-ssl-vhost.conf.j2"
 django_settings_local_template: "settings_local.py.j2"
 django_extra_settings: {}
 django_database_name: "django_{{ gateway_id }}"
+django_hidden_airavata_apps: "[]"
+django_tus_data_dir: "{{user_data_dir}}/tus-temp-dir"
+django_file_upload_max_file_size_mb: 64
 
-django_wsgi_processes: 2
+# Should be a python expression that evaluates to a string representing a file path. For example:
+# django_keycloak_ca_certfile_path: "/etc/ca.pem"
+# or 
+# django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
+# By default it has no value meaning system default CA certs will be used for validation.
+django_keycloak_ca_certfile_path:
+
+django_wsgi_processes: 1
 
 django_debug: false
 django_error_emails: "{{ admin_emails }}"
 python_virtualenv_command: "pyvenv-3.6"
+
+# These directories need to be copied out of the build container and then
+# separately rsynced to deployment
+django_portal_js_build_dirs:
+  - "django_airavata/apps/api/static/django_airavata_api/dist"
+  - "django_airavata/static/common/dist"
+  - "django_airavata/apps/admin/static/django_airavata_admin/dist"
+  - "django_airavata/apps/groups/static/django_airavata_groups/dist"
+  - "django_airavata/apps/workspace/static/django_airavata_workspace/dist"
+  - "django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -72,6 +93,7 @@ gateway_id: "{{ default_gateway }}"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"
 file_upload_tmp_dir: "{{ experiment_data_dir }}/tmp/"
+gateway_data_store_ssh_public_key: ""
 gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
 gateway_data_store_hostname: "{{ groups['django'][0] }}"
 portal_email_tls: false
@@ -79,4 +101,8 @@ portal_title: "Django Airavata Gateway"
 
 httpd_default_http_port: 80
 httpd_default_https_port: 443
+
+# Google Analytics tracking id
+django_google_analytics_tracking_id:
+
 ...

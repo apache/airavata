@@ -80,6 +80,9 @@ public class ProcessInputEntity implements Serializable {
     @Column(name = "IS_READ_ONLY")
     private boolean isReadOnly;
 
+	@Column(name = "OVERRIDE_FILENAME")
+	private String overrideFilename;
+
     @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
     private ProcessEntity process;
@@ -198,6 +201,14 @@ public class ProcessInputEntity implements Serializable {
     public void setReadOnly(boolean readOnly) {
         isReadOnly = readOnly;
     }
+
+	public String getOverrideFilename() {
+		return overrideFilename;
+	}
+
+	public void setOverrideFilename(String overrideFilename) {
+		this.overrideFilename = overrideFilename;
+	}
 
     public ProcessEntity getProcess() {
         return process;

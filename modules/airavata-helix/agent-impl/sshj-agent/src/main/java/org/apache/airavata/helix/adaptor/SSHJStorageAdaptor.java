@@ -80,13 +80,13 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
     }
 
     @Override
-    public void uploadFile(String sourceFile, String destFile) throws AgentException {
-        super.copyFileTo(sourceFile, destFile);
+    public void uploadFile(String localFile, String remoteFile) throws AgentException {
+        super.uploadFile(localFile, remoteFile);
     }
 
     @Override
-    public void downloadFile(String sourceFile, String destFile) throws AgentException {
-        super.copyFileFrom(sourceFile, destFile);
+    public void downloadFile(String remoteFile, String localFile) throws AgentException {
+        super.downloadFile(remoteFile, localFile);
     }
 
     @Override

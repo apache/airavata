@@ -1,0 +1,52 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "geochemsim.org"
+#vhost_servername: "nexttdb.sciencegateway.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/geochemsim.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/geochemsim.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/geochemsim.org/privkey.pem"
+
+django_file_upload_max_file_size_mb: 2500
+
+## Keycloak related variables
+tenant_domain: "nexttdb"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "NextGen Thermodynamics Gateway"
+  external:
+    - name: "existing institution credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "nexttdb"
+experiment_data_dir: "{{ user_data_dir }}/nexttdb"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9jXb9oP4qh3S5Au98nYyV6rOfBXgnvq2asVuapb+a2zyzKKXVxl254IKvFC709F3U9i0re/Z+FQO9qDPZFAgQLps8anyE6+xKuU0DUvzk76OVX/ZMlHfSyRFqKuDBIln02M5rM6qLEUjh7INk1y6z0D1kPW3TsU7w7uY66k4FSAX9qAEZlemy4oCCIQVrege4ZWYSd02H/jXm6j6z7XPI63UbXhpFbZHwdGEAeiQaaas9fDDsy33lN66fC39qV80R5A/7rYQwhyfL1V3wic97lplNyPdZ2fGSUUtFLZxOtJQ1IhDq6kCSYVgQg8U3QviJ5QlYs2CSusshcWUkIZQ/"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Chen Zhu','chenzhu@indiana.edu'),('Lei Gong','lgong@indiana.edu'),('Kevin Tu','tuk@iu.edu')]"
+portal_title: "NextGen Thermodynamics Gateway"
+
+django_google_analytics_tracking_id: "UA-130014168-1"
+...

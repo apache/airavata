@@ -35,6 +35,7 @@ import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -67,7 +68,7 @@ public class SharingServiceDBEventMessagingFactory {
         return dbEventPublisher;
     }
 
-    public static Subscriber getDBEventSubscriber() throws AiravataException, SharingRegistryException {
+    public static Subscriber getDBEventSubscriber() throws AiravataException, SharingRegistryException, IOException {
         if(null == sharingServiceDBEventSubscriber){
             synchronized (SharingServiceDBEventMessagingFactory.class){
                 if(null == sharingServiceDBEventSubscriber){

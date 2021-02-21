@@ -1,0 +1,47 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "django.ultrascan.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/django.ultrascan.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/django.ultrascan.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/django.ultrascan.scigap.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "ultrascan"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Ultrascan Gateway"
+  external:
+    - name: "CILogon"
+      idp_alias: "cilogon"
+
+gateway_id: "ultrascan"
+experiment_data_dir: "{{ user_data_dir }}/ultrascan"
+# gateway_data_store_ssh_public_key: "TODO"
+
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
+portal_title: "Staging Ultrascan SciGaP Dashboard"
+
+...

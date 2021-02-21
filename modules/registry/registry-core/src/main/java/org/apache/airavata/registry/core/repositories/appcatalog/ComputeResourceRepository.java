@@ -230,7 +230,6 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
-        sshJobSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         sshJobSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
         if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             (new ResourceJobManagerRepository()).createParallesimPrefix(sshJobSubmission.getResourceJobManager().getParallelismPrefix(), sshJobSubmissionEntity.getResourceJobManager());

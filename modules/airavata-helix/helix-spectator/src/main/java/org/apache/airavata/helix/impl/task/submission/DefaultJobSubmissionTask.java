@@ -22,11 +22,10 @@ package org.apache.airavata.helix.impl.task.submission;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.helix.core.util.MonitoringUtil;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
-import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.commons.ErrorModel;
@@ -37,9 +36,11 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @TaskDef(name = "Default Job Submission")
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
@@ -66,8 +67,14 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
 
         try {
-            saveAndPublishProcessStatus(ProcessState.EXECUTING);
+            List<JobModel> jobsOfTask = getTaskContext().getRegistryClient().getJobs("taskId", getTaskId());
 
+            if (jobsOfTask.size() > 0) {
+                logger.warn("A job is already available for task " + getTaskId());
+                return onSuccess("A job is already available for task " + getTaskId());
+            }
+
+            saveAndPublishProcessStatus(ProcessState.EXECUTING);
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
 
             JobModel jobModel = new JobModel();
@@ -183,13 +190,59 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
                 // usage reporting as the last step of job submission task
                 if (getComputeResourceDescription().isGatewayUsageReporting()){
-                    String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
-                    String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
-                    ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
-                    String username = experiment.getUserName() + "@" + getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId();
-                    RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
-                            " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
-                    adaptor.executeCommand(rawCommandInfo.getRawCommand(), null);
+
+                    try {
+                        ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
+                        String usageReportingKey = ServerSettings.getSetting("usage.reporting.key");
+                        String username = URLEncoder.encode(
+                                experiment.getUserName(),
+                                StandardCharsets.UTF_8.toString()) + ":" +
+                                URLEncoder.encode(
+                                        getTaskContext().getGroupComputeResourcePreference().getUsageReportingGatewayId(),
+                                        StandardCharsets.UTF_8.toString());
+
+                        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
+                        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+
+                        String hostName = getComputeResourceDescription().getHostName();
+                        List<String> hostAliases = getComputeResourceDescription().getHostAliases();
+                        if (hostAliases != null && hostAliases.size() > 0) {
+                            // TODO this is a temporary fix. Properly add entries to API to fetch host specific xsederesourcename.
+                            hostName = hostAliases.get(0);
+                        }
+
+                        String command = String.format("curl -XPOST --data-urlencode apikey=%s " +
+                                        "--data-urlencode gatewayuser=%s " +
+                                        "--data-urlencode xsederesourcename=%s  " +
+                                        "--data-urlencode jobid=%s " +
+                                        "--data-urlencode submittime='%s' " +
+                                        "%s",
+                                usageReportingKey,
+                                username,
+                                hostName,
+                                jobId,
+                                gmtDateFormat.format(new Date()),
+                                ServerSettings.getSetting("usage.reporting.endpoint"));
+
+                        logger.info("Usage reporting CURL command " + command);
+                        Process curlSubmit = Runtime.getRuntime().exec(command);
+
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(curlSubmit.getInputStream()));
+                        StringBuffer output = new StringBuffer();
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            output.append(line);
+                            output.append("\n");
+                        }
+
+                        logger.info("Usage reporting output " + output.toString());
+                        curlSubmit.waitFor();
+                        logger.info("Usage reporting completed");
+
+                    } catch (Exception e) {
+                        logger.error("Usage reporting failed but continuing. ", e);
+                    }
                 }
 
                 return onSuccess("Submitted job to compute resource");
