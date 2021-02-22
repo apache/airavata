@@ -37,6 +37,7 @@ import org.apache.custos.iam.service.GroupsResponse;
 import org.apache.custos.resource.secret.management.client.ResourceSecretManagementClient;
 import org.apache.custos.tenant.management.service.GetTenantResponse;
 import org.apache.custos.tenant.manamgement.client.TenantManagementClient;
+import org.apache.custos.tenant.profile.service.Tenant;
 import org.apache.custos.user.profile.service.Group;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -91,7 +92,7 @@ public class GatewayGroupsInitializer {
         GatewayGroups gatewayGroups = new GatewayGroups();
         gatewayGroups.setGatewayId(gatewayId);
 
-        GetTenantResponse getTenantResponse = tenantManagementClient.getTenant(custosId);
+        Tenant getTenantResponse = tenantManagementClient.getTenant(custosId);
 
         String ownerId = getTenantResponse.getAdminUsername();
 
