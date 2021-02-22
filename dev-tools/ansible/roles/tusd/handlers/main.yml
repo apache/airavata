@@ -1,5 +1,4 @@
 #
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -16,19 +15,11 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
 
 ---
-user: "pga"
-group: "pga"
-gateway_data_store_hostname: "pgadev.scigap.org"
-gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
-django_wsgi_processes: 1
-doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
-admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
-django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
-django_database_name: "django_{{ gateway_id }}"
-django_hidden_airavata_apps: "['django_airavata_dataparsers']"
-tusd_vhost_servername: "tus.dev.scigap.org"
-airavata_django_git_branch: "develop"
-# django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
+- name: restart httpd
+  service:
+    name: "{{ httpd_name[ansible_os_family] }}"
+    state: reloaded
+    enabled: yes
+  become: yes
