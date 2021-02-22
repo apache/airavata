@@ -24,7 +24,7 @@
 gateway_data_store_hostname: "scigap11.sciencegateways.iu.edu"
 gateway_data_store_resource_id: "scigap11.sciencegateways.iu.edu_96b8dcec-ac84-438a-9927-91baaf87758b"
 
-django_tus_endpoint: "https://tus.simccs.scigap.org/files/"
+tusd_vhost_servername: "tus.simccs.scigap.org"
 # simccs_maptool_branch: "master"
 simccs_maptool_branch: "dev"
 airavata_django_extra_dependencies:
