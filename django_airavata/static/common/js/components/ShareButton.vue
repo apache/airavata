@@ -244,7 +244,11 @@ export default {
           this.localSharedEntity.addGroup({ group: this.readOnlyAdminsGroup });
           this.emitUnsavedEvent();
         }
-        if (this.localSharedEntity.entityId && this.autoAddAdminGroups) {
+        if (
+          this.localSharedEntity.entityId &&
+          this.autoAddAdminGroups &&
+          this.localSharedEntity.isOwner
+        ) {
           // AIRAVATA-3297 Admins group used to get WRITE permission, but the
           // new default is MANAGE_SHARING so update if necessary
           // Since autoAddAdminGroups is true, there should already be an adminsGroupPermission
