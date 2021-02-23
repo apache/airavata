@@ -24,6 +24,8 @@ user_data_dir: "{{ real_user_data_dir }}"
 #airavata_django_git_branch: "simccs"
 vhost_servername: "dev.ampgateway.org"
 vhost_ssl: true
+# tus isn't setup yet
+tusd_vhost_servername:
 # sudo certbot --apache certonly -d django.simccs.scigap.org
 ssl_certificate_file: "/etc/letsencrypt/live/dev.ampgateway.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.ampgateway.org/fullchain.pem"
