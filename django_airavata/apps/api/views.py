@@ -427,14 +427,12 @@ class ExperimentViewSet(mixins.CreateModelMixin,
     def _copy_experiment_input_uri(
             self,
             data_product_uri):
-        source_data_product = self.request.airavata_client.getDataProduct(
-            self.authz_token, data_product_uri)
-        if user_storage.exists(self.request, source_data_product):
+        if user_storage.exists(self.request, data_product_uri=data_product_uri):
             return user_storage.copy_input_file(
-                self.request, source_data_product)
+                self.request, data_product_uri=data_product_uri)
         else:
             log.warning("Could not find file for source data "
-                        "product {}".format(source_data_product))
+                        "product {}".format(data_product_uri))
             return None
 
     def _update_workspace_preferences(self, project_id,
