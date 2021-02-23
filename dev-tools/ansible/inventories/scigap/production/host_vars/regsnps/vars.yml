@@ -1,0 +1,53 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+#gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
+
+vhost_servername: "regsnps.ccbb.iupui.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/privkey.pem"
+
+
+## Keycloak related variables
+tenant_domain: "regsnps"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "RegSNPs Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "regsnps"
+experiment_data_dir: "{{ user_data_dir }}/regsnps"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAlldWcIK6yNgrj8Firns6JzHVv7iHEdj+VRe6GBIbPSsvY70dx6wfxxCaQvaEvfbXasdPsteTGxjYZ1qSiFQ5XWbX0azThxtMpz/ycQ0V9npsEhRMQ7dzRCI/r5RJOMryVK8KeHRxKJC3SUg4NkDqQ9TFkxYv0vWdsuhPFflpR2QvacD4kfh7nBvVhjxLqSlyDYJEJkKBuvx2n6p+Kx9sr9V1UXDZl22TXyTIHGdVwcTS6nhItqMeSCtBDsofv7U1xvKCb3u4D0tXlSAgLv7Anc+CQmJlj6QJQV4U2fsRy0eW+kkn5U3Dza9km0aXdAo+VHuBXdCGTG13e7yTgRRr"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+portal_title: "RegSNPs Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...
