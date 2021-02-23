@@ -98,7 +98,9 @@ def save_input_file(request, file, name=None, content_type=None):
         return data_product
 
 
-def copy_input_file(request, data_product):
+def copy_input_file(request, data_product=None, data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     path = _get_replica_filepath(data_product)
     name = data_product.productName
     full_path = _Datastore().copy(
@@ -111,7 +113,9 @@ def copy_input_file(request, data_product):
     return _save_copy_of_data_product(request, full_path, data_product)
 
 
-def is_input_file(request, data_product):
+def is_input_file(request, data_product=None, data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     if _is_remote_api():
         resp = _call_remote_api(
             request,
@@ -128,7 +132,9 @@ def is_input_file(request, data_product):
         return False
 
 
-def move_input_file(request, data_product, path):
+def move_input_file(request, data_product=None, path=None, data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     source_path = _get_replica_filepath(data_product)
     file_name = data_product.productName
     full_path = _Datastore().move(
@@ -157,8 +163,13 @@ def move_input_file_from_filepath(
     return data_product
 
 
-def open_file(request, data_product):
-    "Return file object for replica if it exists in user storage."
+def open_file(request, data_product=None, data_product_uri=None):
+    """
+    Return file object for replica if it exists in user storage. One of
+    `data_product` or `data_product_uri` is required.
+    """
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     if _is_remote_api():
         resp = _call_remote_api(
             request,
@@ -175,8 +186,13 @@ def open_file(request, data_product):
         return _Datastore().open(data_product.ownerName, path)
 
 
-def exists(request, data_product):
-    "Return True if replica for data_product exists in user storage."
+def exists(request, data_product=None, data_product_uri=None):
+    """
+    Return True if replica for data_product exists in user storage. One of
+    `data_product` or `data_product_uri` is required.
+    """
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     if _is_remote_api():
         resp = _call_remote_api(
             request,
@@ -267,7 +283,9 @@ def update_file_content(request, path, fileContentText):
             myfile.write(fileContentText)
 
 
-def update_data_product_content(request, data_product, fileContentText):
+def update_data_product_content(request, data_product=None, fileContentText="", data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     # TODO: implement remote api support (DataProductView.put())
     path = _get_replica_filepath(data_product)
     full_path = _Datastore().path(request.user.username, path)
@@ -320,8 +338,13 @@ def get_file(request, path):
         raise ObjectDoesNotExist("User storage file path does not exist")
 
 
-def delete(request, data_product):
-    "Delete replica for data product in this data store."
+def delete(request, data_product=None, data_product_uri=None):
+    """
+    Delete replica for data product in this data store. One of `data_product`
+    or `data_product_uri` is required.
+    """
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
     if _is_remote_api():
         _call_remote_api(
             request,
@@ -560,6 +583,11 @@ def _get_data_product_uri(request, full_path, owner=None):
         data_product = _save_data_product(request, full_path, owner=owner)
         product_uri = data_product.productUri
     return product_uri
+
+
+def _get_data_product(request, data_product_uri):
+    return request.airavata_client.getDataProduct(
+        request.authz_token, data_product_uri)
 
 
 def _save_data_product(request, full_path, name=None, content_type=None, owner=None):
