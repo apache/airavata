@@ -24,7 +24,7 @@
 
 gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
 gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
-django_tus_endpoint: "https://tus.scigap.org/files/"
+tusd_vhost_servername: "tus.scigap.org"
 
 vhost_servername: "gateway.futurewater.indiana.edu"
 vhost_ssl: True

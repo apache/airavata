@@ -27,7 +27,7 @@ django_wsgi_processes: 2
 doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
 django_database_name: "django_{{ inventory_hostname }}"
 django_hidden_airavata_apps: "['django_airavata_dataparsers']"
-django_tus_endpoint: "https://tus.staging.scigap.org/files/"
+tusd_vhost_servername: "tus.staging.scigap.org"
 # django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
 
 # Default email settings

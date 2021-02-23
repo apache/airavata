@@ -1,7 +1,7 @@
 version: '3'
 services:
   keycloak:
-    image: jboss/keycloak:2.5.4.Final
+    image: jboss/keycloak
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
@@ -14,7 +14,7 @@ services:
       - ./keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml
     command: ["-b", "0.0.0.0", "-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=singleFile", "-Dkeycloak.migration.file=/opt/keycloak/Default-export.json", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
   db:
-    image: mariadb:10.4.13
+    image: mariadb:10.4
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_USER=airavata
