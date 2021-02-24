@@ -277,6 +277,12 @@ class ExperimentViewSet(mixins.CreateModelMixin,
     @action(methods=['post'], detail=True)
     def launch(self, request, experiment_id=None):
         try:
+            experiment = request.airavata_client.getExperiment(
+                    self.authz_token, experiment_id)
+            if (experiment.enableEmailNotification):
+                experiment.emailAddresses = [request.user.email]
+            request.airavata_client.updateExperiment(
+                    self.authz_token, experiment_id, experiment)
             if getattr(
                 settings,
                 'GATEWAY_DATA_STORE_REMOTE_API',
@@ -293,8 +299,6 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 r.raise_for_status()
                 return Response(r.json())
             else:
-                experiment = request.airavata_client.getExperiment(
-                    self.authz_token, experiment_id)
                 self._set_storage_id_and_data_dir(experiment)
                 self._move_tmp_input_file_uploads_to_data_dir(experiment)
                 request.airavata_client.updateExperiment(
