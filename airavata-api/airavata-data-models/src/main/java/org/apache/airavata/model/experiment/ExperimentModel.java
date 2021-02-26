@@ -64,6 +64,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)18);
   private static final org.apache.thrift.protocol.TField PROCESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("processes", org.apache.thrift.protocol.TType.LIST, (short)19);
   private static final org.apache.thrift.protocol.TField WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("workflow", org.apache.thrift.protocol.TType.STRUCT, (short)20);
+  private static final org.apache.thrift.protocol.TField CUSTOS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("custosId", org.apache.thrift.protocol.TType.STRING, (short)21);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ExperimentModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ExperimentModelTupleSchemeFactory();
@@ -88,6 +89,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private java.util.List<org.apache.airavata.model.commons.ErrorModel> errors; // optional
   private java.util.List<org.apache.airavata.model.process.ProcessModel> processes; // optional
   private org.apache.airavata.model.workflow.AiravataWorkflow workflow; // optional
+  private java.lang.String custosId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -114,7 +116,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     EXPERIMENT_STATUS((short)17, "experimentStatus"),
     ERRORS((short)18, "errors"),
     PROCESSES((short)19, "processes"),
-    WORKFLOW((short)20, "workflow");
+    WORKFLOW((short)20, "workflow"),
+    CUSTOS_ID((short)21, "custosId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -169,6 +172,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           return PROCESSES;
         case 20: // WORKFLOW
           return WORKFLOW;
+        case 21: // CUSTOS_ID
+          return CUSTOS_ID;
         default:
           return null;
       }
@@ -212,7 +217,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.EXECUTION_ID,_Fields.GATEWAY_EXECUTION_ID,_Fields.GATEWAY_INSTANCE_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.USER_CONFIGURATION_DATA,_Fields.EXPERIMENT_INPUTS,_Fields.EXPERIMENT_OUTPUTS,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS,_Fields.PROCESSES,_Fields.WORKFLOW};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.EXECUTION_ID,_Fields.GATEWAY_EXECUTION_ID,_Fields.GATEWAY_INSTANCE_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.USER_CONFIGURATION_DATA,_Fields.EXPERIMENT_INPUTS,_Fields.EXPERIMENT_OUTPUTS,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS,_Fields.PROCESSES,_Fields.WORKFLOW,_Fields.CUSTOS_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -262,6 +267,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.process.ProcessModel.class))));
     tmpMap.put(_Fields.WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("workflow", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workflow.AiravataWorkflow.class)));
+    tmpMap.put(_Fields.CUSTOS_ID, new org.apache.thrift.meta_data.FieldMetaData("custosId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentModel.class, metaDataMap);
   }
@@ -372,6 +379,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     if (other.isSetWorkflow()) {
       this.workflow = new org.apache.airavata.model.workflow.AiravataWorkflow(other.workflow);
     }
+    if (other.isSetCustosId()) {
+      this.custosId = other.custosId;
+    }
   }
 
   public ExperimentModel deepCopy() {
@@ -404,6 +414,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     this.errors = null;
     this.processes = null;
     this.workflow = null;
+    this.custosId = null;
   }
 
   public java.lang.String getExperimentId() {
@@ -962,6 +973,29 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     }
   }
 
+  public java.lang.String getCustosId() {
+    return this.custosId;
+  }
+
+  public void setCustosId(java.lang.String custosId) {
+    this.custosId = custosId;
+  }
+
+  public void unsetCustosId() {
+    this.custosId = null;
+  }
+
+  /** Returns true if field custosId is set (has been assigned a value) and false otherwise */
+  public boolean isSetCustosId() {
+    return this.custosId != null;
+  }
+
+  public void setCustosIdIsSet(boolean value) {
+    if (!value) {
+      this.custosId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case EXPERIMENT_ID:
@@ -1124,6 +1158,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       }
       break;
 
+    case CUSTOS_ID:
+      if (value == null) {
+        unsetCustosId();
+      } else {
+        setCustosId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -1189,6 +1231,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     case WORKFLOW:
       return getWorkflow();
 
+    case CUSTOS_ID:
+      return getCustosId();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1240,6 +1285,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       return isSetProcesses();
     case WORKFLOW:
       return isSetWorkflow();
+    case CUSTOS_ID:
+      return isSetCustosId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1439,6 +1486,15 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         return false;
     }
 
+    boolean this_present_custosId = true && this.isSetCustosId();
+    boolean that_present_custosId = true && that.isSetCustosId();
+    if (this_present_custosId || that_present_custosId) {
+      if (!(this_present_custosId && that_present_custosId))
+        return false;
+      if (!this.custosId.equals(that.custosId))
+        return false;
+    }
+
     return true;
   }
 
@@ -1525,6 +1581,10 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     hashCode = hashCode * 8191 + ((isSetWorkflow()) ? 131071 : 524287);
     if (isSetWorkflow())
       hashCode = hashCode * 8191 + workflow.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetCustosId()) ? 131071 : 524287);
+    if (isSetCustosId())
+      hashCode = hashCode * 8191 + custosId.hashCode();
 
     return hashCode;
   }
@@ -1737,6 +1797,16 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetCustosId()).compareTo(other.isSetCustosId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCustosId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.custosId, other.custosId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1933,6 +2003,16 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         sb.append("null");
       } else {
         sb.append(this.workflow);
+      }
+      first = false;
+    }
+    if (isSetCustosId()) {
+      if (!first) sb.append(", ");
+      sb.append("custosId:");
+      if (this.custosId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.custosId);
       }
       first = false;
     }
@@ -2238,6 +2318,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 21: // CUSTOS_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.custosId = iprot.readString();
+              struct.setCustosIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2417,6 +2505,13 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           oprot.writeFieldEnd();
         }
       }
+      if (struct.custosId != null) {
+        if (struct.isSetCustosId()) {
+          oprot.writeFieldBegin(CUSTOS_ID_FIELD_DESC);
+          oprot.writeString(struct.custosId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2483,7 +2578,10 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.isSetWorkflow()) {
         optionals.set(13);
       }
-      oprot.writeBitSet(optionals, 14);
+      if (struct.isSetCustosId()) {
+        optionals.set(14);
+      }
+      oprot.writeBitSet(optionals, 15);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2562,6 +2660,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.isSetWorkflow()) {
         struct.workflow.write(oprot);
       }
+      if (struct.isSetCustosId()) {
+        oprot.writeString(struct.custosId);
+      }
     }
 
     @Override
@@ -2579,7 +2680,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       struct.setUserNameIsSet(true);
       struct.experimentName = iprot.readString();
       struct.setExperimentNameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(14);
+      java.util.BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -2696,6 +2797,10 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         struct.workflow = new org.apache.airavata.model.workflow.AiravataWorkflow();
         struct.workflow.read(iprot);
         struct.setWorkflowIsSet(true);
+      }
+      if (incoming.get(14)) {
+        struct.custosId = iprot.readString();
+        struct.setCustosIdIsSet(true);
       }
     }
   }

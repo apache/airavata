@@ -1550,7 +1550,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
         RegistryService.Client regClient = registryClientPool.getResource();
         String custosId = authzToken.getClaimsMap().get(Constants.CUSTOS_ID);
-
+        experiment.setCustosId(custosId);
         try {
             String experimentId = regClient.createExperiment(gatewayId, experiment);
 
