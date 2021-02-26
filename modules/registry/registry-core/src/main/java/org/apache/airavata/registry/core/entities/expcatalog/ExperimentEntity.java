@@ -74,7 +74,7 @@ public class ExperimentEntity implements Serializable {
     public boolean enableEmailNotification;
 
     @Column(name = "CUSTOS_ID")
-    public boolean custosId;
+    public String custosId;
 
     @Lob
     @Column(name = "EMAIL_ADDRESSES")
@@ -258,5 +258,14 @@ public class ExperimentEntity implements Serializable {
 
     public void setProcesses(List<ProcessEntity> processes) {
         this.processes = processes;
+    }
+
+    public String getCustosId() {
+        return custosId;
+    }
+
+    public ExperimentEntity setCustosId(String custosId) {
+        this.custosId = custosId;
+        return this;
     }
 }
