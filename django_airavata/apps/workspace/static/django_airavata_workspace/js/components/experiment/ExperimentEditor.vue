@@ -147,7 +147,7 @@
             <b-form-checkbox 
               v-model="localExperiment.enableEmailNotification"
             >
-              Recieve email notification of experiment status
+              Receive email notification of experiment status
             </b-form-checkbox>
           </b-form-group>
         </div>
