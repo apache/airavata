@@ -108,8 +108,7 @@ struct ExperimentModel {
     17: optional list<status_models.ExperimentStatus> experimentStatus,
     18: optional list<airavata_commons.ErrorModel> errors,
     19: optional list<process_model.ProcessModel> processes,
-    20: optional airavata_workflow_model.AiravataWorkflow workflow,
-    21: optional string custosId
+    20: optional airavata_workflow_model.AiravataWorkflow workflow
     }
 
 struct ExperimentSummaryModel {
