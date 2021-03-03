@@ -1939,8 +1939,10 @@ def _generate_output_view_data(request):
     provider_id = params.pop('provider-id')[0]
     experiment_id = params.pop('experiment-id')[0]
     experiment_output_name = params.pop('experiment-output-name')[0]
+    test_mode = ('test-mode' in params and params.pop('test-mode')[0] == "true")
     return output_views.generate_data(request,
                                       provider_id,
                                       experiment_output_name,
                                       experiment_id,
+                                      test_mode=test_mode,
                                       **params.dict())

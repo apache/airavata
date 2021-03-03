@@ -166,6 +166,7 @@ def generate_data(request,
                   output_view_provider_id,
                   experiment_output_name,
                   experiment_id,
+                  test_mode=False,
                   **kwargs):
     output_view_provider = _get_output_view_provider(output_view_provider_id)
     # TODO if output_view_provider is None, return 404
@@ -183,6 +184,7 @@ def generate_data(request,
                           output_view_provider,
                           experiment_output,
                           experiment,
+                          test_mode=test_mode,
                           **kwargs)
 
 
@@ -190,15 +192,25 @@ def _generate_data(request,
                    output_view_provider,
                    experiment_output,
                    experiment,
+                   test_mode=False,
                    **kwargs):
-    # TODO: handle URI_COLLECTION also
-    logger.debug("getting data product for {}".format(experiment_output.value))
     output_files = []
-    if (experiment_output.value and
-        experiment_output.type in (DataType.URI,
-                                   DataType.URI_COLLECTION,
-                                   DataType.STDOUT,
-                                   DataType.STDERR) and
+    # test_mode can only be used in DEBUG=True mode
+    if test_mode and settings.DEBUG:
+        test_output_file = getattr(output_view_provider,
+                                   'test_output_file',
+                                   None)
+        if test_output_file is None:
+            raise Exception(f"test_output_file is not set on {output_view_provider}")
+        logger.info(f"Using {test_output_file} instead of regular output file")
+        output_file = open(test_output_file, 'rb')
+        output_files.append(output_file)
+
+    elif (experiment_output.value and
+          experiment_output.type in (DataType.URI,
+                                     DataType.URI_COLLECTION,
+                                     DataType.STDOUT,
+                                     DataType.STDERR) and
             experiment_output.value.startswith("airavata-dp")):
         data_product_uris = experiment_output.value.split(",")
         data_products = map(lambda dpid:
@@ -209,6 +221,7 @@ def _generate_data(request,
             if user_storage.exists(request, data_product):
                 output_file = user_storage.open_file(request, data_product)
                 output_files.append(output_file)
+
     generate_data_func = output_view_provider.generate_data
     method_sig = inspect.signature(generate_data_func)
     if 'output_files' in method_sig.parameters:
