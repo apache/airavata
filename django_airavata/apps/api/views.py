@@ -278,11 +278,11 @@ class ExperimentViewSet(mixins.CreateModelMixin,
     def launch(self, request, experiment_id=None):
         try:
             experiment = request.airavata_client.getExperiment(
-                    self.authz_token, experiment_id)
+                self.authz_token, experiment_id)
             if (experiment.enableEmailNotification):
                 experiment.emailAddresses = [request.user.email]
             request.airavata_client.updateExperiment(
-                    self.authz_token, experiment_id, experiment)
+                self.authz_token, experiment_id, experiment)
             if getattr(
                 settings,
                 'GATEWAY_DATA_STORE_REMOTE_API',
