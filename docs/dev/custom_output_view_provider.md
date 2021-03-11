@@ -146,7 +146,7 @@ The returned dictionary should include the following entries:
 
 **Examples**
 
--   [dREG - DregGenomeBrowserViewProvider](https://github.com/SciGaP/dreg-djangoapp/blob/master/dreg_djangoapp/output_views.py#L4)
+-   [dREG - DregGenomeBrowserViewProvider](https://github.com/SciGaP/dreg-djangoapp/blob/gbrowser/dreg_djangoapp/output_views.py)
 
 ### Entry Point registration
 
