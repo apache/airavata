@@ -39,13 +39,13 @@ auth_options:
   password:
     name: "HICOPS Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "hicops"
 experiment_data_dir: "{{ user_data_dir }}/hicops"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCntbE2GLI5S2QNRlruR8vjmLHUbpePz9NBcSJuvffOT+R75nsWlyjVEI7Tn43qvJMPR7SpOy5W5u7mmjLYx0lphMv5RJ64Hy5tIK39RlXya3s/+0gyA//I9tS4BAt7NKmGItvIZI/JLGxyUY8ZTnkRofAbEHJy3KtW1lBWUHKNsJfXyR7KJwmEkOVMU8x4fC/C/OyfsofsipG82fYJlfAgpJc+kODAgJBZI90h9pisOmfk2Wkiqt6aC3JHUZmIF2x3w5eXyhTc6RCBgNNQUy88KPOp5neMnCEbrCMx0aZGqLZFb9Q+4DVdnsmS+QvCEEpI8eFiceSN0D1Yo5IC9bvh"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnwOfvXERKIUcsH9W4GH+S+glClMrxzlEV6cXtCgrr92ooTEw3oxjmQGyvGs0G6AFHe7Tbkxnp6QBFD/VvNLpaXcvZc3t37IvbKqm2Wu5TkLhgHZqG/ceGSlaLqgKIhU5kENF3Y0XtK/QSd4hfECWQ/VyzafPCLs88xuaXdhUQE4dw+COrimaW57nCZ/A1lspBIKsnwxqFpmIXE1gsR/eU0UjVCNixm3PoO+0hr6MTzzped+xAdQHuTST/0bu0vcrK1qVixsD8rKVLgaaEaHml93vG85wlzBmsiGID4yKNTJSQBNn3G8r51mjzw72tRHovaYlP3NMpPuWeVZgY7WF9"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Muhammad Haseeb','mhaseeb@fiu.edu'),('Fahad Saeed','fsaeed@fiu.edu')]"
 portal_title: "HICOPS Portal"
