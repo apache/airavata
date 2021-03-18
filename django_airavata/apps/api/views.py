@@ -508,8 +508,8 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
         try:
             applicationInterface = self.request.airavata_client \
                 .getApplicationInterface(self.authz_token, appInterfaceId)
-        except Exception:
-            log.exception("Failed to load app interface")
+        except Exception as e:
+            log.warning(f"Failed to load app interface: {e}")
             applicationInterface = None
         exp_output_views = output_views.get_output_views(
             self.request, experimentModel, applicationInterface)
@@ -529,6 +529,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 inp.type == DataType.URI_COLLECTION)
             for dp in inp.value.split(',')
             if inp.value.startswith('airavata-dp')]
+        applicationModule = None
         try:
             if applicationInterface is not None:
                 appModuleId = applicationInterface.applicationModules[0]
@@ -536,10 +537,9 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                     .getApplicationModule(self.authz_token, appModuleId)
             else:
                 log.warning(
-                    "Cannot log application model since app interface failed to load")
+                    "Cannot load application model since app interface failed to load")
         except Exception:
             log.exception("Failed to load app interface/module")
-            applicationModule = None
 
         compute_resource_id = None
         user_conf = experimentModel.userConfigurationData

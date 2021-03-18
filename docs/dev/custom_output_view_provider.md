@@ -112,6 +112,21 @@ def generate_data(self, request, experiment_output, experiment, output_files=Non
     }
 ```
 
+The arguments to the `generate_data` function are described below:
+
+-   `request` -
+    [Django Request](https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest)
+    object.
+-   `experiment_output` - Airavata metadata about output file(s), see
+    [OutputDataObjectType doc](http://airavata.apache.org/api-docs/master/application_io_models.html#Struct_OutputDataObjectType).
+-   `experiment` - Airavata metadata about the experiment, see
+    [ExperimentModel doc](http://airavata.apache.org/api-docs/master/experiment_model.html#Struct_ExperimentModel).
+-   `output_file` - Python
+    [file-like object](https://docs.python.org/3/glossary.html#term-file-object).
+    Read from this file to process the contents of the output file.
+-   `output_files` - If the output type is URI_COLLECTION, then the collection
+    of files is given as a list of file-like objects.
+
 The required contents of the dictionary varies based on the _display type_.
 
 #### Display type link
@@ -154,7 +169,7 @@ The returned dictionary should include the following entries:
 
 **Examples**
 
--   [dREG - DregGenomeBrowserViewProvider](https://github.com/SciGaP/dreg-djangoapp/blob/master/dreg_djangoapp/output_views.py#L4)
+-   [dREG - DregGenomeBrowserViewProvider](https://github.com/SciGaP/dreg-djangoapp/blob/gbrowser/dreg_djangoapp/output_views.py)
 
 ### Entry Point registration
 

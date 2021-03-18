@@ -256,8 +256,9 @@ export default {
             (gp) => gp.group.isGatewayAdminsGroup
           );
           if (
+            adminsGroupPermission &&
             adminsGroupPermission.permissionType !==
-            models.ResourcePermissionType.MANAGE_SHARING
+              models.ResourcePermissionType.MANAGE_SHARING
           ) {
             adminsGroupPermission.permissionType =
               models.ResourcePermissionType.MANAGE_SHARING;

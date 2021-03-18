@@ -437,11 +437,13 @@ class GaussianEigenvaluesViewProvider:
     name = "Gaussian Eigenvalues"
 ```
 
-3. Now we implement the `generate_data` function. This function should return a
-   dictionary with values that are expected for this `display_type`. For a
-   display type of _image_, the required return values are _image_ which should
-   be a bytes array or file-like object with the image bytes and _mime-type_
-   which should be the image's mime type. Here's the `generate_data` function:
+3. Now we implement the
+   [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
+   This function should return a dictionary with values that are expected for
+   this `display_type`. For a display type of _image_, the required return
+   values are _image_ which should be a bytes array or file-like object with the
+   image bytes and _mime-type_ which should be the image's mime type. Here's the
+   `generate_data` function:
 
 ```python
     def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
