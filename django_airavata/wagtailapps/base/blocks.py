@@ -550,6 +550,10 @@ class NavItem(StructBlock):
         ('', 'Select a horizontal alignment'),
         ('push-right', 'Push Right'),
     ], required=False)
+    include_in_main_menu = ChoiceBlock(choices=[
+        ('', 'Choose if this link should also be added to main menu'),
+        ('yes', 'Add to main menu'),
+    ], required=False, help_text="The main menu is at the top of the dashboard when a user first logs in. Horizontal alignment does not apply when added to main menu.")
 
     class Meta:
         icon = "fa-minus"

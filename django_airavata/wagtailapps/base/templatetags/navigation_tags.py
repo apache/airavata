@@ -168,6 +168,25 @@ def get_nav_extra(context):
     }
 
 
+@register.inclusion_tag(
+    'django_airavata_wagtail_base/includes/main_menu_navs.html', takes_context=True)
+def main_menu_navs(context):
+    """NavExtra nav items that are 'include_in_main_menu' == yes"""
+    nav_items = []
+    if NavExtra.objects.first() is not None:
+        nav_extra = NavExtra.objects.first()
+        # only return the nav_items that have 'include_in_main_menu' == yes
+        if nav_extra.nav and len(nav_extra.nav) > 0:
+            nav = nav_extra.nav[0]
+            nav_items = nav.value['nav_items']
+            nav_items = filter(lambda n: n.value['include_in_main_menu'] == 'yes', nav_items)
+
+    return {
+        'nav_items': nav_items,
+        'request': context['request'],
+    }
+
+
 @register.inclusion_tag('django_airavata_wagtail_base/includes/gateway_icon.html', takes_context=True)
 def gateway_icon(context):
     gateway_icon = GatewayIcon.objects.first()
