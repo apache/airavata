@@ -48,7 +48,6 @@
 
 - name: enable certbot (letsencrypt) renewal
   systemd:
-    state: started
     enabled: true
     name: certbot-renew
     daemon_reload: true
