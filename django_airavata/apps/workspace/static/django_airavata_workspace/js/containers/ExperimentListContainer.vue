@@ -44,6 +44,7 @@
                 <template slot="first">
                   <option :value="null" disabled>Select an experiment status to filter by</option>
                 </template>
+                <option value="ALL">ALL</option>
                 <option value="CREATED">Created</option>
                 <option value="VALIDATED">Validated</option>
                 <option value="SCHEDULED">Scheduled</option>
@@ -228,7 +229,9 @@ export default {
         }
       }
       if (this.experimentStatusSelect){
-        searchParams["STATUS"]= this.experimentStatusSelect;
+        if (this.experimentStatusSelect != "ALL"){
+          searchParams["STATUS"]= this.experimentStatusSelect;
+        }
       }
       if (this.fromDate && this.toDate){
         searchParams["FROM_DATE"] = this.fromDate.getTime();
