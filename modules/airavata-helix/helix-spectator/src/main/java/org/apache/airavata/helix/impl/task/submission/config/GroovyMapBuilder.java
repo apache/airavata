@@ -384,7 +384,7 @@ public class GroovyMapBuilder {
                             paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
                         }
 
-                        inputFiles.add(String.join(" ", paths));
+                        inputFiles.addAll(Arrays.asList(paths));
                     }
                 }
             }
