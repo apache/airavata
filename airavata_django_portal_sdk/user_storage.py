@@ -6,9 +6,11 @@ import mimetypes
 import os
 import shutil
 import warnings
+from datetime import datetime
 from http import HTTPStatus
 from urllib.parse import quote, unquote, urlparse
 
+import grpc
 import requests
 from airavata.model.data.replica.ttypes import (
     DataProductModel,
@@ -23,6 +25,7 @@ from django.core.files import File
 from django.core.files.move import file_move_safe
 from django.core.files.storage import FileSystemStorage
 
+from . import MFTApi_pb2, MFTApi_pb2_grpc
 from .util import convert_iso8601_to_datetime
 
 logger = logging.getLogger(__name__)
@@ -63,6 +66,7 @@ def move_from_filepath(
         name=None,
         content_type=None):
     "Move a file from filesystem into user's storage."
+    # TODO: deprecate this method
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
     full_path = _Datastore().move_external(
@@ -100,6 +104,8 @@ def save_input_file(request, file, name=None, content_type=None):
 
 
 def copy_input_file(request, data_product=None, data_product_uri=None):
+    # TODO: we could probably deprecate this as well, since we do an open/save
+    # to copy instead. Or at least, we don't need it in UserStorageProvider.
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     path = _get_replica_filepath(data_product)
@@ -115,6 +121,7 @@ def copy_input_file(request, data_product=None, data_product_uri=None):
 
 
 def is_input_file(request, data_product=None, data_product_uri=None):
+    # TODO: don't need this in UserStorageProvider
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     if _is_remote_api():
@@ -134,6 +141,7 @@ def is_input_file(request, data_product=None, data_product_uri=None):
 
 
 def move_input_file(request, data_product=None, path=None, data_product_uri=None):
+    # TODO: don't need this in UserStorageProvider
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     source_path = _get_replica_filepath(data_product)
@@ -152,6 +160,7 @@ def move_input_file(request, data_product=None, path=None, data_product_uri=None
 def move_input_file_from_filepath(
     request, source_path, name=None, content_type=None
 ):
+    # TODO: don't need this in UserStorageProvider
     "Move a file from filesystem into user's input file staging area."
     username = request.user.username
     file_name = name if name is not None else os.path.basename(source_path)
@@ -218,7 +227,8 @@ def dir_exists(request, path):
         resp.raise_for_status()
         return resp.json()['isDir']
     else:
-        return _Datastore().dir_exists(request.user.username, path)
+        user_storage_provider = MFTApiUserStorageProvider()
+        return user_storage_provider.dir_exists(request, path)
 
 
 def user_file_exists(request, path):
@@ -311,32 +321,9 @@ def get_file(request, path):
         file['mime_type'] = file['mimeType']
         file['data-product-uri'] = file['dataProductURI']
         return file
-    datastore = _Datastore()
-    if datastore.exists(request.user.username, path):
-        created_time = datastore.get_created_time(
-            request.user.username, path)
-        size = datastore.size(request.user.username, path)
-        full_path = datastore.path(request.user.username, path)
-        data_product_uri = _get_data_product_uri(request, full_path)
-        dir_path, file_name = os.path.split(path)
 
-        data_product = request.airavata_client.getDataProduct(
-            request.authz_token, data_product_uri)
-        mime_type = None
-        if 'mime-type' in data_product.productMetadata:
-            mime_type = data_product.productMetadata['mime-type']
-
-        return {
-            'name': full_path,
-            'path': dir_path,
-            'data-product-uri': data_product_uri,
-            'created_time': created_time,
-            'mime_type': mime_type,
-            'size': size,
-            'hidden': False
-        }
-    else:
-        raise ObjectDoesNotExist("User storage file path does not exist")
+    user_storage_provider = MFTApiUserStorageProvider()
+    return user_storage_provider.get_file(request, path)
 
 
 def delete(request, data_product=None, data_product_uri=None):
@@ -388,58 +375,8 @@ def listdir(request, path):
             file['data-product-uri'] = file['dataProductURI']
         return data['directories'], data['files']
 
-    datastore = _Datastore()
-    if datastore.dir_exists(request.user.username, path):
-        directories, files = datastore.list_user_dir(
-            request.user.username, path)
-        directories_data = []
-        for d in directories:
-            dpath = os.path.join(path, d)
-            created_time = datastore.get_created_time(
-                request.user.username, dpath)
-            size = datastore.size(request.user.username, dpath)
-            directories_data.append(
-                {
-                    "name": d,
-                    "path": dpath,
-                    "created_time": created_time,
-                    "size": size,
-                    "hidden": dpath == TMP_INPUT_FILE_UPLOAD_DIR,
-                }
-            )
-        files_data = []
-        for f in files:
-            user_rel_path = os.path.join(path, f)
-            if not datastore.exists(request.user.username, user_rel_path):
-                logger.warning(f"listdir skipping {request.user.username}:{user_rel_path}, "
-                               "does not exist (broken symlink?)")
-                continue
-            created_time = datastore.get_created_time(
-                request.user.username, user_rel_path
-            )
-            size = datastore.size(request.user.username, user_rel_path)
-            full_path = datastore.path(request.user.username, user_rel_path)
-            data_product_uri = _get_data_product_uri(request, full_path)
-
-            data_product = request.airavata_client.getDataProduct(
-                request.authz_token, data_product_uri)
-            mime_type = None
-            if 'mime-type' in data_product.productMetadata:
-                mime_type = data_product.productMetadata['mime-type']
-            files_data.append(
-                {
-                    "name": f,
-                    "path": user_rel_path,
-                    "data-product-uri": data_product_uri,
-                    "created_time": created_time,
-                    "mime_type": mime_type,
-                    "size": size,
-                    "hidden": False,
-                }
-            )
-        return directories_data, files_data
-    else:
-        raise ObjectDoesNotExist("User storage path does not exist")
+    user_storage_provider = MFTApiUserStorageProvider()
+    return user_storage_provider.listdir(request, path)
 
 
 def list_experiment_dir(request, experiment_id, path=""):
@@ -993,3 +930,267 @@ class _Datastore:
                 if os.path.exists(fp):
                     total_size += os.path.getsize(fp)
         return total_size
+
+
+class UserStorageProvider:
+    def dir_exists(self, request, path):
+        raise NotImplementedError()
+
+    def listdir(self, request, path):
+        raise NotImplementedError()
+
+    def get_file(self, request, path):
+        raise NotImplementedError()
+
+
+class FileSystemUserStorageProvider(UserStorageProvider):
+    def dir_exists(self, request, path):
+        return _Datastore().dir_exists(request.user.username, path)
+
+    def listdir(self, request, path):
+        datastore = _Datastore()
+        if datastore.dir_exists(request.user.username, path):
+            directories, files = datastore.list_user_dir(
+                request.user.username, path)
+            directories_data = []
+            for d in directories:
+                dpath = os.path.join(path, d)
+                created_time = datastore.get_created_time(
+                    request.user.username, dpath)
+                size = datastore.size(request.user.username, dpath)
+                directories_data.append(
+                    {
+                        "name": d,
+                        "path": dpath,
+                        "created_time": created_time,
+                        "size": size,
+                        "hidden": dpath == TMP_INPUT_FILE_UPLOAD_DIR,
+                    }
+                )
+            files_data = []
+            for f in files:
+                user_rel_path = os.path.join(path, f)
+                if not datastore.exists(request.user.username, user_rel_path):
+                    logger.warning(f"listdir skipping {request.user.username}:{user_rel_path}, "
+                                   "does not exist (broken symlink?)")
+                    continue
+                created_time = datastore.get_created_time(
+                    request.user.username, user_rel_path
+                )
+                size = datastore.size(request.user.username, user_rel_path)
+                full_path = datastore.path(request.user.username, user_rel_path)
+                data_product_uri = _get_data_product_uri(request, full_path)
+
+                data_product = request.airavata_client.getDataProduct(
+                    request.authz_token, data_product_uri)
+                mime_type = None
+                if 'mime-type' in data_product.productMetadata:
+                    mime_type = data_product.productMetadata['mime-type']
+                files_data.append(
+                    {
+                        "name": f,
+                        "path": user_rel_path,
+                        "data-product-uri": data_product_uri,
+                        "created_time": created_time,
+                        "mime_type": mime_type,
+                        "size": size,
+                        "hidden": False,
+                    }
+                )
+            return directories_data, files_data
+        else:
+            raise ObjectDoesNotExist("User storage path does not exist")
+
+    def get_file(self, request, path):
+
+        if _is_remote_api():
+            resp = _call_remote_api(request,
+                                    "/user-storage/~/{path}",
+                                    path_params={"path": path},
+                                    raise_for_status=False
+                                    )
+            _raise_404(resp, "User storage file path does not exist")
+            data = resp.json()
+            if data["isDir"]:
+                raise Exception("User storage path is a directory, not a file")
+            file = data['files'][0]
+            file['created_time'] = convert_iso8601_to_datetime(file['createdTime'])
+            file['mime_type'] = file['mimeType']
+            file['data-product-uri'] = file['dataProductURI']
+            return file
+        datastore = _Datastore()
+        if datastore.exists(request.user.username, path):
+            created_time = datastore.get_created_time(
+                request.user.username, path)
+            size = datastore.size(request.user.username, path)
+            full_path = datastore.path(request.user.username, path)
+            data_product_uri = _get_data_product_uri(request, full_path)
+            dir_path, file_name = os.path.split(path)
+
+            data_product = request.airavata_client.getDataProduct(
+                request.authz_token, data_product_uri)
+            mime_type = None
+            if 'mime-type' in data_product.productMetadata:
+                mime_type = data_product.productMetadata['mime-type']
+
+            return {
+                'name': full_path,
+                'path': dir_path,
+                'data-product-uri': data_product_uri,
+                'created_time': created_time,
+                'mime_type': mime_type,
+                'size': size,
+                'hidden': False
+            }
+        else:
+            raise ObjectDoesNotExist("User storage file path does not exist")
+
+
+class MFTApiUserStorageProvider(UserStorageProvider):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def dir_exists(self, request, path):
+        with grpc.insecure_channel('localhost:7004') as channel:
+            # remove trailing slash and figure out parent path
+            # FIXME remove the hard coded /tmp path
+            parent_path, child_path = os.path.split(f"/tmp/{path}".rstrip("/"))
+            logger.debug(f"parent_path={parent_path}, child_path={child_path}")
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            # Get metadata for parent directory and see if child_path exists
+            request = MFTApi_pb2.FetchResourceMetadataRequest(
+                resourceId="remote-ssh-dir-resource",
+                resourceType="SCP",
+                resourceToken="local-ssh-cred",
+                resourceBackend="FILE",
+                resourceCredentialBackend="FILE",
+                targetAgentId="agent0",
+                childPath=parent_path,
+                mftAuthorizationToken="user token")
+            response = stub.getDirectoryResourceMetadata(request)
+            # if not child_path, then return True since the response was
+            # successful and we just need to confirm the existence of the root dir
+            if child_path == '':
+                return True
+            return child_path in map(lambda f: f.friendlyName, response.directories)
+
+    def listdir(self, request, path):
+        # TODO setup resourceId, etc from __init__ arguments
+        channel = grpc.insecure_channel('localhost:7004')
+        stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+        request = MFTApi_pb2.FetchResourceMetadataRequest(
+            resourceId="remote-ssh-dir-resource",
+            resourceType="SCP",
+            resourceToken="local-ssh-cred",
+            resourceBackend="FILE",
+            resourceCredentialBackend="FILE",
+            targetAgentId="agent0",
+            childPath=f"/tmp/{path}",
+            mftAuthorizationToken="user token")
+        response = stub.getDirectoryResourceMetadata(request)
+        directories_data = []
+        for d in response.directories:
+
+            dpath = os.path.join(path, d.friendlyName)
+            created_time = datetime.fromtimestamp(d.createdTime)
+            # TODO MFT API doesn't report size
+            size = 0
+            directories_data.append(
+                {
+                    "name": d.friendlyName,
+                    "path": dpath,
+                    "created_time": created_time,
+                    "size": size,
+                    # TODO how to handle hidden directories or directories for
+                    # staging input file uploads
+                    "hidden": False
+                }
+            )
+        files_data = []
+        for f in response.files:
+            user_rel_path = os.path.join(path, f.friendlyName)
+            # TODO do we need to check for broken symlinks?
+            created_time = datetime.fromtimestamp(f.createdTime)
+            # TODO get the size as well
+            size = 0
+            # full_path = datastore.path(request.user.username, user_rel_path)
+            # TODO how do we register these as data products, do we need to?
+            # data_product_uri = _get_data_product_uri(request, full_path)
+
+            # data_product = request.airavata_client.getDataProduct(
+            #     request.authz_token, data_product_uri)
+            # mime_type = None
+            # if 'mime-type' in data_product.productMetadata:
+            #     mime_type = data_product.productMetadata['mime-type']
+            files_data.append(
+                {
+                    "name": f.friendlyName,
+                    "path": user_rel_path,
+                    "data-product-uri": None,
+                    "created_time": created_time,
+                    "mime_type": None,
+                    "size": size,
+                    "hidden": False,
+                }
+            )
+        return directories_data, files_data
+
+    def get_file(self, request, path):
+        # FIXME remove hard coded /tmp path
+        path = f"/tmp/{path}".rstrip("/")
+        file_metadata = self._get_file(path)
+        if file_metadata is not None:
+            user_rel_path = os.path.join(path, file_metadata.friendlyName)
+            created_time = datetime.fromtimestamp(file_metadata.createdTime)
+            # TODO get the size as well
+            size = 0
+
+            return {
+                "name": file_metadata.friendlyName,
+                "path": user_rel_path,
+                "data-product-uri": None,
+                "created_time": created_time,
+                "mime_type": None,
+                "size": size,
+                "hidden": False,
+            }
+        else:
+            raise ObjectDoesNotExist("User storage file path does not exist")
+
+    def _get_file(self, path):
+        with grpc.insecure_channel('localhost:7004') as channel:
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            # Get metadata for parent directory and see if child_path exists
+            request = MFTApi_pb2.FetchResourceMetadataRequest(
+                resourceId="remote-ssh-dir-resource",
+                resourceType="SCP",
+                resourceToken="local-ssh-cred",
+                resourceBackend="FILE",
+                resourceCredentialBackend="FILE",
+                targetAgentId="agent0",
+                childPath=path,
+                mftAuthorizationToken="user token")
+            try:
+                # TODO is there a better way to check if file exists than catching exception?
+                return stub.getFileResourceMetadata(request)
+            except Exception:
+                logger.exception(f"_get_file({path})")
+                return None
+
+    def _get_download_url(self, path):
+
+        with grpc.insecure_channel('localhost:7004') as channel:
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            download_request = MFTApi_pb2.HttpDownloadApiRequest(sourceStoreId="remote-ssh-storage",
+                                                                 sourcePath="/tmp/a.txt",
+                                                                 sourceToken="local-ssh-cred",
+                                                                 sourceType="SCP",
+                                                                 targetAgent="agent0",
+                                                                 mftAuthorizationToken="")
+            try:
+                # TODO is there a better way to check if file exists than catching exception?
+                # response stub.submitHttpDownload(request)
+                pass
+            except Exception:
+                logger.exception(f"_get_file({path})")
+                return None
