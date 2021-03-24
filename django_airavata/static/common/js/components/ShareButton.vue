@@ -229,14 +229,20 @@ export default {
         }
         if (
           !this.localSharedEntity.entityId &&
-          this.autoAddDefaultGatewayUsersGroup
+          this.autoAddDefaultGatewayUsersGroup &&
+          this.defaultGatewayUsersGroup
         ) {
           this.localSharedEntity.addGroup({
             group: this.defaultGatewayUsersGroup,
           });
           this.emitUnsavedEvent();
         }
-        if (!this.localSharedEntity.entityId && this.autoAddAdminGroups) {
+        if (
+          !this.localSharedEntity.entityId &&
+          this.autoAddAdminGroups &&
+          this.adminsGroup &&
+          this.readOnlyAdminsGroup
+        ) {
           this.localSharedEntity.addGroup({
             group: this.adminsGroup,
             permissionType: models.ResourcePermissionType.MANAGE_SHARING,
