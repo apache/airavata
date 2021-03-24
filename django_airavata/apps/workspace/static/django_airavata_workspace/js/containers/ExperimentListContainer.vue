@@ -50,7 +50,7 @@
                 <option value="SCHEDULED">Scheduled</option>
                 <option value="LAUNCHED">Launched</option>
                 <option value="EXECUTING">Executing</option>
-                <option value="CANCELED">Cancled</option>
+                <option value="CANCELED">Canceled</option>
                 <option value="COMPLETED">Completed</option>
                 <option value="FAILED">Failed</option>
               </b-form-select>
