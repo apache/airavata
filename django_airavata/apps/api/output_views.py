@@ -3,6 +3,7 @@ import inspect
 import json
 import logging
 import os
+from functools import partial
 
 import nbformat
 import papermill as pm
@@ -26,7 +27,8 @@ class DefaultViewProvider:
             request,
             experiment_output,
             experiment,
-            output_file=None):
+            output_file=None,
+            **kwargs):
         return {
         }
 
@@ -164,6 +166,7 @@ def generate_data(request,
                   output_view_provider_id,
                   experiment_output_name,
                   experiment_id,
+                  test_mode=False,
                   **kwargs):
     output_view_provider = _get_output_view_provider(output_view_provider_id)
     # TODO if output_view_provider is None, return 404
@@ -181,6 +184,7 @@ def generate_data(request,
                           output_view_provider,
                           experiment_output,
                           experiment,
+                          test_mode=test_mode,
                           **kwargs)
 
 
@@ -188,31 +192,46 @@ def _generate_data(request,
                    output_view_provider,
                    experiment_output,
                    experiment,
+                   test_mode=False,
                    **kwargs):
-    # TODO: handle URI_COLLECTION also
-    logger.debug("getting data product for {}".format(experiment_output.value))
-    output_file = None
-    test_output_file = getattr(output_view_provider,
-                               'test_output_file',
-                               None)
-    if (experiment_output.value and
-        experiment_output.type in (DataType.URI,
-                                   DataType.STDOUT,
-                                   DataType.STDERR) and
+    output_files = []
+    # test_mode can only be used in DEBUG=True mode
+    if test_mode and settings.DEBUG:
+        test_output_file = getattr(output_view_provider,
+                                   'test_output_file',
+                                   None)
+        if test_output_file is None:
+            raise Exception(f"test_output_file is not set on {output_view_provider}")
+        logger.info(f"Using {test_output_file} instead of regular output file")
+        output_file = open(test_output_file, 'rb')
+        output_files.append(output_file)
+
+    elif (experiment_output.value and
+          experiment_output.type in (DataType.URI,
+                                     DataType.URI_COLLECTION,
+                                     DataType.STDOUT,
+                                     DataType.STDERR) and
             experiment_output.value.startswith("airavata-dp")):
-        data_product = request.airavata_client.getDataProduct(
-            request.authz_token, experiment_output.value)
-        if user_storage.exists(request, data_product):
-            output_file = user_storage.open_file(request, data_product)
-        elif settings.DEBUG and test_output_file is not None:
-            output_file = open(test_output_file, 'rb')
-    # TODO: change interface to provide output_file as a path
+        data_product_uris = experiment_output.value.split(",")
+        data_products = map(lambda dpid:
+                            request.airavata_client.getDataProduct(request.authz_token,
+                                                                   dpid),
+                            data_product_uris)
+        for data_product in data_products:
+            if user_storage.exists(request, data_product):
+                output_file = user_storage.open_file(request, data_product)
+                output_files.append(output_file)
+
+    generate_data_func = output_view_provider.generate_data
+    method_sig = inspect.signature(generate_data_func)
+    if 'output_files' in method_sig.parameters:
+        generate_data_func = partial(generate_data_func, output_files=output_files)
     # TODO: convert experiment and experiment_output to dict/JSON
-    data = output_view_provider.generate_data(request,
-                                              experiment_output,
-                                              experiment,
-                                              output_file=output_file,
-                                              **kwargs)
+    data = generate_data_func(request,
+                              experiment_output,
+                              experiment,
+                              output_file=output_files[0] if len(output_files) > 0 else None,
+                              **kwargs)
     _process_interactive_params(data)
     return data
 

@@ -446,7 +446,7 @@ class GaussianEigenvaluesViewProvider:
    `generate_data` function:
 
 ```python
-    def generate_data(self, request, experiment_output, experiment, output_file=None):
+    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
         # Parse output_file
         output_text = io.TextIOWrapper(output_file)
         gaussian = ccopen(output_text)
@@ -514,7 +514,7 @@ class GaussianEigenvaluesViewProvider:
     display_type = 'image'
     name = "Gaussian Eigenvalues"
 
-    def generate_data(self, request, experiment_output, experiment, output_file=None):
+    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
 
         # Parse output_file
         output_text = io.TextIOWrapper(output_file)
@@ -638,7 +638,7 @@ grid as an example.
    parameter with a default value of `False`:
 
 ```python
-    def generate_data(self, request, experiment_output, experiment, output_file=None, show_grid=False):
+    def generate_data(self, request, experiment_output, experiment, output_file=None, show_grid=False, **kwargs):
 ```
 
 2. Add the following `.grid()` lines to the matplotlib code:

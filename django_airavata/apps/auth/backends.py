@@ -77,9 +77,9 @@ class KeycloakBackend(object):
                 request.authz_token = get_authz_token(
                     request, user=user, access_token=access_token)
             return user
-        except Exception:
-            logger.exception("login failed")
-            return None
+        except Exception as e:
+            logger.warning("login failed", exc_info=e)
+            raise
 
     def get_user(self, user_id):
         try:
@@ -96,14 +96,15 @@ class KeycloakBackend(object):
             verify_ssl = settings.KEYCLOAK_VERIFY_SSL
             oauth2_session = OAuth2Session(client=LegacyApplicationClient(
                 client_id=client_id))
-            if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-                oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
+            verify = verify_ssl
+            if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+                verify = settings.KEYCLOAK_CA_CERTFILE
             token = oauth2_session.fetch_token(token_url=token_url,
                                                username=username,
                                                password=password,
                                                client_id=client_id,
                                                client_secret=client_secret,
-                                               verify=verify_ssl)
+                                               verify=verify)
             userinfo = oauth2_session.get(userinfo_url).json()
             return token, userinfo
         except InvalidGrantError as e:
@@ -126,11 +127,12 @@ class KeycloakBackend(object):
                                        scope='openid',
                                        redirect_uri=redirect_uri,
                                        state=state)
-        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
+        verify = verify_ssl
+        if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+            verify = settings.KEYCLOAK_CA_CERTFILE
         token = oauth2_session.fetch_token(
             token_url, client_secret=client_secret,
-            authorization_response=authorization_code_url, verify=verify_ssl)
+            authorization_response=authorization_code_url, verify=verify)
         userinfo = oauth2_session.get(userinfo_url).json()
         return token, userinfo
 
@@ -143,8 +145,9 @@ class KeycloakBackend(object):
         userinfo_url = settings.KEYCLOAK_USERINFO_URL
         verify_ssl = settings.KEYCLOAK_VERIFY_SSL
         oauth2_session = OAuth2Session(client_id, scope='openid')
-        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
+        verify = verify_ssl
+        if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+            verify = settings.KEYCLOAK_CA_CERTFILE
         refresh_token_ = (refresh_token
                           if refresh_token is not None
                           else request.session['REFRESH_TOKEN'])
@@ -154,7 +157,7 @@ class KeycloakBackend(object):
         token = oauth2_session.refresh_token(token_url=token_url,
                                              refresh_token=refresh_token_,
                                              auth=auth,
-                                             verify=verify_ssl)
+                                             verify=verify)
         userinfo = oauth2_session.get(userinfo_url).json()
         return token, userinfo
 
@@ -164,10 +167,11 @@ class KeycloakBackend(object):
         verify_ssl = settings.KEYCLOAK_VERIFY_SSL
         oauth2_session = OAuth2Session(
             client_id, token={'access_token': token})
-        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
+        verify = verify_ssl
+        if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+            verify = settings.KEYCLOAK_CA_CERTFILE
         userinfo = oauth2_session.get(
-            userinfo_url, verify=verify_ssl).json()
+            userinfo_url, verify=verify).json()
         if 'error' in userinfo:
             msg = userinfo.get('error_description')
             if msg is None:
@@ -208,6 +212,4 @@ class KeycloakBackend(object):
                         last_name=last_name,
                         email=email)
             user.save()
-            utils.send_new_user_email(
-                request, username, email, first_name, last_name)
             return user

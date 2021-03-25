@@ -4,8 +4,8 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - nvm install lts/*
-  - nvm use lts/*
+  - nvm install
+  - nvm use
   - pip install -r requirements-dev.txt
 script:
   - cp django_airavata/settings_local.py.sample django_airavata/settings_local.py

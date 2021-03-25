@@ -1,19 +1,12 @@
 <template>
   <div class="file-input-editor">
     <div class="d-flex" v-if="isDataProductURI && dataProduct">
-      <data-product-viewer
+      <user-storage-link
         class="mr-auto"
-        :data-product="dataProduct"
-        :input-file="true"
-        :open-in-new-window="true"
+        :data-product-uri="dataProduct.productUri"
+        :mime-type="dataProduct.mimeType"
+        :file-name="dataProduct.productName"
       />
-      <b-link @click="viewFile" v-if="isViewable">
-        View File <i class="fa fa-eye"></i>
-        <span class="sr-only">View file</span>
-      </b-link>
-      <b-modal :title="dataProduct.productName" ref="modal" ok-only scrollable>
-        <pre>{{ fileContent }}</pre>
-      </b-modal>
       <delete-link
         v-if="!readOnly && dataProduct.isInputFileUpload"
         class="ml-2"
@@ -43,18 +36,19 @@
 </template>
 
 <script>
-import { models, services, utils } from "django-airavata-api";
-import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
-import { components } from "django-airavata-common-ui";
+import {models, services, utils} from "django-airavata-api";
+import {InputEditorMixin} from "django-airavata-workspace-plugin-api";
+import {components} from "django-airavata-common-ui";
 import InputFileSelector from "./InputFileSelector";
+import UserStorageLink from "../../storage/storage-edit/UserStorageLink";
 
 export default {
   name: "file-input-editor",
   mixins: [InputEditorMixin],
   components: {
-    "data-product-viewer": components.DataProductViewer,
+    UserStorageLink,
     "delete-link": components.DeleteLink,
-    InputFileSelector,
+    InputFileSelector
   },
   computed: {
     isDataProductURI() {
@@ -96,7 +90,7 @@ export default {
   },
   methods: {
     loadDataProduct(dataProductURI) {
-      services.DataProductService.retrieve({ lookup: dataProductURI })
+      services.DataProductService.retrieve({lookup: dataProductURI})
         .then((dataProduct) => (this.dataProduct = dataProduct))
         .catch(() => {
           // If we're unable to load data product, reset data to null
@@ -107,7 +101,7 @@ export default {
     deleteDataProduct() {
       utils.FetchUtils.delete(
         "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value),
-        { ignoreErrors: true }
+        {ignoreErrors: true}
       )
         .then(() => {
           this.data = null;
@@ -137,17 +131,6 @@ export default {
         this.dataProduct = dataProduct;
       }
       this.valueChanged();
-    },
-    viewFile() {
-      this.fileContent = null;
-      fetch(this.dataProduct.downloadURL, {
-        credentials: "same-origin",
-      })
-        .then((result) => result.text())
-        .then((text) => {
-          this.fileContent = text;
-          this.$refs.modal.show();
-        });
     },
     uploadStart() {
       this.uploading = true;

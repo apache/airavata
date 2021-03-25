@@ -1,5 +1,6 @@
 import { components, entry } from "django-airavata-common-ui";
 import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
+import "../../scss/styles.scss";
 
 // Expect a template with id "edit-experiment" and experiment-id data attribute
 //

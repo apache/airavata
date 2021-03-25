@@ -6,8 +6,8 @@
         <span v-if="!saved">Changes are not saved.</span>
       </div>
       <div class="user-storage-file-edit-viewer-status-actions">
-        <user-storage-download-button :file="file" />
-        <b-button :disabled="saved" @click="fileContentChanged">Save </b-button>
+        <user-storage-download-button :data-product-uri="dataProductUri" :file-name="fileName"/>
+        <b-button :disabled="saved" @click="fileContentChanged">Save</b-button>
       </div>
     </div>
     <div style="width: 100%" ref="editor"></div>
@@ -18,15 +18,24 @@
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/abcdef.css";
-import { utils } from "django-airavata-api";
+import {utils} from "django-airavata-api";
 import UserStorageDownloadButton from "./UserStorageDownloadButton";
 
 export default {
   name: "user-storage-file-edit-viewer",
   props: {
-    file: {
+    fileName: {
       required: true,
     },
+    dataProductUri: {
+      required: true,
+    },
+    mimeType: {
+      required: true,
+    },
+    downloadUrl: {
+      required: true,
+    }
   },
   components: {
     UserStorageDownloadButton: UserStorageDownloadButton,
@@ -47,12 +56,19 @@ export default {
   methods: {
     fileContentChanged() {
       const changedFileContent = this.editor.getDoc().getValue();
-      this.$emit("file-content-changed", changedFileContent);
+      if (changedFileContent) {
+        utils.FetchUtils.put(`/api/data-products?product-uri=${this.dataProductUri}`, {
+          fileContentText: changedFileContent,
+        }).then(() => {
+          this.$emit("file-content-changed", changedFileContent);
+        });
+      }
+
       this.saved = true;
     },
     setFileContent() {
       utils.FetchUtils.get(
-        this.file.downloadURL,
+        this.downloadUrl,
         "",
         {
           ignoreErrors: false,
@@ -71,7 +87,7 @@ export default {
         lineNumbers: true,
         lineWrapping: true,
         scrollbarStyle: "native",
-        extraKeys: { "Ctrl-Space": "autocomplete" },
+        extraKeys: {"Ctrl-Space": "autocomplete"},
         value: value,
       });
       this.editor.on("change", () => {

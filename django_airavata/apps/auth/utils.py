@@ -18,7 +18,7 @@ def get_authz_token(request, user=None, access_token=None):
     """Construct AuthzToken instance from session; refresh token if needed."""
     if access_token is not None:
         return _create_authz_token(request, user=user, access_token=access_token)
-    elif not is_access_token_expired(request):
+    elif not is_access_token_expired(request, user=user):
         return _create_authz_token(request, user=user, access_token=access_token)
     elif not is_refresh_token_expired(request):
         # Have backend reauthenticate the user with the refresh token
@@ -36,13 +36,14 @@ def get_service_account_authz_token():
 
     client = BackendApplicationClient(client_id=client_id)
     oauth = OAuth2Session(client=client)
-    if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-        oauth.verify = settings.KEYCLOAK_CA_CERTFILE
+    verify = verify_ssl
+    if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
+        verify = settings.KEYCLOAK_CA_CERTFILE
     token = oauth.fetch_token(
         token_url=token_url,
         client_id=client_id,
         client_secret=client_secret,
-        verify=verify_ssl)
+        verify=verify)
 
     access_token = token.get('access_token')
     return AuthzToken(
@@ -70,15 +71,16 @@ def _get_access_token(request):
         return request.session['ACCESS_TOKEN']
 
 
-def is_access_token_expired(request):
+def is_access_token_expired(request, user=None):
     """Return True if access_token is not available or is expired."""
     # If access token not stored in session, then token expiration/refreshing
     # isn't supported. When token is provided by REST API client it is expected
     # that the client will manage the token lifetime.
+    user = user if user is not None else request.user
     if 'ACCESS_TOKEN' not in request.session:
         return False
     now = time.time()
-    return not request.user.is_authenticated \
+    return not user.is_authenticated \
         or 'ACCESS_TOKEN' not in request.session \
         or 'ACCESS_TOKEN_EXPIRES_AT' not in request.session \
         or request.session['ACCESS_TOKEN_EXPIRES_AT'] < now

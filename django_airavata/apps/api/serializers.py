@@ -1,4 +1,3 @@
-
 import copy
 import datetime
 import json
@@ -244,7 +243,6 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
 
 class ProjectSerializer(
         thrift_utils.create_serializer_class(Project)):
-
     class Meta:
         required = ('name',)
         read_only = ('owner', 'gatewayId')
@@ -307,7 +305,6 @@ class ApplicationModuleSerializer(
 
 class InputDataObjectTypeSerializer(
         thrift_utils.create_serializer_class(InputDataObjectType)):
-
     metaData = StoredJSONField(required=False, allow_null=True)
 
     class Meta:
@@ -316,7 +313,6 @@ class InputDataObjectTypeSerializer(
 
 class OutputDataObjectTypeSerializer(
         thrift_utils.create_serializer_class(OutputDataObjectType)):
-
     metaData = StoredJSONField(required=False, allow_null=True)
 
     class Meta:
@@ -325,7 +321,6 @@ class OutputDataObjectTypeSerializer(
 
 class ApplicationInterfaceDescriptionSerializer(
         thrift_utils.create_serializer_class(ApplicationInterfaceDescription)):
-
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:application-interface-detail',
         lookup_field='applicationInterfaceId',
@@ -353,8 +348,8 @@ class SetEnvPathsSerializer(
 
 
 class ApplicationDeploymentDescriptionSerializer(
-        thrift_utils.create_serializer_class(
-            ApplicationDeploymentDescription)):
+    thrift_utils.create_serializer_class(
+        ApplicationDeploymentDescription)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:application-deployment-detail',
         lookup_field='appDeploymentId',
@@ -414,7 +409,6 @@ class ExperimentStatusSerializer(
 
 class ExperimentSerializer(
         thrift_utils.create_serializer_class(ExperimentModel)):
-
     class Meta:
         required = ('projectId', 'experimentType', 'experimentName')
         read_only = ('userName', 'gatewayId')
@@ -457,7 +451,11 @@ class ExperimentSerializer(
             ResourcePermissionType.WRITE)
 
     def get_relativeExperimentDataDir(self, experiment):
+        request = self.context['request']
+        if hasattr(user_storage, "get_rel_experiment_dir"):
+            return user_storage.get_rel_experiment_dir(request, experiment.experimentId)
 
+        # TODO: remove this older implementation
         if (experiment.userConfigurationData and
                 experiment.userConfigurationData.experimentDataDir):
             request = self.context['request']
@@ -503,9 +501,7 @@ class DataProductSerializer(
         request = self.context['request']
         if user_storage.exists(request, data_product):
             return (request.build_absolute_uri(
-                reverse('django_airavata_api:download_file')) +
-                '?' +
-                urlencode({'data-product-uri': data_product.productUri}))
+                reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': data_product.productUri}))
         return None
 
     def get_isInputFileUpload(self, data_product):
@@ -619,7 +615,7 @@ class GroupResourceProfileSerializer(
             existing_compute_resource_preference = next(
                 (pref for pref in result.computePreferences
                  if pref.computeResourceId ==
-                    compute_resource_preference.computeResourceId),
+                 compute_resource_preference.computeResourceId),
                 None)
             if not existing_compute_resource_preference:
                 result._removed_compute_resource_preferences.append(
@@ -629,7 +625,7 @@ class GroupResourceProfileSerializer(
             existing_compute_resource_policy = next(
                 (pol for pol in result.computeResourcePolicies
                  if pol.resourcePolicyId ==
-                    compute_resource_policy.resourcePolicyId),
+                 compute_resource_policy.resourcePolicyId),
                 None)
             if not existing_compute_resource_policy:
                 result._removed_compute_resource_policies.append(
@@ -639,7 +635,7 @@ class GroupResourceProfileSerializer(
             existing_batch_queue_resource_policy_for_update = next(
                 (bq for bq in result.batchQueueResourcePolicies
                  if bq.resourcePolicyId ==
-                    batch_queue_resource_policy.resourcePolicyId),
+                 batch_queue_resource_policy.resourcePolicyId),
                 None)
             if not existing_batch_queue_resource_policy_for_update:
                 result._removed_batch_queue_resource_policies.append(
@@ -662,6 +658,7 @@ class GroupResourceProfileSerializer(
         def check_token(token):
             return token is None or request.airavata_client.userHasAccess(
                 request.authz_token, token, ResourcePermissionType.READ)
+
         return all(map(check_token, tokens))
 
 
@@ -676,7 +673,6 @@ class GroupPermissionSerializer(serializers.Serializer):
 
 
 class SharedEntitySerializer(serializers.Serializer):
-
     entityId = serializers.CharField(read_only=True)
     userPermissions = UserPermissionSerializer(many=True)
     groupPermissions = GroupPermissionSerializer(many=True)
@@ -695,8 +691,8 @@ class SharedEntitySerializer(serializers.Serializer):
             for user in instance['userPermissions']}
         new_user_permissions = {
             user['user']['airavataInternalUserId']:
-            user['permissionType']
-                for user in validated_data['userPermissions']}
+                user['permissionType']
+            for user in validated_data['userPermissions']}
 
         (
             user_grant_read_permission,
@@ -852,10 +848,6 @@ class StoragePreferenceSerializer(
 
 class GatewayResourceProfileSerializer(
         thrift_utils.create_serializer_class(GatewayResourceProfile)):
-    url = FullyEncodedHyperlinkedIdentityField(
-        view_name='django_airavata_api:gateway-resource-profile-detail',
-        lookup_field='gatewayID',
-        lookup_url_kwarg='gateway_id')
     storagePreferences = StoragePreferenceSerializer(many=True)
     userHasWriteAccess = serializers.SerializerMethodField()
 
@@ -894,9 +886,7 @@ class UserStorageFileSerializer(serializers.Serializer):
         """Getter for downloadURL field."""
         request = self.context['request']
         return (request.build_absolute_uri(
-            reverse('django_airavata_api:download_file')) +
-            '?' +
-            urlencode({'data-product-uri': file['data-product-uri']}))
+            reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': file['data-product-uri']}))
 
 
 class UserStorageDirectorySerializer(serializers.Serializer):

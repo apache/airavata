@@ -161,6 +161,75 @@ a field to upload a file.
 }
 ```
 
+### Slider
+
+Displays a slider for picking a value between some minimum and maximum value.
+
+#### Config options
+
+-   _min_ - minimum value, defaults to 0.
+-   _max_ - maximum value, defaults to 100.
+-   _step_ - step between values. Default is 1. Can be less that one for decimal
+    values.
+-   _valueFormat.percentage_ - whether to save the value with a trailing "%".
+    Defaults to false. Note, this is the value that will be placed in the job
+    script.
+-   _displayFormat.percentage_ - whether to display the value to the user with a
+    trailing "%". Defaults to false.
+
+#### Example
+
+```json
+{
+    "editor": {
+        "ui-component-id": "slider-input-editor",
+        "config": {
+            "min": 32,
+            "max": 212,
+            "step": 0.1,
+            "valueFormat": {
+                "percentage": true
+            },
+            "displayFormat": {
+                "percentage": true
+            }
+        }
+    }
+}
+```
+
+### Range Slider
+
+Like the Slider component but there are two sliders, one for selecting the
+beginning and one for selecting the end of a range.
+
+#### Config options
+
+All of the options of the Slider component, plus:
+
+-   _delimiter_ - the character to place between the values, for example, ",".
+    The default value is a hyphen, "-". This will be placed into the job script.
+
+```json
+{
+    "editor": {
+        "ui-component-id": "range-slider-input-editor",
+        "config": {
+            "min": 32,
+            "max": 212,
+            "step": 0.1,
+            "valueFormat": {
+                "percentage": true
+            },
+            "displayFormat": {
+                "percentage": true
+            },
+            "delimiter": ","
+        }
+    }
+}
+```
+
 ### Autocomplete
 
 The Autocomplete UI component looks up matching entries for the given substring
@@ -222,9 +291,12 @@ implement the REST API for returning autocomplete suggestions.
 
 #### Example REST API implementation
 
-To create the REST API backend needed by the Autocomplete component, first you need a create a custom Django app. See [Custom Django Apps](../dev/custom_django_app) for more information.
+To create the REST API backend needed by the Autocomplete component, first you
+need a create a custom Django app. See
+[Custom Django Apps](../dev/custom_django_app) for more information.
 
-Here's a simple implementation of a view function that looks up words in the system dictionary file:
+Here's a simple implementation of a view function that looks up words in the
+system dictionary file:
 
 ```python
 def test_autocomplete_search(request):
@@ -252,7 +324,8 @@ def test_autocomplete_search(request):
     })
 ```
 
-See also a real world example [miga-autocomplete](https://github.com/bio-miga/miga-autocomplete).
+See also a real world example
+[miga-autocomplete](https://github.com/bio-miga/miga-autocomplete).
 
 #### Example Input Metadata Configuration
 

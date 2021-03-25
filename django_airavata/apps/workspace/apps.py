@@ -37,6 +37,3 @@ class WorkspaceConfig(AiravataAppConfig):
             'active_prefixes': ['storage']
         },
     ]
-
-    def ready(self):
-        import django_airavata.apps.workspace.signals  # noqa
