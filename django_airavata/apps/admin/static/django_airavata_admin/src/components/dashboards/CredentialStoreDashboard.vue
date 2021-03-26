@@ -5,10 +5,16 @@
       :items="sshKeys"
       title="SSH Credentials"
       new-item-button-text="New SSH Credential"
-      @admin-action="showNewSharedSSHCredentialModel"
-      :adminButton="userIsAdmin"
-      admin-button-text = "New Shared SSH Credential"
     >
+      <span slot="additional-buttons">
+          <b-btn
+            v-if="userIsAdmin"
+            @click="showNewSharedSSHCredentialModel"
+            >
+            New Gateway SSH Credential
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </b-btn>
+        </span>
       <template slot="item-list" slot-scope="slotProps">
         <b-table striped hover :fields="fields" :items="slotProps.items">
           <template slot="sharing" slot-scope="data">

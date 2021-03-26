@@ -7,16 +7,7 @@
         </slot>
       </div>
       <div class="col-auto">
-        <slot name="additional-buttons"> 
-          <b-btn
-            v-if="adminButton"
-            @click="adminAction"
-            :disabled="adminButtonDisabled"
-            >
-            {{ adminButtonText }}
-            <i class="fa fa-plus" aria-hidden="true"></i>
-          </b-btn>
-        </slot>
+        <slot name="additional-buttons"> </slot>
         <slot name="new-item-button">
           <b-btn
             variant="primary"
@@ -76,18 +67,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    adminButton: {
-      type: Boolean,
-      default: false,
-    },
-    adminButtonDisabled: {
-      type: Boolean,
-      default: false,
-    },
-    adminButtonText: {
-      type: String,
-      default: "",
-    },
   },
   name: "list-layout",
   data() {
@@ -105,9 +84,6 @@ export default {
     },
     addNewItem: function () {
       this.$emit("add-new-item");
-    },
-    adminAction: function () {
-      this.$emit("admin-action");
     },
   },
   computed: {
