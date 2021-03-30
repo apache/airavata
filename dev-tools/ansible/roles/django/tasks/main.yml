@@ -310,3 +310,11 @@
     state: absent
     path: "{{ airavata_django_portal_tempdir.path }}"
   run_once: true
+
+- name: add domain to Zabbix monitoring checklist
+  lineinfile:
+    path: /etc/zabbix/domain_checklist
+    line: "{{ vhost_servername }}"
+    create: yes
+  become: yes
+  when: vhost_ssl
