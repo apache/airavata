@@ -178,9 +178,9 @@ export default {
       }
     },
     createNewSharedSSHCredential(data) {
-      
+
       services.CredentialSummaryService.createSSH({ data: data }).then((cred) =>
-        { 
+        {
           const sharedEntity = new models.SharedEntity();
           services.UserProfileService.retrieve({
             lookup: session.Session.username,
@@ -194,10 +194,10 @@ export default {
             services.SharedEntityService.merge({
               data: sharedEntity,
               lookup: cred.token,
-            }).then((sharedEntity) => {
+            }).then(() => {
               this.fetchSSHKeys();
             });
-          });          
+          });
         }
       );
     },
