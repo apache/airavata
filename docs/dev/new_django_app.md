@@ -75,7 +75,9 @@ properties:
         highlight the currently active nav item in the left side navigation bar. For
         example, let's say the app's base url is "/myapp" and urls belonging to the
         "projects" nav item are of the form "/myapp/projects/`<project_id>`" and
-        "/myapp/new-project". Then you would set _active_prefixes_ to `["projects", "new-project"]`.
+        "/myapp/new-project". Then you would set _active_prefixes_ to
+        `["projects", "new-project"]`. These strings can also be [regular
+        expressions](https://docs.python.org/3/library/re.html#regular-expression-syntax).
 
 ### Add AppConfig to INSTALLED_APPS
 
