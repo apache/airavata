@@ -109,6 +109,10 @@ export default {
     } = {}
   ) {
     var headers = this.createHeaders(mediaType);
+    // Browsers automatically handle content type for FormData request bodies
+    if (body instanceof FormData) {
+      headers.delete("Content-Type");
+    }
     return this.processFetch(url, {
       method: "put",
       body:
