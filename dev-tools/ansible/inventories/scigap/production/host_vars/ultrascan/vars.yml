@@ -38,14 +38,14 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Ultrascan Gateway"
-#  external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "ultrascan"
 experiment_data_dir: "{{ user_data_dir }}/ultrascan"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnwOfvXERKIUcsH9W4GH+S+glClMrxzlEV6cXtCgrr92ooTEw3oxjmQGyvGs0G6AFHe7Tbkxnp6QBFD/VvNLpaXcvZc3t37IvbKqm2Wu5TkLhgHZqG/ceGSlaLqgKIhU5kENF3Y0XtK/QSd4hfECWQ/VyzafPCLs88xuaXdhUQE4dw+COrimaW57nCZ/A1lspBIKsnwxqFpmIXE1gsR/eU0UjVCNixm3PoO+0hr6MTzzped+xAdQHuTST/0bu0vcrK1qVixsD8rKVLgaaEaHml93vG85wlzBmsiGID4yKNTJSQBNn3G8r51mjzw72tRHovaYlP3NMpPuWeVZgY7WF9"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrWuccVtWQMpOgx9eueQgwS/Kj/ONcY2xOHgkQ1wmorhvWjtU4Sr3mtu/6QvU3suzpclZQkl237ONbPa7J9h1sGINiel4Crrc6P8EWvL/vT/wW2K+8AiG5ktAtMnsCroLnebD0tfVj1vj0BDJmG6g47JBKptPayY64eU43NZ2E9QroB55esDN+IF52w/VDZtjqAp1wsXTvvwqnNoC1hbHyx12JzMKJHdZAp/lRkssNj7WZxwyQDcwaAli5VA1sie0NjduvBgSlHy7kEjdv5yrVov/kIvSq9AEUi9UI+BjJFpCGjGYJbJlh2hJepeMYC6FFE+cTgI+5ZFSVw1qLivL3"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "Ultrascan Portal"
