@@ -284,6 +284,12 @@ AUTHENTICATION_OPTIONS = {
     # ]
 }
 
+# Configure the URIs that can be redirected to with /auth/access-token-redirect?redirect_uri=...
+# Takes a list of dicts, where the key 'URI' specifies the allowed redirect URI
+# and the optional key 'PARAM_NAME' allows specifying the query parameter name
+# for the access token parameter (defaults to 'access_token').
+ACCESS_TOKEN_REDIRECT_ALLOWED_URIS = []
+
 # Seconds each connection in the pool is able to stay alive. If open connection
 # has lived longer than this period, it will be closed.
 # (https://github.com/Thriftpy/thrift_connector)
