@@ -47,7 +47,7 @@ gateway_id: "louisiana-state"
 experiment_data_dir: "{{ user_data_dir }}/louisiana-state"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCGku09BKS2SsQvp6rwoKqvbGrjZ7YcUUFU3zqU7Rd+jtxaRMw/di+ejAcJ3ouQhikW1RsF5BhulWHa7YtH3D/GaDpUeosdYn7al/TuJhC+GEsdVc9hCDxbFY2b7wjF4K8Xt+5/y/ySzTCb1V40ExfH/tBC/9c1CvdkJv4+a8t9O+ZgnWdR6pSarzyFIAXe6oFHauq4o8LRYyBhWaF+4NQDOx/bC46AiaRUtwhWUG5mhEZtKJO9GTcmOMT+TD2U6BDtT6yhL+A+FSM7TepY9nBeO+YHWbZf/yydAjRh8cONWpy7QPieSYm8yAkk0sF8qqAkZusgJFIIhPK/CJQioxuv"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Zach Byerly','zbyerl1@lsu.edu')]"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Zach Byerly','zbyerl1@lsu.edu'),('Le Yan','lyan1@lsu.edu'),('Feng Chen','fchen14@lsu.edu')]"
 portal_title: "LSU Portal"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
