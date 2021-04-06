@@ -518,5 +518,5 @@ def access_token_redirect(request):
         logger.warning(f"redirect_uri value '{redirect_uri}' is not configured "
                        "in ACCESS_TOKEN_REDIRECT_ALLOWED_URIS setting")
         return HttpResponseForbidden("Invalid redirect_uri value")
-    return redirect(redirect_uri + f"?{config.get('PARAM_NAME', 'access_token')}="
+    return redirect(redirect_uri + f"{'&' if '?' in redirect_uri else '?'}{config.get('PARAM_NAME', 'access_token')}="
                     f"{quote(request.authz_token.accessToken)}")
