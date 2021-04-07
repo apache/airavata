@@ -50,5 +50,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnwOfv
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Muhammad Haseeb','mhaseeb@fiu.edu'),('Fahad Saeed','fsaeed@fiu.edu')]"
 portal_title: "HICOPS Portal"
 
-#django_google_analytics_tracking_id: "UA-66348921-1"
+django_google_analytics_tracking_id: "UA-193861714-1"
 ...
