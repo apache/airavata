@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class UserStorageProvider:
-    def __init__(self, authz_token, *args, **kwargs):
+    def __init__(self, authz_token, context=None, *args, **kwargs):
         self.authz_token = authz_token
+        self.context = context
 
     def save(self, authz_token, path, file, name=None, content_type=None):
         raise NotImplementedError()
