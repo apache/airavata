@@ -1,5 +1,12 @@
 <template>
   <div>
+    <user-storage-create-view
+      v-if="includeCreateFileAction && userStoragePath && isDir"
+      :user-storage-path="userStoragePath"
+      :storage-path="storagePath"
+      @upload-success="$emit('upload-success')"
+      @add-directory="(dirName) => $emit('add-directory', dirName)"
+    />
     <user-storage-path-breadcrumb
       v-if="userStoragePath && isDir"
       :parts="userStoragePath.parts"
@@ -63,6 +70,7 @@
 <script>
 import UserStoragePathBreadcrumb from "./StoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
+import UserStorageCreateView from "./UserStorageCreateView";
 import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
 import UserStorageLink from "./storage-edit/UserStorageLink";
 
@@ -74,6 +82,9 @@ export default {
       required: false,
     },
     userStoragePath: {
+      required: true,
+    },
+    storagePath: {
       required: true,
     },
     includeDeleteAction: {
@@ -102,6 +113,7 @@ export default {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
+    UserStorageCreateView,
     UserStorageEditViewer,
   },
   computed: {

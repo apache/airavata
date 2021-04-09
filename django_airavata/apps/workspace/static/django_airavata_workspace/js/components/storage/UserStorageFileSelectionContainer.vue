@@ -30,7 +30,11 @@ let mostRecentPath = "~";
 
 export default {
   name: "user-storage-file-selection-container",
-  computed: {},
+  computed: {
+    storagePath() {
+      return ["~"].concat(this.userStoragePath.parts).join("/") + "/";
+    },
+  },
   props: {
     selectedDataProductUris: {
       type: Array,
