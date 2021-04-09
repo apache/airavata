@@ -442,44 +442,12 @@ class ExperimentSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
-    relativeExperimentDataDir = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, experiment):
         request = self.context['request']
         return request.airavata_client.userHasAccess(
             request.authz_token, experiment.experimentId,
             ResourcePermissionType.WRITE)
-
-    def get_relativeExperimentDataDir(self, experiment):
-        request = self.context['request']
-        if hasattr(user_storage, "get_rel_experiment_dir"):
-            return user_storage.get_rel_experiment_dir(request, experiment.experimentId)
-
-        # TODO: remove this older implementation
-        if (experiment.userConfigurationData and
-                experiment.userConfigurationData.experimentDataDir):
-            request = self.context['request']
-            data_dir = experiment.userConfigurationData.experimentDataDir
-            if getattr(
-                settings,
-                'GATEWAY_DATA_STORE_REMOTE_API',
-                    None) is not None:
-                # Load the relativeExperimentDataDir from the remote Django
-                # portal instance
-                headers = {
-                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
-                r = requests.get(
-                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment.experimentId)}/',
-                    headers=headers,
-                )
-                r.raise_for_status()
-                return r.json()['relativeExperimentDataDir']
-            elif user_storage.dir_exists(request, data_dir):
-                return user_storage.get_rel_path(request, data_dir)
-            else:
-                return None
-        else:
-            return None
 
 
 class DataReplicaLocationSerializer(

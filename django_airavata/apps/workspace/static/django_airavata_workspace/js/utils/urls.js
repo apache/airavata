@@ -47,10 +47,4 @@ export default {
   navigateToProjectsList() {
     window.location.assign(this.projectsList());
   },
-  storageDirectory(relativePath) {
-    if (relativePath.startsWith("/")) {
-      relativePath = relativePath.substring(1);
-    }
-    return "/workspace/storage/~/" + relativePath;
-  },
 };

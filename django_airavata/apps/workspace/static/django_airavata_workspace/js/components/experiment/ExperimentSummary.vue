@@ -383,13 +383,6 @@ export default {
     isCancelable() {
       return this.localFullExperiment.experiment.isCancelable;
     },
-    storageDirLink() {
-      if (this.experiment.relativeExperimentDataDir) {
-        return urls.storageDirectory(this.experiment.relativeExperimentDataDir);
-      } else {
-        return null;
-      }
-    },
   },
   methods: {
     loadExperiment: function () {
