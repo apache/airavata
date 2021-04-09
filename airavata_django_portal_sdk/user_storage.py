@@ -5,6 +5,7 @@ import logging
 import mimetypes
 import os
 import shutil
+import warnings
 from http import HTTPStatus
 from urllib.parse import quote, unquote, urlparse
 
@@ -447,7 +448,23 @@ def list_experiment_dir(request, experiment_id, path=""):
     see `listdir`.
     """
     if _is_remote_api():
-        raise NotImplementedError()
+        resp = _call_remote_api(request,
+                                "/experiment-storage/{experiment_id}/{path}",
+                                path_params={"path": path,
+                                             "experiment_id": experiment_id},
+                                )
+        data = resp.json()
+        for directory in data['directories']:
+            # Convert JSON ISO8601 timestamp to datetime instance
+            directory['created_time'] = convert_iso8601_to_datetime(
+                directory['createdTime'])
+        for file in data['files']:
+            # Convert JSON ISO8601 timestamp to datetime instance
+            file['created_time'] = convert_iso8601_to_datetime(
+                file['createdTime'])
+            file['mime_type'] = file['mimeType']
+            file['data-product-uri'] = file['dataProductURI']
+        return data['directories'], data['files']
 
     experiment = request.airavata_client.getExperiment(
         request.authz_token, experiment_id)
@@ -512,11 +529,22 @@ def list_experiment_dir(request, experiment_id, path=""):
 def experiment_dir_exists(request, experiment_id, path=""):
 
     if _is_remote_api():
-        raise NotImplementedError()
+        resp = _call_remote_api(request,
+                                "/experiment-storage/{experiment_id}/{path}",
+                                path_params={"path": path,
+                                             "experiment_id": experiment_id},
+                                raise_for_status=False)
+        if resp.status_code == HTTPStatus.NOT_FOUND:
+            return False
+        resp.raise_for_status()
+        return resp.json()['isDir']
+
     experiment = request.airavata_client.getExperiment(
         request.authz_token, experiment_id)
     datastore = _Datastore()
     exp_data_path = experiment.userConfigurationData.experimentDataDir
+    if exp_data_path is None:
+        return False
     exp_data_path = os.path.join(exp_data_path, path)
     exp_owner = experiment.userName
     return datastore.dir_exists(exp_owner, exp_data_path)
@@ -549,6 +577,7 @@ def get_rel_path(request, path):
 
 def get_rel_experiment_dir(request, experiment_id):
     """Return experiment data dir path relative to user's directory."""
+    warnings.warn("Use list_experiment_dir instead.", DeprecationWarning)
     if _is_remote_api():
         resp = _call_remote_api(request,
                                 "/experiments/{experimentId}/",
