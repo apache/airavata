@@ -1,12 +1,5 @@
 <template>
   <div>
-    <user-storage-create-view
-      v-if="includeCreateFileAction && userStoragePath && isDir"
-      :user-storage-path="userStoragePath"
-      :storage-path="storagePath"
-      @upload-success="$emit('upload-success')"
-      @add-directory="(dirName) => $emit('add-directory', dirName)"
-    />
     <user-storage-path-breadcrumb
       v-if="userStoragePath && isDir"
       :parts="userStoragePath.parts"
@@ -36,11 +29,16 @@
         >
           <i class="fa fa-folder-open"></i> {{ data.item.name }}
         </b-link>
-        <user-storage-link v-else :data-product-uri="data.item.dataProductURI" :mime-type="data.item.mimeType"
-                           :file-name="data.item.name" :allow-preview="allowPreview"/>
+        <user-storage-link
+          v-else
+          :data-product-uri="data.item.dataProductURI"
+          :mime-type="data.item.mimeType"
+          :file-name="data.item.name"
+          :allow-preview="allowPreview"
+        />
       </template>
       <template slot="createdTimestamp" slot-scope="data">
-        <human-date :date="data.item.createdTime"/>
+        <human-date :date="data.item.createdTime" />
       </template>
       <template slot="actions" slot-scope="data">
         <b-button
@@ -55,16 +53,16 @@
           v-if="includeDeleteAction"
           @delete="deleteItem(data.item)"
         >
-          Are you sure you want to delete <strong>{{ data.item.name }}</strong>?
+          Are you sure you want to delete <strong>{{ data.item.name }}</strong
+          >?
         </delete-button>
       </template>
     </b-table>
   </div>
 </template>
 <script>
-import UserStoragePathBreadcrumb from "./UserStoragePathBreadcrumb.vue";
-import {components} from "django-airavata-common-ui";
-import UserStorageCreateView from "./UserStorageCreateView";
+import UserStoragePathBreadcrumb from "./StoragePathBreadcrumb.vue";
+import { components } from "django-airavata-common-ui";
 import UserStorageEditViewer from "./storage-edit/UserStorageEditViewer";
 import UserStorageLink from "./storage-edit/UserStorageLink";
 
@@ -73,12 +71,9 @@ export default {
   props: {
     allowPreview: {
       default: true,
-      required: false
+      required: false,
     },
     userStoragePath: {
-      required: true,
-    },
-    storagePath: {
       required: true,
     },
     includeDeleteAction: {
@@ -107,7 +102,6 @@ export default {
     "delete-button": components.DeleteButton,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
-    UserStorageCreateView,
     UserStorageEditViewer,
   },
   computed: {
@@ -210,10 +204,6 @@ export default {
           (uri) => item.type === "file" && uri === item.dataProductURI
         ) !== undefined
       );
-    },
-    storageFileViewRouteUrl(item) {
-      // This endpoint can handle XHR upload or a TUS uploadURL
-      return `/workspace/storage/${this.storagePath}${item.name}`;
     },
   },
 };

@@ -256,7 +256,9 @@
         <tr v-if="storageDirLink">
           <th scope="row">Storage Directory</th>
           <td>
-            <b-link :href="storageDirLink">Open</b-link>
+            <experiment-storage-view-container
+              :experimentId="experiment.experimentId"
+            />
           </td>
         </tr>
         <tr>

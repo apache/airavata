@@ -12,11 +12,15 @@
 
 <script>
 export default {
-  name: "user-storage-path-breadcrumb",
+  name: "storage-path-breadcrumb",
   props: {
     parts: {
       type: Array,
       required: true,
+    },
+    rootName: {
+      type: String,
+      default: "Home",
     },
   },
   computed: {
@@ -31,7 +35,7 @@ export default {
         };
       });
       return [
-        { text: "Home", path: "", active: this.parts.length === 0 },
+        { text: this.rootName, path: "", active: this.parts.length === 0 },
       ].concat(partsItems);
     },
   },

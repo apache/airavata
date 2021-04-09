@@ -110,6 +110,7 @@ const services = {
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
   ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
+  ExperimentStoragePathService: ServiceFactory.service("ExperimentStoragePaths"),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfile"

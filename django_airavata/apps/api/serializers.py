@@ -910,6 +910,34 @@ class UserStoragePathSerializer(serializers.Serializer):
     uploaded = DataProductSerializer(read_only=True)
 
 
+# Fields for ExperimentStorageFileSerializer are the same as UserStorageFileSerializer
+ExperimentStorageFileSerializer = UserStorageFileSerializer
+
+
+class ExperimentStorageDirectorySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    path = serializers.CharField()
+    createdTime = serializers.DateTimeField(source='created_time')
+    size = serializers.IntegerField()
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, dir):
+
+        request = self.context['request']
+        return request.build_absolute_uri(
+            reverse("django_airavata_api:experiment-storage-items", kwargs={
+                "experiment_id": dir['experiment_id'],
+                "path": dir['path']
+            }))
+
+
+class ExperimentStoragePathSerializer(serializers.Serializer):
+    isDir = serializers.BooleanField()
+    directories = ExperimentStorageDirectorySerializer(many=True)
+    files = ExperimentStorageFileSerializer(many=True)
+    parts = serializers.ListField(child=serializers.CharField())
+
+
 # ModelSerializers
 class ApplicationPreferencesSerializer(serializers.ModelSerializer):
     class Meta:

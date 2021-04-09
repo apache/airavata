@@ -1619,6 +1619,42 @@ class UserStoragePathView(APIView):
             return []
 
 
+class ExperimentStoragePathView(APIView):
+
+    serializer_class = serializers.ExperimentStoragePathSerializer
+
+    def get(self, request, experiment_id=None, path="", format=None):
+        return self._create_response(request, experiment_id, path)
+
+    def _create_response(self, request, experiment_id, path):
+        if user_storage.experiment_dir_exists(request, experiment_id, path):
+            directories, files = user_storage.list_experiment_dir(request, experiment_id, path)
+
+            def add_expid(d):
+                d['experiment_id'] = experiment_id
+                return d
+            data = {
+                'isDir': True,
+                'directories': map(add_expid, directories),
+                'files': map(add_expid, files)
+            }
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(
+                data, context={'request': request})
+            return Response(serializer.data)
+        else:
+            raise Http404(f"Path '{path}' does not exist for {experiment_id}")
+
+    def _split_path(self, path):
+        head, tail = os.path.split(path)
+        if head != "":
+            return self._split_path(head) + [tail]
+        elif tail != "":
+            return [tail]
+        else:
+            return []
+
+
 class WorkspacePreferencesView(APIView):
     serializer_class = serializers.WorkspacePreferencesSerializer
 

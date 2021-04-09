@@ -1,6 +1,7 @@
 import logging
 
 from django.conf.urls import url
+from django.urls import re_path
 from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -82,6 +83,9 @@ urlpatterns = [
     url(r'^user-storage/~/(?P<path>.*)$',
         views.UserStoragePathView.as_view(),
         name="user-storage-items"),
+    re_path(r'^experiment-storage/(?P<experiment_id>[^/]+)/(?P<path>.*)$',
+            views.ExperimentStoragePathView.as_view(),
+            name="experiment-storage-items"),
     url(r'^experiment-statistics',
         views.ExperimentStatisticsView.as_view(),
         name="experiment-statistics"),
