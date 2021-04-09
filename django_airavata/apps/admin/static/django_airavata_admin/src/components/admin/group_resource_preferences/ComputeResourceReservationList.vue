@@ -4,7 +4,7 @@
     :items="decoratedReservations"
     title="Reservations"
     new-item-button-text="New Reservation"
-    :new-button-disabled="readonly"
+    :newButtonDisabled="readonly"
   >
     <template slot="additional-buttons">
       <delete-button
