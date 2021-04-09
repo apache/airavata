@@ -25,6 +25,20 @@
             Edit
             <i class="fa fa-edit" aria-hidden="true"></i>
           </router-link>
+          <router-link
+            class="action-link"
+            v-if="!data.item.userHasWriteAccess"
+            :to="{
+              name: 'group_resource_preference',
+              params: {
+                value: data.item,
+                id: data.item.groupResourceProfileId,
+              },
+            }"
+          >
+            View
+            <i class="fa fa-eye" aria-hidden="true"></i>
+          </router-link>
           <delete-link
             v-if="data.item.userHasWriteAccess"
             class="action-link"

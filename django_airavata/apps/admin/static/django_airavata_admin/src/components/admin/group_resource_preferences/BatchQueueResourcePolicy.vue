@@ -11,6 +11,7 @@
           id="max-allowed-nodes"
           type="number"
           v-model="data.maxAllowedNodes"
+          :readonly="readonly"
           @input="policyUpdated"
           min="1"
           :max="batchQueue.maxNodes"
@@ -32,6 +33,7 @@
           id="max-allowed-cores"
           type="number"
           v-model="data.maxAllowedCores"
+          :readonly="readonly"
           @input="policyUpdated"
           min="1"
           :max="batchQueue.maxProcessors"
@@ -55,6 +57,7 @@
           id="max-allowed-walltime"
           type="number"
           v-model="data.maxAllowedWalltime"
+          :readonly="readonly"
           @input="policyUpdated"
           min="1"
           :max="batchQueue.maxRunTime"
@@ -82,6 +85,10 @@ export default {
     batchQueue: {
       required: true,
       type: models.BatchQueue,
+    },
+    readonly:{
+      type: Boolean,
+      default: false,
     },
   },
   created() {
