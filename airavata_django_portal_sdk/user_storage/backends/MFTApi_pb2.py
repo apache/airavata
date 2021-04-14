@@ -13,6 +13,7 @@ _sym_db = _symbol_database.Default()
 
 from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from . import CredCommon_pb2 as CredCommon__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'P\001',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cMFTApi.proto\x12#org.apache.airavata.mft.api.service\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x9f\x04\n\x12TransferApiRequest\x12\x17\n\x0fsourceStorageId\x18\x01 \x01(\t\x12\x12\n\nsourcePath\x18\x02 \x01(\t\x12\x12\n\nsourceType\x18\x03 \x01(\t\x12\x13\n\x0bsourceToken\x18\x04 \x01(\t\x12\x1d\n\x15sourceResourceBackend\x18\x05 \x01(\t\x12\x1f\n\x17sourceCredentialBackend\x18\x06 \x01(\t\x12\x1c\n\x14\x64\x65stinationStorageId\x18\x07 \x01(\t\x12\x17\n\x0f\x64\x65stinationPath\x18\x08 \x01(\t\x12\x17\n\x0f\x64\x65stinationType\x18\t \x01(\t\x12\x18\n\x10\x64\x65stinationToken\x18\n \x01(\t\x12\x1b\n\x13\x64\x65stResourceBackend\x18\x0b \x01(\t\x12\x1d\n\x15\x64\x65stCredentialBackend\x18\x0c \x01(\t\x12\x18\n\x10\x61\x66\x66inityTransfer\x18\r \x01(\x08\x12_\n\x0ctargetAgents\x18\x0e \x03(\x0b\x32I.org.apache.airavata.mft.api.service.TransferApiRequest.TargetAgentsEntry\x12\x1d\n\x15mftAuthorizationToken\x18\x0f \x01(\t\x1a\x33\n\x11TargetAgentsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\")\n\x13TransferApiResponse\x12\x12\n\ntransferId\x18\x01 \x01(\t\"\xb2\x01\n\x14HttpUploadApiRequest\x12\x1a\n\x12\x64\x65stinationStoreId\x18\x01 \x01(\t\x12\x17\n\x0f\x64\x65stinationPath\x18\x02 \x01(\t\x12\x18\n\x10\x64\x65stinationToken\x18\x03 \x01(\t\x12\x17\n\x0f\x64\x65stinationType\x18\x04 \x01(\t\x12\x13\n\x0btargetAgent\x18\x05 \x01(\t\x12\x1d\n\x15mftAuthorizationToken\x18\x06 \x01(\t\"9\n\x15HttpUploadApiResponse\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x13\n\x0btargetAgent\x18\x02 \x01(\t\"\xa0\x01\n\x16HttpDownloadApiRequest\x12\x15\n\rsourceStoreId\x18\x01 \x01(\t\x12\x12\n\nsourcePath\x18\x02 \x01(\t\x12\x13\n\x0bsourceToken\x18\x03 \x01(\t\x12\x12\n\nsourceType\x18\x04 \x01(\t\x12\x13\n\x0btargetAgent\x18\x05 \x01(\t\x12\x1d\n\x15mftAuthorizationToken\x18\x06 \x01(\t\";\n\x17HttpDownloadApiResponse\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x13\n\x0btargetAgent\x18\x02 \x01(\t\"L\n\x17TransferStateApiRequest\x12\x12\n\ntransferId\x18\x01 \x01(\t\x12\x1d\n\x15mftAuthorizationToken\x18\x02 \x01(\t\"j\n\x18TransferStateApiResponse\x12\r\n\x05state\x18\x01 \x01(\t\x12\x16\n\x0eupdateTimeMils\x18\x02 \x01(\x03\x12\x12\n\npercentage\x18\x03 \x01(\x01\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\"\xb9\x01\n\x1bResourceAvailabilityRequest\x12\x12\n\nresourceId\x18\x01 \x01(\t\x12\x14\n\x0cresourceType\x18\x02 \x01(\t\x12\x15\n\rresourceToken\x18\x03 \x01(\t\x12\x17\n\x0fresourceBackend\x18\x04 \x01(\t\x12!\n\x19resourceCredentialBackend\x18\x05 \x01(\t\x12\x1d\n\x15mftAuthorizationToken\x18\x06 \x01(\t\"1\n\x1cResourceAvailabilityResponse\x12\x11\n\tavailable\x18\x01 \x01(\x08\"\xc7\x01\n\x14\x46ileMetadataResponse\x12\x14\n\x0c\x66riendlyName\x18\x01 \x01(\t\x12\x14\n\x0cresourceSize\x18\x02 \x01(\x03\x12\x13\n\x0b\x63reatedTime\x18\x03 \x01(\x03\x12\x12\n\nupdateTime\x18\x04 \x01(\x03\x12\x0e\n\x06md5sum\x18\x05 \x01(\t\x12\x14\n\x0cresourcePath\x18\x06 \x01(\t\x12\x18\n\x10parentResourceId\x18\x07 \x01(\t\x12\x1a\n\x12parentResourceType\x18\x08 \x01(\t\"\xde\x02\n\x19\x44irectoryMetadataResponse\x12\x14\n\x0c\x66riendlyName\x18\x01 \x01(\t\x12\x13\n\x0b\x63reatedTime\x18\x02 \x01(\x03\x12\x12\n\nupdateTime\x18\x03 \x01(\x03\x12\x14\n\x0cresourcePath\x18\x04 \x01(\t\x12\x18\n\x10parentResourceId\x18\x05 \x01(\t\x12\x1a\n\x12parentResourceType\x18\x06 \x01(\t\x12S\n\x0b\x64irectories\x18\x07 \x03(\x0b\x32>.org.apache.airavata.mft.api.service.DirectoryMetadataResponse\x12H\n\x05\x66iles\x18\x08 \x03(\x0b\x32\x39.org.apache.airavata.mft.api.service.FileMetadataResponse\x12\x17\n\x0flazyInitialized\x18\t \x01(\x08\"\xe4\x01\n\x1c\x46\x65tchResourceMetadataRequest\x12\x12\n\nresourceId\x18\x01 \x01(\t\x12\x14\n\x0cresourceType\x18\x02 \x01(\t\x12\x15\n\rresourceToken\x18\x03 \x01(\t\x12\x17\n\x0fresourceBackend\x18\x04 \x01(\t\x12!\n\x19resourceCredentialBackend\x18\x05 \x01(\t\x12\x15\n\rtargetAgentId\x18\x07 \x01(\t\x12\x11\n\tchildPath\x18\x08 \x01(\t\x12\x1d\n\x15mftAuthorizationToken\x18\t \x01(\t2\xb5\x0b\n\rMFTApiService\x12\x9f\x01\n\x0esubmitTransfer\x12\x37.org.apache.airavata.mft.api.service.TransferApiRequest\x1a\x38.org.apache.airavata.mft.api.service.TransferApiResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\"\x12/v1.0/api/transfer\x12\xa8\x01\n\x10submitHttpUpload\x12\x39.org.apache.airavata.mft.api.service.HttpUploadApiRequest\x1a:.org.apache.airavata.mft.api.service.HttpUploadApiResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x15/v1.0/api/http-upload\x12\xb0\x01\n\x12submitHttpDownload\x12;.org.apache.airavata.mft.api.service.HttpDownloadApiRequest\x1a<.org.apache.airavata.mft.api.service.HttpDownloadApiResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\"\x17/v1.0/api/http-download\x12\xb5\x01\n\x11getTransferStates\x12<.org.apache.airavata.mft.api.service.TransferStateApiRequest\x1a=.org.apache.airavata.mft.api.service.TransferStateApiResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/v1.0/api/transfer/states0\x01\x12\xb1\x01\n\x10getTransferState\x12<.org.apache.airavata.mft.api.service.TransferStateApiRequest\x1a=.org.apache.airavata.mft.api.service.TransferStateApiResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1.0/api/transfer/state\x12\xa0\x01\n\x17getResourceAvailability\x12@.org.apache.airavata.mft.api.service.ResourceAvailabilityRequest\x1a\x41.org.apache.airavata.mft.api.service.ResourceAvailabilityResponse\"\x00\x12\xc1\x01\n\x17getFileResourceMetadata\x12\x41.org.apache.airavata.mft.api.service.FetchResourceMetadataRequest\x1a\x39.org.apache.airavata.mft.api.service.FileMetadataResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /v1.0/api/resource/metadata/file\x12\xd0\x01\n\x1cgetDirectoryResourceMetadata\x12\x41.org.apache.airavata.mft.api.service.FetchResourceMetadataRequest\x1a>.org.apache.airavata.mft.api.service.DirectoryMetadataResponse\"-\x82\xd3\xe4\x93\x02\'\x12%/v1.0/api/resource/metadata/directoryB\x02P\x01\x62\x06proto3'
+  serialized_pb=b'\n\x0cMFTApi.proto\x12#org.apache.airavata.mft.api.service\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x10\x43redCommon.proto\"\xa3\x03\n\x12TransferApiRequest\x12\x18\n\x10sourceResourceId\x18\x01 \x01(\t\x12\x12\n\nsourceType\x18\x02 \x01(\t\x12\x13\n\x0bsourceToken\x18\x03 \x01(\t\x12\x1d\n\x15\x64\x65stinationResourceId\x18\x07 \x01(\t\x12\x17\n\x0f\x64\x65stinationType\x18\t \x01(\t\x12\x18\n\x10\x64\x65stinationToken\x18\n \x01(\t\x12\x18\n\x10\x61\x66\x66inityTransfer\x18\r \x01(\x08\x12_\n\x0ctargetAgents\x18\x0e \x03(\x0b\x32I.org.apache.airavata.mft.api.service.TransferApiRequest.TargetAgentsEntry\x12H\n\x15mftAuthorizationToken\x18\x0f \x01(\x0b\x32).org.apache.airavata.mft.common.AuthToken\x1a\x33\n\x11TargetAgentsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\")\n\x13TransferApiResponse\x12\x12\n\ntransferId\x18\x01 \x01(\t\"\xc7\x01\n\x14HttpUploadApiRequest\x12\x1d\n\x15\x64\x65stinationResourceId\x18\x01 \x01(\t\x12\x18\n\x10\x64\x65stinationToken\x18\x03 \x01(\t\x12\x17\n\x0f\x64\x65stinationType\x18\x04 \x01(\t\x12\x13\n\x0btargetAgent\x18\x05 \x01(\t\x12H\n\x15mftAuthorizationToken\x18\x06 \x01(\x0b\x32).org.apache.airavata.mft.common.AuthToken\"9\n\x15HttpUploadApiResponse\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x13\n\x0btargetAgent\x18\x02 \x01(\t\"\xba\x01\n\x16HttpDownloadApiRequest\x12\x18\n\x10sourceResourceId\x18\x01 \x01(\t\x12\x13\n\x0bsourceToken\x18\x03 \x01(\t\x12\x12\n\nsourceType\x18\x04 \x01(\t\x12\x13\n\x0btargetAgent\x18\x05 \x01(\t\x12H\n\x15mftAuthorizationToken\x18\x06 \x01(\x0b\x32).org.apache.airavata.mft.common.AuthToken\";\n\x17HttpDownloadApiResponse\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x13\n\x0btargetAgent\x18\x02 \x01(\t\"w\n\x17TransferStateApiRequest\x12\x12\n\ntransferId\x18\x01 \x01(\t\x12H\n\x15mftAuthorizationToken\x18\x02 \x01(\x0b\x32).org.apache.airavata.mft.common.AuthToken\"j\n\x18TransferStateApiResponse\x12\r\n\x05state\x18\x01 \x01(\t\x12\x16\n\x0eupdateTimeMils\x18\x02 \x01(\x03\x12\x12\n\npercentage\x18\x03 \x01(\x01\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\"\xe4\x01\n\x1bResourceAvailabilityRequest\x12\x12\n\nresourceId\x18\x01 \x01(\t\x12\x14\n\x0cresourceType\x18\x02 \x01(\t\x12\x15\n\rresourceToken\x18\x03 \x01(\t\x12\x17\n\x0fresourceBackend\x18\x04 \x01(\t\x12!\n\x19resourceCredentialBackend\x18\x05 \x01(\t\x12H\n\x15mftAuthorizationToken\x18\x06 \x01(\x0b\x32).org.apache.airavata.mft.common.AuthToken\"1\n\x1cResourceAvailabilityResponse\x12\x11\n\tavailable\x18\x01 \x01(\x08\"\xc7\x01\n\x14\x46ileMetadataResponse\x12\x14\n\x0c\x66riendlyName\x18\x01 \x01(\t\x12\x14\n\x0cresourceSize\x18\x02 \x01(\x03\x12\x13\n\x0b\x63reatedTime\x18\x03 \x01(\x03\x12\x12\n\nupdateTime\x18\x04 \x01(\x03\x12\x0e\n\x06md5sum\x18\x05 \x01(\t\x12\x14\n\x0cresourcePath\x18\x06 \x01(\t\x12\x18\n\x10parentResourceId\x18\x07 \x01(\t\x12\x1a\n\x12parentResourceType\x18\x08 \x01(\t\"\xde\x02\n\x19\x44irectoryMetadataResponse\x12\x14\n\x0c\x66riendlyName\x18\x01 \x01(\t\x12\x13\n\x0b\x63reatedTime\x18\x02 \x01(\x03\x12\x12\n\nupdateTime\x18\x03 \x01(\x03\x12\x14\n\x0cresourcePath\x18\x04 \x01(\t\x12\x18\n\x10parentResourceId\x18\x05 \x01(\t\x12\x1a\n\x12parentResourceType\x18\x06 \x01(\t\x12S\n\x0b\x64irectories\x18\x07 \x03(\x0b\x32>.org.apache.airavata.mft.api.service.DirectoryMetadataResponse\x12H\n\x05\x66iles\x18\x08 \x03(\x0b\x32\x39.org.apache.airavata.mft.api.service.FileMetadataResponse\x12\x17\n\x0flazyInitialized\x18\t \x01(\x08\"\x8f\x02\n\x1c\x46\x65tchResourceMetadataRequest\x12\x12\n\nresourceId\x18\x01 \x01(\t\x12\x14\n\x0cresourceType\x18\x02 \x01(\t\x12\x15\n\rresourceToken\x18\x03 \x01(\t\x12\x17\n\x0fresourceBackend\x18\x04 \x01(\t\x12!\n\x19resourceCredentialBackend\x18\x05 \x01(\t\x12\x15\n\rtargetAgentId\x18\x07 \x01(\t\x12\x11\n\tchildPath\x18\x08 \x01(\t\x12H\n\x15mftAuthorizationToken\x18\t \x01(\x0b\x32).org.apache.airavata.mft.common.AuthToken2\xb5\x0b\n\rMFTApiService\x12\x9f\x01\n\x0esubmitTransfer\x12\x37.org.apache.airavata.mft.api.service.TransferApiRequest\x1a\x38.org.apache.airavata.mft.api.service.TransferApiResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\"\x12/v1.0/api/transfer\x12\xa8\x01\n\x10submitHttpUpload\x12\x39.org.apache.airavata.mft.api.service.HttpUploadApiRequest\x1a:.org.apache.airavata.mft.api.service.HttpUploadApiResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x15/v1.0/api/http-upload\x12\xb0\x01\n\x12submitHttpDownload\x12;.org.apache.airavata.mft.api.service.HttpDownloadApiRequest\x1a<.org.apache.airavata.mft.api.service.HttpDownloadApiResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\"\x17/v1.0/api/http-download\x12\xb5\x01\n\x11getTransferStates\x12<.org.apache.airavata.mft.api.service.TransferStateApiRequest\x1a=.org.apache.airavata.mft.api.service.TransferStateApiResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/v1.0/api/transfer/states0\x01\x12\xb1\x01\n\x10getTransferState\x12<.org.apache.airavata.mft.api.service.TransferStateApiRequest\x1a=.org.apache.airavata.mft.api.service.TransferStateApiResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1.0/api/transfer/state\x12\xa0\x01\n\x17getResourceAvailability\x12@.org.apache.airavata.mft.api.service.ResourceAvailabilityRequest\x1a\x41.org.apache.airavata.mft.api.service.ResourceAvailabilityResponse\"\x00\x12\xc1\x01\n\x17getFileResourceMetadata\x12\x41.org.apache.airavata.mft.api.service.FetchResourceMetadataRequest\x1a\x39.org.apache.airavata.mft.api.service.FileMetadataResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /v1.0/api/resource/metadata/file\x12\xd0\x01\n\x1cgetDirectoryResourceMetadata\x12\x41.org.apache.airavata.mft.api.service.FetchResourceMetadataRequest\x1a>.org.apache.airavata.mft.api.service.DirectoryMetadataResponse\"-\x82\xd3\xe4\x93\x02\'\x12%/v1.0/api/resource/metadata/directoryB\x02P\x01\x62\x06proto3'
   ,
-  dependencies=[google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,CredCommon__pb2.DESCRIPTOR,])
 
 
 
@@ -62,8 +63,8 @@ _TRANSFERAPIREQUEST_TARGETAGENTSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=605,
-  serialized_end=656,
+  serialized_start=499,
+  serialized_end=550,
 )
 
 _TRANSFERAPIREQUEST = _descriptor.Descriptor(
@@ -75,107 +76,65 @@ _TRANSFERAPIREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='sourceStorageId', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceStorageId', index=0,
+      name='sourceResourceId', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceResourceId', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='sourcePath', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourcePath', index=1,
+      name='sourceType', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceType', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='sourceType', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceType', index=2,
+      name='sourceToken', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceToken', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='sourceToken', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceToken', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='sourceResourceBackend', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceResourceBackend', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='sourceCredentialBackend', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.sourceCredentialBackend', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='destinationStorageId', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationStorageId', index=6,
+      name='destinationResourceId', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationResourceId', index=3,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='destinationPath', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationPath', index=7,
-      number=8, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='destinationType', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationType', index=8,
+      name='destinationType', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationType', index=4,
       number=9, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='destinationToken', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationToken', index=9,
+      name='destinationToken', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destinationToken', index=5,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='destResourceBackend', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destResourceBackend', index=10,
-      number=11, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='destCredentialBackend', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.destCredentialBackend', index=11,
-      number=12, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='affinityTransfer', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.affinityTransfer', index=12,
+      name='affinityTransfer', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.affinityTransfer', index=6,
       number=13, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='targetAgents', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.targetAgents', index=13,
+      name='targetAgents', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.targetAgents', index=7,
       number=14, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.mftAuthorizationToken', index=14,
-      number=15, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.TransferApiRequest.mftAuthorizationToken', index=8,
+      number=15, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -191,8 +150,8 @@ _TRANSFERAPIREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=113,
-  serialized_end=656,
+  serialized_start=131,
+  serialized_end=550,
 )
 
 
@@ -223,8 +182,8 @@ _TRANSFERAPIRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=658,
-  serialized_end=699,
+  serialized_start=552,
+  serialized_end=593,
 )
 
 
@@ -237,44 +196,37 @@ _HTTPUPLOADAPIREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='destinationStoreId', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationStoreId', index=0,
+      name='destinationResourceId', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationResourceId', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='destinationPath', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationPath', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='destinationToken', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationToken', index=2,
+      name='destinationToken', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationToken', index=1,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='destinationType', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationType', index=3,
+      name='destinationType', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.destinationType', index=2,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='targetAgent', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.targetAgent', index=4,
+      name='targetAgent', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.targetAgent', index=3,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.mftAuthorizationToken', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.HttpUploadApiRequest.mftAuthorizationToken', index=4,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -290,8 +242,8 @@ _HTTPUPLOADAPIREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=702,
-  serialized_end=880,
+  serialized_start=596,
+  serialized_end=795,
 )
 
 
@@ -329,8 +281,8 @@ _HTTPUPLOADAPIRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=882,
-  serialized_end=939,
+  serialized_start=797,
+  serialized_end=854,
 )
 
 
@@ -343,44 +295,37 @@ _HTTPDOWNLOADAPIREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='sourceStoreId', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourceStoreId', index=0,
+      name='sourceResourceId', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourceResourceId', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='sourcePath', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourcePath', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='sourceToken', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourceToken', index=2,
+      name='sourceToken', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourceToken', index=1,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='sourceType', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourceType', index=3,
+      name='sourceType', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.sourceType', index=2,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='targetAgent', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.targetAgent', index=4,
+      name='targetAgent', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.targetAgent', index=3,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.mftAuthorizationToken', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.HttpDownloadApiRequest.mftAuthorizationToken', index=4,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -396,8 +341,8 @@ _HTTPDOWNLOADAPIREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=942,
-  serialized_end=1102,
+  serialized_start=857,
+  serialized_end=1043,
 )
 
 
@@ -435,8 +380,8 @@ _HTTPDOWNLOADAPIRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1104,
-  serialized_end=1163,
+  serialized_start=1045,
+  serialized_end=1104,
 )
 
 
@@ -457,8 +402,8 @@ _TRANSFERSTATEAPIREQUEST = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.TransferStateApiRequest.mftAuthorizationToken', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -474,8 +419,8 @@ _TRANSFERSTATEAPIREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1165,
-  serialized_end=1241,
+  serialized_start=1106,
+  serialized_end=1225,
 )
 
 
@@ -527,8 +472,8 @@ _TRANSFERSTATEAPIRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1243,
-  serialized_end=1349,
+  serialized_start=1227,
+  serialized_end=1333,
 )
 
 
@@ -577,8 +522,8 @@ _RESOURCEAVAILABILITYREQUEST = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.ResourceAvailabilityRequest.mftAuthorizationToken', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -594,8 +539,8 @@ _RESOURCEAVAILABILITYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1352,
-  serialized_end=1537,
+  serialized_start=1336,
+  serialized_end=1564,
 )
 
 
@@ -626,8 +571,8 @@ _RESOURCEAVAILABILITYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1539,
-  serialized_end=1588,
+  serialized_start=1566,
+  serialized_end=1615,
 )
 
 
@@ -707,8 +652,8 @@ _FILEMETADATARESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1591,
-  serialized_end=1790,
+  serialized_start=1618,
+  serialized_end=1817,
 )
 
 
@@ -795,8 +740,8 @@ _DIRECTORYMETADATARESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1793,
-  serialized_end=2143,
+  serialized_start=1820,
+  serialized_end=2170,
 )
 
 
@@ -859,8 +804,8 @@ _FETCHRESOURCEMETADATAREQUEST = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='mftAuthorizationToken', full_name='org.apache.airavata.mft.api.service.FetchResourceMetadataRequest.mftAuthorizationToken', index=7,
-      number=9, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=9, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -876,14 +821,20 @@ _FETCHRESOURCEMETADATAREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2146,
-  serialized_end=2374,
+  serialized_start=2173,
+  serialized_end=2444,
 )
 
 _TRANSFERAPIREQUEST_TARGETAGENTSENTRY.containing_type = _TRANSFERAPIREQUEST
 _TRANSFERAPIREQUEST.fields_by_name['targetAgents'].message_type = _TRANSFERAPIREQUEST_TARGETAGENTSENTRY
+_TRANSFERAPIREQUEST.fields_by_name['mftAuthorizationToken'].message_type = CredCommon__pb2._AUTHTOKEN
+_HTTPUPLOADAPIREQUEST.fields_by_name['mftAuthorizationToken'].message_type = CredCommon__pb2._AUTHTOKEN
+_HTTPDOWNLOADAPIREQUEST.fields_by_name['mftAuthorizationToken'].message_type = CredCommon__pb2._AUTHTOKEN
+_TRANSFERSTATEAPIREQUEST.fields_by_name['mftAuthorizationToken'].message_type = CredCommon__pb2._AUTHTOKEN
+_RESOURCEAVAILABILITYREQUEST.fields_by_name['mftAuthorizationToken'].message_type = CredCommon__pb2._AUTHTOKEN
 _DIRECTORYMETADATARESPONSE.fields_by_name['directories'].message_type = _DIRECTORYMETADATARESPONSE
 _DIRECTORYMETADATARESPONSE.fields_by_name['files'].message_type = _FILEMETADATARESPONSE
+_FETCHRESOURCEMETADATAREQUEST.fields_by_name['mftAuthorizationToken'].message_type = CredCommon__pb2._AUTHTOKEN
 DESCRIPTOR.message_types_by_name['TransferApiRequest'] = _TRANSFERAPIREQUEST
 DESCRIPTOR.message_types_by_name['TransferApiResponse'] = _TRANSFERAPIRESPONSE
 DESCRIPTOR.message_types_by_name['HttpUploadApiRequest'] = _HTTPUPLOADAPIREQUEST
@@ -1009,8 +960,8 @@ _MFTAPISERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=2377,
-  serialized_end=3838,
+  serialized_start=2447,
+  serialized_end=3908,
   methods=[
   _descriptor.MethodDescriptor(
     name='submitTransfer',

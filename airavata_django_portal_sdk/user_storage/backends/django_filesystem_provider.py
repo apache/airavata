@@ -6,11 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from django.core.files.storage import FileSystemStorage
 
 from .base import UserStorageProvider
-from django.core.files import File
 
 logger = logging.getLogger(__name__)
-
-TMP_INPUT_FILE_UPLOAD_DIR = "tmp"
 
 
 class DjangoFileSystemProvider(UserStorageProvider):
@@ -58,9 +55,9 @@ class DjangoFileSystemProvider(UserStorageProvider):
                     {
                         "name": d,
                         "path": datastore.rel_path(dpath),
+                        "resource_path": datastore.rel_path(dpath),
                         "created_time": created_time,
                         "size": size,
-                        "hidden": dpath == TMP_INPUT_FILE_UPLOAD_DIR,
                     }
                 )
             files_data = []
@@ -77,10 +74,9 @@ class DjangoFileSystemProvider(UserStorageProvider):
                     {
                         "name": f,
                         "path": datastore.rel_path(full_path),
-                        "resource_path": full_path,
+                        "resource_path": datastore.rel_path(full_path),
                         "created_time": created_time,
                         "size": size,
-                        "hidden": False,
                     }
                 )
             return directories_data, files_data
@@ -93,10 +89,9 @@ class DjangoFileSystemProvider(UserStorageProvider):
                 {
                     "name": os.path.basename(resource_path),
                     "path": datastore.rel_path(full_path),
-                    "resource_path": full_path,
+                    "resource_path": datastore.rel_path(full_path),
                     "created_time": created_time,
                     "size": size,
-                    "hidden": False,
                 }
             ]
         else:

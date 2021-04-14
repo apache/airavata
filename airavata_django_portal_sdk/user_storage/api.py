@@ -51,7 +51,8 @@ def get_user_storage_provider(request, owner_username=None, storage_resource_id=
             options = dict(directory=settings.GATEWAY_DATA_STORE_DIR)
             logger.warning("Please add the USER_STORAGES setting. Using legacy GATEWAY_DATA_STORE_RESOURCE_ID and GATEWAY_DATA_STORE_DIR settings.")
         else:
-            for conf in settings.USER_STORAGES:
+            for key in settings.USER_STORAGES:
+                conf = settings.USER_STORAGES[key]
                 if conf['STORAGE_RESOURCE_ID'] == storage_resource_id:
                     module_class_name = conf['BACKEND']
                     options = conf.get('OPTIONS', {})
@@ -241,7 +242,7 @@ def dir_exists(request, path, storage_resource_id=None):
         return resp.json()['isDir']
     else:
         backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-        return backend.exists(path)
+        return backend.is_dir(path)
 
 
 def user_file_exists(request, path, storage_resource_id=None):
@@ -256,7 +257,7 @@ def user_file_exists(request, path, storage_resource_id=None):
         resp.raise_for_status()
         return resp.json()['files'][0]['dataProductURI']
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    if backend.exists(path) and backend.is_file(path):
+    if backend.is_file(path):
         _, files = backend.get_metadata(path)
         full_path = files[0]['resource_path']
         data_product_uri = _get_data_product_uri(request, full_path, backend.resource_id)
@@ -343,7 +344,7 @@ def get_file_metadata(request, path, storage_resource_id=None):
         return file
 
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    if backend.exists(path) and backend.is_file(path):
+    if backend.is_file(path):
         _, files = backend.get_metadata(path)
         file = files[0]
         data_product_uri = _get_data_product_uri(request, file['resource_path'],
@@ -418,6 +419,9 @@ def listdir(request, path, storage_resource_id=None):
 
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
     directories, files = backend.get_metadata(path)
+    # Mark the TMP_INPUT_FILE_UPLOAD_DIR directory as hidden in the UI
+    for directory in directories:
+        directory['hidden'] = directory['path'] == TMP_INPUT_FILE_UPLOAD_DIR
     # for each file, lookup or register a data product and enrich the file
     # metadata with data-product-uri and mime-type
     for file in files:
@@ -668,13 +672,14 @@ def _determine_content_type(full_path, content_type=None):
         # Try to guess the content-type from file extension
         guessed_type, encoding = mimetypes.guess_type(full_path)
         result = guessed_type
-    if result is None or result == "application/octet-stream":
-        # Check if file is Unicode text by trying to read some of it
-        try:
-            open(full_path, "r").read(1024)
-            result = "text/plain"
-        except UnicodeDecodeError:
-            logger.debug(f"Failed to read as Unicode text: {full_path}")
+    # TODO: implement change to use UserStorageProvider.open to read from file
+    # if result is None or result == "application/octet-stream":
+    #     # Check if file is Unicode text by trying to read some of it
+    #     try:
+    #         open(full_path, "r").read(1024)
+    #         result = "text/plain"
+    #     except UnicodeDecodeError:
+    #         logger.debug(f"Failed to read as Unicode text: {full_path}")
     return result
 
 

@@ -62,3 +62,7 @@ class UserStorageProvider:
     @property
     def username(self):
         return self.authz_token.claimsMap['userName']
+
+    @property
+    def access_token(self):
+        return self.authz_token.accessToken

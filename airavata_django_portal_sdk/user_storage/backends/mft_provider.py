@@ -1,152 +1,217 @@
+import logging
+import os
+from datetime import datetime
+
+import grpc
+
+from . import CredCommon_pb2, MFTApi_pb2, MFTApi_pb2_grpc
 from .base import UserStorageProvider
+
+logger = logging.getLogger(__name__)
 
 
 class MFTUserStorageProvider(UserStorageProvider):
 
+    def __init__(self, authz_token, resource_id, context=None, resource_token=None, mft_api_endpoint=None, mft_api_secure=False, resource_per_gateway=False, **kwargs):
+        super().__init__(authz_token, resource_id, context=context, **kwargs)
+        self.resource_token = resource_token
+        self.mft_api_endpoint = mft_api_endpoint
+        self.mft_api_secure = mft_api_secure
+        self.resource_per_gateway = resource_per_gateway
+
     def exists(self, resource_path):
-        return super().exists(resource_path)
-#         with grpc.insecure_channel('localhost:7004') as channel:
-#             # remove trailing slash and figure out parent path
-#             # FIXME remove the hard coded /tmp path
-#             parent_path, child_path = os.path.split(f"/tmp/{path}".rstrip("/"))
-#             logger.debug(f"parent_path={parent_path}, child_path={child_path}")
-#             stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
-#             # Get metadata for parent directory and see if child_path exists
-#             request = MFTApi_pb2.FetchResourceMetadataRequest(
-#                 resourceId="remote-ssh-dir-resource",
-#                 resourceType="SCP",
-#                 resourceToken="local-ssh-cred",
-#                 resourceBackend="FILE",
-#                 resourceCredentialBackend="FILE",
-#                 targetAgentId="agent0",
-#                 childPath=parent_path,
-#                 mftAuthorizationToken="user token")
-#             response = stub.getDirectoryResourceMetadata(request)
-#             # if not child_path, then return True since the response was
-#             # successful and we just need to confirm the existence of the root dir
-#             if child_path == '':
-#                 return True
-#             return child_path in map(lambda f: f.friendlyName, response.directories)
+        with grpc.insecure_channel(self.mft_api_endpoint) as channel:
+            child_path = self._get_child_path(resource_path)
+            # TODO: is this still needed?
+            # parent_path, child_path = os.path.split(f"/tmp/{resource_path}".rstrip("/"))
+            # get metadata for the parent path
+            if child_path is not None:
+                parent_path, child_path = os.path.split(child_path)
+            else:
+                parent_path = None
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            # Get metadata for parent directory and see if child_path exists
+            request = MFTApi_pb2.FetchResourceMetadataRequest(
+                # resourceId="remote-ssh-dir-resource",
+                resourceId=self.resource_id,
+                resourceType="SCP",
+                # resourceToken="local-ssh-cred",
+                resourceToken=self.resource_token,
+                resourceBackend="FILE",
+                resourceCredentialBackend="FILE",
+                targetAgentId="agent0",
+                childPath=parent_path,
+                mftAuthorizationToken=self.auth_token,
+            )
+            try:
+                response = stub.getDirectoryResourceMetadata(request)
+            except Exception:
+                # Could not find the parent path, so apparently doesn't exist
+                logger.warning(f"Could not get metadata for {parent_path} on {self.resource_id}")
+                return False
+            # if not child_path, then return True since the response was
+            # successful and we just need to confirm the existence of the root dir
+            if child_path is None:
+                return True
+            return child_path in map(lambda f: f.friendlyName, list(response.directories) + list(response.files))
 
     def get_metadata(self, resource_path):
-        return super().get_metadata(resource_path)
-#     def listdir(self, request, path):
-#         # TODO setup resourceId, etc from __init__ arguments
-#         channel = grpc.insecure_channel('localhost:7004')
-#         stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
-#         request = MFTApi_pb2.FetchResourceMetadataRequest(
-#             resourceId="remote-ssh-dir-resource",
-#             resourceType="SCP",
-#             resourceToken="local-ssh-cred",
-#             resourceBackend="FILE",
-#             resourceCredentialBackend="FILE",
-#             targetAgentId="agent0",
-#             childPath=f"/tmp/{path}",
-#             mftAuthorizationToken="user token")
-#         response = stub.getDirectoryResourceMetadata(request)
-#         directories_data = []
-#         for d in response.directories:
+        with grpc.insecure_channel(self.mft_api_endpoint) as channel:
+            child_path = self._get_child_path(resource_path)
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            request = MFTApi_pb2.FetchResourceMetadataRequest(
+                # resourceId="remote-ssh-dir-resource",
+                resourceId=self.resource_id,
+                resourceType="SCP",
+                # resourceToken="local-ssh-cred",
+                resourceToken=self.resource_token,
+                resourceBackend="FILE",
+                resourceCredentialBackend="FILE",
+                targetAgentId="agent0",
+                childPath=child_path,
+                mftAuthorizationToken=self.auth_token)
+            try:
+                logger.debug(f"getDirectoryResourceMetadata({request})")
+                response = stub.getDirectoryResourceMetadata(request)
+                logger.debug(f"getDirectoryResourceMetadata response={response}")
+                directories = response.directories
+                files = response.files
+            except Exception:
+                # if getting metadata for directory fails, try as file
+                # FIXME is there a better way to determine if directory or file?
+                logger.debug(f"getFileResourceMetadata({request})")
+                response = stub.getFileResourceMetadata(request)
+                logger.debug(f"getFileResourceMetadata response={response}")
+                directories = []
+                files = [response]
+            directories_data = []
+            for d in directories:
 
-#             dpath = os.path.join(path, d.friendlyName)
-#             created_time = datetime.fromtimestamp(d.createdTime)
-#             # TODO MFT API doesn't report size
-#             size = 0
-#             directories_data.append(
-#                 {
-#                     "name": d.friendlyName,
-#                     "path": dpath,
-#                     "created_time": created_time,
-#                     "size": size,
-#                     # TODO how to handle hidden directories or directories for
-#                     # staging input file uploads
-#                     "hidden": False
-#                 }
-#             )
-#         files_data = []
-#         for f in response.files:
-#             user_rel_path = os.path.join(path, f.friendlyName)
-#             # TODO do we need to check for broken symlinks?
-#             created_time = datetime.fromtimestamp(f.createdTime)
-#             # TODO get the size as well
-#             size = 0
-#             # full_path = datastore.path(request.user.username, user_rel_path)
-#             # TODO how do we register these as data products, do we need to?
-#             # data_product_uri = _get_data_product_uri(request, full_path)
+                dpath = os.path.join(resource_path, d.friendlyName)
+                created_time = datetime.fromtimestamp(d.createdTime)
+                # TODO MFT API doesn't report size
+                size = 0
+                directories_data.append(
+                    {
+                        "name": d.friendlyName,
+                        # path is the relative path, or at least, relative to given resource_path
+                        "path": dpath,
+                        # resource_path is the id or full path to the resource
+                        "resource_path": d.resourcePath,
+                        "created_time": created_time,
+                        "size": size,
+                        # TODO how to handle hidden directories or directories for
+                        # staging input file uploads
+                        "hidden": False
+                    }
+                )
+            files_data = []
+            for f in files:
+                user_rel_path = os.path.join(resource_path, f.friendlyName)
+                # TODO do we need to check for broken symlinks?
+                created_time = datetime.fromtimestamp(f.createdTime)
+                size = f.resourceSize
+                # full_path = datastore.path(request.user.username, user_rel_path)
+                # TODO how do we register these as data products, do we need to?
+                # data_product_uri = _get_data_product_uri(request, full_path)
 
-#             # data_product = request.airavata_client.getDataProduct(
-#             #     request.authz_token, data_product_uri)
-#             # mime_type = None
-#             # if 'mime-type' in data_product.productMetadata:
-#             #     mime_type = data_product.productMetadata['mime-type']
-#             files_data.append(
-#                 {
-#                     "name": f.friendlyName,
-#                     "path": user_rel_path,
-#                     "data-product-uri": None,
-#                     "created_time": created_time,
-#                     "mime_type": None,
-#                     "size": size,
-#                     "hidden": False,
-#                 }
-#             )
-#         return directories_data, files_data
+                # data_product = request.airavata_client.getDataProduct(
+                #     request.authz_token, data_product_uri)
+                # mime_type = None
+                # if 'mime-type' in data_product.productMetadata:
+                #     mime_type = data_product.productMetadata['mime-type']
+                files_data.append(
+                    {
+                        "name": f.friendlyName,
+                        "path": user_rel_path,
+                        "resource_path": f.resourcePath,
+                        "created_time": created_time,
+                        "size": size,
+                        "hidden": False,
+                    }
+                )
+            return directories_data, files_data
 
-#     def get_file(self, request, path):
-#         # FIXME remove hard coded /tmp path
-#         path = f"/tmp/{path}".rstrip("/")
-#         file_metadata = self._get_file(path)
-#         if file_metadata is not None:
-#             user_rel_path = os.path.join(path, file_metadata.friendlyName)
-#             created_time = datetime.fromtimestamp(file_metadata.createdTime)
-#             # TODO get the size as well
-#             size = 0
+    def is_file(self, resource_path):
+        with grpc.insecure_channel(self.mft_api_endpoint) as channel:
+            child_path = self._get_child_path(resource_path)
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            # Get metadata for parent directory and see if child_path exists
+            request = MFTApi_pb2.FetchResourceMetadataRequest(
+                # resourceId="remote-ssh-dir-resource",
+                resourceId=self.resource_id,
+                resourceType="SCP",
+                # resourceToken="local-ssh-cred",
+                resourceToken=self.resource_token,
+                resourceBackend="FILE",
+                resourceCredentialBackend="FILE",
+                targetAgentId="agent0",
+                childPath=child_path,
+                mftAuthorizationToken=self.auth_token,
+            )
+            try:
+                stub.getFileResourceMetadata(request)
+                return True
+            except Exception:
+                # assume that is doesn't exist, or isn't a file
+                logger.warning(f"Could not get metadata for {child_path} on {self.resource_id}")
+                return False
 
-#             return {
-#                 "name": file_metadata.friendlyName,
-#                 "path": user_rel_path,
-#                 "data-product-uri": None,
-#                 "created_time": created_time,
-#                 "mime_type": None,
-#                 "size": size,
-#                 "hidden": False,
-#             }
-#         else:
-#             raise ObjectDoesNotExist("User storage file path does not exist")
+    def is_dir(self, resource_path):
+        with grpc.insecure_channel(self.mft_api_endpoint) as channel:
+            child_path = self._get_child_path(resource_path)
+            stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+            # Get metadata for parent directory and see if child_path exists
+            request = MFTApi_pb2.FetchResourceMetadataRequest(
+                # resourceId="remote-ssh-dir-resource",
+                resourceId=self.resource_id,
+                resourceType="SCP",
+                # resourceToken="local-ssh-cred",
+                resourceToken=self.resource_token,
+                resourceBackend="FILE",
+                resourceCredentialBackend="FILE",
+                targetAgentId="agent0",
+                childPath=child_path,
+                mftAuthorizationToken=self.auth_token,
+            )
+            try:
+                stub.getDirectoryResourceMetadata(request)
+                return True
+            except Exception:
+                # assume that it doesn't exist or isn't a file
+                logger.warning(f"Could not get metadata for {child_path} on {self.resource_id}")
+                return False
 
-#     def _get_file(self, path):
-#         with grpc.insecure_channel('localhost:7004') as channel:
-#             stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
-#             # Get metadata for parent directory and see if child_path exists
-#             request = MFTApi_pb2.FetchResourceMetadataRequest(
-#                 resourceId="remote-ssh-dir-resource",
-#                 resourceType="SCP",
-#                 resourceToken="local-ssh-cred",
-#                 resourceBackend="FILE",
-#                 resourceCredentialBackend="FILE",
-#                 targetAgentId="agent0",
-#                 childPath=path,
-#                 mftAuthorizationToken="user token")
-#             try:
-#                 # TODO is there a better way to check if file exists than catching exception?
-#                 return stub.getFileResourceMetadata(request)
-#             except Exception:
-#                 logger.exception(f"_get_file({path})")
-#                 return None
+    def _get_child_path(self, resource_path):
+        """Convert possibly relative child path into absolute path."""
+        if not resource_path.startswith("/"):
+            # resource_path is relative, need to construct an absolute path
+            if self.resource_per_gateway:
+                resource_path = os.path.join(self.username, resource_path).rstrip("/")
+            # If there is no child path, just return none
+            if resource_path == '':
+                return None
+            logger.debug(f"figuring out resourcePath of {self.resource_id} ...")
+            with grpc.insecure_channel(self.mft_api_endpoint) as channel:
+                stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
+                request = MFTApi_pb2.FetchResourceMetadataRequest(
+                    # resourceId="remote-ssh-dir-resource",
+                    resourceId=self.resource_id,
+                    resourceType="SCP",
+                    # resourceToken="local-ssh-cred",
+                    resourceToken=self.resource_token,
+                    resourceBackend="FILE",
+                    resourceCredentialBackend="FILE",
+                    targetAgentId="agent0",
+                    mftAuthorizationToken=self.auth_token)
+                response = stub.getDirectoryResourceMetadata(request)
+                logger.debug(f"metadata of {self.resource_id} is {response}")
+                return os.path.join(response.resourcePath, resource_path)
+        else:
+            # resource_path appears to be absolute path
+            return resource_path
 
-#     def _get_download_url(self, path):
-
-#         with grpc.insecure_channel('localhost:7004') as channel:
-#             stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
-#             download_request = MFTApi_pb2.HttpDownloadApiRequest(sourceStoreId="remote-ssh-storage",
-#                                                                  sourcePath="/tmp/a.txt",
-#                                                                  sourceToken="local-ssh-cred",
-#                                                                  sourceType="SCP",
-#                                                                  targetAgent="agent0",
-#                                                                  mftAuthorizationToken="")
-#             try:
-#                 # TODO is there a better way to check if file exists than catching exception?
-#                 # response stub.submitHttpDownload(request)
-#                 pass
-#             except Exception:
-#                 logger.exception(f"_get_file({path})")
-#                 return None
+    @property
+    def auth_token(self):
+        """Instance of CredCommon.AuthToken wrapping user's access token."""
+        return CredCommon_pb2.AuthToken(userTokenAuth=CredCommon_pb2.UserTokenAuth(token=self.access_token))
