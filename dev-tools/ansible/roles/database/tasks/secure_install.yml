@@ -25,7 +25,7 @@
               password="{{ mysql_root_password }}"
               host=localhost
               login_user=root
-              # login_password="{{ mysql_root_password }}"
+              login_password="{{ mysql_root_password }}"
 
 - name: Copy .my.cnf file
   template: src=my.cnf.j2 dest="{{ user_home }}/.my.cnf"

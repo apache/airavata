@@ -22,11 +22,11 @@
 ################################################################################
 # Setup and run rabbitmq
 - name: Install erlang latest version
-  yum: name=https://www.rabbitmq.com/releases/erlang/erlang-18.3-1.el7.centos.x86_64.rpm state=present
+  yum: name=https://github.com/rabbitmq/erlang-rpm/releases/download/v18.3.4.6/erlang-18.3.4.6-1.el7.centos.x86_64.rpm state=present
   become: yes
 
 - name: Install Rabbitmq rpm
-  yum: name=https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm state=present
+  yum: name=https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_10/rabbitmq-server-3.6.10-1.el7.noarch.rpm state=present
   become: yes
 
 - name: open rabbitmq ports

@@ -19,8 +19,8 @@
 #
 
 ---
-keycloak_version: "2.5.4.Final"
-keycloak_downlaod_url: "https://downloads.jboss.org/keycloak/{{keycloak_version}}/keycloak-{{keycloak_version}}.tar.gz"
+keycloak_version: "12.0.3"
+keycloak_downlaod_url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_version }}/keycloak-{{ keycloak_version }}.tar.gz"
 keycloak_install_dir: "keycloak-{{keycloak_version}}"
 keycloak_db_connector_name: "mysql-connector-java-5.1.41"
 # keycloak_ssl_keystore_file: "keycloak.jks"
