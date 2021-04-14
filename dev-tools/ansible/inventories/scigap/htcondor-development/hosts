@@ -1,0 +1,20 @@
+[keycloak]
+129.114.17.144 ansible_connection=ssh ansible_user=root
+
+[database]
+129.114.17.144 ansible_connection=ssh ansible_user=root
+
+[api-orch]
+129.114.17.144 ansible_connection=ssh ansible_user=root
+
+[zookeeper]
+129.114.17.144 ansible_connection=ssh ansible_user=root
+
+[rabbitmq]
+129.114.17.144 ansible_connection=ssh ansible_user=root
+
+[helix]
+129.114.17.144 ansible_connection=ssh ansible_user=root
+
+[kafka]
+129.114.17.144 ansible_connection=ssh ansible_user=root
