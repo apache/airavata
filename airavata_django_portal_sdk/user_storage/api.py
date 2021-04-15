@@ -7,7 +7,7 @@ import mimetypes
 import os
 import warnings
 from http import HTTPStatus
-from urllib.parse import quote, unquote, urlparse
+from urllib.parse import quote, unquote, urlencode, urlparse
 
 import requests
 from airavata.model.data.replica.ttypes import (
@@ -21,6 +21,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from ..util import convert_iso8601_to_datetime
+from django.urls import reverse
+from airavata_django_portal_sdk.user_storage.backends.base import ProvidesDownloadUrl
 
 logger = logging.getLogger(__name__)
 
@@ -179,6 +181,25 @@ def move(request, data_product=None, path=None, data_product_uri=None, storage_r
 def move_input_file(request, data_product=None, path=None, data_product_uri=None, storage_resource_id=None):
     warnings.warn("Use 'move' instead.", DeprecationWarning)
     return move(request, data_product=data_product, path=path, data_product_uri=data_product_uri, storage_resource_id=storage_resource_id)
+
+
+def get_download_url(request, data_product=None, data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
+    if _is_remote_api():
+        raise NotImplementedError()
+    else:
+        storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
+        backend = get_user_storage_provider(request,
+                                            owner_username=data_product.ownerName,
+                                            storage_resource_id=storage_resource_id)
+        if isinstance(backend, ProvidesDownloadUrl):
+            return backend.get_download_url(path)
+        else:
+            # if backend doesn't provide a download url, then use default one
+            # that uses backend to read the file
+            return (reverse("airavata_django_portal_sdk:download_file") + "?" +
+                    urlencode({"data-product-uri": data_product.productUri}))
 
 
 def open_file(request, data_product=None, data_product_uri=None):
@@ -435,6 +456,8 @@ def listdir(request, path, storage_resource_id=None):
             mime_type = data_product.productMetadata['mime-type']
         file['data-product-uri'] = data_product_uri
         file['mime_type'] = mime_type
+        # TODO: remove this, there's no need for hidden files
+        file['hidden'] = False
     return directories, files
 
 

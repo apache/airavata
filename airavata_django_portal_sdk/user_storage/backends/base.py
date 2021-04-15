@@ -1,4 +1,16 @@
 
+class ProvidesDownloadUrl:
+    """Mixin for UserStorageProvider that provides download url."""
+    def get_download_url(self, resource_path):
+        raise NotImplementedError()
+
+
+class ProvidesUploadUrl:
+    """Mixin for UserStorageProvider that provides upload url."""
+    def get_upload_url(self, resource_path):
+        raise NotImplementedError()
+
+
 class UserStorageProvider:
     def __init__(self, authz_token, resource_id, context=None, **kwargs):
         self.authz_token = authz_token
@@ -13,13 +25,7 @@ class UserStorageProvider:
         """
         raise NotImplementedError()
 
-    def get_upload_url(self, resource_path):
-        raise NotImplementedError()
-
     def open(self, resource_path):
-        raise NotImplementedError()
-
-    def get_download_url(self, resource_path):
         raise NotImplementedError()
 
     def exists(self, resource_path):
