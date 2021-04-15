@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<div id="{{ bundle_name }}"/>
+<div id="{{ bundle_name }}" {% if next %} data-next="{{ next }}" {% endif %} />
 {% endblock content %}
 
 {% block scripts %}
