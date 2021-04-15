@@ -447,7 +447,8 @@ def listdir(request, path, storage_resource_id=None):
     # metadata with data-product-uri and mime-type
     for file in files:
         data_product_uri = _get_data_product_uri(request, file['resource_path'],
-                                                 storage_resource_id=backend.resource_id)
+                                                 storage_resource_id=backend.resource_id,
+                                                 backend=backend)
 
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, data_product_uri)
@@ -498,7 +499,8 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
         # metadata with data-product-uri and mime-type
         for file in files:
             data_product_uri = _get_data_product_uri(request, file['resource_path'],
-                                                     storage_resource_id=backend.resource_id)
+                                                     storage_resource_id=backend.resource_id,
+                                                     backend=backend)
 
             data_product = request.airavata_client.getDataProduct(
                 request.authz_token, data_product_uri)
@@ -594,7 +596,7 @@ def get_rel_experiment_dir(request, experiment_id, storage_resource_id=None):
         return None
 
 
-def _get_data_product_uri(request, full_path, storage_resource_id, owner=None):
+def _get_data_product_uri(request, full_path, storage_resource_id, owner=None, backend=None):
 
     from airavata_django_portal_sdk import models
     if owner is None:
@@ -604,7 +606,7 @@ def _get_data_product_uri(request, full_path, storage_resource_id, owner=None):
     if user_file.exists():
         product_uri = user_file[0].file_dpu
     else:
-        data_product = _save_data_product(request, full_path, storage_resource_id, owner=owner)
+        data_product = _save_data_product(request, full_path, storage_resource_id, owner=owner, backend=backend)
         product_uri = data_product.productUri
     return product_uri
 
@@ -614,12 +616,12 @@ def _get_data_product(request, data_product_uri):
         request.authz_token, data_product_uri)
 
 
-def _save_data_product(request, full_path, storage_resource_id, name=None, content_type=None, owner=None):
+def _save_data_product(request, full_path, storage_resource_id, name=None, content_type=None, owner=None, backend=None):
     "Create, register and record in DB a data product for full_path."
     if owner is None:
         owner = request.user.username
     data_product = _create_data_product(
-        owner, full_path, storage_resource_id, name=name, content_type=content_type
+        owner, full_path, storage_resource_id, name=name, content_type=content_type, backend=backend
     )
     product_uri = _register_data_product(request, full_path, data_product, owner=owner)
     data_product.productUri = product_uri
@@ -671,7 +673,7 @@ def _delete_data_product(username, full_path):
         user_file.delete()
 
 
-def _create_data_product(username, full_path, storage_resource_id, name=None, content_type=None):
+def _create_data_product(username, full_path, storage_resource_id, name=None, content_type=None, backend=None):
     data_product = DataProductModel()
     data_product.gatewayId = settings.GATEWAY_ID
     data_product.ownerName = username
@@ -681,7 +683,7 @@ def _create_data_product(username, full_path, storage_resource_id, name=None, co
         file_name = os.path.basename(full_path)
     data_product.productName = file_name
     data_product.dataProductType = DataProductType.FILE
-    final_content_type = _determine_content_type(full_path, content_type)
+    final_content_type = _determine_content_type(full_path, content_type, backend=backend)
     if final_content_type is not None:
         data_product.productMetadata = {"mime-type": final_content_type}
     data_replica_location = _create_replica_location(full_path, file_name, storage_resource_id)
@@ -689,20 +691,22 @@ def _create_data_product(username, full_path, storage_resource_id, name=None, co
     return data_product
 
 
-def _determine_content_type(full_path, content_type=None):
+def _determine_content_type(full_path, content_type=None, backend=None):
     result = content_type
     if result is None:
         # Try to guess the content-type from file extension
         guessed_type, encoding = mimetypes.guess_type(full_path)
         result = guessed_type
-    # TODO: implement change to use UserStorageProvider.open to read from file
-    # if result is None or result == "application/octet-stream":
-    #     # Check if file is Unicode text by trying to read some of it
-    #     try:
-    #         open(full_path, "r").read(1024)
-    #         result = "text/plain"
-    #     except UnicodeDecodeError:
-    #         logger.debug(f"Failed to read as Unicode text: {full_path}")
+    if result is None or result == "application/octet-stream":
+        # Check if file is Unicode text by trying to read some of it
+        try:
+            if backend is not None:
+                file = backend.open(full_path)
+                # Try to decode the first kb as UTF8
+                file.read(1024).decode('utf-8')
+                result = "text/plain"
+        except UnicodeDecodeError:
+            logger.debug(f"Failed to read as Unicode text: {full_path}")
     return result
 
 
