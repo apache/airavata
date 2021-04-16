@@ -4,7 +4,6 @@ import json
 import logging
 from urllib.parse import quote, urlencode
 
-import requests
 from airavata.model.appcatalog.appdeployment.ttypes import (
     ApplicationDeploymentDescription,
     ApplicationModule,
