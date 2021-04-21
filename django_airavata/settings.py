@@ -315,6 +315,18 @@ WEBPACK_LOADER = {
             'webpack-stats.json'),
         'TIMEOUT': 60,
     },
+    'AUTH': {
+        'BUNDLE_DIR_NAME': 'django_airavata_auth/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'auth',
+            'static',
+            'django_airavata_auth',
+            'dist',
+            'webpack-stats.json'),
+    },
     'DATAPARSERS': {
         'BUNDLE_DIR_NAME': 'django_airavata_dataparsers/dist/',
         'STATS_FILE': os.path.join(

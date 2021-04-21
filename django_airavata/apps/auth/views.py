@@ -6,6 +6,7 @@ from urllib.parse import quote, urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
 from django.http import HttpResponseBadRequest, JsonResponse
@@ -15,6 +16,7 @@ from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 
 from django_airavata.apps.auth import serializers
 
@@ -507,21 +509,29 @@ def _create_login_desktop_failed_response(request, idp_alias=None):
                     "?" + urlencode(params))
 
 
-class IsUserOrReadOnlyForSuperuser(permissions.BasePermission):
+@login_required
+def user_profile(request):
+    return render(request, "django_airavata_auth/base.html", {
+        'bundle_name': "user-profile"
+    })
+
+
+class IsUserOrReadOnlyForAdmins(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         if (request.method in permissions.SAFE_METHODS and
-                request.user.is_superuser):
+                request.is_gateway_admin):
             return True
         return obj == request.user
 
 
+# TODO: disable deleting and creating?
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserSerializer
     queryset = get_user_model().objects.all()
-    permission_classes = [IsUserOrReadOnlyForSuperuser]
+    permission_classes = [IsUserOrReadOnlyForAdmins]
 
     def get_queryset(self):
         user = self.request.user
@@ -529,3 +539,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return get_user_model().objects.all()
         else:
             return get_user_model().objects.get(pk=user.pk)
+
+    @action(detail=False)
+    def current(self, request):
+        return redirect(reverse('django_airavata_auth:user-detail', kwargs={'pk': request.user.id}))

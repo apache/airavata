@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block css %}
+{% render_bundle 'chunk-vendors' 'css' 'AUTH' %}
+{% comment %}BUT NOTE: if you only have one entry point you won't have a 'chunk-common' bundle so you may need to comment out the next line until you have more than one entry point.{% endcomment %}
+{% comment %} {% render_bundle 'chunk-common' 'css' 'MYAPP' %} {% endcomment %}
+{% render_bundle bundle_name 'css' 'AUTH' %}
+{% endblock %}
+
+{% block content %}
+<div id="{{ bundle_name }}"/>
+{% endblock %}
+
+
+{% block scripts %}
+{% render_bundle 'chunk-vendors' 'js' 'AUTH' %}
+{% comment %}BUT NOTE: if you only have one entry point you won't have a 'chunk-common' bundle so you may need to comment out the next line until you have more than one entry point.{% endcomment %}
+{% comment %} {% render_bundle 'chunk-common' 'js' 'MYAPP' %} {% endcomment %}
+{% render_bundle bundle_name 'js' 'AUTH' %}
+{% endblock %}

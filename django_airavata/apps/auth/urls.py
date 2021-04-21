@@ -32,4 +32,5 @@ urlpatterns = [
         views.login_desktop_success, name="login_desktop_success"),
     url(r'^refreshed-token-desktop$', views.refreshed_token_desktop,
         name="refreshed_token_desktop"),
+    url(r'^user-profile/', views.user_profile),
 ]

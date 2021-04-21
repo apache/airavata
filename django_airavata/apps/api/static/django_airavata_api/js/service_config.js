@@ -24,6 +24,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
 import UnverifiedEmailUserProfile from "./models/UnverifiedEmailUserProfile";
+import User from "./models/User";
 import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
@@ -368,6 +369,17 @@ export default {
     pagination: true,
     queryParams: ["limit", "offset"],
     modelClass: UnverifiedEmailUserProfile,
+  },
+  Users: {
+    url: "/auth/users",
+    viewSet: true,
+    methods: {
+      current: {
+        url: "/auth/users/current/",
+        requestType: "get"
+      }
+    },
+    modelClass: User,
   },
   UserProfiles: {
     url: "/api/user-profiles",
