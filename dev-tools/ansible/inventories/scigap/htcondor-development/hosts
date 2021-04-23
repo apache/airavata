@@ -1,5 +1,5 @@
 [keycloak]
-129.114.17.144 ansible_connection=ssh ansible_user=root
+api.rnamake.org ansible_connection=ssh ansible_user=root
 
 [database]
 129.114.17.144 ansible_connection=ssh ansible_user=root
