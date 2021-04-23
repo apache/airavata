@@ -391,13 +391,31 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             String bearerAuth = "Bearer " + token;
             conn.setRequestProperty("Authorization", bearerAuth);
         }
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
+
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            rd.close();
+            return result.toString();
+        } catch (IOException e) {
+            try {
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                String line;
+                StringBuilder errResult = new StringBuilder();
+
+                while ((line = errorReader.readLine()) != null) {
+                    errResult.append(line);
+                }
+                errorReader.close();
+                logger.error("Errored reading from url {}. Error message {}", urlToRead, errResult.toString());
+            } catch (Exception ignore) {
+                // Ignore if error stream was failed as this is only useful for logging purposes
+            }
+            throw e;
         }
-        rd.close();
-        return result.toString();
     }
 
     private String getAdminAccessToken(String gatewayId) throws Exception {
