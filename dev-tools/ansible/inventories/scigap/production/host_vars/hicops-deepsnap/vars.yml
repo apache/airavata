@@ -47,7 +47,7 @@ gateway_id: "hicops"
 experiment_data_dir: "{{ user_data_dir }}/hicops"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnwOfvXERKIUcsH9W4GH+S+glClMrxzlEV6cXtCgrr92ooTEw3oxjmQGyvGs0G6AFHe7Tbkxnp6QBFD/VvNLpaXcvZc3t37IvbKqm2Wu5TkLhgHZqG/ceGSlaLqgKIhU5kENF3Y0XtK/QSd4hfECWQ/VyzafPCLs88xuaXdhUQE4dw+COrimaW57nCZ/A1lspBIKsnwxqFpmIXE1gsR/eU0UjVCNixm3PoO+0hr6MTzzped+xAdQHuTST/0bu0vcrK1qVixsD8rKVLgaaEaHml93vG85wlzBmsiGID4yKNTJSQBNn3G8r51mjzw72tRHovaYlP3NMpPuWeVZgY7WF9"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Muhammad Haseeb','mhaseeb@fiu.edu'),('Fahad Saeed','fsaeed@fiu.edu')]"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Muhammad Haseeb','mhase003@fiu.edu'),('Fahad Saeed','fsaeed@fiu.edu')]"
 portal_title: "HICOPS Portal"
 
 django_google_analytics_tracking_id: "UA-193861714-1"
