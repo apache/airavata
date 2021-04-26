@@ -38,6 +38,7 @@ mines ansible_host=149.165.156.46
 amp ansible_host=149.165.170.199
 geo ansible_host=149.165.156.46
 delta ansible_host=149.165.169.250
+custos-testdrive ansible_host=pgadev.scigap.org
 
 #149.165.169.129
 
