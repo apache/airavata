@@ -468,9 +468,8 @@ class DataProductSerializer(
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
         request = self.context['request']
-        if user_storage.exists(request, data_product):
-            return (request.build_absolute_uri(
-                reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': data_product.productUri}))
+        if hasattr(user_storage, 'get_download_url'):
+            return user_storage.get_download_url(request, data_product)
         return None
 
     def get_isInputFileUpload(self, data_product):
@@ -858,13 +857,12 @@ class UserStorageFileSerializer(serializers.Serializer):
     createdTime = serializers.DateTimeField(source='created_time')
     mimeType = serializers.CharField(source='mime_type')
     size = serializers.IntegerField()
-    hidden = serializers.BooleanField()
 
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
         request = self.context['request']
-        return (request.build_absolute_uri(
-            reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': file['data-product-uri']}))
+        if hasattr(user_storage, 'get_download_url'):
+            return user_storage.get_download_url(request, data_product_uri=file['data-product-uri'])
 
 
 class UserStorageDirectorySerializer(serializers.Serializer):
