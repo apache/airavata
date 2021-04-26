@@ -15,5 +15,6 @@ def get_download_url(data_product_uri):
 
 app_name = 'airavata_django_portal_sdk'
 urlpatterns = [
-    path('download', views.download_file, name='download_file'),
+    path('download-file', views.download_file, name='download_file'),
+    path('download', views.download, name='download'),
 ]

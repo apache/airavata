@@ -20,16 +20,8 @@ class DjangoFileSystemProvider(UserStorageProvider):
         full_path = self.datastore.save(path, file, name=name)
         return self.storage_resource_id, full_path
 
-    def get_upload_url(self, resource_path):
-        # TODO: implement
-        return super().get_upload_url(resource_path)
-
     def open(self, resource_path):
         return self.datastore.open(resource_path)
-
-    def get_download_url(self, resource_path):
-        # TODO: implement
-        return super().get_download_url(resource_path)
 
     def exists(self, resource_path):
         return self.datastore.exists(resource_path)

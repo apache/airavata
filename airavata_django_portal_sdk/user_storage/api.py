@@ -19,10 +19,13 @@ from airavata.model.data.replica.ttypes import (
 )
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
+
+from airavata_django_portal_sdk.user_storage.backends.base import (
+    ProvidesDownloadUrl
+)
 
 from ..util import convert_iso8601_to_datetime
-from django.urls import reverse
-from airavata_django_portal_sdk.user_storage.backends.base import ProvidesDownloadUrl
 
 logger = logging.getLogger(__name__)
 
@@ -186,20 +189,25 @@ def move_input_file(request, data_product=None, path=None, data_product_uri=None
 def get_download_url(request, data_product=None, data_product_uri=None):
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        raise NotImplementedError()
+    storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
+    backend = get_user_storage_provider(request,
+                                        owner_username=data_product.ownerName,
+                                        storage_resource_id=storage_resource_id)
+    if isinstance(backend, ProvidesDownloadUrl):
+        return backend.get_download_url(path)
     else:
-        storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
-        backend = get_user_storage_provider(request,
-                                            owner_username=data_product.ownerName,
-                                            storage_resource_id=storage_resource_id)
-        if isinstance(backend, ProvidesDownloadUrl):
-            return backend.get_download_url(path)
-        else:
-            # if backend doesn't provide a download url, then use default one
-            # that uses backend to read the file
-            return (reverse("airavata_django_portal_sdk:download_file") + "?" +
-                    urlencode({"data-product-uri": data_product.productUri}))
+        # if backend doesn't provide a download url, then use default one
+        # that uses backend to read the file
+        return (reverse("airavata_django_portal_sdk:download_file") + "?" +
+                urlencode({"data-product-uri": data_product.productUri}))
+
+
+def get_lazy_download_url(request, data_product=None, data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
+    # /download will call get_download_url and redirect to it
+    return (reverse("airavata_django_portal_sdk:download") + "?" +
+            urlencode({"data-product-uri": data_product.productUri}))
 
 
 def open_file(request, data_product=None, data_product_uri=None):

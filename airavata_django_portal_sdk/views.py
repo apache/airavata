@@ -1,32 +1,26 @@
 import logging
 import os
-from urllib.parse import urlparse
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect
-from django.urls import reverse
 
 from airavata_django_portal_sdk import user_storage
 
 logger = logging.getLogger(__name__)
 
 
+@login_required
+def download(request):
+    data_product_uri = request.GET.get('data-product-uri', '')
+    download_url = user_storage.get_download_url(request, data_product_uri=data_product_uri)
+    return redirect(download_url)
+
+
 # TODO: moving this view out of REST API means losing access token based authentication
 @login_required
 def download_file(request):
-
-    data_product_uri = request.GET.get('data-product-uri', '')
-    download_url = user_storage.get_download_url(request, data_product_uri=data_product_uri)
-    # If the download_url resolves to this view, then handle it directly
-    if urlparse(download_url).path == reverse('airavata_django_portal_sdk:download_file'):
-        return _internal_download_file(request)
-    else:
-        return redirect(download_url)
-
-
-def _internal_download_file(request):
     data_product_uri = request.GET.get('data-product-uri', '')
     force_download = 'download' in request.GET
     data_product = None
