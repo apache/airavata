@@ -2,7 +2,7 @@ import copy
 import datetime
 import json
 import logging
-from urllib.parse import quote, urlencode
+from urllib.parse import quote
 
 from airavata.model.appcatalog.appdeployment.ttypes import (
     ApplicationDeploymentDescription,
@@ -58,7 +58,6 @@ from airavata.model.workspace.ttypes import (
 )
 from airavata_django_portal_sdk import user_storage
 from django.conf import settings
-from django.urls import reverse
 from rest_framework import serializers
 
 from . import models, thrift_utils
@@ -468,8 +467,8 @@ class DataProductSerializer(
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
         request = self.context['request']
-        if hasattr(user_storage, 'get_download_url'):
-            return user_storage.get_download_url(request, data_product)
+        if hasattr(user_storage, 'get_lazy_download_url'):
+            return user_storage.get_lazy_download_url(request, data_product)
         return None
 
     def get_isInputFileUpload(self, data_product):
@@ -861,8 +860,8 @@ class UserStorageFileSerializer(serializers.Serializer):
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
         request = self.context['request']
-        if hasattr(user_storage, 'get_download_url'):
-            return user_storage.get_download_url(request, data_product_uri=file['data-product-uri'])
+        if hasattr(user_storage, 'get_lazy_download_url'):
+            return user_storage.get_lazy_download_url(request, data_product_uri=file['data-product-uri'])
 
 
 class UserStorageDirectorySerializer(serializers.Serializer):
