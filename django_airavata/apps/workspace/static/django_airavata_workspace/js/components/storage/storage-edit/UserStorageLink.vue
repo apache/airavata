@@ -35,7 +35,7 @@ export default {
     },
     allowPreview: {
       default: true,
-      required: true
+      required: false
     }
   },
   methods: {
