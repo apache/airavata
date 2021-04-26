@@ -32,11 +32,9 @@ import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.custos.group.management.client.GroupManagementClient;
-import org.apache.custos.iam.service.GroupRepresentation;
-import org.apache.custos.iam.service.GroupsResponse;
 import org.apache.custos.resource.secret.management.client.ResourceSecretManagementClient;
-import org.apache.custos.tenant.management.service.GetTenantResponse;
 import org.apache.custos.tenant.manamgement.client.TenantManagementClient;
+import org.apache.custos.tenant.profile.service.Tenant;
 import org.apache.custos.user.profile.service.Group;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -91,9 +89,9 @@ public class GatewayGroupsInitializer {
         GatewayGroups gatewayGroups = new GatewayGroups();
         gatewayGroups.setGatewayId(gatewayId);
 
-        GetTenantResponse getTenantResponse = tenantManagementClient.getTenant(custosId);
+        Tenant tenant = tenantManagementClient.getTenant(custosId);
 
-        String ownerId = getTenantResponse.getAdminUsername();
+        String ownerId = tenant.getAdminUsername();
 
 
         // Gateway Users

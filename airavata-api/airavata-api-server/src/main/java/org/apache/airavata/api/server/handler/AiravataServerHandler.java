@@ -179,6 +179,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 AddResourceCredentialResponse response = resourceSecretClient.addPasswordCredential(custosId,
                         "Credentials for default gateway",
                         ServerSettings.getDefaultUser(),
+                        ServerSettings.getDefaultUser(),
                         ServerSettings.getDefaultUserPassword());
 
                 if (response != null && response.getToken() != null && !response.getToken().trim().equals("")) {
@@ -768,7 +769,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             logger.info("Registering for user "+ loginUserName + "at "+ custosId);
 
             AddResourceCredentialResponse response =
-                    resourceSecretClient.addPasswordCredential(custosId, description, loginUserName, password);
+                    resourceSecretClient.addPasswordCredential(custosId, description, loginUserName, loginUserName, password);
 
             if (response.getToken() == null || response.getToken().trim().equals("")) {
                 String msg = "Password token is empty";

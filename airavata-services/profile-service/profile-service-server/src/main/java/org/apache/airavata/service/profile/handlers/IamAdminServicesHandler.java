@@ -491,6 +491,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             AddResourceCredentialResponse response = resourceSecretManagementClient.addPasswordCredential(createdGatewayCustosId,
                     passwordCredential.getMetadata().getDescription(),
                     gateway.getIdentityServerUserName(),
+                    gateway.getIdentityServerUserName(),
                     passwordCredential.getPassword());
             gateway.setIdentityServerPasswordToken(response.getToken());
         } catch (Exception ex) {
