@@ -517,6 +517,8 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
                 mime_type = data_product.productMetadata['mime-type']
             file['data-product-uri'] = data_product_uri
             file['mime_type'] = mime_type
+            # TODO: remove this, there's no need for hidden files
+            file['hidden'] = False
         return directories, files
     else:
         raise ObjectDoesNotExist("Experiment data directory does not exist")
