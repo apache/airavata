@@ -1007,11 +1007,12 @@ def upload_input_file(request):
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
-    def move_input_file(file_path, file_name, file_type):
-        return user_storage.move_input_file_from_filepath(
-            request, file_path, name=file_name, content_type=file_type)
+    def save_upload(file_path, file_name, file_type):
+        with open(file_path, 'rb') as uploaded_file:
+            return user_storage.save_input_file(request, uploaded_file,
+                                                name=file_name, content_type=file_type)
     try:
-        data_product = tus.move_tus_upload(uploadURL, move_input_file)
+        data_product = tus.save_tus_upload(uploadURL, save_upload)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
@@ -1548,11 +1549,11 @@ class UserStoragePathView(APIView):
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
 
-            def move_file(file_path, file_name, file_type):
-                return user_storage.move_from_filepath(
-                    request, file_path, path, name=file_name,
-                    content_type=file_type)
-            data_product = tus.move_tus_upload(uploadURL, move_file)
+            def save_file(file_path, file_name, file_type):
+                with open(file_path, 'rb') as uploaded_file:
+                    return user_storage.save(request, path, uploaded_file,
+                                             name=file_name, content_type=file_type)
+            data_product = tus.save_tus_upload(uploadURL, save_file)
         return self._create_response(request, path, uploaded=data_product)
 
     # Accept wither to replace file or to replace file content text.
