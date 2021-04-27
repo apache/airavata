@@ -177,7 +177,7 @@ def move(request, data_product=None, path=None, data_product_uri=None, storage_r
     data_product_copy = _save_copy_of_data_product(request, full_path, data_product, storage_resource_id)
     # Remove the source file and data product metadata
     source_backend.delete(source_path)
-    _delete_data_product(data_product.ownerName, source_path)
+    _delete_data_product(data_product.ownerName, source_path, storage_resource_id=source_storage_resource_id)
     return data_product_copy
 
 
@@ -415,7 +415,7 @@ def delete(request, data_product=None, data_product_uri=None):
         backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
         try:
             backend.delete(path)
-            _delete_data_product(data_product.ownerName, path)
+            _delete_data_product(data_product.ownerName, path, storage_resource_id)
         except Exception:
             logger.exception(
                 "Unable to delete file {} for data product uri {}".format(
@@ -612,7 +612,7 @@ def _get_data_product_uri(request, full_path, storage_resource_id, owner=None, b
     if owner is None:
         owner = request.user.username
     user_file = models.UserFiles.objects.filter(
-        username=owner, file_path=full_path)
+        username=owner, file_path=full_path, file_resource_id=storage_resource_id)
     if user_file.exists():
         product_uri = user_file[0].file_dpu
     else:
@@ -633,12 +633,12 @@ def _save_data_product(request, full_path, storage_resource_id, name=None, conte
     data_product = _create_data_product(
         owner, full_path, storage_resource_id, name=name, content_type=content_type, backend=backend
     )
-    product_uri = _register_data_product(request, full_path, data_product, owner=owner)
+    product_uri = _register_data_product(request, full_path, data_product, storage_resource_id, owner=owner)
     data_product.productUri = product_uri
     return data_product
 
 
-def _register_data_product(request, full_path, data_product, owner=None):
+def _register_data_product(request, full_path, data_product, storage_resource_id, owner=None):
     if owner is None:
         owner = request.user.username
     product_uri = request.airavata_client.registerDataProduct(
@@ -648,7 +648,8 @@ def _register_data_product(request, full_path, data_product, owner=None):
     user_file_instance = models.UserFiles(
         username=owner,
         file_path=full_path,
-        file_dpu=product_uri)
+        file_dpu=product_uri,
+        file_resource_id=storage_resource_id)
     user_file_instance.save()
     return product_uri
 
@@ -656,7 +657,7 @@ def _register_data_product(request, full_path, data_product, owner=None):
 def _save_copy_of_data_product(request, full_path, data_product, storage_resource_id):
     """Save copy of a data product with a different path."""
     data_product_copy = _copy_data_product(request, data_product, full_path, storage_resource_id)
-    product_uri = _register_data_product(request, full_path, data_product_copy)
+    product_uri = _register_data_product(request, full_path, data_product_copy, storage_resource_id)
     data_product_copy.productUri = product_uri
     return data_product_copy
 
@@ -673,12 +674,12 @@ def _copy_data_product(request, data_product, full_path, storage_resource_id):
     return data_product_copy
 
 
-def _delete_data_product(username, full_path):
+def _delete_data_product(username, full_path, storage_resource_id):
     # TODO: call API to delete data product from replica catalog when it is
     # available (not currently implemented)
     from airavata_django_portal_sdk import models
     user_file = models.UserFiles.objects.filter(
-        username=username, file_path=full_path)
+        username=username, file_path=full_path, file_resource_id=storage_resource_id)
     if user_file.exists():
         user_file.delete()
 

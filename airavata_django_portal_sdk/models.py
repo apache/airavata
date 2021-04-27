@@ -6,6 +6,10 @@ class UserFiles(models.Model):
     username = models.CharField(max_length=64)
     file_path = models.TextField()
     file_dpu = models.CharField(max_length=255, primary_key=True)
+    # resource id is either the (legacy) storage resource id that has an
+    # associated storage preference in the Gateway Resource Profile, or a
+    # resource id to a resource defined in MFT
+    file_resource_id = models.CharField(max_length=255)
 
     class Meta:
         indexes = [
