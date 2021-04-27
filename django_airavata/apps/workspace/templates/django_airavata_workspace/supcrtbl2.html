@@ -57,12 +57,16 @@ document.getElementById("experiment-editor").addEventListener('loaded', e => {
         const radios = document.querySelectorAll(`[name="input:${input.name}"]`);
         for (const radio of radios) {
           if (radio.value === input.value) {
-            radio.checked = true;
+            // Have to set value with setAttribute so it is part of the DOM
+            // since the slot content doesn't appear to get added to the custom
+            // element until later. Setting as a property doesn't work.
+            radio.setAttribute("checked", "checked");
             break;
           }
         }
+      } else if (inputEl.type === 'text') {
+        inputEl.setAttribute("value", input.value);
       }
-      inputEl.setAttribute("value", input.value);
     }
     // document.getElementById("myinput").setAttribute("value", input.value);
   }
