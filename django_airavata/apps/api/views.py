@@ -28,6 +28,7 @@ from airavata_django_portal_sdk import user_storage
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from django.views.decorators.gzip import gzip_page
 from django.urls import reverse
 from rest_framework import mixins, status
 from rest_framework.decorators import action, api_view
@@ -1021,6 +1022,7 @@ def tus_upload_finish(request):
         return exceptions.generic_json_exception_response(e, status=400)
 
 
+@gzip_page
 @api_view()
 def download_file(request):
     # TODO check that user has access to this file using sharing API
