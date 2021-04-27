@@ -94,7 +94,7 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
     storage_resource_id, resource_path = backend.save(path, file, name=name, content_type=content_type)
     data_product = _save_data_product(
-        request, resource_path, storage_resource_id, name=name, content_type=content_type
+        request, resource_path, storage_resource_id, name=name, content_type=content_type, backend=backend
     )
     return data_product
 
@@ -121,7 +121,7 @@ def save_input_file(request, file, name=None, content_type=None, storage_resourc
         storage_resource_id, resource_path = backend.save(
             TMP_INPUT_FILE_UPLOAD_DIR, file, name=file_name)
         data_product = _save_data_product(
-            request, resource_path, storage_resource_id, name=name, content_type=content_type
+            request, resource_path, storage_resource_id, name=name, content_type=content_type, backend=backend
         )
         return data_product
 

@@ -11,6 +11,7 @@ from airavata.model.data.replica.ttypes import (
     DataReplicaLocationModel,
     ReplicaLocationCategory
 )
+from airavata.model.security.ttypes import AuthzToken
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase, override_settings
 
@@ -32,7 +33,9 @@ class BaseTestCase(TestCase):
         self.product_uri = f"airavata-dp://{uuid.uuid4()}"
         self.request.airavata_client.registerDataProduct.return_value = \
             self.product_uri
-        self.request.authz_token = "dummy"
+        self.request.authz_token = AuthzToken(accessToken="dummy",
+                                              claimsMap={'gatewayID': GATEWAY_ID,
+                                                         'userName': self.user.username})
 
 
 class SaveTests(BaseTestCase):
@@ -60,7 +63,7 @@ class SaveTests(BaseTestCase):
             self.assertDictEqual({'mime-type': 'text/plain'},
                                  dp.productMetadata)
             self.assertEqual(1, len(dp.replicaLocations))
-            self.assertEqual(f"file://gateway.com:{path}/{file.name}",
+            self.assertEqual(f"{path}/{file.name}",
                              dp.replicaLocations[0].filePath)
 
     def test_save_with_name_and_content_type(self):
@@ -90,7 +93,7 @@ class SaveTests(BaseTestCase):
             self.assertDictEqual({'mime-type': 'application/some-app'},
                                  dp.productMetadata)
             self.assertEqual(1, len(dp.replicaLocations))
-            self.assertEqual(f"file://gateway.com:{path}/bar.txt",
+            self.assertEqual(f"{path}/bar.txt",
                              dp.replicaLocations[0].filePath)
 
     def test_save_with_unknown_text_file_type(self):
