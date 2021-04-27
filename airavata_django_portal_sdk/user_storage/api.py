@@ -187,6 +187,7 @@ def move_input_file(request, data_product=None, path=None, data_product_uri=None
 
 
 def get_download_url(request, data_product=None, data_product_uri=None):
+    "Return URL for downloading data product. One of `data_product` or `data_product_uri` is required."
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
@@ -525,7 +526,7 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
 
 
 def experiment_dir_exists(request, experiment_id, path="", storage_resource_id=None):
-
+    "Returns True if the path exists in the given experiment's data directory."
     if _is_remote_api():
         resp = _call_remote_api(request,
                                 "/experiment-storage/{experiment_id}/{path}",
@@ -558,6 +559,18 @@ def get_experiment_dir(request, project_name=None, experiment_name=None, path=No
 
 
 def create_user_dir(request, path="", dir_names=(), create_unique=False, storage_resource_id=None):
+    """
+    Creates a directory, and intermediate directories if given, at the given
+    path in the user's storage.  `dir_names` should be either a list or tuple
+    of directories names to create at the given path.  If `create_unique` is
+    True and the given `dir_names` results in an already existing directory,
+    the `dir_names` will be modified (for example, random suffix added) until
+    it results in a name for a directory that doesn't exist and that
+    directory will get created.  If `create_unique` is False (the default)
+    and the directory already exists, no directory will be created, but the
+    directory resource information will be returned.  Returns a tuple of the
+    storage_resource_id and resource_path of the directory resource.
+    """
     if _is_remote_api():
         logger.debug(f"path={path}")
         _call_remote_api(request,
