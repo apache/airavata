@@ -12,7 +12,9 @@
     "test": "npm run test:unit",
     "test:unit": "vue-cli-service test:unit",
     "test:unit:watch": "vue-cli-service test:unit --watch",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "wc": "WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc",
+    "wc:watch": "WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",

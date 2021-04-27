@@ -114,7 +114,8 @@ def create_experiment(request, app_module_id):
         context['experiment_data_dir'] = request.GET['experiment-data-dir']
 
     return render(request,
-                  'django_airavata_workspace/create_experiment.html',
+                  #   'django_airavata_workspace/create_experiment.html',
+                  'django_airavata_workspace/supcrtbl2.html',
                   context)
 
 
@@ -123,7 +124,8 @@ def edit_experiment(request, experiment_id):
     request.active_nav_item = 'experiments'
 
     return render(request,
-                  'django_airavata_workspace/edit_experiment.html',
+                #   'django_airavata_workspace/edit_experiment.html',
+                  'django_airavata_workspace/supcrtbl2.html',
                   {'bundle_name': 'edit-experiment',
                    'experiment_id': experiment_id})
 

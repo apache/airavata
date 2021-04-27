@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block css %}
+{% comment %} TODO: are chunk-vendors and chunk-common needed? {% endcomment %}
+{% comment %} {% render_bundle 'chunk-vendors' 'css' 'WORKSPACE' %} {% endcomment %}
+{% comment %} {% render_bundle 'chunk-common' 'css' 'WORKSPACE' %} {% endcomment %}
+{% comment %} {% render_bundle 'adpf' 'css' 'WORKSPACE' %} {% endcomment %}
+{% endblock %}
+
+{% block content %}
+{% comment %} TODO: maybe use wc- as a prefix? {% endcomment %}
+<div class="main-content-wrapper">
+    <main class="main-content">
+        <div class="container-fluid">
+          <h1>SUPCRTBL Online Version 1.0.1</h2>
+          <adpf-experiment-editor
+            id="experiment-editor"
+            application-id="supcrtbl_eb4216b3-fcbf-4422-a70d-27af2550cfb6"
+            {% if experiment_id %}
+            experiment-id="{{ experiment_id }}"
+            {% endif %} >
+            <div id="solvent" slot="Specify Solvent Phase Region">
+              <label for="input:Specify Solvent Phase Region">Specify solvent phase region:</label>
+              <input type="radio" name="input:Specify Solvent Phase Region" value="0">One-phase region</input> <br/>
+              <input type="radio" name="input:Specify Solvent Phase Region" value="1">liquid vapor saturation curve</input>
+            </div>
+
+            <div slot="Input-to-Echo">
+            My custom input editor: <input id="myinput" style="background-color: lightgrey;" name="input:Input-to-Echo" value=""/>
+            </div>
+          </adpf-experiment-editor>
+        </div>
+    </main>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% comment %} {% render_bundle 'chunk-vendors' 'js' 'WORKSPACE' %} {% endcomment %}
+<script src="{% static 'django_airavata_workspace/wc/adpf.chunk-vendors.js' %}"></script>
+{% comment %} {% render_bundle 'chunk-common' 'js' 'WORKSPACE' %} {% endcomment %}
+{% comment %} {% render_bundle 'adpf' 'js' 'WORKSPACE' %} {% endcomment %}
+<script src="{% static 'django_airavata_workspace/wc/adpf.min.js' %}"></script>
+<script>
+document.getElementById("experiment-editor").addEventListener('loaded', e => {
+  const [experiment] = e.detail;
+  for (const input of experiment.experimentInputs) {
+    // This runs before the custom element is registered which is probably why we need setAttribute here
+    // TODO: just iterate over the slotted inputs
+    const inputEl = document.querySelector(`[name="input:${input.name}"]`)
+    if (!inputEl) {
+      console.warn("Could not find input editor for ", input);
+    } else {
+      if (inputEl.type === 'radio') {
+        const radios = document.querySelectorAll(`[name="input:${input.name}"]`);
+        for (const radio of radios) {
+          if (radio.value === input.value) {
+            radio.checked = true;
+            break;
+          }
+        }
+      }
+      inputEl.setAttribute("value", input.value);
+    }
+    // document.getElementById("myinput").setAttribute("value", input.value);
+  }
+});
+function validateExperiment(event) {
+  const [experiment] = event.detail;
+  // This works, can check the current values of all inputs
+  if (experiment.experimentInputs[0].value === "Valcustom3") {
+    console.log('save: preventing default');
+    event.preventDefault();
+  }
+}
+document.getElementById('experiment-editor').addEventListener('save', validateExperiment);
+</script>
+{% endblock %}

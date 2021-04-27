@@ -31,12 +31,15 @@ module.exports = {
     },
   },
   configureWebpack: {
-    plugins: [
-      new BundleTracker({
-        filename: "webpack-stats.json",
-        path: "./static/django_airavata_workspace/dist/",
-      }),
-    ],
+    plugins:
+      process.env.WC_MODE !== "true"
+        ? [
+            new BundleTracker({
+              filename: "webpack-stats.json",
+              path: "./static/django_airavata_workspace/dist/",
+            }),
+          ]
+        : [],
     optimization: {
       /*
        * Force creating a vendor bundle so we can load the 'app' and 'vendor'
