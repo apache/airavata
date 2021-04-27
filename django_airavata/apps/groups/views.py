@@ -19,6 +19,7 @@ def groups_create(request):
 
     return render(request, 'django_airavata_groups/base.html', {
         'bundle_name': 'group-create',
+        'next': request.GET.get('next'),
     })
 
 
@@ -29,4 +30,5 @@ def edit_group(request, group_id):
     return render(request, 'django_airavata_groups/group_edit.html', {
         'bundle_name': 'group-edit',
         'group_id': group_id,
+        'next': request.GET.get('next'),
     })

@@ -253,12 +253,6 @@
             </ul>
           </td>
         </tr>
-        <tr v-if="storageDirLink">
-          <th scope="row">Storage Directory</th>
-          <td>
-            <b-link :href="storageDirLink">Open</b-link>
-          </td>
-        </tr>
         <tr>
           <th scope="row">Errors</th>
           <td>
@@ -431,13 +425,6 @@ export default {
         moment(jobDetail.creationTime).fromNow()
       );
     },
-    storageDirLink() {
-      if (this.experiment.relativeExperimentDataDir) {
-        return this.storageDirectory(this.experiment.relativeExperimentDataDir);
-      } else {
-        return null;
-      }
-    },
     failedJobs() {
       if (this.fullExperiment && this.fullExperiment.jobDetails) {
         return this.fullExperiment.jobDetails.filter(
@@ -476,12 +463,6 @@ export default {
       return dataProducts
         ? dataProducts.filter((dp) => (dp ? true : false))
         : [];
-    },
-    storageDirectory(relativePath) {
-      if (relativePath.startsWith("/")) {
-        relativePath = relativePath.substring(1);
-      }
-      return "/workspace/storage/~/" + relativePath;
     },
   },
 };

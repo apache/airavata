@@ -140,6 +140,19 @@
         </div>
       </div>
       <div class="row">
+        <div class="col">
+          <b-form-group
+            label="Email Settings"
+          >
+            <b-form-checkbox 
+              v-model="localExperiment.enableEmailNotification"
+            >
+              Receive email notification of experiment status
+            </b-form-checkbox>
+          </b-form-group>
+        </div>
+      </div>
+      <div class="row">
         <div id="col-exp-buttons" class="col">
           <b-button
             variant="success"

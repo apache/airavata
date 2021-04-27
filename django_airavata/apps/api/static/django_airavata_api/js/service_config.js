@@ -8,6 +8,7 @@ import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
 import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentStatistics from "./models/ExperimentStatistics";
+import ExperimentStoragePath from "./models/ExperimentStoragePath";
 import ExperimentSummary from "./models/ExperimentSummary";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
@@ -218,6 +219,17 @@ export default {
           "resourceHostName",
         ],
         modelClass: ExperimentStatistics,
+      },
+    },
+  },
+  ExperimentStoragePaths: {
+    url: "/api/experiment-storage",
+    methods: {
+      get: {
+        url: "/api/experiment-storage/<experimentId>/<path>",
+        requestType: "get",
+        modelClass: ExperimentStoragePath,
+        encodePathParams: false,
       },
     },
   },

@@ -3,7 +3,6 @@
     <user-storage-path-viewer
       v-if="userStoragePath"
       :user-storage-path="userStoragePath"
-      :storage-path="storagePath"
       @directory-selected="directorySelected"
       @file-selected="fileSelected"
       :include-delete-action="false"

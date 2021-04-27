@@ -277,6 +277,12 @@ class ExperimentViewSet(mixins.CreateModelMixin,
     @action(methods=['post'], detail=True)
     def launch(self, request, experiment_id=None):
         try:
+            experiment = request.airavata_client.getExperiment(
+                self.authz_token, experiment_id)
+            if (experiment.enableEmailNotification):
+                experiment.emailAddresses = [request.user.email]
+            request.airavata_client.updateExperiment(
+                self.authz_token, experiment_id, experiment)
             if getattr(
                 settings,
                 'GATEWAY_DATA_STORE_REMOTE_API',
@@ -293,8 +299,6 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 r.raise_for_status()
                 return Response(r.json())
             else:
-                experiment = request.airavata_client.getExperiment(
-                    self.authz_token, experiment_id)
                 self._set_storage_id_and_data_dir(experiment)
                 self._move_tmp_input_file_uploads_to_data_dir(experiment)
                 request.airavata_client.updateExperiment(
@@ -1003,11 +1007,12 @@ def upload_input_file(request):
 def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
-    def move_input_file(file_path, file_name, file_type):
-        return user_storage.move_input_file_from_filepath(
-            request, file_path, name=file_name, content_type=file_type)
+    def save_upload(file_path, file_name, file_type):
+        with open(file_path, 'rb') as uploaded_file:
+            return user_storage.save_input_file(request, uploaded_file,
+                                                name=file_name, content_type=file_type)
     try:
-        data_product = tus.move_tus_upload(uploadURL, move_input_file)
+        data_product = tus.save_tus_upload(uploadURL, save_upload)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
         return JsonResponse({'uploaded': True,
@@ -1038,7 +1043,10 @@ def download_file(request):
     try:
         data_file = user_storage.open_file(request, data_product)
         response = FileResponse(data_file, content_type=mime_type)
-        file_name = os.path.basename(data_file.name)
+        if user_storage.is_input_file(request, data_product):
+            file_name = data_product.productName
+        else:
+            file_name = os.path.basename(data_file.name)
         if mime_type == 'application/octet-stream' or force_download:
             response['Content-Disposition'] = ('attachment; filename="{}"'
                                                .format(file_name))
@@ -1541,11 +1549,11 @@ class UserStoragePathView(APIView):
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
 
-            def move_file(file_path, file_name, file_type):
-                return user_storage.move_from_filepath(
-                    request, file_path, path, name=file_name,
-                    content_type=file_type)
-            data_product = tus.move_tus_upload(uploadURL, move_file)
+            def save_file(file_path, file_name, file_type):
+                with open(file_path, 'rb') as uploaded_file:
+                    return user_storage.save(request, path, uploaded_file,
+                                             name=file_name, content_type=file_type)
+            data_product = tus.save_tus_upload(uploadURL, save_file)
         return self._create_response(request, path, uploaded=data_product)
 
     # Accept wither to replace file or to replace file content text.
@@ -1601,6 +1609,42 @@ class UserStoragePathView(APIView):
             serializer = self.serializer_class(
                 data, context={'request': request})
             return Response(serializer.data)
+
+    def _split_path(self, path):
+        head, tail = os.path.split(path)
+        if head != "":
+            return self._split_path(head) + [tail]
+        elif tail != "":
+            return [tail]
+        else:
+            return []
+
+
+class ExperimentStoragePathView(APIView):
+
+    serializer_class = serializers.ExperimentStoragePathSerializer
+
+    def get(self, request, experiment_id=None, path="", format=None):
+        return self._create_response(request, experiment_id, path)
+
+    def _create_response(self, request, experiment_id, path):
+        if user_storage.experiment_dir_exists(request, experiment_id, path):
+            directories, files = user_storage.list_experiment_dir(request, experiment_id, path)
+
+            def add_expid(d):
+                d['experiment_id'] = experiment_id
+                return d
+            data = {
+                'isDir': True,
+                'directories': map(add_expid, directories),
+                'files': map(add_expid, files)
+            }
+            data['parts'] = self._split_path(path)
+            serializer = self.serializer_class(
+                data, context={'request': request})
+            return Response(serializer.data)
+        else:
+            raise Http404(f"Path '{path}' does not exist for {experiment_id}")
 
     def _split_path(self, path):
         head, tail = os.path.split(path)

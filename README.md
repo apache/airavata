@@ -79,14 +79,6 @@ information on how to install yarn.
     python manage.py runserver
     ```
 
-    - Note: if you want to use OpenID Connect authentication from the Django
-      Portal when running it locally, you'll need to first set the following
-      environment to allow OAuth over insecure HTTP:
-
-          ```
-          export OAUTHLIB_INSECURE_TRANSPORT=1
-          ```
-
 7.  Point your browser to http://localhost:8000.
 
 ## Docker instructions

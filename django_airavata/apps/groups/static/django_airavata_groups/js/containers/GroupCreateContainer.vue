@@ -8,6 +8,12 @@ import GroupEditor from "../group_components/GroupEditor.vue";
 import { models, session } from "django-airavata-api";
 export default {
   name: "group-create-container",
+  props: {
+    next: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       newGroup: this.createNewGroup(),
@@ -18,7 +24,7 @@ export default {
   },
   methods: {
     handleSaved: function () {
-      window.location.assign("/groups/");
+      window.location.assign(this.next);
     },
     createNewGroup() {
       const group = new models.Group();

@@ -8,10 +8,12 @@
   "module": "./js/index.js",
   "scripts": {
     "watch": "vue-cli-service build --watch --mode production",
-    "build": "vue-cli-service build",
+    "build": "npm run build-app && npm run build-lib",
+    "build-app": "vue-cli-service build",
+    "build-lib": "LIBRARY_MODE=true vue-cli-service build --target lib --name CommonUI --no-clean ./js/components.js",
     "lint": "vue-cli-service lint ./js/",
     "lint:visualstudio": "vue-cli-service lint --format visualstudio ./js/",
-    "format": "prettier --write ."
+    "format": "prettier --check --write ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.6.3",

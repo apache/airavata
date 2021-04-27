@@ -1,5 +1,6 @@
 """Django Airavata Auth Backends: KeycloakBackend."""
 import logging
+import os
 import time
 
 import requests
@@ -130,6 +131,12 @@ class KeycloakBackend(object):
         verify = verify_ssl
         if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
             verify = settings.KEYCLOAK_CA_CERTFILE
+        if not request.is_secure() and settings.DEBUG and not os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
+            # For local development (DEBUG=True), allow insecure OAuth redirect flow
+            # if OAUTHLIB_INSECURE_TRANSPORT isn't already set
+            os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = "1"
+            logger.info("Adding env var OAUTHLIB_INSECURE_TRANSPORT=1 to allow "
+                        "OAuth redirect flow even though request is not secure")
         token = oauth2_session.fetch_token(
             token_url, client_secret=client_secret,
             authorization_response=authorization_code_url, verify=verify)

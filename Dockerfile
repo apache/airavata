@@ -58,7 +58,6 @@ RUN yarn run build
 FROM python:3.8 as server-stage
 
 ENV PYTHONUNBUFFERED 1
-ENV OAUTHLIB_INSECURE_TRANSPORT 1
 
 EXPOSE 8000
 

@@ -71,7 +71,6 @@ const FIELDS = [
     type: "boolean",
     default: true,
   },
-  "relativeExperimentDataDir",
 ];
 
 export default class Experiment extends BaseModel {

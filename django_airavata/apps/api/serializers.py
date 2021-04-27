@@ -4,7 +4,6 @@ import json
 import logging
 from urllib.parse import quote, urlencode
 
-import requests
 from airavata.model.appcatalog.appdeployment.ttypes import (
     ApplicationDeploymentDescription,
     ApplicationModule,
@@ -442,44 +441,12 @@ class ExperimentSerializer(
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
     experimentStatus = ExperimentStatusSerializer(many=True, allow_null=True)
     userHasWriteAccess = serializers.SerializerMethodField()
-    relativeExperimentDataDir = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, experiment):
         request = self.context['request']
         return request.airavata_client.userHasAccess(
             request.authz_token, experiment.experimentId,
             ResourcePermissionType.WRITE)
-
-    def get_relativeExperimentDataDir(self, experiment):
-        request = self.context['request']
-        if hasattr(user_storage, "get_rel_experiment_dir"):
-            return user_storage.get_rel_experiment_dir(request, experiment.experimentId)
-
-        # TODO: remove this older implementation
-        if (experiment.userConfigurationData and
-                experiment.userConfigurationData.experimentDataDir):
-            request = self.context['request']
-            data_dir = experiment.userConfigurationData.experimentDataDir
-            if getattr(
-                settings,
-                'GATEWAY_DATA_STORE_REMOTE_API',
-                    None) is not None:
-                # Load the relativeExperimentDataDir from the remote Django
-                # portal instance
-                headers = {
-                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
-                r = requests.get(
-                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment.experimentId)}/',
-                    headers=headers,
-                )
-                r.raise_for_status()
-                return r.json()['relativeExperimentDataDir']
-            elif user_storage.dir_exists(request, data_dir):
-                return user_storage.get_rel_path(request, data_dir)
-            else:
-                return None
-        else:
-            return None
 
 
 class DataReplicaLocationSerializer(
@@ -908,6 +875,34 @@ class UserStoragePathSerializer(serializers.Serializer):
     parts = serializers.ListField(child=serializers.CharField())
     # uploaded is populated after a file upload
     uploaded = DataProductSerializer(read_only=True)
+
+
+# Fields for ExperimentStorageFileSerializer are the same as UserStorageFileSerializer
+ExperimentStorageFileSerializer = UserStorageFileSerializer
+
+
+class ExperimentStorageDirectorySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    path = serializers.CharField()
+    createdTime = serializers.DateTimeField(source='created_time')
+    size = serializers.IntegerField()
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, dir):
+
+        request = self.context['request']
+        return request.build_absolute_uri(
+            reverse("django_airavata_api:experiment-storage-items", kwargs={
+                "experiment_id": dir['experiment_id'],
+                "path": dir['path']
+            }))
+
+
+class ExperimentStoragePathSerializer(serializers.Serializer):
+    isDir = serializers.BooleanField()
+    directories = ExperimentStorageDirectorySerializer(many=True)
+    files = ExperimentStorageFileSerializer(many=True)
+    parts = serializers.ListField(child=serializers.CharField())
 
 
 # ModelSerializers

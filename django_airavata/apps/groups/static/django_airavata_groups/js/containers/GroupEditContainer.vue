@@ -14,6 +14,10 @@ export default {
       type: String,
       required: true,
     },
+    next: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -25,7 +29,7 @@ export default {
   },
   methods: {
     handleSaved: function () {
-      window.location.assign("/groups/");
+      window.location.assign(this.next);
     },
   },
   computed: {},
