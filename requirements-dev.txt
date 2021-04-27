@@ -5,3 +5,4 @@ flake8==3.8.4
 flake8-isort==4.0.0
 mkdocs==1.1.2
 mkautodoc==0.1.0
+pycodestyle==2.6.0
