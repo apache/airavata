@@ -1,16 +1,23 @@
 <template>
-  <form v-if="experiment" @input="onInput" @submit.prevent="onSubmit">
-    <slot name="experiment-name">
-      <input
-        type="text"
-        name="experiment-name"
-        :value="experiment.experimentName"
-      />
-    </slot>
+  <form v-if="experiment" @submit.prevent="onSubmit">
+    <div @input="updateExperimentName">
+      <slot name="experiment-name">
+        <input
+          type="text"
+          name="experiment-name"
+          :value="experiment.experimentName"
+        />
+      </slot>
+    </div>
     <template v-for="input in experiment.experimentInputs">
-      <div :key="input.name">
+      <div :key="input.name" @input="updateInputValue($event, input)">
         <slot :name="input.name">
-          {{input.name}} <input  v-if="input.type.name == 'STRING'" :name="`input:${input.name}`" :value="input.value"/>
+          {{ input.name }}
+          <input
+            v-if="input.type.name == 'STRING'"
+            :name="`input:${input.name}`"
+            :value="input.value"
+          />
         </slot>
         <!-- TODO: add support for other input types -->
       </div>
@@ -56,24 +63,21 @@ export default {
     };
   },
   methods: {
-    onInput(event) {
-      console.log(event.target.name, event.target.value);
-      if (event.target.name === "experiment-name") {
-        this.experiment.experimentName = event.target.value;
-      }
-      if (event.target.name.startsWith("input:")) {
-        for (const input of this.experiment.experimentInputs) {
-          if (event.target.name === `input:${input.name}`){
-            input.value = event.target.value;
-          }
-        }
-      }
+    updateExperimentName(event) {
+      this.experiment.experimentName = event.target.value;
+    },
+    updateInputValue(event, experimentInput) {
+      experimentInput.value = event.target.value;
     },
     onSubmit(event) {
       // console.log(event);
       // 'save' event is cancelable. Listener can call .preventDefault() on the event to cancel.
-      // composed: true allows the shadow DOM event to bubble up through the shadow shadow root.
-      const saveEvent = new CustomEvent('save', {detail: [this.experiment], cancelable: true, composed: true});
+      // composed: true allows the shadow DOM event to bubble up through the shadow root.
+      const saveEvent = new CustomEvent("save", {
+        detail: [this.experiment],
+        cancelable: true,
+        composed: true,
+      });
       this.$el.dispatchEvent(saveEvent);
       if (saveEvent.defaultPrevented) {
         return;
@@ -88,10 +92,9 @@ export default {
       return await saveExperiment(this.experiment);
     },
     async loadExperiment() {
-
       if (this.experimentId) {
         const experiment = await getExperiment(this.experimentId);
-        this.$emit('loaded', experiment);
+        this.$emit("loaded", experiment);
         return experiment;
       } else {
         const experiment = this.appInterface.createExperiment();
@@ -103,10 +106,10 @@ export default {
         experiment.projectId = defaultProjectId;
         experiment.userConfigurationData.computationalResourceScheduling.resourceHostId =
           "bigred3.uits.iu.edu_2141bf96-c458-4ecd-8759-aa3a08f31956";
-        this.$emit('loaded', experiment);
+        this.$emit("loaded", experiment);
         return experiment;
       }
-    }
+    },
   },
 };
 </script>
