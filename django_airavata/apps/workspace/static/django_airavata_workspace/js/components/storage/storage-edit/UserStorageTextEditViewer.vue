@@ -1,16 +1,31 @@
 <template>
   <div>
     <div class="user-storage-file-edit-viewer-status">
-      <div class="user-storage-file-edit-viewer-status-message">
+      <div
+        class="user-storage-file-edit-viewer-status-message"
+        v-if="editAvailable"
+      >
         <span v-if="saved">All the changes are saved.</span>
         <span v-if="!saved">Changes are not saved.</span>
       </div>
       <div class="user-storage-file-edit-viewer-status-actions">
-        <user-storage-download-button :data-product-uri="dataProductUri" :file-name="fileName"/>
-        <b-button :disabled="saved" @click="fileContentChanged">Save</b-button>
+        <user-storage-download-button
+          :data-product-uri="dataProductUri"
+          :file-name="fileName"
+        />
+        <b-button
+          v-if="editAvailable"
+          :disabled="saved"
+          @click="fileContentChanged"
+          >Save</b-button
+        >
       </div>
     </div>
     <div style="width: 100%" ref="editor"></div>
+    <div class="edit-not-available" v-if="!editAvailable">
+      Inline edit not available. Click the <strong>Download</strong> button to
+      download the file.
+    </div>
   </div>
 </template>
 
@@ -18,8 +33,10 @@
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/abcdef.css";
-import {utils} from "django-airavata-api";
+import { services, utils } from "django-airavata-api";
 import UserStorageDownloadButton from "./UserStorageDownloadButton";
+
+const MAX_EDIT_FILESIZE = 1024 * 1024;
 
 export default {
   name: "user-storage-file-edit-viewer",
@@ -35,7 +52,7 @@ export default {
     },
     downloadUrl: {
       required: true,
-    }
+    },
   },
   components: {
     UserStorageDownloadButton: UserStorageDownloadButton,
@@ -45,6 +62,7 @@ export default {
       fileContent: "",
       saved: true,
       editor: null,
+      dataProduct: null,
     };
   },
   mounted() {
@@ -53,31 +71,51 @@ export default {
   destroyed() {
     this.editor.getWrapperElement().remove();
   },
+  computed: {
+    editAvailable() {
+      return !this.dataProduct || this.dataProduct.filesize < MAX_EDIT_FILESIZE;
+    },
+  },
   methods: {
     fileContentChanged() {
       const changedFileContent = this.editor.getDoc().getValue();
       if (changedFileContent) {
-        utils.FetchUtils.put(`/api/data-products?product-uri=${this.dataProductUri}`, {
-          fileContentText: changedFileContent,
-        }).then(() => {
+        utils.FetchUtils.put(
+          `/api/data-products?product-uri=${this.dataProductUri}`,
+          {
+            fileContentText: changedFileContent,
+          }
+        ).then(() => {
           this.$emit("file-content-changed", changedFileContent);
         });
       }
 
       this.saved = true;
     },
+    loadDataProduct() {
+      return services.DataProductService.retrieve({
+        lookup: this.dataProductUri,
+      }).then((dataProduct) => {
+        this.dataProduct = dataProduct;
+        return dataProduct;
+      });
+    },
     setFileContent() {
-      utils.FetchUtils.get(
-        this.downloadUrl,
-        "",
-        {
-          ignoreErrors: false,
-          showSpinner: true,
-        },
-        "text"
-      ).then((res) => {
-        this.fileContent = res;
-        this.setFileContentEditor(this.fileContent);
+      this.loadDataProduct().then(() => {
+        if (this.editAvailable) {
+          utils.FetchUtils.get(
+            this.downloadUrl,
+            "",
+            {
+              ignoreErrors: false,
+              showSpinner: true,
+            },
+            "text"
+          ).then((res) => {
+            this.fileContent = res;
+            this.setFileContentEditor(this.fileContent);
+          });
+        }
       });
     },
     setFileContentEditor(value = "") {
@@ -87,7 +125,7 @@ export default {
         lineNumbers: true,
         lineWrapping: true,
         scrollbarStyle: "native",
-        extraKeys: {"Ctrl-Space": "autocomplete"},
+        extraKeys: { "Ctrl-Space": "autocomplete" },
         value: value,
       });
       this.editor.on("change", () => {
