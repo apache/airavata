@@ -22,6 +22,9 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
+airavata_django_extra_dependencies:
+  - git+https://github.com/SciGaP/regsnp-django-app.git#egg=regsnp_django_app
+
 vhost_servername: "regsnps.ccbb.iupui.edu"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/cert.pem"
