@@ -394,6 +394,13 @@ def get_file_metadata(request, path, storage_resource_id=None):
         raise ObjectDoesNotExist("File does not exist at that path.")
 
 
+def get_data_product_metadata(request, data_product=None, data_product_uri=None):
+    if data_product is None:
+        data_product = _get_data_product(request, data_product_uri)
+    storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
+    return get_file_metadata(request, path, storage_resource_id)
+
+
 def get_file(request, path, storage_resource_id=None):
     warnings.warn("Use 'get_file_metadata' instead.", DeprecationWarning)
     return get_file_metadata(request, path, storage_resource_id)
