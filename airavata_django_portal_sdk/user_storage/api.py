@@ -387,6 +387,8 @@ def get_file_metadata(request, path, storage_resource_id=None):
             mime_type = data_product.productMetadata['mime-type']
         file['data-product-uri'] = data_product_uri
         file['mime_type'] = mime_type
+        # TODO: remove this, there's no need for hidden files
+        file['hidden'] = False
         return file
     else:
         raise ObjectDoesNotExist("File does not exist at that path.")
