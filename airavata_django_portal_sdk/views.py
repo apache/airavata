@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect
+from django.views.decorators.gzip import gzip_page
 
 from airavata_django_portal_sdk import user_storage
 
@@ -19,6 +20,7 @@ def download(request):
 
 
 # TODO: moving this view out of REST API means losing access token based authentication
+@gzip_page
 @login_required
 def download_file(request):
     data_product_uri = request.GET.get('data-product-uri', '')
