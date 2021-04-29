@@ -594,7 +594,7 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
         while not backend.exists(path):
             path, dir_name = os.path.split(path)
             if dir_name == '':
-                raise Exception("Could not find a base directory in which to create directories.")
+                break
             dir_names.insert(0, dir_name)
     storage_resource_id, resource_path = backend.create_dirs(path, dir_names=dir_names, create_unique=create_unique)
     return storage_resource_id, resource_path
