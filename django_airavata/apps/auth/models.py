@@ -7,6 +7,7 @@ VERIFY_EMAIL_TEMPLATE = 1
 NEW_USER_EMAIL_TEMPLATE = 2
 PASSWORD_RESET_EMAIL_TEMPLATE = 3
 USER_ADDED_TO_GROUP_TEMPLATE = 4
+VERIFY_EMAIL_CHANGE_TEMPLATE = 5
 
 
 class EmailVerification(models.Model):
@@ -24,6 +25,7 @@ class EmailTemplate(models.Model):
         (NEW_USER_EMAIL_TEMPLATE, 'New User Email Template'),
         (PASSWORD_RESET_EMAIL_TEMPLATE, 'Password Reset Email Template'),
         (USER_ADDED_TO_GROUP_TEMPLATE, 'User Added to Group Template'),
+        (VERIFY_EMAIL_CHANGE_TEMPLATE, 'Verify Email Change Template'),
     )
     template_type = models.IntegerField(
         primary_key=True, choices=TEMPLATE_TYPE_CHOICES)
@@ -73,3 +75,12 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return f"{self.claim}={self.value}"
+
+
+class PendingEmailChange(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email_address = models.EmailField()
+    verification_code = models.CharField(
+        max_length=36, unique=True, default=uuid.uuid4)
+    created_date = models.DateTimeField(auto_now_add=True)
+    verified = models.BooleanField(default=False)

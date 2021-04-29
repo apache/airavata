@@ -10,7 +10,7 @@
       <b-form-input v-model="user.last_name" />
     </b-form-group>
     <b-form-group label="Email">
-      <b-form-input disabled :value="user.email" />
+      <b-form-input v-model="user.email" />
     </b-form-group>
     <b-button variant="primary" @click="$emit('save', user)">Save</b-button>
     <b-button>Cancel</b-button>

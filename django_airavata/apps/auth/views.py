@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.transaction import atomic
 from django.forms import ValidationError
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render, resolve_url
@@ -543,3 +544,42 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def current(self, request):
         return redirect(reverse('django_airavata_auth:user-detail', kwargs={'pk': request.user.id}))
+
+
+@login_required
+@atomic
+def verify_email_change(request, code):
+    try:
+        pending_email_change = models.PendingEmailChange.objects.get(user=request.user, verification_code=code)
+        pending_email_change.verified = True
+        pending_email_change.save()
+        request.user.email = pending_email_change.email_address
+        request.user.save()
+
+        user_profile_client = request.profile_service['user_profile']
+        airavata_user_profile = user_profile_client.getUserProfileById(
+            request.authz_token, request.user.username, settings.GATEWAY_ID)
+        airavata_user_profile.emails = [pending_email_change.email_address]
+        user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+
+        # TODO: add success message
+        return redirect(reverse('django_airavata_auth:user_profile'))
+    except ObjectDoesNotExist:
+        # if doesn't exist, give user a form where they can enter their
+        # username to resend verification code
+        logger.exception("PendingEmailChange object doesn't exist for "
+                         "code {}".format(code))
+        # TODO: add error message
+        # messages.error(
+        #     request,
+        #     "Email verification failed. Please enter your username and we "
+        #     "will send you another email verification link.")
+        return redirect(reverse('django_airavata_auth:user_profile'))
+    except Exception:
+        logger.exception("Email change verification processing failed!")
+        # TODO: add error message
+        # messages.error(
+        #     request,
+        #     "Email verification failed. Please try clicking the email "
+        #     "verification link again later.")
+        return redirect(reverse('django_airavata_auth:user_profile'))
