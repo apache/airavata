@@ -47,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
             # Email doesn't get updated until it is verified. Create a pending
             # email change record in the meantime
             pending_email_change = models.PendingEmailChange.objects.create(user=request.user, email_address=validated_data['email'])
-            self._send_email_verification_link(pending_email_change)
+            self._send_email_verification_link(request, pending_email_change)
         instance.save()
         # save in the user profile service too
         user_profile_client = request.profile_service['user_profile']
@@ -58,9 +58,8 @@ class UserSerializer(serializers.ModelSerializer):
         user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
         return instance
 
-    def _send_email_verification_link(self, pending_email_change):
+    def _send_email_verification_link(self, request, pending_email_change):
 
-        request = self.context['request']
         verification_uri = request.build_absolute_uri(
             reverse(
                 'django_airavata_auth:verify_email_change', kwargs={

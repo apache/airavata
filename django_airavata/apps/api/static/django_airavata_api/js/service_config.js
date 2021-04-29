@@ -376,8 +376,12 @@ export default {
     methods: {
       current: {
         url: "/auth/users/current/",
-        requestType: "get"
-      }
+        requestType: "get",
+      },
+      resendEmailVerification: {
+        url: "/auth/users/<lookup>/resend_email_verification/",
+        requestType: "post",
+      },
     },
     modelClass: User,
   },

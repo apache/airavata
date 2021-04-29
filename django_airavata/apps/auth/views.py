@@ -545,6 +545,14 @@ class UserViewSet(viewsets.ModelViewSet):
     def current(self, request):
         return redirect(reverse('django_airavata_auth:user-detail', kwargs={'pk': request.user.id}))
 
+    @action(methods=['post'], detail=True)
+    def resend_email_verification(self, request, pk=None):
+        pending_email_change = models.PendingEmailChange.objects.get(user=request.user, verified=False)
+        if pending_email_change is not None:
+            serializer = serializers.UserSerializer()
+            serializer._send_email_verification_link(request, pending_email_change)
+        return JsonResponse({})
+
 
 @login_required
 @atomic
