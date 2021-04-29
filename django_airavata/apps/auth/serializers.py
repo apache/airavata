@@ -12,12 +12,29 @@ from . import models, utils
 logger = logging.getLogger(__name__)
 
 
+class PendingEmailChangeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.PendingEmailChange
+        fields = ['email_address', 'created_date']
+
+
 class UserSerializer(serializers.ModelSerializer):
 
-    # TODO: add a lookup of most recent PendingEmailChange if any
+    pending_email_change = serializers.SerializerMethodField()
+
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'pending_email_change']
+
+    def get_pending_email_change(self, instance):
+        request = self.context['request']
+        pending_email_change = models.PendingEmailChange.objects.filter(user=request.user, verified=False).first()
+        if pending_email_change is not None:
+            serializer = PendingEmailChangeSerializer(instance=pending_email_change, context=self.context)
+            return serializer.data
+        else:
+            return None
 
     @atomic
     def update(self, instance, validated_data):
