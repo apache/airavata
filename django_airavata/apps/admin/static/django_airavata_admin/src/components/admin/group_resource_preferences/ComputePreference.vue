@@ -210,6 +210,9 @@ export default {
   },
   mounted: function () {
     const computeResourcePromise = this.fetchComputeResource(this.host_id);
+    if (this.localGroupResourceProfile){
+        this.userHasWriteAccess = this.localGroupResourceProfile.userHasWriteAccess;
+    }
     if (!this.value && this.id && this.host_id) {
       services.GroupResourceProfileService.retrieve({ lookup: this.id }).then(
         (groupResourceProfile) => {
@@ -263,7 +266,7 @@ export default {
       validationErrors: null,
       reservationsInvalid: false,
       computeResourcePolicyInvalid: false,
-      userHasWriteAccess: true,
+      userHasWriteAccess: false,
     };
   },
   computed: {

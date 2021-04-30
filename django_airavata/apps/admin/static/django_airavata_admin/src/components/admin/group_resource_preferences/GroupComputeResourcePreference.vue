@@ -128,14 +128,14 @@
     <div class="fixed-footer">
       <b-button 
       variant="primary" 
-      disabled="!data.userHasWriteAccess"
+      :disabled="!data.userHasWriteAccess"
       @click="saveGroupResourceProfile"
         >Save</b-button
       >
       <delete-button
         v-if="id"
         class="ml-2"
-        disabled="!data.userHasWriteAccess"
+        :disabled="!data.userHasWriteAccess"
         @delete="removeGroupResourceProfile"
       >
         Are you sure you want to remove Group Resource Profile
