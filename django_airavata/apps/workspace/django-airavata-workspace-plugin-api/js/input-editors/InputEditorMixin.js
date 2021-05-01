@@ -30,9 +30,18 @@ export default {
       inputHasBegun: false,
     };
   },
-  computed: {
-    validationResults: function () {
-      return this.experimentInput.validate(this.data);
+  asyncComputed: {
+    // POTENTIAL SOLUTION
+    // validationResults: {
+    //   get() {
+    //     return this.experimentInput.validate(this.data)
+    //   },
+    //   default: 'Validating Input...'
+    // }
+
+    validationResults: function () {      
+      return new Promise(resolve => resolve(this.experimentInput.validate(this.data)));
+      // return this.experimentInput.validate(this.data);
     },
     validationMessages: function () {
       return "value" in this.validationResults
