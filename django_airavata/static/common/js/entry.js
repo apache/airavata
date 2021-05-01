@@ -1,7 +1,7 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
-import AsyncComputed from 'vue-async-computed';
+import AsyncComputed from "vue-async-computed";
 
 GlobalErrorHandler.init();
 
