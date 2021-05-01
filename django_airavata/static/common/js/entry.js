@@ -1,6 +1,7 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
+import AsyncComputed from 'vue-async-computed';
 
 GlobalErrorHandler.init();
 
@@ -18,6 +19,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 export default function entry(entryPointFunction) {
   // Common Vue configuration
   Vue.use(BootstrapVue);
+  Vue.use(AsyncComputed)
 
   entryPointFunction(Vue);
 }
