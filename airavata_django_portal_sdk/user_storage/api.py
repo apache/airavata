@@ -507,12 +507,15 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
     experiment = request.airavata_client.getExperiment(
         request.authz_token, experiment_id)
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    exp_data_path = experiment.userConfigurationData.experimentDataDir
-    exp_data_path = os.path.join(exp_data_path, path)
+    exp_data_dir = experiment.userConfigurationData.experimentDataDir
+    exp_data_path = os.path.join(exp_data_dir, path)
     # Implement username override with exp_owner
     # exp_owner = experiment.userName
     if backend.exists(exp_data_path):
         directories, files = backend.get_metadata(exp_data_path)
+        for directory in directories:
+            # construct the relative path of the directory within the experiment data dir
+            directory['path'] = os.path.relpath(directory['resource_path'], exp_data_dir)
         # for each file, lookup or register a data product and enrich the file
         # metadata with data-product-uri and mime-type
         for file in files:
@@ -527,6 +530,8 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
                 mime_type = data_product.productMetadata['mime-type']
             file['data-product-uri'] = data_product_uri
             file['mime_type'] = mime_type
+            # construct the relative path of the file within the experiment data dir
+            file['path'] = os.path.relpath(file['resource_path'], exp_data_dir)
             # TODO: remove this, there's no need for hidden files
             file['hidden'] = False
         return directories, files
