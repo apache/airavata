@@ -432,7 +432,8 @@ class ExperimentSerializer(
         view_name='django_airavata_api:shared-entity-detail',
         lookup_field='experimentId',
         lookup_url_kwarg='entity_id')
-    experimentInputs = serializers.ListField(
+    experimentInputs = OrderedListField(
+        order_by='inputOrder',
         child=InputDataObjectTypeSerializer(),
         allow_null=True)
     experimentOutputs = serializers.ListField(
