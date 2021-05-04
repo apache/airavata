@@ -206,15 +206,6 @@ document.getElementById("experiment-editor").addEventListener('loaded', e => {
   }
   resetViews();
 });
-function validateExperiment(event) {
-  const [experiment] = event.detail;
-  // This works, can check the current values of all inputs
-  if (experiment.experimentInputs[0].value === "Valcustom3") {
-    console.log('save: preventing default');
-    event.preventDefault();
-  }
-}
-document.getElementById('experiment-editor').addEventListener('save', validateExperiment);
 
 $('document').ready(function() {
   $('#reaction').textcomplete([{
@@ -365,5 +356,121 @@ function resetViews() {
 			resetViews();
 		});
 	});
+
+  function validateExperiment(event) {
+    // const [experiment] = event.detail;
+    if (!checkOutput()) {
+      console.log('save: preventing default');
+      event.preventDefault();
+    }
+  }
+  document.getElementById('experiment-editor').addEventListener('save', validateExperiment);
+
+	function checkOutput(){
+		var filledIn = true;
+		var textArr = ["isochoresRange","tempRange","isothermsRange","dH2ORange","isobarsRange","logKRange","presRange","logKBoundingTempRange","logKBoundingPresRange"];
+		for(let s of textArr){
+			if($("input#"+s).is(":visible")){
+				var iv = document.getElementById(s).value;
+				var ivs = iv.trim().split(" ");
+				var cvs = iv.trim().split(",");
+				var ccvs = iv.trim().split(", ");
+				var spaceSeperated = false;
+				var commaSeperated = false;
+				var commaSpaceSeperated = false;
+				if(s==="logKBoundingPresRange" || s==="logKBoundingTempRange"){
+					if(ccvs.length==2){
+						commaSpaceSeperated=true;
+						if(parseInt(ccvs[0],10)>parseInt(ccvs[1],10) || parseInt(ccvs[0],10) < 0 || parseInt(ccvs[1],10) < 0){alert("invalid values for "+s); return false;}
+					}
+					if(ivs.length==2 && !commaSpaceSeperated){
+						spaceSeperated=true;
+						if(parseInt(ivs[0],10)>parseInt(ivs[1],10) || parseInt(ivs[0],10) < 0 || parseInt(ivs[1],10) < 0){alert("invalid values for "+s); return false;}
+					}
+					if(cvs.length==2 && !commaSpaceSeperated){
+						commaSeperated=true;
+						if(parseInt(cvs[0],10)>parseInt(cvs[1],10) || parseInt(cvs[0],10) < 0 || parseInt(cvs[1],10) < 0){alert("invalid values for "+s); return false;}
+					}
+				}
+				else{
+					if(ccvs.length==3){
+						commaSpaceSeperated=true;
+						if(parseInt(ccvs[0],10)>parseInt(ccvs[1],10) || parseInt(ccvs[0],10) < 0 || parseInt(ccvs[1],10) < 0){alert("invalid values for "+s); return false;}
+					}
+					if(ivs.length==3 && !commaSpaceSeperated){
+						spaceSeperated=true;
+						if(parseInt(ivs[0],10)>parseInt(ivs[1],10) || parseInt(ivs[0],10) < 0 || parseInt(ivs[1],10) < 0){alert("invalid values for "+s); return false;}
+					}
+					if(cvs.length==3 && !commaSpaceSeperated){
+						commaSeperated=true;
+						if(parseInt(cvs[0],10)>parseInt(cvs[1],10) || parseInt(cvs[0],10) < 0 || parseInt(cvs[1],10) < 0){alert("invalid values for "+s); return false;}
+					}
+					if(parseInt(ivs[0],10)>parseInt(ivs[1],10) || parseInt(ivs[0],10) < 0 || parseInt(ivs[1],10) < 0 || parseInt(ivs[2],10) < 0){alert("invalid values for "+s); return false;}
+				}
+				if(spaceSeperated){
+					for(let i of ivs){if(!/^-?[0-9.]+\s*$/.test(i)){alert("single space seperated: values must be ints or floats for "+s); return false;}}
+				}
+				if(commaSeperated){
+					for(let i of cvs){if(!/^-?[0-9.]+\s*$/.test(i)){alert("comma seperated: values must be ints or floats for "+s); return false;}}
+				}
+				if(commaSpaceSeperated){
+					for(let i of ccvs){if(!/^-?[0-9.]+\s*$/.test(i)){alert("comma & space seperated: values must be ints or floats for "+s); return false;}}
+				}
+				if(!commaSpaceSeperated && !spaceSeperated && !commaSeperated){alert("space or comma seperated values per line for "+s); return false;}
+			}
+		}
+		var textAreaArr = ["dH2OTempPairs","tempDH2OPairs","presTempPairs","tempPresPairs","lipVapSatTempVal","lipVapSatPresVal"];
+		for(let s of textAreaArr){
+			if($("textarea#"+s).is(":visible")){
+				var iv = document.getElementById(s).value;
+				var ivl = iv.trim().split(/\r|\n/);
+				for(let ivlv of ivl){
+					var ccvs = ivlv.trim().split(", ");
+					var ivs = ivlv.trim().split(",");
+					var commaSpaceSeperated = ccvs.length>1;
+					var commaSeperated = !commaSpaceSeperated && ivs.length>1;
+					if(commaSeperated){
+						for(let i of ivs){
+							if(!/^-?[0-9.]+\s*$/.test(i)){alert("values must be ints or floats for "+s); return false;}
+							if(parseInt(i,10) < 0){alert("invalid values for "+s); return false;}
+						}
+					}
+					if(commaSpaceSeperated){
+						for(let i of ccvs){
+							if(!/^-?[0-9.]+\s*$/.test(i)){alert("values must be ints or floats for "+s); return false;}
+							if(parseInt(i,10) < 0){alert("invalid values for "+s); return false;}
+						}
+					}
+					if(s==="lipVapSatPresVal" || s==="lipVapSatTempVal"){
+						if(ivs.length!=1){alert("1 value per line for "+s); return false;}
+						if(!/^-?[0-9.]+\s*$/.test(ivs)){alert("values must be ints or floats for "+s); return false;}
+					}
+					else{if(ivs.length!=2){alert("2 comma seperated values per line for "+s); return false;}}
+				}
+				if(s==="lipVapSatPresVal" || s==="lipVapSatTempVal"){
+					if(ivl[ivl.length-1]!=0){alert("must end with 0");return false;}
+				}
+				else{
+					alert("'"+ivl[ivl.length-1].toString().trim()+"'");
+					if(ivl[ivl.length-1].toString().trim()!="0,0"){alert("must end with 0,0");return false;}
+				}
+			}
+		}
+		var reactiv = document.getElementById("reaction").value.split(/\r|\n/);
+		for(let s of reactiv){
+			var ivs = s.trim().split(" ");
+      // FIXME: no preg_match in JavaScript
+			// if(preg_match("/[a-z]/i", $s) && ivs.length!=2){alert("2 space seperated values per line for reaction"); return false;}
+			if(!/^-?[0-9]+\s*$/.test(ivs[0])){alert("stoichiometric coefficient must be an int for "+s); return false;}
+		}
+		$("input:visible:text").each(function(){if($(this).val().length === 0){filledIn = false;}});
+		$("textarea:visible").each(function(){if($(this).val().length === 0){filledIn = false;}});
+		if(!filledIn){
+			alert("Please Fill in All Items");
+			return false;
+		}
+		if(validOutput){return true;}
+		return true;
+	}
 </script>
 {% endblock %}
