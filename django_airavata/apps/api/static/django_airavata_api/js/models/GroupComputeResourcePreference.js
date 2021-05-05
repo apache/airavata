@@ -27,6 +27,7 @@ const FIELDS = [
     list: true,
     default: BaseModel.defaultNewInstance(Array),
   },
+  
 ];
 
 export default class GroupComputeResourcePreference extends BaseModel {

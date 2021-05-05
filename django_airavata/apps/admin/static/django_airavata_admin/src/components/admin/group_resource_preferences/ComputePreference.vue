@@ -32,6 +32,7 @@
                 required
                 v-model="data.loginUserName"
                 :state="validationFeedback.loginUserName.state"
+                :disabled="!userHasWriteAccess"
                 @input="validate"
               >
               </b-form-input>
@@ -43,6 +44,7 @@
               <ssh-credential-selector
                 v-model="data.resourceSpecificCredentialStoreToken"
                 v-if="localGroupResourceProfile"
+                :readonly="!userHasWriteAccess"
                 :null-option-default-credential-token="
                   localGroupResourceProfile.defaultCredentialStoreToken
                 "
@@ -76,6 +78,7 @@
                 id="allocation-number"
                 type="text"
                 v-model="data.allocationProjectNumber"
+                :disabled="!userHasWriteAccess"
               >
               </b-form-input>
             </b-form-group>
@@ -92,6 +95,7 @@
                 type="text"
                 required
                 v-model="data.scratchLocation"
+                :disabled="!userHasWriteAccess"
                 :state="validationFeedback.scratchLocation.state"
                 @input="validate"
               >
@@ -110,6 +114,7 @@
               :batch-queues="computeResource.batchQueues"
               :compute-resource-policy="localComputeResourcePolicy"
               :batch-queue-resource-policies="localBatchQueueResourcePolicies"
+              :readonly="!userHasWriteAccess"
               @compute-resource-policy-updated="
                 localComputeResourcePolicy = $event
               "
@@ -130,6 +135,7 @@
             <compute-resource-reservation-list
               :reservations="data.reservations"
               :queues="queueNames"
+              :readonly="!userHasWriteAccess"
               @added="addReservation"
               @deleted="deleteReservation"
               @updated="updateReservation"
@@ -141,10 +147,16 @@
       </div>
     </div>
     <div class="fixed-footer">
-      <b-button variant="primary" @click="save" :disabled="!valid"
+      <b-button 
+      variant="primary" 
+      @click="save" 
+      :disabled="!valid || !userHasWriteAccess"
         >Save</b-button
       >
-      <delete-button class="ml-2" @delete="remove">
+      <delete-button 
+      class="ml-2" 
+      :disabled="!userHasWriteAccess"
+      @delete="remove">
         Are you sure you want to remove the preferences for compute resource
         <strong>{{ computeResource.hostName }}</strong
         >?
@@ -198,10 +210,14 @@ export default {
   },
   mounted: function () {
     const computeResourcePromise = this.fetchComputeResource(this.host_id);
+    if (this.localGroupResourceProfile){
+        this.userHasWriteAccess = this.localGroupResourceProfile.userHasWriteAccess;
+    }
     if (!this.value && this.id && this.host_id) {
       services.GroupResourceProfileService.retrieve({ lookup: this.id }).then(
         (groupResourceProfile) => {
           this.localGroupResourceProfile = groupResourceProfile;
+          this.userHasWriteAccess = this.localGroupResourceProfile.userHasWriteAccess;
           const computeResourcePreference = groupResourceProfile.getComputePreference(
             this.host_id
           );
@@ -225,6 +241,7 @@ export default {
       this.createDefaultComputeResourcePolicy(computeResourcePromise);
     }
     this.$on("input", this.validate);
+    
   },
   data: function () {
     return {
@@ -249,6 +266,7 @@ export default {
       validationErrors: null,
       reservationsInvalid: false,
       computeResourcePolicyInvalid: false,
+      userHasWriteAccess: false,
     };
   },
   computed: {

@@ -17,6 +17,7 @@
                 id="profile-name"
                 type="text"
                 v-model="data.groupResourceProfileName"
+                :disabled="!data.userHasWriteAccess"
                 required
                 placeholder="Name of this Group Resource Profile"
               >
@@ -29,6 +30,7 @@
               <ssh-credential-selector
                 id="default-credential-store-token"
                 v-model="data.defaultCredentialStoreToken"
+                :readonly="!data.userHasWriteAccess"
               >
               </ssh-credential-selector>
             </b-form-group>
@@ -39,6 +41,7 @@
     </div>
     <list-layout
       :items="data.computePreferences"
+      :newButtonDisabled="!data.userHasWriteAccess"
       title="Compute Preferences"
       new-item-button-text="New Compute Preference"
       @add-new-item="createComputePreference"
@@ -62,6 +65,7 @@
           <template slot="action" slot-scope="row">
             <router-link
               class="action-link"
+              v-if="data.userHasWriteAccess"
               :to="{
                 name: 'compute_preference',
                 params: {
@@ -81,8 +85,33 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
+            
+            <router-link
+              class="action-link"
+              v-if="!data.userHasWriteAccess"
+              :to="{
+                name: 'compute_preference',
+                params: {
+                  value: row.item,
+                  id: id,
+                  host_id: row.item.computeResourceId,
+                  groupResourceProfile: data,
+                  computeResourcePolicy: data.getComputeResourcePolicy(
+                    row.item.computeResourceId
+                  ),
+                  batchQueueResourcePolicies: data.getBatchQueueResourcePolicies(
+                    row.item.computeResourceId
+                  ),
+                },
+              }"
+            >
+              View
+              <i class="fa fa-eye" aria-hidden="true"></i>
+            </router-link>
+            
             <delete-link
               class="action-link"
+              v-if="data.userHasWriteAccess"
               @delete="removeComputePreference(row.item.computeResourceId)"
             >
               Are you sure you want to remove the preferences for compute
@@ -97,12 +126,16 @@
       </template>
     </list-layout>
     <div class="fixed-footer">
-      <b-button variant="primary" @click="saveGroupResourceProfile"
+      <b-button 
+      variant="primary" 
+      :disabled="!data.userHasWriteAccess"
+      @click="saveGroupResourceProfile"
         >Save</b-button
       >
       <delete-button
         v-if="id"
         class="ml-2"
+        :disabled="!data.userHasWriteAccess"
         @delete="removeGroupResourceProfile"
       >
         Are you sure you want to remove Group Resource Profile
