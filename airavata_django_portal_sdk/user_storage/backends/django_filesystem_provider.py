@@ -107,7 +107,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
         # Special case: handle creating user's home directory
         if resource_path == '' and not datastore.exists(''):
             datastore.create_user_dir('')
-            return self.storage_resource_id, datastore.path(resource_path) 
+            return self.storage_resource_id, datastore.path(resource_path)
         if not datastore.exists(resource_path):
             raise ObjectDoesNotExist(f"User resource_path does not exist {resource_path}")
         valid_dir_names = []
