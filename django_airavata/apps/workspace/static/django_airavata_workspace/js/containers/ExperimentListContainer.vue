@@ -39,6 +39,7 @@
                 <option value="EXPERIMENT_DESC">Experiment Description</option>
                 <option value="APPLICATION_ID">Application</option>
                 <option value="PROJECT_ID">Project</option>
+                <option value="JOB_ID">Job Id</option>
               </b-form-select>
               <b-form-select v-model="experimentStatusSelect">
                 <template slot="first">
