@@ -13,7 +13,7 @@
       <div
         :ref="input.name"
         :key="input.name"
-        @input="updateInputValue($event, input)"
+        @input="updateInputValue(input.name, $event.target.value)"
       >
       <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
@@ -82,8 +82,9 @@ export default {
     updateExperimentName(event) {
       this.experiment.experimentName = event.target.value;
     },
-    updateInputValue(event, experimentInput) {
-      experimentInput.value = event.target.value;
+    updateInputValue(inputName, value) {
+      const experimentInput = this.experiment.experimentInputs.find(i => i.name === inputName);
+      experimentInput.value = value;
     },
     onSubmit(event) {
       // console.log(event);

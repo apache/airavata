@@ -220,7 +220,14 @@ $('document').ready(function() {
     },replace: function (word) {
       return word + ' ';
     }
-  }]);
+  }]).on('textComplete:select', e => {
+    // Keep the value of 'Reaction' up-to-date when an autocomplete option is selected.
+    // experiment-editor listens for 'input' events, which are triggered when user
+    // types in 'Reaction' textarea, but selecting an autocomplete option doesn't
+    // trigger an 'input' event, so we need to manually update the value of the
+    // experiment input when an autocomplete option is selected.
+    document.getElementById('experiment-editor').vueComponent.updateInputValue('Reaction', e.target.value);
+  });
 });
 
 function resetViews() {
