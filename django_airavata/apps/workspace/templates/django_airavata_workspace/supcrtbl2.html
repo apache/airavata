@@ -188,19 +188,21 @@ document.getElementById("experiment-editor").addEventListener('loaded', e => {
     // console.log("slotEl=", slotEl);
     if (slotEl) {
       const inputEls = slotEl.querySelectorAll('input');
+      const textareaEl = slotEl.querySelector('textarea');
       // console.log("inputEls=", inputEls);
-      if (!inputEls || inputEls.length === 0) {
-        continue;
-      }
-      if (inputEls[0].type === 'text') {
-        inputEls[0].value = input.value;
-      } else if (inputEls[0].type === 'radio') {
-        for (radio of inputEls) {
-          if (radio.value === input.value) {
-            radio.checked = true;
-            break;
+      if (inputEls && inputEls.length > 0) {
+        if (inputEls[0].type === 'text') {
+          inputEls[0].value = input.value;
+        } else if (inputEls[0].type === 'radio') {
+          for (radio of inputEls) {
+            if (radio.value === input.value) {
+              radio.checked = true;
+              break;
+            }
           }
         }
+      } else if (textareaEl) {
+        textareaEl.value = input.value;
       }
     }
   }
@@ -469,7 +471,7 @@ function resetViews() {
 			alert("Please Fill in All Items");
 			return false;
 		}
-		if(validOutput){return true;}
+		// if(validOutput){return true;}
 		return true;
 	}
 </script>
