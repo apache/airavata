@@ -402,7 +402,44 @@ def get_data_product_metadata(request, data_product=None, data_product_uri=None)
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
-    return get_file_metadata(request, path, storage_resource_id)
+    if _is_remote_api():
+        resp = _call_remote_api(
+            request,
+            "/data-products/",
+            params={'product-uri': data_product.productUri})
+        data = resp.json()
+        file = {
+            "name": os.path.basename(path),
+            # FIXME: since this isn't the true relative path, going to leave out for now
+            # "path": path,
+            "resource_path": path,
+            "created_time": convert_iso8601_to_datetime(data['creationTime'], microseconds=False),
+            "size": data['filesize']
+        }
+        mime_type = None
+        if 'mime-type' in data_product.productMetadata:
+            mime_type = data_product.productMetadata['mime-type']
+        file['data-product-uri'] = data_product_uri
+        file['mime_type'] = mime_type
+        # TODO: remove this, there's no need for hidden files
+        file['hidden'] = False
+        return file
+    backend = get_user_storage_provider(request,
+                                        owner_username=data_product.ownerName,
+                                        storage_resource_id=storage_resource_id)
+    if backend.is_file(path):
+        _, files = backend.get_metadata(path)
+        file = files[0]
+        mime_type = None
+        if 'mime-type' in data_product.productMetadata:
+            mime_type = data_product.productMetadata['mime-type']
+        file['data-product-uri'] = data_product_uri
+        file['mime_type'] = mime_type
+        # TODO: remove this, there's no need for hidden files
+        file['hidden'] = False
+        return file
+    else:
+        raise ObjectDoesNotExist("File does not exist at that path.")
 
 
 def get_file(request, path, storage_resource_id=None):
@@ -793,7 +830,7 @@ def _get_replica_resource_id_and_filepath(data_product):
         return (replica_location.storageResourceId,
                 unquote(urlparse(replica_location.filePath).path))
     else:
-        return None
+        return None, None
 
 
 def _is_remote_api():
