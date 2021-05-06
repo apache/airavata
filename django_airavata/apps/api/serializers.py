@@ -481,7 +481,7 @@ class DataProductSerializer(
     def get_filesize(self, data_product):
         request = self.context['request']
         # For backwards compatibility with older user_storage, can be eventually removed
-        if hasattr(user_storage, 'get_data_product_metadata'):
+        if hasattr(user_storage, 'get_data_product_metadata') and user_storage.exists(request, data_product):
             metadata = user_storage.get_data_product_metadata(request, data_product)
             return metadata['size']
         else:
