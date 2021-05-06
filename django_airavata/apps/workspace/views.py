@@ -124,7 +124,7 @@ def edit_experiment(request, experiment_id):
     request.active_nav_item = 'experiments'
 
     return render(request,
-                #   'django_airavata_workspace/edit_experiment.html',
+                  #   'django_airavata_workspace/edit_experiment.html',
                   'django_airavata_workspace/supcrtbl2.html',
                   {'bundle_name': 'edit-experiment',
                    'experiment_id': experiment_id})
