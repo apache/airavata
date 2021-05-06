@@ -24,6 +24,11 @@
       <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
+    <div @input="updateGroupResourceProfileId">
+      <slot name="experiment-group-resource-profile">
+        <adpf-group-resource-profile-selector :value="experiment.userConfigurationData.groupResourceProfileId"/>
+      </slot>
+    </div>
     <slot name="save-button">
       <button type="submit" name="save-experiment-button">Save</button>
     </slot>
@@ -94,6 +99,10 @@ export default {
     updateProjectId(event) {
       const [projectId] = event.detail;
       this.experiment.projectId = projectId;
+    },
+    updateGroupResourceProfileId(event) {
+      const [groupResourceProfileId] = event.detail;
+      this.experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
     },
     onSubmit(event) {
       // console.log(event);

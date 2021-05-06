@@ -1,25 +1,28 @@
 import { services } from "django-airavata-api";
-const APPLICATION_MODULES = {};
-const APPLICATION_INTERFACES = {};
+const CACHE = {
+  APPLICATION_MODULES: {},
+  APPLICATION_INTERFACES: {},
+  WORKSPACE_PREFERENCES: null,
+};
 export async function getApplicationModule(applicationId) {
-  if (applicationId in APPLICATION_MODULES) {
-    return APPLICATION_MODULES[applicationId];
+  if (applicationId in CACHE.APPLICATION_MODULES) {
+    return CACHE.APPLICATION_MODULES[applicationId];
   }
   const result = await services.ApplicationModuleService.retrieve({
     lookup: applicationId,
   });
-  APPLICATION_MODULES[applicationId] = result;
+  CACHE.APPLICATION_MODULES[applicationId] = result;
   return result;
 }
 
 export async function getApplicationInterfaceForModule(applicationId) {
-  if (applicationId in APPLICATION_INTERFACES) {
-    return APPLICATION_INTERFACES[applicationId];
+  if (applicationId in CACHE.APPLICATION_INTERFACES) {
+    return CACHE.APPLICATION_INTERFACES[applicationId];
   }
   const result = await services.ApplicationModuleService.getApplicationInterface(
     { lookup: applicationId }
   );
-  APPLICATION_INTERFACES[applicationId] = result;
+  CACHE.APPLICATION_INTERFACES[applicationId] = result;
   return result;
 }
 
@@ -34,9 +37,21 @@ export async function saveExperiment(experiment) {
   }
 }
 
+export async function getWorkspacePreferences() {
+  if (!CACHE.WORKSPACE_PREFERENCES) {
+    CACHE.WORKSPACE_PREFERENCES = await services.WorkspacePreferencesService.get();
+  }
+  return CACHE.WORKSPACE_PREFERENCES;
+}
+
 export async function getDefaultProjectId() {
-  const preferences = await services.WorkspacePreferencesService.get();
-  return preferences.most_recent_project_id;
+  const prefs = await getWorkspacePreferences();
+  return prefs.most_recent_project_id;
+}
+
+export async function getDefaultGroupResourceProfileId() {
+  const prefs = await getWorkspacePreferences();
+  return prefs.most_recent_group_resource_profile_id;
 }
 
 export async function getExperiment(experimentId) {
@@ -45,4 +60,8 @@ export async function getExperiment(experimentId) {
 
 export async function getProjects() {
   return await services.ProjectService.listAll();
+}
+
+export async function getGroupResourceProfiles() {
+  return await services.GroupResourceProfileService.list();
 }
