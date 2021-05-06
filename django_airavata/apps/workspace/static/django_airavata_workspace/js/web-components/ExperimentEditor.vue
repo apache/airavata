@@ -9,6 +9,12 @@
         />
       </slot>
     </div>
+    <div @input="updateProjectId">
+      <!-- TODO: define this as a native slot? -->
+      <slot name="experiment-project">
+        <adpf-project-selector :value="experiment.projectId"/>
+      </slot>
+    </div>
     <template v-for="input in experiment.experimentInputs">
       <div
         :ref="input.name"
@@ -29,7 +35,6 @@ import {
   getApplicationModule,
   getApplicationInterfaceForModule,
   saveExperiment,
-  getDefaultProjectId,
   getExperiment,
 } from "./store";
 
@@ -86,6 +91,10 @@ export default {
       const experimentInput = this.experiment.experimentInputs.find(i => i.name === inputName);
       experimentInput.value = value;
     },
+    updateProjectId(event) {
+      const [projectId] = event.detail;
+      this.experiment.projectId = projectId;
+    },
     onSubmit(event) {
       // console.log(event);
       // 'save' event is cancelable. Listener can call .preventDefault() on the event to cancel.
@@ -119,8 +128,6 @@ export default {
           this.applicationModule.appModuleName +
           " on " +
           new Date().toLocaleString();
-        const defaultProjectId = await getDefaultProjectId();
-        experiment.projectId = defaultProjectId;
         experiment.userConfigurationData.computationalResourceScheduling.resourceHostId =
           "js-169-51.jetstream-cloud.org_6672e8fe-8d63-4bbe-8bf8-4ea04092e72f";
         this.$emit("loaded", experiment);
@@ -131,4 +138,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+@import "./styles.css";
+</style>

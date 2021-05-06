@@ -42,3 +42,7 @@ export async function getDefaultProjectId() {
 export async function getExperiment(experimentId) {
   return await services.ExperimentService.retrieve({ lookup: experimentId });
 }
+
+export async function getProjects() {
+  return await services.ProjectService.listAll();
+}
