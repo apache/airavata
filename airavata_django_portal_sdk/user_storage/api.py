@@ -248,7 +248,11 @@ def exists(request, data_product=None, data_product_uri=None):
         resp = _call_remote_api(
             request,
             "/data-products/",
-            params={'product-uri': data_product.productUri})
+            params={'product-uri': data_product.productUri},
+            raise_for_status=False)
+        if resp.status_code == HTTPStatus.NOT_FOUND:
+            return False
+        resp.raise_for_status()
         data = resp.json()
         return data['downloadURL'] is not None
     else:
