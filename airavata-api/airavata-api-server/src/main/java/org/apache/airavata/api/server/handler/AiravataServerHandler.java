@@ -5556,9 +5556,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             if(ServerSettings.isEnableSharing()) {
                 try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                     if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
                             groupResourceProfileId, gatewayId + ":WRITE")){
@@ -5569,6 +5569,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
             boolean result = regClient.removeGroupResourceProfile(groupResourceProfileId);
+            sharingClient.deleteEntity(gatewayId, groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
