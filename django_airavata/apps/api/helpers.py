@@ -65,7 +65,7 @@ class WorkspacePreferencesHelper:
             prefs.save()
         group_resource_profiles = request.airavata_client.getGroupResourceList(
             request.authz_token, settings.GATEWAY_ID)
-        group_resource_profile_ids = map(lambda g: g.groupResourceProfileId, group_resource_profiles)
+        group_resource_profile_ids = list(map(lambda g: g.groupResourceProfileId, group_resource_profiles))
         if (not prefs.most_recent_group_resource_profile_id or
                 prefs.most_recent_group_resource_profile_id not in group_resource_profile_ids):
             first_grp_id = (group_resource_profile_ids[0]
