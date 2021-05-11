@@ -35,6 +35,7 @@ import SetEnvPaths from "./models/SetEnvPaths";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
+import UserConfigurationData from "./models/UserConfigurationData";
 import UserPermission from "./models/UserPermission";
 
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
@@ -93,6 +94,7 @@ const models = {
   SharedEntity,
   StoragePreference,
   SummaryType,
+  UserConfigurationData,
   UserPermission,
 };
 
@@ -110,7 +112,9 @@ const services = {
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
   ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
-  ExperimentStoragePathService: ServiceFactory.service("ExperimentStoragePaths"),
+  ExperimentStoragePathService: ServiceFactory.service(
+    "ExperimentStoragePaths"
+  ),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfile"

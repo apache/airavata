@@ -24,9 +24,9 @@
       <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
-    <div @input="updateGroupResourceProfileId">
-      <slot name="experiment-group-resource-profile">
-        <adpf-group-resource-profile-selector :value="experiment.userConfigurationData.groupResourceProfileId"/>
+    <div @input="updateUserConfigurationData">
+      <slot name="experiment-resource-selection">
+        <adpf-resource-selection-editor ref="resourceSelectionEditor" />
       </slot>
     </div>
     <slot name="save-button">
@@ -45,6 +45,7 @@ import {
 
 export default {
   props: {
+    // TODO: rename to applicationModuleId?
     applicationId: {
       type: String,
       required: true,
@@ -79,6 +80,9 @@ export default {
         // TODO: add support for other input types
         this.$refs[input.name][0].append(slot);
       }
+      // Can't set objects via attributes, must set as prop
+      this.$refs.resourceSelectionEditor.value = this.experiment.userConfigurationData;
+      this.$refs.resourceSelectionEditor.applicationModuleId = this.applicationId;
     });
   },
   data() {
@@ -100,9 +104,9 @@ export default {
       const [projectId] = event.detail;
       this.experiment.projectId = projectId;
     },
-    updateGroupResourceProfileId(event) {
-      const [groupResourceProfileId] = event.detail;
-      this.experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
+    updateUserConfigurationData(event) {
+      const [userConfigurationData] = event.detail;
+      this.experiment.userConfigurationData = userConfigurationData;
     },
     onSubmit(event) {
       // console.log(event);
@@ -137,8 +141,6 @@ export default {
           this.applicationModule.appModuleName +
           " on " +
           new Date().toLocaleString();
-        experiment.userConfigurationData.computationalResourceScheduling.resourceHostId =
-          "js-169-51.jetstream-cloud.org_6672e8fe-8d63-4bbe-8bf8-4ea04092e72f";
         this.$emit("loaded", experiment);
         return experiment;
       }

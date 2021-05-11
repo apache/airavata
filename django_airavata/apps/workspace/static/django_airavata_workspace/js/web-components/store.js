@@ -1,4 +1,4 @@
-import { services } from "django-airavata-api";
+import { errors, services, utils } from "django-airavata-api";
 const CACHE = {
   APPLICATION_MODULES: {},
   APPLICATION_INTERFACES: {},
@@ -16,6 +16,8 @@ export async function getApplicationModule(applicationId) {
 }
 
 export async function getApplicationInterfaceForModule(applicationId) {
+  // TODO: I'm not sure this is the right pattern. Perhaps the promise should be
+  // put in the cache and the cache entry should be 'await'-ed.
   if (applicationId in CACHE.APPLICATION_INTERFACES) {
     return CACHE.APPLICATION_INTERFACES[applicationId];
   }
@@ -54,6 +56,11 @@ export async function getDefaultGroupResourceProfileId() {
   return prefs.most_recent_group_resource_profile_id;
 }
 
+export async function getDefaultComputeResourceId() {
+  const prefs = await getWorkspacePreferences();
+  return prefs.most_recent_compute_resource_id;
+}
+
 export async function getExperiment(experimentId) {
   return await services.ExperimentService.retrieve({ lookup: experimentId });
 }
@@ -64,4 +71,30 @@ export async function getProjects() {
 
 export async function getGroupResourceProfiles() {
   return await services.GroupResourceProfileService.list();
+}
+
+export async function getApplicationDeployments(
+  applicationId,
+  groupResourceProfileId
+) {
+  return await services.ApplicationDeploymentService.list(
+    {
+      appModuleId: applicationId,
+      groupResourceProfileId: groupResourceProfileId,
+    },
+    { ignoreErrors: true }
+  )
+    .catch((error) => {
+      // Ignore unauthorized errors, force user to pick another GroupResourceProfile
+      if (!errors.ErrorUtils.isUnauthorizedError(error)) {
+        return Promise.reject(error);
+      }
+    })
+    // Report all other error types
+    .catch(utils.FetchUtils.reportError);
+}
+
+export async function getComputeResourceNames() {
+  // TODO: cache these
+  return await services.ComputeResourceService.names();
 }
