@@ -5,27 +5,23 @@ const CACHE = {
   WORKSPACE_PREFERENCES: null,
 };
 export async function getApplicationModule(applicationId) {
-  if (applicationId in CACHE.APPLICATION_MODULES) {
-    return CACHE.APPLICATION_MODULES[applicationId];
+  if (!(applicationId in CACHE.APPLICATION_MODULES)) {
+    const promise = services.ApplicationModuleService.retrieve({
+      lookup: applicationId,
+    });
+    CACHE.APPLICATION_MODULES[applicationId] = promise;
   }
-  const result = await services.ApplicationModuleService.retrieve({
-    lookup: applicationId,
-  });
-  CACHE.APPLICATION_MODULES[applicationId] = result;
-  return result;
+  return await CACHE.APPLICATION_MODULES[applicationId];
 }
 
 export async function getApplicationInterfaceForModule(applicationId) {
-  // TODO: I'm not sure this is the right pattern. Perhaps the promise should be
-  // put in the cache and the cache entry should be 'await'-ed.
-  if (applicationId in CACHE.APPLICATION_INTERFACES) {
-    return CACHE.APPLICATION_INTERFACES[applicationId];
+  if (!(applicationId in CACHE.APPLICATION_INTERFACES)) {
+    const promise = services.ApplicationModuleService.getApplicationInterface({
+      lookup: applicationId,
+    });
+    CACHE.APPLICATION_INTERFACES[applicationId] = promise;
   }
-  const result = await services.ApplicationModuleService.getApplicationInterface(
-    { lookup: applicationId }
-  );
-  CACHE.APPLICATION_INTERFACES[applicationId] = result;
-  return result;
+  return await CACHE.APPLICATION_INTERFACES[applicationId];
 }
 
 export async function saveExperiment(experiment) {
@@ -41,9 +37,9 @@ export async function saveExperiment(experiment) {
 
 export async function getWorkspacePreferences() {
   if (!CACHE.WORKSPACE_PREFERENCES) {
-    CACHE.WORKSPACE_PREFERENCES = await services.WorkspacePreferencesService.get();
+    CACHE.WORKSPACE_PREFERENCES = services.WorkspacePreferencesService.get();
   }
-  return CACHE.WORKSPACE_PREFERENCES;
+  return await CACHE.WORKSPACE_PREFERENCES;
 }
 
 export async function getDefaultProjectId() {
