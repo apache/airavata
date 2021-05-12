@@ -69,6 +69,12 @@ export async function getGroupResourceProfiles() {
   return await services.GroupResourceProfileService.list();
 }
 
+export async function getGroupResourceProfile(groupResourceProfileId) {
+  return await services.GroupResourceProfileService.retrieve({
+    lookup: groupResourceProfileId,
+  });
+}
+
 export async function getApplicationDeployments(
   applicationId,
   groupResourceProfileId
@@ -93,4 +99,10 @@ export async function getApplicationDeployments(
 export async function getComputeResourceNames() {
   // TODO: cache these
   return await services.ComputeResourceService.names();
+}
+
+export async function getAppDeploymentQueues(appDeploymentId) {
+  return await services.ApplicationDeploymentService.getQueues({
+    lookup: appDeploymentId,
+  });
 }

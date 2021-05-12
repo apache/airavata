@@ -10,6 +10,7 @@ import BaseModel from "./models/BaseModel";
 import BatchQueue from "./models/BatchQueue";
 import BatchQueueResourcePolicy from "./models/BatchQueueResourcePolicy";
 import CommandObject from "./models/CommandObject";
+import ComputationalResourceSchedulingModel from "./models/ComputationalResourceSchedulingModel";
 import ComputeResourcePolicy from "./models/ComputeResourcePolicy";
 import ComputeResourceReservation from "./models/ComputeResourceReservation";
 import DataProduct from "./models/DataProduct";
@@ -69,6 +70,7 @@ const models = {
   BatchQueue,
   BatchQueueResourcePolicy,
   CommandObject,
+  ComputationalResourceSchedulingModel,
   ComputeResourcePolicy,
   ComputeResourceReservation,
   DataProduct,

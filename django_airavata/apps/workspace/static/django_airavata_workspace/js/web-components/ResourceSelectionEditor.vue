@@ -17,9 +17,8 @@
     </div>
     <div @input.stop="updateComputationalResourceScheduling">
       <adpf-queue-settings-editor
+        ref="queueSettingsEditor"
         slot="resource-selection-queue-settings"
-        :value="userConfigurationData.computationalResourceScheduling"
-        :queues="queues"
         :max-allowed-nodes="maxAllowedNodes"
         :max-allowed-cores="maxAllowedCores"
         :max-allowed-walltime="maxAllowedWalltime"
@@ -32,8 +31,10 @@
 <script>
 import { models } from "django-airavata-api";
 import {
+  getAppDeploymentQueues,
   getApplicationDeployments,
   getDefaultComputeResourceId,
+  getGroupResourceProfile,
 } from "./store";
 export default {
   // TODO: better name? UserConfigurationDataEditor?
@@ -50,11 +51,8 @@ export default {
     return {
       userConfigurationData: this.cloneValue(),
       applicationDeployments: [],
-      queues: [],
-      maxAllowedNodes: 0,
-      maxAllowedCores: 0,
-      maxAllowedWalltime: 0,
-      maxMemory: 0,
+      appDeploymentQueues: [],
+      groupResourceProfile: null,
       defaultComputeResourceId: null,
     };
   },
@@ -74,57 +72,252 @@ export default {
             .resourceHostId
         : null;
     },
+    applicationDeployment() {
+      if (this.applicationDeployments && this.resourceHostId) {
+        return this.applicationDeployments.find(
+          (ad) => ad.computeHostId === this.resourceHostId
+        );
+      } else {
+        return null;
+      }
+    },
+    computeResourcePolicy() {
+      if (!this.groupResourceProfile || !this.resourceHostId) {
+        return null;
+      }
+      return this.groupResourceProfile.computeResourcePolicies.find(
+        (crp) => crp.computeResourceId === this.resourceHostId
+      );
+    },
+    batchQueueResourcePolicies: function () {
+      if (!this.groupResourceProfile || !this.resourceHostId) {
+        return null;
+      }
+      return this.groupResourceProfile.batchQueueResourcePolicies.filter(
+        (bqrp) => bqrp.computeResourceId === this.resourceHostId
+      );
+    },
+    batchQueueResourcePolicy() {
+      if (!this.batchQueueResourcePolicies || !this.queueName) {
+        return null;
+      }
+      return this.batchQueueResourcePolicies.find(
+        (bqrp) => bqrp.queuename === this.queueName
+      );
+    },
+    queueName() {
+      return this.userConfigurationData &&
+        this.userConfigurationData.computationalResourceScheduling
+        ? this.userConfigurationData.computationalResourceScheduling.queueName
+        : null;
+    },
+    queues() {
+      return this.appDeploymentQueues
+        ? this.appDeploymentQueues.filter((q) =>
+            this.isQueueInComputeResourcePolicy(q.queueName)
+          )
+        : [];
+    },
+    queue() {
+      return this.queues && this.queueName
+        ? this.queues.find((q) => q.queueName === this.queueName)
+        : null;
+    },
+    maxAllowedCores: function () {
+      if (!this.queue) {
+        return 0;
+      }
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedCores,
+          this.queue.maxProcessors
+        );
+      }
+      return this.queue.maxProcessors;
+    },
+    maxAllowedNodes: function () {
+      if (!this.queue) {
+        return 0;
+      }
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedNodes,
+          this.queue.maxNodes
+        );
+      }
+      return this.queue.maxNodes;
+    },
+    maxAllowedWalltime: function () {
+      if (!this.queue) {
+        return 0;
+      }
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedWalltime,
+          this.queue.maxRunTime
+        );
+      }
+      return this.queue.maxRunTime;
+    },
+    maxMemory() {
+      return this.queue ? this.queue.maxMemory : 0;
+    },
   },
   methods: {
     emitValueChanged: function () {
       const inputEvent = new CustomEvent("input", {
-        detail: [this.userConfigurationData],
+        detail: [this.userConfigurationData.clone()],
         composed: true,
         bubbles: true,
       });
       this.$el.dispatchEvent(inputEvent);
     },
-    updateGroupResourceProfileId(event) {
+    async updateGroupResourceProfileId(event) {
       const [groupResourceProfileId] = event.detail;
       this.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
       this.emitValueChanged();
-      this.loadApplicationDeployments();
+      await this.loadGroupResourceProfile();
+      await this.loadApplicationDeployments();
+      // allowed queues may have changed
+      // TODO: reapply batchQueueResourcePolicy if batchQueueResourcePolicy
     },
     updateComputeResourceHostId(event) {
       const [computeResourceHostId] = event.detail;
       this.userConfigurationData.computationalResourceScheduling.resourceHostId = computeResourceHostId;
       this.emitValueChanged();
-      // TODO: recalculate queues for the selected host
+      this.loadAppDeploymentQueues();
     },
     updateComputationalResourceScheduling(event) {
       const [computationalResourceScheduling] = event.detail;
+      const queueChanged =
+        this.queueName !== computationalResourceScheduling.queueName;
       this.userConfigurationData.computationalResourceScheduling = computationalResourceScheduling;
+      if (queueChanged) {
+        this.initializeQueue();
+      }
       this.emitValueChanged();
-      // TODO: recalculate maxes for the selected queue, etc.
     },
     async loadApplicationDeployments() {
       this.applicationDeployments = await getApplicationDeployments(
         this.applicationModuleId,
         this.groupResourceProfileId
       );
+      // Make sure that resource host id is in the list of app deployments
+      this.initializeResourceHostId();
+    },
+    initializeResourceHostId() {
+      // if there isn't a selected compute resource or there is but it isn't in
+      // the list of app deployments, set a default one
       if (
-        !this.userConfigurationData.computationalResourceScheduling
-          .computeHostId
+        !this.resourceHostId ||
+        !this.computeResources.find((crid) => crid === this.resourceHostId)
       ) {
         this.userConfigurationData.computationalResourceScheduling.resourceHostId = this.getDefaultResourceHostId();
+        this.emitValueChanged();
       }
     },
+    async loadAppDeploymentQueues() {
+      const applicationDeployment = this.applicationDeployment;
+      this.appDeploymentQueues = await getAppDeploymentQueues(
+        applicationDeployment.appDeploymentId
+      );
+      // set to the default queue or the first one
+      const defaultQueue = this.getDefaultQueue();
+      if (defaultQueue) {
+        this.userConfigurationData.computationalResourceScheduling.queueName =
+          defaultQueue.queueName;
+      } else {
+        this.userConfigurationData.computationalResourceScheduling.queueName = null;
+      }
+      this.initializeQueue();
+    },
+    isQueueInComputeResourcePolicy: function (queueName) {
+      if (!this.computeResourcePolicy) {
+        return true;
+      }
+      return this.computeResourcePolicy.allowedBatchQueues.includes(queueName);
+    },
+    initializeQueue() {
+      const queue = this.queue;
+      if (queue) {
+        const crs = this.userConfigurationData.computationalResourceScheduling;
+        crs.queueName = queue.queueName;
+        crs.totalCPUCount = this.getDefaultCPUCount(queue);
+        crs.nodeCount = this.getDefaultNodeCount(queue);
+        crs.wallTimeLimit = this.getDefaultWalltime(queue);
+        if (this.maxMemory === 0) {
+          crs.totalPhysicalMemory = 0;
+        }
+      } else {
+        const crs = this.userConfigurationData.computationalResourceScheduling;
+        crs.queueName = null;
+        crs.totalCPUCount = 0;
+        crs.nodeCount = 0;
+        crs.wallTimeLimit = 0;
+        crs.totalPhysicalMemory = 0;
+      }
+      this.emitValueChanged();
+    },
+    getDefaultQueue() {
+      const defaultQueue = this.queues.find((q) => q.isDefaultQueue);
+      if (defaultQueue) {
+        return defaultQueue;
+      } else if (this.queues.length > 0) {
+        return this.queues[0];
+      } else {
+        return null;
+      }
+    },
+    getDefaultCPUCount(queue) {
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedCores,
+          queue.defaultCPUCount
+        );
+      }
+      return queue.defaultCPUCount;
+    },
+    getDefaultNodeCount(queue) {
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedNodes,
+          queue.defaultNodeCount
+        );
+      }
+      return queue.defaultNodeCount;
+    },
+    getDefaultWalltime(queue) {
+      const batchQueueResourcePolicy = this.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedWalltime,
+          queue.defaultWalltime
+        );
+      }
+      return queue.defaultWalltime;
+    },
     cloneValue() {
-      return this.value ? new models.UserConfigurationData(this.value) : null;
+      return this.value ? this.value.clone() : null;
     },
     async loadData() {
       if (this.groupResourceProfileId) {
+        this.loadGroupResourceProfile();
         this.loadApplicationDeployments();
       }
       this.loadDefaultComputeResourceId();
     },
     async loadDefaultComputeResourceId() {
       this.defaultComputeResourceId = await getDefaultComputeResourceId();
+    },
+    async loadGroupResourceProfile() {
+      this.groupResourceProfile = await getGroupResourceProfile(
+        this.groupResourceProfileId
+      );
     },
     getDefaultResourceHostId() {
       if (
@@ -137,12 +330,16 @@ export default {
       } else if (this.computeResources.length > 0) {
         // Just pick the first one
         return this.computeResources[0];
+      } else {
+        return null;
       }
     },
     bindWebComponentProps() {
       this.$nextTick(() => {
         this.$refs.computeResourceSelector.computeResources = this.computeResources;
         this.$refs.computeResourceSelector.value = this.resourceHostId;
+        this.$refs.queueSettingsEditor.value = this.userConfigurationData.computationalResourceScheduling;
+        this.$refs.queueSettingsEditor.queues = this.queues;
       });
     },
   },
@@ -153,6 +350,8 @@ export default {
     },
     computeResources: "bindWebComponentProps",
     resourceHostId: "bindWebComponentProps",
+    queueName: "bindWebComponentProps",
+    queues: "bindWebComponentProps",
   },
 };
 </script>
