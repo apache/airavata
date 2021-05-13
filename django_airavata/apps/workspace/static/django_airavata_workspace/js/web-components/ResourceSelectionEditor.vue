@@ -345,14 +345,20 @@ export default {
     },
     async loadData() {
       if (this.groupResourceProfileId) {
-        // TODO: handle user no longer has access to GRP
-        await this.loadGroupResourceProfile();
-        await this.loadApplicationDeployments();
-        await this.loadAppDeploymentQueues();
-        await this.applyGroupResourceProfile();
-        // If existing values are no longer selectable, the userConfigurationData
-        // may have changed
-        this.emitValueChanged();
+        let groupResourceProfile = await this.loadGroupResourceProfile();
+        // handle user no longer has access to GRP
+        if (!groupResourceProfile) {
+          await this.initializeGroupResourceProfileId();
+          groupResourceProfile = await this.loadGroupResourceProfile();
+        }
+        if (groupResourceProfile) {
+          await this.loadApplicationDeployments();
+          await this.loadAppDeploymentQueues();
+          await this.applyGroupResourceProfile();
+          // If existing values are no longer selectable, the userConfigurationData
+          // may have changed
+          this.emitValueChanged();
+        }
       } else {
         await this.initializeGroupResourceProfileId();
         if (this.groupResourceProfileId) {
@@ -367,6 +373,7 @@ export default {
       this.groupResourceProfile = await getGroupResourceProfile(
         this.groupResourceProfileId
       );
+      return this.groupResourceProfile;
     },
     async getDefaultResourceHostId() {
       const defaultComputeResourceId = await getDefaultComputeResourceId();

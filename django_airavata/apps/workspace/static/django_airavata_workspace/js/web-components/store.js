@@ -70,9 +70,22 @@ export async function getGroupResourceProfiles() {
 }
 
 export async function getGroupResourceProfile(groupResourceProfileId) {
-  return await services.GroupResourceProfileService.retrieve({
-    lookup: groupResourceProfileId,
-  });
+  return await services.GroupResourceProfileService.retrieve(
+    {
+      lookup: groupResourceProfileId,
+    },
+    { ignoreErrors: true }
+  )
+    .catch((error) => {
+      // Ignore unauthorized errors, force user to pick a different GroupResourceProfile
+      if (!errors.ErrorUtils.isUnauthorizedError(error)) {
+        return Promise.reject(error);
+      } else {
+        return Promise.resolve(null);
+      }
+    })
+    // Report all other error types
+    .catch(utils.FetchUtils.reportError);
 }
 
 export async function getApplicationDeployments(
