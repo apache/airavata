@@ -6,9 +6,14 @@ from urllib.parse import quote, urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import (
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    JsonResponse
+)
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context
 from django.urls import reverse
@@ -502,3 +507,16 @@ def _create_login_desktop_failed_response(request, idp_alias=None):
         params['username'] = request.POST['username']
     return redirect(reverse('django_airavata_auth:login_desktop') +
                     "?" + urlencode(params))
+
+
+@login_required
+def access_token_redirect(request):
+    redirect_uri = request.GET['redirect_uri']
+    config = next(filter(lambda d: d.get('URI') == redirect_uri,
+                         settings.ACCESS_TOKEN_REDIRECT_ALLOWED_URIS), None)
+    if config is None:
+        logger.warning(f"redirect_uri value '{redirect_uri}' is not configured "
+                       "in ACCESS_TOKEN_REDIRECT_ALLOWED_URIS setting")
+        return HttpResponseForbidden("Invalid redirect_uri value")
+    return redirect(redirect_uri + f"{'&' if '?' in redirect_uri else '?'}{config.get('PARAM_NAME', 'access_token')}="
+                    f"{quote(request.authz_token.accessToken)}")
