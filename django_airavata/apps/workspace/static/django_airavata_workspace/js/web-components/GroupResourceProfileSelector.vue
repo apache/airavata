@@ -104,6 +104,11 @@ export default {
       );
     },
   },
+  watch: {
+    value() {
+      this.groupResourceProfileId = this.value;
+    },
+  },
 };
 </script>
 

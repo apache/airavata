@@ -34,6 +34,7 @@ import {
   getAppDeploymentQueues,
   getApplicationDeployments,
   getDefaultComputeResourceId,
+  getDefaultGroupResourceProfileId,
   getGroupResourceProfile,
 } from "./store";
 export default {
@@ -53,7 +54,6 @@ export default {
       applicationDeployments: [],
       appDeploymentQueues: [],
       groupResourceProfile: null,
-      defaultComputeResourceId: null,
     };
   },
   computed: {
@@ -178,17 +178,22 @@ export default {
     async updateGroupResourceProfileId(event) {
       const [groupResourceProfileId] = event.detail;
       this.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
-      this.emitValueChanged();
       await this.loadGroupResourceProfile();
       await this.loadApplicationDeployments();
-      // allowed queues may have changed
-      // TODO: reapply batchQueueResourcePolicy if batchQueueResourcePolicy
-    },
-    updateComputeResourceHostId(event) {
-      const [computeResourceHostId] = event.detail;
-      this.userConfigurationData.computationalResourceScheduling.resourceHostId = computeResourceHostId;
+      await this.applyGroupResourceProfile();
       this.emitValueChanged();
-      this.loadAppDeploymentQueues();
+    },
+    async updateComputeResourceHostId(event) {
+      const [computeResourceHostId] = event.detail;
+      if (
+        this.userConfigurationData.computationalResourceScheduling
+          .resourceHostId !== computeResourceHostId
+      ) {
+        this.userConfigurationData.computationalResourceScheduling.resourceHostId = computeResourceHostId;
+        await this.loadAppDeploymentQueues();
+        this.setDefaultQueue();
+        this.emitValueChanged();
+      }
     },
     updateComputationalResourceScheduling(event) {
       const [computationalResourceScheduling] = event.detail;
@@ -205,25 +210,45 @@ export default {
         this.applicationModuleId,
         this.groupResourceProfileId
       );
-      // Make sure that resource host id is in the list of app deployments
-      this.initializeResourceHostId();
     },
-    initializeResourceHostId() {
+    async initializeGroupResourceProfileId() {
+      this.userConfigurationData.groupResourceProfileId = await getDefaultGroupResourceProfileId();
+    },
+    async applyGroupResourceProfile() {
+      // Make sure that resource host id is in the list of app deployments
+      const computeResourceChanged = await this.initializeResourceHostId();
+      if (computeResourceChanged) {
+        await this.loadAppDeploymentQueues();
+        this.setDefaultQueue();
+      } else if (!this.queue) {
+        // allowed queues may have changed. If selected queue isn't in the list
+        // of allowed queues, reset to the default
+        this.setDefaultQueue();
+      } else {
+        // reapply batchQueueResourcePolicy maximums since they may have changed
+        this.applyBatchQueueResourcePolicy();
+      }
+    },
+    async initializeResourceHostId() {
       // if there isn't a selected compute resource or there is but it isn't in
       // the list of app deployments, set a default one
+      // Returns true if the resourceHostId changed
       if (
         !this.resourceHostId ||
         !this.computeResources.find((crid) => crid === this.resourceHostId)
       ) {
-        this.userConfigurationData.computationalResourceScheduling.resourceHostId = this.getDefaultResourceHostId();
-        this.emitValueChanged();
+        this.userConfigurationData.computationalResourceScheduling.resourceHostId = await this.getDefaultResourceHostId();
+        return true;
       }
+      return false;
     },
     async loadAppDeploymentQueues() {
       const applicationDeployment = this.applicationDeployment;
       this.appDeploymentQueues = await getAppDeploymentQueues(
         applicationDeployment.appDeploymentId
       );
+    },
+    setDefaultQueue() {
       // set to the default queue or the first one
       const defaultQueue = this.getDefaultQueue();
       if (defaultQueue) {
@@ -248,9 +273,7 @@ export default {
         crs.totalCPUCount = this.getDefaultCPUCount(queue);
         crs.nodeCount = this.getDefaultNodeCount(queue);
         crs.wallTimeLimit = this.getDefaultWalltime(queue);
-        if (this.maxMemory === 0) {
-          crs.totalPhysicalMemory = 0;
-        }
+        crs.totalPhysicalMemory = 0;
       } else {
         const crs = this.userConfigurationData.computationalResourceScheduling;
         crs.queueName = null;
@@ -259,7 +282,6 @@ export default {
         crs.wallTimeLimit = 0;
         crs.totalPhysicalMemory = 0;
       }
-      this.emitValueChanged();
     },
     getDefaultQueue() {
       const defaultQueue = this.queues.find((q) => q.isDefaultQueue);
@@ -301,32 +323,58 @@ export default {
       }
       return queue.defaultWalltime;
     },
+    applyBatchQueueResourcePolicy() {
+      if (this.batchQueueResourcePolicy) {
+        const crs = this.userConfigurationData.computationalResourceScheduling;
+        crs.totalCPUCount = Math.min(
+          crs.totalCPUCount,
+          this.batchQueueResourcePolicy.maxAllowedCores
+        );
+        crs.nodeCount = Math.min(
+          crs.nodeCount,
+          this.batchQueueResourcePolicy.maxAllowedNodes
+        );
+        crs.wallTimeLimit = Math.min(
+          crs.wallTimeLimit,
+          this.batchQueueResourcePolicy.maxAllowedWalltime
+        );
+      }
+    },
     cloneValue() {
       return this.value ? this.value.clone() : null;
     },
     async loadData() {
       if (this.groupResourceProfileId) {
-        this.loadGroupResourceProfile();
-        this.loadApplicationDeployments();
+        // TODO: handle user no longer has access to GRP
+        await this.loadGroupResourceProfile();
+        await this.loadApplicationDeployments();
+        await this.loadAppDeploymentQueues();
+        await this.applyGroupResourceProfile();
+        // If existing values are no longer selectable, the userConfigurationData
+        // may have changed
+        this.emitValueChanged();
+      } else {
+        await this.initializeGroupResourceProfileId();
+        if (this.groupResourceProfileId) {
+          await this.loadGroupResourceProfile();
+          await this.loadApplicationDeployments();
+          await this.applyGroupResourceProfile();
+          this.emitValueChanged();
+        }
       }
-      this.loadDefaultComputeResourceId();
-    },
-    async loadDefaultComputeResourceId() {
-      this.defaultComputeResourceId = await getDefaultComputeResourceId();
     },
     async loadGroupResourceProfile() {
       this.groupResourceProfile = await getGroupResourceProfile(
         this.groupResourceProfileId
       );
     },
-    getDefaultResourceHostId() {
+    async getDefaultResourceHostId() {
+      const defaultComputeResourceId = await getDefaultComputeResourceId();
       if (
-        this.defaultComputeResourceId &&
-        this.computeResources.find(
-          (crid) => crid === this.defaultComputeResourceId
-        )
+        defaultComputeResourceId &&
+        this.computeResources.find((crid) => crid === defaultComputeResourceId)
       ) {
-        return this.defaultComputeResourceId;
+        return defaultComputeResourceId;
       } else if (this.computeResources.length > 0) {
         // Just pick the first one
         return this.computeResources[0];
@@ -350,7 +398,8 @@ export default {
     },
     computeResources: "bindWebComponentProps",
     resourceHostId: "bindWebComponentProps",
-    queueName: "bindWebComponentProps",
+    "userConfigurationData.computationalResourceScheduling":
+      "bindWebComponentProps",
     queues: "bindWebComponentProps",
   },
 };
