@@ -17,6 +17,9 @@
     "wc:watch": "WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/vue-fontawesome": "^2.0.2",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "2.0.0-rc.26",
     "codemirror": "5.52.2",
