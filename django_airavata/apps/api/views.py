@@ -1539,7 +1539,11 @@ class UserStoragePathView(APIView):
 
     def post(self, request, path="/", format=None):
         if not user_storage.dir_exists(request, path):
-            user_storage.create_user_dir(request, path)
+            _, resource_path = user_storage.create_user_dir(request, path)
+            # create_user_dir may create the directory with a different name
+            # than requested, for example, converting spaces to underscores, so
+            # use as the path the path that is returned by create_user_dir
+            path = resource_path
 
         data_product = None
         # Handle direct upload
@@ -1595,6 +1599,7 @@ class UserStoragePathView(APIView):
             if uploaded is not None:
                 data['uploaded'] = uploaded
             data['parts'] = self._split_path(path)
+            data['path'] = path
             serializer = self.serializer_class(
                 data, context={'request': request})
             return Response(serializer.data)
@@ -1614,7 +1619,7 @@ class UserStoragePathView(APIView):
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
-        if head != "":
+        if head != path:
             return self._split_path(head) + [tail]
         elif tail != "":
             return [tail]
