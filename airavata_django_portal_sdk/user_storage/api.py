@@ -616,23 +616,27 @@ def get_experiment_dir(request, project_name=None, experiment_name=None, path=No
 def create_user_dir(request, path="", dir_names=(), create_unique=False, storage_resource_id=None):
     """
     Creates a directory, and intermediate directories if given, at the given
-    path in the user's storage.  `dir_names` should be either a list or tuple
-    of directories names to create at the given path.  If `create_unique` is
-    True and the given `dir_names` results in an already existing directory,
-    the `dir_names` will be modified (for example, random suffix added) until
-    it results in a name for a directory that doesn't exist and that
-    directory will get created.  If `create_unique` is False (the default)
-    and the directory already exists, no directory will be created, but the
-    directory resource information will be returned.  Returns a tuple of the
-    storage_resource_id and resource_path of the directory resource.
+    path in the user's storage.  `dir_names` should be either a list or tuple of
+    directories names to create at the given path.  If `create_unique` is True
+    and the given `dir_names` results in an already existing directory, the
+    `dir_names` will be modified (for example, random suffix added) until it
+    results in a name for a directory that doesn't exist and that directory will
+    get created.  If `create_unique` is False (the default) and the directory
+    already exists, no directory will be created, but the directory resource
+    information will be returned.  `dir_names` may also be modified to sanitize
+    them for file paths, for example, converting spaces to underscores.  Returns
+    a tuple of the storage_resource_id and resource_path of the directory
+    resource.
     """
     if _is_remote_api():
         logger.debug(f"path={path}")
-        _call_remote_api(request,
-                         "/user-storage/~/{path}",
-                         path_params={"path": path},
-                         method="post")
-        return
+        resp = _call_remote_api(request,
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
+                                method="post")
+        path = resp.json()['path']
+        # FIXME: should use the storage_resource_id returned from remote API call
+        return storage_resource_id, path
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
     # For backwards compatibility, manufacture the dir_names array as needed
     if len(dir_names) == 0:
