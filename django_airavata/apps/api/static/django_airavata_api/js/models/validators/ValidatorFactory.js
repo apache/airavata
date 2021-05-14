@@ -15,7 +15,7 @@ export default class ValidatorFactory {
       let validator = new validatorClass(validation);
       let errorMessage = validator.validate(value);
       if (errorMessage !== null) {
-        errorMessages.push(errorMessage);
+        errorMessages.push(Promise.resolve(errorMessage));
       }
     });
     return errorMessages;
