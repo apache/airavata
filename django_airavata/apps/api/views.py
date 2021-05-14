@@ -1535,9 +1535,12 @@ class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer
 
     def get(self, request, path="/", format=None):
+        # AIRAVATA-3460 Allow passing path as a query parameter instead
+        path = request.GET.get('path', path)
         return self._create_response(request, path)
 
     def post(self, request, path="/", format=None):
+        path = request.POST.get('path', path)
         if not user_storage.dir_exists(request, path):
             _, resource_path = user_storage.create_user_dir(request, path)
             # create_user_dir may create the directory with a different name
@@ -1564,6 +1567,7 @@ class UserStoragePathView(APIView):
 
     # Accept wither to replace file or to replace file content text.
     def put(self, request, path="/", format=None):
+        path = request.POST.get('path', path)
         # Replace the file if the request has a file upload.
         if 'file' in request.FILES:
             self.delete(request=request, path=path, format=format)
@@ -1581,6 +1585,7 @@ class UserStoragePathView(APIView):
         return self._create_response(request=request, path=path)
 
     def delete(self, request, path="/", format=None):
+        path = request.POST.get('path', path)
         if user_storage.dir_exists(request, path):
             user_storage.delete_dir(request, path)
         else:
