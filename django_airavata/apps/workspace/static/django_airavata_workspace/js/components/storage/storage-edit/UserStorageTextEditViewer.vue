@@ -1,12 +1,9 @@
 <template>
   <div>
     <div class="user-storage-file-edit-viewer-status">
-      <div
-        class="user-storage-file-edit-viewer-status-message"
-        v-if="editAvailable"
-      >
-        <span v-if="saved">All the changes are saved.</span>
-        <span v-if="!saved">Changes are not saved.</span>
+      <div class="user-storage-file-edit-viewer-status-message">
+        <span v-if="editAvailable && saved">All the changes are saved.</span>
+        <span v-if="editAvailable && !saved">Changes are not saved.</span>
       </div>
       <div class="user-storage-file-edit-viewer-status-actions">
         <user-storage-download-button
@@ -21,8 +18,8 @@
         >
       </div>
     </div>
-    <div style="width: 100%" ref="editor"></div>
-    <div class="edit-not-available" v-if="!editAvailable">
+    <div style="width: 100%" ref="editor" v-if="editAvailable"></div>
+    <div class="user-storage-file-edit-viewer-no-preview" v-else>
       Inline edit not available. Click the <strong>Download</strong> button to
       download the file.
     </div>
