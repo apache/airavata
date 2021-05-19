@@ -546,11 +546,11 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
 
     experiment = request.airavata_client.getExperiment(
         request.authz_token, experiment_id)
-    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
+    backend = get_user_storage_provider(request,
+                                        storage_resource_id=storage_resource_id,
+                                        owner_username=experiment.userName)
     exp_data_dir = experiment.userConfigurationData.experimentDataDir
     exp_data_path = os.path.join(exp_data_dir, path)
-    # Implement username override with exp_owner
-    # exp_owner = experiment.userName
     if backend.exists(exp_data_path):
         directories, files = backend.get_metadata(exp_data_path)
         for directory in directories:
@@ -561,7 +561,7 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
         for file in files:
             data_product_uri = _get_data_product_uri(request, file['resource_path'],
                                                      storage_resource_id=backend.resource_id,
-                                                     backend=backend)
+                                                     backend=backend, owner=experiment.userName)
 
             data_product = request.airavata_client.getDataProduct(
                 request.authz_token, data_product_uri)
@@ -597,9 +597,9 @@ def experiment_dir_exists(request, experiment_id, path="", storage_resource_id=N
     exp_data_path = experiment.userConfigurationData.experimentDataDir
     if exp_data_path is None:
         return False
-    # Implement username overide with exp_owner
-    # exp_owner = experiment.userName
-    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
+    backend = get_user_storage_provider(request,
+                                        storage_resource_id=storage_resource_id,
+                                        owner_username=experiment.userName)
     return backend.exists(exp_data_path)
 
 
