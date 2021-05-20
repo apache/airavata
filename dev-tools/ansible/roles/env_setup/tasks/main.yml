@@ -71,19 +71,6 @@
   become: yes
   when: ansible_os_family == "Debian"
 
-- name: Allow subnets to access zabbix
-  firewalld:
-    zone: public
-    permanent: yes
-    state: enabled
-    immediate: yes
-    rich_rule: rule family=ipv4 source address="{{ item }}" port port=10050 protocol=tcp accept
-  with_items:
-    - "{{ monitoring_subnets }}"
-  become: yes
-  become_user: root
-  when: ansible_os_family == "RedHat"
-
 # Automatic security updates installation
 
 - name: Install yum-cron, yum-utils (RedHat)
@@ -98,6 +85,7 @@
   copy:
     src: yum-cron.conf
     dest: /etc/yum/yum-cron.conf
+    backup: yes
   become: yes
   when: ansible_os_family == "RedHat"
 
