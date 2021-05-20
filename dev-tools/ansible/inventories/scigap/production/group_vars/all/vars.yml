@@ -229,3 +229,6 @@ rabbitmq_subnets: "{{ iu_subnets }}"
 db_subnets: "{{ iu_subnets }}"
 zabbix_subnets: "{{ iu_subnets }}"
 monitoring_subnets: "{{ iu_subnets }}"
+
+# Zabbix
+zabbix_server: "rt-watch.uits.indiana.edu"
