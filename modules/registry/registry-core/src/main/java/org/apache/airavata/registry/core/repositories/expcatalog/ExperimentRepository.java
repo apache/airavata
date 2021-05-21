@@ -113,7 +113,9 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         experimentStatus.setState(ExperimentState.CREATED);
         experimentStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         experimentModel.addToExperimentStatus(experimentStatus);
-        experimentModel.setExperimentId(AiravataUtils.getId(experimentModel.getExperimentName()));
+        String expName = experimentModel.getExperimentName();
+        // This is to avoid overflow of experiment id size. Total experiment id length is <= 50 + UUID
+        experimentModel.setExperimentId(AiravataUtils.getId(expName.substring(0, Math.min(expName.length(), 50))));
 
         return saveExperimentModelData(experimentModel);
     }
