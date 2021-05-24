@@ -1,27 +1,26 @@
 import logging
 import os
 
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect
 from django.views.decorators.gzip import gzip_page
+from rest_framework.decorators import api_view
 
 from airavata_django_portal_sdk import user_storage
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@api_view()
 def download(request):
     data_product_uri = request.GET.get('data-product-uri', '')
     download_url = user_storage.get_download_url(request, data_product_uri=data_product_uri)
     return redirect(download_url)
 
 
-# TODO: moving this view out of REST API means losing access token based authentication
 @gzip_page
-@login_required
+@api_view()
 def download_file(request):
     data_product_uri = request.GET.get('data-product-uri', '')
     force_download = 'download' in request.GET

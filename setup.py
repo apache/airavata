@@ -23,8 +23,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         "django",
+        "django-rest-framework",
         # Installed from git repo; see requirements.txt for details
-        "airavata-python-sdk"
+        "airavata-python-sdk",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",

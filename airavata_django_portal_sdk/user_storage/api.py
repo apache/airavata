@@ -222,7 +222,8 @@ def open_file(request, data_product=None, data_product_uri=None):
         resp = _call_remote_api(
             request,
             "/download",
-            params={'data-product-uri': data_product.productUri})
+            params={'data-product-uri': data_product.productUri},
+            base_url="/sdk")
         file = io.BytesIO(resp.content)
         disposition = resp.headers['Content-Disposition']
         disp_value, disp_params = cgi.parse_header(disposition)
@@ -846,6 +847,7 @@ def _call_remote_api(
         path_params=None,
         method="get",
         raise_for_status=True,
+        base_url="/api",
         **kwargs):
 
     headers = {
@@ -856,9 +858,13 @@ def _call_remote_api(
             encoded_path_params[pk] = quote(pv)
     encoded_path = path.format(**encoded_path_params)
     logger.debug(f"encoded_path={encoded_path}")
+    remote_api_url = settings.GATEWAY_DATA_STORE_REMOTE_API
+    if remote_api_url.endswith("/api"):
+        warnings.warn(f"Set GATEWAY_DATA_STORE_REMOTE_API to \"{remote_api_url}\". /api is no longer needed.", DeprecationWarning)
+        remote_api_url = remote_api_url[0:remote_api_url.rfind("/api")]
     r = requests.request(
         method,
-        f'{settings.GATEWAY_DATA_STORE_REMOTE_API}{encoded_path}',
+        f'{remote_api_url}{base_url}{encoded_path}',
         headers=headers,
         **kwargs,
     )
