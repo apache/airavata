@@ -223,7 +223,9 @@ def open_file(request, data_product=None, data_product_uri=None):
             request,
             "/download",
             params={'data-product-uri': data_product.productUri},
-            base_url="/sdk")
+            # TODO: once /sdk/download is integrated with airavata-django-portal, this can be updated to
+            # base_url="/sdk"
+            base_url="/api")
         file = io.BytesIO(resp.content)
         disposition = resp.headers['Content-Disposition']
         disp_value, disp_params = cgi.parse_header(disposition)
