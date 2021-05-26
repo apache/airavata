@@ -2,17 +2,21 @@
   <form v-if="experiment" @submit.prevent="onSubmit">
     <div @input="updateExperimentName">
       <slot name="experiment-name">
-        <input
-          type="text"
-          name="experiment-name"
-          :value="experiment.experimentName"
-        />
+        <b-form-group label="Experiment Name" label-for="experiment-name">
+          <b-form-input
+            type="text"
+            name="experiment-name"
+            :value="experiment.experimentName"
+            required
+          >
+          </b-form-input>
+        </b-form-group>
       </slot>
     </div>
     <div @input="updateProjectId">
       <!-- TODO: define this as a native slot? -->
       <slot name="experiment-project">
-        <adpf-project-selector :value="experiment.projectId"/>
+        <adpf-project-selector :value="experiment.projectId" />
       </slot>
     </div>
     <template v-for="input in experiment.experimentInputs">
@@ -21,7 +25,7 @@
         :key="input.name"
         @input="updateInputValue(input.name, $event.target.value)"
       >
-      <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
+        <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
     <div @input="updateUserConfigurationData">
@@ -42,6 +46,10 @@ import {
   saveExperiment,
   getExperiment,
 } from "./store";
+
+import Vue from "vue";
+import { BootstrapVue } from "bootstrap-vue";
+Vue.use(BootstrapVue);
 
 export default {
   props: {
@@ -97,7 +105,9 @@ export default {
       this.experiment.experimentName = event.target.value;
     },
     updateInputValue(inputName, value) {
-      const experimentInput = this.experiment.experimentInputs.find(i => i.name === inputName);
+      const experimentInput = this.experiment.experimentInputs.find(
+        (i) => i.name === inputName
+      );
       experimentInput.value = value;
     },
     updateProjectId(event) {
