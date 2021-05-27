@@ -1,4 +1,3 @@
----
 # inventory file : scigap develop deployment
 
 [zookeeper]
