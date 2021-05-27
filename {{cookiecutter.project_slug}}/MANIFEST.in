@@ -1,0 +1,2 @@
+recursive-include {{ cookiecutter.project_slug }}/static *
+recursive-include {{ cookiecutter.project_slug }}/templates *
