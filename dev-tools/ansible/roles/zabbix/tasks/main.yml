@@ -63,4 +63,11 @@
   become: yes
   become_user: root
 
+- name: copy check-domains.sh script (Zabbix remote command)
+  copy:
+    src: check-domains.sh
+    dest: /usr/local/bin/check-domains.sh
+    mode: 0755
+  become: yes
+  become_user: root
 ...
