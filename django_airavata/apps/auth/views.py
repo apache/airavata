@@ -18,6 +18,7 @@ from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from django_airavata.apps.auth import serializers
 
@@ -553,41 +554,23 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer._send_email_verification_link(request, pending_email_change)
         return JsonResponse({})
 
+    @action(methods=['post'], detail=True)
+    @atomic
+    def verify_email_change(self, request, pk=None):
+        user = self.get_object()
+        code = request.data['code']
 
-@login_required
-@atomic
-def verify_email_change(request, code):
-    try:
-        pending_email_change = models.PendingEmailChange.objects.get(user=request.user, verification_code=code)
+        pending_email_change = models.PendingEmailChange.objects.get(user=user, verification_code=code)
         pending_email_change.verified = True
         pending_email_change.save()
-        request.user.email = pending_email_change.email_address
-        request.user.save()
+        user.email = pending_email_change.email_address
+        user.save()
+        user.refresh_from_db()
 
         user_profile_client = request.profile_service['user_profile']
         airavata_user_profile = user_profile_client.getUserProfileById(
-            request.authz_token, request.user.username, settings.GATEWAY_ID)
+            request.authz_token, user.username, settings.GATEWAY_ID)
         airavata_user_profile.emails = [pending_email_change.email_address]
         user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
-
-        # TODO: add success message
-        return redirect(reverse('django_airavata_auth:user_profile'))
-    except ObjectDoesNotExist:
-        # if doesn't exist, give user a form where they can enter their
-        # username to resend verification code
-        logger.exception("PendingEmailChange object doesn't exist for "
-                         "code {}".format(code))
-        # TODO: add error message
-        # messages.error(
-        #     request,
-        #     "Email verification failed. Please enter your username and we "
-        #     "will send you another email verification link.")
-        return redirect(reverse('django_airavata_auth:user_profile'))
-    except Exception:
-        logger.exception("Email change verification processing failed!")
-        # TODO: add error message
-        # messages.error(
-        #     request,
-        #     "Email verification failed. Please try clicking the email "
-        #     "verification link again later.")
-        return redirect(reverse('django_airavata_auth:user_profile'))
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)

@@ -19,9 +19,16 @@ export default {
   components: { UserProfileEditor },
   name: "user-profile-container",
   created() {
-    services.UserService.current().then((user) => {
-      this.user = user;
-    });
+    services.UserService.current()
+      .then((user) => {
+        this.user = user;
+      })
+      .then(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        if (queryParams.has("code")) {
+          this.verifyEmailChange(queryParams.get("code"));
+        }
+      });
   },
   data() {
     return {
@@ -48,6 +55,24 @@ export default {
             duration: 5,
           })
         );
+      });
+    },
+    verifyEmailChange(code) {
+      services.UserService.verifyEmailChange({
+        lookup: this.user.id,
+        data: { code: code },
+      }).then((user) => {
+        // User now updated with email change
+        this.user = user;
+        notifications.NotificationList.add(
+          new notifications.Notification({
+            type: "SUCCESS",
+            message: "Email address verified and updated",
+            duration: 5,
+          })
+        );
+        // Update URL, removing the code from the query string
+        window.history.replaceState({}, '', '/auth/user-profile/');
       });
     },
   },

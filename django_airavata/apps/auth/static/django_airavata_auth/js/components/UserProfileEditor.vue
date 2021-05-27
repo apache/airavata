@@ -46,6 +46,11 @@ export default {
       return JSON.parse(JSON.stringify(this.value));
     },
   },
+  watch: {
+    value() {
+      this.user = this.cloneValue();
+    }
+  }
 };
 </script>
 

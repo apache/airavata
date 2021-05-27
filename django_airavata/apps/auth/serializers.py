@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -60,10 +61,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def _send_email_verification_link(self, request, pending_email_change):
 
-        verification_uri = request.build_absolute_uri(
-            reverse(
-                'django_airavata_auth:verify_email_change', kwargs={
-                    'code': pending_email_change.verification_code}))
+        verification_uri = (
+            request.build_absolute_uri(reverse('django_airavata_auth:user_profile')) +
+            '?' + urlencode({"code": pending_email_change.verification_code}))
         logger.debug(
             "verification_uri={}".format(verification_uri))
 

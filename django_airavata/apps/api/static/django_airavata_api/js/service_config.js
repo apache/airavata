@@ -382,6 +382,14 @@ export default {
         url: "/auth/users/<lookup>/resend_email_verification/",
         requestType: "post",
       },
+      verifyEmailChange: {
+        url: "/auth/users/<lookup>/verify_email_change/",
+        requestType: "post",
+        bodyParams: {
+          name: "data",
+        },
+        modelClass: User,
+      },
     },
     modelClass: User,
   },
