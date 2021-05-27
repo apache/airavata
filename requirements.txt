@@ -1,5 +1,5 @@
 # Pin these dependencies
-Django>=2.2,<2.3
+Django==2.2.23
 requests==2.13.0
 requests-oauthlib==0.7.0
 thrift==0.10.0
@@ -7,7 +7,7 @@ thrift_connector==0.24
 djangorestframework==3.10.3
 django-webpack-loader==0.6.0
 
-wagtail>=2.7,<2.8
+wagtail==2.9.3
 wagtailfontawesome==1.2.1
 
 jupyter==1.0.0

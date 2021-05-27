@@ -128,7 +128,6 @@ MIDDLEWARE = [
     # profile_service_client
     'django_airavata.apps.auth.middleware.gateway_groups_middleware',
     # Wagtail related middleware
-    'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
