@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'wagtailfontawesome',
+    'wagtail_draftail_anchors',
 
     # wagtail custom apps
     'django_airavata.wagtailapps.base.apps.BaseConfig',
