@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/usr/bin/needs-restarting -r > /dev/null
+echo $? > /etc/zabbix/needs-restarting
+
+exit 0
