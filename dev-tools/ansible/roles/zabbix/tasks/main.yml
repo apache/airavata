@@ -1,0 +1,73 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+- name: Install Zabbix yum repository
+  yum: name=https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-1.el7.noarch.rpm state=present
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Install Zabbix Agent
+  yum: name=zabbix-agent state=present
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Copy Zabbix configuration
+  template: src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf backup=yes
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Start Zabbix Agent
+  service: name=zabbix-agent state=started enabled=yes
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Allow subnets to access zabbix
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port=10050 protocol=tcp accept
+  with_items:
+    - "{{ zabbix_subnets }}"
+  become: yes
+  become_user: root
+  when: ansible_os_family == "RedHat"
+
+# This is used to define an item and trigger to check if a host needs to be
+# restarted in order to apply security updates
+- name: Install check-needs-restarting.cron script
+  copy:
+    src: check-needs-restarting.cron
+    dest: /etc/cron.daily/check-needs-restarting.cron
+    mode: 0755
+  become: yes
+  become_user: root
+
+- name: copy check-domains.sh script (Zabbix remote command)
+  copy:
+    src: check-domains.sh
+    dest: /usr/local/bin/check-domains.sh
+    mode: 0755
+  become: yes
+  become_user: root
+...
