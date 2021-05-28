@@ -1,0 +1,9 @@
+{
+  "project_name": "My Custom Output View",
+  "project_slug": "{{ cookiecutter.project_name | slugify(separator='_')}}",
+  "project_short_description": "{{ cookiecutter.project_name }} generates data for an output view in the Airavata Django Portal",
+  "output_view_provider_class_name": "{{ cookiecutter.project_name | title | replace(' ', '') }}Provider",
+  "output_views_directory_name": "output_views",
+  "output_view_display_type": ["image", "link", "html"],
+  "number_of_output_files": ["single (URI)", "multiple (URI_COLLECTION)"]
+}
