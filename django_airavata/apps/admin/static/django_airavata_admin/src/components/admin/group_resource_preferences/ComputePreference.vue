@@ -240,6 +240,9 @@ export default {
     } else if (!this.computeResourcePolicy) {
       this.createDefaultComputeResourcePolicy(computeResourcePromise);
     }
+    if (!this.id){
+      this.userHasWriteAccess=true;
+    }
     this.$on("input", this.validate);
     
   },
