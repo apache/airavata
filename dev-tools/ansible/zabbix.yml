@@ -22,6 +22,7 @@
 - hosts: all
   name: install/setup zabbix on all servers
   roles:
+    - role: env_setup
     - role: zabbix
 
 ...
