@@ -4,6 +4,9 @@ import io
 from django.template.loader import render_to_string
 {% endif %}
 
+from airavata_django_portal_sdk import user_storage
+
+
 class {{ cookiecutter.output_view_provider_class_name }}:
     display_type = "{{ cookiecutter.output_view_display_type }}"
     # As a performance optimization, the output view provider can be invoked
@@ -14,6 +17,32 @@ class {{ cookiecutter.output_view_provider_class_name }}:
     name = "{{ cookiecutter.project_name }}"
 
     def generate_data(self, request, experiment_output, experiment,{% if "single" in cookiecutter.number_of_output_files %} output_file=None,{% else %} output_files=None,{% endif %} **kwargs):
+
+        # Use `output_file` or `output_files` to read from the output file(s).
+        # See https://docs.python.org/3/tutorial/inputoutput.html#methods-of-file-objects
+        # for how to read from file objects. For example, to read the entire file, use:
+        #
+        # entire_file = output_file.read()
+
+
+        # Example code: user_storage module
+        # To find other files in the experiment data directory, use the
+        # user_storage module of the airavata_django_portal_sdk. You can use the
+        # following to list the files and directories in the experiment data
+        # directory:
+        #
+        # dirs, files = user_storage.list_experiment_dir(request, experiment.experimentId)
+        #
+        # The 'files' variable is a list of dictionaries, each one will have a
+        # 'data-product-uri' key. Use the data-product-uri to open the file:
+        #
+        # data_product_uri = files[0]['data-product-uri']
+        # data = user_storage.open_file(request, data_product_uri=data_product_uri)
+        #
+        # See https://airavata-django-portal-sdk.readthedocs.io/en/latest/#module-user_storage
+        # for more information.
+
+
     {% if cookiecutter.output_view_display_type == "link" %}
         label = "Link to Google"
         url = "https://google.com"
