@@ -1,6 +1,8 @@
 import os
 import sys
 
+from setuptools.config import read_configuration
+
 
 def find_setup_cfg_file():
     currdir = os.getcwd()
@@ -41,9 +43,15 @@ def find_last_line_of_entry_points(setup_cfg_lines):
     # Return None if we couldn't find it
     return entry_points_end if entry_points_end > 0 else None
 
+def get_django_app_package_name(setup_cfg_file):
+    setup_cfg_dict = read_configuration(setup_cfg_file)
+    entry_point = setup_cfg_dict['options']['entry_points']['airavata.djangoapp'][0]
+    django_app_package_name = entry_point.split('=')[0].strip()
+    return django_app_package_name
+
 def insert_output_view_provider(setup_cfg_lines, index, insert_entry_point_group=False):
     updated_lines = setup_cfg_lines.copy()
-    updated_lines.insert(index+1, "    {{cookiecutter.project_slug}} = FIXME.{{cookiecutter.output_views_directory_name}}:{{cookiecutter.output_view_provider_class_name}}" + os.linesep)
+    updated_lines.insert(index+1, "    {{cookiecutter.project_slug}} = {{cookiecutter.custom_django_app_module_name}}.{{cookiecutter.output_views_directory_name}}:{{cookiecutter.output_view_provider_class_name}}" + os.linesep)
     if insert_entry_point_group:
         updated_lines.insert(index+1, "airavata.output_view_providers =" + os.linesep)
     return updated_lines
