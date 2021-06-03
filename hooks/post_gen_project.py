@@ -51,7 +51,7 @@ def get_django_app_package_name(setup_cfg_file):
 
 def insert_output_view_provider(setup_cfg_lines, index, insert_entry_point_group=False):
     updated_lines = setup_cfg_lines.copy()
-    updated_lines.insert(index+1, "    {{cookiecutter.project_slug}} = {{cookiecutter.custom_django_app_module_name}}.{{cookiecutter.output_views_directory_name}}:{{cookiecutter.output_view_provider_class_name}}" + os.linesep)
+    updated_lines.insert(index+1, "    {{cookiecutter.project_slug}} = {{cookiecutter.custom_django_app_module_name}}.{{cookiecutter.output_views_directory_name}}.{{cookiecutter.project_slug}}:{{cookiecutter.output_view_provider_class_name}}" + os.linesep)
     if insert_entry_point_group:
         updated_lines.insert(index+1, "airavata.output_view_providers =" + os.linesep)
     return updated_lines
