@@ -1,3 +1,4 @@
+from django.conf import settings
 {% if cookiecutter.output_view_display_type == "image" %}
 import io
 {% elif cookiecutter.output_view_display_type == "html" %}
