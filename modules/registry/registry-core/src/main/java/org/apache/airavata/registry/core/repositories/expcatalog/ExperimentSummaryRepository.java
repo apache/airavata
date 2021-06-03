@@ -37,9 +37,13 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.persistence.Query;
 
 public class ExperimentSummaryRepository extends ExpCatAbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
@@ -202,44 +206,58 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
             }
 
+            int allExperimentsCount = getExperimentStatisticsCountForState(null, gatewayId, fromDate, toDate,
+                    userName, applicationName, resourceHostName, accessibleExperimentIds);
             List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(null, gatewayId,
                     fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
-            experimentStatistics.setAllExperimentCount(allExperiments.size());
+            experimentStatistics.setAllExperimentCount(allExperimentsCount);
             experimentStatistics.setAllExperiments(allExperiments);
 
-            List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(ExperimentState.CREATED, gatewayId,
+            List<ExperimentState> createdStates = Arrays.asList(ExperimentState.CREATED, ExperimentState.VALIDATED);
+            int createdExperimentsCount = getExperimentStatisticsCountForState(
+                    createdStates, gatewayId, fromDate, toDate,
+                    userName, applicationName, resourceHostName, accessibleExperimentIds);
+            List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(createdStates, gatewayId,
                     fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
-            createdExperiments.addAll(getExperimentStatisticsForState(ExperimentState.VALIDATED, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
-            experimentStatistics.setCreatedExperimentCount(createdExperiments.size());
+            experimentStatistics.setCreatedExperimentCount(createdExperimentsCount);
             experimentStatistics.setCreatedExperiments(createdExperiments);
 
-            List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(ExperimentState.EXECUTING, gatewayId,
+            List<ExperimentState> runningStates = Arrays.asList(ExperimentState.EXECUTING, ExperimentState.SCHEDULED, ExperimentState.LAUNCHED);
+            int runningExperimentsCount = getExperimentStatisticsCountForState(
+                    runningStates, gatewayId,
                     fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
-            runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId, fromDate,
-                    toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
-            runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId, fromDate,
-                    toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
-            experimentStatistics.setRunningExperimentCount(runningExperiments.size());
+            List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(runningStates, gatewayId,
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
+            experimentStatistics.setRunningExperimentCount(runningExperimentsCount);
             experimentStatistics.setRunningExperiments(runningExperiments);
 
+            List<ExperimentState> completedStates = Arrays.asList(ExperimentState.COMPLETED);
+            int completedExperimentsCount = getExperimentStatisticsCountForState(
+                    completedStates, gatewayId,
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
             List<ExperimentSummaryModel> completedExperiments = getExperimentStatisticsForState(
-                    ExperimentState.COMPLETED, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
+                    completedStates, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
                     accessibleExperimentIds);
-            experimentStatistics.setCompletedExperimentCount(completedExperiments.size());
+            experimentStatistics.setCompletedExperimentCount(completedExperimentsCount);
             experimentStatistics.setCompletedExperiments(completedExperiments);
 
-            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED,
+            List<ExperimentState> failedStates = Arrays.asList(ExperimentState.FAILED);
+            int failedExperimentsCount = getExperimentStatisticsCountForState(
+                    failedStates, gatewayId,
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
+            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(failedStates,
                     gatewayId, fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
-            experimentStatistics.setFailedExperimentCount(failedExperiments.size());
+            experimentStatistics.setFailedExperimentCount(failedExperimentsCount);
             experimentStatistics.setFailedExperiments(failedExperiments);
 
+            List<ExperimentState> cancelledStates = Arrays.asList(ExperimentState.CANCELED, ExperimentState.CANCELING);
+            int cancelledExperimentsCount = getExperimentStatisticsCountForState(
+                    cancelledStates, gatewayId,
+                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
             List<ExperimentSummaryModel> cancelledExperiments = getExperimentStatisticsForState(
-                    ExperimentState.CANCELED, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
+                    cancelledStates, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
                     accessibleExperimentIds);
-            cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId, fromDate,
-                    toDate, userName, applicationName, resourceHostName, accessibleExperimentIds));
-            experimentStatistics.setCancelledExperimentCount(cancelledExperiments.size());
+            experimentStatistics.setCancelledExperimentCount(cancelledExperimentsCount);
             experimentStatistics.setCancelledExperiments(cancelledExperiments);
 
             return experimentStatistics;
@@ -252,22 +270,62 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
     }
 
-    protected List<ExperimentSummaryModel> getExperimentStatisticsForState(ExperimentState experimentState, String gatewayId, Timestamp fromDate, Timestamp toDate,
+    protected int getExperimentStatisticsCountForState(List<ExperimentState> experimentStates, String gatewayId, Timestamp fromDate, Timestamp toDate,
+                                                                           String userName, String applicationName, String resourceHostName, List<String> experimentIds) throws RegistryException, IllegalArgumentException {
+        String query = "SELECT count(ES.experimentId) FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+        Map<String, Object> queryParameters = new HashMap<>();
+
+        String finalQuery = filterExperimentStatisticsQuery(query, queryParameters, experimentStates, gatewayId, 
+            fromDate, toDate, userName, applicationName, resourceHostName, experimentIds);
+        
+        if (finalQuery == null) {
+            return 0;
+        }
+
+        long count = (long) execute(entityManager -> {
+            Query jpaQuery = entityManager.createQuery(finalQuery);
+            for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
+
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
+            return jpaQuery.getSingleResult();
+        });
+        return Long.valueOf(count).intValue();
+    }
+
+    protected List<ExperimentSummaryModel> getExperimentStatisticsForState(List<ExperimentState> experimentStates, String gatewayId, Timestamp fromDate, Timestamp toDate,
                                                                            String userName, String applicationName, String resourceHostName, List<String> experimentIds) throws RegistryException, IllegalArgumentException {
 
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
-        if (experimentState != null) {
-            logger.debug("Filter Experiments by Experiment State");
-            queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, experimentState);
-            query += "ES.experimentStatus LIKE :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
+        query = filterExperimentStatisticsQuery(query, queryParameters, experimentStates, gatewayId, 
+            fromDate, toDate, userName, applicationName, resourceHostName, experimentIds);
+
+        if (query == null) {
+            return new ArrayList<ExperimentSummaryModel>();
+        }
+
+        query += "ORDER BY ES.creationTime DESC";
+        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, Integer.MAX_VALUE, 0, queryParameters);
+        return experimentSummaryModelList;
+    }
+
+    protected String filterExperimentStatisticsQuery(String query, Map<String, Object> queryParameters, 
+            List<ExperimentState> experimentStates, String gatewayId, Timestamp fromDate, 
+            Timestamp toDate, String userName, String applicationName, String resourceHostName, List<String> experimentIds) {
+
+        if (experimentStates != null) {
+            logger.debug("Filter Experiments by Experiment States");
+            List<String> statesAsStrings = experimentStates.stream().map(s -> s.toString()).collect(Collectors.toList());
+            queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, statesAsStrings);
+            query += "ES.experimentStatus IN :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
         }
 
         if (gatewayId != null) {
             logger.debug("Filter Experiments by GatewayId");
             queryParameters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
-            query += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
+            query += "ES.gatewayId = :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
         }
 
         if (fromDate != null && toDate != null) {
@@ -283,13 +341,13 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (userName != null) {
             logger.debug("Filter Experiments by UserName");
             queryParameters.put(DBConstants.Experiment.USER_NAME, userName);
-            query += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
+            query += "ES.userName = :" + DBConstants.Experiment.USER_NAME + " AND ";
         }
 
         if (applicationName != null) {
             logger.debug("Filter Experiments by ApplicationName");
             queryParameters.put(DBConstants.Experiment.EXECUTION_ID, applicationName);
-            query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
+            query += "ES.executionId = :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
         }
 
         if (experimentIds != null) {
@@ -298,14 +356,14 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                 queryParameters.put(DBConstants.Experiment.EXPERIMENT_ID, experimentIds);
                 query += "ES.experimentId IN :" + DBConstants.Experiment.EXPERIMENT_ID + " AND ";
             } else {
-                return new ArrayList<ExperimentSummaryModel>();
+                return null;
             }
         }
 
         if (resourceHostName != null) {
             logger.debug("Filter Experiments by ResourceHostName");
             queryParameters.put(DBConstants.Experiment.RESOURCE_HOST_ID, resourceHostName);
-            query += "ES.resourceHostId LIKE :" + DBConstants.Experiment.RESOURCE_HOST_ID + " ";
+            query += "ES.resourceHostId = :" + DBConstants.Experiment.RESOURCE_HOST_ID + " ";
         }
 
         else {
@@ -313,9 +371,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             query = query.substring(0, query.length() - 4);
         }
 
-        query += "ORDER BY ES.creationTime DESC";
-        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, Integer.MAX_VALUE, 0, queryParameters);
-        return experimentSummaryModelList;
+        return query;
     }
 
 }
