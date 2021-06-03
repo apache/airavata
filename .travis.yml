@@ -3,9 +3,11 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 install:
   - nvm install
   - nvm use
+  - pip install --upgrade pip setuptools wheel
   - pip install -r requirements-dev.txt
 script:
   - cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
