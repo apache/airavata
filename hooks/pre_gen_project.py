@@ -24,3 +24,8 @@ if not os.path.isfile(os.path.join(django_app_module_dir, "apps.py")):
     if candidate is not None:
         print(f"Did you mean '{candidate}' instead of '{{cookiecutter.custom_django_app_module_name}}'?", file=sys.stderr)
     sys.exit(1)
+
+# Make sure that there isn't an output_views isn't a file
+if os.path.isfile(os.path.join(django_app_module_dir, "{{cookiecutter.output_views_directory_name}}.py")):
+    print(f"ERROR: {os.path.join(django_app_module_dir, '{{cookiecutter.output_views_directory_name}}.py')} is a file. Convert to a module directory. See the README: https://github.com/machristie/cookiecutter-airavata-django-output-view.")
+    sys.exit(1)

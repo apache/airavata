@@ -27,3 +27,16 @@ Then run the following:
 When prompted for the name of the `custom_django_app_module_name`, give it the
 name of your Airavata Django app. Keeping with the example, you would supply
 `test_django_app`.
+
+## Converting output_views.py to a module directory
+
+If your Django app has an output_views.py file you'll get an error since this
+cookiecutter assumes that `output_views` is a module directory. To convert it to
+module directory:
+
+1. Create an `output_views/` directory in the same directory where your
+   output_views.py file lives.
+2. Either, rename your `output_views.py` file to `output_views/__init__.py`
+3. Or, create an empty `output_views/__init__.py` file and move/rename as
+   appropriate your `output_views.py` file to a file in the `output_views/`
+   directory. You'll need to update the entry_points in setup.cfg.
