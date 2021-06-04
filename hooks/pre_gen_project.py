@@ -22,7 +22,7 @@ if not os.path.isfile(os.path.join(django_app_module_dir, "apps.py")):
             break
     print(f"ERROR: {{cookiecutter.custom_django_app_module_name}} doesn't look like a Django app module", file=sys.stderr)
     if candidate is not None:
-        print(f"Did you mean '{candidate}' instead of '{{cookiecutter.custom_django_app_module_name}}'?", file=sys.stderr)
+        print(f"For custom_django_app_module_name, did you mean '{candidate}' instead of '{{cookiecutter.custom_django_app_module_name}}'?", file=sys.stderr)
     sys.exit(1)
 
 # Make sure that there isn't an output_views isn't a file
