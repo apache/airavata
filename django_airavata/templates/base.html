@@ -206,7 +206,10 @@
             {{ request.user.first_name }} {{ request.user.last_name }}
           </a>
           <div class=dropdown-menu aria-labelledby=dropdownMenuButton>
-            {% comment %} <a class=dropdown-item href=#>User settings</a> {% endcomment %}
+            <a class=dropdown-item href="{% url 'django_airavata_auth:user_profile' %}">
+              User Settings
+              <i class="fa fa-user-cog"></i>
+            </a>
             <a class=dropdown-item href="{% url 'django_airavata_auth:logout' %}">
               Logout <i class="fa fa-sign-out-alt"></i>
             </a>
