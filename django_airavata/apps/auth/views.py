@@ -560,17 +560,23 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         code = request.data['code']
 
-        pending_email_change = models.PendingEmailChange.objects.get(user=user, verification_code=code)
+        try:
+            pending_email_change = models.PendingEmailChange.objects.get(user=user, verification_code=code)
+        except models.PendingEmailChange.DoesNotExist:
+            raise Exception('Verification code is invalid. Please try again.')
         pending_email_change.verified = True
         pending_email_change.save()
         user.email = pending_email_change.email_address
         user.save()
         user.refresh_from_db()
 
-        user_profile_client = request.profile_service['user_profile']
-        airavata_user_profile = user_profile_client.getUserProfileById(
-            request.authz_token, user.username, settings.GATEWAY_ID)
-        airavata_user_profile.emails = [pending_email_change.email_address]
-        user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+        try:
+            user_profile_client = request.profile_service['user_profile']
+            airavata_user_profile = user_profile_client.getUserProfileById(
+                request.authz_token, user.username, settings.GATEWAY_ID)
+            airavata_user_profile.emails = [pending_email_change.email_address]
+            user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+        except Exception as e:
+            raise Exception(f"Failed to update Airavata User Profile with new email address: {e}") from e
         serializer = self.get_serializer(user)
         return Response(serializer.data)
