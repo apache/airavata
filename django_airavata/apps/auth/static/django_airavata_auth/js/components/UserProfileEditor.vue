@@ -4,13 +4,13 @@
       <b-form-input disabled :value="user.username" />
     </b-form-group>
     <b-form-group label="First Name">
-      <b-form-input v-model="user.first_name" />
+      <b-form-input v-model="user.first_name" @keydown.native.enter="save" />
     </b-form-group>
     <b-form-group label="Last Name">
-      <b-form-input v-model="user.last_name" />
+      <b-form-input v-model="user.last_name" @keydown.native.enter="save" />
     </b-form-group>
     <b-form-group label="Email">
-      <b-form-input v-model="user.email" />
+      <b-form-input v-model="user.email" @keydown.native.enter="save" />
       <b-alert class="mt-1" show v-if="user.pending_email_change"
         >Once you verify your email address at
         <strong>{{ user.pending_email_change.email_address }}</strong
@@ -21,8 +21,7 @@
         ></b-alert
       >
     </b-form-group>
-    <b-button variant="primary" @click="$emit('save', user)">Save</b-button>
-    <b-button>Cancel</b-button>
+    <b-button variant="primary" @click="save">Save</b-button>
   </b-card>
 </template>
 
@@ -45,12 +44,15 @@ export default {
     cloneValue() {
       return JSON.parse(JSON.stringify(this.value));
     },
+    save() {
+      this.$emit("save", this.user);
+    },
   },
   watch: {
     value() {
       this.user = this.cloneValue();
-    }
-  }
+    },
+  },
 };
 </script>
 

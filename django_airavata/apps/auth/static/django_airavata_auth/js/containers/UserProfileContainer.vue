@@ -41,6 +41,13 @@ export default {
         lookup: value.id,
         data: value,
       }).then((user) => {
+        notifications.NotificationList.add(
+          new notifications.Notification({
+            type: "SUCCESS",
+            message: "User profile saved",
+            duration: 5,
+          })
+        );
         this.user = user;
       });
     },
@@ -72,7 +79,7 @@ export default {
           })
         );
         // Update URL, removing the code from the query string
-        window.history.replaceState({}, '', '/auth/user-profile/');
+        window.history.replaceState({}, "", "/auth/user-profile/");
       });
     },
   },
