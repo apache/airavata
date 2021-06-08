@@ -26,6 +26,7 @@ import ValidatedFormGroup from "./components/ValidatedFormGroup";
 
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
 import ValidationErrors from "./errors/ValidationErrors";
+import * as vuelidateHelpers from "./errors/vuelidateHelpers.js";
 
 import ListLayout from "./layouts/ListLayout.vue";
 
@@ -63,12 +64,13 @@ const components = {
   UnsavedChangesGuard,
   Uppy,
   ValidatedForm,
-  ValidatedFormGroup
+  ValidatedFormGroup,
 };
 
 const errors = {
   GlobalErrorHandler,
   ValidationErrors,
+  vuelidateHelpers,
 };
 
 const layouts = {

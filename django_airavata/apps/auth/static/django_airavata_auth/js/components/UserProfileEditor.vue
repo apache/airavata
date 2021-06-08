@@ -4,13 +4,28 @@
       <b-form-input disabled :value="user.username" />
     </b-form-group>
     <b-form-group label="First Name">
-      <b-form-input v-model="user.first_name" @keydown.native.enter="save" />
+      <b-form-input
+        v-model="$v.user.first_name.$model"
+        @keydown.native.enter="save"
+        :state="validateState($v.user.first_name)"
+      />
     </b-form-group>
     <b-form-group label="Last Name">
-      <b-form-input v-model="user.last_name" @keydown.native.enter="save" />
+      <b-form-input
+        v-model="$v.user.last_name.$model"
+        @keydown.native.enter="save"
+        :state="validateState($v.user.last_name)"
+      />
     </b-form-group>
     <b-form-group label="Email">
-      <b-form-input v-model="user.email" @keydown.native.enter="save" />
+      <b-form-input
+        v-model="$v.user.email.$model"
+        @keydown.native.enter="save"
+        :state="validateState($v.user.email)"
+      />
+      <b-form-invalid-feedback v-if="!$v.user.email.email">
+        {{ user.email }} is not a valid email address.
+      </b-form-invalid-feedback>
       <b-alert class="mt-1" show v-if="user.pending_email_change"
         >Once you verify your email address at
         <strong>{{ user.pending_email_change.email_address }}</strong
@@ -21,14 +36,21 @@
         ></b-alert
       >
     </b-form-group>
-    <b-button variant="primary" @click="save">Save</b-button>
+    <b-button variant="primary" @click="save" :disabled="$v.$invalid"
+      >Save</b-button
+    >
   </b-card>
 </template>
 
 <script>
 import { models } from "django-airavata-api";
+import { errors } from "django-airavata-common-ui";
+import { validationMixin } from "vuelidate";
+import { email, required } from "vuelidate/lib/validators";
+
 export default {
   name: "user-profile-editor",
+  mixins: [validationMixin],
   props: {
     value: {
       type: models.User,
@@ -40,13 +62,32 @@ export default {
       user: this.cloneValue(),
     };
   },
+  validations() {
+    return {
+      user: {
+        first_name: {
+          required,
+        },
+        last_name: {
+          required,
+        },
+        email: {
+          required,
+          email,
+        },
+      },
+    };
+  },
   methods: {
     cloneValue() {
       return JSON.parse(JSON.stringify(this.value));
     },
     save() {
-      this.$emit("save", this.user);
+      if (!this.$v.$invalid) {
+        this.$emit("save", this.user);
+      }
     },
+    validateState: errors.vuelidateHelpers.validateState,
   },
   watch: {
     value() {
