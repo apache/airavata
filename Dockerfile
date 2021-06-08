@@ -65,7 +65,7 @@ WORKDIR /code
 COPY requirements.txt requirements-mysql.txt ./
 COPY setup.* ./
 COPY README.md .
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 RUN pip install -r requirements-mysql.txt
 
