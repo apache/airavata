@@ -12,7 +12,7 @@ from requests_oauthlib import OAuth2Session
 
 from django_airavata.apps.auth.utils import get_authz_token
 
-from . import utils
+from . import models, utils
 
 logger = logging.getLogger(__name__)
 
@@ -200,23 +200,62 @@ class KeycloakBackend(object):
 
     def _process_userinfo(self, request, userinfo):
         logger.debug("userinfo: {}".format(userinfo))
+        sub = userinfo['sub']
         username = userinfo['preferred_username']
         email = userinfo['email']
         first_name = userinfo['given_name']
         last_name = userinfo['family_name']
-        request.session['USERINFO'] = userinfo
+
+        user = self._get_or_create_user(sub, username)
+        user_profile = user.user_profile
+
+        # Save the user info claims
+        for (claim, value) in userinfo.items():
+            if user_profile.userinfo_set.filter(claim=claim).exists():
+                userinfo_claim = user_profile.userinfo_set.get(claim=claim)
+                userinfo_claim.value = value
+                userinfo_claim.save()
+            else:
+                user_profile.userinfo_set.create(claim=claim, value=value)
+
+        # Update User model fields
+        user = user_profile.user
+        user.email = email
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+        return user
+
+    def _get_or_create_user(self, sub, username):
+
         try:
-            user = User.objects.get(username=username)
-            # Update these fields each time, in case they have changed
-            user.email = email
-            user.first_name = first_name
-            user.last_name = last_name
-            user.save()
-            return user
-        except User.DoesNotExist:
-            user = User(username=username,
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=email)
-            user.save()
-            return user
+            user_profile = models.UserProfile.objects.get(
+                userinfo__claim='sub', userinfo__value=sub)
+            return user_profile.user
+        except models.UserProfile.DoesNotExist:
+            try:
+                # For backwards compatibility, lookup by username
+                user = User.objects.get(username=username)
+                # Make sure there is a user_profile with the sub claim, which
+                # will be used to do the lookup next time
+                if not hasattr(user, 'user_profile'):
+                    user_profile = models.UserProfile(user=user)
+                    user_profile.save()
+                    user_profile.userinfo_set.create(
+                        claim='sub', value=sub)
+                else:
+                    userinfo = user.user_profile.userinfo_set.get(claim='sub')
+                    logger.warning(
+                        f"User {username} exists but sub claims don't match: "
+                        f"old={userinfo.value}, new={sub}. Updating to new "
+                        "sub claim.")
+                    userinfo.value = sub
+                    userinfo.save()
+                return user
+            except User.DoesNotExist:
+                user = User(username=username)
+                user.save()
+                user_profile = models.UserProfile(user=user)
+                user_profile.save()
+                user_profile.userinfo_set.create(claim='sub', value=sub)
+                return user

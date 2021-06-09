@@ -5,9 +5,10 @@ from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.transaction import atomic
 from django.forms import ValidationError
 from django.http import (
     HttpResponseBadRequest,
@@ -19,6 +20,11 @@ from django.template import Context
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from django_airavata.apps.auth import serializers
 
 from . import forms, iam_admin_client, models, utils
 
@@ -520,3 +526,73 @@ def access_token_redirect(request):
         return HttpResponseForbidden("Invalid redirect_uri value")
     return redirect(redirect_uri + f"{'&' if '?' in redirect_uri else '?'}{config.get('PARAM_NAME', 'access_token')}="
                     f"{quote(request.authz_token.accessToken)}")
+
+
+def user_profile(request):
+    return render(request, "django_airavata_auth/base.html", {
+        'bundle_name': "user-profile"
+    })
+
+
+class IsUserOrReadOnlyForAdmins(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if (request.method in permissions.SAFE_METHODS and
+                request.is_gateway_admin):
+            return True
+        return obj == request.user
+
+
+# TODO: disable deleting and creating?
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.UserSerializer
+    queryset = get_user_model().objects.all()
+    permission_classes = [IsUserOrReadOnlyForAdmins]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return get_user_model().objects.all()
+        else:
+            return get_user_model().objects.get(pk=user.pk)
+
+    @action(detail=False)
+    def current(self, request):
+        return redirect(reverse('django_airavata_auth:user-detail', kwargs={'pk': request.user.id}))
+
+    @action(methods=['post'], detail=True)
+    def resend_email_verification(self, request, pk=None):
+        pending_email_change = models.PendingEmailChange.objects.get(user=request.user, verified=False)
+        if pending_email_change is not None:
+            serializer = serializers.UserSerializer()
+            serializer._send_email_verification_link(request, pending_email_change)
+        return JsonResponse({})
+
+    @action(methods=['post'], detail=True)
+    @atomic
+    def verify_email_change(self, request, pk=None):
+        user = self.get_object()
+        code = request.data['code']
+
+        try:
+            pending_email_change = models.PendingEmailChange.objects.get(user=user, verification_code=code)
+        except models.PendingEmailChange.DoesNotExist:
+            raise Exception('Verification code is invalid. Please try again.')
+        pending_email_change.verified = True
+        pending_email_change.save()
+        user.email = pending_email_change.email_address
+        user.save()
+        user.refresh_from_db()
+
+        try:
+            user_profile_client = request.profile_service['user_profile']
+            airavata_user_profile = user_profile_client.getUserProfileById(
+                request.authz_token, user.username, settings.GATEWAY_ID)
+            airavata_user_profile.emails = [pending_email_change.email_address]
+            user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+        except Exception as e:
+            raise Exception(f"Failed to update Airavata User Profile with new email address: {e}") from e
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
