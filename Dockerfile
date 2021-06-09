@@ -30,6 +30,13 @@ RUN yarn
 COPY ./django_airavata/apps/groups/ .
 RUN yarn run build
 
+# build auth javascript
+WORKDIR /code/django_airavata/apps/auth
+COPY ./django_airavata/apps/auth/package.json ./django_airavata/apps/auth/yarn.lock ./
+RUN yarn
+COPY ./django_airavata/apps/auth/ .
+RUN yarn run build
+
 # build workspace/django-airavata-workspace-plugin-api javascript
 # This one must come before workspace build
 WORKDIR /code/django_airavata/apps/workspace/django-airavata-workspace-plugin-api
@@ -83,6 +90,8 @@ WORKDIR /code/django_airavata/apps/admin/static/django_airavata_admin
 COPY --from=build-stage /code/django_airavata/apps/admin/static/django_airavata_admin .
 WORKDIR /code/django_airavata/apps/groups/static/django_airavata_groups
 COPY --from=build-stage /code/django_airavata/apps/groups/static/django_airavata_groups .
+WORKDIR /code/django_airavata/apps/auth/static/django_airavata_auth
+COPY --from=build-stage /code/django_airavata/apps/auth/static/django_airavata_auth .
 WORKDIR /code/django_airavata/apps/workspace/static/django_airavata_workspace
 COPY --from=build-stage /code/django_airavata/apps/workspace/static/django_airavata_workspace .
 WORKDIR /code/django_airavata/apps/dataparsers/static/django_airavata_dataparsers

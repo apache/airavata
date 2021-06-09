@@ -5,3 +5,4 @@ venv
 **/dist
 *.sqlite3
 **/settings_local*.py
+.tox
