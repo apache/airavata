@@ -492,7 +492,8 @@ Choose from 1, 2 [1]:
    for how to prepare the values expected in the returned dictionary. Let's
    start filling in the implementation.
 
-4. First we'll add some imports at the top. Replace the existing imports with these:
+4. First we'll add some imports at the top. Replace the existing imports with
+   these:
 
 ```python
 import io
@@ -717,8 +718,9 @@ declare interactive parameters that can be manipulated by the user. We can add a
 simple boolean interactive parameter to toggle the display of the matplotlib
 grid as an example.
 
-1. Open `$HOME/gateways_tutorial_app/gateways_tutorial_app/output_views/gaussian_eigenvalues_view.py`. Change
-   the `generate_data` function so that it has an additional `show_grid`
+1. Open
+   `$HOME/gateways_tutorial_app/gateways_tutorial_app/output_views/gaussian_eigenvalues_view.py`.
+   Change the `generate_data` function so that it has an additional `show_grid`
    parameter with a default value of `False`:
 
 ```python
@@ -798,10 +800,12 @@ Django framework as well as the Airavata Django Portal REST APIs and JS library.
 To start, we'll just create a simple "Hello World" page for the Django app and
 get it properly registered with the local Django Portal instance.
 
-1. In the `gateways19-tutorial` directory, open
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`.
-   Some of the HTML view is commented out. The following is the uncommented
-   content:
+1. In the `gateways_tutorial_app` directory, open
+   `$HOME/gateways_tutorial_app/gateways_tutorial_app/templates/gateways_tutorial_app/home.html`.
+   Copy this file to `hello.html` in the same directory.
+
+2. Change the title of the page, in the `<h1>` tag, to **Hello World** and save
+   the file.
 
 ```xml
 {% extends 'base.html' %}
@@ -817,74 +821,62 @@ get it properly registered with the local Django Portal instance.
 {% endblock content %}
 ```
 
-2. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/apps.py`:
+3. Open the file `$HOME/gateways_tutorial_app/gateways_tutorial_app/views.py`
+   and add the following `hello_world` view function at the end of the file:
+
+```python
+
+@login_required
+def hello_world(request):
+    return render(request, "gateways_tutorial_app/hello.html")
+```
+
+This view will simply display the template created in the previous step.
+
+4. Open the file `$HOME/gateways_tutorial_app/gateways_tutorial_app/urls.py` and
+   add a URL mapping for of `hello/` to the `hello_world` view function:
+
+```python
+from django.urls import path
+
+from . import views
+
+app_name = 'gateways_tutorial_app'
+urlpatterns = [
+    path('home/', views.home, name='home'),
+    path('hello/', views.hello_world, name='hello_world'),
+]
+
+```
+
+This maps the `/hello/` URL to the `hello_world` view.
+
+5. Open the file `$HOME/gateways_tutorial_app/gateways_tutorial_app/apps.py` and
+   add the `fa_icon_class` attribute and the `url_home` attribute to the
+   `GatewaysTutorialAppConfig` class:
 
 ```python
 from django.apps import AppConfig
 
 
-class Gateways19TutorialAppConfig(AppConfig):
-    name = 'gateways19_tutorial'
+class GatewaysTutorialAppConfig(AppConfig):
+    name = 'gateways_tutorial_app'
     label = name
-    verbose_name = "Gateways Tutorial"
+    verbose_name = "Gateways Tutorial App"
     fa_icon_class = "fa-comment"
+    url_home = "gateways_tutorial_app:hello_world"
 ```
 
 This the main metadata for this custom Django app. Besides the normal metadata
 that the Django framework expects, this also defines a display name
-(`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app.
-
-3. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/views.py`:
-
-```python
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-
-@login_required
-def hello_world(request):
-    return render(request, "gateways19_tutorial/hello.html")
-```
-
-This view will simply display the template created in the previous step.
-
-4. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/urls.py`:
-
-```python
-from django.conf.urls import url, include
-
-from . import views
-
-app_name = 'gateways19_tutorial'
-urlpatterns = [
-    url(r'^hello/', views.hello_world, name="home"),
-]
-```
-
-This maps the `/hello/` URL to the `hello_world` view.
-
-5. We've created the necessary code for our Django app to display the hello
-   world page, but now we need to add some metadata to this Python package so
-   that the Django Portal knows about this Django app. In
-   `$HOME/gateways19-tutorial/setup.py`, we add the following
-   `[airavata.djangoapp]` metadata to the entry_points section:
-
-```python
-setuptools.setup(
-# ...
-    entry_points="""
-[airavata.output_view_providers]
-gaussian-eigenvalues-plot = gateways19_tutorial.output_views:GaussianEigenvaluesViewProvider
-[airavata.djangoapp]
-gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
-""",
-)
-```
+(`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app. The
+`url_home` attribute specifies the initial view that should be rendered when
+navigating to this app.
 
 ---
 
 Now you should be able to [log into the portal locally](http://localhost:8000)
-and see **Gateways Tutorial** in the drop down menu in the header (click on
+and see **Gateways Tutorial App** in the drop down menu in the header (click on
 **Workspace** then you should see it in that menu).
 
 ![Screenshot of custom app in menu](./screenshots/gateways19/custom-app-menu.png)
@@ -894,8 +886,8 @@ and see **Gateways Tutorial** in the drop down menu in the header (click on
 Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
-1. In the `$HOME/gateways19-tutorial/gateways19_tutorial/views.py` file, we add
-   the following import:
+1. In the `$HOME/gateways_tutorial_app/gateways_tutorial_app/views.py` file, we
+   add the following import:
 
 ```python
 from django.http import JsonResponse
@@ -927,27 +919,28 @@ def languages(request):
     }]})
 ```
 
-3. In `$HOME/gateways19-tutorial/gateways19_tutorial/urls.py` we add a url
+3. In `$HOME/gateways_tutorial_app/gateways_tutorial_app/urls.py` we add a url
    mapping for the `languages` view:
 
 ```python
 urlpatterns = [
-    url(r'^hello/', views.hello_world, name="home"),
-    url(r'^languages/', views.languages, name="languages"),
+    path('home/', views.home, name='home'),
+    path('hello/', views.hello_world, name="home"),
+    path('languages/', views.languages, name="languages"),
 ]
 ```
 
 4. In
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`,
-   uncomment the comment that starts `<!-- Adding a list of "Hello" greetings`
-   on line 11 and ends on line 21. That is, just delete lines 11 and 21. This
-   adds a `<select>` element to the template which will be used to display the
-   greeting options:
+   `$HOME/gateways_tutorial_app/gateways_tutorial_app/templates/gateways_tutorial_app/hello.html`,
+   add the lines between the **STARTING HERE** and **ENDING HERE** comments.
+   This adds a `<select>` element to the template which will be used to display
+   the greeting options:
 
 ```html
 ...
 <h1>Hello World</h1>
 
+<!-- STARTING HERE -->
 <div class="card">
     <div class="card-header">Run "echo" for different languages</div>
     <div class="card-body">
@@ -955,31 +948,30 @@ urlpatterns = [
         <button id="run-button" class="btn btn-primary">Run</button>
     </div>
 </div>
+<!-- ENDING HERE -->
 ...
 ```
 
-5. We also add the `{% load static %}` directive and then a `scripts` block to
-   the end of `hello.html`. This will load the AiravataAPI JavaScript library
+5. The `hello.html` template already has the `{% load static %}` directive and a
+   `scripts` block at the end. This will load the AiravataAPI JavaScript library
    which has utilities for interacting with the Django portal's REST API (which
    can also be used for custom developed REST endpoints) and model classes for
    Airavata's data models. The `utils.FetchUtils` is used to load the languages
    REST endpoint.
 
-```xml
-{% extends 'base.html' %}
+    Add to `hello.html` the code between the **STARTING HERE** and **ENDING
+    HERE** comments.
 
-{% load static %}
-
-...
-{% endblock content %}
-
-{% block scripts %}
+```html
+{% extends 'base.html' %} {% load static %} ... {% endblock content %} {% block
+scripts %}
 <script src="{% static 'django_airavata_api/dist/airavata-api.js' %}"></script>
 <script>
     const { models, services, session, utils } = AiravataAPI;
 
-    utils.FetchUtils.get("/gateways19_tutorial/languages/").then(data => {
-        data.languages.forEach(language => {
+    // STARTING HERE
+    utils.FetchUtils.get("/gateways_tutorial_app/languages/").then((data) => {
+        data.languages.forEach((language) => {
             $("#greeting-select").append(
                 `<option value="${language.greeting}">
                     ${language.lang} - "${language.greeting}"
@@ -987,12 +979,13 @@ urlpatterns = [
             );
         });
     });
+    // ENDING HERE
 </script>
 {% endblock scripts %}
 ```
 
 Now when you view the custom app at
-[http://localhost:8000/gateways19_tutorial/hello/](http://localhost:8000/gateways19_tutorial/hello/)
+[http://localhost:8000/gateways_tutorial_app/hello/](http://localhost:8000/gateways_tutorial_app/hello/)
 you should see a dropdown of greetings in several languages, like so:
 
 ![Screenshot of custom app with languages list](./screenshots/gateways19/custom-app-languages-list.png)
@@ -1002,13 +995,12 @@ you should see a dropdown of greetings in several languages, like so:
 Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 1. In
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`,
-   uncomment the comment that begins with
-   `<!-- Displaying a list of recent experiments` on line 21 or so and ends on
-   line 45. This adds table to display recent experiments to the bottom of
+   `$HOME/gateways_tutorial_app/gateways_tutorial_app/templates/gateways_tutorial_app/hello.html`,
+   add the following lines between the **STARTING HERE** and **ENDING HERE**
+   comments. This adds table to display recent experiments to the bottom of
    `hello.html`:
 
-```xml
+```html
 ...
             <div class="card">
                 <div class="card-header">
@@ -1019,6 +1011,8 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
                     <button id="run-button" class="btn btn-primary">Run</button>
                 </div>
             </div>
+
+            <!-- STARTING HERE -->
             <div class="card">
                 <div class="card-header">
                     Experiments
@@ -1040,6 +1034,8 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
                     </table>
                 </div>
             </div>
+            <!-- ENDING HERE -->
+
         </div>
     </main>
 </div>
@@ -1090,12 +1086,11 @@ The user interface should now look something like:
 
 ### Submitting an Echo job
 
-Now we'll use `AiravataAPI` to submit an Echo job.
+Now we'll use `AiravataAPI` to submit an Echo job. Let's take a look at what
+we'll need to do make this work.
 
-1. In
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`
-   we add a click handler to the _Run_ button that gets the selected greeting
-   value:
+1. We'll need to add a click handler to the _Run_ button that gets the selected
+   greeting value:
 
 ```javascript
 $("#run-button").click((e) => {
@@ -1162,7 +1157,8 @@ const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
 ```
 
 5. Once we have all of this information we can then create an `Experiment`
-   object then _save_ and _launch_ it. Here's the complete click handler:
+   object then _save_ and _launch_ it. Here's the complete click handler. We add
+   the following to the end of the _scripts_ block in `hello.html`:
 
 ```javascript
 $("#run-button").click((e) => {
@@ -1280,9 +1276,9 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 }
 ```
 
-3. To enable this, remove the comment starting with
-   `/* Displaying the experiment output` on line 88 and ending on line 113.
-   Here's the update to the `loadExperiments` function:
+3. To enable this, add the lines between the **STARTING HERE** and **ENDING
+   HERE** comments to the `loadExperiments` function. Here's the update to the
+   `loadExperiments` function:
 
 ```javascript
 function loadExperiments() {
@@ -1303,6 +1299,8 @@ function loadExperiments() {
                             <td id="output_${index}"></td>
                         </tr>`
             );
+
+            // STARTING HERE
             // If experiment has finished, load full details, then parse the stdout file
             if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
                 services.FullExperimentService.retrieve({
@@ -1330,6 +1328,8 @@ function loadExperiments() {
                         $(`#output_${index}`).text(text);
                     });
             }
+            // ENDING HERE
+
         });
     });
 }
