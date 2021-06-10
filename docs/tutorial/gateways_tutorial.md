@@ -396,9 +396,9 @@ if you are interested).
 
 ```
 cd $HOME
-git clone https://github.com/machristie/gateways19-tutorial.git gateways19-tutorial-final
+git clone https://github.com/machristie/gateways_tutorial_app.git gateways_tutorial_app-final
 cd gateways_tutorial_app
-docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../gateways19-tutorial-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../gateways_tutorial_app-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
 ```
 
 !!! note "For remote Docker host users"
@@ -484,7 +484,7 @@ Choose from 1, 2 [1]:
 
 3. This creates a custom output view provider, called
    GaussianEigenvaluesViewProvider, in `gateways-tutorialoutput_views/`. Open
-   `$HOME/gateways19-tutorial/gateways_tutorial_app/gateways_tutorial_app/output_views/gaussian_eigenvalues_view.py`
+   `$HOME/gateways_tutorial_app/gateways_tutorial_app/output_views/gaussian_eigenvalues_view.py`
    in your editor and we'll look at the generated code. The cookiecutter
    template has generated a GaussianEigenvaluesViewProvider class with a method
    called `generate_data`. The generate_data method has some commented out code
@@ -638,7 +638,7 @@ class GaussianEigenvaluesViewProvider:
    template already created this when it generated the
    gaussian_eigenvalues_view.py code. We can take a look and make sure it added
    an `airavata.output_view_providers` entry to the `[options.entry_points]`
-   section in the `$HOME/gateways19-tutorial/gateways_tutorial_app/setup.cfg`
+   section in the `$HOME/gateways_tutorial_app/setup.cfg`
    file:
 
 ```ini
@@ -1329,7 +1329,6 @@ function loadExperiments() {
                     });
             }
             // ENDING HERE
-
         });
     });
 }
@@ -1337,15 +1336,8 @@ function loadExperiments() {
 
 ## Resources
 
-You can browser the final version of the _gateways19-tutorial_ code at
-<https://github.com/machristie/gateways19-tutorial/tree/solution>. If you get
-stuck at some point with the tutorial you can skip to the solution by running
-the following git command in your _gateways19-tutorial_ repo:
-
-```bash
-cd $HOME/gateways19-tutorial
-git reset --hard origin/solution
-```
+You can browser the final version of the code at
+<https://github.com/machristie/gateways_tutorial_app>.
 
 ### Airavata API
 
