@@ -85,8 +85,8 @@ COPY ./ .
 # Copy javascript builds from build-stage
 WORKDIR /code/django_airavata/apps/api/static/django_airavata_api
 COPY --from=build-stage /code/django_airavata/apps/api/static/django_airavata_api .
-WORKDIR /code/django_airavata/static/common
-COPY --from=build-stage /code/django_airavata/static/common .
+WORKDIR /code/django_airavata/static/common/dist
+COPY --from=build-stage /code/django_airavata/static/common/dist .
 WORKDIR /code/django_airavata/apps/admin/static/django_airavata_admin
 COPY --from=build-stage /code/django_airavata/apps/admin/static/django_airavata_admin .
 WORKDIR /code/django_airavata/apps/groups/static/django_airavata_groups
