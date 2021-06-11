@@ -515,6 +515,12 @@ service Airavata extends base_api.BaseAPI {
      * @param resourceHostName
      *       Hostname id substring with which to further filter statistics.
      *
+     * @param limit
+     *       Amount of results to be fetched.
+     *
+     * @param offset
+     *       The starting point of the results to be fetched.
+     *
      **/
     experiment_model.ExperimentStatistics getExperimentStatistics(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
@@ -522,7 +528,9 @@ service Airavata extends base_api.BaseAPI {
                             4: required i64 toTime,
                             5: string userName,
                             6: string applicationName,
-                            7: string resourceHostName)
+                            7: string resourceHostName,
+                            8: i32 limit,
+                            9: i32 offset)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
