@@ -22,6 +22,9 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
+airavata_django_extra_dependencies:
+  - git+https://github.com/NCAR/lrose-sgci.git@main#egg=my-custom-django-app
+
 vhost_servername: "gateway.lrose.net"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/gateway.lrose.net/cert.pem"
