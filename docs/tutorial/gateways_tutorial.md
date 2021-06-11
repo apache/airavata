@@ -22,20 +22,21 @@ Python 3.6-3.9 are supported, but I highly recommend you download and use
 1. Download and install Python 3.9.
     - (macOS/Windows): Download from https://www.python.org/downloads/
     - (Linux): use your distribution's package manager to install Python 3.9
-2. (macOS/Linux) Verify you have installed Python 3.9. Open a terminal and run `python3.9 --version`.
+2. (macOS/Linux) Verify you have installed Python 3.9. Open a terminal and run
+   `python3.9 --version`.
 
 ```
 $ python3.9 --version
 Python 3.9.5
 ```
 
-3. (Windows) Verify you have installed Python 3.9. Open `cmd` and run `py --version`:
+3. (Windows) Verify you have installed Python 3.9. Open `cmd` and run
+   `py --version`:
 
 ```text
 C:\Users\machrist>py --version
 Python 3.9.5
 ```
-
 
 !!! note "Special note for Windows Home users"
 
@@ -719,9 +720,9 @@ docker exec gateways19-tutorial touch /code/django_airavata/wsgi.py
 
 These commands:
 
-1. install our package's dependencies,
-2. install the package into the container's Python environment, and
-3. touches the wsgi.py to trigger a reload of the Django portal dev server.
+1. install our custom django app package and its dependencies into the
+   container's Python environment, and
+2. touches the wsgi.py to trigger a reload of the Django portal dev server.
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
@@ -981,17 +982,25 @@ urlpatterns = [
 
 ```html
 ...
-<h1>Hello World</h1>
+<div class="main-content-wrapper">
+    <main class="main-content">
+        <div class="container-fluid">
+            <h1>Hello World</h1>
 
-<!-- STARTING HERE -->
-<div class="card">
-    <div class="card-header">Run "echo" for different languages</div>
-    <div class="card-body">
-        <select id="greeting-select"></select>
-        <button id="run-button" class="btn btn-primary">Run</button>
-    </div>
+            <!-- STARTING HERE -->
+            <div class="card">
+                <div class="card-header">
+                    Run "echo" for different languages
+                </div>
+                <div class="card-body">
+                    <select id="greeting-select"></select>
+                    <button id="run-button" class="btn btn-primary">Run</button>
+                </div>
+            </div>
+            <!-- ENDING HERE -->
+        </div>
+    </main>
 </div>
-<!-- ENDING HERE -->
 ...
 ```
 
@@ -1006,8 +1015,7 @@ urlpatterns = [
     HERE** comments.
 
 ```html
-{% extends 'base.html' %} {% load static %} ... {% endblock content %} {% block
-scripts %}
+{% block scripts %}
 <script src="{% static 'django_airavata_api/dist/airavata-api.js' %}"></script>
 <script>
     const { models, services, session, utils } = AiravataAPI;
