@@ -8,10 +8,34 @@ both simple and complex customizations to the user interface.
 Tutorial attendees should have:
 
 -   a laptop on which to write Python code
+-   Python
 -   Git client
 -   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
     or
     [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
+
+### Installing Python
+
+Python 3.6-3.9 are supported, but I highly recommend you download and use
+**Python 3.9**
+
+1. Download and install Python 3.9.
+    - (macOS/Windows): Download from https://www.python.org/downloads/
+    - (Linux): use your distribution's package manager to install Python 3.9
+2. (macOS/Linux) Verify you have installed Python 3.9. Open a terminal and run `python3.9 --version`.
+
+```
+$ python3.9 --version
+Python 3.9.5
+```
+
+3. (Windows) Verify you have installed Python 3.9. Open `cmd` and run `py --version`:
+
+```text
+C:\Users\machrist>py --version
+Python 3.9.5
+```
+
 
 !!! note "Special note for Windows Home users"
 
@@ -355,17 +379,37 @@ We have a local develop environment created. Now we can start adding custom
 code. First, we'll create a custom Django app, which is the standard way to
 package a Django extension.
 
-1. Install the latest version of cookiecutter. Cookiecutter is a tool for
+1. (macOS/Linux) Create and activate a Python virtual environment
+
+```bash
+$ cd $HOME
+$ python3.9 -m venv tutorial-env
+$ source tutorial-env/bin/activate
+(tutorial-env) $
+```
+
+2. (Windows) Create and activate a Python virtual environment
+
+```text
+C:\Users\machrist>cd %HOMEDRIVE%%HOMEPATH%
+
+C:\Users\machrist>py -m venv tutorial-env
+
+C:\Users\machrist>tutorial-env\Scripts\activate.bat
+
+(tutorial-env) C:\Users\machrist>
+```
+
+3. Install the latest version of cookiecutter. Cookiecutter is a tool for
    generating project source code from a template.
 
 ```sh
-pip install --user -U cookiecutter
+pip install -U cookiecutter
 ```
 
-2. Use cookiecutter to run the Airavata Django app template.
+4. Use cookiecutter to run the Airavata Django app template.
 
 ```sh
-cd $HOME
 cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
 ```
 
@@ -638,8 +682,7 @@ class GaussianEigenvaluesViewProvider:
    template already created this when it generated the
    gaussian_eigenvalues_view.py code. We can take a look and make sure it added
    an `airavata.output_view_providers` entry to the `[options.entry_points]`
-   section in the `$HOME/gateways_tutorial_app/setup.cfg`
-   file:
+   section in the `$HOME/gateways_tutorial_app/setup.cfg` file:
 
 ```ini
 [options.entry_points]
