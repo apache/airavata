@@ -20,7 +20,7 @@
 
 ---
 - name: Install OpenJDK 11
-  yum: name=java-11-openjdk-devel state=latest update_cache=yes
+  yum: name="{{ openjdk_version }}" state=present update_cache=yes
   become: yes
   tags:
     - always
@@ -36,6 +36,16 @@
     - { path: "{{ java_home }}/bin", exe: 'keytool' }
     - { path: "{{ java_home }}/bin", exe: 'javac' }
     - { path: "{{ java_home }}/bin", exe: 'javadoc' }
+  become: yes
+  tags:
+       - always
+
+- name: Copy java.security file to {{ java_home }}
+  copy:
+    src: java.security
+    dest: "{{ java_home }}/conf/security/java.security"
+    mode: 644
+    backup: yes
   become: yes
   tags:
        - always
