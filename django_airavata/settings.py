@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'wagtailfontawesome',
+    'wagtail_draftail_anchors',
 
     # wagtail custom apps
     'django_airavata.wagtailapps.base.apps.BaseConfig',
@@ -128,7 +129,6 @@ MIDDLEWARE = [
     # profile_service_client
     'django_airavata.apps.auth.middleware.gateway_groups_middleware',
     # Wagtail related middleware
-    'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 

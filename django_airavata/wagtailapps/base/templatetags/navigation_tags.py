@@ -1,6 +1,6 @@
 from django import template
 from django.conf import settings
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Site
 
 from django_airavata.wagtailapps.base.models import (
     Announcements,
@@ -23,7 +23,7 @@ def get_site_root(context):
     # This returns a core.Page. The main menu needs to have the site.root_page
     # defined else will return an object attribute error ('str' object has no
     # attribute 'get_children')
-    return context['request'].site.root_page
+    return Site.find_for_request(context['request']).root_page
 
 
 def has_menu_children(page):
