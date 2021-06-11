@@ -16,8 +16,8 @@ Django Portal locally. This will allow you to try it out and can also be used as
 a development environment. If you just want to run the Airavata Django Portal
 locally, see the Docker instructions below for a more simplified approach.
 
-The Airavata Django Portal works with Python versions 3.6, 3.7 and 3.8. You'll
-need one of these versions installed locally.
+The Airavata Django Portal works with Python versions 3.6, 3.7, 3.8 and 3.9.
+You'll need one of these versions installed locally.
 
 You'll also need Node.js and yarn to build the JavaScript frontend code. Please
 install
@@ -34,7 +34,7 @@ information on how to install yarn.
     cd airavata-django-portal
     python3 -m venv venv
     source venv/bin/activate
-    pip install --upgrade pip
+    pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
     ```
 
