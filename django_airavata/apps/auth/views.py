@@ -2,7 +2,7 @@ import io
 import logging
 import time
 from datetime import datetime, timedelta, timezone
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlparse
 
 import requests
 from django.conf import settings
@@ -604,7 +604,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 def download_settings_local(request):
 
-    if not request.is_gateway_admin or not request.is_read_only_gateway_admin:
+    if not (request.is_gateway_admin or request.is_read_only_gateway_admin):
         raise PermissionDenied()
 
     if settings.DEBUG:
@@ -659,7 +659,8 @@ def get_client(access_token, clients_endpoint, client_id):
 
 def get_clients_endpoint():
     realm = settings.GATEWAY_ID
-    clients_endpoint = f"https://iamdev.scigap.org/auth/admin/realms/{realm}/clients"
+    parse_result = urlparse(settings.KEYCLOAK_AUTHORIZE_URL)
+    clients_endpoint = f"{parse_result.scheme}://{parse_result.netloc}/auth/admin/realms/{realm}/clients"
     return clients_endpoint
 
 
