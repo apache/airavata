@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
@@ -15,4 +16,5 @@ urlpatterns = [
         name='gateway_resource_profile'),
     url(r'^notices/', views.notices, name='notices'),
     url(r'^users/', views.users, name='users'),
+    path('developers/', views.developers, name='developers'),
 ]

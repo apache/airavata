@@ -1,22 +1,26 @@
+import io
 import logging
 import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote, urlencode
 
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.transaction import atomic
 from django.forms import ValidationError
 from django.http import (
+    FileResponse,
     HttpResponseBadRequest,
     HttpResponseForbidden,
     JsonResponse
 )
 from django.shortcuts import redirect, render, resolve_url
 from django.template import Context
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
@@ -596,3 +600,93 @@ class UserViewSet(viewsets.ModelViewSet):
             raise Exception(f"Failed to update Airavata User Profile with new email address: {e}") from e
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+
+def download_settings_local(request):
+
+    if not request.is_gateway_admin or not request.is_read_only_gateway_admin:
+        raise PermissionDenied()
+
+    if settings.DEBUG:
+        raise Exception("Downloading a settings_local.py file isn't allowed in DEBUG mode.")
+
+    development_client_id = f"local-django-{request.user.username}"
+    access_token = utils.get_service_account_authz_token().accessToken
+    clients_endpoint = get_clients_endpoint()
+    development_client = get_client(access_token, clients_endpoint, development_client_id)
+    if development_client is None:
+        development_client_endpoint = create_client(access_token, clients_endpoint, development_client_id)
+    else:
+        development_client_endpoint = get_client_endpoint(development_client)
+    development_client_secret = get_client_secret(access_token, development_client_endpoint)
+
+    context = {}
+    context['AUTHENTICATION_OPTIONS'] = settings.AUTHENTICATION_OPTIONS
+    context['keycloak_client_id'] = development_client_id
+    context['keycloak_client_secret'] = development_client_secret
+    context['KEYCLOAK_AUTHORIZE_URL'] = settings.KEYCLOAK_AUTHORIZE_URL
+    context['KEYCLOAK_TOKEN_URL'] = settings.KEYCLOAK_TOKEN_URL
+    context['KEYCLOAK_USERINFO_URL'] = settings.KEYCLOAK_USERINFO_URL
+    context['KEYCLOAK_LOGOUT_URL'] = settings.KEYCLOAK_LOGOUT_URL
+    context['GATEWAY_ID'] = settings.GATEWAY_ID
+    context['AIRAVATA_API_HOST'] = settings.AIRAVATA_API_HOST
+    context['AIRAVATA_API_PORT'] = settings.AIRAVATA_API_PORT
+    context['AIRAVATA_API_SECURE'] = settings.AIRAVATA_API_SECURE
+    context['GATEWAY_DATA_STORE_RESOURCE_ID'] = settings.GATEWAY_DATA_STORE_RESOURCE_ID
+    if hasattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API'):
+        context['GATEWAY_DATA_STORE_REMOTE_API'] = settings.GATEWAY_DATA_STORE_REMOTE_API
+    else:
+        context['GATEWAY_DATA_STORE_REMOTE_API'] = request.build_absolute_uri("/api")
+    context['PROFILE_SERVICE_HOST'] = settings.PROFILE_SERVICE_HOST
+    context['PROFILE_SERVICE_PORT'] = settings.PROFILE_SERVICE_PORT
+    context['PROFILE_SERVICE_SECURE'] = settings.PROFILE_SERVICE_SECURE
+    context['PORTAL_TITLE'] = settings.PORTAL_TITLE
+    settings_local_str = render_to_string("django_airavata_auth/settings_local.py.template", context)
+    settings_local_bytesio = io.BytesIO(settings_local_str.encode())
+    return FileResponse(settings_local_bytesio, as_attachment=True, filename="settings_local.py")
+
+
+def get_client(access_token, clients_endpoint, client_id):
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+    r = requests.get(clients_endpoint, {'clientId': client_id}, headers=headers)
+    r.raise_for_status()
+    clients = r.json()
+    if len(clients) == 0:
+        return None
+    else:
+        return clients[0]
+
+
+def get_clients_endpoint():
+    realm = settings.GATEWAY_ID
+    clients_endpoint = f"https://iamdev.scigap.org/auth/admin/realms/{realm}/clients"
+    return clients_endpoint
+
+
+def get_client_endpoint(client):
+    return f"{get_clients_endpoint()}/{client['id']}"
+
+
+def create_client(access_token, clients_endpoint, client_id):
+    client = {
+        'clientId': client_id,
+        "redirectUris": [
+            "http://localhost:8000/",
+            "http://localhost:8000/auth/callback*",
+            "http://127.0.0.1:8000/",
+            "http://127.0.0.1:8000/auth/callback*"
+        ],
+        "directAccessGrantsEnabled": True
+    }
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+    r = requests.post(clients_endpoint, json=client, headers=headers)
+    r.raise_for_status()
+    return r.headers['Location']
+
+
+def get_client_secret(access_token, client_endpoint):
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+    r = requests.get(client_endpoint + "/client-secret", headers=headers)
+    r.raise_for_status()
+    return r.json()['value']

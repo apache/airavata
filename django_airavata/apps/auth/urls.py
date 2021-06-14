@@ -1,5 +1,6 @@
 
 from django.conf.urls import include, url
+from django.urls import path
 from rest_framework import routers
 
 from . import views
@@ -34,4 +35,5 @@ urlpatterns = [
         name="refreshed_token_desktop"),
     url(r'^access-token-redirect$', views.access_token_redirect, name="access_token_redirect"),
     url(r'^user-profile/', views.user_profile, name="user_profile"),
+    path('settings-local/', views.download_settings_local, name="download_settings_local"),
 ]

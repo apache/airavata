@@ -65,4 +65,12 @@ class AdminConfig(AiravataAppConfig):
             'enabled': lambda req: (req.is_gateway_admin or
                                     req.is_read_only_gateway_admin)
         },
+        {
+            'label': 'Developer Console',
+            'icon': 'fa fa-code',
+            'url': 'django_airavata_admin:developers',
+            'active_prefixes': ['developers'],
+            'enabled': lambda req: (req.is_gateway_admin or
+                                    req.is_read_only_gateway_admin)
+        },
     ]
