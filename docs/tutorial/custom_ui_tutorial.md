@@ -1,4 +1,4 @@
-# Gateways Tutorial
+# Custom UI Tutorial
 
 Objective: learn the basics of the Apache Airavata Django Portal and how to make
 both simple and complex customizations to the user interface.
@@ -13,6 +13,22 @@ Tutorial attendees should have:
 -   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
     or
     [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
+
+!!! note "Special note for Windows Home users"
+
+    If you have Windows Home installed, you'll need to either use a **remote
+    Docker host** (recommended) or take some extra steps to setup WSL2
+    (Windows Subsystem for Linux 2). The following are some special
+    instructions to help you with these options:
+
+    1. (**Recommended**) For the in person session of the tutorial, you will
+    have the option of using a **remote Docker host** provided to you. See
+    [Appendix: Setting up Windows Home for a remote Docker
+    host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
+    details.
+    2. (**Advanced**) [Install Docker Desktop on Windows Home with WSL2
+    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/).
+    See the link for more information.
 
 ### Installing Python
 
@@ -37,22 +53,6 @@ Python 3.9.5
 C:\Users\machrist>py --version
 Python 3.9.5
 ```
-
-!!! note "Special note for Windows Home users"
-
-    If you have Windows Home installed, you'll need to either use a **remote
-    Docker host** (recommended) or take some extra steps to setup WSL2
-    (Windows Subsystem for Linux 2). The following are some special
-    instructions to help you with these options:
-
-    1. (**Recommended**) For the in person session of the tutorial, you will
-    have the option of using a **remote Docker host** provided to you. See
-    [Appendix: Setting up Windows Home for a remote Docker
-    host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
-    details.
-    2. (**Advanced**) [Install Docker Desktop on Windows Home with WSL2
-    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/).
-    See the link for more information.
 
 ## Outline
 
@@ -415,14 +415,14 @@ cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
 ```
 
 You'll need to answer some questions. You can name it whatever you want, but to
-follow along with the tutorial, for `project_name` give **Gateways Tutorial
+follow along with the tutorial, for `project_name` give **Custom UI Tutorial
 App**. For the rest of the questions, you can simply accept the defaults:
 
 ```
-project_name [My Custom Django App]: Gateways Tutorial App
-project_slug [gateways_tutorial_app]:
+project_name [My Custom Django App]: Custom UI Tutorial App
+project_slug [custom_ui_tutorial_app]:
 project_short_description [Custom Django app with everything needed to be installed in the airavata-django-portal]:
-app_config_class_name [GatewaysTutorialAppConfig]:
+app_config_class_name [CustomUiTutorialAppConfig]:
 version [0.1.0]:
 ```
 
@@ -437,13 +437,13 @@ if you are interested).
 1. Make sure you have
    [Docker installed](https://www.docker.com/products/docker-desktop).
 2. Run the following to create a Docker container called
-   **gateways19-tutorial**.
+   **custom-ui-tutorial**.
 
 ```
 cd $HOME
-git clone https://github.com/machristie/gateways_tutorial_app.git gateways_tutorial_app-final
-cd gateways_tutorial_app
-docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../gateways_tutorial_app-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+cd custom_ui_tutorial_app
+docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
 ```
 
 !!! note "For remote Docker host users"
@@ -475,7 +475,7 @@ docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "
 3. Run the following to load the default set of CMS pages:
 
 ```
-docker exec gateways19-tutorial python manage.py load_cms_data new_default_theme
+docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
 ```
 
 ---
@@ -489,11 +489,11 @@ experiments listed on the right hand side.
 Now we'll also generate and implement a **Gaussian Eigenvalues View** provider.
 
 1. We'll run another cookiecutter template to generate the output view provider
-   code. First, change into the `gateways_tutorial_app` generated in the
+   code. First, change into the `custom_ui_tutorial_app` generated in the
    previous step:
 
 ```sh
-cd $HOME/gateways_tutorial_app
+cd $HOME/custom_ui_tutorial_app
 ```
 
 2. Run the following cookiecutter template:
@@ -506,7 +506,7 @@ You'll need to answer some questions again. For `project_name` give **Gaussian
 Eigenvalues View**. For `custom_django_app_module_name`, you need to provide the
 name of the Python module that was generated by
 cookiecutter-airavata-django-app, which for this tutorial is
-**gateways_tutorial_app**. For all of the other questions you can accept the
+**custom_ui_tutorial_app**. For all of the other questions you can accept the
 default.
 
 ```
@@ -514,7 +514,7 @@ project_name [My Custom Output View]: Gaussian Eigenvalues View
 project_slug [gaussian_eigenvalues_view]:
 project_short_description [Gaussian Eigenvalues View generates data for an output view in the Airavata Django Portal]:
 output_view_provider_class_name [GaussianEigenvaluesViewProvider]:
-custom_django_app_module_name []: gateways_tutorial_app
+custom_django_app_module_name []: custom_ui_tutorial_app
 output_views_directory_name [output_views]:
 Select output_view_display_type:
 1 - image
@@ -528,8 +528,8 @@ Choose from 1, 2 [1]:
 ```
 
 3. This creates a custom output view provider, called
-   GaussianEigenvaluesViewProvider, in `gateways-tutorialoutput_views/`. Open
-   `$HOME/gateways_tutorial_app/gateways_tutorial_app/output_views/gaussian_eigenvalues_view.py`
+   GaussianEigenvaluesViewProvider, in `custom_ui_tutorial_app/output_views/`. Open
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/output_views/gaussian_eigenvalues_view.py`
    in your editor and we'll look at the generated code. The cookiecutter
    template has generated a GaussianEigenvaluesViewProvider class with a method
    called `generate_data`. The generate_data method has some commented out code
@@ -683,18 +683,18 @@ class GaussianEigenvaluesViewProvider:
    template already created this when it generated the
    gaussian_eigenvalues_view.py code. We can take a look and make sure it added
    an `airavata.output_view_providers` entry to the `[options.entry_points]`
-   section in the `$HOME/gateways_tutorial_app/setup.cfg` file:
+   section in the `$HOME/custom_ui_tutorial_app/setup.cfg` file:
 
 ```ini
 [options.entry_points]
 airavata.djangoapp =
-    gateways_tutorial_app = gateways_tutorial_app.apps:GatewaysTutorialAppConfig
+    custom_ui_tutorial_app = custom_ui_tutorial_app.apps:CustomUiTutorialAppConfig
 airavata.output_view_providers =
-    gaussian_eigenvalues_view = gateways_tutorial_app.output_views.gaussian_eigenvalues_view:GaussianEigenvaluesViewProvider
+    gaussian_eigenvalues_view = custom_ui_tutorial_app.output_views.gaussian_eigenvalues_view:GaussianEigenvaluesViewProvider
 ```
 
 `gaussian_eigenvalues_view` is the output view provider id.
-`gateways_tutorial_app.output_views.gaussian_eigenvalues_view` is the module in
+`custom_ui_tutorial_app.output_views.gaussian_eigenvalues_view` is the module in
 which the `GaussianEigenvaluesViewProvider` output view provider class is found.
 
 9. While we're looking at setup.cfg, let's add our output view providers Python
@@ -710,12 +710,12 @@ install_requires =
     matplotlib
 ```
 
-10. Now we need to install the _gateways_tutorial_app_ package into the Django
+10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
     portal's virtual environment.
 
 ```bash
-docker exec -w /extensions gateways19-tutorial pip install -e .
-docker exec gateways19-tutorial touch /code/django_airavata/wsgi.py
+docker exec -w /extensions custom-ui-tutorial pip install -e .
+docker exec custom-ui-tutorial touch /code/django_airavata/wsgi.py
 ```
 
 These commands:
@@ -763,7 +763,7 @@ simple boolean interactive parameter to toggle the display of the matplotlib
 grid as an example.
 
 1. Open
-   `$HOME/gateways_tutorial_app/gateways_tutorial_app/output_views/gaussian_eigenvalues_view.py`.
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/output_views/gaussian_eigenvalues_view.py`.
    Change the `generate_data` function so that it has an additional `show_grid`
    parameter with a default value of `False`:
 
@@ -844,8 +844,8 @@ Django framework as well as the Airavata Django Portal REST APIs and JS library.
 To start, we'll just create a simple "Hello World" page for the Django app and
 get it properly registered with the local Django Portal instance.
 
-1. In the `gateways_tutorial_app` directory, open
-   `$HOME/gateways_tutorial_app/gateways_tutorial_app/templates/gateways_tutorial_app/home.html`.
+1. In the `custom_ui_tutorial_app` directory, open
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/home.html`.
    Copy this file to `hello.html` in the same directory.
 
 2. Change the title of the page, in the `<h1>` tag, to **Hello World** and save
@@ -865,19 +865,19 @@ get it properly registered with the local Django Portal instance.
 {% endblock content %}
 ```
 
-3. Open the file `$HOME/gateways_tutorial_app/gateways_tutorial_app/views.py`
+3. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py`
    and add the following `hello_world` view function at the end of the file:
 
 ```python
 
 @login_required
 def hello_world(request):
-    return render(request, "gateways_tutorial_app/hello.html")
+    return render(request, "custom_ui_tutorial_app/hello.html")
 ```
 
 This view will simply display the template created in the previous step.
 
-4. Open the file `$HOME/gateways_tutorial_app/gateways_tutorial_app/urls.py` and
+4. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py` and
    add a URL mapping for of `hello/` to the `hello_world` view function:
 
 ```python
@@ -885,7 +885,7 @@ from django.urls import path
 
 from . import views
 
-app_name = 'gateways_tutorial_app'
+app_name = 'custom_ui_tutorial_app'
 urlpatterns = [
     path('home/', views.home, name='home'),
     path('hello/', views.hello_world, name='hello_world'),
@@ -895,20 +895,20 @@ urlpatterns = [
 
 This maps the `/hello/` URL to the `hello_world` view.
 
-5. Open the file `$HOME/gateways_tutorial_app/gateways_tutorial_app/apps.py` and
+5. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/apps.py` and
    add the `fa_icon_class` attribute and the `url_home` attribute to the
-   `GatewaysTutorialAppConfig` class:
+   `CustomUiTutorialAppConfig` class:
 
 ```python
 from django.apps import AppConfig
 
 
-class GatewaysTutorialAppConfig(AppConfig):
-    name = 'gateways_tutorial_app'
+class CustomUiTutorialAppConfig(AppConfig):
+    name = 'custom_ui_tutorial_app'
     label = name
-    verbose_name = "Gateways Tutorial App"
+    verbose_name = "Custom UI Tutorial App"
     fa_icon_class = "fa-comment"
-    url_home = "gateways_tutorial_app:hello_world"
+    url_home = "custom_ui_tutorial_app:hello_world"
 ```
 
 This the main metadata for this custom Django app. Besides the normal metadata
@@ -920,7 +920,7 @@ navigating to this app.
 ---
 
 Now you should be able to [log into the portal locally](http://localhost:8000)
-and see **Gateways Tutorial App** in the drop down menu in the header (click on
+and see **Custom UI Tutorial App** in the drop down menu in the header (click on
 **Workspace** then you should see it in that menu).
 
 ![Screenshot of custom app in menu](./screenshots/gateways19/custom-app-menu.png)
@@ -930,7 +930,7 @@ and see **Gateways Tutorial App** in the drop down menu in the header (click on
 Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
-1. In the `$HOME/gateways_tutorial_app/gateways_tutorial_app/views.py` file, we
+1. In the `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py` file, we
    add the following import:
 
 ```python
@@ -963,7 +963,7 @@ def languages(request):
     }]})
 ```
 
-3. In `$HOME/gateways_tutorial_app/gateways_tutorial_app/urls.py` we add a url
+3. In `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py` we add a url
    mapping for the `languages` view:
 
 ```python
@@ -975,7 +975,7 @@ urlpatterns = [
 ```
 
 4. In
-   `$HOME/gateways_tutorial_app/gateways_tutorial_app/templates/gateways_tutorial_app/hello.html`,
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/hello.html`,
    add the lines between the **STARTING HERE** and **ENDING HERE** comments.
    This adds a `<select>` element to the template which will be used to display
    the greeting options:
@@ -1021,7 +1021,7 @@ urlpatterns = [
     const { models, services, session, utils } = AiravataAPI;
 
     // STARTING HERE
-    utils.FetchUtils.get("/gateways_tutorial_app/languages/").then((data) => {
+    utils.FetchUtils.get("/custom_ui_tutorial_app/languages/").then((data) => {
         data.languages.forEach((language) => {
             $("#greeting-select").append(
                 `<option value="${language.greeting}">
@@ -1036,7 +1036,7 @@ urlpatterns = [
 ```
 
 Now when you view the custom app at
-[http://localhost:8000/gateways_tutorial_app/hello/](http://localhost:8000/gateways_tutorial_app/hello/)
+[http://localhost:8000/custom_ui_tutorial_app/hello/](http://localhost:8000/custom_ui_tutorial_app/hello/)
 you should see a dropdown of greetings in several languages, like so:
 
 ![Screenshot of custom app with languages list](./screenshots/gateways19/custom-app-languages-list.png)
@@ -1046,7 +1046,7 @@ you should see a dropdown of greetings in several languages, like so:
 Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 1. In
-   `$HOME/gateways_tutorial_app/gateways_tutorial_app/templates/gateways_tutorial_app/hello.html`,
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/hello.html`,
    add the following lines between the **STARTING HERE** and **ENDING HERE**
    comments. This adds table to display recent experiments to the bottom of
    `hello.html`:
@@ -1261,7 +1261,7 @@ $("#run-button").click((e) => {
 Now that we can launch the experiment we can go ahead and give it a try.
 
 You can also try this out in the production deployment at
-<https://testdrive.airavata.org/gateways19_tutorial/hello/>.
+<https://testdrive.airavata.org/custom_ui_tutorial_app/hello/>.
 
 ### Displaying the experiment output
 
@@ -1388,7 +1388,7 @@ function loadExperiments() {
 ## Resources
 
 You can browser the final version of the code at
-<https://github.com/machristie/gateways_tutorial_app>.
+<https://github.com/machristie/custom_ui_tutorial_app>.
 
 ### Airavata API
 
