@@ -1,5 +1,6 @@
 
 from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
@@ -28,4 +29,5 @@ urlpatterns = [
         views.login_desktop_success, name="login_desktop_success"),
     url(r'^refreshed-token-desktop$', views.refreshed_token_desktop,
         name="refreshed_token_desktop"),
+    path('settings-local/', views.download_settings_local, name="download_settings_local"),
 ]

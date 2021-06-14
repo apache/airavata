@@ -57,3 +57,9 @@ def users(request):
 def experiment_statistics(request):
     request.active_nav_item = 'experiment-statistics'
     return render(request, 'admin/admin_base.html')
+
+
+@login_required
+def developers(request):
+    request.active_nav_item = 'developers'
+    return render(request, 'admin/admin_base.html')
