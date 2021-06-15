@@ -137,7 +137,7 @@ customize the user interface used for application inputs.
 1. In the portal, click on the dropdown menu at the top right (currently
    **Workspace** is likely selected) and select **Settings**.
 
-![Screenshot of Settings menu](./screenshots/gateways19/settings_menu.png)
+![Screenshot of Settings menu](./screenshots/custom-ui/settings_menu.png)
 
 2. You should see the _Application Catalog_. Click on the **New Application**
    button.
@@ -745,7 +745,7 @@ additional output view of the file.
 
 It should look something like this:
 
-![Screenshot of Gaussian log output-view-providers json](./screenshots/gateways19/gaussian-output-view-providers-json.png)
+![Screenshot of Gaussian log output-view-providers json](./screenshots/custom-ui/gaussian-output-view-providers-json.png)
 
 7. Go back to the **Workspace** using the menu at the top.
 8. Select your Gaussian16 experiment from the right sidebar.
@@ -923,7 +923,7 @@ Now you should be able to [log into the portal locally](http://localhost:8000)
 and see **Custom UI Tutorial App** in the drop down menu in the header (click on
 **Workspace** then you should see it in that menu).
 
-![Screenshot of custom app in menu](./screenshots/gateways19/custom-app-menu.png)
+![Screenshot of custom app in menu](./screenshots/custom-ui/custom-app-menu.png)
 
 ### Adding a list of "Hello" greetings
 
