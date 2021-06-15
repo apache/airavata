@@ -303,15 +303,15 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             Response httpResponse = client.realms().realm(gatewayDetails.getGatewayId()).clients().create(pgaClient);
             logger.info("Tenant Client configuration exited with code : " + httpResponse.getStatus()+" : " +httpResponse.getStatusInfo());
 
-            // Add the manage-users role to the web client
+            // Add the manage-users and manage-clients roles to the web client
             UserRepresentation serviceAccountUserRepresentation = getUserByUsername(client, gatewayDetails.getGatewayId(), "service-account-" + pgaClient.getClientId());
             UserResource serviceAccountUser = client.realms().realm(gatewayDetails.getGatewayId()).users().get(serviceAccountUserRepresentation.getId());
             String realmManagementClientId = getRealmManagementClientId(client, gatewayDetails.getGatewayId());
-            List<RoleRepresentation> manageUsersRole = serviceAccountUser.roles().clientLevel(realmManagementClientId).listAvailable()
+            List<RoleRepresentation> manageUsersAndManageClientsRoles = serviceAccountUser.roles().clientLevel(realmManagementClientId).listAvailable()
                     .stream()
-                    .filter(r -> r.getName().equals("manage-users"))
+                    .filter(r -> r.getName().equals("manage-users") || r.getName().equals("manage-clients"))
                     .collect(Collectors.toList());
-            serviceAccountUser.roles().clientLevel(realmManagementClientId).add(manageUsersRole);
+            serviceAccountUser.roles().clientLevel(realmManagementClientId).add(manageUsersAndManageClientsRoles);
 
             if(httpResponse.getStatus() == 201){
                 String ClientUUID = client.realms().realm(gatewayDetails.getGatewayId()).clients().findByClientId(pgaClient.getClientId()).get(0).getId();
