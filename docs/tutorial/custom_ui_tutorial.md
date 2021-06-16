@@ -8,11 +8,14 @@ both simple and complex customizations to the user interface.
 Tutorial attendees should have:
 
 -   a laptop on which to write Python code
--   Python
+-   Python 3.9
 -   Git client
--   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
-    or
-    [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
+-   For running the Airavata Django Portal locally, either:
+    -   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
+        or
+        [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
+    -   Or, Python 3.9 and [Node LTS](https://nodejs.org/en/download/) and
+        [Yarn package manager](https://yarnpkg.com/getting-started/install).
 
 !!! note "Special note for Windows Home users"
 
@@ -436,8 +439,7 @@ if you are interested).
 
 1. Make sure you have
    [Docker installed](https://www.docker.com/products/docker-desktop).
-2. Run the following to create a Docker container called
-   **custom-ui-tutorial**.
+2. Run the following to create a Docker container called **custom-ui-tutorial**.
 
 ```
 cd $HOME
@@ -476,6 +478,62 @@ docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$
 
 ```
 docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
+```
+
+#### Python/Windows instructions
+
+Verify that you have the following installled
+
+-   Python 3.9
+-   Node LTS
+-   Yarn
+-   Git
+
+The following instructions assume that you start in your home directory, but you
+could technically checkout and build the code anywhere.
+
+1. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
+
+```text
+(tutorial-env) C:\Users\machrist>cd %HOMEDRIVE%%HOMEPATH%
+
+(tutorial-env) C:\Users\machrist>git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+
+(tutorial-env) C:\Users\machrist>git clone https://github.com/apache/airavata-django-portal.git
+```
+
+2. Install the airavata-django-portal dependencies.
+
+```text
+(tutorial-env) C:\Users\machrist>cd airavata-django-portal
+
+(tutorial-env) C:\Users\machrist\airavata-django-portal>pip install -U pip
+
+(tutorial-env) C:\Users\machrist\airavata-django-portal>pip install -r requirements.txt
+```
+
+3. Copy in the settings_local.py file.
+
+```text
+(tutorial-env) C:\Users\machrist\airavata-django-portal>copy ..\custom_ui_tutorial_app-final\settings_local.py django_airavata\
+```
+
+4. Run Django database migrations
+
+```text
+(tutorial-env) C:\Users\machrist\airavata-django-portal>python manage.py migrate
+```
+
+5. Load the default Wagtail CMS pages.
+
+```text
+(tutorial-env) C:\Users\machrist\airavata-django-portal>python manage.py load_cms_data new_default_theme
+```
+
+6. Build the JavaScript frontend code.
+
+```text
+(tutorial-env) C:\Users\machrist\airavata-django-portal>build_js.bat
 ```
 
 ---
@@ -528,7 +586,8 @@ Choose from 1, 2 [1]:
 ```
 
 3. This creates a custom output view provider, called
-   GaussianEigenvaluesViewProvider, in `custom_ui_tutorial_app/output_views/`. Open
+   GaussianEigenvaluesViewProvider, in `custom_ui_tutorial_app/output_views/`.
+   Open
    `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/output_views/gaussian_eigenvalues_view.py`
    in your editor and we'll look at the generated code. The cookiecutter
    template has generated a GaussianEigenvaluesViewProvider class with a method
@@ -713,6 +772,8 @@ install_requires =
 10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
     portal's virtual environment.
 
+Docker instructions:
+
 ```bash
 docker exec -w /extensions custom-ui-tutorial pip install -e .
 docker exec custom-ui-tutorial touch /code/django_airavata/wsgi.py
@@ -723,6 +784,16 @@ These commands:
 1. install our custom django app package and its dependencies into the
    container's Python environment, and
 2. touches the wsgi.py to trigger a reload of the Django portal dev server.
+
+Python/Windows instructions:
+
+```text
+(tutorial-env) C:\Users\machrist\airavata-django-portal>cd ..\custom_ui_tutorial_app
+
+(tutorial-env) C:\Users\machrist\custom_ui_tutorial_app>pip install -e .
+
+(tutorial-env) C:\Users\machrist\airavata-django-portal>python manage.py runserver
+```
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
@@ -877,8 +948,8 @@ def hello_world(request):
 
 This view will simply display the template created in the previous step.
 
-4. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py` and
-   add a URL mapping for of `hello/` to the `hello_world` view function:
+4. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py`
+   and add a URL mapping for of `hello/` to the `hello_world` view function:
 
 ```python
 from django.urls import path
@@ -895,8 +966,8 @@ urlpatterns = [
 
 This maps the `/hello/` URL to the `hello_world` view.
 
-5. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/apps.py` and
-   add the `fa_icon_class` attribute and the `url_home` attribute to the
+5. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/apps.py`
+   and add the `fa_icon_class` attribute and the `url_home` attribute to the
    `CustomUiTutorialAppConfig` class:
 
 ```python
@@ -930,8 +1001,8 @@ and see **Custom UI Tutorial App** in the drop down menu in the header (click on
 Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
-1. In the `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py` file, we
-   add the following import:
+1. In the `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py` file,
+   we add the following import:
 
 ```python
 from django.http import JsonResponse
