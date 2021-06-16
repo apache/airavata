@@ -55,7 +55,7 @@ RUN yarn run build
 
 
 
-FROM python:3.8 as server-stage
+FROM python:3.9-slim as server-stage
 
 ENV PYTHONUNBUFFERED 1
 
@@ -65,9 +65,10 @@ WORKDIR /code
 COPY requirements.txt requirements-mysql.txt ./
 COPY setup.* ./
 COPY README.md .
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install -r requirements.txt
-RUN pip install -r requirements-mysql.txt
+RUN apt-get update && apt-get install -y git gcc zlib1g-dev libjpeg-dev default-libmysqlclient-dev
+RUN pip install --upgrade pip setuptools wheel --no-cache
+RUN pip install -r requirements.txt --no-cache
+RUN pip install -r requirements-mysql.txt --no-cache
 
 # Copy in a default settings_local.py file
 COPY ./django_airavata/settings_local.py.sample ./django_airavata/settings_local.py
