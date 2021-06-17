@@ -38,24 +38,24 @@ Tutorial attendees should have:
 Python 3.6-3.9 are supported, but I highly recommend you download and use
 **Python 3.9**
 
-1. Download and install Python 3.9.
-    - (macOS/Windows): Download from https://www.python.org/downloads/
-    - (Linux): use your distribution's package manager to install Python 3.9
-2. (macOS/Linux) Verify you have installed Python 3.9. Open a terminal and run
-   `python3.9 --version`.
+Download and install Python 3.9.
 
-```
-$ python3.9 --version
-Python 3.9.5
-```
+-   (macOS/Windows): Download from <https://www.python.org/downloads/>
+-   (Linux): use your distribution's package manager to install Python 3.9
 
-3. (Windows) Verify you have installed Python 3.9. Open `cmd` and run
-   `py --version`:
+Verify you have installed Python 3.9:
 
-```text
-C:\Users\machrist>py --version
-Python 3.9.5
-```
+=== "macOS/Linux"
+
+        $ python3.9 --version
+        Python 3.9.5
+
+=== "Windows"
+
+    Open `cmd` then run:
+
+        C:\Users\username>py --version
+        Python 3.9.5
 
 ## Outline
 
@@ -383,35 +383,35 @@ We have a local develop environment created. Now we can start adding custom
 code. First, we'll create a custom Django app, which is the standard way to
 package a Django extension.
 
-1. (macOS/Linux) Create and activate a Python virtual environment
+#### Create and activate a Python virtual environment
 
-```bash
-$ cd $HOME
-$ python3.9 -m venv tutorial-env
-$ source tutorial-env/bin/activate
-(tutorial-env) $
-```
+=== "macOS/Linux"
 
-2. (Windows) Create and activate a Python virtual environment
+        $ cd $HOME
+        $ python3.9 -m venv tutorial-env
+        $ source tutorial-env/bin/activate
+        (tutorial-env) $
 
-```text
-C:\Users\machrist>cd %HOMEDRIVE%%HOMEPATH%
+=== "Windows"
 
-C:\Users\machrist>py -m venv tutorial-env
+        C:\Users\username>cd %HOMEDRIVE%%HOMEPATH%
 
-C:\Users\machrist>tutorial-env\Scripts\activate.bat
+        C:\Users\username>py -m venv tutorial-env
 
-(tutorial-env) C:\Users\machrist>
-```
+        C:\Users\username>tutorial-env\Scripts\activate.bat
 
-3. Install the latest version of cookiecutter. Cookiecutter is a tool for
+        (tutorial-env) C:\Users\username>
+
+#### Run the django app cookiecutter
+
+1. Install the latest version of cookiecutter. Cookiecutter is a tool for
    generating project source code from a template.
 
 ```sh
 pip install -U cookiecutter
 ```
 
-4. Use cookiecutter to run the Airavata Django app template.
+2. Use cookiecutter to run the Airavata Django app template.
 
 ```sh
 cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
@@ -431,22 +431,78 @@ version [0.1.0]:
 
 ### Setup local Django portal development environment
 
-To run the Django portal locally we'll start it as a Docker container. Another
-option, which we won't cover in this tutorial, is to check out the code and run
-the portal locally as a Python process (see the airavata-django-portal
-[README](https://github.com/apache/airavata-django-portal/blob/master/README.md)
-if you are interested).
+For running the local Django portal development environment, there are a few
+options:
 
-1. Make sure you have
-   [Docker installed](https://www.docker.com/products/docker-desktop).
-2. Run the following to create a Docker container called **custom-ui-tutorial**.
+-   **Docker**: Run the portal as a Docker container. If you have Docker
+    installed, this is the **recommended** option for the tutorial.
+-   **Python**: Install the portal dependencies (Python and Nodejs) and then run
+    it directly on your computer. This is recommended when you don't or can't
+    have Docker installed. It is also what we recommend when you are developing
+    a real custom django app extension.
 
-```
-cd $HOME
-git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
-cd custom_ui_tutorial_app
-docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
-```
+=== "Docker (macOS/Linux)"
+
+    1. Make sure you have
+    [Docker installed](https://www.docker.com/products/docker-desktop).
+    2. Run the following to create a Docker container called **custom-ui-tutorial**.
+
+            cd $HOME
+            git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+            cd custom_ui_tutorial_app
+            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+    3. Run the following to load the default set of CMS pages:
+
+            docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
+
+=== "Python (Windows)"
+
+    Verify that you have the following installed
+
+    -   Python 3.9
+    -   Node LTS
+    -   Yarn
+    -   Git
+
+    The following instructions assume that you start in your home directory, but you
+    could technically checkout and build the code anywhere.
+
+    1. Make sure that you have activated your `tutorial-env` virtual
+    environment. You should see `(tutorial-env)` at the beginning of the CMD
+    prompt. See the [virtual environment instructions if
+    needed](#create-and-activate-a-python-virtual-environment).
+
+    2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
+
+            (tutorial-env) C:\Users\username>cd %HOMEDRIVE%%HOMEPATH%
+
+            (tutorial-env) C:\Users\username>git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+
+            (tutorial-env) C:\Users\username>git clone https://github.com/apache/airavata-django-portal.git
+
+    3. Install the airavata-django-portal dependencies.
+
+            (tutorial-env) C:\Users\username>cd airavata-django-portal
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>pip install -U pip
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>pip install -r requirements.txt
+
+    4. Copy in the settings_local.py file.
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>copy ..\custom_ui_tutorial_app-final\settings_local.py django_airavata\
+
+    5. Run Django database migrations
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py migrate
+
+    6. Load the default Wagtail CMS pages.
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py load_cms_data new_default_theme
+
+    7. Build the JavaScript frontend code.
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>build_js.bat
 
 !!! note "For remote Docker host users"
 
@@ -471,70 +527,8 @@ docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$
         cd airavata-django-portal
         docker build -t airavata-django-portal .
 
-    Now you can `airavata-django-portal` instead of
+    Now you can use `airavata-django-portal` instead of
     `machristie/airavata-django-portal` in the `docker run` command above.
-
-3. Run the following to load the default set of CMS pages:
-
-```
-docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
-```
-
-#### Python/Windows instructions
-
-Verify that you have the following installled
-
--   Python 3.9
--   Node LTS
--   Yarn
--   Git
-
-The following instructions assume that you start in your home directory, but you
-could technically checkout and build the code anywhere.
-
-1. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
-
-```text
-(tutorial-env) C:\Users\machrist>cd %HOMEDRIVE%%HOMEPATH%
-
-(tutorial-env) C:\Users\machrist>git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
-
-(tutorial-env) C:\Users\machrist>git clone https://github.com/apache/airavata-django-portal.git
-```
-
-2. Install the airavata-django-portal dependencies.
-
-```text
-(tutorial-env) C:\Users\machrist>cd airavata-django-portal
-
-(tutorial-env) C:\Users\machrist\airavata-django-portal>pip install -U pip
-
-(tutorial-env) C:\Users\machrist\airavata-django-portal>pip install -r requirements.txt
-```
-
-3. Copy in the settings_local.py file.
-
-```text
-(tutorial-env) C:\Users\machrist\airavata-django-portal>copy ..\custom_ui_tutorial_app-final\settings_local.py django_airavata\
-```
-
-4. Run Django database migrations
-
-```text
-(tutorial-env) C:\Users\machrist\airavata-django-portal>python manage.py migrate
-```
-
-5. Load the default Wagtail CMS pages.
-
-```text
-(tutorial-env) C:\Users\machrist\airavata-django-portal>python manage.py load_cms_data new_default_theme
-```
-
-6. Build the JavaScript frontend code.
-
-```text
-(tutorial-env) C:\Users\machrist\airavata-django-portal>build_js.bat
-```
 
 ---
 
@@ -772,28 +766,24 @@ install_requires =
 10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
     portal's virtual environment.
 
-Docker instructions:
+=== "Docker (macOS/Linux)"
 
-```bash
-docker exec -w /extensions custom-ui-tutorial pip install -e .
-docker exec custom-ui-tutorial touch /code/django_airavata/wsgi.py
-```
+        docker exec -w /extensions custom-ui-tutorial pip install -e .
+        docker exec custom-ui-tutorial touch /code/django_airavata/wsgi.py
 
-These commands:
+    These commands:
 
-1. install our custom django app package and its dependencies into the
-   container's Python environment, and
-2. touches the wsgi.py to trigger a reload of the Django portal dev server.
+    1. install our custom django app package and its dependencies into the
+    container's Python environment, and
+    2. touches the wsgi.py to trigger a reload of the Django portal dev server.
 
-Python/Windows instructions:
+=== "Python (Windows)"
 
-```text
-(tutorial-env) C:\Users\machrist\airavata-django-portal>cd ..\custom_ui_tutorial_app
+        (tutorial-env) C:\Users\username\airavata-django-portal>cd ..\custom_ui_tutorial_app
 
-(tutorial-env) C:\Users\machrist\custom_ui_tutorial_app>pip install -e .
+        (tutorial-env) C:\Users\username\custom_ui_tutorial_app>pip install -e .
 
-(tutorial-env) C:\Users\machrist\airavata-django-portal>python manage.py runserver
-```
+        (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py runserver
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 

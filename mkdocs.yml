@@ -22,8 +22,12 @@ nav:
 
 theme: readthedocs
 
+extra_css:
+  - assets/css/pymdownx.tabbed.css
+
 markdown_extensions:
   - sane_lists # allow restarting numbering of ordered lists
   - admonition
   - toc:
       permalink: true
+  - pymdownx.tabbed
