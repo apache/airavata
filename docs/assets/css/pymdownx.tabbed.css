@@ -14,7 +14,8 @@
   order: 99;
   width: 100%;
   background-color: #e7f2fa;
-  padding: 0.25em;
+  padding: 0.5em;
+  border-top: 1px solid #6ab0de;
 }
 
 .tabbed-set label {
@@ -37,8 +38,8 @@
 }
 
 .tabbed-set input:nth-child(n + 1):checked + label {
-  /* color: #ff5252; */
-  background-color: #e7f2fa;
+  background: #6ab0de;
+  color: #fff;
 }
 
 .tabbed-set input:nth-child(n + 1):checked + label + .tabbed-content {
