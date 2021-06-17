@@ -390,7 +390,7 @@ package a Django extension.
 
 === "Windows"
 
-        C:\Users\username>cd %HOMEDRIVE%%HOMEPATH%
+        C:\Users\username>cd %userprofile%
 
         C:\Users\username>py -m venv tutorial-env
 
@@ -474,7 +474,7 @@ options:
 
     2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
 
-            (tutorial-env) C:\Users\username>cd %HOMEDRIVE%%HOMEPATH%
+            (tutorial-env) C:\Users\username>cd %userprofile%
 
             (tutorial-env) C:\Users\username>git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
 
@@ -565,9 +565,13 @@ Now we'll also generate and implement a **Gaussian Eigenvalues View** provider.
    code. First, change into the `custom_ui_tutorial_app` generated in the
    previous step:
 
-```sh
-cd $HOME/custom_ui_tutorial_app
-```
+=== "macOS/Linux"
+
+        (tutorial-env) $ cd $HOME/custom_ui_tutorial_app
+
+=== "Windows"
+
+        (tutorial-env) C:\Users\username>cd %userprofile%\custom_ui_tutorial_app
 
 2. Run the following cookiecutter template:
 
