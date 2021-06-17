@@ -504,10 +504,6 @@ options:
 
             (tutorial-env) C:\Users\username\airavata-django-portal>build_js.bat
 
-    8. Run the server.
-
-            (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py runserver
-
 === "Python (macOS/Linux)"
 
     Verify that you have the following installed
@@ -552,10 +548,6 @@ options:
     7. Build the JavaScript frontend code.
 
             (tutorial-env) $ build_js.sh
-
-    8. Run the server.
-
-            (tutorial-env) $ python manage.py runserver
 
 ### Create the custom output viewer
 
@@ -804,7 +796,7 @@ install_requires =
 
 === "Python (Windows)"
 
-        (tutorial-env) C:\Users\username\airavata-django-portal>cd ..\custom_ui_tutorial_app
+        (tutorial-env) C:\Users\username\airavata-django-portal>cd %userprofile%\custom_ui_tutorial_app
 
         (tutorial-env) C:\Users\username\custom_ui_tutorial_app>pip install -e .
 
