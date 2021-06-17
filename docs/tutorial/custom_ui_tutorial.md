@@ -455,6 +455,10 @@ options:
 
             docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
 
+    Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
+    enter your username and password. On the dashboard you should see the your
+    experiments listed on the right hand side.
+
 === "Python (Windows)"
 
     Verify that you have the following installed
@@ -504,6 +508,59 @@ options:
 
             (tutorial-env) C:\Users\username\airavata-django-portal>build_js.bat
 
+    8. Run the server.
+
+            (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py runserver
+
+=== "Python (macOS/Linux)"
+
+    Verify that you have the following installed
+
+    -   Python 3.9
+    -   Node LTS
+    -   Yarn
+    -   Git
+
+    The following instructions assume that you start in your home directory, but you
+    could technically checkout and build the code anywhere.
+
+    1. Make sure that you have activated your `tutorial-env` virtual
+    environment. You should see `(tutorial-env)` at the beginning of the shell
+    prompt. See the [virtual environment instructions if
+    needed](#create-and-activate-a-python-virtual-environment).
+
+    2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
+
+            (tutorial-env) $ cd $HOME
+            (tutorial-env) $ git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+            (tutorial-env) $ git clone https://github.com/apache/airavata-django-portal.git
+
+    3. Install the airavata-django-portal dependencies.
+
+            (tutorial-env) $ cd airavata-django-portal
+            (tutorial-env) $ pip install -U pip
+            (tutorial-env) $ pip install -r requirements.txt
+
+    4. Copy in the settings_local.py file.
+
+            (tutorial-env) $ cp ../custom_ui_tutorial_app-final/settings_local.py django_airavata/
+
+    5. Run Django database migrations
+
+            (tutorial-env) $ python manage.py migrate
+
+    6. Load the default Wagtail CMS pages.
+
+            (tutorial-env) $ python manage.py load_cms_data new_default_theme
+
+    7. Build the JavaScript frontend code.
+
+            (tutorial-env) $ build_js.sh
+
+    8. Run the server.
+
+            (tutorial-env) $ python manage.py runserver
+
 !!! note "For remote Docker host users"
 
     If you are using a remote Docker host (for example, you have Windows Home
@@ -529,12 +586,6 @@ options:
 
     Now you can use `airavata-django-portal` instead of
     `machristie/airavata-django-portal` in the `docker run` command above.
-
----
-
-Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
-enter your username and password. On the dashboard you should see the your
-experiments listed on the right hand side.
 
 ### Create the custom output viewer
 
@@ -783,7 +834,16 @@ install_requires =
 
         (tutorial-env) C:\Users\username\custom_ui_tutorial_app>pip install -e .
 
+        (tutorial-env) C:\Users\username\custom_ui_tutorial_app>cd ..\airavata-django-portal
+
         (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py runserver
+
+=== "Python (macOS/Linux)"
+
+        (tutorial-env) $ cd $HOME/custom_ui_tutorial_app
+        (tutorial-env) $ pip install -e .
+        (tutorial-env) $ cd ../airavata-django-portal
+        (tutorial-env) $ python manage.py runserver
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
