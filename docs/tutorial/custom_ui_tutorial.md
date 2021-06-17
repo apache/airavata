@@ -182,7 +182,7 @@ Dashboard.
 
 8. Click **Save** at the bottom of the screen.
 9. Click on the **Deployments** tab.
-10. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_
+10. Click on the **New Deployment** button. Select the _example-vc.jetstream-cloud.org_
     compute resource in the drop down list and click **OK**.
 11. For the _Application Executable Path_, provide the value `/usr/bin/true`.
     This is the only required field.
