@@ -290,13 +290,17 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 settings,
                 'GATEWAY_DATA_STORE_REMOTE_API',
                     None) is not None:
+                remote_api_url = settings.GATEWAY_DATA_STORE_REMOTE_API
+                if remote_api_url.endswith("/api"):
+                    warnings.warn(f"Set GATEWAY_DATA_STORE_REMOTE_API to \"{remote_api_url}\". /api is no longer needed.", DeprecationWarning)
+                    remote_api_url = remote_api_url[0:remote_api_url.rfind("/api")]
                 # Proxy the launch/ request to the remote Django portal
                 # instance since it must setup the experiment data directory
                 # which is only on the remote Django portal instance
                 headers = {
                     'Authorization': f'Bearer {request.authz_token.accessToken}'}
                 r = requests.post(
-                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/launch/',
+                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/api/experiments/{quote(experiment_id)}/launch/',
                     headers=headers,
                 )
                 r.raise_for_status()
