@@ -6,15 +6,16 @@
   "author": "Marcus Christie <machristie@apache.org>",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "run-s build:vue build:wc",
+    "build:vue": "vue-cli-service build",
     "lint": "vue-cli-service lint ./static/django_airavata_workspace/js",
     "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_workspace/js",
     "test": "npm run test:unit",
     "test:unit": "vue-cli-service test:unit",
     "test:unit:watch": "vue-cli-service test:unit --watch",
     "format": "prettier --write .",
-    "wc": "WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc",
-    "wc:watch": "WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
+    "build:wc": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc",
+    "build:wc:watch": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -45,9 +46,11 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.5",
+    "cross-env": "^7.0.3",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0-0",
     "node-sass": "^5.0.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.1.2",
     "sass-loader": "10.1.1",
     "vue-loader": "^15.5.1",
