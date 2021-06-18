@@ -110,11 +110,11 @@ click the **Browse** button to upload the file:
 
 -   [npentane12diol.inp](./data/npentane12diol.inp)
 
-You can click on **View File** to take a quick look at the file.
+You can click on the file to take a quick look at the file in a popup window.
 
 Now we'll select what account to charge and where to run this job. The
-_Allocation_ field should already have _Default Gateway Profile_ selected. Under
-_Compute Resource_ make sure you select **comet.sdsc.edu**.
+_Allocation_ field should already have **Default** selected. Under
+_Compute Resource_ make sure you select **Expanse**.
 
 Then click **Save and Launch**.
 
