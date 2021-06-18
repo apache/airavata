@@ -444,9 +444,9 @@ options:
     2. Run the following to create a Docker container called **custom-ui-tutorial**.
 
             cd $HOME
-            git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+            git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
             cd custom_ui_tutorial_app
-            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app-final/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app_solution/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
     3. Run the following to load the default set of CMS pages:
 
             docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
@@ -476,7 +476,7 @@ options:
 
             (tutorial-env) C:\Users\username>cd %userprofile%
 
-            (tutorial-env) C:\Users\username>git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+            (tutorial-env) C:\Users\username>git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
 
             (tutorial-env) C:\Users\username>git clone https://github.com/apache/airavata-django-portal.git
 
@@ -490,7 +490,7 @@ options:
 
     4. Copy in the settings_local.py file.
 
-            (tutorial-env) C:\Users\username\airavata-django-portal>copy ..\custom_ui_tutorial_app-final\settings_local.py django_airavata\
+            (tutorial-env) C:\Users\username\airavata-django-portal>copy ..\custom_ui_tutorial_app_solution\settings_local.py django_airavata\
 
     5. Run Django database migrations
 
@@ -524,7 +524,7 @@ options:
     2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
 
             (tutorial-env) $ cd $HOME
-            (tutorial-env) $ git clone https://github.com/machristie/custom_ui_tutorial_app.git custom_ui_tutorial_app-final
+            (tutorial-env) $ git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
             (tutorial-env) $ git clone https://github.com/apache/airavata-django-portal.git
 
     3. Install the airavata-django-portal dependencies.
@@ -535,7 +535,7 @@ options:
 
     4. Copy in the settings_local.py file.
 
-            (tutorial-env) $ cp ../custom_ui_tutorial_app-final/settings_local.py django_airavata/
+            (tutorial-env) $ cp ../custom_ui_tutorial_app_solution/settings_local.py django_airavata/
 
     5. Run Django database migrations
 
