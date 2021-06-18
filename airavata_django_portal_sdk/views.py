@@ -1,9 +1,12 @@
+import io
 import logging
 import os
+import zipfile
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import redirect
+from django.utils.text import get_valid_filename
 from django.views.decorators.gzip import gzip_page
 from rest_framework.decorators import api_view
 
@@ -50,3 +53,58 @@ def download_file(request):
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
+
+
+@api_view()
+def download_dir(request):
+    path = request.GET.get('path', "")
+    # TODO: switch to writing to a temporary file and returning a streaming FileResponse
+    b = io.BytesIO()
+    with zipfile.ZipFile(b, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+        _add_directory_to_zipfile(request, zf, path)
+        # directories, files = user_storage.listdir(request, path)
+        # for file in files:
+        #     o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
+        #     zf.writestr(file['name'], o.read())
+        # TODO: recursively walk directories too
+    resp = HttpResponse(b.getvalue(), content_type="application/x-zip-compressed")
+    filename = 'home.zip' if path == "" else f"{os.path.basename(path)}.zip"
+    resp['Content-Disposition'] = f'attachment; filename={filename}'
+    return resp
+    # b.seek(0)
+    # return FileResponse(b, as_attachment=True, filename=filename)
+
+
+@api_view()
+def download_experiment_dir(request, experiment_id=None):
+    path = request.GET.get('path', "")
+    experiment = request.airavata_client.getExperiment(request.authz_token, experiment_id)
+    # TODO: switch to writing to a temporary file and returning a streaming FileResponse
+    b = io.BytesIO()
+    with zipfile.ZipFile(b, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path)
+    resp = HttpResponse(b.getvalue(), content_type="application/x-zip-compressed")
+    if path == "":
+        filename = f'{get_valid_filename(experiment.experimentName)}.zip'
+    else:
+        filename = f'{get_valid_filename(experiment.experimentName)}_{os.path.basename(path)}.zip'
+    resp['Content-Disposition'] = f'attachment; filename={filename}'
+    return resp
+
+
+def _add_directory_to_zipfile(request, zf, path, directory=""):
+    directories, files = user_storage.listdir(request, os.path.join(path, directory))
+    for file in files:
+        o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
+        zf.writestr(os.path.join(directory, file['name']), o.read())
+    for d in directories:
+        _add_directory_to_zipfile(request, zf, path, d['name'])
+
+
+def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory=""):
+    directories, files = user_storage.list_experiment_dir(request, experiment_id, os.path.join(path, directory))
+    for file in files:
+        o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
+        zf.writestr(os.path.join(directory, file['name']), o.read())
+    for d in directories:
+        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, d['name'])
