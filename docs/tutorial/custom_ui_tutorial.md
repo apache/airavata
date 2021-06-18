@@ -447,7 +447,10 @@ options:
             git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
             cd custom_ui_tutorial_app
             docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app_solution/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
-    3. Run the following to load the default set of CMS pages:
+    3. Wait until the Docker container starts up. Go to <http://localhost:8000>
+    and when it loads and you see **Welcome to your new Wagtail site!**, then
+    you're ready to proceed to the next step.
+    4. Run the following to load the default set of CMS pages:
 
             docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
 
