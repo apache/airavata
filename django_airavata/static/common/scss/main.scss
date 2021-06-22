@@ -136,6 +136,7 @@ $header_height_with_border: $header_height + 1px;
 .sidebar {
   flex-basis: 200px;
   background-color: #ffffff;
+  overflow-y: auto;
 }
 
 .sidebar-header {
