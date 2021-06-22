@@ -217,7 +217,7 @@ export default {
   methods: {
     doFocus() {
       this.$refs.nameInput.focus();
-      this.$el.scrollIntoView();
+      this.$el.scrollIntoView({ behavior: "smooth" });
     },
     deleteApplicationInput() {
       this.$emit("delete");

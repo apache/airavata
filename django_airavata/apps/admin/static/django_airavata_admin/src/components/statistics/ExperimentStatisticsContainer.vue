@@ -550,8 +550,7 @@ export default {
       this.experimentDetails.splice(index, 1);
     },
     scrollTabsIntoView() {
-      // FIXME: AIRAVATA-3163: disabling since it prevents scrolling back up to the header
-      // this.$refs.tabs.$el.scrollIntoView();
+      this.$refs.tabs.$el.scrollIntoView({ behavior: "smooth" });
     },
   },
 };
