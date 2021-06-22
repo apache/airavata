@@ -615,83 +615,10 @@ Choose from 1, 2 [1]:
    for how to prepare the values expected in the returned dictionary. Let's
    start filling in the implementation.
 
-4. First we'll add some imports at the top. Replace the existing imports with
-   these:
-
-```python
-import io
-import os
-
-import numpy as np
-from cclib.parser import ccopen
-from django.conf import settings
-from matplotlib.figure import Figure
-
-from airavata_django_portal_sdk import user_storage
-```
-
-5. Now we implement the
-   [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
-   This function should return a dictionary with values that are expected for
-   this `display_type`. For a display type of _image_, the required return
-   values are _image_ which should be a bytes array or file-like object with the
-   image bytes and _mime-type_ which should be the image's mime type. Here's the
-   `generate_data` function:
-
-```python
-    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
-        # Parse output_file
-        output_text = io.TextIOWrapper(output_file)
-        gaussian = ccopen(output_text)
-        data = gaussian.parse()
-        data.listify()
-        homo_eigenvalues = None
-        lumo_eigenvalues = None
-        if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
-            homos = data.homos[0] + 1
-            moenergies = data.moenergies[0]
-            if homos > 9 and len(moenergies) >= homos:
-                homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
-            if homos + 9 <= len(moenergies):
-                lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
-
-        # Create plot
-        fig = Figure()
-        if homo_eigenvalues and lumo_eigenvalues:
-            fig.suptitle("Eigenvalues")
-            ax = fig.subplots(2, 1)
-            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
-            ax[0].set_ylabel('eV')
-            ax[0].legend()
-            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
-            ax[1].set_ylabel('eV')
-            ax[1].legend()
-        else:
-            ax = fig.subplots()
-            ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
-                verticalalignment='center', transform=ax.transAxes)
-
-        # Export plot as image buffer
-        buffer = io.BytesIO()
-        fig.savefig(buffer, format='png')
-        image_bytes = buffer.getvalue()
-        buffer.close()
-
-        # return dictionary with image data
-        return {
-            'image': image_bytes,
-            'mime-type': 'image/png'
-        }
-```
-
-This plots the eigenvalues of molecular orbital energies calculated by Gaussian.
-`cclib` is a Python computational chemistry library which is used to read the
-molecular orbital energies. Then `matplotlib` is used to create two plots of
-these values. Finally, the plots are exported as a PNG image that is returns as
-a buffer of bytes.
-
-7. Altogether, the output_views/gaussian_eigenvalues_view.py file should have
-   the following contents:
+4. As a final result, the output_views/gaussian_eigenvalues_view.py file should
+   have the following contents. I'll explain each part of this in the following
+   steps, but you can go ahead and copy and paste the following into
+   `gaussian_eigenvalues_view.py`:
 
 ```python
 import io
@@ -756,7 +683,85 @@ class GaussianEigenvaluesViewProvider:
 
 ```
 
-8. Now we need to register our _output view provider_ with the package metadata
+5. Let's take a look at the implementation. First we added some imports at the
+   top:
+
+```python
+import io
+import os
+
+import numpy as np
+from cclib.parser import ccopen
+from django.conf import settings
+from matplotlib.figure import Figure
+
+from airavata_django_portal_sdk import user_storage
+```
+
+6.  Next we implemented the
+    [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
+    This function should return a dictionary with values that are expected for
+    this `display_type`. For a display type of _image_, the required return
+    values are _image_ which should be a bytes array or file-like object with
+    the image bytes and _mime-type_ which should be the image's mime type. There
+    implementation plots the eigenvalues of molecular orbital energies
+    calculated by Gaussian and has three parts:
+
+    1. Use the _cclib_ library to parse the Gaussian log file. _cclib_ is a
+       Python computational chemistry library which is used to read the
+       molecular orbital energies.
+    2. Generate a plot using _matplotlib_.
+    3. Save the plot as a PNG image into an in-memory array of bytes.
+
+    Here's the `generate_data` function:
+
+```python
+    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
+        # Parse output_file
+        output_text = io.TextIOWrapper(output_file)
+        gaussian = ccopen(output_text)
+        data = gaussian.parse()
+        data.listify()
+        homo_eigenvalues = None
+        lumo_eigenvalues = None
+        if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
+            homos = data.homos[0] + 1
+            moenergies = data.moenergies[0]
+            if homos > 9 and len(moenergies) >= homos:
+                homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
+            if homos + 9 <= len(moenergies):
+                lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
+
+        # Create plot
+        fig = Figure()
+        if homo_eigenvalues and lumo_eigenvalues:
+            fig.suptitle("Eigenvalues")
+            ax = fig.subplots(2, 1)
+            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
+            ax[0].set_ylabel('eV')
+            ax[0].legend()
+            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
+            ax[1].set_ylabel('eV')
+            ax[1].legend()
+        else:
+            ax = fig.subplots()
+            ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
+                verticalalignment='center', transform=ax.transAxes)
+
+        # Export plot as image buffer
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format='png')
+        image_bytes = buffer.getvalue()
+        buffer.close()
+
+        # return dictionary with image data
+        return {
+            'image': image_bytes,
+            'mime-type': 'image/png'
+        }
+```
+
+7. Now we need to register our _output view provider_ with the package metadata
    so that the Django Portal will be able to discover it. The cookiecutter
    template already created this when it generated the
    gaussian_eigenvalues_view.py code. We can take a look and make sure it added
