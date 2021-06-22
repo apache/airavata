@@ -82,8 +82,8 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
         files = {'file': (name, file, content_type)
                  if content_type is not None else file, }
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                data={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 method="post",
                                 files=files)
         data = resp.json()
@@ -270,8 +270,8 @@ def dir_exists(request, path, storage_resource_id=None):
     "Return True if path exists in user's data store."
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                params={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 raise_for_status=False)
         if resp.status_code == HTTPStatus.NOT_FOUND:
             return False
@@ -286,8 +286,8 @@ def user_file_exists(request, path, storage_resource_id=None):
     """If file exists, return data product URI, else None."""
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                params={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 raise_for_status=False)
         if resp.status_code == HTTPStatus.NOT_FOUND or resp.json()['isDir']:
             return None
@@ -307,8 +307,8 @@ def delete_dir(request, path, storage_resource_id=None):
     """Delete path in user's data store, if it exists."""
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                data={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 method="delete",
                                 raise_for_status=False)
         _raise_404(resp, f"File path does not exist {path}")
@@ -322,8 +322,8 @@ def delete_user_file(request, path, storage_resource_id=None):
     """Delete file in user's data store, if it exists."""
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                data={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 method="delete",
                                 raise_for_status=False)
         _raise_404(resp, f"File path does not exist {path}")
@@ -336,10 +336,11 @@ def delete_user_file(request, path, storage_resource_id=None):
 def update_file_content(request, path, fileContentText, storage_resource_id=None):
     if _is_remote_api():
         _call_remote_api(request,
-                         "/user-storage/~/",
-                         data={"path": path,
-                               "fileContentText": fileContentText},
-                         method="put")
+                         "/user-storage/~/{path}",
+                         path_params={"path": path},
+                         method="put",
+                         data={"fileContentText": fileContentText}
+                         )
         return
     else:
         backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
@@ -365,8 +366,8 @@ def update_data_product_content(request, data_product=None, fileContentText="", 
 def get_file_metadata(request, path, storage_resource_id=None):
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                params={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 raise_for_status=False
                                 )
         _raise_404(resp, "User storage file path does not exist")
@@ -483,8 +484,8 @@ def listdir(request, path, storage_resource_id=None):
 
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                params={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 )
         data = resp.json()
         for directory in data['directories']:
@@ -633,8 +634,8 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
     if _is_remote_api():
         logger.debug(f"path={path}")
         resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                data={"path": path},
+                                "/user-storage/~/{path}",
+                                path_params={"path": path},
                                 method="post")
         path = resp.json()['path']
         # FIXME: should use the storage_resource_id returned from remote API call
