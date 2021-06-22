@@ -113,8 +113,8 @@ click the **Browse** button to upload the file:
 You can click on the file to take a quick look at the file in a popup window.
 
 Now we'll select what account to charge and where to run this job. The
-_Allocation_ field should already have **Default** selected. Under
-_Compute Resource_ make sure you select **Expanse**.
+_Allocation_ field should already have **Default** selected. Under _Compute
+Resource_ make sure you select **Expanse**.
 
 Then click **Save and Launch**.
 
@@ -182,8 +182,9 @@ Dashboard.
 
 8. Click **Save** at the bottom of the screen.
 9. Click on the **Deployments** tab.
-10. Click on the **New Deployment** button. Select the _example-vc.jetstream-cloud.org_
-    compute resource in the drop down list and click **OK**.
+10. Click on the **New Deployment** button. Select the
+    _example-vc.jetstream-cloud.org_ compute resource in the drop down list and
+    click **OK**.
 11. For the _Application Executable Path_, provide the value `/usr/bin/true`.
     This is the only required field.
 12. Click **Save** at the bottom of the screen.
@@ -199,24 +200,27 @@ interface.
 
 There are a few things to point out now:
 
--   the _Screening libraries_ and _Visualization scripts_ only accept specific
-    values. For example, one of the allowed values for _Screening libraries_ is
-    `screen_drugbank`
 -   the _Target ID_ input takes a string value, but only certain characters
     (alphanumeric) are allowed and the string value has a minimum and maximum
     allowed length.
+-   the _Screening libraries_ and _Visualization scripts_ only accept specific
+    values. For example, one of the allowed values for _Screening libraries_ is
+    `screen_drugbank`
 
 We can make this user interface more user friendly by providing more guidance in
-the application inputs' user interface. For the _Screening libraries_ and
-_Visualization scripts_ we'll provide a list of labeled checkboxes for the user
-to select. For the _Target ID_ we'll provide validation feedback that verifies
-that the given value has an allowed length and only allowed characters.
+the application inputs' user interface. What we'll do:
+
+-   for _Target ID_ (input #1) we'll provide validation feedback that verifies
+    that the given value has an allowed length and only allowed characters.
+-   nothing to configure for _Target Structure_ (input #2)
+-   for _Screening libraries_ and _Visualization scripts_ (inputs #3 and #4)
+    we'll provide a list of labeled checkboxes for the user to select.
 
 1. Go back to **Settings** and in the **Application Catalog** click on your
    eFindSite application.
 2. Click on the **Interface** tab.
-3. For _Target ID_, in the _Advanced Input Field Modification Metadata_ box, add
-   the following JSON configuration:
+3. For _Target ID_ (input #1), in the _Advanced Input Field Modification
+   Metadata_ box, add the following JSON configuration:
 
 ```json
 {
@@ -251,8 +255,9 @@ This JSON configuration customizes the input editor in two ways:
 -   it sets the UI component of the input editor to be the `string-input-editor`
     (which is also the default)
 
-4. Likewise for _Screening Libraries_, set the _Advanced Input Field
-   Modification Metadata_ to:
+4. Skipping past _Target Structure_ (input #2) and on to **_Screening
+   Libraries_** (input #3), set the _Advanced Input Field Modification Metadata_
+   to:
 
 ```json
 {
@@ -303,8 +308,8 @@ editor, the `checkbox-input-editor`. It also provides a list of text/value pairs
 for the checkboxes; the values are what will be provided to the application as
 command line arguments.
 
-5. Similarly for the _Visualization scripts_, provide the following JSON
-   configuration:
+5. Similarly for the _Visualization scripts_ (input #4), provide the following
+   JSON configuration:
 
 ```json
 {
