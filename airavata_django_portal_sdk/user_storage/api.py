@@ -637,7 +637,10 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
                                 method="post")
-        path = resp.json()['path']
+        json = resp.json()
+        # 'path' is a new response attribute, for backwards compatibility check if it exists first
+        if 'path' in json:
+            path = json['path']
         # FIXME: should use the storage_resource_id returned from remote API call
         return storage_resource_id, path
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
