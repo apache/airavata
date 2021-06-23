@@ -529,8 +529,8 @@ service Airavata extends base_api.BaseAPI {
                             5: string userName,
                             6: string applicationName,
                             7: string resourceHostName,
-                            8: i32 limit,
-                            9: i32 offset)
+                            8: i32 limit = 50,
+                            9: i32 offset = 0)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
