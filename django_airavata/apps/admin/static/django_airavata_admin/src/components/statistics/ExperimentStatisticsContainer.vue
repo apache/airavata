@@ -151,7 +151,7 @@
                 header-text-variant="white"
                 :count="experimentStatistics.allExperimentCount || 0"
                 title="Total Experiments"
-                @click="selectExperiments('allExperiments')"
+                @click="selectedExperimentSummariesKey = 'allExperiments'"
               >
                 <span slot="link-text">All</span>
               </experiment-statistics-card>
@@ -162,7 +162,7 @@
                 :count="experimentStatistics.createdExperimentCount || 0"
                 :states="createdStates"
                 title="Created Experiments"
-                @click="selectExperiments('createdExperiments')"
+                @click="selectedExperimentSummariesKey = 'createdExperiments'"
               >
               </experiment-statistics-card>
             </div>
@@ -173,7 +173,7 @@
                 :count="experimentStatistics.runningExperimentCount || 0"
                 :states="runningStates"
                 title="Running Experiments"
-                @click="selectExperiments('runningExperiments')"
+                @click="selectedExperimentSummariesKey = 'runningExperiments'"
               >
               </experiment-statistics-card>
             </div>
@@ -185,7 +185,7 @@
                 :count="experimentStatistics.completedExperimentCount || 0"
                 :states="completedStates"
                 title="Completed Experiments"
-                @click="selectExperiments('completedExperiments')"
+                @click="selectedExperimentSummariesKey = 'completedExperiments'"
               >
               </experiment-statistics-card>
             </div>
@@ -197,7 +197,7 @@
                 :count="experimentStatistics.cancelledExperimentCount || 0"
                 :states="canceledStates"
                 title="Cancelled Experiments"
-                @click="selectExperiments('cancelledExperiments')"
+                @click="selectedExperimentSummariesKey = 'cancelledExperiments'"
               >
               </experiment-statistics-card>
             </div>
@@ -209,7 +209,7 @@
                 :count="experimentStatistics.failedExperimentCount || 0"
                 :states="failedStates"
                 title="Failed Experiments"
-                @click="selectExperiments('failedExperiments')"
+                @click="selectedExperimentSummariesKey = 'failedExperiments'"
               >
               </experiment-statistics-card>
             </div>
@@ -240,12 +240,6 @@
                   </template>
                 </b-table>
               </b-card>
-              <pager
-                v-if="experimentStatistics.allExperimentCount > 0"
-                :paginator="experimentStatisticsPaginator"
-                @next="experimentStatisticsPaginator.next()"
-                @previous="experimentStatisticsPaginator.previous()"
-              ></pager>
             </div>
           </div>
         </b-tab>
@@ -285,7 +279,7 @@ export default {
     const fromTime = new Date().fp_incr(0);
     const toTime = new Date().fp_incr(1);
     return {
-      experimentStatisticsPaginator: null,
+      experimentStatistics: {},
       selectedExperimentSummariesKey: null,
       fromTime: fromTime,
       toTime: toTime,
@@ -321,14 +315,8 @@ export default {
     "compute-resource-name": components.ComputeResourceName,
     "human-date": components.HumanDate,
     "experiment-status-badge": components.ExperimentStatusBadge,
-    pager: components.Pager,
   },
   computed: {
-    experimentStatistics() {
-      return this.experimentStatisticsPaginator
-        ? this.experimentStatisticsPaginator.results
-        : {};
-    },
     createdStates() {
       // TODO: moved to ExperimentStatistics model
       return [models.ExperimentState.CREATED, models.ExperimentState.VALIDATED];
@@ -487,10 +475,8 @@ export default {
       if (this.hostnameFilterEnabled && this.hostnameFilter) {
         requestData["resourceHostName"] = this.hostnameFilter;
       }
-      return services.ExperimentStatisticsService.get(requestData).then(
-        (stats) => {
-          this.experimentStatisticsPaginator = stats;
-        }
+      services.ExperimentStatisticsService.get(requestData).then(
+        (stats) => (this.experimentStatistics = stats)
       );
     },
     getPast24Hours() {
@@ -498,11 +484,13 @@ export default {
       //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
+      this.loadStatistics();
     },
     getPastWeek() {
       this.fromTime = new Date().fp_incr(-7);
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
+      this.loadStatistics();
     },
     updateDateRange() {
       this.dateRange = [
@@ -563,15 +551,6 @@ export default {
     },
     scrollTabsIntoView() {
       this.$refs.tabs.$el.scrollIntoView({ behavior: "smooth" });
-    },
-    selectExperiments(experimentSummariesKey) {
-      if (
-        this.experimentStatisticsPaginator &&
-        this.experimentStatisticsPaginator.offset > 0
-      ) {
-        this.loadStatistics();
-      }
-      this.selectedExperimentSummariesKey = experimentSummariesKey;
     },
   },
 };

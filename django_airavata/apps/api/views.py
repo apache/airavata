@@ -30,7 +30,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.views.decorators.gzip import gzip_page
-from rest_framework import mixins, pagination, status
+from rest_framework import mixins, status
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
@@ -1832,24 +1832,12 @@ class ExperimentStatisticsView(APIView):
         username = request.GET.get('userName', None)
         application_name = request.GET.get('applicationName', None)
         resource_hostname = request.GET.get('resourceHostName', None)
-        limit = int(request.GET.get('limit', '50'))
-        offset = int(request.GET.get('offset', '0'))
-
         statistics = request.airavata_client.getExperimentStatistics(
             request.authz_token, settings.GATEWAY_ID, from_time, to_time,
-            username, application_name, resource_hostname, limit, offset)
-        serializer = self.serializer_class(statistics, context={'request': request})
-
-        paginator = pagination.LimitOffsetPagination()
-        paginator.count = statistics.allExperimentCount
-        paginator.limit = limit
-        paginator.offset = offset
-        paginator.request = request
-        response = paginator.get_paginated_response(serializer.data)
-        # Also add limit and offset to the response
-        response.data['limit'] = limit
-        response.data['offset'] = offset
-        return response
+            username, application_name, resource_hostname)
+        serializer = self.serializer_class(
+            statistics, context={'request': request})
+        return Response(serializer.data)
 
 
 class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
