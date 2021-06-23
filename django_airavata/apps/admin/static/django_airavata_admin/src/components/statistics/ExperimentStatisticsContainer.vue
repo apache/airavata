@@ -484,13 +484,11 @@ export default {
       //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
-      this.loadStatistics();
     },
     getPastWeek() {
       this.fromTime = new Date().fp_incr(-7);
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
-      this.loadStatistics();
     },
     updateDateRange() {
       this.dateRange = [
