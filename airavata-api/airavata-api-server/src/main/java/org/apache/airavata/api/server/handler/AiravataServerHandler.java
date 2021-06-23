@@ -1249,7 +1249,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, String gatewayId, long fromTime, long toTime,
-                                                        String userName, String applicationName, String resourceHostName)
+                                                        String userName, String applicationName, String resourceHostName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         // SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
@@ -1278,7 +1278,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             //         userId + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE).forEach(e -> accessibleExpIds.add(e.getEntityId()));
             List<String> accessibleExpIds = null;
 
-            ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
+            ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds, limit, offset);
             registryClientPool.returnResource(regClient);
             // sharingClientPool.returnResource(sharingClient);
             return result;

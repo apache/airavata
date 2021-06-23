@@ -27,6 +27,9 @@ airavata_django_extra_dependencies:
 
 vhost_servername: "immuneportal.ccbb.iupui.edu"
 vhost_ssl: True
+vhost_aliases:
+  - url: /data/
+    path: "{{ user_data_dir }}/regsnps/regsnps-data/"
 ssl_certificate_file: "/etc/letsencrypt/live/immuneportal.ccbb.iupui.edu/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/immuneportal.ccbb.iupui.edu/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/immuneportal.ccbb.iupui.edu/privkey.pem"
