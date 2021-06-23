@@ -531,7 +531,7 @@ class FullExperimentSerializer(serializers.Serializer):
         raise Exception("Not implemented")
 
 
-class ExperimentSummarySerializer(
+class BaseExperimentSummarySerializer(
         thrift_utils.create_serializer_class(ExperimentSummaryModel)):
     creationTime = UTCPosixTimestampDateTimeField()
     statusUpdateTime = UTCPosixTimestampDateTimeField()
@@ -543,6 +543,9 @@ class ExperimentSummarySerializer(
         view_name='django_airavata_api:project-detail',
         lookup_field='projectId',
         lookup_url_kwarg='project_id')
+
+
+class ExperimentSummarySerializer(BaseExperimentSummarySerializer):
     userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, experiment):
@@ -989,12 +992,12 @@ class NotificationSerializer(
 
 class ExperimentStatisticsSerializer(
         thrift_utils.create_serializer_class(ExperimentStatistics)):
-    allExperiments = ExperimentSummarySerializer(many=True)
-    completedExperiments = ExperimentSummarySerializer(many=True)
-    failedExperiments = ExperimentSummarySerializer(many=True)
-    cancelledExperiments = ExperimentSummarySerializer(many=True)
-    createdExperiments = ExperimentSummarySerializer(many=True)
-    runningExperiments = ExperimentSummarySerializer(many=True)
+    allExperiments = BaseExperimentSummarySerializer(many=True)
+    completedExperiments = BaseExperimentSummarySerializer(many=True)
+    failedExperiments = BaseExperimentSummarySerializer(many=True)
+    cancelledExperiments = BaseExperimentSummarySerializer(many=True)
+    createdExperiments = BaseExperimentSummarySerializer(many=True)
+    runningExperiments = BaseExperimentSummarySerializer(many=True)
 
 
 class UnverifiedEmailUserProfile(serializers.Serializer):

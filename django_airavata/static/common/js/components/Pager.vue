@@ -42,6 +42,12 @@ export default {
     },
     last: function () {
       if (this.paginator) {
+        if (this.paginator.hasOwnProperty("count")) {
+          return Math.min(
+            this.paginator.offset + this.paginator.limit,
+            this.paginator.count
+          );
+        }
         return this.paginator.offset + this.paginator.results.length;
       } else {
         return null;
