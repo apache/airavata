@@ -30,3 +30,6 @@ CREATE TABLE IF NOT exists `GATEWAY_USAGE_REPORTING_COMMAND` (
 -- AIRAVATA-3369: Convert USER_FRIENDLY_DESCRIPTION from VARCHAR to TEXT (CLOB)
 alter table EXPERIMENT_INPUT modify column USER_FRIENDLY_DESCRIPTION TEXT;
 alter table PROCESS_INPUT modify column USER_FRIENDLY_DESCRIPTION TEXT;
+
+-- AIRAVATA-3322: Index on experiment_status to help statistics queries
+CREATE INDEX IF NOT EXISTS experiment_status_experiment_id_time_of_state_change_state ON EXPERIMENT_STATUS (EXPERIMENT_ID, TIME_OF_STATE_CHANGE, STATE);
