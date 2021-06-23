@@ -459,7 +459,7 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         """
         pass
 
-    def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName):
+    def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset):
         """
 
         Get Experiment Statistics
@@ -483,6 +483,12 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         @param resourceHostName
               Hostname id substring with which to further filter statistics.
 
+        @param limit
+              Amount of results to be fetched.
+
+        @param offset
+              The starting point of the results to be fetched.
+
 
 
         Parameters:
@@ -493,6 +499,8 @@ class Iface(airavata.base.api.BaseAPI.Iface):
          - userName
          - applicationName
          - resourceHostName
+         - limit
+         - offset
         """
         pass
 
@@ -4913,7 +4921,7 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperiments failed: unknown result")
 
-    def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName):
+    def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset):
         """
 
         Get Experiment Statistics
@@ -4937,6 +4945,12 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
         @param resourceHostName
               Hostname id substring with which to further filter statistics.
 
+        @param limit
+              Amount of results to be fetched.
+
+        @param offset
+              The starting point of the results to be fetched.
+
 
 
         Parameters:
@@ -4947,11 +4961,13 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
          - userName
          - applicationName
          - resourceHostName
+         - limit
+         - offset
         """
-        self.send_getExperimentStatistics(authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName)
+        self.send_getExperimentStatistics(authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset)
         return self.recv_getExperimentStatistics()
 
-    def send_getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName):
+    def send_getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset):
         self._oprot.writeMessageBegin('getExperimentStatistics', TMessageType.CALL, self._seqid)
         args = getExperimentStatistics_args()
         args.authzToken = authzToken
@@ -4961,6 +4977,8 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
         args.userName = userName
         args.applicationName = applicationName
         args.resourceHostName = resourceHostName
+        args.limit = limit
+        args.offset = offset
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -14646,7 +14664,7 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
         iprot.readMessageEnd()
         result = getExperimentStatistics_result()
         try:
-            result.success = self._handler.getExperimentStatistics(args.authzToken, args.gatewayId, args.fromTime, args.toTime, args.userName, args.applicationName, args.resourceHostName)
+            result.success = self._handler.getExperimentStatistics(args.authzToken, args.gatewayId, args.fromTime, args.toTime, args.userName, args.applicationName, args.resourceHostName, args.limit, args.offset)
             msg_type = TMessageType.REPLY
         except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
             raise
@@ -25020,6 +25038,8 @@ class getExperimentStatistics_args(object):
      - userName
      - applicationName
      - resourceHostName
+     - limit
+     - offset
     """
 
     thrift_spec = (
@@ -25031,9 +25051,11 @@ class getExperimentStatistics_args(object):
         (5, TType.STRING, 'userName', 'UTF8', None, ),  # 5
         (6, TType.STRING, 'applicationName', 'UTF8', None, ),  # 6
         (7, TType.STRING, 'resourceHostName', 'UTF8', None, ),  # 7
+        (8, TType.I32, 'limit', None, 50, ),  # 8
+        (9, TType.I32, 'offset', None, 0, ),  # 9
     )
 
-    def __init__(self, authzToken=None, gatewayId=None, fromTime=None, toTime=None, userName=None, applicationName=None, resourceHostName=None,):
+    def __init__(self, authzToken=None, gatewayId=None, fromTime=None, toTime=None, userName=None, applicationName=None, resourceHostName=None, limit=thrift_spec[8][4], offset=thrift_spec[9][4],):
         self.authzToken = authzToken
         self.gatewayId = gatewayId
         self.fromTime = fromTime
@@ -25041,6 +25063,8 @@ class getExperimentStatistics_args(object):
         self.userName = userName
         self.applicationName = applicationName
         self.resourceHostName = resourceHostName
+        self.limit = limit
+        self.offset = offset
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -25087,6 +25111,16 @@ class getExperimentStatistics_args(object):
                     self.resourceHostName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.I32:
+                    self.limit = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.I32:
+                    self.offset = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -25124,6 +25158,14 @@ class getExperimentStatistics_args(object):
         if self.resourceHostName is not None:
             oprot.writeFieldBegin('resourceHostName', TType.STRING, 7)
             oprot.writeString(self.resourceHostName.encode('utf-8') if sys.version_info[0] == 2 else self.resourceHostName)
+            oprot.writeFieldEnd()
+        if self.limit is not None:
+            oprot.writeFieldBegin('limit', TType.I32, 8)
+            oprot.writeI32(self.limit)
+            oprot.writeFieldEnd()
+        if self.offset is not None:
+            oprot.writeFieldBegin('offset', TType.I32, 9)
+            oprot.writeI32(self.offset)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
