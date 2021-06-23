@@ -42,14 +42,13 @@ export default {
     },
     last: function () {
       if (this.paginator) {
-        if (this.paginator.count) {
+        if (this.paginator.hasOwnProperty("count")) {
           return Math.min(
             this.paginator.offset + this.paginator.limit,
             this.paginator.count
           );
-        } else {
-          return this.paginator.offset + this.paginator.results.length;
         }
+        return this.paginator.offset + this.paginator.results.length;
       } else {
         return null;
       }
