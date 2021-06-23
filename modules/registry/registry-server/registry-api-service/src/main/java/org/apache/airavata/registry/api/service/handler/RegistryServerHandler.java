@@ -462,7 +462,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             // Cap the max returned experiment summaries at 1000
-            limit = Math.max(limit, 1000);
+            limit = Math.min(limit, 1000);
 
             ExperimentStatistics result = experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters, limit, offset);
             logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : " + AiravataUtils.getTime(fromTime) + " and " + AiravataUtils.getTime(toTime));
