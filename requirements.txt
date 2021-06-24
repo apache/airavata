@@ -14,6 +14,7 @@ wagtail-draftail-anchors==0.2.0
 jupyter==1.0.0
 papermill==1.0.1
 
--e git+https://github.com/apache/airavata-django-portal-sdk.git@master#egg=airavata-django-portal-sdk
+airavata-django-portal-sdk==1.0
+
 -e git+https://github.com/apache/airavata.git@develop#egg=airavata-python-sdk&subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk
 -e "."
