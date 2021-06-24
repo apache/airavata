@@ -3,6 +3,9 @@ import uuid
 from django.conf import settings
 from django.db import models
 
+from . import forms
+from django.core.exceptions import ValidationError
+
 VERIFY_EMAIL_TEMPLATE = 1
 NEW_USER_EMAIL_TEMPLATE = 2
 PASSWORD_RESET_EMAIL_TEMPLATE = 3
@@ -58,11 +61,38 @@ class UserProfile(models.Model):
 
     @property
     def is_complete(self):
-        # TODO: implement this to check if there are any missing fields on the
-        # User model (email, first_name, last_name) or if the username was is
-        # invalid (for example if defaulted to the IdP's 'sub' claim) or if
-        # there are any extra profile fields that are not valid
-        return False
+        return (self.is_username_valid and
+                self.is_first_name_valid and
+                self.is_last_name_valid and
+                self.is_email_valid)
+
+    @property
+    def is_username_valid(self):
+        # use forms.USERNAME_VALIDATOR with an exception when the username is
+        # equal to the email
+        try:
+            forms.USERNAME_VALIDATOR(self.user.username)
+            validates = True
+        except ValidationError:
+            validates = False
+        return (validates or (self.is_email_valid and self.user.email == self.user.username))
+
+    @property
+    def is_first_name_valid(self):
+        return self.is_non_empty(self.user.first_name)
+
+    @property
+    def is_last_name_valid(self):
+        return self.is_non_empty(self.user.last_name)
+
+    @property
+    def is_email_valid(self):
+        # Only checking for non-empty only; assumption is that email is verified
+        # before it is set or updated
+        return self.is_non_empty(self.user.email)
+
+    def is_non_empty(self, value: str):
+        return value is not None and value.strip() != ""
 
 
 class UserInfo(models.Model):

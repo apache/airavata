@@ -230,6 +230,7 @@ class KeycloakBackend(object):
 
         # Update User model fields
         user = user_profile.user
+        user.username = username
         user.email = email
         user.first_name = first_name
         user.last_name = last_name

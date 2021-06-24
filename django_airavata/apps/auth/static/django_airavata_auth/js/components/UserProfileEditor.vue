@@ -1,7 +1,15 @@
 <template>
   <b-card>
     <b-form-group label="Username">
-      <b-form-input disabled :value="user.username" />
+      <b-form-input
+        v-model="$v.user.username.$model"
+        @keydown.native.enter="save"
+        :state="validateState($v.user.username)"
+      />
+      <b-form-invalid-feedback v-if="!$v.user.username.emailOrMatchesRegex">
+        Username can only contain lowercase letters, numbers, underscores and
+        hyphens OR it can be the same as the email address.
+      </b-form-invalid-feedback>
     </b-form-group>
     <b-form-group label="First Name">
       <b-form-input
@@ -46,7 +54,7 @@
 import { models } from "django-airavata-api";
 import { errors } from "django-airavata-common-ui";
 import { validationMixin } from "vuelidate";
-import { email, required } from "vuelidate/lib/validators";
+import { email, helpers, or, required, sameAs } from "vuelidate/lib/validators";
 
 export default {
   name: "user-profile-editor",
@@ -63,8 +71,14 @@ export default {
     };
   },
   validations() {
+    const usernameRegex = helpers.regex("username", /^[a-z0-9_-]+$/);
+    const emailOrMatchesRegex = or(usernameRegex, sameAs('email'));
     return {
       user: {
+        username: {
+          required,
+          emailOrMatchesRegex,
+        },
         first_name: {
           required,
         },
