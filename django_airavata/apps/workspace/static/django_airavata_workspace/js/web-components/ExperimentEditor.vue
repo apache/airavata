@@ -62,6 +62,7 @@ import {
 
 import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
+import urls from "../utils/urls";
 Vue.use(BootstrapVue);
 
 export default {
@@ -145,15 +146,45 @@ export default {
         return;
       }
       if (event.submitter.name === "save-experiment-button") {
-        this.saveExperiment();
+        await saveExperiment(this.experiment);
+        this.postSave();
+        return;
       } else {
         // Default submit button handling is save and launch
-        const experiment = await this.saveExperiment();
+        const experiment = await saveExperiment(this.experiment);
         await launchExperiment(experiment.experimentId);
+        this.postSaveAndLaunch(experiment);
+        return;
       }
     },
-    async saveExperiment() {
-      return await saveExperiment(this.experiment);
+    postSave() {
+      // client code can listen for 'saved' and preventDefault() on it to handle
+      // it differently. Default action is to navigate to experiments list.
+      const savedEvent = new CustomEvent("saved", {
+        detail: [this.experiment],
+        cancelable: true,
+        composed: true,
+      });
+      this.$el.dispatchEvent(savedEvent);
+      if (savedEvent.defaultPrevented) {
+        return;
+      }
+      urls.navigateToExperimentsList();
+    },
+    postSaveAndLaunch(experiment) {
+      // client code can listen for 'saved-and-launched' and preventDefault() on
+      // it to handle it differently. Default action is to navigate to
+      // the experiment summary page.
+      const savedAndLaunchedEvent = new CustomEvent("saved-and-launched", {
+        detail: [this.experiment],
+        cancelable: true,
+        composed: true,
+      });
+      this.$el.dispatchEvent(savedAndLaunchedEvent);
+      if (savedAndLaunchedEvent.defaultPrevented) {
+        return;
+      }
+      urls.navigateToViewExperiment(experiment, { launching: true });
     },
     async loadExperiment() {
       if (this.experimentId) {
