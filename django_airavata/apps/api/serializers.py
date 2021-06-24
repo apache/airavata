@@ -468,9 +468,7 @@ class DataProductSerializer(
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field."""
         request = self.context['request']
-        if hasattr(user_storage, 'get_lazy_download_url'):
-            return user_storage.get_lazy_download_url(request, data_product)
-        return None
+        return user_storage.get_lazy_download_url(request, data_product)
 
     def get_isInputFileUpload(self, data_product):
         """Return True if this is an uploaded input file."""
@@ -861,8 +859,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
         request = self.context['request']
-        if hasattr(user_storage, 'get_lazy_download_url'):
-            return user_storage.get_lazy_download_url(request, data_product_uri=file['data-product-uri'])
+        return user_storage.get_lazy_download_url(request, data_product_uri=file['data-product-uri'])
 
 
 class UserStorageDirectorySerializer(serializers.Serializer):
