@@ -412,4 +412,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+@import "./styles.css";
+
+:host {
+  display: block;
+  margin-bottom: 1rem;
+}
+</style>

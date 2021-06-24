@@ -34,7 +34,19 @@
       </slot>
     </div>
     <slot name="save-button">
-      <button type="submit" name="save-experiment-button">Save</button>
+      <div class="d-flex justify-content-end">
+        <b-button
+          type="submit"
+          variant="success"
+          name="save-and-launch-experiment-button"
+          class="mr-2"
+        >
+          Save and Launch
+        </b-button>
+        <b-button type="submit" variant="primary" name="save-experiment-button">
+          Save
+        </b-button>
+      </div>
     </slot>
   </form>
 </template>
@@ -45,6 +57,7 @@ import {
   getApplicationInterfaceForModule,
   saveExperiment,
   getExperiment,
+  launchExperiment,
 } from "./store";
 
 import Vue from "vue";
@@ -118,7 +131,7 @@ export default {
       const [userConfigurationData] = event.detail;
       this.experiment.userConfigurationData = userConfigurationData;
     },
-    onSubmit(event) {
+    async onSubmit(event) {
       // console.log(event);
       // 'save' event is cancelable. Listener can call .preventDefault() on the event to cancel.
       // composed: true allows the shadow DOM event to bubble up through the shadow root.
@@ -135,6 +148,8 @@ export default {
         this.saveExperiment();
       } else {
         // Default submit button handling is save and launch
+        const experiment = await this.saveExperiment();
+        await launchExperiment(experiment.experimentId);
       }
     },
     async saveExperiment() {
@@ -161,4 +176,9 @@ export default {
 
 <style>
 @import "./styles.css";
+
+:host {
+  display: block;
+  margin-bottom: 1em;
+}
 </style>
