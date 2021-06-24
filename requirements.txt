@@ -19,7 +19,6 @@ google-api-python-client==1.12.8
 grpcio-tools==1.34.1
 grpcio==1.34.1
 
-# TODO: switch this back to master branch once mft-integration branch testing is done
--e git+https://github.com/apache/airavata-django-portal-sdk.git@mft-integration#egg=airavata-django-portal-sdk
+airavata-django-portal-sdk==1.1dev1
 -e git+https://github.com/apache/airavata.git@develop#egg=airavata-python-sdk&subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk
 -e "."
