@@ -7,15 +7,16 @@ both simple and complex customizations to the user interface.
 
 Tutorial attendees should have:
 
--   a laptop on which to write Python code
--   Python 3.9
+-   a text editor or IDE for writing Python and web code. Any text editor or IDE
+    will do but if you're looking for recommendations, I recommend
+    [Visual Studio Code](https://code.visualstudio.com/).
+-   latest Python (current version as of this writing is 3.9.5)
 -   Git client
--   For running the Airavata Django Portal locally, either:
-    -   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
-        or
-        [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
-    -   Or, Python 3.9 and [Node LTS](https://nodejs.org/en/download/) and
-        [Yarn package manager](https://yarnpkg.com/getting-started/install).
+-   [Docker Desktop](https://www.docker.com/products/docker-desktop)
+-   If you don't have Docker installed or can't install it (see special note
+    below), you'll also need:
+    -   [Node LTS](https://nodejs.org/en/download/),
+    -   and [Yarn package manager](https://yarnpkg.com/getting-started/install).
 
 !!! note "Special note for Windows Home users"
 
@@ -52,6 +53,116 @@ Verify you have installed Python 3.9:
 
         C:\Users\username>py --version
         Python 3.9.5
+
+### Installing Git
+
+If you don't already have Git installed, see <https://git-scm.com/downloads> and
+follow the installation instructions for your platform.
+
+Verify that you have installed Git:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ git --version
+        git version 2.26.0
+
+    The command should print "git version X.X". The version should be at least 2.0.
+
+=== "Windows"
+
+    Open `cmd` then run:
+
+        C:\Users\username>git --version
+        git version 2.32.0.windows.1
+
+    The command should print "git version X.X". The version should be at least 2.0.
+
+### Installing Docker Desktop
+
+Follow the instructions at
+[Docker Desktop](https://www.docker.com/products/docker-desktop) to install
+Docker Desktop.
+
+Verify that you have installed Docker Desktop:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ docker --version
+        Docker version 20.10.7, build f0df350
+
+    The command should print "Docker version X.X". As long as it is a recent
+    version, you should be fine.
+
+=== "Windows"
+
+    Open `cmd` then run:
+
+        C:\Users\username>docker --version
+        Docker version 20.10.7, build f0df350
+
+    The command should print "Docker version X.X". As long as it is a recent
+    version, you should be fine.
+
+### Installing Node.js LTS
+
+Note: you only need to install Node.js LTS if you don't have Docker installed.
+
+Follow the instructions on the
+[Node.js downloads page](https://nodejs.org/en/download/) to install Node.js LTS
+for your platform.
+
+Verify that you have installed Node.js LTS:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ node --version
+        v14.17.1
+
+    The command should print "vX.X". The version should be at least v14.0.
+
+=== "Windows"
+
+    Open `cmd` then run:
+
+        C:\Users\username>node --version
+        v14.17.1
+
+    The command should print "vX.X". The version should be at least v14.0.
+
+### Installing Yarn
+
+Note: you only need to install Yarn if you don't have Docker installed. Yarn
+requires Node.js.
+
+To install Yarn run
+
+    npm install -g yarn
+
+Verify that you have installed Yarn:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ yarn --version
+        1.22.10
+
+    The command should print "X.X". The version should be 1.X.
+
+=== "Windows"
+
+    Open `cmd` then run:
+
+        C:\Users\username>yarn --version
+        1.22.10
+
+    The command should print "X.X". The version should be 1.X.
 
 ## Outline
 
