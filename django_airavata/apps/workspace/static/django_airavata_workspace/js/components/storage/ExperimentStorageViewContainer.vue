@@ -1,8 +1,22 @@
 <template>
-  <b-card header="Experiment Data Directory">
+  <b-card>
+    <template #header>
+      <div class="d-flex justify-content-between">
+        <h6 class="mb-0">Experiment Data Directory</h6>
+        <b-link
+          :href="`/sdk/download-experiment-dir/${encodeURIComponent(
+            experimentId
+          )}`"
+        >
+          Download Zip
+          <i class="fa fa-file-archive" aria-hidden="true"></i>
+        </b-link>
+      </div>
+    </template>
     <experiment-storage-path-viewer
       v-if="experimentStoragePath"
       :experiment-storage-path="experimentStoragePath"
+      :experiment-id="experimentId"
       @directory-selected="directorySelected"
       :download-in-new-window="true"
     ></experiment-storage-path-viewer>

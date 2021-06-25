@@ -56,13 +56,19 @@
         >
           Select
         </b-button>
-        <delete-button
-          v-if="includeDeleteAction"
-          @delete="deleteItem(data.item)"
+
+        <b-link
+          v-if="data.item.type === 'dir'"
+          class="action-link"
+          :href="`/sdk/download-dir?path=${data.item.path}`"
         >
+          Download Zip
+          <i class="fa fa-file-archive" aria-hidden="true"></i>
+        </b-link>
+        <delete-link v-if="includeDeleteAction" @delete="deleteItem(data.item)">
           Are you sure you want to delete <strong>{{ data.item.name }}</strong
           >?
-        </delete-button>
+        </delete-link>
       </template>
     </b-table>
   </div>
@@ -110,7 +116,7 @@ export default {
   },
   components: {
     UserStorageLink,
-    "delete-button": components.DeleteButton,
+    "delete-link": components.DeleteLink,
     "human-date": components.HumanDate,
     UserStoragePathBreadcrumb,
     UserStorageCreateView,
@@ -220,3 +226,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.action-link + .delete-link {
+  margin-left: 0.25rem;
+}
+</style>

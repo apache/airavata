@@ -27,6 +27,18 @@
       <template slot="createdTimestamp" slot-scope="data">
         <human-date :date="data.item.createdTime" />
       </template>
+      <template slot="actions" slot-scope="data">
+        <b-link
+          v-if="data.item.type === 'dir'"
+          class="action-link"
+          :href="`/sdk/download-experiment-dir/${encodeURIComponent(
+            experimentId
+          )}?path=${data.item.path}`"
+        >
+          Download Zip
+          <i class="fa fa-file-archive" aria-hidden="true"></i>
+        </b-link>
+      </template>
     </b-table>
   </div>
 </template>
@@ -35,7 +47,7 @@ import StoragePathBreadcrumb from "./StoragePathBreadcrumb.vue";
 import { components } from "django-airavata-common-ui";
 
 export default {
-  name: "user-storage-path-viewer",
+  name: "experiment-storage-path-viewer",
   props: {
     experimentStoragePath: {
       required: true,
@@ -43,6 +55,9 @@ export default {
     downloadInNewWindow: {
       type: Boolean,
       default: false,
+    },
+    experimentId: {
+      required: true,
     },
   },
   components: {
@@ -67,6 +82,10 @@ export default {
           label: "Created Time",
           key: "createdTimestamp",
           sortable: true,
+        },
+        {
+          label: "Actions",
+          key: "actions",
         },
       ];
     },

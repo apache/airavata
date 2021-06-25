@@ -65,7 +65,7 @@ settings_local.py to have the domain of the remote deployed Django portal:
 
 ```
 # Change this to match your remote Django portal instance
-GATEWAY_DATA_STORE_REMOTE_API = 'https://testdrive.airavata.org/api'
+GATEWAY_DATA_STORE_REMOTE_API = 'https://testdrive.airavata.org'
 ```
 
 ## Reference
