@@ -29,7 +29,8 @@ class KeycloakBackend(object):
                      request=None,
                      username=None,
                      password=None,
-                     refresh_token=None):
+                     refresh_token=None,
+                     idp_alias=None):
         try:
             user = None
             access_token = None
@@ -75,6 +76,9 @@ class KeycloakBackend(object):
                     request)
                 self._process_token(request, token)
                 user = self._process_userinfo(request, userinfo)
+                if idp_alias is not None:
+                    self._store_idp_userinfo(user, token, idp_alias)
+                # TODO: if idp_alias, add idp userinfo too
                 access_token = token['access_token']
             # authz_token_middleware has already run, so must manually add
             # the `request.authz_token` attribute
@@ -270,3 +274,31 @@ class KeycloakBackend(object):
                 user_profile.save()
                 user_profile.userinfo_set.create(claim='sub', value=sub)
                 return user
+
+    def _store_idp_userinfo(self, user, token, idp_alias):
+        try:
+            access_token = token['access_token']
+            logger.debug(f"access_token={access_token} for idp_alias={idp_alias}")
+            # fetch the idp's token
+            headers = {'Authorization': f'Bearer {access_token}'}
+            # For the following to work, in Keycloak the IDP should have 'Store
+            # Tokens' and 'Stored Tokens Readable' enabled and the user needs
+            # the broker/read-token role
+            r = requests.get(f"https://iamdev.scigap.org/auth/realms/seagrid/broker/{idp_alias}/token", headers=headers)
+            idp_token = r.json()
+            idp_headers = {'Authorization': f"Bearer {idp_token['access_token']}"}
+            r = requests.get("https://cilogon.org/oauth2/userinfo", headers=idp_headers)
+            userinfo = r.json()
+            logger.debug(f"userinfo={userinfo}")
+
+            # Save the idp user info claims
+            user_profile = user.user_profile
+            for (claim, value) in userinfo.items():
+                if user_profile.idp_userinfo.filter(idp_alias=idp_alias, claim=claim).exists():
+                    userinfo_claim = user_profile.idp_userinfo.get(idp_alias=idp_alias, claim=claim)
+                    userinfo_claim.value = value
+                    userinfo_claim.save()
+                else:
+                    user_profile.idp_userinfo.create(idp_alias=idp_alias, claim=claim, value=value)
+        except Exception:
+            logger.exception(f"Failed to store IDP userinfo for {user.username} from IDP {idp_alias}")

@@ -146,7 +146,9 @@ def start_logout(request):
 def callback(request):
     try:
         login_desktop = request.GET.get('login_desktop', "false") == "true"
-        user = authenticate(request=request)
+        idp_alias = request.GET.get('idp_alias')
+        user = authenticate(request=request, idp_alias=idp_alias)
+
         if user is not None:
             login(request, user)
             if login_desktop:
@@ -161,7 +163,6 @@ def callback(request):
         messages.error(
             request,
             "Failed to process OAuth2 callback: {}".format(str(err)))
-        idp_alias = request.GET.get('idp_alias')
         if login_desktop:
             return _create_login_desktop_failed_response(
                 request, idp_alias=idp_alias)

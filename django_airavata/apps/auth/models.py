@@ -99,12 +99,29 @@ class UserInfo(models.Model):
     claim = models.CharField(max_length=64)
     value = models.CharField(max_length=255)
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ['user_profile', 'claim']
 
     def __str__(self):
         return f"{self.claim}={self.value}"
+
+
+class IDPUserInfo(models.Model):
+    idp_alias = models.CharField(max_length=64)
+    claim = models.CharField(max_length=64)
+    value = models.CharField(max_length=255)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="idp_userinfo")
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user_profile', 'claim', 'idp_alias']
+
+    def __str__(self):
+        return f"{self.idp_alias}: {self.claim}={self.value}"
 
 
 class PendingEmailChange(models.Model):
