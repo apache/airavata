@@ -72,8 +72,8 @@ WORKDIR /code
 COPY requirements.txt requirements-mysql.txt ./
 COPY setup.* ./
 COPY README.md .
-RUN apt-get update && apt-get install -y git gcc zlib1g-dev libjpeg-dev default-libmysqlclient-dev
-RUN pip install --upgrade pip --no-cache
+RUN apt-get update && apt-get install -y git gcc g++ zlib1g-dev libjpeg-dev default-libmysqlclient-dev
+RUN pip install --upgrade pip setuptools wheel --no-cache
 RUN pip install -r requirements.txt --no-cache
 RUN pip install -r requirements-mysql.txt --no-cache
 
