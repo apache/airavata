@@ -1,9 +1,12 @@
 import logging
 import os
+import tempfile
+import zipfile
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect
+from django.utils.text import get_valid_filename
 from django.views.decorators.gzip import gzip_page
 from rest_framework.decorators import api_view
 
@@ -50,3 +53,52 @@ def download_file(request):
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
+
+
+@api_view()
+def download_dir(request):
+    path = request.GET.get('path', "")
+    fp = tempfile.TemporaryFile()
+    with zipfile.ZipFile(fp, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+        _add_directory_to_zipfile(request, zf, path)
+    if os.path.basename(path) == "" or get_valid_filename(os.path.basename(path)) == "":
+        filename = 'home.zip'
+    else:
+        filename = get_valid_filename(os.path.basename(path)) + ".zip"
+    fp.seek(0)
+    # FileResponse will automatically close the temporary file
+    return FileResponse(fp, as_attachment=True, filename=filename)
+
+
+@api_view()
+def download_experiment_dir(request, experiment_id=None):
+    path = request.GET.get('path', "")
+    experiment = request.airavata_client.getExperiment(request.authz_token, experiment_id)
+    fp = tempfile.TemporaryFile()
+    with zipfile.ZipFile(fp, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path)
+    if os.path.basename(path) == "" or get_valid_filename(os.path.basename(path)) == "":
+        filename = f'{get_valid_filename(experiment.experimentName)}.zip'
+    else:
+        filename = f'{get_valid_filename(experiment.experimentName)}_{get_valid_filename(os.path.basename(path))}.zip'
+    fp.seek(0)
+    # FileResponse will automatically close the temporary file
+    return FileResponse(fp, as_attachment=True, filename=filename)
+
+
+def _add_directory_to_zipfile(request, zf, path, directory=""):
+    directories, files = user_storage.listdir(request, os.path.join(path, directory))
+    for file in files:
+        o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
+        zf.writestr(os.path.join(directory, file['name']), o.read())
+    for d in directories:
+        _add_directory_to_zipfile(request, zf, path, d['name'])
+
+
+def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory=""):
+    directories, files = user_storage.list_experiment_dir(request, experiment_id, os.path.join(path, directory))
+    for file in files:
+        o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
+        zf.writestr(os.path.join(directory, file['name']), o.read())
+    for d in directories:
+        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, d['name'])
