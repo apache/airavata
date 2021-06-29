@@ -14,6 +14,8 @@ from airavata_django_portal_sdk import user_storage
 
 logger = logging.getLogger(__name__)
 
+MAX_DOWNLOAD_ZIPFILE_SIZE = 1 * 1024**3  # 1 GB
+
 
 @api_view()
 def download(request):
@@ -91,6 +93,8 @@ def _add_directory_to_zipfile(request, zf, path, directory=""):
     for file in files:
         o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
         zf.writestr(os.path.join(directory, file['name']), o.read())
+        if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
+            raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
     for d in directories:
         _add_directory_to_zipfile(request, zf, path, d['name'])
 
@@ -100,5 +104,7 @@ def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, direc
     for file in files:
         o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
         zf.writestr(os.path.join(directory, file['name']), o.read())
+        if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
+            raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
     for d in directories:
         _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, d['name'])
