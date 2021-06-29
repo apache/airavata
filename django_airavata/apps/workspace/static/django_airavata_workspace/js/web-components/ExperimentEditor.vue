@@ -1,23 +1,12 @@
 <template>
   <form v-if="experiment" @submit.prevent="onSubmit">
-    <div @input="updateExperimentName">
-      <slot name="experiment-name">
-        <b-form-group label="Experiment Name" label-for="experiment-name">
-          <b-form-input
-            type="text"
-            name="experiment-name"
-            :value="experiment.experimentName"
-            required
-          >
-          </b-form-input>
-        </b-form-group>
-      </slot>
+    <div ref="experimentName" @input="updateExperimentName">
+      <!-- programmatically define slot for experiment-name as native slot
+            (not Vue slots), see #mounted() -->
     </div>
-    <div @input="updateProjectId">
-      <!-- TODO: define this as a native slot? -->
-      <slot name="experiment-project">
-        <adpf-project-selector :value="experiment.projectId" />
-      </slot>
+    <div ref="projectSelector" @input="updateProjectId">
+      <!-- programmatically define slot for experiment-project as native slot
+           (not Vue slots), see #mounted() -->
     </div>
     <template v-for="input in experiment.experimentInputs">
       <div
@@ -28,26 +17,14 @@
         <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
-    <div @input="updateUserConfigurationData">
-      <slot name="experiment-resource-selection">
-        <adpf-resource-selection-editor ref="resourceSelectionEditor" />
-      </slot>
+    <div ref="resourceSelectionEditor" @input="updateUserConfigurationData">
+      <!-- programmatically define slot for experiment-resource-selection as
+           native slot (not Vue slots), see #mounted() -->
     </div>
-    <slot name="save-button">
-      <div class="d-flex justify-content-end">
-        <b-button
-          type="submit"
-          variant="success"
-          name="save-and-launch-experiment-button"
-          class="mr-2"
-        >
-          Save and Launch
-        </b-button>
-        <b-button type="submit" variant="primary" name="save-experiment-button">
-          Save
-        </b-button>
-      </div>
-    </slot>
+    <div ref="experimentButtons">
+      <!-- programmatically define slot for experiment-buttons as
+          native slot (not Vue slots), see #mounted() -->
+    </div>
   </form>
 </template>
 
@@ -102,9 +79,102 @@ export default {
         // TODO: add support for other input types
         this.$refs[input.name][0].append(slot);
       }
+
+      /*
+       * Experiment Name native slot
+       */
+      // <slot name="experiment-name">
+      //   <b-form-group label="Experiment Name" label-for="experiment-name">
+      //     <b-form-input
+      //       type="text"
+      //       name="experiment-name"
+      //       :value="experiment.experimentName"
+      //       required
+      //     >
+      //     </b-form-input>
+      //   </b-form-group>
+      // </slot>
+      const experimentNameGroupEl = document.createElement("div");
+      experimentNameGroupEl.classList.add("form-group");
+      const experimentNameLabelEl = document.createElement("label");
+      experimentNameLabelEl.setAttribute("for", "experiment-name-input");
+      experimentNameLabelEl.textContent = "Experiment Name";
+      const experimentNameInputEl = document.createElement("input");
+      experimentNameInputEl.classList.add("form-control");
+      experimentNameInputEl.setAttribute("id", "experiment-name-input");
+      experimentNameInputEl.setAttribute("type", "text");
+      experimentNameInputEl.setAttribute("name", "experiment-name");
+      experimentNameInputEl.setAttribute(
+        "value",
+        this.experiment.experimentName
+      );
+      experimentNameInputEl.setAttribute("required", "required");
+      experimentNameGroupEl.append(
+        experimentNameLabelEl,
+        experimentNameInputEl
+      );
+      this.$refs.experimentName.append(
+        this.createSlot("experiment-name", experimentNameGroupEl)
+      );
+
+      const projectSelectorEl = document.createElement("adpf-project-selector");
+      if (this.experiment.projectId) {
+        projectSelectorEl.setAttribute("value", this.experiment.projectId);
+      }
+      this.$refs.projectSelector.append(
+        this.createSlot("experiment-project", projectSelectorEl)
+      );
+
+      const resourceSelectionEditor = document.createElement(
+        "adpf-resource-selection-editor"
+      );
+      this.$refs.resourceSelectionEditor.append(
+        this.createSlot(
+          "experiment-resource-selection",
+          resourceSelectionEditor
+        )
+      );
       // Can't set objects via attributes, must set as prop
-      this.$refs.resourceSelectionEditor.value = this.experiment.userConfigurationData;
-      this.$refs.resourceSelectionEditor.applicationModuleId = this.applicationId;
+      resourceSelectionEditor.value = this.experiment.userConfigurationData;
+      resourceSelectionEditor.applicationModuleId = this.applicationId;
+
+      /*
+       * Experiment (save/launch) Buttons native slot
+       */
+      // <slot name="experiment-buttons">
+      //   <div class="d-flex justify-content-end">
+      //     <b-button
+      //       type="submit"
+      //       variant="success"
+      //       name="save-and-launch-experiment-button"
+      //       class="mr-2"
+      //     >
+      //       Save and Launch
+      //     </b-button>
+      //     <b-button type="submit" variant="primary" name="save-experiment-button">
+      //       Save
+      //     </b-button>
+      //   </div>
+      // </slot>
+      const buttonsRowEl = document.createElement("div");
+      buttonsRowEl.classList.add("d-flex", "justify-content-end");
+      const saveAndLaunchButtonEl = document.createElement("button");
+      saveAndLaunchButtonEl.setAttribute("type", "submit");
+      saveAndLaunchButtonEl.setAttribute(
+        "name",
+        "save-and-launch-experiment-button"
+      );
+      saveAndLaunchButtonEl.classList.add("btn", "btn-success", "mr-2");
+      saveAndLaunchButtonEl.textContent = "Save and Launch";
+      const saveButtonEl = document.createElement("button");
+      saveButtonEl.setAttribute("type", "submit");
+      saveButtonEl.setAttribute("name", "save-experiment-button");
+      saveButtonEl.classList.add("btn", "btn-primary");
+      saveButtonEl.textContent = "Save";
+      buttonsRowEl.append(saveAndLaunchButtonEl, saveButtonEl);
+      this.$refs.experimentButtons.append(
+        this.createSlot("experiment-buttons", buttonsRowEl)
+      );
     });
   },
   data() {
@@ -200,6 +270,12 @@ export default {
         this.$emit("loaded", experiment);
         return experiment;
       }
+    },
+    createSlot(name, ...children) {
+      const slot = document.createElement("slot");
+      slot.setAttribute("name", name);
+      slot.append(...children);
+      return slot;
     },
   },
 };
