@@ -148,7 +148,21 @@
     - delete older files
   with_items: "{{ django_portal_js_build_dirs }}"
 
-- name: Create virtual environment for Django portal and install dependencies
+- name: Create virtual environment for Django portal and update pip, setuptools and wheel
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ django_venv_dir }}"
+    virtualenv_command: "{{ python_virtualenv_command }}"
+    chdir: "{{ airavata_django_checkout }}"
+    state: latest
+  become: yes
+  become_user: "{{user}}"
+  with_list:
+    - pip
+    - setuptools
+    - wheel
+
+- name: Install dependencies in virtual environment for Django portal
   pip:
     requirements: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
