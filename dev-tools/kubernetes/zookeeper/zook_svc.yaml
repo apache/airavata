@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    name: zookeeper
+    app: airavata
+spec:
+  ports:
+  - port: 2181
+    name: port-2181
+    protocol: TCP
+  - port: 2888
+    name: port-2888
+    protocol: TCP
+  - port: 3888
+    name: port-3888
+    protocol: TCP
+  selector:
+    name: zookeeper
+    app: airavata-pga
+
