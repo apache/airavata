@@ -244,9 +244,13 @@ export default {
     },
     async loadAppDeploymentQueues() {
       const applicationDeployment = this.applicationDeployment;
-      this.appDeploymentQueues = await getAppDeploymentQueues(
-        applicationDeployment.appDeploymentId
-      );
+      if (applicationDeployment) {
+        this.appDeploymentQueues = await getAppDeploymentQueues(
+          applicationDeployment.appDeploymentId
+        );
+      } else {
+        this.appDeploymentQueues = [];
+      }
     },
     setDefaultQueue() {
       // set to the default queue or the first one
