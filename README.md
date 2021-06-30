@@ -76,3 +76,31 @@ flake8 .
 autopep8 -i -aaa -r .
 isort .
 ```
+
+### Making a new release
+
+1. Update the version in setup.py
+2. Tag the repo with the same version, with the format `v${version_number}`. For
+   example, if the version number in setup.py is "1.2" then tag the repo with
+   "v1.2".
+
+   git tag -m VERSION VERSION
+
+3. In a clean checkout
+
+   ```
+   cd /tmp/
+   git clone /path/to/airavata-django-portal-sdk/ -b VERSION
+   python3 -m venv venv
+   source venv/bin/activate
+   python3 -m pip install --upgrade build
+   python3 -m build
+   ```
+
+4. Push to pypi.org. Optionally can push to test.pypi.org. See
+   <https://packaging.python.org/tutorials/packaging-projects/> for more info.
+
+   ```
+   python3 -m pip install --upgrade twine
+   python3 -m twine upload dist/*
+   ```
