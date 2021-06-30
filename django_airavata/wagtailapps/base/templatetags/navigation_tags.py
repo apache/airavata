@@ -206,6 +206,14 @@ def gateway_title(context):
     }
 
 
+@register.inclusion_tag('django_airavata_wagtail_base/includes/favicon.html', takes_context=True)
+def favicon(context):
+    gateway_icon = GatewayIcon.objects.first()
+    return {
+        'gateway_icon': gateway_icon
+    }
+
+
 @register.inclusion_tag('django_airavata_wagtail_base/includes/extra_web_resources.html',
                         takes_context=True)
 def extra_web_resources(context):
