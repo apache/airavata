@@ -656,6 +656,15 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
     return storage_resource_id, resource_path
 
 
+def create_symlink(request, src_path, dest_path, storage_resource_id=None):
+    """Create link named dest_path pointing to src_path on storage resource."""
+    if _is_remote_api():
+        logger.warning("create_symlink isn't supported in Remote API mode")
+        return
+    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
+    backend.create_symlink(src_path, dest_path)
+
+
 def get_rel_experiment_dir(request, experiment_id, storage_resource_id=None):
     """Return experiment data dir path relative to user's directory."""
     warnings.warn("Use 'list_experiment_dir' instead.", DeprecationWarning)

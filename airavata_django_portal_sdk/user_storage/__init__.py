@@ -1,5 +1,6 @@
 from .api import (
     copy_input_file,
+    create_symlink,
     create_user_dir,
     delete,
     delete_dir,
@@ -29,6 +30,7 @@ from .api import (
 
 __all__ = [
     'copy_input_file',
+    'create_symlink',
     'create_user_dir',
     'delete',
     'delete_dir',

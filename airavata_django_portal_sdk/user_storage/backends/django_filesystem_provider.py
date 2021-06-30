@@ -121,6 +121,17 @@ class DjangoFileSystemProvider(UserStorageProvider):
         datastore.create_user_dir(final_path)
         return self.storage_resource_id, datastore.path(final_path)
 
+    def create_symlink(self, source_path, dest_path):
+        datastore = self.datastore
+        if (datastore.symlink_exists(dest_path) and
+                os.path.realpath(source_path) == os.path.realpath(datastore.path(dest_path))):
+            logger.debug(f"symlink at {dest_path} already points to {source_path}")
+            return
+        elif datastore.exists(dest_path):
+            raise Exception(f"{dest_path} already exists, but isn't the expected symlink")
+        else:
+            datastore.create_symlink(source_path, dest_path)
+
     @property
     def datastore(self):
         directory = os.path.join(self.directory, self.username)
@@ -163,6 +174,15 @@ class _Datastore:
             logger.warning(f"Invalid path: {e}")
             return False
 
+    def symlink_exists(self, path):
+        """Check if symlink path exists in this data store."""
+        logger.debug(f"symlink_exists: {path}, {self.path(path)}")
+        try:
+            return self.storage.exists(path) and os.path.islink(self.path(path))
+        except SuspiciousFileOperation as e:
+            logger.warning(f"Invalid path: {e}")
+            return False
+
     def open(self, path):
         """Open path for user if it exists in this data store."""
         if self.exists(path):
@@ -189,6 +209,12 @@ class _Datastore:
         else:
             raise Exception("Directory {} already exists".format(path))
 
+    def create_symlink(self, source_path, dest_path):
+        user_data_storage = self.storage
+        full_path = user_data_storage.path(dest_path)
+        os.symlink(source_path, full_path)
+        return full_path
+
     def delete(self, path):
         """Delete file in this data store."""
         if self.file_exists(path):
@@ -200,7 +226,10 @@ class _Datastore:
 
     def delete_dir(self, path):
         """Delete entire directory in this data store."""
-        if self.dir_exists(path):
+        if self.symlink_exists(path):
+            user_path = self.path(path)
+            os.unlink(user_path)
+        elif self.dir_exists(path):
             user_path = self.path(path)
             shutil.rmtree(user_path)
         else:
