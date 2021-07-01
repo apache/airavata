@@ -20,7 +20,10 @@ MAX_DOWNLOAD_ZIPFILE_SIZE = 1 * 1024**3  # 1 GB
 @api_view()
 def download(request):
     data_product_uri = request.GET.get('data-product-uri', '')
-    download_url = user_storage.get_download_url(request, data_product_uri=data_product_uri)
+    force_download = 'download' in request.GET
+    download_url = user_storage.get_download_url(request,
+                                                 data_product_uri=data_product_uri,
+                                                 force_download=force_download)
     return redirect(download_url)
 
 
