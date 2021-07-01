@@ -4,7 +4,7 @@
       v-if="includeCreateFileAction && userStoragePath && isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
-      @upload-success="$emit('upload-success')"
+      @upload-finished="$emit('upload-finished')"
       @add-directory="(dirName) => $emit('add-directory', dirName)"
     />
     <user-storage-path-breadcrumb
