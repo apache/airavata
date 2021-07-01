@@ -46,6 +46,11 @@ auth_options:
 #    - name: "Existing Institute Login"
 #      idp_alias: "cilogon"
 
+django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared_data:
+      path: /var/www/portals/gateway-user-data/shared_data
+
 gateway_id: "dev-delta"
 experiment_data_dir: "{{ user_data_dir }}/django-dev-delta"
 # gateway_data_store_ssh_public_key: "TODO"
