@@ -1597,6 +1597,18 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
                                            context={'request': request})
         return Response(serializer.data)
 
+    @action(methods=['put'], detail=True)
+    def update_username(self, request, user_id=None):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        old_username = user_id
+        new_username = serializer.validated_data['userId']
+        iam_admin_client.update_username(old_username, new_username)
+        instance = self.get_instance(new_username)
+        serializer = self.serializer_class(instance=instance,
+                                           context={'request': request})
+        return Response(serializer.data)
+
     def _convert_user_profile(self, user_profile):
         user_profile_client = self.request.profile_service['user_profile']
         group_manager_client = self.request.profile_service['group_manager']

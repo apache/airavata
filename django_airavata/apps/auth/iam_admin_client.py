@@ -3,6 +3,10 @@ Wrapper around the IAM Admin Services client.
 """
 
 import logging
+from urllib.parse import urlparse
+
+import requests
+from django.conf import settings
 
 from django_airavata.utils import iamadmin_client_pool
 
@@ -61,3 +65,33 @@ def reset_user_password(username, new_password):
     authz_token = utils.get_service_account_authz_token()
     return iamadmin_client_pool.resetUserPassword(
         authz_token, username, new_password)
+
+
+def update_username(username, new_username):
+    # make sure that new_username is available
+    if not is_username_available(new_username):
+        raise Exception(f"Can't change username of {username} to {new_username} because it is not available")
+    # fetch user representation
+    authz_token = utils.get_service_account_authz_token()
+    headers = {'Authorization': f'Bearer {authz_token.accessToken}'}
+    parsed = urlparse(settings.KEYCLOAK_AUTHORIZE_URL)
+    r = requests.get(f"{parsed.scheme}://{parsed.netloc}/auth/admin/realms/{settings.GATEWAY_ID}/users",
+                     params={'username': username},
+                     headers=headers)
+    r.raise_for_status()
+    user_list = r.json()
+    user = None
+    # The users search finds partial matches. Loop to find the exact match.
+    for u in user_list:
+        if u['username'] == username:
+            user = u
+            break
+    if user is None:
+        raise Exception(f"Could not find user {username}")
+
+    # update username
+    user['username'] = new_username
+    r = requests.put(f"{parsed.scheme}://{parsed.netloc}/auth/admin/realms/{settings.GATEWAY_ID}/users/{user['id']}",
+                     json=user,
+                     headers=headers)
+    r.raise_for_status()
