@@ -58,6 +58,14 @@
         </b-button>
 
         <b-link
+          v-if="data.item.type === 'file'"
+          class="action-link"
+          :href="`${data.item.downloadURL}&download`"
+        >
+          Download File
+          <i class="fa fa-download" aria-hidden="true"></i>
+        </b-link>
+        <b-link
           v-if="data.item.type === 'dir'"
           class="action-link"
           :href="`/sdk/download-dir?path=${data.item.path}`"
