@@ -34,6 +34,11 @@
       :username="iamUserProfile.userId"
       @delete-user="$emit('delete-user', $event)"
     />
+    <change-username-panel
+      :username="iamUserProfile.userId"
+      :email="iamUserProfile.email"
+      @update-username="$emit('update-username', $event)"
+    />
   </div>
 </template>
 <script>
@@ -42,6 +47,7 @@ import UserGroupMembershipEditor from "./UserGroupMembershipEditor";
 import ActivateUserPanel from "./ActivateUserPanel";
 import EnableUserPanel from "./EnableUserPanel";
 import DeleteUserPanel from "./DeleteUserPanel";
+import ChangeUsernamePanel from "./ChangeUsernamePanel.vue";
 
 export default {
   name: "user-details-container",
@@ -60,6 +66,7 @@ export default {
     EnableUserPanel,
     DeleteUserPanel,
     ActivateUserPanel,
+    ChangeUsernamePanel,
   },
   data() {
     return {

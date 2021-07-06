@@ -47,6 +47,7 @@
                   @groups-updated="groupsUpdated"
                   @enable-user="enableUser"
                   @delete-user="deleteUser"
+                  @update-username="updateUsername(data.item, ...$event)"
                 />
               </template>
             </b-table>
@@ -203,6 +204,14 @@ export default {
       services.IAMUserProfileService.delete({ lookup: username }).finally(() =>
         this.reloadUserProfiles()
       );
+    },
+    updateUsername(userProfile, username, newUsername) {
+      const updatedUserProfile = userProfile.clone();
+      updatedUserProfile.userId = newUsername;
+      services.IAMUserProfileService.updateUsername({
+        lookup: username,
+        data: updatedUserProfile,
+      }).finally(() => this.reloadUserProfiles());
     },
   },
 };
