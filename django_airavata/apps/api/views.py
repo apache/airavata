@@ -300,7 +300,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 headers = {
                     'Authorization': f'Bearer {request.authz_token.accessToken}'}
                 r = requests.post(
-                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/api/experiments/{quote(experiment_id)}/launch/',
+                    f'{remote_api_url}/api/experiments/{quote(experiment_id)}/launch/',
                     headers=headers,
                 )
                 r.raise_for_status()
@@ -314,7 +314,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                     request.authz_token, experiment_id, self.gateway_id)
                 return Response({'success': True})
         except Exception as e:
-            return Response({'success': False, 'errorMessage': e.message})
+            return Response({'success': False, 'errorMessage': str(e)})
 
     @action(methods=['get'], detail=True)
     def jobs(self, request, experiment_id=None):
