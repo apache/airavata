@@ -186,7 +186,7 @@ def move_input_file(request, data_product=None, path=None, data_product_uri=None
     return move(request, data_product=data_product, path=path, data_product_uri=data_product_uri, storage_resource_id=storage_resource_id)
 
 
-def get_download_url(request, data_product=None, data_product_uri=None, force_download=False):
+def get_download_url(request, data_product=None, data_product_uri=None, force_download=False, mime_type=None):
     "Return URL for downloading data product. One of `data_product` or `data_product_uri` is required."
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
@@ -202,6 +202,8 @@ def get_download_url(request, data_product=None, data_product_uri=None, force_do
         params = {"data-product-uri": data_product.productUri}
         if force_download:
             params['download'] = ''
+        if mime_type is not None:
+            params['mime-type'] = mime_type
         return f"{reverse('airavata_django_portal_sdk:download_file')}?{urlencode(params)}"
 
 
