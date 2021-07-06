@@ -14,45 +14,102 @@ output view provider will be invoked and it should return image data.
 
 ## Getting started
 
-See the
-[Custom UI tutorial](../tutorial/custom_ui_tutorial.md#tutorial-exercise-create-a-custom-output-viewer-for-an-output-file)
-for help on setting up a development environment and implementing a simple
-output view provider.
+For a step by step tutorial approach to creating a custom output view provider,
+see
+[Custom UI tutorial](../tutorial/custom_ui_tutorial.md#tutorial-exercise-create-a-custom-output-viewer-for-an-output-file).
 
-You can use this as a starting point to create your own custom output view
-provider. Here is what you would need to change:
+To create a custom output view provider, we'll need to create an installable
+Python package with the required metadata to describe the custom output view
+provider and how to import it. We'll use a project code generation tool called
+[Cookiecutter](https://cookiecutter.readthedocs.io/) to generate all of the
+necessary files and configuration. These steps will show how to use
+Cookiecutter.
 
-1. First add your custom output view provider implementation to
-   `output_views.py`.
-2. Rename the Python package name in `setup.py`.
-3. Update the `install_requires` list of dependencies based on what your custom
-   output view provider requires.
-4. Rename the Python module folder from `./gateways2019_tutorial` to whatever
-   you want to call it.
-5. Rename the output view provider in the `entry_points` metadata in `setup.py`.
-   For example, if you wanted to name your output view provider
-   `earthquake-sites-visualization` and you renamed your Python module folder
-   from `./gateways2019_tutorial` to `./earthquake_gateway`, then you could have
-   the following in the `entry_points`:
+1.  Install the Airavata Django Portal if you haven't already. See the
+    [https://github.com/apache/airavata-django-portal/blob/master/README.md](README)
+    for instructions.
+2.  With the Airavata Django Portal virtual environment activated, install
+    cookiecutter.
 
 ```
-...
-    entry_points="""
-[airavata.output_view_providers]
-earthquake-sites-visualization = earthquake_gateway.output_views:EarthquakeSitesViewProvider
-""",
+pip install -U cookiecutter
 ```
 
-6. If you don't need a Django app, you can remove the `[airavata.djangoapp]`
-   section from `entry_points`.
+3.  If you haven't already, you'll need to create a custom Django app to contain
+    your output view provider code. If you already have a custom Django app,
+    skip to step 4. To create a custom Django app, navigate to a separate
+    directory outside the airavata-django-portal, where you'll create your
+    custom django app. Use cookiecutter to run the Airavata Django app template.
 
-Please note, if you update `setup.py` and you're doing local development, you'll
-need to reinstall the package into your local Django instance's virtual
-environment using:
-
-```bash
-python setup.py develop
 ```
+cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
+```
+
+You'll need to answer some questions. The project name is the most important
+one. You can name it whatever you want. For these instructions I'll name it
+**Custom Django App**. For the rest of the questions, you can simply accept the
+defaults:
+
+```
+project_name [My Custom Django App]: Custom Django App
+project_slug [custom_django_app]:
+project_short_description [Custom Django app with everything needed to be installed in the airavata-django-portal]:
+app_config_class_name [CustomDjangoAppConfig]:
+version [0.1.0]:
+```
+
+See [Adding a Custom Django App](./custom_django_app.md) for more details.
+
+4.  Change into the directory of your custom Django app. Then run the following
+    command:
+
+```
+cd custom_django_app  # Or whatever you named your custom Django app
+cookiecutter https://github.com/machristie/cookiecutter-airavata-django-output-view.git -f
+```
+
+You'll need to answer some questions. For `project_name` give the name for your
+output view provider. The other very important question is the
+`custom_django_app_module_name`. This should be the module name of your custom
+Django app. In the running example, I would put `custom_django_app`. If you get
+an error about the custom_django_app_module_name, check the error message
+because it should provide a hint for what you should provide instead.
+
+The other questions are hopefully self explanatory and for most you can just
+accept the default value. You'll have the option of generating an image, html or
+link type output view provider. Also, you'll be asked whether your output view
+provider is to be used with a single file (URI) or a collection of files
+(URI_COLLECTION); if you're not sure, just pick the default value for now.
+
+5.  To install the custom Django app and the generated output view provider, run
+    the following in your custom Django app directory (the directory with the
+    setup.cfg file):
+
+```
+pip install -e .
+```
+
+### Generated files
+
+The output view provider cookiecutter does two things:
+
+1. it generates a output view provider file in the `output_views/` folder
+2. add an entry point listing to entry_points in `setup.cfg`
+
+See the output view provider file for the `generate_data` function. This is
+where you'll add your code. There is some commented out sample code to show you
+
+-   how to read the output file
+-   how to do more advanced interactions with the user's storage using the
+    user_storage module of the Airavata Django Portal SDK
+-   how to call the Airavata API using the Airavata Python SDK
+-   how to create the returned dictionary with the expected values for the given
+    display type (for example, for 'image' display type, the returned dictionary
+    should contain a key called `image` with the bytes of the images and a key
+    called `mime-type` with the mime type of the image).
+
+The rest of the documentation provides additional reference and guidance on
+implementing the `generate_data` function.
 
 ### Setting up remote data access
 
