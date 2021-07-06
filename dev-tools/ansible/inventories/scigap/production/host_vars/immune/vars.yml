@@ -30,6 +30,9 @@ vhost_ssl: True
 vhost_aliases:
   - url: /data/
     path: "{{ user_data_dir }}/regsnps/regsnps-data/"
+    headers:
+      - name: "Access-Control-Allow-Origin"
+        value: '"*"'
 ssl_certificate_file: "/etc/letsencrypt/live/immuneportal.ccbb.iupui.edu/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/immuneportal.ccbb.iupui.edu/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/immuneportal.ccbb.iupui.edu/privkey.pem"

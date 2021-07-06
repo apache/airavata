@@ -52,6 +52,9 @@
     Alias "{{ alias.url }}" "{{ alias.path }}"
     <Directory "{{ alias.path }}">
         Require all granted
+        {% for header in alias.headers %}
+        Header set {{ header.name }} {{ header.value }}
+        {% endfor %}
     </Directory>
     {% endfor %}
 
