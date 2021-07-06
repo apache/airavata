@@ -4,7 +4,7 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <b-table hover :fields="fields" :items="items" fixed="true">
+            <b-table hover :fields="fields" :items="items" :fixed="true">
               <template slot="creationTime" slot-scope="data">
                 <human-date :date="data.value" />
               </template>
