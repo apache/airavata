@@ -51,7 +51,10 @@ def download_file(request):
     try:
         data_file = user_storage.open_file(request, data_product)
         response = FileResponse(data_file, content_type=mime_type)
-        file_name = os.path.basename(data_file.name)
+        if user_storage.is_input_file(request, data_product):
+            file_name = data_product.productName
+        else:
+            file_name = os.path.basename(data_file.name)
         if mime_type == 'application/octet-stream' or force_download:
             response['Content-Disposition'] = ('attachment; filename="{}"'
                                                .format(file_name))
