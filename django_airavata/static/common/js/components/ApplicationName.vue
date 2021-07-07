@@ -18,12 +18,17 @@ export default {
     };
   },
   created() {
-    services.ApplicationInterfaceService.retrieve(
-      { lookup: this.applicationInterfaceId },
-      { ignoreErrors: true, cache: true }
-    )
-      .then((appInterface) => (this.applicationInterface = appInterface))
-      .catch(() => (this.notAvailable = true));
+    this.loadApplicationInterface();
+  },
+  methods: {
+    loadApplicationInterface() {
+      services.ApplicationInterfaceService.retrieve(
+        { lookup: this.applicationInterfaceId },
+        { ignoreErrors: true, cache: true }
+      )
+        .then((appInterface) => (this.applicationInterface = appInterface))
+        .catch(() => (this.notAvailable = true));
+    },
   },
   computed: {
     applicationName() {
@@ -34,6 +39,11 @@ export default {
           ? this.applicationInterface.applicationName
           : "";
       }
+    },
+  },
+  watch: {
+    applicationInterfaceId() {
+      this.loadApplicationInterface();
     },
   },
 };
