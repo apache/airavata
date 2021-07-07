@@ -3,12 +3,13 @@
     <b-form-group label="Username">
       <b-form-input
         v-model="$v.user.username.$model"
-        @keydown.native.enter="save"
+        :disabled="true"
         :state="validateState($v.user.username)"
       />
       <b-form-invalid-feedback v-if="!$v.user.username.emailOrMatchesRegex">
         Username can only contain lowercase letters, numbers, underscores and
-        hyphens OR it can be the same as the email address.
+        hyphens OR it can be the same as the email address. Only an
+        administrator can update your username to a valid value.
       </b-form-invalid-feedback>
     </b-form-group>
     <b-form-group label="First Name">
@@ -64,6 +65,9 @@ export default {
       type: models.User,
       required: true,
     },
+  },
+  created() {
+    this.$v.user.$touch();
   },
   data() {
     return {
