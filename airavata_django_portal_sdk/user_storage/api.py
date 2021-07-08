@@ -74,13 +74,14 @@ def get_user_storage_provider(request, owner_username=None, storage_resource_id=
     return instance
 
 
-def save(request, path, file, name=None, content_type=None, storage_resource_id=None):
+def save(request, path, file, name=None, content_type=None, storage_resource_id=None, experiment_id=None):
     "Save file in path in the user's storage and return DataProduct."
     if _is_remote_api():
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
                  if content_type is not None else file, }
+        # TODO: add experiment data directory relative paths support to remote API
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -91,8 +92,9 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, product_uri)
         return data_product
+    final_path = _get_final_path(request, path, experiment_id)
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    storage_resource_id, resource_path = backend.save(path, file, name=name, content_type=content_type)
+    storage_resource_id, resource_path = backend.save(final_path, file, name=name, content_type=content_type)
     data_product = _save_data_product(
         request, resource_path, storage_resource_id, name=name, content_type=content_type, backend=backend
     )
@@ -270,9 +272,10 @@ def exists(request, data_product=None, data_product_uri=None):
         return backend.exists(path)
 
 
-def dir_exists(request, path, storage_resource_id=None):
+def dir_exists(request, path, storage_resource_id=None, experiment_id=None):
     "Return True if path exists in user's data store."
     if _is_remote_api():
+        # TODO: add experiment data directory relative path support to remote API
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -282,13 +285,16 @@ def dir_exists(request, path, storage_resource_id=None):
         resp.raise_for_status()
         return resp.json()['isDir']
     else:
-        backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-        return backend.is_dir(path)
+        final_path, owner_username = _get_final_path_and_owner_username(request, path, experiment_id)
+        backend = get_user_storage_provider(
+            request, storage_resource_id=storage_resource_id, owner_username=owner_username)
+        return backend.is_dir(final_path)
 
 
-def user_file_exists(request, path, storage_resource_id=None):
+def user_file_exists(request, path, storage_resource_id=None, experiment_id=None):
     """If file exists, return data product URI, else None."""
     if _is_remote_api():
+        # TODO: add experiment data directory relative path support to remote API
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -297,9 +303,11 @@ def user_file_exists(request, path, storage_resource_id=None):
             return None
         resp.raise_for_status()
         return resp.json()['files'][0]['dataProductURI']
-    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    if backend.is_file(path):
-        _, files = backend.get_metadata(path)
+    final_path, owner_username = _get_final_path_and_owner_username(request, path, experiment_id)
+    backend = get_user_storage_provider(
+        request, storage_resource_id=storage_resource_id, owner_username=owner_username)
+    if backend.is_file(final_path):
+        _, files = backend.get_metadata(final_path)
         full_path = files[0]['resource_path']
         data_product_uri = _get_data_product_uri(request, full_path, backend.resource_id)
         return data_product_uri
@@ -307,9 +315,10 @@ def user_file_exists(request, path, storage_resource_id=None):
         return None
 
 
-def delete_dir(request, path, storage_resource_id=None):
+def delete_dir(request, path, storage_resource_id=None, experiment_id=None):
     """Delete path in user's data store, if it exists."""
     if _is_remote_api():
+        # TODO: add experiment data directory relative path support to remote API
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -319,12 +328,14 @@ def delete_dir(request, path, storage_resource_id=None):
         resp.raise_for_status()
         return
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    backend.delete(path)
+    final_path = _get_final_path(request, path, experiment_id)
+    backend.delete(final_path)
 
 
-def delete_user_file(request, path, storage_resource_id=None):
+def delete_user_file(request, path, storage_resource_id=None, experiment_id=None):
     """Delete file in user's data store, if it exists."""
     if _is_remote_api():
+        # TODO: add experiment data directory relative path support to remote API
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -334,7 +345,8 @@ def delete_user_file(request, path, storage_resource_id=None):
         resp.raise_for_status()
         return
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    backend.delete(path)
+    final_path = _get_final_path(request, path, experiment_id)
+    backend.delete(final_path)
 
 
 def update_file_content(request, path, fileContentText, storage_resource_id=None):
@@ -620,7 +632,7 @@ def get_experiment_dir(request, project_name=None, experiment_name=None, path=No
     return resource_path
 
 
-def create_user_dir(request, path="", dir_names=(), create_unique=False, storage_resource_id=None):
+def create_user_dir(request, path="", dir_names=(), create_unique=False, storage_resource_id=None, experiment_id=None):
     """
     Creates a directory, and intermediate directories if given, at the given
     path in the user's storage.  `dir_names` should be either a list or tuple of
@@ -637,6 +649,7 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
     """
     if _is_remote_api():
         logger.debug(f"path={path}")
+        # TODO: add experiment data directory relative path support to remote API
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -649,14 +662,15 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
         return storage_resource_id, path
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
     # For backwards compatibility, manufacture the dir_names array as needed
+    final_path = _get_final_path(request, path, experiment_id)
     if len(dir_names) == 0:
         dir_names = []
-        while not backend.exists(path):
-            path, dir_name = os.path.split(path)
+        while not backend.exists(final_path):
+            final_path, dir_name = os.path.split(final_path)
             if dir_name == '':
                 break
             dir_names.insert(0, dir_name)
-    storage_resource_id, resource_path = backend.create_dirs(path, dir_names=dir_names, create_unique=create_unique)
+    storage_resource_id, resource_path = backend.create_dirs(final_path, dir_names=dir_names, create_unique=create_unique)
     return storage_resource_id, resource_path
 
 
@@ -854,6 +868,28 @@ def _get_replica_resource_id_and_filepath(data_product):
                 unquote(urlparse(replica_location.filePath).path))
     else:
         return None, None
+
+
+def _get_final_path(request, path, experiment_id):
+    "If experiment_id is given, join the path to it's data directory"
+    final_path = path
+    if experiment_id is not None:
+        experiment = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+        exp_data_dir = experiment.userConfigurationData.experimentDataDir
+        final_path = os.path.join(exp_data_dir, path)
+    return final_path
+
+
+def _get_final_path_and_owner_username(request, path, experiment_id):
+    "If experiment_id is given, join the path to it's data directory and also return owner username"
+    final_path = path
+    if experiment_id is not None:
+        experiment = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+        exp_data_dir = experiment.userConfigurationData.experimentDataDir
+        return os.path.join(exp_data_dir, path), experiment.userName
+    return final_path, None
 
 
 def _is_remote_api():
