@@ -91,6 +91,7 @@ isort .
    ```
    cd /tmp/
    git clone /path/to/airavata-django-portal-sdk/ -b VERSION
+   cd airavata-django-portal-sdk
    python3 -m venv venv
    source venv/bin/activate
    python3 -m pip install --upgrade build
