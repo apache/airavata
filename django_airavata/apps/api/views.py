@@ -1520,8 +1520,9 @@ class UserStoragePathView(APIView):
 
     def post(self, request, path="/", format=None):
         path = request.POST.get('path', path)
-        if not user_storage.dir_exists(request, path):
-            _, resource_path = user_storage.create_user_dir(request, path)
+        experiment_id = request.POST.get('experiment-id')
+        if not user_storage.dir_exists(request, path, experiment_id=experiment_id):
+            _, resource_path = user_storage.create_user_dir(request, path, experiment_id=experiment_id)
             # create_user_dir may create the directory with a different name
             # than requested, for example, converting spaces to underscores, so
             # use as the path the path that is returned by create_user_dir
@@ -1532,7 +1533,8 @@ class UserStoragePathView(APIView):
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = user_storage.save(
-                request, path, user_file, content_type=user_file.content_type)
+                request, path, user_file, content_type=user_file.content_type,
+                experiment_id=experiment_id)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
@@ -1540,7 +1542,8 @@ class UserStoragePathView(APIView):
             def save_file(file_path, file_name, file_type):
                 with open(file_path, 'rb') as uploaded_file:
                     return user_storage.save(request, path, uploaded_file,
-                                             name=file_name, content_type=file_type)
+                                             name=file_name, content_type=file_type,
+                                             experiment_id=experiment_id)
             data_product = tus.save_tus_upload(uploadURL, save_file)
         return self._create_response(request, path, uploaded=data_product)
 
@@ -1565,16 +1568,18 @@ class UserStoragePathView(APIView):
 
     def delete(self, request, path="/", format=None):
         path = request.POST.get('path', path)
-        if user_storage.dir_exists(request, path):
-            user_storage.delete_dir(request, path)
+        experiment_id = request.POST.get('experiment-id')
+        if user_storage.dir_exists(request, path, experiment_id=experiment_id):
+            user_storage.delete_dir(request, path, experiment_id=experiment_id)
         else:
-            user_storage.delete_user_file(request, path)
+            user_storage.delete_user_file(request, path, experiment_id=experiment_id)
 
         return Response(status=204)
 
     def _create_response(self, request, path, uploaded=None):
-        if user_storage.dir_exists(request, path):
-            directories, files = user_storage.listdir(request, path)
+        experiment_id = request.POST.get('experiment-id')
+        if user_storage.dir_exists(request, path, experiment_id=experiment_id):
+            directories, files = user_storage.listdir(request, path, experiment_id=experiment_id)
             data = {
                 'isDir': True,
                 'directories': directories,
