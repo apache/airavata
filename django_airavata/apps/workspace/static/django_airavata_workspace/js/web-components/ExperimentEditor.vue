@@ -12,7 +12,7 @@
       <div
         :ref="input.name"
         :key="input.name"
-        @input="updateInputValue(input.name, $event.target.value)"
+        @input="updateInputValue(input.name, $event)"
       >
         <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
@@ -36,6 +36,7 @@ import {
   getExperiment,
   launchExperiment,
 } from "./store";
+import { utils } from "django-airavata-common-ui";
 
 import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
@@ -71,13 +72,15 @@ export default {
         slot.setAttribute("name", input.name);
         if (input.type.name === "STRING") {
           slot.textContent = `${input.name} `;
-          const textInput = document.createElement("input");
-          textInput.setAttribute("type", "text");
+          const textInput = document.createElement("adpf-string-input-editor");
           textInput.setAttribute("value", input.value);
           slot.appendChild(textInput);
+          this.$refs[input.name][0].append(slot);
+          textInput.experimentInput = input;
+          textInput.experiment = this.experiment;
+          textInput.id = utils.sanitizeHTMLId(input.name);
         }
         // TODO: add support for other input types
-        this.$refs[input.name][0].append(slot);
       }
 
       /*
@@ -188,10 +191,17 @@ export default {
     updateExperimentName(event) {
       this.experiment.experimentName = event.target.value;
     },
-    updateInputValue(inputName, value) {
+    updateInputValue(inputName, event) {
+      if (event.inputType) {
+        // Ignore these fine-grained events about the type of change made
+        return;
+      }
       const experimentInput = this.experiment.experimentInputs.find(
         (i) => i.name === inputName
       );
+      // web component input events have the current value in a detail array,
+      // native input events have the current value in target.value
+      const value = Array.isArray(event.detail) ? event.detail[0] : event.target.value;
       experimentInput.value = value;
     },
     updateProjectId(event) {

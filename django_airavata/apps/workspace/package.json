@@ -14,8 +14,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:unit:watch": "vue-cli-service test:unit --watch",
     "format": "prettier --write .",
-    "build:wc": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc",
-    "build:wc:watch": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
+    "build:wc": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/**/*.vue' --dest ./static/django_airavata_workspace/wc",
+    "build:wc:watch": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/**/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
