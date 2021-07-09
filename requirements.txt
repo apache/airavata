@@ -19,6 +19,6 @@ google-api-python-client==1.12.8
 grpcio-tools==1.34.1
 grpcio==1.34.1
 
-airavata-django-portal-sdk==1.1.dev3
+airavata-django-portal-sdk==1.1.dev4
 -e git+https://github.com/apache/airavata.git@develop#egg=airavata-python-sdk&subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk
 -e "."
