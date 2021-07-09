@@ -379,7 +379,7 @@ def update_data_product_content(request, data_product=None, fileContentText="", 
     update_file_content(request, path, fileContentText, storage_resource_id=storage_resource_id)
 
 
-def get_file_metadata(request, path, storage_resource_id=None):
+def get_file_metadata(request, path, storage_resource_id=None, experiment_id=None):
     if _is_remote_api():
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
@@ -397,8 +397,9 @@ def get_file_metadata(request, path, storage_resource_id=None):
         return file
 
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    if backend.is_file(path):
-        _, files = backend.get_metadata(path)
+    final_path = _get_final_path(request, path, experiment_id)
+    if backend.is_file(final_path):
+        _, files = backend.get_metadata(final_path)
         file = files[0]
         data_product_uri = _get_data_product_uri(request, file['resource_path'],
                                                  storage_resource_id=backend.resource_id)
@@ -461,9 +462,9 @@ def get_data_product_metadata(request, data_product=None, data_product_uri=None)
         raise ObjectDoesNotExist("File does not exist at that path.")
 
 
-def get_file(request, path, storage_resource_id=None):
+def get_file(request, path, storage_resource_id=None, experiment_id=None):
     warnings.warn("Use 'get_file_metadata' instead.", DeprecationWarning)
-    return get_file_metadata(request, path, storage_resource_id)
+    return get_file_metadata(request, path, storage_resource_id, experiment_id=experiment_id)
 
 
 def delete(request, data_product=None, data_product_uri=None):
@@ -495,7 +496,7 @@ def delete(request, data_product=None, data_product_uri=None):
             raise
 
 
-def listdir(request, path, storage_resource_id=None):
+def listdir(request, path, storage_resource_id=None, experiment_id=None):
     """Return a tuple of two lists, one for directories, the second for files."""
 
     if _is_remote_api():
@@ -517,7 +518,8 @@ def listdir(request, path, storage_resource_id=None):
         return data['directories'], data['files']
 
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    directories, files = backend.get_metadata(path)
+    final_path = _get_final_path(request, path, experiment_id)
+    directories, files = backend.get_metadata(final_path)
     # Mark the TMP_INPUT_FILE_UPLOAD_DIR directory as hidden in the UI
     for directory in directories:
         directory['hidden'] = directory['path'] == TMP_INPUT_FILE_UPLOAD_DIR
