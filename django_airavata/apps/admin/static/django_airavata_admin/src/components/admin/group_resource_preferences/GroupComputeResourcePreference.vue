@@ -85,7 +85,7 @@
               Edit
               <i class="fa fa-edit" aria-hidden="true"></i>
             </router-link>
-            
+
             <router-link
               class="action-link"
               v-if="!userHasWriteAccess"
@@ -108,7 +108,7 @@
               View
               <i class="fa fa-eye" aria-hidden="true"></i>
             </router-link>
-            
+
             <delete-link
               class="action-link"
               v-if="userHasWriteAccess"
@@ -126,8 +126,8 @@
       </template>
     </list-layout>
     <div class="fixed-footer">
-      <b-button 
-      variant="primary" 
+      <b-button
+      variant="primary"
       :disabled="!userHasWriteAccess"
       @click="saveGroupResourceProfile"
         >Save</b-button
@@ -202,7 +202,7 @@ export default {
       data: data,
       service: services.GroupResourceProfileService,
       sharedEntity: null,
-      userHasWriteAccess: false,
+      userHasWriteAccess: data.userHasWriteAccess,
       computePreferencesFields: [
         {
           label: "Name",

@@ -858,6 +858,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     createdTime = serializers.DateTimeField(source='created_time')
     mimeType = serializers.CharField(source='mime_type')
     size = serializers.IntegerField()
+    hidden = serializers.BooleanField()
 
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
