@@ -123,7 +123,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_airavata.apps.auth.middleware.authz_token_middleware',
     'django_airavata.middleware.AiravataClientMiddleware',
-    'django_airavata.middleware.sharing_client',
     'django_airavata.middleware.profile_service_client',
     # Needs to come after authz_token_middleware, airavata_client and
     # profile_service_client

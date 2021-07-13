@@ -4,7 +4,6 @@ from contextlib import contextmanager
 
 import thrift_connector.connection_pool as connection_pool
 from airavata.api import Airavata
-from airavata.api.sharing import SharingRegistryService
 from airavata.service.profile.groupmanager.cpi import GroupManagerService
 from airavata.service.profile.groupmanager.cpi.constants import (
     GROUP_MANAGER_CPI_NAME
@@ -73,13 +72,6 @@ def create_airavata_client(transport):
     return client
 
 
-def create_sharing_client(transport):
-
-    protocol = TBinaryProtocol.TBinaryProtocol(transport)
-
-    return SharingRegistryService.Client(protocol)
-
-
 def get_binary_protocol(transport):
     return TBinaryProtocol.TBinaryProtocol(transport)
 
@@ -115,14 +107,6 @@ def get_airavata_client():
                              settings.AIRAVATA_API_PORT,
                              settings.AIRAVATA_API_SECURE,
                              create_airavata_client)
-
-
-def get_sharing_client():
-    """Get Sharing API client as context manager (use in `with statement`)."""
-    return get_thrift_client(settings.SHARING_API_HOST,
-                             settings.SHARING_API_PORT,
-                             settings.SHARING_API_SECURE,
-                             create_sharing_client)
 
 
 def get_group_manager_client():
@@ -251,10 +235,6 @@ class UserProfileServiceThriftClient(MultiplexThriftClientMixin,
     secure = settings.PROFILE_SERVICE_SECURE
 
 
-class SharingAPIThriftClient(CustomThriftClient):
-    secure = settings.SHARING_API_SECURE
-
-
 airavata_api_client_pool = connection_pool.ClientPool(
     Airavata,
     settings.AIRAVATA_API_HOST,
@@ -288,12 +268,5 @@ user_profile_client_pool = connection_pool.ClientPool(
     settings.PROFILE_SERVICE_HOST,
     settings.PROFILE_SERVICE_PORT,
     connection_class=UserProfileServiceThriftClient,
-    keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
-)
-sharing_api_client_pool = connection_pool.ClientPool(
-    SharingRegistryService,
-    settings.SHARING_API_HOST,
-    settings.SHARING_API_PORT,
-    connection_class=SharingAPIThriftClient,
     keepalive=settings.THRIFT_CLIENT_POOL_KEEPALIVE
 )
