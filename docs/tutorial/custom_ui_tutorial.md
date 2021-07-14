@@ -13,22 +13,9 @@ Tutorial attendees should have:
 -   latest Python (current version as of this writing is 3.9.5)
 -   Git client
 -   [Docker Desktop](https://www.docker.com/products/docker-desktop)
--   If you don't have Docker installed or can't install it (see special note
-    below), you'll also need:
+-   If you don't have Docker installed or can't install it, you'll also need:
     -   [Node LTS](https://nodejs.org/en/download/),
     -   and [Yarn package manager](https://yarnpkg.com/getting-started/install).
-
-!!! note "Special note for Windows Home users"
-
-    If you have Windows Home, you may not be able to install Docker Desktop.
-    You'll need to either **install the Airavata Django Portal dependencies
-    (Python, Nodejs, Yarn)** (recommended) or take some extra steps to setup
-    WSL2 (Windows Subsystem for Linux 2) and then install Docker Desktop. Since
-    setting up WSL2 can be fairly involved, we don't recommend it for the in
-    person tutorial, but if you are interested in this option, see [Install
-    Docker Desktop on Windows Home with WSL2
-    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/)
-    for more information.
 
 ### Installing Python
 
@@ -49,9 +36,9 @@ Verify you have installed Python 3.9:
 
 === "Windows"
 
-    Open `cmd` then run:
+    Open PowerShell then run:
 
-        C:\Users\username>py --version
+        PS C:\Users\username> py --version
         Python 3.9.5
 
 ### Installing Git
@@ -72,10 +59,10 @@ Verify that you have installed Git:
 
 === "Windows"
 
-    Open `cmd` then run:
+    Open PowerShell then run:
 
-        C:\Users\username>git --version
-        git version 2.32.0.windows.1
+        PS C:\Users\username> git --version
+        git version 2.32.0.windows.2
 
     The command should print "git version X.X". The version should be at least 2.0.
 
@@ -93,16 +80,37 @@ Verify that you have installed Docker Desktop:
 
         $ docker --version
         Docker version 20.10.7, build f0df350
+        $ docker run hello-world
+        Unable to find image 'hello-world:latest' locally
+        latest: Pulling from library/hello-world
+        109db8fad215: Pull complete
+        Digest: sha256:df5f5184104426b65967e016ff2ac0bfcd44ad7899ca3bbcf8e44e4461491a9e
+        Status: Downloaded newer image for hello-world:latest
+
+        Hello from Docker!
+        This message shows that your installation appears to be working correctly.
+        ...
+
 
     The command should print "Docker version X.X". As long as it is a recent
     version, you should be fine.
 
 === "Windows"
 
-    Open `cmd` then run:
+    Open PowerShell then run:
 
-        C:\Users\username>docker --version
+        PS C:\Users\username> docker --version
         Docker version 20.10.7, build f0df350
+        PS C:\Users\username> docker run hello-world
+        Unable to find image 'hello-world:latest' locally
+        latest: Pulling from library/hello-world
+        b8dfde127a29: Pull complete
+        Digest: sha256:df5f5184104426b65967e016ff2ac0bfcd44ad7899ca3bbcf8e44e4461491a9e
+        Status: Downloaded newer image for hello-world:latest
+
+        Hello from Docker!
+        This message shows that your installation appears to be working correctly.
+        ...
 
     The command should print "Docker version X.X". As long as it is a recent
     version, you should be fine.
@@ -128,10 +136,10 @@ Verify that you have installed Node.js LTS:
 
 === "Windows"
 
-    Open `cmd` then run:
+    Open PowerShell then run:
 
-        C:\Users\username>node --version
-        v14.17.1
+        PS C:\Users\username> node --version
+        v14.17.3
 
     The command should print "vX.X". The version should be at least v14.0.
 
@@ -157,9 +165,9 @@ Verify that you have installed Yarn:
 
 === "Windows"
 
-    Open `cmd` then run:
+    Open PowerShell then run:
 
-        C:\Users\username>yarn --version
+        PS C:\Users\username> yarn --version
         1.22.10
 
     The command should print "X.X". The version should be 1.X.
@@ -506,13 +514,10 @@ package a Django extension.
 
 === "Windows"
 
-        C:\Users\username>cd %userprofile%
-
-        C:\Users\username>py -m venv tutorial-env
-
-        C:\Users\username>tutorial-env\Scripts\activate.bat
-
-        (tutorial-env) C:\Users\username>
+        PS C:\Users\username> cd $HOME
+        PS C:\Users\username> py -m venv tutorial-env
+        PS C:\Users\username> .\tutorial-env\Scripts\Activate.ps1
+        (tutorial-env) PS C:\Users\username>
 
 #### Run the django app cookiecutter
 
@@ -553,16 +558,22 @@ options:
     have Docker installed. It is also what we recommend when you are developing
     a real custom django app extension.
 
-=== "Docker (macOS/Linux)"
+Regardless of which approach you use, you'll need to get a config file for
+setting up a local development environment that has the same settings as
+Testdrive. Go to <https://testdrive.airavata.org/admin/developers/> and download
+the settings_local.py file for local development. Move or copy it to the
+`$HOME/custom_ui_tutorial_app/` directory.
+
+=== "Docker (macOS/Linux/Windows)"
+
+    Note for **Windows** users, the following commands assume PowerShell.
 
     1. Make sure you have
     [Docker installed](https://www.docker.com/products/docker-desktop).
     2. Run the following to create a Docker container called **custom-ui-tutorial**.
 
-            cd $HOME
-            git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
-            cd custom_ui_tutorial_app
-            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/../custom_ui_tutorial_app_solution/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+            cd $HOME/custom_ui_tutorial_app
+            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "${PWD}:/extensions" -v "${PWD}/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
     3. Wait until the Docker container starts up. Go to <http://localhost:8000>
     and when it loads and you see **Welcome to your new Wagtail site!**, then
     you're ready to proceed to the next step.
@@ -593,35 +604,32 @@ options:
 
     2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
 
-            (tutorial-env) C:\Users\username>cd %userprofile%
-
-            (tutorial-env) C:\Users\username>git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
-
-            (tutorial-env) C:\Users\username>git clone https://github.com/apache/airavata-django-portal.git
+            (tutorial-env) PS C:\Users\username>cd $HOME
+            (tutorial-env) PS C:\Users\username>git clone https://github.com/apache/airavata-django-portal.git
 
     3. Install the airavata-django-portal dependencies.
 
-            (tutorial-env) C:\Users\username>cd airavata-django-portal
-
-            (tutorial-env) C:\Users\username\airavata-django-portal>pip install -U pip
-
-            (tutorial-env) C:\Users\username\airavata-django-portal>pip install -r requirements.txt
+            (tutorial-env) PS C:\Users\username>cd airavata-django-portal
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>pip install -U pip
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>pip install -r requirements.txt
 
     4. Copy in the settings_local.py file.
 
-            (tutorial-env) C:\Users\username\airavata-django-portal>copy ..\custom_ui_tutorial_app_solution\settings_local.py django_airavata\
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>copy ..\custom_ui_tutorial_app\settings_local.py django_airavata\
 
     5. Run Django database migrations
 
-            (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py migrate
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>python manage.py migrate
 
     6. Load the default Wagtail CMS pages.
 
-            (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py load_cms_data new_default_theme
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>python manage.py load_cms_data new_default_theme
 
     7. Build the JavaScript frontend code.
 
-            (tutorial-env) C:\Users\username\airavata-django-portal>build_js.bat
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>.\build_js.bat
+
+       This last step can take a few minutes to complete.
 
 === "Python (macOS/Linux)"
 
@@ -643,7 +651,6 @@ options:
     2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
 
             (tutorial-env) $ cd $HOME
-            (tutorial-env) $ git clone https://github.com/machristie/custom_ui_tutorial_app_solution.git
             (tutorial-env) $ git clone https://github.com/apache/airavata-django-portal.git
 
     3. Install the airavata-django-portal dependencies.
@@ -654,7 +661,7 @@ options:
 
     4. Copy in the settings_local.py file.
 
-            (tutorial-env) $ cp ../custom_ui_tutorial_app_solution/settings_local.py django_airavata/
+            (tutorial-env) $ cp ../custom_ui_tutorial_app/settings_local.py django_airavata/
 
     5. Run Django database migrations
 
@@ -666,7 +673,9 @@ options:
 
     7. Build the JavaScript frontend code.
 
-            (tutorial-env) $ build_js.sh
+            (tutorial-env) $ ./build_js.sh
+
+       This last step can take a few minutes to complete.
 
 ### Create the custom output viewer
 
@@ -682,7 +691,7 @@ Now we'll also generate and implement a **Gaussian Eigenvalues View** provider.
 
 === "Windows"
 
-        (tutorial-env) C:\Users\username>cd %userprofile%\custom_ui_tutorial_app
+        (tutorial-env) PS C:\Users\username>cd $HOME\custom_ui_tutorial_app
 
 2. Run the following cookiecutter template:
 
@@ -907,7 +916,7 @@ install_requires =
 10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
     portal's virtual environment.
 
-=== "Docker (macOS/Linux)"
+=== "Docker (macOS/Linux/Windows)"
 
         docker exec -w /extensions custom-ui-tutorial pip install -e .
         docker exec custom-ui-tutorial touch /code/django_airavata/wsgi.py
@@ -920,13 +929,10 @@ install_requires =
 
 === "Python (Windows)"
 
-        (tutorial-env) C:\Users\username\airavata-django-portal>cd %userprofile%\custom_ui_tutorial_app
-
-        (tutorial-env) C:\Users\username\custom_ui_tutorial_app>pip install -e .
-
-        (tutorial-env) C:\Users\username\custom_ui_tutorial_app>cd ..\airavata-django-portal
-
-        (tutorial-env) C:\Users\username\airavata-django-portal>python manage.py runserver
+        (tutorial-env) PS C:\Users\username\airavata-django-portal> cd $HOME\custom_ui_tutorial_app
+        (tutorial-env) PS C:\Users\username\custom_ui_tutorial_app> pip install -e .
+        (tutorial-env) PS C:\Users\username\custom_ui_tutorial_app> cd ..\airavata-django-portal
+        (tutorial-env) PS C:\Users\username\airavata-django-portal> python manage.py runserver
 
 === "Python (macOS/Linux)"
 
@@ -1107,7 +1113,7 @@ urlpatterns = [
 This maps the `/hello/` URL to the `hello_world` view.
 
 5. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/apps.py`
-   and add the `fa_icon_class` attribute and the `url_home` attribute to the
+   and update the `fa_icon_class` attribute and the `url_home` attribute to the
    `CustomUiTutorialAppConfig` class:
 
 ```python
@@ -1310,6 +1316,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 ```javascript
 // ...
+    // STARTING HERE
     const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
 
     function loadExperiments() {
@@ -1336,6 +1343,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
     loadExperiments();
     $("#refresh-button").click(loadExperiments);
+    // ENDING HERE
 
 </script>
 
@@ -1423,6 +1431,9 @@ const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
    the following to the end of the _scripts_ block in `hello.html`:
 
 ```javascript
+// ...
+
+// STARTING HERE
 $("#run-button").click((e) => {
     const greeting = $("#greeting-select").val();
     const loadAppInterface = services.ApplicationInterfaceService.retrieve({
@@ -1467,6 +1478,11 @@ $("#run-button").click((e) => {
             });
         });
 });
+// ENDING HERE
+
+</script>
+
+{% endblock scripts %}
 ```
 
 Now that we can launch the experiment we can go ahead and give it a try.
