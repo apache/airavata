@@ -276,9 +276,8 @@ def dir_exists(request, path, storage_resource_id=None, experiment_id=None):
     "Return True if path exists in user's data store."
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                params={"experiment-id": experiment_id},
+                                "/user-storage/~/",
+                                params={"path": path, "experiment-id": experiment_id},
                                 raise_for_status=False)
         if resp.status_code == HTTPStatus.NOT_FOUND:
             return False
@@ -502,9 +501,8 @@ def listdir(request, path, storage_resource_id=None, experiment_id=None):
 
     if _is_remote_api():
         resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                params={"experiment-id": experiment_id},
+                                "/user-storage/~/",
+                                params={"path": path, "experiment-id": experiment_id},
                                 )
         data = resp.json()
         for directory in data['directories']:
