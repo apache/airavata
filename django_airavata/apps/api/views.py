@@ -1515,12 +1515,13 @@ class UserStoragePathView(APIView):
 
     def get(self, request, path="/", format=None):
         # AIRAVATA-3460 Allow passing path as a query parameter instead
-        path = request.GET.get('path', path)
-        return self._create_response(request, path)
+        path = request.query_params.get('path', path)
+        experiment_id = request.query_params.get('experiment-id')
+        return self._create_response(request, path, experiment_id=experiment_id)
 
     def post(self, request, path="/", format=None):
-        path = request.POST.get('path', path)
-        experiment_id = request.POST.get('experiment-id')
+        path = request.data.get('path', path)
+        experiment_id = request.data.get('experiment-id')
         if not user_storage.dir_exists(request, path, experiment_id=experiment_id):
             _, resource_path = user_storage.create_user_dir(request, path, experiment_id=experiment_id)
             # create_user_dir may create the directory with a different name
@@ -1545,7 +1546,7 @@ class UserStoragePathView(APIView):
                                              name=file_name, content_type=file_type,
                                              experiment_id=experiment_id)
             data_product = tus.save_tus_upload(uploadURL, save_file)
-        return self._create_response(request, path, uploaded=data_product)
+        return self._create_response(request, path, uploaded=data_product, experiment_id=experiment_id)
 
     # Accept wither to replace file or to replace file content text.
     def put(self, request, path="/", format=None):
@@ -1567,8 +1568,8 @@ class UserStoragePathView(APIView):
         return self._create_response(request=request, path=path)
 
     def delete(self, request, path="/", format=None):
-        path = request.POST.get('path', path)
-        experiment_id = request.POST.get('experiment-id')
+        path = request.data.get('path', path)
+        experiment_id = request.data.get('experiment-id')
         if user_storage.dir_exists(request, path, experiment_id=experiment_id):
             user_storage.delete_dir(request, path, experiment_id=experiment_id)
         else:
@@ -1576,8 +1577,7 @@ class UserStoragePathView(APIView):
 
         return Response(status=204)
 
-    def _create_response(self, request, path, uploaded=None):
-        experiment_id = request.POST.get('experiment-id')
+    def _create_response(self, request, path, uploaded=None, experiment_id=None):
         if user_storage.dir_exists(request, path, experiment_id=experiment_id):
             directories, files = user_storage.listdir(request, path, experiment_id=experiment_id)
             data = {
