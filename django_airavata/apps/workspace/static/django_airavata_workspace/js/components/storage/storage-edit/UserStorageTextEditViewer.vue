@@ -66,7 +66,11 @@ export default {
     this.setFileContent();
   },
   destroyed() {
-    this.editor.getWrapperElement().remove();
+    // this.editor is created only when the file is small enough to be
+    // previewed/edited in browser
+    if (this.editor) {
+      this.editor.getWrapperElement().remove();
+    }
   },
   computed: {
     editAvailable() {
