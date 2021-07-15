@@ -1593,7 +1593,7 @@ class UserStoragePathView(APIView):
                 data, context={'request': request})
             return Response(serializer.data)
         else:
-            file = user_storage.get_file(request, path)
+            file = user_storage.get_file_metadata(request, path, experiment_id=experiment_id)
             data = {
                 'isDir': False,
                 'directories': [],
