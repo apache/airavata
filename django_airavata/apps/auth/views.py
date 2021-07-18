@@ -557,10 +557,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
+        if user.is_gateway_admin:
             return get_user_model().objects.all()
         else:
-            return get_user_model().objects.get(pk=user.pk)
+            return get_user_model().objects.filter(pk=user.pk)
 
     @action(detail=False)
     def current(self, request):
