@@ -38,12 +38,11 @@ def initialize_user_profile(sender, request, user, **kwargs):
     # have an Airavata user profile (See IAMAdminServices.enableUser). The
     # following is necessary for users coming from federated login who don't
     # need to verify their email.
-    authz_token = utils.get_authz_token(request)
-    if authz_token is not None:
-        if not user_profile_client_pool.doesUserExist(authz_token,
+    if request.authz_token is not None:
+        if not user_profile_client_pool.doesUserExist(request.authz_token,
                                                       user.username,
                                                       settings.GATEWAY_ID):
-            user_profile_client_pool.initializeUserProfile(authz_token)
+            user_profile_client_pool.initializeUserProfile(request.authz_token)
             log.info("initialized user profile for {}".format(user.username))
             # Since user profile created, inform admins of new user
             utils.send_new_user_email(
