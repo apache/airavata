@@ -532,6 +532,7 @@ def access_token_redirect(request):
                     f"{quote(request.authz_token.accessToken)}")
 
 
+@login_required
 def user_profile(request):
     return render(request, "django_airavata_auth/base.html", {
         'bundle_name': "user-profile"
