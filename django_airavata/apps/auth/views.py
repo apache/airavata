@@ -603,6 +603,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+@login_required
 def download_settings_local(request):
 
     if not (request.is_gateway_admin or request.is_read_only_gateway_admin):
