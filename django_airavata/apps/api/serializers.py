@@ -466,9 +466,12 @@ class DataProductSerializer(
     filesize = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
-        """Getter for downloadURL field."""
+        """Getter for downloadURL field. Returns None if file is not available."""
         request = self.context['request']
-        return user_storage.get_lazy_download_url(request, data_product)
+        if user_storage.exists(request, data_product):
+            return user_storage.get_lazy_download_url(request, data_product)
+        else:
+            return None
 
     def get_isInputFileUpload(self, data_product):
         """Return True if this is an uploaded input file."""
