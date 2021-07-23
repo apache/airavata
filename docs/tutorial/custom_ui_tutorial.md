@@ -501,7 +501,9 @@ code. First we'll generate the custom Django app code.
 
 We have a local develop environment created. Now we can start adding custom
 code. First, we'll create a custom Django app, which is the standard way to
-package a Django extension.
+package a Django extension. We won't write any Django code until the next
+exercise, but generating the custom Django app code gives us a Python package we
+can install in which we can write the custom output view code.
 
 #### Create and activate a Python virtual environment
 
