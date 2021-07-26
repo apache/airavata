@@ -154,6 +154,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             // Default access token lifespan to 30 minutes, SSO session idle to 60 minutes
             newRealmDetails.setAccessTokenLifespan(1800);
             newRealmDetails.setSsoSessionIdleTimeout(3600);
+            newRealmDetails.setEditUsernameAllowed(true);
             RealmRepresentation realmWithRoles = TenantManagementKeycloakImpl.createDefaultRoles(newRealmDetails);
             client.realms().create(realmWithRoles);
             return gatewayDetails;
