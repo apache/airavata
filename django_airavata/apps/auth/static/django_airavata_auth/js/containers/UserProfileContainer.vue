@@ -1,6 +1,9 @@
 <template>
   <div>
     <h1 class="h4 mb-4">User Profile Editor</h1>
+    <b-alert :show="user && !user.complete"
+      >Please complete your user profile before continuing.</b-alert
+    >
     <user-profile-editor
       v-if="user"
       v-model="user"

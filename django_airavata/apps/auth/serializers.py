@@ -23,10 +23,11 @@ class PendingEmailChangeSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 
     pending_email_change = serializers.SerializerMethodField()
+    complete = serializers.SerializerMethodField()
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'pending_email_change']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'pending_email_change', 'complete']
 
     def get_pending_email_change(self, instance):
         request = self.context['request']
@@ -36,6 +37,9 @@ class UserSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+
+    def get_complete(self, instance):
+        return instance.user_profile.is_complete
 
     @atomic
     def update(self, instance, validated_data):

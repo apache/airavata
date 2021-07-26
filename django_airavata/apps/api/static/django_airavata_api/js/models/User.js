@@ -1,6 +1,14 @@
 import BaseModel from "./BaseModel";
 
-const FIELDS = ["id", "username", "first_name", "last_name", "email", "pending_email_change"];
+const FIELDS = [
+  "id",
+  "username",
+  "first_name",
+  "last_name",
+  "email",
+  "pending_email_change",
+  "complete",
+];
 
 export default class User extends BaseModel {
   constructor(data = {}) {
