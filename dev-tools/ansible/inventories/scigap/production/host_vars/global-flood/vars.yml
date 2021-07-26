@@ -22,11 +22,11 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-vhost_servername: "globalflood.scigap.org"
+vhost_servername: "global-floods-monitoring.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/globalflood.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/globalflood.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/globalflood.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/privkey.pem"
 
 
 ## Keycloak related variables
@@ -36,7 +36,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "Global Flood Assessment Gateway"
+    name: "Global Floods Assessment Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
@@ -47,7 +47,7 @@ experiment_data_dir: "{{ user_data_dir }}/global-flood"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPuGmLPwwXu15TCdLwsE9dFoWJu1kzQzdLukslMKjVCf05Fe+MyCP7EG5n1psGigSORGm0bo/9t9fPQGyPRUR2jIBI5lR2bE5JJ8XNotf+Gdv45FXhXHTIPSeb1bAymEQVghALxqeYOWnnP+6aL61Zy6nAokMJdkdRXFRxr0paYLbH3oaCAVdp2ggMXP+KMvkKHjMSa9aZFK/V/YrIRONKDrdK+DV7D0xk4XGplRAsw8UpS8GJipfq8uTM23Tr/UMCYUCbW8qqf0HYFohY+51lT/1JjYb+cBWjy1iuNGVQVnQsuNSOoDnW1C07V6VFzwKZJOv+rYhw6iL5rcq3fzDD"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Wang Jun','wang208@iu.edu')]"
-portal_title: "Global Flood Assessment Gateway"
+portal_title: "Global Floods Assessment Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
 ...
