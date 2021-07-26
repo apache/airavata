@@ -84,7 +84,7 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
-                                params={"experiment-id": experiment_id},
+                                data={"experiment-id": experiment_id},
                                 method="post",
                                 files=files)
         data = resp.json()
@@ -320,7 +320,7 @@ def delete_dir(request, path, storage_resource_id=None, experiment_id=None):
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
-                                params={"experiment-id": experiment_id},
+                                data={"experiment-id": experiment_id},
                                 method="delete",
                                 raise_for_status=False)
         _raise_404(resp, f"File path does not exist {path}")
@@ -337,7 +337,7 @@ def delete_user_file(request, path, storage_resource_id=None, experiment_id=None
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
-                                params={"experiment-id": experiment_id},
+                                data={"experiment-id": experiment_id},
                                 method="delete",
                                 raise_for_status=False)
         _raise_404(resp, f"File path does not exist {path}")
@@ -654,7 +654,7 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
-                                params={"experiment-id": experiment_id},
+                                data={"experiment-id": experiment_id},
                                 method="post")
         json = resp.json()
         # 'path' is a new response attribute, for backwards compatibility check if it exists first
