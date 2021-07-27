@@ -239,6 +239,16 @@ class KeycloakBackend(object):
         user.first_name = first_name
         user.last_name = last_name
         user.save()
+
+        # Since only Admins can fix a bad username, alert Admins if the user has
+        # an invalid username
+        if not user_profile.is_username_valid:
+            try:
+                utils.send_admin_alert_about_invalid_username(
+                    request, username, email, first_name, last_name)
+            except Exception:
+                logger.exception(f"Failed to send alert about username being invalid: {username}")
+
         return user
 
     def _get_or_create_user(self, sub, username):
