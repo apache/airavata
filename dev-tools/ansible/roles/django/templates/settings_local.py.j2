@@ -104,6 +104,12 @@ AUTHENTICATION_OPTIONS = {
             {% if external.logo is defined %}
             'logo': '{{ external.logo }}',
             {% endif %}
+            {% if external.idp_token_url is defined %}
+            'idp_token_url': '{{ external.idp_token_url }}',
+            {% endif %}
+            {% if external.userinfo_url is defined %}
+            'userinfo_url': '{{ external.userinfo_url }}',
+            {% endif %}
         },
         {% endfor %}
     ]
