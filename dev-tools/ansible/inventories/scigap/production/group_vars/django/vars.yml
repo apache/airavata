@@ -29,6 +29,7 @@ django_database_name: "django_{{ inventory_hostname }}"
 django_hidden_airavata_apps: "['django_airavata_dataparsers']"
 tusd_vhost_servername: "tus.airavata.org"
 # django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
+cilogon_userinfo_url: "https://cilogon.org/oauth2/userinfo"
 
 # Default email settings
 portal_email_host: "smtp.gmail.com"
