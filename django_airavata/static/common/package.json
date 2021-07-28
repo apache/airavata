@@ -8,9 +8,8 @@
   "module": "./js/index.js",
   "scripts": {
     "watch": "vue-cli-service build --watch --mode production",
-    "build": "npm run build-app && npm run build-lib",
+    "build": "npm run build-app",
     "build-app": "vue-cli-service build",
-    "build-lib": "LIBRARY_MODE=true vue-cli-service build --target lib --name CommonUI --no-clean ./js/components.js",
     "lint": "vue-cli-service lint ./js/",
     "lint:visualstudio": "vue-cli-service lint --format visualstudio ./js/",
     "format": "prettier --check --write ."
@@ -23,7 +22,7 @@
     "@uppy/tus": "^1.3.0",
     "@uppy/xhr-upload": "^1.2.0",
     "bootstrap": "^4.3.1",
-    "bootstrap-vue": "2.0.0-rc.26",
+    "bootstrap-vue": "^2.21.2",
     "clipboard": "^2.0.4",
     "django-airavata-api": "link:../../apps/api",
     "jquery": "^3.3.1",

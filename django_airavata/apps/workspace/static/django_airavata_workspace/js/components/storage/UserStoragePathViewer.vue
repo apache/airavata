@@ -29,7 +29,7 @@
       :items="items"
       sort-by="name"
     >
-      <template slot="name" slot-scope="data">
+      <template slot="cell(name)" slot-scope="data">
         <b-link
           v-if="data.item.type === 'dir'"
           @click="directorySelected(data.item)"
@@ -44,10 +44,10 @@
           :allow-preview="allowPreview"
         />
       </template>
-      <template slot="createdTimestamp" slot-scope="data">
+      <template slot="cell(createdTimestamp)" slot-scope="data">
         <human-date :date="data.item.createdTime" />
       </template>
-      <template slot="actions" slot-scope="data">
+      <template slot="cell(actions)" slot-scope="data">
         <b-button
           v-if="includeSelectFileAction && data.item.type === 'file'"
           @click="$emit('file-selected', data.item)"

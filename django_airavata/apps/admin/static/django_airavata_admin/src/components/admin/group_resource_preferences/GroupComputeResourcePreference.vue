@@ -53,16 +53,16 @@
           :items="slotProps.items"
           sort-by="computeResourceId"
         >
-          <template slot="policy" slot-scope="row">
+          <template slot="cell(policy)" slot-scope="row">
             <compute-resource-policy-summary
               :compute-resource-id="row.item.computeResourceId"
               :group-resource-profile="data"
             />
           </template>
-          <template slot="reservations" slot-scope="row">
+          <template slot="cell(reservations)" slot-scope="row">
             <compute-resource-reservations-summary :reservations="row.value" />
           </template>
-          <template slot="action" slot-scope="row">
+          <template slot="cell(action)" slot-scope="row">
             <router-link
               class="action-link"
               v-if="userHasWriteAccess"

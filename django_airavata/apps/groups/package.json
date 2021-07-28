@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
-    "bootstrap-vue": "2.0.0-rc.26",
     "django-airavata-api": "link:../api",
     "django-airavata-common-ui": "link:../../static/common",
     "moment": "^2.18.1",

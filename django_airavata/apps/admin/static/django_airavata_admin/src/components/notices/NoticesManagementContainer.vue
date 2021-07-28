@@ -31,13 +31,13 @@
               </template>
               <template slot="item-list" slot-scope="slotProps">
                 <b-table hover :fields="fields" :items="items">
-                  <template slot="publishedTime" slot-scope="data">
+                  <template slot="cell(publishedTime)" slot-scope="data">
                     <human-date :date="data.value" /> </template
                   >row
-                  <template slot="expirationTime" slot-scope="data">
+                  <template slot="cell(expirationTime)" slot-scope="data">
                     <human-date :date="data.value" />
                   </template>
-                  <template slot="action" slot-scope="data">
+                  <template slot="cell(action)" slot-scope="data">
                     <template v-if="data.item.userHasWriteAccess">
                       <b-link class="action-link" @click="toggleDetails(data)">
                         Edit

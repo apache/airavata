@@ -7,10 +7,10 @@
   >
     <template slot="item-list" slot-scope="slotProps">
       <b-table striped hover :fields="fields" :items="slotProps.items">
-        <template slot="updatedTime" slot-scope="data">
+        <template slot="cell(updatedTime)" slot-scope="data">
           <human-date :date="data.value" />
         </template>
-        <template slot="action" slot-scope="data">
+        <template slot="cell(action)" slot-scope="data">
           <router-link
             class="action-link"
             v-if="data.item.userHasWriteAccess"
