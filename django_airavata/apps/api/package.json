@@ -43,8 +43,8 @@
     "root": true,
     "extends": "eslint:recommended",
     "parserOptions": {
-      "ecmaVersion": 6,
-      "sourceType": "module"
+      "sourceType": "module",
+      "ecmaVersion": 2017
     },
     "env": {
       "browser": true,

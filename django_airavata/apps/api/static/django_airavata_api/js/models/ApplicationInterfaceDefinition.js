@@ -78,4 +78,14 @@ export default class ApplicationInterfaceDefinition extends BaseModel {
     experiment.executionId = this.applicationInterfaceId;
     return experiment;
   }
+
+  get applicationModuleId() {
+    if (!this.applicationModules || this.applicationModules.length > 1) {
+      throw new Error(
+        `No unique application module exists for interface
+        ${this.applicationName}: modules=${this.applicationModules}`
+      );
+    }
+    return this.applicationModules[0];
+  }
 }
