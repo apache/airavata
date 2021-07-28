@@ -10,6 +10,9 @@
       @save="onSave"
       @resend-email-verification="resendEmailVerification"
     />
+    <b-link class="text-muted small" href="/workspace/dashboard"
+      >Return to Dashboard</b-link
+    >
   </div>
 </template>
 

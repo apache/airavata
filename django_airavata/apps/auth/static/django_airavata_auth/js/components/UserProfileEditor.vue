@@ -76,7 +76,7 @@ export default {
   },
   validations() {
     const usernameRegex = helpers.regex("username", /^[a-z0-9_-]+$/);
-    const emailOrMatchesRegex = or(usernameRegex, sameAs('email'));
+    const emailOrMatchesRegex = or(usernameRegex, sameAs("email"));
     return {
       user: {
         username: {
