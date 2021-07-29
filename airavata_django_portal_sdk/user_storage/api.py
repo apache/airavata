@@ -318,7 +318,8 @@ def user_file_exists(request, path, storage_resource_id=None, experiment_id=None
     if backend.is_file(final_path):
         _, files = backend.get_metadata(final_path)
         full_path = files[0]['resource_path']
-        data_product_uri = _get_data_product_uri(request, full_path, backend.resource_id)
+        data_product_uri = _get_data_product_uri(request, full_path,
+                                                 backend.resource_id, owner=owner_username)
         return data_product_uri
     else:
         return None
@@ -415,7 +416,8 @@ def get_file_metadata(request, path, storage_resource_id=None, experiment_id=Non
         _, files = backend.get_metadata(final_path)
         file = files[0]
         data_product_uri = _get_data_product_uri(request, file['resource_path'],
-                                                 storage_resource_id=backend.resource_id)
+                                                 storage_resource_id=backend.resource_id,
+                                                 owner=owner_username)
 
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, data_product_uri)
@@ -546,6 +548,7 @@ def listdir(request, path, storage_resource_id=None, experiment_id=None):
     for file in files:
         data_product_uri = _get_data_product_uri(request, file['resource_path'],
                                                  storage_resource_id=backend.resource_id,
+                                                 owner=owner_username,
                                                  backend=backend)
 
         data_product = request.airavata_client.getDataProduct(
