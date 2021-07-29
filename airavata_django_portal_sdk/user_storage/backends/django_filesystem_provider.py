@@ -81,7 +81,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
                 {
                     "name": os.path.basename(resource_path),
                     "path": datastore.rel_path(full_path),
-                    "resource_path": datastore.rel_path(full_path),
+                    "resource_path": full_path,
                     "created_time": created_time,
                     "size": size,
                 }
