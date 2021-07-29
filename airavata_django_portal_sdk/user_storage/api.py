@@ -396,8 +396,8 @@ def get_file_metadata(request, path, storage_resource_id=None, experiment_id=Non
         file['data-product-uri'] = file['dataProductURI']
         return file
 
-    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    final_path = _get_final_path(request, path, experiment_id)
+    final_path, owner_username = _get_final_path_and_owner_username(request, path, experiment_id)
+    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id, owner_username=owner_username)
     if backend.is_file(final_path):
         _, files = backend.get_metadata(final_path)
         file = files[0]
@@ -517,8 +517,9 @@ def listdir(request, path, storage_resource_id=None, experiment_id=None):
             file['data-product-uri'] = file['dataProductURI']
         return data['directories'], data['files']
 
-    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
-    final_path = _get_final_path(request, path, experiment_id)
+    final_path, owner_username = _get_final_path_and_owner_username(request, path, experiment_id)
+    backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id,
+                                        owner_username=owner_username)
     directories, files = backend.get_metadata(final_path)
     # Mark the TMP_INPUT_FILE_UPLOAD_DIR directory as hidden in the UI
     for directory in directories:
