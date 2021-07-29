@@ -270,12 +270,18 @@ export default {
       this.$emit("cancel");
     },
     defaultQueueChanged(queueName) {
-      const queue = this.computeResource.batchQueues.find(
-        (q) => q.queueName === queueName
-      );
-      this.data.defaultNodeCount = queue.defaultNodeCount;
-      this.data.defaultCPUCount = queue.defaultCPUCount;
-      this.data.defaultWalltime = queue.defaultWalltime;
+      if (queueName) {
+        const queue = this.computeResource.batchQueues.find(
+          (q) => q.queueName === queueName
+        );
+        this.data.defaultNodeCount = queue.defaultNodeCount;
+        this.data.defaultCPUCount = queue.defaultCPUCount;
+        this.data.defaultWalltime = queue.defaultWalltime;
+      } else {
+        this.data.defaultNodeCount = null;
+        this.data.defaultCPUCount = null;
+        this.data.defaultWalltime = null;
+      }
     },
     savedSharedEntity(newSharedEntity) {
       this.$emit("sharing-changed", newSharedEntity, this.data, false);
