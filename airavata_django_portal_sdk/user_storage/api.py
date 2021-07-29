@@ -75,7 +75,11 @@ def get_user_storage_provider(request, owner_username=None, storage_resource_id=
 
 
 def save(request, path, file, name=None, content_type=None, storage_resource_id=None, experiment_id=None):
-    "Save file in path in the user's storage and return DataProduct."
+    """
+    Save file in path in the user's storage and return DataProduct. If
+    `experiment_id` provided then the path will be relative to the experiment
+    data directory.
+    """
     if _is_remote_api():
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
@@ -273,7 +277,10 @@ def exists(request, data_product=None, data_product_uri=None):
 
 
 def dir_exists(request, path, storage_resource_id=None, experiment_id=None):
-    "Return True if path exists in user's data store."
+    """
+    Return True if path exists in user's data store. If `experiment_id` provided
+    then the path will be relative to the experiment data directory.
+    """
     if _is_remote_api():
         resp = _call_remote_api(request,
                                 "/user-storage/~/",
@@ -291,7 +298,10 @@ def dir_exists(request, path, storage_resource_id=None, experiment_id=None):
 
 
 def user_file_exists(request, path, storage_resource_id=None, experiment_id=None):
-    """If file exists, return data product URI, else None."""
+    """
+    If file exists, return data product URI, else None. If `experiment_id`
+    provided then the path will be relative to the experiment data directory.
+    """
     if _is_remote_api():
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
@@ -315,7 +325,10 @@ def user_file_exists(request, path, storage_resource_id=None, experiment_id=None
 
 
 def delete_dir(request, path, storage_resource_id=None, experiment_id=None):
-    """Delete path in user's data store, if it exists."""
+    """
+    Delete path in user's data store, if it exists. If `experiment_id` provided
+    then the path will be relative to the experiment data directory.
+    """
     if _is_remote_api():
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
@@ -497,7 +510,11 @@ def delete(request, data_product=None, data_product_uri=None):
 
 
 def listdir(request, path, storage_resource_id=None, experiment_id=None):
-    """Return a tuple of two lists, one for directories, the second for files."""
+    """
+    Return a tuple of two lists, one for directories, the second for files.  If
+    `experiment_id` provided then the path will be relative to the experiment
+    data directory.
+    """
 
     if _is_remote_api():
         resp = _call_remote_api(request,
@@ -649,6 +666,9 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
     them for file paths, for example, converting spaces to underscores.  Returns
     a tuple of the storage_resource_id and resource_path of the directory
     resource.
+
+    If `experiment_id` provided then the path will be relative to the experiment
+    data directory.
     """
     if _is_remote_api():
         logger.debug(f"path={path}")
