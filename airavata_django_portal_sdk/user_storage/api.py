@@ -80,7 +80,7 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
-                 if content_type is not None else file, }
+                 if content_type is not None else (name, file)}
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
                                 path_params={"path": path},
@@ -107,7 +107,7 @@ def save_input_file(request, file, name=None, content_type=None, storage_resourc
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
-                 if content_type is not None else file, }
+                 if content_type is not None else (name, file)}
         resp = _call_remote_api(request,
                                 "/upload",
                                 method="post",
