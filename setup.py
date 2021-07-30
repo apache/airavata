@@ -31,7 +31,6 @@ setup(
             'wagtailfontawesome',
             'jupyter',
             'papermill',
-            # Installed from git repo; see requirements.txt for details
             "airavata-django-portal-sdk",
     ],
     extras_require={

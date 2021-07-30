@@ -116,6 +116,22 @@ following:
 
 4. Point your browser to http://localhost:8000.
 
+### Multi-architecture images
+
+To build and push
+[multi-architecture images](https://docs.docker.com/desktop/multi-arch/), first
+create a builder (one time)
+
+```
+docker buildx create --name mybuilder --use
+```
+
+then run
+
+```
+docker buildx build --platform linux/amd64,linux/arm64 -t TAG --push .
+```
+
 ## Documentation
 
 Documentation currently is available at

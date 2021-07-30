@@ -1,0 +1,47 @@
+.tabbed-set {
+  display: flex;
+  position: relative;
+  flex-wrap: wrap;
+  margin-bottom: 1em;
+}
+
+.tabbed-set .highlight {
+  background: #ddd;
+}
+
+.tabbed-set .tabbed-content {
+  display: none;
+  order: 99;
+  width: 100%;
+  background-color: #e7f2fa;
+  padding: 0.5em;
+  border-top: 1px solid #6ab0de;
+}
+
+.tabbed-set label {
+  width: auto;
+  /* margin: 0 0.5em; */
+  margin: 0;
+  padding: 0.25em 0.5em;
+  /* font-size: 120%; */
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tabbed-set input {
+  position: absolute;
+  opacity: 0;
+}
+
+.tabbed-set input:nth-child(n + 1) {
+  color: #333333;
+}
+
+.tabbed-set input:nth-child(n + 1):checked + label {
+  background: #6ab0de;
+  color: #fff;
+}
+
+.tabbed-set input:nth-child(n + 1):checked + label + .tabbed-content {
+  display: block;
+}

@@ -1,4 +1,4 @@
-# Gateways Tutorial
+# Custom UI Tutorial
 
 Objective: learn the basics of the Apache Airavata Django Portal and how to make
 both simple and complex customizations to the user interface.
@@ -7,27 +7,170 @@ both simple and complex customizations to the user interface.
 
 Tutorial attendees should have:
 
--   a laptop on which to write Python code
+-   a text editor or IDE for writing Python and web code. Any text editor or IDE
+    will do but if you're looking for recommendations, I recommend
+    [Visual Studio Code](https://code.visualstudio.com/).
+-   latest Python (current version as of this writing is 3.9.5)
 -   Git client
--   [Docker desktop for Windows and macOS](https://www.docker.com/products/docker-desktop)
-    or
-    [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community)
+-   [Docker Desktop](https://www.docker.com/products/docker-desktop)
+-   If you don't have Docker installed or can't install it, you'll also need:
+    -   [Node LTS](https://nodejs.org/en/download/),
+    -   and [Yarn package manager](https://yarnpkg.com/getting-started/install).
 
-!!! note "Special note for Windows Home users"
+### Installing Python
 
-    If you have Windows Home installed, you'll need to either use a **remote
-    Docker host** (recommended) or take some extra steps to setup WSL2
-    (Windows Subsystem for Linux 2). The following are some special
-    instructions to help you with these options:
+Python 3.6-3.9 are supported, but I highly recommend you download and use
+**Python 3.9**
 
-    1. (**Recommended**) For the in person session of the tutorial, you will
-    have the option of using a **remote Docker host** provided to you. See
-    [Appendix: Setting up Windows Home for a remote Docker
-    host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
-    details.
-    2. (**Advanced**) [Install Docker Desktop on Windows Home with WSL2
-    enabled](https://docs.docker.com/docker-for-windows/install-windows-home/).
-    See the link for more information.
+Download and install Python 3.9.
+
+-   (macOS/Windows): Download from <https://www.python.org/downloads/>
+-   (Linux): use your distribution's package manager to install Python 3.9
+
+Verify you have installed Python 3.9:
+
+=== "macOS/Linux"
+
+        $ python3.9 --version
+        Python 3.9.5
+
+=== "Windows"
+
+    Open PowerShell then run:
+
+        PS C:\Users\username> py --version
+        Python 3.9.5
+
+### Installing Git
+
+If you don't already have Git installed, see <https://git-scm.com/downloads> and
+follow the installation instructions for your platform.
+
+Verify that you have installed Git:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ git --version
+        git version 2.26.0
+
+    The command should print "git version X.X". The version should be at least 2.0.
+
+=== "Windows"
+
+    Open PowerShell then run:
+
+        PS C:\Users\username> git --version
+        git version 2.32.0.windows.2
+
+    The command should print "git version X.X". The version should be at least 2.0.
+
+### Installing Docker Desktop
+
+Follow the instructions at
+[Docker Desktop](https://www.docker.com/products/docker-desktop) to install
+Docker Desktop.
+
+Verify that you have installed Docker Desktop:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ docker --version
+        Docker version 20.10.7, build f0df350
+        $ docker run hello-world
+        Unable to find image 'hello-world:latest' locally
+        latest: Pulling from library/hello-world
+        109db8fad215: Pull complete
+        Digest: sha256:df5f5184104426b65967e016ff2ac0bfcd44ad7899ca3bbcf8e44e4461491a9e
+        Status: Downloaded newer image for hello-world:latest
+
+        Hello from Docker!
+        This message shows that your installation appears to be working correctly.
+        ...
+
+
+    The command should print "Docker version X.X". As long as it is a recent
+    version, you should be fine.
+
+=== "Windows"
+
+    Open PowerShell then run:
+
+        PS C:\Users\username> docker --version
+        Docker version 20.10.7, build f0df350
+        PS C:\Users\username> docker run hello-world
+        Unable to find image 'hello-world:latest' locally
+        latest: Pulling from library/hello-world
+        b8dfde127a29: Pull complete
+        Digest: sha256:df5f5184104426b65967e016ff2ac0bfcd44ad7899ca3bbcf8e44e4461491a9e
+        Status: Downloaded newer image for hello-world:latest
+
+        Hello from Docker!
+        This message shows that your installation appears to be working correctly.
+        ...
+
+    The command should print "Docker version X.X". As long as it is a recent
+    version, you should be fine.
+
+### Installing Node.js LTS
+
+Note: you only need to install Node.js LTS if you don't have Docker installed.
+
+Follow the instructions on the
+[Node.js downloads page](https://nodejs.org/en/download/) to install Node.js LTS
+for your platform.
+
+Verify that you have installed Node.js LTS:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ node --version
+        v14.17.1
+
+    The command should print "vX.X". The version should be at least v14.0.
+
+=== "Windows"
+
+    Open PowerShell then run:
+
+        PS C:\Users\username> node --version
+        v14.17.3
+
+    The command should print "vX.X". The version should be at least v14.0.
+
+### Installing Yarn
+
+Note: you only need to install Yarn if you don't have Docker installed. Yarn
+requires Node.js.
+
+To install Yarn run
+
+    npm install -g yarn
+
+Verify that you have installed Yarn:
+
+=== "macOS/Linux"
+
+    Open a terminal
+
+        $ yarn --version
+        1.22.10
+
+    The command should print "X.X". The version should be 1.X.
+
+=== "Windows"
+
+    Open PowerShell then run:
+
+        PS C:\Users\username> yarn --version
+        1.22.10
+
+    The command should print "X.X". The version should be 1.X.
 
 ## Outline
 
@@ -86,11 +229,11 @@ click the **Browse** button to upload the file:
 
 -   [npentane12diol.inp](./data/npentane12diol.inp)
 
-You can click on **View File** to take a quick look at the file.
+You can click on the file to take a quick look at the file in a popup window.
 
 Now we'll select what account to charge and where to run this job. The
-_Allocation_ field should already have _Default Gateway Profile_ selected. Under
-_Compute Resource_ make sure you select **comet.sdsc.edu**.
+_Allocation_ field should already have **Default** selected. Under _Compute
+Resource_ make sure you select **Expanse**.
 
 Then click **Save and Launch**.
 
@@ -112,7 +255,7 @@ customize the user interface used for application inputs.
 1. In the portal, click on the dropdown menu at the top right (currently
    **Workspace** is likely selected) and select **Settings**.
 
-![Screenshot of Settings menu](./screenshots/gateways19/settings_menu.png)
+![Screenshot of Settings menu](./screenshots/custom-ui/settings_menu.png)
 
 2. You should see the _Application Catalog_. Click on the **New Application**
    button.
@@ -158,8 +301,9 @@ Dashboard.
 
 8. Click **Save** at the bottom of the screen.
 9. Click on the **Deployments** tab.
-10. Click on the **New Deployment** button. Select the _mike.hpc.lsu.edu_
-    compute resource in the drop down list and click **OK**.
+10. Click on the **New Deployment** button. Select the
+    _example-vc.jetstream-cloud.org_ compute resource in the drop down list and
+    click **OK**.
 11. For the _Application Executable Path_, provide the value `/usr/bin/true`.
     This is the only required field.
 12. Click **Save** at the bottom of the screen.
@@ -175,24 +319,27 @@ interface.
 
 There are a few things to point out now:
 
--   the _Screening libraries_ and _Visualization scripts_ only accept specific
-    values. For example, one of the allowed values for _Screening libraries_ is
-    `screen_drugbank`
 -   the _Target ID_ input takes a string value, but only certain characters
     (alphanumeric) are allowed and the string value has a minimum and maximum
     allowed length.
+-   the _Screening libraries_ and _Visualization scripts_ only accept specific
+    values. For example, one of the allowed values for _Screening libraries_ is
+    `screen_drugbank`
 
 We can make this user interface more user friendly by providing more guidance in
-the application inputs' user interface. For the _Screening libraries_ and
-_Visualization scripts_ we'll provide a list of labeled checkboxes for the user
-to select. For the _Target ID_ we'll provide validation feedback that verifies
-that the given value has an allowed length and only allowed characters.
+the application inputs' user interface. What we'll do:
+
+-   for _Target ID_ (input #1) we'll provide validation feedback that verifies
+    that the given value has an allowed length and only allowed characters.
+-   nothing to configure for _Target Structure_ (input #2)
+-   for _Screening libraries_ and _Visualization scripts_ (inputs #3 and #4)
+    we'll provide a list of labeled checkboxes for the user to select.
 
 1. Go back to **Settings** and in the **Application Catalog** click on your
    eFindSite application.
 2. Click on the **Interface** tab.
-3. For _Target ID_, in the _Advanced Input Field Modification Metadata_ box, add
-   the following JSON configuration:
+3. For _Target ID_ (input #1), in the _Advanced Input Field Modification
+   Metadata_ box, add the following JSON configuration:
 
 ```json
 {
@@ -227,8 +374,9 @@ This JSON configuration customizes the input editor in two ways:
 -   it sets the UI component of the input editor to be the `string-input-editor`
     (which is also the default)
 
-4. Likewise for _Screening Libraries_, set the _Advanced Input Field
-   Modification Metadata_ to:
+4. Skipping past _Target Structure_ (input #2) and on to **_Screening
+   Libraries_** (input #3), set the _Advanced Input Field Modification Metadata_
+   to:
 
 ```json
 {
@@ -279,8 +427,8 @@ editor, the `checkbox-input-editor`. It also provides a list of text/value pairs
 for the checkboxes; the values are what will be provided to the application as
 command line arguments.
 
-5. Similarly for the _Visualization scripts_, provide the following JSON
-   configuration:
+5. Similarly for the _Visualization scripts_ (input #4), provide the following
+   JSON configuration:
 
 ```json
 {
@@ -347,103 +495,347 @@ possible to provide additional custom views for output files. Examples include:
 -   parameterized notebook
 
 To be able to create a custom output viewer we'll need to write some Python
-code. First, we'll get a local version of the Django portal running which we'll
-use as a development environment.
+code. First we'll generate the custom Django app code.
+
+### Generate a custom Django app
+
+We have a local develop environment created. Now we can start adding custom
+code. First, we'll create a custom Django app, which is the standard way to
+package a Django extension. We won't write any Django code until the next
+exercise, but generating the custom Django app code gives us a Python package we
+can install in which we can write the custom output view code.
+
+#### Create and activate a Python virtual environment
+
+=== "macOS/Linux"
+
+        $ cd $HOME
+        $ python3.9 -m venv tutorial-env
+        $ source tutorial-env/bin/activate
+        (tutorial-env) $
+
+=== "Windows"
+
+        PS C:\Users\username> cd $HOME
+        PS C:\Users\username> py -m venv tutorial-env
+        PS C:\Users\username> .\tutorial-env\Scripts\Activate.ps1
+        (tutorial-env) PS C:\Users\username>
+
+#### Run the django app cookiecutter
+
+1. Install the latest version of cookiecutter. Cookiecutter is a tool for
+   generating project source code from a template.
+
+```sh
+pip install -U cookiecutter
+```
+
+2. Use cookiecutter to run the Airavata Django app template.
+
+```sh
+cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
+```
+
+You'll need to answer some questions. You can name it whatever you want, but to
+follow along with the tutorial, for `project_name` give **Custom UI Tutorial
+App**. For the rest of the questions, you can simply accept the defaults:
+
+```
+project_name [My Custom Django App]: Custom UI Tutorial App
+project_slug [custom_ui_tutorial_app]:
+project_short_description [Custom Django app with everything needed to be installed in the airavata-django-portal]:
+app_config_class_name [CustomUiTutorialAppConfig]:
+version [0.1.0]:
+```
 
 ### Setup local Django portal development environment
 
-To run the Django portal locally we'll start it as a Docker container. Another
-option, which we won't cover in this tutorial, is to check out the code and run
-the portal locally as a Python process (see the airavata-django-portal
-[README](https://github.com/apache/airavata-django-portal/blob/master/README.md)
-if you are interested).
+For running the local Django portal development environment, there are a few
+options:
 
-1. Make sure you have
-   [Docker installed](https://www.docker.com/products/docker-desktop).
-2. Run the following to create a Docker container called
-   **gateways19-tutorial**.
+-   **Docker**: Run the portal as a Docker container. If you have Docker
+    installed, this is the **recommended** option for the tutorial.
+-   **Python**: Install the portal dependencies (Python and Nodejs) and then run
+    it directly on your computer. This is recommended when you don't or can't
+    have Docker installed. It is also what we recommend when you are developing
+    a real custom django app extension.
+
+Regardless of which approach you use, you'll need to get a config file for
+setting up a local development environment that has the same settings as
+Testdrive. Go to <https://testdrive.airavata.org/admin/developers/> and download
+the settings_local.py file for local development. Move or copy it to the
+`$HOME/custom_ui_tutorial_app/` directory.
+
+=== "Docker (macOS/Linux/Windows)"
+
+    Note for **Windows** users, the following commands assume PowerShell.
+
+    1. Make sure you have
+    [Docker installed](https://www.docker.com/products/docker-desktop).
+    2. Run the following to create a Docker container called **custom-ui-tutorial**.
+
+            cd $HOME/custom_ui_tutorial_app
+            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "${PWD}:/extensions" -v "${PWD}/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+    3. Wait until the Docker container starts up. Go to <http://localhost:8000>
+    and when it loads and you see **Welcome to your new Wagtail site!**, then
+    you're ready to proceed to the next step.
+    4. Run the following to load the default set of CMS pages:
+
+            docker exec custom-ui-tutorial python manage.py load_cms_data new_default_theme
+
+    Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
+    enter your username and password. On the dashboard you should see the your
+    experiments listed on the right hand side.
+
+=== "Python (Windows)"
+
+    Verify that you have the following installed
+
+    -   Python 3.9
+    -   Node LTS
+    -   Yarn
+    -   Git
+
+    The following instructions assume that you start in your home directory, but you
+    could technically checkout and build the code anywhere.
+
+    1. Make sure that you have activated your `tutorial-env` virtual
+    environment. You should see `(tutorial-env)` at the beginning of the CMD
+    prompt. See the [virtual environment instructions if
+    needed](#create-and-activate-a-python-virtual-environment).
+
+    2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
+
+            (tutorial-env) PS C:\Users\username>cd $HOME
+            (tutorial-env) PS C:\Users\username>git clone https://github.com/apache/airavata-django-portal.git
+
+    3. Install the airavata-django-portal dependencies.
+
+            (tutorial-env) PS C:\Users\username>cd airavata-django-portal
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>pip install -U pip
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>pip install -r requirements.txt
+
+    4. Copy in the settings_local.py file.
+
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>copy ..\custom_ui_tutorial_app\settings_local.py django_airavata\
+
+    5. Run Django database migrations
+
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>python manage.py migrate
+
+    6. Load the default Wagtail CMS pages.
+
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>python manage.py load_cms_data new_default_theme
+
+    7. Build the JavaScript frontend code.
+
+            (tutorial-env) PS C:\Users\username\airavata-django-portal>.\build_js.bat
+
+       This last step can take a few minutes to complete.
+
+=== "Python (macOS/Linux)"
+
+    Verify that you have the following installed
+
+    -   Python 3.9
+    -   Node LTS
+    -   Yarn
+    -   Git
+
+    The following instructions assume that you start in your home directory, but you
+    could technically checkout and build the code anywhere.
+
+    1. Make sure that you have activated your `tutorial-env` virtual
+    environment. You should see `(tutorial-env)` at the beginning of the shell
+    prompt. See the [virtual environment instructions if
+    needed](#create-and-activate-a-python-virtual-environment).
+
+    2. Clone the custom_ui_tutorial_app and airavata-django-portal repositories.
+
+            (tutorial-env) $ cd $HOME
+            (tutorial-env) $ git clone https://github.com/apache/airavata-django-portal.git
+
+    3. Install the airavata-django-portal dependencies.
+
+            (tutorial-env) $ cd airavata-django-portal
+            (tutorial-env) $ pip install -U pip
+            (tutorial-env) $ pip install -r requirements.txt
+
+    4. Copy in the settings_local.py file.
+
+            (tutorial-env) $ cp ../custom_ui_tutorial_app/settings_local.py django_airavata/
+
+    5. Run Django database migrations
+
+            (tutorial-env) $ python manage.py migrate
+
+    6. Load the default Wagtail CMS pages.
+
+            (tutorial-env) $ python manage.py load_cms_data new_default_theme
+
+    7. Build the JavaScript frontend code.
+
+            (tutorial-env) $ ./build_js.sh
+
+       This last step can take a few minutes to complete.
+
+### Create the custom output viewer
+
+Now we'll also generate and implement a **Gaussian Eigenvalues View** provider.
+
+1. We'll run another cookiecutter template to generate the output view provider
+   code. First, change into the `custom_ui_tutorial_app` generated in the
+   previous step:
+
+=== "macOS/Linux"
+
+        (tutorial-env) $ cd $HOME/custom_ui_tutorial_app
+
+=== "Windows"
+
+        (tutorial-env) PS C:\Users\username>cd $HOME\custom_ui_tutorial_app
+
+2. Run the following cookiecutter template:
+
+```sh
+cookiecutter https://github.com/machristie/cookiecutter-airavata-django-output-view.git -f
+```
+
+You'll need to answer some questions again. For `project_name` give **Gaussian
+Eigenvalues View**. For `custom_django_app_module_name`, you need to provide the
+name of the Python module that was generated by
+cookiecutter-airavata-django-app, which for this tutorial is
+**custom_ui_tutorial_app**. For all of the other questions you can accept the
+default.
 
 ```
-cd $HOME
-git clone https://github.com/machristie/gateways19-tutorial.git
-cd gateways19-tutorial
-docker run -d --name gateways19-tutorial -p 8000:8000 -v "$PWD:/extensions" -v "$PWD/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+project_name [My Custom Output View]: Gaussian Eigenvalues View
+project_slug [gaussian_eigenvalues_view]:
+project_short_description [Gaussian Eigenvalues View generates data for an output view in the Airavata Django Portal]:
+output_view_provider_class_name [GaussianEigenvaluesViewProvider]:
+custom_django_app_module_name []: custom_ui_tutorial_app
+output_views_directory_name [output_views]:
+Select output_view_display_type:
+1 - image
+2 - link
+3 - html
+Choose from 1, 2, 3 [1]:
+Select number_of_output_files:
+1 - single (URI)
+2 - multiple (URI_COLLECTION)
+Choose from 1, 2 [1]:
 ```
 
-!!! note "For remote Docker host users"
+3. This creates a custom output view provider, called
+   GaussianEigenvaluesViewProvider, in `custom_ui_tutorial_app/output_views/`.
+   Open
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/output_views/gaussian_eigenvalues_view.py`
+   in your editor and we'll look at the generated code. The cookiecutter
+   template has generated a GaussianEigenvaluesViewProvider class with a method
+   called `generate_data`. The generate_data method has some commented out code
+   samples and links to further information. There is also guidance at the end
+   for how to prepare the values expected in the returned dictionary. Let's
+   start filling in the implementation.
 
-    If you are using a remote Docker host (for example, you have Windows Home
-    and can't install Docker Desktop), make sure you run the above commands
-    on the remote Docker host. That means you need to
-    `ssh USERNAME@IP_ADDRESS` to the remote host first. See [Appendix on
-    running on a remote Docker
-    host](#appendix-setting-up-windows-for-a-remote-docker-host) for more
-    information on setting up the SSH connection. You can run the remaining
-    `docker` commands on your own computer, but this `docker run` command
-    must be run on the remote Docker host so that the tutorial files can be
-    mounted into it.
-
-!!! note
-
-    You can also build the Docker image from scratch, which you might want to
-    do if the Docker image is out-dated. To do that run the following:
-
-        cd /tmp/
-        git clone https://github.com/apache/airavata-django-portal.git
-        cd airavata-django-portal
-        docker build -t airavata-django-portal .
-
-    Now you can `airavata-django-portal` instead of
-    `machristie/airavata-django-portal` in the `docker run` command above.
-
-3. Run the following to load the default set of CMS pages:
-
-```
-docker exec gateways19-tutorial python manage.py load_cms_data new_default_theme
-```
-
----
-
-Go to [http://localhost:8000](http://localhost:8000), click on **Login in**,
-enter your username and password. On the dashboard you should see the your
-experiments listed on the right hand side.
-
-### Setup the custom output viewer package
-
-1. We've defined a custom output view provider, called
-   GaussianEigenvaluesViewProvider, in `output_views.py`. Open
-   `$HOME/gateways19-tutorial/gateways19_tutorial/output_views.py` in your
-   editor and we'll look at how it is implemented. First we add some imports
+4. As a final result, the output_views/gaussian_eigenvalues_view.py file should
+   have the following contents. I'll explain each part of this in the following
+   steps, but you can go ahead and copy and paste the following into
+   `gaussian_eigenvalues_view.py`:
 
 ```python
 import io
 import os
 
 import numpy as np
+from cclib.parser import ccopen
+from django.conf import settings
 from matplotlib.figure import Figure
 
-from cclib.parser import ccopen
+from airavata_django_portal_sdk import user_storage
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-```
 
-2. Next we define the GaussianEigenvaluesViewProvider class, set some metadata
-   attributes on the class. We set it's `display_type` to _image_ and give it a
-   _name_:
-
-```python
 class GaussianEigenvaluesViewProvider:
     display_type = 'image'
     name = "Gaussian Eigenvalues"
+
+    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
+
+        # Parse output_file
+        output_text = io.TextIOWrapper(output_file)
+        gaussian = ccopen(output_text)
+        data = gaussian.parse()
+        data.listify()
+        homo_eigenvalues = None
+        lumo_eigenvalues = None
+        if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
+            homos = data.homos[0] + 1
+            moenergies = data.moenergies[0]
+            if homos > 9 and len(moenergies) >= homos:
+                homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
+            if homos + 9 <= len(moenergies):
+                lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
+
+        # Create plot
+        fig = Figure()
+        if homo_eigenvalues and lumo_eigenvalues:
+            fig.suptitle("Eigenvalues")
+            ax = fig.subplots(2, 1)
+            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
+            ax[0].set_ylabel('eV')
+            ax[0].legend()
+            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
+            ax[1].set_ylabel('eV')
+            ax[1].legend()
+        else:
+            ax = fig.subplots()
+            ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
+                verticalalignment='center', transform=ax.transAxes)
+
+        # Export plot as image buffer
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format='png')
+        image_bytes = buffer.getvalue()
+        buffer.close()
+
+        # return dictionary with image data
+        return {
+            'image': image_bytes,
+            'mime-type': 'image/png'
+        }
+
 ```
 
-3. Now we implement the
-   [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
-   This function should return a dictionary with values that are expected for
-   this `display_type`. For a display type of _image_, the required return
-   values are _image_ which should be a bytes array or file-like object with the
-   image bytes and _mime-type_ which should be the image's mime type. Here's the
-   `generate_data` function:
+5. Let's take a look at the implementation. First we added some imports at the
+   top:
+
+```python
+import io
+import os
+
+import numpy as np
+from cclib.parser import ccopen
+from django.conf import settings
+from matplotlib.figure import Figure
+
+from airavata_django_portal_sdk import user_storage
+```
+
+6.  Next we implemented the
+    [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
+    This function should return a dictionary with values that are expected for
+    this `display_type`. For a display type of _image_, the required return
+    values are _image_ which should be a bytes array or file-like object with
+    the image bytes and _mime-type_ which should be the image's mime type. There
+    implementation plots the eigenvalues of molecular orbital energies
+    calculated by Gaussian and has three parts:
+
+    1. Use the _cclib_ library to parse the Gaussian log file. _cclib_ is a
+       Python computational chemistry library which is used to read the
+       molecular orbital energies.
+    2. Generate a plot using _matplotlib_.
+    3. Save the plot as a PNG image into an in-memory array of bytes.
+
+    Here's the `generate_data` function:
 
 ```python
     def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
@@ -491,109 +883,65 @@ class GaussianEigenvaluesViewProvider:
         }
 ```
 
-This plots the eigenvalues of molecular orbital energies calculated by Gaussian.
-`cclib` is a Python computational chemistry library which is used to read the
-molecular orbital energies. Then `matplotlib` is used to create two plots of
-these values. Finally, the plots are exported as a PNG image that is returns as
-a buffer of bytes.
+7. Now we need to register our _output view provider_ with the package metadata
+   so that the Django Portal will be able to discover it. The cookiecutter
+   template already created this when it generated the
+   gaussian_eigenvalues_view.py code. We can take a look and make sure it added
+   an `airavata.output_view_providers` entry to the `[options.entry_points]`
+   section in the `$HOME/custom_ui_tutorial_app/setup.cfg` file:
 
-4. Altogether, the output_views.py file should have the following contents:
-
-```python
-import io
-import os
-
-import numpy as np
-from matplotlib.figure import Figure
-
-from cclib.parser import ccopen
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-class GaussianEigenvaluesViewProvider:
-    display_type = 'image'
-    name = "Gaussian Eigenvalues"
-
-    def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
-
-        # Parse output_file
-        output_text = io.TextIOWrapper(output_file)
-        gaussian = ccopen(output_text)
-        data = gaussian.parse()
-        data.listify()
-        homo_eigenvalues = None
-        lumo_eigenvalues = None
-        if hasattr(data, 'homos') and hasattr(data, 'moenergies'):
-            homos = data.homos[0] + 1
-            moenergies = data.moenergies[0]
-            if homos > 9 and len(moenergies) >= homos:
-                homo_eigenvalues = [data.moenergies[0][homos - 1 - i] for i in range(1, 10)]
-            if homos + 9 <= len(moenergies):
-                lumo_eigenvalues = [data.moenergies[0][homos + i] for i in range(1, 10)]
-
-        # Create plot
-        fig = Figure()
-        if homo_eigenvalues and lumo_eigenvalues:
-            fig.suptitle("Eigenvalues")
-            ax = fig.subplots(2, 1)
-            ax[0].plot(range(1, 10), homo_eigenvalues, label='Homo')
-            ax[0].set_ylabel('eV')
-            ax[0].legend()
-            ax[1].plot(range(1, 10), lumo_eigenvalues, label='Lumo')
-            ax[1].set_ylabel('eV')
-            ax[1].legend()
-        else:
-            ax = fig.subplots()
-            ax.text(0.5, 0.5, "No applicable data", horizontalalignment='center',
-                verticalalignment='center', transform=ax.transAxes)
-
-        # Export plot as image buffer
-        buffer = io.BytesIO()
-        fig.savefig(buffer, format='png')
-        image_bytes = buffer.getvalue()
-        buffer.close()
-
-        # return dictionary with image data
-        return {
-            'image': image_bytes,
-            'mime-type': 'image/png'
-        }
-
+```ini
+[options.entry_points]
+airavata.djangoapp =
+    custom_ui_tutorial_app = custom_ui_tutorial_app.apps:CustomUiTutorialAppConfig
+airavata.output_view_providers =
+    gaussian_eigenvalues_view = custom_ui_tutorial_app.output_views.gaussian_eigenvalues_view:GaussianEigenvaluesViewProvider
 ```
 
-5. Now we need to register our _output view provider_ with the package metadata
-   so that the Django Portal will be able to discover it. We add the following
-   lines to the `entry_points` parameter in the
-   `$HOME/gateways19-tutorial/setup.py` file:
+`gaussian_eigenvalues_view` is the output view provider id.
+`custom_ui_tutorial_app.output_views.gaussian_eigenvalues_view` is the module in
+which the `GaussianEigenvaluesViewProvider` output view provider class is found.
 
-```python
-setuptools.setup(
-# ...
-    entry_points="""
-[airavata.output_view_providers]
-gaussian-eigenvalues-plot = gateways19_tutorial.output_views:GaussianEigenvaluesViewProvider
-""",
-)
+9. While we're looking at setup.cfg, let's add our output view providers Python
+   dependencies. Under `install_requires` add _cclib_, _numpy_ and _matplotlib_,
+   so that it looks like:
+
+```ini
+install_requires =
+    django >= 2.2
+    airavata-django-portal-sdk
+    cclib
+    numpy
+    matplotlib
 ```
 
-`gaussian-eigenvalues-plot` is the output view provider id.
-`gateways19_tutorial.output_views` is the module in which the
-`GaussianEigenvaluesViewProvider` output view provider class is found.
+10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
+    portal's virtual environment.
 
-6. Now we need to install the _gateways19-tutorial_ package into the Django
-   portal's virtual environment.
+=== "Docker (macOS/Linux/Windows)"
 
-```bash
-docker exec -w /extensions gateways19-tutorial pip install -r requirements.txt
-docker exec -w /extensions gateways19-tutorial python setup.py develop
-docker exec gateways19-tutorial touch /code/django_airavata/wsgi.py
-```
+        docker exec -w /extensions custom-ui-tutorial pip install -e .
+        docker exec custom-ui-tutorial touch /code/django_airavata/wsgi.py
 
-These commands:
+    These commands:
 
-1. install our package's dependencies,
-2. install the package into the container's Python environment, and
-3. touches the wsgi.py to trigger a reload of the Django portal dev server.
+    1. install our custom django app package and its dependencies into the
+    container's Python environment, and
+    2. touches the wsgi.py to trigger a reload of the Django portal dev server.
+
+=== "Python (Windows)"
+
+        (tutorial-env) PS C:\Users\username\airavata-django-portal> cd $HOME\custom_ui_tutorial_app
+        (tutorial-env) PS C:\Users\username\custom_ui_tutorial_app> pip install -e .
+        (tutorial-env) PS C:\Users\username\custom_ui_tutorial_app> cd ..\airavata-django-portal
+        (tutorial-env) PS C:\Users\username\airavata-django-portal> python manage.py runserver
+
+=== "Python (macOS/Linux)"
+
+        (tutorial-env) $ cd $HOME/custom_ui_tutorial_app
+        (tutorial-env) $ pip install -e .
+        (tutorial-env) $ cd ../airavata-django-portal
+        (tutorial-env) $ python manage.py runserver
 
 ### Use the GaussianEigenvaluesViewProvider with the Gaussian log output file
 
@@ -610,13 +958,13 @@ additional output view of the file.
 
 ```json
 {
-    "output-view-providers": ["gaussian-eigenvalues-plot"]
+    "output-view-providers": ["gaussian_eigenvalues_view"]
 }
 ```
 
 It should look something like this:
 
-![Screenshot of Gaussian log output-view-providers json](./screenshots/gateways19/gaussian-output-view-providers-json.png)
+![Screenshot of Gaussian log output-view-providers json](./screenshots/custom-ui/gaussian-output-view-providers-json.png)
 
 7. Go back to the **Workspace** using the menu at the top.
 8. Select your Gaussian16 experiment from the right sidebar.
@@ -633,8 +981,9 @@ declare interactive parameters that can be manipulated by the user. We can add a
 simple boolean interactive parameter to toggle the display of the matplotlib
 grid as an example.
 
-1. Open `$HOME/gateways19-tutorial/gateways19_tutorial/output_views.py`. Change
-   the `generate_data` function so that it has an additional `show_grid`
+1. Open
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/output_views/gaussian_eigenvalues_view.py`.
+   Change the `generate_data` function so that it has an additional `show_grid`
    parameter with a default value of `False`:
 
 ```python
@@ -714,10 +1063,12 @@ Django framework as well as the Airavata Django Portal REST APIs and JS library.
 To start, we'll just create a simple "Hello World" page for the Django app and
 get it properly registered with the local Django Portal instance.
 
-1. In the `gateways19-tutorial` directory, open
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`.
-   Some of the HTML view is commented out. The following is the uncommented
-   content:
+1. In the `custom_ui_tutorial_app` directory, open
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/home.html`.
+   Copy this file to `hello.html` in the same directory.
+
+2. Change the title of the page, in the `<h1>` tag, to **Hello World** and save
+   the file.
 
 ```xml
 {% extends 'base.html' %}
@@ -733,85 +1084,73 @@ get it properly registered with the local Django Portal instance.
 {% endblock content %}
 ```
 
-2. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/apps.py`:
+3. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py`
+   and add the following `hello_world` view function at the end of the file:
+
+```python
+
+@login_required
+def hello_world(request):
+    return render(request, "custom_ui_tutorial_app/hello.html")
+```
+
+This view will simply display the template created in the previous step.
+
+4. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py`
+   and add a URL mapping for of `hello/` to the `hello_world` view function:
+
+```python
+from django.urls import path
+
+from . import views
+
+app_name = 'custom_ui_tutorial_app'
+urlpatterns = [
+    path('home/', views.home, name='home'),
+    path('hello/', views.hello_world, name='hello_world'),
+]
+
+```
+
+This maps the `/hello/` URL to the `hello_world` view.
+
+5. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/apps.py`
+   and update the `fa_icon_class` attribute and the `url_home` attribute to the
+   `CustomUiTutorialAppConfig` class:
 
 ```python
 from django.apps import AppConfig
 
 
-class Gateways19TutorialAppConfig(AppConfig):
-    name = 'gateways19_tutorial'
+class CustomUiTutorialAppConfig(AppConfig):
+    name = 'custom_ui_tutorial_app'
     label = name
-    verbose_name = "Gateways Tutorial"
+    verbose_name = "Custom UI Tutorial App"
     fa_icon_class = "fa-comment"
+    url_home = "custom_ui_tutorial_app:hello_world"
 ```
 
 This the main metadata for this custom Django app. Besides the normal metadata
 that the Django framework expects, this also defines a display name
-(`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app.
-
-3. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/views.py`:
-
-```python
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-
-@login_required
-def hello_world(request):
-    return render(request, "gateways19_tutorial/hello.html")
-```
-
-This view will simply display the template created in the previous step.
-
-4. Open the file `$HOME/gateways19-tutorial/gateways19_tutorial/urls.py`:
-
-```python
-from django.conf.urls import url, include
-
-from . import views
-
-app_name = 'gateways19_tutorial'
-urlpatterns = [
-    url(r'^hello/', views.hello_world, name="home"),
-]
-```
-
-This maps the `/hello/` URL to the `hello_world` view.
-
-5. We've created the necessary code for our Django app to display the hello
-   world page, but now we need to add some metadata to this Python package so
-   that the Django Portal knows about this Django app. In
-   `$HOME/gateways19-tutorial/setup.py`, we add the following
-   `[airavata.djangoapp]` metadata to the entry_points section:
-
-```python
-setuptools.setup(
-# ...
-    entry_points="""
-[airavata.output_view_providers]
-gaussian-eigenvalues-plot = gateways19_tutorial.output_views:GaussianEigenvaluesViewProvider
-[airavata.djangoapp]
-gateways19_tutorial = gateways19_tutorial.apps:Gateways19TutorialAppConfig
-""",
-)
-```
+(`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app. The
+`url_home` attribute specifies the initial view that should be rendered when
+navigating to this app.
 
 ---
 
 Now you should be able to [log into the portal locally](http://localhost:8000)
-and see **Gateways Tutorial** in the drop down menu in the header (click on
+and see **Custom UI Tutorial App** in the drop down menu in the header (click on
 **Workspace** then you should see it in that menu).
 
-![Screenshot of custom app in menu](./screenshots/gateways19/custom-app-menu.png)
+![Screenshot of custom app in menu](./screenshots/custom-ui/custom-app-menu.png)
 
 ### Adding a list of "Hello" greetings
 
 Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
-1. In the `$HOME/gateways19-tutorial/gateways19_tutorial/views.py` file, we add
-   the following import:
+1. In the `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py` file,
+   we add the following import:
 
 ```python
 from django.http import JsonResponse
@@ -843,59 +1182,66 @@ def languages(request):
     }]})
 ```
 
-3. In `$HOME/gateways19-tutorial/gateways19_tutorial/urls.py` we add a url
+3. In `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py` we add a url
    mapping for the `languages` view:
 
 ```python
 urlpatterns = [
-    url(r'^hello/', views.hello_world, name="home"),
-    url(r'^languages/', views.languages, name="languages"),
+    path('home/', views.home, name='home'),
+    path('hello/', views.hello_world, name="home"),
+    path('languages/', views.languages, name="languages"),
 ]
 ```
 
 4. In
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`,
-   uncomment the comment that starts `<!-- Adding a list of "Hello" greetings`
-   on line 11 and ends on line 21. That is, just delete lines 11 and 21. This
-   adds a `<select>` element to the template which will be used to display the
-   greeting options:
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/hello.html`,
+   add the lines between the **STARTING HERE** and **ENDING HERE** comments.
+   This adds a `<select>` element to the template which will be used to display
+   the greeting options:
 
 ```html
 ...
-<h1>Hello World</h1>
+<div class="main-content-wrapper">
+    <main class="main-content">
+        <div class="container-fluid">
+            <h1>Hello World</h1>
 
-<div class="card">
-    <div class="card-header">Run "echo" for different languages</div>
-    <div class="card-body">
-        <select id="greeting-select"></select>
-        <button id="run-button" class="btn btn-primary">Run</button>
-    </div>
+            <!-- STARTING HERE -->
+            <div class="card">
+                <div class="card-header">
+                    Run "echo" for different languages
+                </div>
+                <div class="card-body">
+                    <select id="greeting-select"></select>
+                    <button id="run-button" class="btn btn-primary">Run</button>
+                </div>
+            </div>
+            <!-- ENDING HERE -->
+        </div>
+    </main>
 </div>
 ...
 ```
 
-5. We also add the `{% load static %}` directive and then a `scripts` block to
-   the end of `hello.html`. This will load the AiravataAPI JavaScript library
+5. The `hello.html` template already has the `{% load static %}` directive and a
+   `scripts` block at the end. This will load the AiravataAPI JavaScript library
    which has utilities for interacting with the Django portal's REST API (which
    can also be used for custom developed REST endpoints) and model classes for
    Airavata's data models. The `utils.FetchUtils` is used to load the languages
    REST endpoint.
 
-```xml
-{% extends 'base.html' %}
+    Add to `hello.html` the code between the **STARTING HERE** and **ENDING
+    HERE** comments.
 
-{% load static %}
-
-...
-{% endblock content %}
-
+```html
 {% block scripts %}
 <script src="{% static 'django_airavata_api/dist/airavata-api.js' %}"></script>
 <script>
     const { models, services, session, utils } = AiravataAPI;
 
-    utils.FetchUtils.get("/gateways19_tutorial/languages/").then(data => {
-        data.languages.forEach(language => {
+    // STARTING HERE
+    utils.FetchUtils.get("/custom_ui_tutorial_app/languages/").then((data) => {
+        data.languages.forEach((language) => {
             $("#greeting-select").append(
                 `<option value="${language.greeting}">
                     ${language.lang} - "${language.greeting}"
@@ -903,12 +1249,13 @@ urlpatterns = [
             );
         });
     });
+    // ENDING HERE
 </script>
 {% endblock scripts %}
 ```
 
 Now when you view the custom app at
-[http://localhost:8000/gateways19_tutorial/hello/](http://localhost:8000/gateways19_tutorial/hello/)
+[http://localhost:8000/custom_ui_tutorial_app/hello/](http://localhost:8000/custom_ui_tutorial_app/hello/)
 you should see a dropdown of greetings in several languages, like so:
 
 ![Screenshot of custom app with languages list](./screenshots/gateways19/custom-app-languages-list.png)
@@ -918,13 +1265,12 @@ you should see a dropdown of greetings in several languages, like so:
 Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 1. In
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`,
-   uncomment the comment that begins with
-   `<!-- Displaying a list of recent experiments` on line 21 or so and ends on
-   line 45. This adds table to display recent experiments to the bottom of
+   `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/hello.html`,
+   add the following lines between the **STARTING HERE** and **ENDING HERE**
+   comments. This adds table to display recent experiments to the bottom of
    `hello.html`:
 
-```xml
+```html
 ...
             <div class="card">
                 <div class="card-header">
@@ -935,6 +1281,8 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
                     <button id="run-button" class="btn btn-primary">Run</button>
                 </div>
             </div>
+
+            <!-- STARTING HERE -->
             <div class="card">
                 <div class="card-header">
                     Experiments
@@ -956,6 +1304,8 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
                     </table>
                 </div>
             </div>
+            <!-- ENDING HERE -->
+
         </div>
     </main>
 </div>
@@ -968,6 +1318,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
 ```javascript
 // ...
+    // STARTING HERE
     const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
 
     function loadExperiments() {
@@ -994,6 +1345,7 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
     loadExperiments();
     $("#refresh-button").click(loadExperiments);
+    // ENDING HERE
 
 </script>
 
@@ -1006,12 +1358,11 @@ The user interface should now look something like:
 
 ### Submitting an Echo job
 
-Now we'll use `AiravataAPI` to submit an Echo job.
+Now we'll use `AiravataAPI` to submit an Echo job. Let's take a look at what
+we'll need to do make this work.
 
-1. In
-   `$HOME/gateways19-tutorial/gateways19_tutorial/templates/gateways19_tutorial/hello.html`
-   we add a click handler to the _Run_ button that gets the selected greeting
-   value:
+1. We'll need to add a click handler to the _Run_ button that gets the selected
+   greeting value:
 
 ```javascript
 $("#run-button").click((e) => {
@@ -1078,9 +1429,13 @@ const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
 ```
 
 5. Once we have all of this information we can then create an `Experiment`
-   object then _save_ and _launch_ it. Here's the complete click handler:
+   object then _save_ and _launch_ it. Here's the complete click handler. We add
+   the following to the end of the _scripts_ block in `hello.html`:
 
 ```javascript
+// ...
+
+// STARTING HERE
 $("#run-button").click((e) => {
     const greeting = $("#greeting-select").val();
     const loadAppInterface = services.ApplicationInterfaceService.retrieve({
@@ -1102,15 +1457,18 @@ $("#run-button").click((e) => {
             experiment.experimentName = "Echo " + greeting;
             experiment.projectId = workspacePrefs.most_recent_project_id;
             const cloudQueue = queues.find((q) => q.queueName === queueName);
-            experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
-            experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
+            experiment.userConfigurationData.groupResourceProfileId =
+                groupResourceProfileId;
+            experiment.userConfigurationData.computationalResourceScheduling.resourceHostId =
+                resourceHostId;
             experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount =
                 cloudQueue.defaultCPUCount;
             experiment.userConfigurationData.computationalResourceScheduling.nodeCount =
                 cloudQueue.defaultNodeCount;
             experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit =
                 cloudQueue.defaultWalltime;
-            experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
+            experiment.userConfigurationData.computationalResourceScheduling.queueName =
+                queueName;
             // Copy the selected greeting to the value of the first input
             experiment.experimentInputs[0].value = greeting;
 
@@ -1122,12 +1480,17 @@ $("#run-button").click((e) => {
             });
         });
 });
+// ENDING HERE
+
+</script>
+
+{% endblock scripts %}
 ```
 
 Now that we can launch the experiment we can go ahead and give it a try.
 
 You can also try this out in the production deployment at
-<https://testdrive.airavata.org/gateways19_tutorial/hello/>.
+<https://testdrive.airavata.org/custom_ui_tutorial_app/hello/>.
 
 ### Displaying the experiment output
 
@@ -1151,9 +1514,10 @@ We'll read the STDOUT file and display that in our experiment listing table.
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
         (fullDetails) => {
-            const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                (o) => o.name === "Echo-STDOUT"
-            ).value;
+            const stdoutDataProductId =
+                fullDetails.experiment.experimentOutputs.find(
+                    (o) => o.name === "Echo-STDOUT"
+                ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
                 (dp) => dp.productUri === stdoutDataProductId
             );
@@ -1173,9 +1537,10 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
     services.FullExperimentService.retrieve({ lookup: exp.experimentId })
         .then((fullDetails) => {
-            const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                (o) => o.name === "Echo-STDOUT"
-            ).value;
+            const stdoutDataProductId =
+                fullDetails.experiment.experimentOutputs.find(
+                    (o) => o.name === "Echo-STDOUT"
+                ).value;
             const stdoutDataProduct = fullDetails.outputDataProducts.find(
                 (dp) => dp.productUri === stdoutDataProductId
             );
@@ -1191,9 +1556,9 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
 }
 ```
 
-3. To enable this, remove the comment starting with
-   `/* Displaying the experiment output` on line 88 and ending on line 113.
-   Here's the update to the `loadExperiments` function:
+3. To enable this, add the lines between the **STARTING HERE** and **ENDING
+   HERE** comments to the `loadExperiments` function. Here's the update to the
+   `loadExperiments` function:
 
 ```javascript
 function loadExperiments() {
@@ -1214,18 +1579,22 @@ function loadExperiments() {
                             <td id="output_${index}"></td>
                         </tr>`
             );
+
+            // STARTING HERE
             // If experiment has finished, load full details, then parse the stdout file
             if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
                 services.FullExperimentService.retrieve({
                     lookup: exp.experimentId,
                 })
                     .then((fullDetails) => {
-                        const stdoutDataProductId = fullDetails.experiment.experimentOutputs.find(
-                            (o) => o.name === "Echo-STDOUT"
-                        ).value;
-                        const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                            (dp) => dp.productUri === stdoutDataProductId
-                        );
+                        const stdoutDataProductId =
+                            fullDetails.experiment.experimentOutputs.find(
+                                (o) => o.name === "Echo-STDOUT"
+                            ).value;
+                        const stdoutDataProduct =
+                            fullDetails.outputDataProducts.find(
+                                (dp) => dp.productUri === stdoutDataProductId
+                            );
                         if (
                             stdoutDataProduct &&
                             stdoutDataProduct.downloadURL
@@ -1239,6 +1608,7 @@ function loadExperiments() {
                         $(`#output_${index}`).text(text);
                     });
             }
+            // ENDING HERE
         });
     });
 }
@@ -1246,15 +1616,8 @@ function loadExperiments() {
 
 ## Resources
 
-You can browser the final version of the _gateways19-tutorial_ code at
-<https://github.com/machristie/gateways19-tutorial/tree/solution>. If you get
-stuck at some point with the tutorial you can skip to the solution by running
-the following git command in your _gateways19-tutorial_ repo:
-
-```bash
-cd $HOME/gateways19-tutorial
-git reset --hard origin/solution
-```
+You can browser the final version of the code at
+<https://github.com/machristie/custom_ui_tutorial_app>.
 
 ### Airavata API
 
@@ -1271,131 +1634,3 @@ file in the
 
 SciGaP provides free Airavata Gateways hosting services. Log in or create an
 account at [scigap.org](https://scigap.org/) to request gateway hosting.
-
-## Appendix: Setting up Windows for a **remote Docker host**
-
-### Installing Visual Studio Code
-
-The tutorial code needs to be on the remote Docker host so that it can be
-mounted into the Django portal container. To modify the files as required by the
-tutorial you'll need to either SSH into the remote Docker host and edit the
-files there with a terminal editor, like Vim, or you can use
-[Visual Studio Code](https://code.visualstudio.com/) to edit the files remotely
-with the SSH extension.
-
-To use Visual Studio Code, install it from <https://code.visualstudio.com/>.
-Once you have it installed, start it. In the menu, go to **View > Extensions**.
-In the Extensions search, type `ssh` and click on **Install** for the _Remote -
-SSH_ extension. Once it is installed, click on the green box in the lower left
-hand corner and select **Remote-SSH: Connect to Host...**, or, type
-`Ctrl-Shift-P` and type `Remote-SSH` and select **Remote-SSH: Connect to
-Host...**. Select **linux** as the remote platform type.
-
-Once you are connected, go to **View > Explorer**. Click on the **Open Folder**
-button. Select the folder that contains the tutorial code and click **OK**. You
-should now see the tutorial files in the Explorer on the left hand side. Now you
-can edit the tutorial files from your local computer and they will be
-immediately reflected in the Django portal container.
-
-### SSH configuration
-
-To connect via SSH to the remote Docker host, you'll need an SSH key pair. If
-you are setting up the remote Docker host, you can create the key pair yourself
-and copy the public portion to the `~/.ssh/authorized_keys` file under the user
-account on the remote Docker host. For the in person tutorial session this will
-have already been setup and you will be provided with the private key.
-
-1. Create a directory in your home directory (i.e. `C:\Users\<username>\`)
-   called `.ssh`.
-2. Copy the private key file into the `.ssh` directory.
-3. Create (or if provided, copy) a `config` file in the `.ssh` directory. The
-   contents of the file should be:
-
-```
-Host IP_ADDRESS
-    IdentityFile ~\.ssh\PRIVATE_KEY
-```
-
-Where IP_ADDRESS should be replaced with the IP address or hostname of the
-remote Docker host (for example: `149.165.168.201`). And PRIVATE_KEY should be
-replaced with the name of your private key file that you copied in step 2.
-
-Test that SSH is working by opening a Powershell command prompt (in Visual
-Studio Code open a new terminal with **Ctrl+Shift+`**) and running the
-following:
-
-```
-ssh username@IP_ADDRESS
-```
-
-You should see something like the following:
-
-```text
-PS C:\Users\testuser> ssh user1@149.165.157.132
-The authenticity of host '149.165.157.132 (149.165.157.132)' can't be established.
-ECDSA key fingerprint is SHA256:RG86D7KwCZNQtFOAfEc4TZ4V0stn1RyGrj5I+v7SHxU.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '149.165.157.132' (ECDSA) to the list of known hosts.
-Last login: Thu Aug 20 14:31:41 2020 from 156-56-142-122.dhcp-bl.indiana.edu
-[user1@django-tutorial ~]$
-```
-
-If you get the "authenticity of host ... can't be established", as shown above,
-enter `yes` at the prompt to proceed. You shouldn't be prompted for a password
-since the private key will be used for authentication. If you are prompted for a
-password, double check that the `config` file is correct.
-
-### Connecting to Docker
-
-To connect to Docker you'll need the Docker client. Download
-<https://github.com/StefanScherer/docker-cli-builder/releases/download/19.03.12/docker.exe>
-and copy it to `C:\Windows` (or anywhere else that is on your PATH, or in the
-current directory).
-
-Next, at a Powershell command prompt set the environment variable `DOCKER_HOST`
-to the SSH username and IP address of the remote Docker host.
-
-```
-$env:DOCKER_HOST = "ssh://USERNAME@IP_ADDRESS"
-```
-
-But replace USERNAME with your username on the remote Docker host and the
-IP_ADDRESS with the IP address or domain name of the remote Docker host. For
-example:
-
-```
-$env:DOCKER_HOST = "ssh://train01@149.165.170.99"
-```
-
-Now run the following to test that the connection is working:
-
-```
-docker ps
-```
-
-You'll use this command prompt window during the tutorial to run docker
-commands.
-
-!!! note "Note for legacy Command Prompt users"
-
-    If you are using `CMD`, the legacy command prompt program then you need a
-    slightly different way of specifying the DOCKER_HOST environment
-    variable. The form is
-
-    ```
-    set DOCKER_HOST=ssh://USERNAME@IP_ADDRESS
-    ```
-
-### SSH Tunnel
-
-For some of the tutorial instructions you'll be asked to load the Django portal
-in your browser at <http://localhost:8000>. However, your Django portal
-container is running on a remote Docker host, not your local computer. To make
-it appear that the Django portal is running locally, create an SSH tunnel to
-forward port 8000 to the remote Docker host. In a separate command prompt (in
-Visual Studio Code open a new terminal with **Ctrl+Shift+`**), run the
-following:
-
-```
-ssh -L 8000:localhost:8000 USERNAME@IP_ADDRESS
-```

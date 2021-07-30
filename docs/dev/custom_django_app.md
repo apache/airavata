@@ -13,168 +13,201 @@ with metadata describing that it is a Django app meant to be automatically
 installed into the Airavata Django Portal when it is loaded into the virtual
 environment.
 
-We'll go through the minimal setup code needed. This will follow along with the
-code in the <https://github.com/machristie/test-dynamic-djangoapp> repo, which
-represents a minimal custom Django app for the Django Portal.
+We'll use a project code generation tool called
+[Cookiecutter](https://cookiecutter.readthedocs.io/) to generate all of the
+necessary files and configuration. These steps will show how to use
+Cookiecutter. Then we'll take a tour of the generated code.
 
-1.  Install the Airavata Django Portal. See the
+1.  Install the Airavata Django Portal if you haven't already. See the
     [https://github.com/apache/airavata-django-portal/blob/master/README.md](README)
     for instructions.
-2.  With the Django Portal virtual environment activated, navigate to a separate
-    directory outside the airavata-django-portal, where you'll create your
-    custom django app. The following instructions wil assume this directory is
-    `$HOME/custom-django-app` but it could be called and placed anywhere. In
-    `$HOME/custom-django-app`, run `django-admin startapp my_custom_app`, but
-    instead of _my_custom_app_ specify the module name you want to use. For
-    example, let's say your directory is called `custom-django-app` and you want
-    to call the module name `custom_app`. Then you would run
+2.  With the Airavata Django Portal virtual environment activated, install
+    cookiecutter.
 
-        cd $HOME/custom-django-app
-        django-admin startapp custom_app
-
-    This will result in the following files:
-
-        custom-django-app
-        custom-django-app/custom_app
-        custom-django-app/custom_app/migrations
-        custom-django-app/custom_app/migrations/__init__.py
-        custom-django-app/custom_app/models.py
-        custom-django-app/custom_app/__init__.py
-        custom-django-app/custom_app/apps.py
-        custom-django-app/custom_app/admin.py
-        custom-django-app/custom_app/tests.py
-        custom-django-app/custom_app/views.py
-
-3.  Create a `setup.py` file in your custom apps root directory. In the example
-    above that would be in the `$HOME/custom-django-app/` directory.
-
-```python
-import setuptools
-
-setuptools.setup(
-    name="my-custom-django-app",
-    version="0.0.1",
-    description="... description ...",
-    packages=setuptools.find_packages(),
-    install_requires=[
-        'django>=1.11.16'
-    ],
-    entry_points="""
-[airavata.djangoapp]
-custom_app = custom_app.apps:CustomAppConfig
-""",
-)
+```
+pip install -U cookiecutter
 ```
 
-Change the `name` and `description` as appropriate. The necessary metadata for
-letting the Airavata Django Portal know that this Python package is a custom
-Django app is specified in the `[airavata.djangoapp]` section.
+3.  Navigate to a separate directory outside the airavata-django-portal, where
+    you'll create your custom django app. Use cookiecutter to run the Airavata
+    Django app template.
 
-4.  Create the CustomAppConfig class that is referenced above. Open
-    `$HOME/custom-django-app/custom_app/apps.py` and edit to match the
-    following:
-
-```python
-from django.apps import AppConfig
-
-
-class CustomAppConfig(AppConfig):
-    name = 'custom_app'
-    label = name
-    verbose_name = 'My Custom App'
-    fa_icon_class = 'fa-comment'
+```
+cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
 ```
 
-This the main metadata for this custom Django app. Besides the normal metadata
-that the Django framework expects, this also defines a display name
-(`verbose_name`) and an icon (`fa_icon_class`) to use for this custom app. See
+You'll need to answer some questions. The project name is the most important
+one. You can name it whatever you want. For these instructions I'll name it
+**Custom Django App**. For the rest of the questions, you can simply accept the
+defaults:
+
+```
+project_name [My Custom Django App]: Custom Django App
+project_slug [custom_django_app]:
+project_short_description [Custom Django app with everything needed to be installed in the airavata-django-portal]:
+app_config_class_name [CustomDjangoAppConfig]:
+version [0.1.0]:
+```
+
+4. The generated code is placed in a project directory. The directory has the
+   same name as the project slug. In my case that is `custom_django_app`.
+
+```
+(venv) $ cd custom_django_app/
+(venv) $ find .
+.
+./pyproject.toml
+./MANIFEST.in
+./README.md
+./setup.py
+./.gitignore
+./setup.cfg
+./custom_django_app
+./custom_django_app/models.py
+./custom_django_app/__init__.py
+./custom_django_app/apps.py
+./custom_django_app/admin.py
+./custom_django_app/static
+./custom_django_app/static/custom_django_app
+./custom_django_app/static/custom_django_app/README.md
+./custom_django_app/output_views
+./custom_django_app/output_views/__init__.py
+./custom_django_app/templates
+./custom_django_app/templates/custom_django_app
+./custom_django_app/templates/custom_django_app/home.html
+./custom_django_app/tests.py
+./custom_django_app/urls.py
+./custom_django_app/views.py
+```
+
+5. To install the custom django app in your local Airavata Django Portal
+   instance, use `pip` to install it.
+
+```
+pip install -e .
+```
+
+6. (Optional) If you want to use Git source control for this project, then this
+   directory (the one with setup.cfg and pyproject.toml) is where you should
+   initialize the Git repository.
+
+```
+$ git init
+```
+
+Now we'll take a tour of the generated files.
+
+In the root directory are several Python project files: pyproject.toml,
+MANIFEST.in, setup.py, and setup.cfg. setup.cfg is the most important of these
+since it defines Python package name, version, description, dependencies, etc.
+In the custom Django app module directory (custom_django_app in the example
+above) are where you will find the generate Django Python and HTML code. Here
+are some things you may need to update as you develop your custom Django app:
+
+### setup.cfg
+
+-   **name**: you can update the name, but this really only affects the name of
+    the Python project when installing it from a repository like
+    <https://pypi.org>.
+-   **description**: this is the Python package description. Like the name,
+    really only affects package repositories like <https://pypi.org>.
+-   **version**: if you push your custom Django app to pypi.org, then you'll
+    want to increment the version number.
+-   **install_requires**: this is where you list other Python packages on which
+    your custom Django app depends. As an example, see the
+    [Custom UI tutorial](../tutorial/custom_ui_tutorial.md#create-the-custom-output-viewer)
+    when cclib, numpy and matplotlib are added to setup.cfg for the
+    GaussianEigenvaluesViewProvider.
+-   **options.entry_points**: this is metadata that describes where this custom
+    Django app's AppConfig class is located so that the Airavata Django Portal
+    can load it. In the Django framework, the AppConfig class is the entry point
+    to the app. Normally you won't need to update this, but if you decide to
+    change the Django app's Python module name or the name of the AppConfig
+    class, then you'll need to update these to remain consistent.
+
+### apps.py
+
+This file defines the custom Django app's AppConfig class. This the main
+metadata for this custom Django app. Besides the normal metadata that the Django
+framework expects, this also defines a display name (`verbose_name`) and an icon
+(`fa_icon_class`) to use for this custom app. See
 [AppConfig settings](./new_django_app.md#integrating-with-the-django-portal) for
 details on available properties here. Note that `app_order` isn't supported for
 custom Django apps. Only `name`, `label` and `verbose_name` are required. See
 [Django project documentation on AppConfig](https://docs.djangoproject.com/en/1.11/ref/applications/#application-configuration)
 for description of these properties.
 
-5.  Create a simple template based view in
-    `$HOME/custom-django-app/custom_app/views.py`.
+### views.py
 
-```python
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+This is where you define your Django views. Views are functions or classes that
+take as input an HTTP request and generate an HTTP response. See
+[part 1 of the Django tutorial](https://docs.djangoproject.com/en/2.2/intro/tutorial01/)
+for more information.
 
-# Create your views here.
+In the generated views.py file there is simple view function called `home` that
+simply renders the `home.html` template. There is also some commented out code
+that shows how to, for example,
 
-@login_required
-def hello_world(request):
-    return render(request, "custom_app/hello.html")
+-   make Airavata API calls with the Airavata Python SDK
+-   manage the user's data storage with the Airavata Django Portal SDK
+
+Also note that if you want to require authentication for your view, just add the
+`@login_required` decorator.
+
+### templates (home.html)
+
+HTML templates are added to the `templates/` folder. The standard convention in
+Django is to create a directory in the `templates/` folder with the name of the
+Python module and put your template in there, as a way to namespace the names of
+an app's templates.From the
+[Django docs](https://docs.djangoproject.com/en/1.11/topics/templates/):
+
+> It’s possible – and preferable – to organize templates in subdirectories
+> inside each directory containing templates. The convention is to make a
+> subdirectory for each Django app, with subdirectories within those
+> subdirectories as needed.
+
+The generated `home.html` file uses a couple of Django template features. First
+is the use of named blocks that extend a base template. By extending the
+`base.html` template, your custom Django app will fit into the over Airavata
+Django Portal. There's a block for adding the main content, called `content`,
+and there is a block for JavaScript code called `scripts` and a block for CSS
+called `css`. Also, the home.html template references a context variable,
+`{{ project_name }}`, a variable that is placed in the context by the `home`
+view function defined in views.py. To learn more about Django templates, see
+[the Django tutorial, part 3](https://docs.djangoproject.com/en/2.2/intro/tutorial03/).
+
+`home.html` also has some commented out example code showing how to use the
+JavaScript SDK. The JavaScript SDK allows you to write frontend code that
+interacts with the Airavata API via the Airavata Django Portal REST API.
+
+### urls.py
+
+To map your view function to URLs, you add a URL pattern to `urls.py`. The
+generated `urls.py` already has a mapping for the `home` view function. As you
+add additional view functions, you'll want to add a mapping to a URL pattern
+here.
+
+### static files (images, CSS, JS, etc.)
+
+Put static folders into the `static/custom_django_app` (or whatever you named
+your django app) subdirectory. You can then reference a URL to one of these
+static file in a template by using the `static` template tag, like so:
+
+```html
+<script src="{% static 'custom_django_app/some_script.js' %}"></script>
 ```
 
-This view will render the template `custom_app/hello.html` which we'll create in
-the next step. Add the `@login_required` decorator to any views that should be
-authenticated.
+See the README.md in the `static/` subdirectory for more information.
 
-6.  Create the hello.html template in
-    `$HOME/custom-django-app/custom_app/templates/custom_app/hello.html`
+### output_views/
 
-```django
-{% extends 'base.html' %}
-{% block content %}
-<div class="main-content-wrapper">
-    <main class="main-content">
-        <div class="container-fluid">
-            <h1>Hello World</h1>
-        </div>
-    </main>
-</div>
-{% endblock content %}
-```
+This is the folder where you can define
+[output view providers](./custom_output_view_provider.md). An output view
+provider is a Python class that creates a visualization of an output file by
+generating an image or other appropriate data from the output file.
 
-!!! note
-
-    Notice that we created a directory for our templates in `custom_app`
-    called `templates/custom_app/hello.html`. That might look like
-    redundancy, but it is intentional. The convention in Django is to create
-    a separately named directory under `templates` for each Django app. From
-    the [Django docs](https://docs.djangoproject.com/en/1.11/topics/templates/):
-
-    > It’s possible – and preferable – to organize templates in
-    > subdirectories inside each directory containing templates. The convention
-    > is to make a subdirectory for each Django app, with subdirectories within
-    > those subdirectories as needed.
-
-7.  Create a url mapping for this view in
-    `$HOME/custom-django-app/custom_app/urls.py`.
-
-```python
-from django.conf.urls import url, include
-
-from . import views
-
-app_name = 'custom_app'
-urlpatterns = [
-    url(r'^hello/', views.hello_world, name="home"),
-]
-```
-
-Note that
-[`app_name` specifies the namespace](https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces-and-included-urlconfs)
-for your app's urls and should be changed to something appropriate for your app.
-
-8. That defines a basic Hello World Django app. To preview and develop this
-   Django app further we need to install it into a locally running Django
-   portal. See
-   [the README.md](https://github.com/apache/airavata-django-portal/blob/master/README.md)
-   for notes on getting the Django portal installed locally. Let's assume you
-   install the Django portal locally in `$HOME/airavata-django-portal`. To
-   install the custom Django app in that portal you would:
-
-```bash
-# First activate the Django portal's virtual environment
-cd $HOME/airavata-django-portal
-source venv/bin/activate
-# Then change to the custom app and install it in develop mode
-cd $HOME/custom-django-app
-python setup.py develop
-```
+### Viewing the custom Django app
 
 Now when you log into the Django portal at <http://localhost:8000> you should
 see the custom app in the dropdown menu in the top of the page (the one that
@@ -202,7 +235,7 @@ in the `scripts` block:
 For more information on the AiravataAPI library:
 
 -   see the
-    [Gateways tutorial](../tutorial/gateways_tutorial.md#tutorial-exercise-create-a-custom-django-app)
+    [Custom UI tutorial](../tutorial/custom_ui_tutorial.md#tutorial-exercise-create-a-custom-django-app)
 -   see the
     [index.js](https://github.com/apache/airavata-django-portal/blob/master/django_airavata/apps/api/static/django_airavata_api/js/index.js)
     file in the AiravataAPI to see what models and services are provided by the
