@@ -8,6 +8,10 @@ import { createExperiment } from "../../js/utils/ExperimentUtils";
 // Mock out 'index' so that RESTful service calls can be mocked
 jest.mock("../../js/index");
 
+beforeEach(() => {
+  jest.resetAllMocks();
+});
+
 test("error thrown when no applicationName given", async () => {
   try {
     expect.assertions(2);
@@ -15,7 +19,7 @@ test("error thrown when no applicationName given", async () => {
   } catch (e) {
     expect(e).toBeInstanceOf(Error);
     expect(e.message).toEqual(
-      "Either applicationName or applicationId is required"
+      "Either applicationInterfaceId or applicationId or applicationName is required"
     );
   }
 });
@@ -61,6 +65,32 @@ test("verify if applicationId and applicationName are given, applicationInterfac
       services.ApplicationModuleService.getApplicationInterface
     ).toHaveBeenCalledWith({
       lookup: "Foo_module1",
+    });
+  }
+});
+
+test("verify if applicationInterfaceId and applicationId and applicationName are given, applicationInterface is loaded with applicationId", async () => {
+  services.ApplicationInterfaceService.retrieve.mockResolvedValue(
+    new ApplicationInterfaceDefinition({
+      applicationInterfaceId: "Foo_interface1",
+      applicationName: "Foo",
+      applicationModules: ["Foo_module1"],
+    })
+  );
+  try {
+    expect.assertions(3);
+    await createExperiment({
+      applicationInterfaceId: "Foo_interface1",
+      applicationId: "Foo_module1",
+      applicationName: "Foo",
+    });
+  } catch (e) {
+    expect(services.ApplicationModuleService.getApplicationInterface).not.toHaveBeenCalled();
+    expect(services.ApplicationInterfaceService.list).not.toHaveBeenCalled();
+    expect(
+      services.ApplicationInterfaceService.retrieve
+    ).toHaveBeenCalledWith({
+      lookup: "Foo_interface1",
     });
   }
 });

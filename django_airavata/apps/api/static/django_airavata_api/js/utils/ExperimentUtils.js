@@ -3,12 +3,17 @@ import { services } from "../index";
 const createExperiment = async function ({
   applicationName, // name of the application interface (usually the same as the application module)
   applicationId, // the id of the application module
+  applicationInterfaceId, // the id of the application interface
   computeResourceName,
   experimentName,
   experimentInputs,
 } = {}) {
   let applicationInterface = null;
-  if (applicationId) {
+  if (applicationInterfaceId) {
+    applicationInterface = await loadApplicationInterfaceById(
+      applicationInterfaceId
+    );
+  } else if (applicationId) {
     applicationInterface = await loadApplicationInterfaceByApplicationModuleId(
       applicationId
     );
@@ -17,7 +22,7 @@ const createExperiment = async function ({
       applicationName
     );
   } else {
-    throw new Error("Either applicationName or applicationId is required");
+    throw new Error("Either applicationInterfaceId or applicationId or applicationName is required");
   }
   const applicationModuleId = applicationInterface.applicationModuleId;
   let computeResourceId = null;
@@ -88,6 +93,12 @@ const loadApplicationInterfaceByName = async function (applicationName) {
     );
   }
   return applicationInterface;
+};
+
+const loadApplicationInterfaceById = async function (applicationInterfaceId) {
+  return await services.ApplicationInterfaceService.retrieve({
+    lookup: applicationInterfaceId,
+  });
 };
 
 const loadApplicationInterfaceByApplicationModuleId = async function (
