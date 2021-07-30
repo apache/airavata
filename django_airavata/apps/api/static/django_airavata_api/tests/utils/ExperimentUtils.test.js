@@ -14,7 +14,9 @@ test("error thrown when no applicationName given", async () => {
     await createExperiment();
   } catch (e) {
     expect(e).toBeInstanceOf(Error);
-    expect(e.message).toEqual("applicationName is required");
+    expect(e.message).toEqual(
+      "Either applicationName or applicationId is required"
+    );
   }
 });
 
@@ -37,6 +39,29 @@ test("error thrown with applicationName doesn't match any interfaces", async () 
     expect(e.message).toEqual(
       "Could not find application interface named test"
     );
+  }
+});
+
+test("verify if applicationId and applicationName are given, applicationInterface is loaded with applicationId", async () => {
+  services.ApplicationModuleService.getApplicationInterface.mockResolvedValue(
+    new ApplicationInterfaceDefinition({
+      applicationName: "Foo",
+      applicationModules: ["Foo_module1"],
+    })
+  );
+  try {
+    expect.assertions(2);
+    await createExperiment({
+      applicationId: "Foo_module1",
+      applicationName: "Foo",
+    });
+  } catch (e) {
+    expect(services.ApplicationModuleService.list).not.toHaveBeenCalled();
+    expect(
+      services.ApplicationModuleService.getApplicationInterface
+    ).toHaveBeenCalledWith({
+      lookup: "Foo_module1",
+    });
   }
 });
 

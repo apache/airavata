@@ -2,17 +2,22 @@ import { services } from "../index";
 
 const createExperiment = async function ({
   applicationName, // name of the application interface (usually the same as the application module)
+  applicationId, // the id of the application module
   computeResourceName,
   experimentName,
   experimentInputs,
 } = {}) {
   let applicationInterface = null;
-  if (applicationName) {
+  if (applicationId) {
+    applicationInterface = await loadApplicationInterfaceByApplicationModuleId(
+      applicationId
+    );
+  } else if (applicationName) {
     applicationInterface = await loadApplicationInterfaceByName(
       applicationName
     );
   } else {
-    throw new Error("applicationName is required");
+    throw new Error("Either applicationName or applicationId is required");
   }
   const applicationModuleId = applicationInterface.applicationModuleId;
   let computeResourceId = null;
@@ -85,6 +90,14 @@ const loadApplicationInterfaceByName = async function (applicationName) {
   return applicationInterface;
 };
 
+const loadApplicationInterfaceByApplicationModuleId = async function (
+  applicationId
+) {
+  return await services.ApplicationModuleService.getApplicationInterface({
+    lookup: applicationId,
+  });
+};
+
 const loadComputeResourceIdByName = async function (computeResourceName) {
   const computeResourceNames = await services.ComputeResourceService.names();
   for (const computeResourceId in computeResourceNames) {
@@ -146,9 +159,7 @@ const loadWorkspacePreferences = async function () {
   return await services.WorkspacePreferencesService.get();
 };
 
-export {
-  createExperiment,
-};
+export { createExperiment };
 
 export default {
   createExperiment,
