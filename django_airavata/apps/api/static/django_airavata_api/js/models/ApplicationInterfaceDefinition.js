@@ -26,6 +26,7 @@ const FIELDS = [
     name: "applicationOutputs",
     type: OutputDataObjectType,
     list: true,
+    default: BaseModel.defaultNewInstance(Array),
   },
   {
     name: "archiveWorkingDirectory",

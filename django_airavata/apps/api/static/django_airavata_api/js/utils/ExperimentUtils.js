@@ -79,7 +79,7 @@ const loadApplicationInterfaceByName = async function (applicationName) {
   );
   if (!applicationInterface) {
     throw new Error(
-      `Could not find application with interface named ${applicationName}`
+      `Could not find application interface named ${applicationName}`
     );
   }
   return applicationInterface;
@@ -144,6 +144,10 @@ const loadQueue = async function (applicationDeployment) {
 
 const loadWorkspacePreferences = async function () {
   return await services.WorkspacePreferencesService.get();
+};
+
+export {
+  createExperiment,
 };
 
 export default {
