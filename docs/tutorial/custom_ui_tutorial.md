@@ -1358,133 +1358,118 @@ The user interface should now look something like:
 
 ### Submitting an Echo job
 
-Now we'll use `AiravataAPI` to submit an Echo job. Let's take a look at what
-we'll need to do make this work.
+Now we'll use `AiravataAPI` to submit an Echo job. First we'll add the code and
+then examine it line by line to see what it is doing.
 
-1. We'll need to add a click handler to the _Run_ button that gets the selected
-   greeting value:
-
-```javascript
-$("#run-button").click((e) => {
-    const greeting = $("#greeting-select").val();
-});
-```
-
-2. There are a couple key pieces of information that are needed to submit a
-   computational experiment. We can use the REST API to find these. The
-   application we want to use is called Echo and it has id
-   `Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8`. We can browse the API for this
-   application using:
-   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/>.
-   First, we need the _Application Interface_ for the application, which defines
-   the inputs and outputs of the application. We can get its id by following the
-   link to `applicationInterface`:
-   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_interface/>.
-   We'll create an _Experiment_ instance from the _Application Interface_
-   definition:
-
-```javascript
-const loadAppInterface = services.ApplicationInterfaceService.retrieve({
-    lookup: appInterfaceId,
-});
-```
-
-3. Second, we need to know where and how the application is deployed. We could
-   let the user then pick where they want to run this application. For this
-   exercise we're going to hard code the resource and the application deployment
-   that will be used for executing the application, but we still need the
-   application deployment information so we can get default values for the
-   application that can be used when submitting the job to that scheduler. The
-   application deployment id we get from
-   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_deployments/>.
-
-```javascript
-const appDeploymentId =
-    "example-vc.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
-const loadQueues = services.ApplicationDeploymentService.getQueues({
-    lookup: appDeploymentId,
-});
-```
-
-4. We also need to know a few other pieces of information, like the id of the
-   compute resource which
-   <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_deployments/>
-   also provides with the value `computeHostId`. The queue name we can get from
-   following the link from the deployment to the queues:
-   <https://testdrive.airavata.org/api/application-deployments/example-vc.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/queues/>.
-   Here we see that the `queueName` is `cloud`. We also need the account to use
-   to submit the job and that is specified via a "Group Resource Profile".
-   <https://testdrive.airavata.org/api/group-resource-profiles/> lists profiles
-   you have access to and the compute resources each profile can use for job
-   submission. We'll use the tutorial reservation one. Finally, experiments are
-   organized by projects so we'll also load the user's most recently used
-   project which is stored in the user's WorkspacePreferences:
-
-```javascript
-const resourceHostId =
-    "example-vc.jetstream-cloud.org_794fd026-101a-46af-8868-5d7a86f813a1";
-const queueName = "cloud";
-const groupResourceProfileId = "fc245311-a7d1-41af-b8ae-a4142989c9a1";
-const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
-```
-
-5. Once we have all of this information we can then create an `Experiment`
-   object then _save_ and _launch_ it. Here's the complete click handler. We add
-   the following to the end of the _scripts_ block in `hello.html`:
+1. Add the following to the end of the _scripts_ block in `hello.html`:
 
 ```javascript
 // ...
 
 // STARTING HERE
-$("#run-button").click((e) => {
-    const greeting = $("#greeting-select").val();
-    const loadAppInterface = services.ApplicationInterfaceService.retrieve({
-        lookup: appInterfaceId,
-    });
-    const appDeploymentId =
-        "example-vc.jetstream-cloud.org_Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8";
-    const loadQueues = services.ApplicationDeploymentService.getQueues({
-        lookup: appDeploymentId,
-    });
-    const resourceHostId =
-        "example-vc.jetstream-cloud.org_794fd026-101a-46af-8868-5d7a86f813a1";
-    const queueName = "cloud";
-    const groupResourceProfileId = "fc245311-a7d1-41af-b8ae-a4142989c9a1";
-    const loadWorkspacePrefs = services.WorkspacePreferencesService.get();
-    Promise.all([loadAppInterface, loadWorkspacePrefs, loadQueues])
-        .then(([appInterface, workspacePrefs, queues]) => {
-            const experiment = appInterface.createExperiment();
-            experiment.experimentName = "Echo " + greeting;
-            experiment.projectId = workspacePrefs.most_recent_project_id;
-            const cloudQueue = queues.find((q) => q.queueName === queueName);
-            experiment.userConfigurationData.groupResourceProfileId =
-                groupResourceProfileId;
-            experiment.userConfigurationData.computationalResourceScheduling.resourceHostId =
-                resourceHostId;
-            experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount =
-                cloudQueue.defaultCPUCount;
-            experiment.userConfigurationData.computationalResourceScheduling.nodeCount =
-                cloudQueue.defaultNodeCount;
-            experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit =
-                cloudQueue.defaultWalltime;
-            experiment.userConfigurationData.computationalResourceScheduling.queueName =
-                queueName;
-            // Copy the selected greeting to the value of the first input
-            experiment.experimentInputs[0].value = greeting;
-
+    $("#run-button").click((e) => {
+        const greeting = $("#greeting-select").val();
+        // Construct experiment object
+        utils.ExperimentUtils.createExperiment({
+            applicationInterfaceId: appInterfaceId,
+            computeResourceName: "example-vc.jetstream-cloud.org",
+            experimentName: "Echo " + greeting,
+            experimentInputs: {
+                "Input-to-Echo": greeting
+            }
+        }).then(experiment=> {
+            // Save experiment
             return services.ExperimentService.create({ data: experiment });
-        })
-        .then((exp) => {
+        }).then(experiment => {
+            // Launch experiment
             return services.ExperimentService.launch({
-                lookup: exp.experimentId,
+                lookup: experiment.experimentId,
             });
-        });
-});
+        })
+    });
 // ENDING HERE
 
 </script>
 
 {% endblock scripts %}
+```
+
+2. Going line by line we'll now take a look at this code. We added a click
+   handler to the _Run_ button that gets the selected greeting value:
+
+```javascript
+$("#run-button").click((e) => {
+    const greeting = $("#greeting-select").val();
+});
+```
+
+3. Now the code constructs an experiment object using the utility function
+   `utils.ExperimentUtils.createExperiment`. In Airavata, Experiments are
+   created from Application Interface descriptions, so we'll first pass the
+   `applicationInterfaceId`. We already have the `appInterfaceId` in the code
+   because we used this to retrieve experiment results for the Echo application.
+
+    You might wonder, how would I find this ID if I wanted to look one up for an
+    application? For this you can use the REST API and programmatically look up
+    these values in your code. Also, the Airavata Django Portal has a browseable
+    REST API and we'll take a look at that now.
+
+    If you go to <https://testdrive.airavata.org/api/applications/> (make sure
+    you are logged in first) you'll see the _Application Module List_. For each
+    entry you can click on the URL for the `applicationInterface` and get the
+    REST API response for the application interface. For example, if you click
+    on the applicationInterface link for the Echo application module,
+    <https://testdrive.airavata.org/api/applications/Echo_37eb38ac-74c8-4aa4-a037-c656ab5bc6b8/application_interface/>,
+    you'll then get a response that shows that the _applicationInterfaceId_ is
+    `Echo_23d67491-1bef-47bd-a0f5-faf069e09773`.
+
+    The other parameters to the `createExperiment` function are the
+    `computeResourceName` of the cluster to which we want to submit as well as
+    the name of the experiment and the experiment's input values.
+
+```javascript
+        // Construct experiment object
+        utils.ExperimentUtils.createExperiment({
+            applicationInterfaceId: appInterfaceId,
+            computeResourceName: "example-vc.jetstream-cloud.org",
+            experimentName: "Echo " + greeting,
+            experimentInputs: {
+                "Input-to-Echo": greeting
+            }
+        })
+```
+
+4. The `createExperiment` function does a few more things behind the scenes and
+   once we run it we can take a look at the REST API calls it makes. In summary
+   `createExperiment`:
+
+    - loads the Application Interface
+    - loads the compute resource ID
+    - finds a Group Resource Profile that can be used to submit the job to the
+      given compute resource
+    - finds the Application Deployment for the application on the given compute
+      resource
+    - loads the default queue settings for that Application Deployment and uses
+      them when constructing the Experiment
+    - loads the user's most recently used Project and uses it when constructing
+      the Experiment
+    - creates an Experiment instance from the Application Interface and
+      populates its fields
+
+5. Now that the experiment object is created, we can save it
+   (`ExperimentService.create`) and then launch it (`ExperimentService.launch`).
+
+```javascript
+        // ...
+        }).then(experiment=> {
+            // Save experiment
+            return services.ExperimentService.create({ data: experiment });
+        }).then(experiment => {
+            // Launch experiment
+            return services.ExperimentService.launch({
+                lookup: experiment.experimentId,
+            });
+        })
 ```
 
 Now that we can launch the experiment we can go ahead and give it a try.
