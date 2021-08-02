@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.urls import path
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r'^api/', include('django_airavata.apps.api.urls')),
     url(r'^groups/', include('django_airavata.apps.groups.urls')),
     url(r'^dataparsers/', include('django_airavata.apps.dataparsers.urls')),
+    path('sdk/', include('airavata_django_portal_sdk.urls')),
     url(r'^home$', views.home, name='home'),
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),

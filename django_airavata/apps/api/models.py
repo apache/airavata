@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -33,3 +34,28 @@ class User_Notifications(models.Model):
     username = models.CharField(max_length=64)
     notification_id = models.CharField(max_length=255)
     is_read = models.BooleanField(default=False)
+
+
+class ApplicationTemplate(models.Model):
+    application_module_id = models.CharField(max_length=255, unique=True)
+    template_path = models.TextField()
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.application_module_id}: {self.template_path}"
+
+
+class ApplicationTemplateContextProcessor(models.Model):
+    application_template = models.ForeignKey(ApplicationTemplate, on_delete=models.CASCADE, related_name="context_processors")
+    # Use django.util.module_loading.import_string to import
+    # https://docs.djangoproject.com/en/3.2/ref/utils/#module-django.utils.module_loading
+    callable_path = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = (('application_template', 'callable_path'),)
+
+    def __str__(self):
+        return self.callable_path

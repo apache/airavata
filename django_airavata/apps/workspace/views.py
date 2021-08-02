@@ -7,8 +7,10 @@ from airavata.model.application.io.ttypes import DataType
 from airavata_django_portal_sdk import user_storage as user_storage_sdk
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.utils.module_loading import import_string
 from rest_framework.renderers import JSONRenderer
 
+from django_airavata.apps.api import models
 from django_airavata.apps.api.views import (
     ApplicationModuleViewSet,
     ExperimentSearchViewSet,
@@ -113,19 +115,51 @@ def create_experiment(request, app_module_id):
     if 'experiment-data-dir' in request.GET:
         context['experiment_data_dir'] = request.GET['experiment-data-dir']
 
-    return render(request,
-                  'django_airavata_workspace/create_experiment.html',
-                  context)
+    template_path = 'django_airavata_workspace/create_experiment.html'
+    # Apply a custom application template if it exists
+    custom_template_path, custom_context = get_custom_template(request, app_module_id)
+    if custom_template_path is not None:
+        logger.debug(f"Applying custom application template {custom_template_path}")
+        template_path = custom_template_path
+        context.update(custom_context)
+
+    return render(request, template_path, context)
 
 
 @login_required
 def edit_experiment(request, experiment_id):
     request.active_nav_item = 'experiments'
 
-    return render(request,
-                  'django_airavata_workspace/edit_experiment.html',
-                  {'bundle_name': 'edit-experiment',
-                   'experiment_id': experiment_id})
+    experiment = request.airavata_client.getExperiment(request.authz_token, experiment_id)
+    applicationInterface = request.airavata_client.getApplicationInterface(request.authz_token, experiment.executionId)
+    app_module_id = applicationInterface.applicationModules[0]
+    context = {
+        'bundle_name': 'edit-experiment',
+        'experiment_id': experiment_id,
+        'app_module_id': app_module_id,
+    }
+    template_path = 'django_airavata_workspace/edit_experiment.html'
+    # Apply a custom application template if it exists
+    custom_template_path, custom_context = get_custom_template(request, app_module_id)
+    if custom_template_path is not None:
+        logger.debug(f"Applying custom application template {custom_template_path}")
+        template_path = custom_template_path
+        context.update(custom_context)
+
+    return render(request, template_path, context)
+
+
+def get_custom_template(request, app_module_id):
+    template_path = None
+    context = {}
+    query = models.ApplicationTemplate.objects.filter(application_module_id=app_module_id)
+    if query.exists():
+        application_template = query.get()
+        template_path = application_template.template_path
+        for context_processor in application_template.context_processors.all():
+            context_processor = import_string(context_processor.callable_path)
+            context.update(context_processor(request))
+    return template_path, context
 
 
 @login_required

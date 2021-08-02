@@ -10,6 +10,7 @@ import BaseModel from "./models/BaseModel";
 import BatchQueue from "./models/BatchQueue";
 import BatchQueueResourcePolicy from "./models/BatchQueueResourcePolicy";
 import CommandObject from "./models/CommandObject";
+import ComputationalResourceSchedulingModel from "./models/ComputationalResourceSchedulingModel";
 import ComputeResourcePolicy from "./models/ComputeResourcePolicy";
 import ComputeResourceReservation from "./models/ComputeResourceReservation";
 import DataProduct from "./models/DataProduct";
@@ -35,6 +36,7 @@ import SetEnvPaths from "./models/SetEnvPaths";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
+import UserConfigurationData from "./models/UserConfigurationData";
 import UserPermission from "./models/UserPermission";
 
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
@@ -68,6 +70,7 @@ const models = {
   BatchQueue,
   BatchQueueResourcePolicy,
   CommandObject,
+  ComputationalResourceSchedulingModel,
   ComputeResourcePolicy,
   ComputeResourceReservation,
   DataProduct,
@@ -93,6 +96,7 @@ const models = {
   SharedEntity,
   StoragePreference,
   SummaryType,
+  UserConfigurationData,
   UserPermission,
 };
 
@@ -110,7 +114,9 @@ const services = {
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
   ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
-  ExperimentStoragePathService: ServiceFactory.service("ExperimentStoragePaths"),
+  ExperimentStoragePathService: ServiceFactory.service(
+    "ExperimentStoragePaths"
+  ),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfile"
@@ -139,6 +145,7 @@ const services = {
     "UnverifiedEmailUsers"
   ),
   UserProfileService: ServiceFactory.service("UserProfiles"),
+  UserService: ServiceFactory.service("Users"),
   UserStoragePathService: ServiceFactory.service("UserStoragePaths"),
   WorkspacePreferencesService: ServiceFactory.service("WorkspacePreferences"),
 };

@@ -86,6 +86,13 @@ GATEWAY_DATA_STORE_DIR = '/tmp'
 GATEWAY_DATA_STORE_HOSTNAME = 'localhost'
 FILE_UPLOAD_TEMP_DIR = '/tmp'
 
+# Define shared directories. Each entry is symlinked into the user's storage.
+# GATEWAY_DATA_SHARED_DIRECTORIES = {
+#     'Display Name': {
+#         'path': '/path/to/shared/dir'
+#     }
+# }
+
 # Profile Service Configuration
 PROFILE_SERVICE_HOST = AIRAVATA_API_HOST
 PROFILE_SERVICE_PORT = 8962

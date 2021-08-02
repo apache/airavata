@@ -284,6 +284,12 @@ AUTHENTICATION_OPTIONS = {
     # ]
 }
 
+# Configure the URIs that can be redirected to with /auth/access-token-redirect?redirect_uri=...
+# Takes a list of dicts, where the key 'URI' specifies the allowed redirect URI
+# and the optional key 'PARAM_NAME' allows specifying the query parameter name
+# for the access token parameter (defaults to 'access_token').
+ACCESS_TOKEN_REDIRECT_ALLOWED_URIS = []
+
 # Seconds each connection in the pool is able to stay alive. If open connection
 # has lived longer than this period, it will be closed.
 # (https://github.com/Thriftpy/thrift_connector)
@@ -314,6 +320,18 @@ WEBPACK_LOADER = {
             'dist',
             'webpack-stats.json'),
         'TIMEOUT': 60,
+    },
+    'AUTH': {
+        'BUNDLE_DIR_NAME': 'django_airavata_auth/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'auth',
+            'static',
+            'django_airavata_auth',
+            'dist',
+            'webpack-stats.json'),
     },
     'DATAPARSERS': {
         'BUNDLE_DIR_NAME': 'django_airavata_dataparsers/dist/',

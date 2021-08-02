@@ -2,7 +2,7 @@ import copy
 import datetime
 import json
 import logging
-from urllib.parse import quote, urlencode
+from urllib.parse import quote
 
 from airavata.model.appcatalog.appdeployment.ttypes import (
     ApplicationDeploymentDescription,
@@ -432,7 +432,8 @@ class ExperimentSerializer(
         view_name='django_airavata_api:shared-entity-detail',
         lookup_field='experimentId',
         lookup_url_kwarg='entity_id')
-    experimentInputs = serializers.ListField(
+    experimentInputs = OrderedListField(
+        order_by='inputOrder',
         child=InputDataObjectTypeSerializer(),
         allow_null=True)
     experimentOutputs = serializers.ListField(
@@ -462,19 +463,29 @@ class DataProductSerializer(
     replicaLocations = DataReplicaLocationSerializer(many=True)
     downloadURL = serializers.SerializerMethodField()
     isInputFileUpload = serializers.SerializerMethodField()
+    filesize = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
-        """Getter for downloadURL field."""
+        """Getter for downloadURL field. Returns None if file is not available."""
         request = self.context['request']
         if user_storage.exists(request, data_product):
-            return (request.build_absolute_uri(
-                reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': data_product.productUri}))
-        return None
+            return user_storage.get_lazy_download_url(request, data_product)
+        else:
+            return None
 
     def get_isInputFileUpload(self, data_product):
         """Return True if this is an uploaded input file."""
         request = self.context['request']
         return user_storage.is_input_file(request, data_product)
+
+    def get_filesize(self, data_product):
+        request = self.context['request']
+        # For backwards compatibility with older user_storage, can be eventually removed
+        if hasattr(user_storage, 'get_data_product_metadata') and user_storage.exists(request, data_product):
+            metadata = user_storage.get_data_product_metadata(request, data_product)
+            return metadata['size']
+        else:
+            return 0
 
 
 # TODO move this into airavata_sdk?
@@ -520,7 +531,7 @@ class FullExperimentSerializer(serializers.Serializer):
         raise Exception("Not implemented")
 
 
-class ExperimentSummarySerializer(
+class BaseExperimentSummarySerializer(
         thrift_utils.create_serializer_class(ExperimentSummaryModel)):
     creationTime = UTCPosixTimestampDateTimeField()
     statusUpdateTime = UTCPosixTimestampDateTimeField()
@@ -532,6 +543,9 @@ class ExperimentSummarySerializer(
         view_name='django_airavata_api:project-detail',
         lookup_field='projectId',
         lookup_url_kwarg='project_id')
+
+
+class ExperimentSummarySerializer(BaseExperimentSummarySerializer):
     userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_userHasWriteAccess(self, experiment):
@@ -852,8 +866,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     def get_downloadURL(self, file):
         """Getter for downloadURL field."""
         request = self.context['request']
-        return (request.build_absolute_uri(
-            reverse('django_airavata_api:download_file')) + '?' + urlencode({'data-product-uri': file['data-product-uri']}))
+        return user_storage.get_lazy_download_url(request, data_product_uri=file['data-product-uri'])
 
 
 class UserStorageDirectorySerializer(serializers.Serializer):
@@ -873,6 +886,7 @@ class UserStoragePathSerializer(serializers.Serializer):
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)
     parts = serializers.ListField(child=serializers.CharField())
+    path = serializers.CharField()
     # uploaded is populated after a file upload
     uploaded = DataProductSerializer(read_only=True)
 
@@ -977,12 +991,12 @@ class NotificationSerializer(
 
 class ExperimentStatisticsSerializer(
         thrift_utils.create_serializer_class(ExperimentStatistics)):
-    allExperiments = ExperimentSummarySerializer(many=True)
-    completedExperiments = ExperimentSummarySerializer(many=True)
-    failedExperiments = ExperimentSummarySerializer(many=True)
-    cancelledExperiments = ExperimentSummarySerializer(many=True)
-    createdExperiments = ExperimentSummarySerializer(many=True)
-    runningExperiments = ExperimentSummarySerializer(many=True)
+    allExperiments = BaseExperimentSummarySerializer(many=True)
+    completedExperiments = BaseExperimentSummarySerializer(many=True)
+    failedExperiments = BaseExperimentSummarySerializer(many=True)
+    cancelledExperiments = BaseExperimentSummarySerializer(many=True)
+    createdExperiments = BaseExperimentSummarySerializer(many=True)
+    runningExperiments = BaseExperimentSummarySerializer(many=True)
 
 
 class UnverifiedEmailUserProfile(serializers.Serializer):

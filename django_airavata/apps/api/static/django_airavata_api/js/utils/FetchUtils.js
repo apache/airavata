@@ -57,6 +57,7 @@ export default {
       return null;
     }
   },
+  // For POST, PUT, DELETE
   createHeaders: function (
     contentType = "application/json",
     accept = "application/json"
@@ -152,7 +153,7 @@ export default {
         return responseCache.get(url);
       }
     }
-    var headers = this.createHeaders(mediaType);
+    var headers = new Headers({ Accept: mediaType });
     const fetchRequest = this.processFetch(
       url,
       {

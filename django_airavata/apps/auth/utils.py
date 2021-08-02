@@ -18,7 +18,9 @@ def get_authz_token(request, user=None, access_token=None):
     """Construct AuthzToken instance from session; refresh token if needed."""
     if access_token is not None:
         return _create_authz_token(request, user=user, access_token=access_token)
-    elif not is_access_token_expired(request, user=user):
+    elif is_request_access_token(request):
+        return _create_authz_token(request, user=user)
+    elif is_session_access_token(request) and not is_session_access_token_expired(request, user=user):
         return _create_authz_token(request, user=user, access_token=access_token)
     elif not is_refresh_token_expired(request):
         # Have backend reauthenticate the user with the refresh token
@@ -64,21 +66,38 @@ def _create_authz_token(request, user=None, access_token=None):
                                  'userName': username})
 
 
-def _get_access_token(request):
+def _get_access_token_source(request):
     if hasattr(request, 'auth') and request.auth is not None:
-        return request.auth
+        return 'request'
+    elif 'ACCESS_TOKEN' in request.session:
+        return 'session'
     else:
+        return None
+
+
+def _get_access_token(request):
+    source = _get_access_token_source(request)
+    if source == 'request':
+        return request.auth
+    elif source == 'session':
         return request.session['ACCESS_TOKEN']
+    else:
+        return None
 
 
-def is_access_token_expired(request, user=None):
-    """Return True if access_token is not available or is expired."""
-    # If access token not stored in session, then token expiration/refreshing
-    # isn't supported. When token is provided by REST API client it is expected
-    # that the client will manage the token lifetime.
+def is_session_access_token(request):
+    """Return True if access token is stored in the user's session."""
+    return _get_access_token_source(request) == 'session'
+
+
+def is_request_access_token(request):
+    """Return True if access token passed in request, e.g., a Bearer token."""
+    return _get_access_token_source(request) == 'request'
+
+
+def is_session_access_token_expired(request, user=None):
+    """Return True if session access_token is not available or is expired."""
     user = user if user is not None else request.user
-    if 'ACCESS_TOKEN' not in request.session:
-        return False
     now = time.time()
     return not user.is_authenticated \
         or 'ACCESS_TOKEN' not in request.session \

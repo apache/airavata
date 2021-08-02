@@ -31,7 +31,8 @@
     "moment": "^2.24.0",
     "popper.js": "^1.14.6",
     "terser": "^4.1.2",
-    "vue": "^2.5.22"
+    "vue": "^2.5.22",
+    "vue-async-computed": "^3.9.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.1.1",

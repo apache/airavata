@@ -484,13 +484,11 @@ export default {
       //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
-      this.loadStatistics();
     },
     getPastWeek() {
       this.fromTime = new Date().fp_incr(-7);
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
-      this.loadStatistics();
     },
     updateDateRange() {
       this.dateRange = [
@@ -550,8 +548,7 @@ export default {
       this.experimentDetails.splice(index, 1);
     },
     scrollTabsIntoView() {
-      // FIXME: AIRAVATA-3163: disabling since it prevents scrolling back up to the header
-      // this.$refs.tabs.$el.scrollIntoView();
+      this.$refs.tabs.$el.scrollIntoView({ behavior: "smooth" });
     },
   },
 };

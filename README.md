@@ -44,14 +44,20 @@ information on how to install yarn.
       [mysqlclient-python installation notes](https://github.com/PyMySQL/mysqlclient-python#install)
       for more details.
 
-2.  Create a local settings file. Copy
-    `django_airavata/settings_local.py.sample` to
-    `django_airavata/settings_local.py` and edit the contents to match your
-    Keycloak and Airavata server deployments.
+2.  Create a local settings file.
 
-    ```
-    cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
-    ```
+    - You can either copy `django_airavata/settings_local.py.sample` to
+      `django_airavata/settings_local.py` and edit the contents to match your
+      Keycloak and Airavata server deployments.
+
+      ```
+      cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
+      ```
+
+    - Or, if you have Admin access to an Airavata Django Portal instance, you
+      can log in, go to _Settings_ and then _Developer Console_
+      (/admin/developers) and download a `settings_local.py` file for local
+      development. Save it to the `django_airavata/` directory.
 
 3.  Run Django migrations
 

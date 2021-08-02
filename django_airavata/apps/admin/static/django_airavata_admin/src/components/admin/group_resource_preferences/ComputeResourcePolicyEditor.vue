@@ -12,6 +12,7 @@
             batchQueue.queueName
           )
         "
+        :disabled="readonly"
         @input="batchQueueChecked(batchQueue, $event)"
       >
         {{ batchQueue.queueName }}
@@ -23,6 +24,7 @@
           )
         "
         :batch-queue="batchQueue"
+        :readonly="readonly"
         :value="
           localBatchQueueResourcePolicies.find(
             (pol) => pol.queuename === batchQueue.queueName
@@ -53,6 +55,10 @@ export default {
     },
     batchQueueResourcePolicies: {
       type: Array,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
     },
   },
   components: {

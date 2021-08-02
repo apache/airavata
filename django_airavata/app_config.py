@@ -76,8 +76,7 @@ def get_default_url_home(app_config):
             first_named_url = urlpattern.name
             break
     if not first_named_url:
-        raise Exception("{} has no named urls, "
-                        "can't figure out default home URL")
+        raise Exception(f"{urls} has no named urls, can't figure out default home URL")
     if app_name:
         return app_name + ":" + first_named_url
     else:

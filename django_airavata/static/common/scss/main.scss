@@ -9,11 +9,15 @@ body {
   overflow: hidden;
 }
 
+$header_height: 70px;
+$header_height_with_border: $header_height + 1px;
+
 .c-header {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #ddd;
   background-color: #ffffff;
+  margin-bottom: -$header_height_with_border;
 
   &__logo {
     margin-right: 1rem;
@@ -95,6 +99,11 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  // AIRAVATA-3163 Fix the issue with the header scrolling off the page with
+  // scrollIntoView() by making the .stage element have the full height of the
+  // page. The padding-top here is matched by an equal but negative amount of
+  // margin-bottom on .c-header.
+  padding-top: $header_height_with_border;
 }
 
 @media screen and (min-width: 768px) {
@@ -124,14 +133,10 @@ body {
   }
 }
 
-/* Add extra padding at the bottom to accommodate for the scrolling under the fixed width header */
-.main-content > :last-child {
-  padding-bottom: 90px;
-}
-
 .sidebar {
   flex-basis: 200px;
   background-color: #ffffff;
+  overflow-y: auto;
 }
 
 .sidebar-header {

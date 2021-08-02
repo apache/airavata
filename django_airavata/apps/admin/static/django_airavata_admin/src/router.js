@@ -6,8 +6,9 @@ import ApplicationModuleEditor from "./components/applications/ApplicationModule
 import ApplicationsDashboard from "./components/dashboards/ApplicationsDashboard.vue";
 import ComputePreference from "./components/admin/group_resource_preferences/ComputePreference";
 import ComputeResourcePreferenceDashboard from "./components/dashboards/ComputeResourcePreferenceDashboard";
-import ExperimentStatisticsContainer from "./components/statistics/ExperimentStatisticsContainer";
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
+import DevelopersContainer from "./components/developers//DevelopersContainer.vue";
+import ExperimentStatisticsContainer from "./components/statistics/ExperimentStatisticsContainer";
 import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
 import IdentityServiceUserManagementContainer from "./components/users/IdentityServiceUserManagementContainer.vue";
@@ -149,6 +150,11 @@ const routes = [
     component: ExperimentStatisticsContainer,
     name: "experiment-statistics",
   },
+  {
+    path: "/developers",
+    component: DevelopersContainer,
+    name: "developers",
+  }
 ];
 export default new VueRouter({
   mode: "history",

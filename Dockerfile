@@ -30,6 +30,13 @@ RUN yarn
 COPY ./django_airavata/apps/groups/ .
 RUN yarn run build
 
+# build auth javascript
+WORKDIR /code/django_airavata/apps/auth
+COPY ./django_airavata/apps/auth/package.json ./django_airavata/apps/auth/yarn.lock ./
+RUN yarn
+COPY ./django_airavata/apps/auth/ .
+RUN yarn run build
+
 # build workspace/django-airavata-workspace-plugin-api javascript
 # This one must come before workspace build
 WORKDIR /code/django_airavata/apps/workspace/django-airavata-workspace-plugin-api
@@ -65,7 +72,7 @@ WORKDIR /code
 COPY requirements.txt requirements-mysql.txt ./
 COPY setup.* ./
 COPY README.md .
-RUN apt-get update && apt-get install -y git gcc zlib1g-dev libjpeg-dev default-libmysqlclient-dev
+RUN apt-get update && apt-get install -y git gcc g++ zlib1g-dev libjpeg-dev default-libmysqlclient-dev
 RUN pip install --upgrade pip setuptools wheel --no-cache
 RUN pip install -r requirements.txt --no-cache
 RUN pip install -r requirements-mysql.txt --no-cache
@@ -78,12 +85,14 @@ COPY ./ .
 # Copy javascript builds from build-stage
 WORKDIR /code/django_airavata/apps/api/static/django_airavata_api
 COPY --from=build-stage /code/django_airavata/apps/api/static/django_airavata_api .
-WORKDIR /code/django_airavata/static/common
-COPY --from=build-stage /code/django_airavata/static/common .
+WORKDIR /code/django_airavata/static/common/dist
+COPY --from=build-stage /code/django_airavata/static/common/dist .
 WORKDIR /code/django_airavata/apps/admin/static/django_airavata_admin
 COPY --from=build-stage /code/django_airavata/apps/admin/static/django_airavata_admin .
 WORKDIR /code/django_airavata/apps/groups/static/django_airavata_groups
 COPY --from=build-stage /code/django_airavata/apps/groups/static/django_airavata_groups .
+WORKDIR /code/django_airavata/apps/auth/static/django_airavata_auth
+COPY --from=build-stage /code/django_airavata/apps/auth/static/django_airavata_auth .
 WORKDIR /code/django_airavata/apps/workspace/static/django_airavata_workspace
 COPY --from=build-stage /code/django_airavata/apps/workspace/static/django_airavata_workspace .
 WORKDIR /code/django_airavata/apps/dataparsers/static/django_airavata_dataparsers

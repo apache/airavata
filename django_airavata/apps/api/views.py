@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import os
+import warnings
 from datetime import datetime, timedelta
 from urllib.parse import quote
 
@@ -27,8 +28,10 @@ from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import user_storage
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse
+from django.views.decorators.gzip import gzip_page
 from rest_framework import mixins, status
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
@@ -287,13 +290,17 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 settings,
                 'GATEWAY_DATA_STORE_REMOTE_API',
                     None) is not None:
+                remote_api_url = settings.GATEWAY_DATA_STORE_REMOTE_API
+                if remote_api_url.endswith("/api"):
+                    warnings.warn(f"Set GATEWAY_DATA_STORE_REMOTE_API to \"{remote_api_url}\". /api is no longer needed.", DeprecationWarning)
+                    remote_api_url = remote_api_url[0:remote_api_url.rfind("/api")]
                 # Proxy the launch/ request to the remote Django portal
                 # instance since it must setup the experiment data directory
                 # which is only on the remote Django portal instance
                 headers = {
                     'Authorization': f'Bearer {request.authz_token.accessToken}'}
                 r = requests.post(
-                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/launch/',
+                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/api/experiments/{quote(experiment_id)}/launch/',
                     headers=headers,
                 )
                 r.raise_for_status()
@@ -1021,40 +1028,14 @@ def tus_upload_finish(request):
         return exceptions.generic_json_exception_response(e, status=400)
 
 
+@gzip_page
 @api_view()
 def download_file(request):
-    # TODO check that user has access to this file using sharing API
+    # TODO: remove this deprecated view
+    warnings.warn("download_file view has moved to SDK", DeprecationWarning)
+    # redirect to /sdk/download
     data_product_uri = request.GET.get('data-product-uri', '')
-    force_download = 'download' in request.GET
-    data_product = None
-    try:
-        data_product = request.airavata_client.getDataProduct(
-            request.authz_token, data_product_uri)
-        mime_type = "application/octet-stream"  # default mime-type
-        if (data_product.productMetadata and
-                'mime-type' in data_product.productMetadata):
-            mime_type = data_product.productMetadata['mime-type']
-        # 'mime-type' url parameter overrides
-        mime_type = request.GET.get('mime-type', mime_type)
-    except Exception as e:
-        log.warning("Failed to load DataProduct for {}"
-                    .format(data_product_uri), exc_info=True)
-        raise Http404("data product does not exist") from e
-    try:
-        data_file = user_storage.open_file(request, data_product)
-        response = FileResponse(data_file, content_type=mime_type)
-        if user_storage.is_input_file(request, data_product):
-            file_name = data_product.productName
-        else:
-            file_name = os.path.basename(data_file.name)
-        if mime_type == 'application/octet-stream' or force_download:
-            response['Content-Disposition'] = ('attachment; filename="{}"'
-                                               .format(file_name))
-        else:
-            response['Content-Disposition'] = f'inline; filename="{file_name}"'
-        return response
-    except ObjectDoesNotExist as e:
-        raise Http404(str(e)) from e
+    return redirect(user_storage.get_download_url(request, data_product_uri=data_product_uri))
 
 
 @api_view(http_method_names=['DELETE'])
@@ -1533,11 +1514,18 @@ class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer
 
     def get(self, request, path="/", format=None):
+        # AIRAVATA-3460 Allow passing path as a query parameter instead
+        path = request.GET.get('path', path)
         return self._create_response(request, path)
 
     def post(self, request, path="/", format=None):
+        path = request.POST.get('path', path)
         if not user_storage.dir_exists(request, path):
-            user_storage.create_user_dir(request, path)
+            _, resource_path = user_storage.create_user_dir(request, path)
+            # create_user_dir may create the directory with a different name
+            # than requested, for example, converting spaces to underscores, so
+            # use as the path the path that is returned by create_user_dir
+            path = resource_path
 
         data_product = None
         # Handle direct upload
@@ -1558,6 +1546,7 @@ class UserStoragePathView(APIView):
 
     # Accept wither to replace file or to replace file content text.
     def put(self, request, path="/", format=None):
+        path = request.POST.get('path', path)
         # Replace the file if the request has a file upload.
         if 'file' in request.FILES:
             self.delete(request=request, path=path, format=format)
@@ -1575,6 +1564,7 @@ class UserStoragePathView(APIView):
         return self._create_response(request=request, path=path)
 
     def delete(self, request, path="/", format=None):
+        path = request.POST.get('path', path)
         if user_storage.dir_exists(request, path):
             user_storage.delete_dir(request, path)
         else:
@@ -1593,6 +1583,7 @@ class UserStoragePathView(APIView):
             if uploaded is not None:
                 data['uploaded'] = uploaded
             data['parts'] = self._split_path(path)
+            data['path'] = path
             serializer = self.serializer_class(
                 data, context={'request': request})
             return Response(serializer.data)
@@ -1612,7 +1603,7 @@ class UserStoragePathView(APIView):
 
     def _split_path(self, path):
         head, tail = os.path.split(path)
-        if head != "":
+        if head != path:
             return self._split_path(head) + [tail]
         elif tail != "":
             return [tail]

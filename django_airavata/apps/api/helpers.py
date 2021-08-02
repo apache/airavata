@@ -63,18 +63,19 @@ class WorkspacePreferencesHelper:
                     most_recent_project.projectID))
             prefs.most_recent_project_id = most_recent_project.projectID
             prefs.save()
+        group_resource_profiles = request.airavata_client.getGroupResourceList(
+            request.authz_token, settings.GATEWAY_ID)
+        group_resource_profile_ids = list(map(lambda g: g.groupResourceProfileId, group_resource_profiles))
         if (not prefs.most_recent_group_resource_profile_id or
-                not self._can_read(
-                    request,
-                    prefs.most_recent_group_resource_profile_id)):
-            first_grp = self._get_first_group_resource_profile(request)
-            if first_grp:
-                logger.warn(f"_check: updating "
-                            f"most_recent_group_resource_profile_id to "
-                            f"{first_grp.groupResourceProfileId}")
-                prefs.most_recent_group_resource_profile_id = \
-                    first_grp.groupResourceProfileId
-                prefs.save()
+                prefs.most_recent_group_resource_profile_id not in group_resource_profile_ids):
+            first_grp_id = (group_resource_profile_ids[0]
+                            if len(group_resource_profile_ids) > 0
+                            else None)
+            logger.warn(f"_check: updating "
+                        f"most_recent_group_resource_profile_id to "
+                        f"{first_grp_id}")
+            prefs.most_recent_group_resource_profile_id = first_grp_id
+            prefs.save()
 
     def _can_write(self, request, entity_id):
         return request.airavata_client.userHasAccess(

@@ -16,3 +16,4 @@ package-lock.json
 # mkdocs
 site/
 .tox/
+yarn-error.log

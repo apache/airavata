@@ -1,10 +1,15 @@
 
-from django.conf.urls import url
+from django.conf.urls import include, url
+from django.urls import path
+from rest_framework import routers
 
 from . import views
 
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet, basename='user')
 app_name = 'django_airavata_auth'
 urlpatterns = [
+    url(r'^', include(router.urls)),
     url(r'^login$', views.start_login, name='login'),
     url(r'^login-password$', views.start_username_password_login,
         name='login_with_password'),
@@ -28,4 +33,7 @@ urlpatterns = [
         views.login_desktop_success, name="login_desktop_success"),
     url(r'^refreshed-token-desktop$', views.refreshed_token_desktop,
         name="refreshed_token_desktop"),
+    url(r'^access-token-redirect$', views.access_token_redirect, name="access_token_redirect"),
+    url(r'^user-profile/', views.user_profile, name="user_profile"),
+    path('settings-local/', views.download_settings_local, name="download_settings_local"),
 ]
