@@ -83,10 +83,13 @@ def user_profile_completeness_check(get_response):
         if not request.user.is_authenticated:
             return get_response(request)
 
+        allowed_paths = [
+            reverse('django_airavata_auth:user_profile'),
+            reverse('django_airavata_auth:logout'),
+        ]
         if (not request.user.user_profile.is_complete and
-            request.path != reverse('django_airavata_auth:user_profile') and
-            request.path != reverse('django_airavata_auth:logout') and
-                request.META['HTTP_ACCEPT'] != 'application/json') and not request.path.startswith("/media/"):
+            request.path not in allowed_paths and
+                'text/html' in request.META['HTTP_ACCEPT']):
             return redirect('django_airavata_auth:user_profile')
         else:
             return get_response(request)
