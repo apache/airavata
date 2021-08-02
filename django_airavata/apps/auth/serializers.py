@@ -56,6 +56,12 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         # save in the user profile service too
         user_profile_client = request.profile_service['user_profile']
+        # Check if user profile exists and create it if not first. User Profile
+        # doesn't get created until the profile is complete, so it may not exist yet.
+        if not user_profile_client.doesUserExist(request.authz_token,
+                                                 request.user.username,
+                                                 settings.GATEWAY_ID):
+            user_profile_client.initializeUserProfile(request.authz_token)
         airavata_user_profile = user_profile_client.getUserProfileById(
             request.authz_token, request.user.username, settings.GATEWAY_ID)
         airavata_user_profile.firstName = instance.first_name
