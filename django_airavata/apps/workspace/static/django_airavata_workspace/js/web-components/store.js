@@ -26,7 +26,7 @@ export async function getApplicationInterfaceForModule(applicationId) {
 
 export async function saveExperiment(experiment) {
   if (experiment.experimentId) {
-    return await services.ExperimentService.update({
+    await services.ExperimentService.update({
       data: experiment,
       lookup: experiment.experimentId,
     });

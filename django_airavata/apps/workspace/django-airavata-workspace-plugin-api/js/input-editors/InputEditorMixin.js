@@ -13,7 +13,7 @@ export default {
     },
     experiment: {
       type: models.Experiment,
-      required: true,
+      required: false,
     },
     id: {
       type: String,
@@ -31,7 +31,7 @@ export default {
     };
   },
   asyncComputed: {
-    validationResults: {      
+    validationResults: {
       get () {
         let results = this.experimentInput.validate(this.data);
         let value = []

@@ -1,12 +1,10 @@
 <template>
-<!-- NOTE: regarding v-if="ready": experimentInput/experiment/id are late bound,
-     don't create component until they is available -->
+  <!-- NOTE: experimentInput is late bound, don't create component until it is available -->
   <string-input-editor
-    v-if="ready"
+    v-if="experimentInput"
     :id="id"
     :value="data"
     :experiment-input="experimentInput"
-    :experiment="experiment"
     :read-only="readOnly"
     @input="onInput"
   />
@@ -17,29 +15,36 @@ import StringInputEditor from "../../components/experiment/input-editors/StringI
 import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
 import AsyncComputed from "vue-async-computed";
+import { utils } from "django-airavata-common-ui";
+import vuestore from "../vuestore";
 Vue.use(BootstrapVue);
 Vue.use(AsyncComputed);
 
 export default {
   props: {
     value: String,
-    experimentInput: Object,
-    experiment: Object,
-    readOnly: Boolean,
-    id: String,
+    // experimentInput: Object,
+    name: String,
   },
   components: {
     StringInputEditor,
   },
+  store: vuestore,
   data() {
     return {
       data: this.value,
     };
   },
   computed: {
-    ready() {
-      return this.experiment && this.experimentInput && this.id;
-    }
+    readOnly() {
+      return this.experimentInput.isReadOnly;
+    },
+    id() {
+      return utils.sanitizeHTMLId(this.experimentInput.name);
+    },
+    experimentInput() {
+      return this.$store.getters.getExperimentInputByName(this.name);
+    },
   },
   methods: {
     onInput(value) {
@@ -52,7 +57,7 @@ export default {
         });
         this.$el.dispatchEvent(inputEvent);
       }
-    }
+    },
   },
 };
 </script>

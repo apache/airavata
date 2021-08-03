@@ -29,16 +29,9 @@
 </template>
 
 <script>
-import {
-  getApplicationModule,
-  getApplicationInterfaceForModule,
-  saveExperiment,
-  getExperiment,
-  launchExperiment,
-} from "./store";
-import { utils } from "django-airavata-common-ui";
-
 import Vue from "vue";
+import vuestore from "./vuestore";
+import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 import urls from "../utils/urls";
 Vue.use(BootstrapVue);
@@ -55,13 +48,18 @@ export default {
       required: false,
     },
   },
+  store: vuestore,
   async created() {},
   async mounted() {
-    this.applicationModule = await getApplicationModule(this.applicationId);
-    this.appInterface = await getApplicationInterfaceForModule(
-      this.applicationId
-    );
-    this.experiment = await this.loadExperiment();
+    if (this.experimentId) {
+      await this.$store.dispatch("loadExperiment", {
+        experimentId: this.experimentId,
+      });
+    } else {
+      await this.$store.dispatch("loadNewExperiment", {
+        applicationId: this.applicationId,
+      });
+    }
     // vue-web-component-wrapper clones native slots and turns them into Vue
     // slots which means they lose any event listeners and they basically aren't
     // in the DOM any more.  As a workaround, programmatically create native
@@ -74,14 +72,13 @@ export default {
           slot.textContent = `${input.name} `;
           const textInput = document.createElement("adpf-string-input-editor");
           textInput.setAttribute("value", input.value);
+          textInput.setAttribute("name", input.name);
           slot.appendChild(textInput);
           this.$refs[input.name][0].append(slot);
-          textInput.experimentInput = input;
-          textInput.experiment = this.experiment;
-          textInput.id = utils.sanitizeHTMLId(input.name);
         }
         // TODO: add support for other input types
       }
+      // this.injectPropsIntoSlottedInputs();
 
       /*
        * Experiment Name native slot
@@ -180,37 +177,36 @@ export default {
       );
     });
   },
-  data() {
-    return {
-      applicationModule: null,
-      appInterface: null,
-      experiment: null,
-    };
+  computed: {
+    ...mapGetters(["experiment"]),
   },
   methods: {
     updateExperimentName(event) {
-      this.experiment.experimentName = event.target.value;
+      this.$store.dispatch("updateExperimentName", {
+        name: event.target.value,
+      });
     },
     updateInputValue(inputName, event) {
       if (event.inputType) {
         // Ignore these fine-grained events about the type of change made
         return;
       }
-      const experimentInput = this.experiment.experimentInputs.find(
-        (i) => i.name === inputName
-      );
       // web component input events have the current value in a detail array,
       // native input events have the current value in target.value
-      const value = Array.isArray(event.detail) ? event.detail[0] : event.target.value;
-      experimentInput.value = value;
+      const value = Array.isArray(event.detail)
+        ? event.detail[0]
+        : event.target.value;
+      this.$store.dispatch("updateExperimentInputValue", { inputName, value });
     },
     updateProjectId(event) {
       const [projectId] = event.detail;
-      this.experiment.projectId = projectId;
+      this.$store.dispatch("updateProjectId", { projectId });
     },
     updateUserConfigurationData(event) {
       const [userConfigurationData] = event.detail;
-      this.experiment.userConfigurationData = userConfigurationData;
+      this.$store.dispatch("updateUserConfigurationData", {
+        userConfigurationData,
+      });
     },
     async onSubmit(event) {
       // console.log(event);
@@ -226,14 +222,14 @@ export default {
         return;
       }
       if (event.submitter.name === "save-experiment-button") {
-        await saveExperiment(this.experiment);
+        await this.$store.dispatch("saveExperiment");
         this.postSave();
         return;
       } else {
         // Default submit button handling is save and launch
-        const experiment = await saveExperiment(this.experiment);
-        await launchExperiment(experiment.experimentId);
-        this.postSaveAndLaunch(experiment);
+        await this.$store.dispatch("saveExperiment");
+        await this.$store.dispatch("launchExperiment");
+        this.postSaveAndLaunch(this.experiment);
         return;
       }
     },
@@ -265,21 +261,6 @@ export default {
         return;
       }
       urls.navigateToViewExperiment(experiment, { launching: true });
-    },
-    async loadExperiment() {
-      if (this.experimentId) {
-        const experiment = await getExperiment(this.experimentId);
-        this.$emit("loaded", experiment);
-        return experiment;
-      } else {
-        const experiment = this.appInterface.createExperiment();
-        experiment.experimentName =
-          this.applicationModule.appModuleName +
-          " on " +
-          new Date().toLocaleString();
-        this.$emit("loaded", experiment);
-        return experiment;
-      }
     },
     createSlot(name, ...children) {
       const slot = document.createElement("slot");
