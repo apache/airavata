@@ -14,12 +14,15 @@ logger = logging.getLogger(__name__)
 
 class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
 
-    def __init__(self, authz_token, resource_id, context=None, resource_token=None, mft_api_endpoint=None, mft_api_secure=False, resource_per_gateway=False, **kwargs):
+    def __init__(self, authz_token, resource_id, context=None, resource_token=None,
+                 mft_api_endpoint=None, mft_api_secure=False, resource_per_gateway=False, 
+                 base_resource_path=None, **kwargs):
         super().__init__(authz_token, resource_id, context=context, **kwargs)
         self.resource_token = resource_token
         self.mft_api_endpoint = mft_api_endpoint
         self.mft_api_secure = mft_api_secure
         self.resource_per_gateway = resource_per_gateway
+        self.base_resource_path = base_resource_path
 
     def exists(self, resource_path):
         with grpc.insecure_channel(self.mft_api_endpoint) as channel:
@@ -185,10 +188,8 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
             child_path = self._get_child_path(resource_path)
             stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
             download_request = MFTApi_pb2.HttpDownloadApiRequest(
-                # sourceResourceId=self.resource_id,
-                # FIXME: just hacking in something to force it to work
-                sourceResourceId="remote-ssh-resource",
-                # sourcePath=child_path,
+                sourceResourceId=self.resource_id,
+                sourceResourceChildPath=child_path,
                 sourceToken=self.resource_token,
                 sourceType="SCP",
                 targetAgent="agent0",
@@ -211,33 +212,41 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
         return file
 
     def _get_child_path(self, resource_path):
-        """Convert possibly relative child path into absolute path."""
-        if not resource_path.startswith("/"):
-            # resource_path is relative, need to construct an absolute path
+        """Convert resource path into child path appropriate for resource."""
+        if not os.path.isabs(resource_path):
             if self.resource_per_gateway:
                 resource_path = os.path.join(self.username, resource_path).rstrip("/")
             # If there is no child path, just return none
             if resource_path == '':
                 return None
-            logger.debug(f"figuring out resourcePath of {self.resource_id} ...")
+            return self._get_abs_child_path(resource_path)
+        else:
+            # resource_path appears to be absolute path
+            return resource_path
+
+    def _get_relative_child_path(self, child_path):
+        base_resource_path = self._get_base_resource_path()
+        return os.path.relpath(child_path, start=base_resource_path)
+
+    def _get_abs_child_path(self, child_path):
+        base_resource_path = self._get_base_resource_path()
+        return os.path.join(base_resource_path, child_path)
+
+    def _get_base_resource_path(self):
+        if self.base_resource_path is None:
             with grpc.insecure_channel(self.mft_api_endpoint) as channel:
                 stub = MFTApi_pb2_grpc.MFTApiServiceStub(channel)
                 request = MFTApi_pb2.FetchResourceMetadataRequest(
-                    # resourceId="remote-ssh-dir-resource",
                     resourceId=self.resource_id,
                     resourceType="SCP",
-                    # resourceToken="local-ssh-cred",
                     resourceToken=self.resource_token,
                     resourceBackend="FILE",
                     resourceCredentialBackend="FILE",
                     targetAgentId="agent0",
                     mftAuthorizationToken=self.auth_token)
                 response = stub.getDirectoryResourceMetadata(request)
-                logger.debug(f"metadata of {self.resource_id} is {response}")
-                return os.path.join(response.resourcePath, resource_path)
-        else:
-            # resource_path appears to be absolute path
-            return resource_path
+                self.base_resource_path = response.resourcePath
+        return self.base_resource_path
 
     @property
     def auth_token(self):
