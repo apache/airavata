@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'P\001',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x43redCommon.proto\x12\x1eorg.apache.airavata.mft.common\"\x1e\n\rUserTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"@\n\tAgentAuth\x12\r\n\x05token\x18\x01 \x01(\t\x12\x0f\n\x07\x61gentId\x18\x02 \x01(\t\x12\x13\n\x0b\x61gentSecret\x18\x03 \x01(\t\"\xcb\x01\n\x0c\x44\x65legateAuth\x12\x0e\n\x06userId\x18\x01 \x01(\t\x12\x10\n\x08\x63lientId\x18\x02 \x01(\t\x12\x14\n\x0c\x63lientSecret\x18\x03 \x01(\t\x12P\n\nproperties\x18\x04 \x03(\x0b\x32<.org.apache.airavata.mft.common.DelegateAuth.PropertiesEntry\x1a\x31\n\x0fPropertiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xea\x01\n\tAuthToken\x12\x46\n\ruserTokenAuth\x18\x01 \x01(\x0b\x32-.org.apache.airavata.mft.common.UserTokenAuthH\x00\x12>\n\tagentAuth\x18\x02 \x01(\x0b\x32).org.apache.airavata.mft.common.AgentAuthH\x00\x12\x44\n\x0c\x64\x65legateAuth\x18\x03 \x01(\x0b\x32,.org.apache.airavata.mft.common.DelegateAuthH\x00\x42\x0f\n\rauthMechanismB\x02P\x01\x62\x06proto3'
+  serialized_pb=b'\n\x10\x43redCommon.proto\x12\x1eorg.apache.airavata.mft.common\"\x1e\n\rUserTokenAuth\x12\r\n\x05token\x18\x01 \x01(\t\"2\n\x0cPasswordAuth\x12\x10\n\x08userName\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"@\n\tAgentAuth\x12\r\n\x05token\x18\x01 \x01(\t\x12\x0f\n\x07\x61gentId\x18\x02 \x01(\t\x12\x13\n\x0b\x61gentSecret\x18\x03 \x01(\t\"\xcb\x01\n\x0c\x44\x65legateAuth\x12\x0e\n\x06userId\x18\x01 \x01(\t\x12\x10\n\x08\x63lientId\x18\x02 \x01(\t\x12\x14\n\x0c\x63lientSecret\x18\x03 \x01(\t\x12P\n\nproperties\x18\x04 \x03(\x0b\x32<.org.apache.airavata.mft.common.DelegateAuth.PropertiesEntry\x1a\x31\n\x0fPropertiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xb0\x02\n\tAuthToken\x12\x46\n\ruserTokenAuth\x18\x01 \x01(\x0b\x32-.org.apache.airavata.mft.common.UserTokenAuthH\x00\x12>\n\tagentAuth\x18\x02 \x01(\x0b\x32).org.apache.airavata.mft.common.AgentAuthH\x00\x12\x44\n\x0c\x64\x65legateAuth\x18\x03 \x01(\x0b\x32,.org.apache.airavata.mft.common.DelegateAuthH\x00\x12\x44\n\x0cpasswordAuth\x18\x04 \x01(\x0b\x32,.org.apache.airavata.mft.common.PasswordAuthH\x00\x42\x0f\n\rauthMechanismB\x02P\x01\x62\x06proto3'
 )
 
 
@@ -54,6 +54,45 @@ _USERTOKENAUTH = _descriptor.Descriptor(
   ],
   serialized_start=52,
   serialized_end=82,
+)
+
+
+_PASSWORDAUTH = _descriptor.Descriptor(
+  name='PasswordAuth',
+  full_name='org.apache.airavata.mft.common.PasswordAuth',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='userName', full_name='org.apache.airavata.mft.common.PasswordAuth.userName', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='password', full_name='org.apache.airavata.mft.common.PasswordAuth.password', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=84,
+  serialized_end=134,
 )
 
 
@@ -98,8 +137,8 @@ _AGENTAUTH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=84,
-  serialized_end=148,
+  serialized_start=136,
+  serialized_end=200,
 )
 
 
@@ -137,8 +176,8 @@ _DELEGATEAUTH_PROPERTIESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=305,
-  serialized_end=354,
+  serialized_start=357,
+  serialized_end=406,
 )
 
 _DELEGATEAUTH = _descriptor.Descriptor(
@@ -189,8 +228,8 @@ _DELEGATEAUTH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=151,
-  serialized_end=354,
+  serialized_start=203,
+  serialized_end=406,
 )
 
 
@@ -223,6 +262,13 @@ _AUTHTOKEN = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='passwordAuth', full_name='org.apache.airavata.mft.common.AuthToken.passwordAuth', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -240,8 +286,8 @@ _AUTHTOKEN = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=357,
-  serialized_end=591,
+  serialized_start=409,
+  serialized_end=713,
 )
 
 _DELEGATEAUTH_PROPERTIESENTRY.containing_type = _DELEGATEAUTH
@@ -249,6 +295,7 @@ _DELEGATEAUTH.fields_by_name['properties'].message_type = _DELEGATEAUTH_PROPERTI
 _AUTHTOKEN.fields_by_name['userTokenAuth'].message_type = _USERTOKENAUTH
 _AUTHTOKEN.fields_by_name['agentAuth'].message_type = _AGENTAUTH
 _AUTHTOKEN.fields_by_name['delegateAuth'].message_type = _DELEGATEAUTH
+_AUTHTOKEN.fields_by_name['passwordAuth'].message_type = _PASSWORDAUTH
 _AUTHTOKEN.oneofs_by_name['authMechanism'].fields.append(
   _AUTHTOKEN.fields_by_name['userTokenAuth'])
 _AUTHTOKEN.fields_by_name['userTokenAuth'].containing_oneof = _AUTHTOKEN.oneofs_by_name['authMechanism']
@@ -258,7 +305,11 @@ _AUTHTOKEN.fields_by_name['agentAuth'].containing_oneof = _AUTHTOKEN.oneofs_by_n
 _AUTHTOKEN.oneofs_by_name['authMechanism'].fields.append(
   _AUTHTOKEN.fields_by_name['delegateAuth'])
 _AUTHTOKEN.fields_by_name['delegateAuth'].containing_oneof = _AUTHTOKEN.oneofs_by_name['authMechanism']
+_AUTHTOKEN.oneofs_by_name['authMechanism'].fields.append(
+  _AUTHTOKEN.fields_by_name['passwordAuth'])
+_AUTHTOKEN.fields_by_name['passwordAuth'].containing_oneof = _AUTHTOKEN.oneofs_by_name['authMechanism']
 DESCRIPTOR.message_types_by_name['UserTokenAuth'] = _USERTOKENAUTH
+DESCRIPTOR.message_types_by_name['PasswordAuth'] = _PASSWORDAUTH
 DESCRIPTOR.message_types_by_name['AgentAuth'] = _AGENTAUTH
 DESCRIPTOR.message_types_by_name['DelegateAuth'] = _DELEGATEAUTH
 DESCRIPTOR.message_types_by_name['AuthToken'] = _AUTHTOKEN
@@ -270,6 +321,13 @@ UserTokenAuth = _reflection.GeneratedProtocolMessageType('UserTokenAuth', (_mess
   # @@protoc_insertion_point(class_scope:org.apache.airavata.mft.common.UserTokenAuth)
   })
 _sym_db.RegisterMessage(UserTokenAuth)
+
+PasswordAuth = _reflection.GeneratedProtocolMessageType('PasswordAuth', (_message.Message,), {
+  'DESCRIPTOR' : _PASSWORDAUTH,
+  '__module__' : 'CredCommon_pb2'
+  # @@protoc_insertion_point(class_scope:org.apache.airavata.mft.common.PasswordAuth)
+  })
+_sym_db.RegisterMessage(PasswordAuth)
 
 AgentAuth = _reflection.GeneratedProtocolMessageType('AgentAuth', (_message.Message,), {
   'DESCRIPTOR' : _AGENTAUTH,
