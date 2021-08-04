@@ -74,6 +74,11 @@ def get_user_storage_provider(request, owner_username=None, storage_resource_id=
     return instance
 
 
+def get_default_storage_resource_id(request):
+    backend = get_user_storage_provider(request)
+    return backend.storage_resource_id
+
+
 def save(request, path, file, name=None, content_type=None, storage_resource_id=None, experiment_id=None):
     """
     Save file in path in the user's storage and return DataProduct. If
