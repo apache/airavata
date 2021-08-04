@@ -202,16 +202,8 @@ def get_download_url(request, data_product=None, data_product_uri=None, force_do
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     if _is_remote_api():
-        resp = _call_remote_api(
-            request,
-            "/data-products/",
-            params={'product-uri': data_product.productUri},
-            raise_for_status=False)
-        if resp.status_code == HTTPStatus.NOT_FOUND:
-            return None
-        resp.raise_for_status()
-        data = resp.json()
-        return data['downloadURL']
+        # Build a local /sdk/download-file URL that will stream the file from the remote server
+        return _build_download_url(request, data_product, force_download=force_download, mime_type=mime_type)
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
     backend = get_user_storage_provider(request,
                                         owner_username=data_product.ownerName,
@@ -221,28 +213,21 @@ def get_download_url(request, data_product=None, data_product_uri=None, force_do
     else:
         # if backend doesn't provide a download url, then use default one
         # that uses backend to read the file
-        params = {"data-product-uri": data_product.productUri}
-        if force_download:
-            params['download'] = ''
-        if mime_type is not None:
-            params['mime-type'] = mime_type
-        return request.build_absolute_uri(f"{reverse('airavata_django_portal_sdk:download_file')}?{urlencode(params)}")
+        return _build_download_url(request, data_product, force_download=force_download, mime_type=mime_type)
+
+
+def _build_download_url(request, data_product, force_download=False, mime_type=None):
+    params = {"data-product-uri": data_product.productUri}
+    if force_download:
+        params['download'] = ''
+    if mime_type is not None:
+        params['mime-type'] = mime_type
+    return request.build_absolute_uri(f"{reverse('airavata_django_portal_sdk:download_file')}?{urlencode(params)}")
 
 
 def get_lazy_download_url(request, data_product=None, data_product_uri=None):
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        resp = _call_remote_api(
-            request,
-            "/data-products/",
-            params={'product-uri': data_product.productUri},
-            raise_for_status=False)
-        if resp.status_code == HTTPStatus.NOT_FOUND:
-            return None
-        resp.raise_for_status()
-        data = resp.json()
-        return data['downloadURL']
     # /download will call get_download_url and redirect to it
     return request.build_absolute_uri(reverse("airavata_django_portal_sdk:download") + "?" +
                                       urlencode({"data-product-uri": data_product.productUri}))
