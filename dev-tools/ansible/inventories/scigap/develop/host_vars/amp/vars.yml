@@ -47,6 +47,8 @@ gateway_id: "amp"
 experiment_data_dir: "{{ user_data_dir }}/django-amp"
 # gateway_data_store_ssh_public_key: "TODO"
 
+django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu')]"
+
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
 portal_email_tls: true
