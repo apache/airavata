@@ -1,4 +1,3 @@
-import io
 import logging
 import os
 from datetime import datetime
@@ -15,7 +14,7 @@ logger = logging.getLogger(__name__)
 class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
 
     def __init__(self, authz_token, resource_id, context=None, resource_token=None,
-                 mft_api_endpoint=None, mft_api_secure=False, resource_per_gateway=False, 
+                 mft_api_endpoint=None, mft_api_secure=False, resource_per_gateway=False,
                  base_resource_path=None, **kwargs):
         super().__init__(authz_token, resource_id, context=context, **kwargs)
         self.resource_token = resource_token
