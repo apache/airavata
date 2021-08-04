@@ -11,14 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class DjangoFileSystemProvider(UserStorageProvider):
-    def __init__(self, authz_token, resource_id, context=None, directory=None, storage_resource_id=None, **kwargs):
+    def __init__(self, authz_token, resource_id, context=None, directory=None, **kwargs):
         super().__init__(authz_token, resource_id, context=context, **kwargs)
         self.directory = directory
-        self.storage_resource_id = resource_id
 
     def save(self, path, file, name=None, content_type=None):
         full_path = self.datastore.save(path, file, name=name)
-        return self.storage_resource_id, full_path
+        return self.resource_id, full_path
 
     def open(self, resource_path):
         return self.datastore.open(resource_path)
@@ -107,7 +106,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
         # Special case: handle creating user's home directory
         if resource_path == '' and not datastore.exists(''):
             datastore.create_user_dir('')
-            return self.storage_resource_id, datastore.path(resource_path)
+            return self.resource_id, datastore.path(resource_path)
         if not datastore.exists(resource_path):
             raise ObjectDoesNotExist(f"User resource_path does not exist {resource_path}")
         valid_dir_names = []
@@ -119,7 +118,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
         # Make sure path is unique if it already exists
         final_path = datastore.get_available_name(final_path)
         datastore.create_user_dir(final_path)
-        return self.storage_resource_id, datastore.path(final_path)
+        return self.resource_id, datastore.path(final_path)
 
     def create_symlink(self, source_path, dest_path):
         datastore = self.datastore
