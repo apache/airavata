@@ -205,11 +205,14 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
 
     def open(self, resource_path):
         download_url = self.get_download_url(resource_path)
-        r = requests.get(download_url)
+        r = requests.get(download_url, stream=True)
         r.raise_for_status()
-        file = io.BytesIO(r.content)
-        file.name = os.path.basename(resource_path)
-        return file
+        # raw stream doesn't automatically decode the response body based on the
+        # transfer encoding, but setting decode_content to True causes it to do
+        # the decoding.
+        r.raw.decode_content = True
+        r.raw.name = os.path.basename(resource_path)
+        return r.raw
 
     def _get_child_path(self, resource_path):
         """Convert resource path into child path appropriate for resource."""

@@ -843,10 +843,10 @@ def _determine_content_type(full_path, content_type=None, backend=None):
         # Check if file is Unicode text by trying to read some of it
         try:
             if backend is not None:
-                file = backend.open(full_path)
-                # Try to decode the first kb as UTF8
-                file.read(1024).decode('utf-8')
-                result = "text/plain"
+                with backend.open(full_path) as file:
+                    # Try to decode the first kb as UTF8
+                    file.read(1024).decode('utf-8')
+                    result = "text/plain"
         except UnicodeDecodeError:
             logger.debug(f"Failed to read as Unicode text: {full_path}")
     return result
