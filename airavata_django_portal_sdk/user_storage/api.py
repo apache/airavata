@@ -196,6 +196,17 @@ def get_download_url(request, data_product=None, data_product_uri=None, force_do
     "Return URL for downloading data product. One of `data_product` or `data_product_uri` is required."
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
+    if _is_remote_api():
+        resp = _call_remote_api(
+            request,
+            "/data-products/",
+            params={'product-uri': data_product.productUri},
+            raise_for_status=False)
+        if resp.status_code == HTTPStatus.NOT_FOUND:
+            return None
+        resp.raise_for_status()
+        data = resp.json()
+        return data['downloadURL']
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
     backend = get_user_storage_provider(request,
                                         owner_username=data_product.ownerName,
@@ -210,15 +221,26 @@ def get_download_url(request, data_product=None, data_product_uri=None, force_do
             params['download'] = ''
         if mime_type is not None:
             params['mime-type'] = mime_type
-        return f"{reverse('airavata_django_portal_sdk:download_file')}?{urlencode(params)}"
+        return request.build_absolute_uri(f"{reverse('airavata_django_portal_sdk:download_file')}?{urlencode(params)}")
 
 
 def get_lazy_download_url(request, data_product=None, data_product_uri=None):
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
+    if _is_remote_api():
+        resp = _call_remote_api(
+            request,
+            "/data-products/",
+            params={'product-uri': data_product.productUri},
+            raise_for_status=False)
+        if resp.status_code == HTTPStatus.NOT_FOUND:
+            return None
+        resp.raise_for_status()
+        data = resp.json()
+        return data['downloadURL']
     # /download will call get_download_url and redirect to it
-    return (reverse("airavata_django_portal_sdk:download") + "?" +
-            urlencode({"data-product-uri": data_product.productUri}))
+    return request.build_absolute_uri(reverse("airavata_django_portal_sdk:download") + "?" +
+                                      urlencode({"data-product-uri": data_product.productUri}))
 
 
 def open_file(request, data_product=None, data_product_uri=None):
@@ -233,9 +255,7 @@ def open_file(request, data_product=None, data_product_uri=None):
             request,
             "/download",
             params={'data-product-uri': data_product.productUri},
-            # TODO: once /sdk/download is integrated with airavata-django-portal, this can be updated to
-            # base_url="/sdk"
-            base_url="/api")
+            base_url="/sdk")
         file = io.BytesIO(resp.content)
         disposition = resp.headers['Content-Disposition']
         disp_value, disp_params = cgi.parse_header(disposition)
