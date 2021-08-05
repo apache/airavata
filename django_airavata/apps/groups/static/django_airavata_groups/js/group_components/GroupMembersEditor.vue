@@ -186,6 +186,7 @@
 <script>
 import { models, services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
+import { VueDraggableDirective, draggable } from 'vue-draggable'
 import GroupMembersDetailsContainer from "./GroupMembersDetailsContainer.vue";
 
 export default {
