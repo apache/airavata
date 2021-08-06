@@ -38,13 +38,13 @@ auth_options:
   password:
     name: "UNG Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "gateway-ung"
 experiment_data_dir: "{{ user_data_dir }}/gateway-ung"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPuGmLPwwXu15TCdLwsE9dFoWJu1kzQzdLukslMKjVCf05Fe+MyCP7EG5n1psGigSORGm0bo/9t9fPQGyPRUR2jIBI5lR2bE5JJ8XNotf+Gdv45FXhXHTIPSeb1bAymEQVghALxqeYOWnnP+6aL61Zy6nAokMJdkdRXFRxr0paYLbH3oaCAVdp2ggMXP+KMvkKHjMSa9aZFK/V/YrIRONKDrdK+DV7D0xk4XGplRAsw8UpS8GJipfq8uTM23Tr/UMCYUCbW8qqf0HYFohY+51lT/1JjYb+cBWjy1iuNGVQVnQsuNSOoDnW1C07V6VFzwKZJOv+rYhw6iL5rcq3fzDD"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbGE2Zb7zHfOx1IwaUQkAsRNr3Y6ieqQ2jnvbvs4XBM0ARw3ME0feMIcJKB3NFjIEQqS67w1mV0tpoCmRVtSK7IVujbCCvyRFUOLh+BOgqF7Xm887FPidOm0qpSh3s46Wbd758uXurqojedC2xJp62e4aSgzdijyX2gBI1giQHaKSE2WW6L5wGkhIQoxSvaL1hSnL7adH6e2RqB1+ePbO6OGr6pRbNIQqCgYZGvNAJBoiP9K1CwQTcGkj0b2Ptr2kD2JWQqivdPM5YVR4PxH2vtovL0HLjHvXmljWdns/b4PQGDyfpUMgKAthlAlq5zGOJZqfIGdBxLnC8AaoZNGiF"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Luis Parra','Luis.CuevaParra@ung.edu'),('Smit Patel','snpate8729@ung.edu')]"
 portal_title: "UNG Gateway"
