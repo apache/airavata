@@ -1,7 +1,9 @@
 import { components, entry } from "django-airavata-common-ui";
 import GroupEditContainer from "./containers/GroupEditContainer.vue";
+import VueDraggable from 'vue-draggable';
 
 entry((Vue) => {
+  Vue.use(VueDraggable);
   new Vue({
     render(h) {
       return h(components.MainLayout, [
