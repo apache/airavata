@@ -25,13 +25,9 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentSummaryEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
-import org.apache.airavata.registry.core.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
-import org.apache.airavata.registry.cpi.utils.Constants;
-import org.apache.derby.vti.Restriction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +43,14 @@ import javax.persistence.Query;
 
 public class ExperimentSummaryRepository extends ExpCatAbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
+    private final static int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
 
     public ExperimentSummaryRepository() { super(ExperimentSummaryModel.class, ExperimentSummaryEntity.class); }
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleExperimentIds, Map<String, String> filters, int limit,
                                                                        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException, IllegalArgumentException {
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+        String whereClause = "";
         Map<String, Object> queryParameters = new HashMap<>();
 
         if (filters == null || !filters.containsKey(DBConstants.Experiment.GATEWAY_ID)) {
@@ -68,50 +66,50 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                     + " JOIN J.task T"
                     + " JOIN T.process P"
                     + " WHERE J.jobId = : " + DBConstants.Job.JOB_ID;
-            query += "ES.experimentId IN  ( "+ query_jobId + " ) AND ";
+            whereClause += "ES.experimentId IN  ( " + query_jobId + " ) AND ";
         }
 
         if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
             logger.debug("Filter Experiments by User");
             queryParameters.put(DBConstants.Experiment.USER_NAME, filters.get(DBConstants.Experiment.USER_NAME));
-            query += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
+            whereClause += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
         }
 
         if (filters.get(DBConstants.Experiment.GATEWAY_ID) != null) {
             logger.debug("Filter Experiments by Gateway ID");
             queryParameters.put(DBConstants.Experiment.GATEWAY_ID, filters.get(DBConstants.Experiment.GATEWAY_ID));
-            query += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
+            whereClause += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
         }
 
         if (filters.get(DBConstants.Experiment.PROJECT_ID) != null) {
             logger.debug("Filter Experiments by Project ID");
             queryParameters.put(DBConstants.Experiment.PROJECT_ID, filters.get(DBConstants.Experiment.PROJECT_ID));
-            query += "ES.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID + " AND ";
+            whereClause += "ES.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID + " AND ";
         }
 
         if (filters.get(DBConstants.Experiment.EXPERIMENT_NAME) != null) {
             logger.debug("Filter Experiments by Name");
             queryParameters.put(DBConstants.Experiment.EXPERIMENT_NAME, filters.get(DBConstants.Experiment.EXPERIMENT_NAME));
-            query += "ES.name LIKE :" + DBConstants.Experiment.EXPERIMENT_NAME + " AND ";
+            whereClause += "ES.name LIKE :" + DBConstants.Experiment.EXPERIMENT_NAME + " AND ";
         }
 
         if (filters.get(DBConstants.Experiment.DESCRIPTION) != null) {
             logger.debug("Filter Experiments by Description");
             queryParameters.put(DBConstants.Experiment.DESCRIPTION, filters.get(DBConstants.Experiment.DESCRIPTION));
-            query += "ES.description LIKE :" + DBConstants.Experiment.DESCRIPTION + " AND ";
+            whereClause += "ES.description LIKE :" + DBConstants.Experiment.DESCRIPTION + " AND ";
         }
 
         if (filters.get(DBConstants.Experiment.EXECUTION_ID) != null) {
             logger.debug("Filter Experiments by Execution ID");
             queryParameters.put(DBConstants.Experiment.EXECUTION_ID, filters.get(DBConstants.Experiment.EXECUTION_ID));
-            query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
+            whereClause += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
         }
 
         if (filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS) != null) {
             logger.debug("Filter Experiments by State");
             String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS)).toString();
             queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, state);
-            query += "ES.experimentStatus LIKE :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
+            whereClause += "ES.experimentStatus LIKE :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
         }
 
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
@@ -124,7 +122,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                 logger.debug("Filter Experiments by CreationTime");
                 queryParameters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
                 queryParameters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
-                query += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :" + DBConstants.ExperimentSummary.TO_DATE + " AND ";
+                whereClause += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :"
+                        + DBConstants.ExperimentSummary.TO_DATE + " AND ";
             }
 
         }
@@ -132,13 +131,13 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
             logger.debug("Filter Experiments by Username");
             queryParameters.put(DBConstants.Experiment.USER_NAME, filters.get(DBConstants.Experiment.USER_NAME));
-            query += "ES.userName = :" + DBConstants.Experiment.USER_NAME + " AND ";
+            whereClause += "ES.userName = :" + DBConstants.Experiment.USER_NAME + " AND ";
         }
 
         if (!accessibleExperimentIds.isEmpty()) {
             logger.debug("Filter Experiments by Accessible Experiment IDs");
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIds);
-            query += " ES.experimentId IN :" + DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS;
+            whereClause += " ES.experimentId IN :" + DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS;
         }
 
         else {
@@ -146,13 +145,80 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             return new ArrayList<ExperimentSummaryModel>();
         }
 
+        int queryLimit = limit;
+        int queryOffset = offset;
+        int accessibleExperimentIdsBatchNum = 0;
+
+        // Figure out the initial batch of accessible experiment ids and the
+        // offset into it by counting the matching experiments in each batch
+        if (queryOffset > 0) {
+            String countQuery = "SELECT COUNT(ES) FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+            countQuery += whereClause;
+            BatchOffset batchOffset = findInitialAccessibleExperimentsBatchOffset(countQuery, queryOffset, queryParameters, accessibleExperimentIds);
+            queryOffset = batchOffset.offset;
+            accessibleExperimentIdsBatchNum = batchOffset.batchNum;
+        }
+
+        query += whereClause;
         if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(DBConstants.Experiment.CREATION_TIME)) {
             String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
             query += " ORDER BY ES." + DBConstants.Experiment.CREATION_TIME + " " + order;
         }
 
-        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, limit, offset, queryParameters);
-        return experimentSummaryModelList;
+        List<ExperimentSummaryModel> allExperimentSummaryModels = new ArrayList<>();
+
+        // Break up the query in batches over accessibleExperimentIds
+        // NOTE: this assumes that the accessibleExperimentIds are sorted in the
+        // same order as the expected experiment summary results
+        double totalBatches = Math.ceil(
+                Integer.valueOf(accessibleExperimentIds.size()).floatValue() / ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE);
+        for (int batchNum = accessibleExperimentIdsBatchNum; batchNum < totalBatches; batchNum++) {
+            List<String> accessibleExperimentIdsBatch = accessibleExperimentIds.subList(
+                    batchNum * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE,
+                    Math.min(accessibleExperimentIds.size(), (batchNum + 1) * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE));
+            queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIdsBatch);
+            List<ExperimentSummaryModel> experimentSummaryModelList = select(query, queryLimit, queryOffset, queryParameters);
+            allExperimentSummaryModels.addAll(experimentSummaryModelList);
+            if (allExperimentSummaryModels.size() == limit) {
+                return allExperimentSummaryModels;
+            } else if (limit > 0 && allExperimentSummaryModels.size() < limit) {
+                queryLimit -= experimentSummaryModelList.size();
+                // In the next and subsequent batches, start from offset 0
+                queryOffset = 0;
+            }
+        }
+        return allExperimentSummaryModels;
+    }
+
+    class BatchOffset {
+        final int batchNum;
+        final int offset;
+
+        BatchOffset(int batchNum, int offset) {
+            this.batchNum = batchNum;
+            this.offset = offset;
+        }
+    }
+
+    private BatchOffset findInitialAccessibleExperimentsBatchOffset(String query, int queryOffset,
+            Map<String, Object> queryParameters, List<String> accessibleExperimentIds) {
+        
+        int accumulator = 0;
+
+        double totalBatches = Math.ceil(
+                Integer.valueOf(accessibleExperimentIds.size()).floatValue() / ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE);
+        for (int batchNum = 0; batchNum < totalBatches; batchNum++) {
+            List<String> accessibleExperimentIdsBatch = accessibleExperimentIds.subList(
+                    batchNum * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE,
+                    Math.min(accessibleExperimentIds.size(), (batchNum + 1) * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE));
+            queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIdsBatch);
+            int count = scalarInt(query, queryParameters);
+            if (accumulator + count > queryOffset ) {
+                return new BatchOffset(batchNum, queryOffset - accumulator);
+            }
+            accumulator += count;
+        }
+        return new BatchOffset(0, 0);
     }
 
     public ExperimentStatistics getAccessibleExperimentStatistics(List<String> accessibleExperimentIds, Map<String,String> filters, int limit, int offset) throws RegistryException {

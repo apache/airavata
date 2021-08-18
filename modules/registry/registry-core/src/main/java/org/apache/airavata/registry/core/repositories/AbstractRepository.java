@@ -113,6 +113,21 @@ public abstract class AbstractRepository<T, E, Id> {
         return get(id) != null;
     }
 
+    public int scalarInt(String query, Map<String, Object> queryParams) {
+
+        int scalarInt = execute(entityManager -> {
+            Query jpaQuery = entityManager.createQuery(query);
+
+            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            return ((Number)jpaQuery.getSingleResult()).intValue();
+        });
+        return scalarInt;
+    }
+
     public <R> R execute(Committer<EntityManager, R> committer){
         EntityManager entityManager = null;
         try {
