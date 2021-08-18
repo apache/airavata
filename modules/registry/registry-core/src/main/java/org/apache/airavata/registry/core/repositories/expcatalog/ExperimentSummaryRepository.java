@@ -215,10 +215,15 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             int count = scalarInt(query, queryParameters);
             if (accumulator + count > queryOffset ) {
                 return new BatchOffset(batchNum, queryOffset - accumulator);
+            } else if (accumulator + count == queryOffset) {
+                // The initial batch is the next batch since this batch ends at the queryOffset
+                return new BatchOffset(batchNum + 1, 0);
             }
             accumulator += count;
         }
-        return new BatchOffset(0, 0);
+        // We didn't find a batch with the offset in it, so just return a batch
+        // num past the last one
+        return new BatchOffset(Double.valueOf(totalBatches).intValue(), 0);
     }
 
     public ExperimentStatistics getAccessibleExperimentStatistics(List<String> accessibleExperimentIds, Map<String,String> filters, int limit, int offset) throws RegistryException {
