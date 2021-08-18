@@ -104,7 +104,7 @@ def _add_directory_to_zipfile(request, zf, path, directory=""):
         if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
             raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
     for d in directories:
-        _add_directory_to_zipfile(request, zf, path, d['name'])
+        _add_directory_to_zipfile(request, zf, path, os.path.join(directory, d['name']))
 
 
 def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory=""):
@@ -115,4 +115,4 @@ def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, direc
         if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
             raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
     for d in directories:
-        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, d['name'])
+        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, os.path.join(directory, d['name']))
