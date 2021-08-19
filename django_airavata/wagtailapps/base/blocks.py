@@ -13,6 +13,8 @@ from wagtail.core.blocks import (
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
+from wagtailmarkdownblock.blocks import MarkdownBlock
+from wagtailcodeblock.blocks import CodeBlock
 
 
 class ImageBlock(StructBlock):
@@ -254,7 +256,46 @@ class BootstrapButton(StructBlock):
         template = "blocks/bootstrap/button.html"
         help_text = "Create a bootstrap button"
 
+class BootstrapButtonMore(StructBlock):
+    """
+    Custom 'StructBlock' that allows the user to make a bootstrap button
+    """
+    button_text = TextBlock()
+    button_link = TextBlock()
+    button_color = ChoiceBlock(choices=[
+        ('btn-primary', 'DEFAULT'),
+        ('btn-danger', 'RED'),
+        ('btn-secondary', 'GREY'),
+        ('btn-success', 'GREEN'),
+        ('btn-warning', 'ORANGE')
+    ], blank=True, required=False, help_text="select a button color")
+    button_size = ChoiceBlock(choices=[
+        ('', 'DEFAULT'),
+        ('btn-lg', 'LARGE'),
+        ('btn-sm', 'SMALL')
+    ], blank=True, required=False, help_text="select a button size")
+    custom_class = TextBlock(
+        required=False,
+        blank=True,
+        help_text="control the look of this button by giving unique class names "
+                  "separated by space and styling the class in css")
+    custom_class1 = TextBlock(
+        required=False,
+        blank=True,
+        help_text="control the look of this body by giving unique class names "
+                  "separated by space and styling the class in css")   
+    custom_class2 = TextBlock(
+        required=False,
+        blank=True,
+        help_text="control the look of this body by giving unique style names "
+                  "separated by space and styling the class in css")            
+    body = blocks.RichTextBlock(features=['h1','h2','h3','h4','h5','h6','code','blockquote','bold','italic','ol','ul','hr','link','document-link','image','embed'])
+    class Meta:
+        icon = "fa-bold"
+        template = "blocks/bootstrap/buttonmore.html"
+        help_text = "Create a bootstrap button"        
 
+        
 class BootstrapAlert(StructBlock):
     """
     Custom 'StructBlock' that allows the user to make a bootstrap alert
@@ -480,6 +521,9 @@ class BaseStreamBlock(StreamBlock):
     font_awesome_icon_block = FontAwesomeIcon()
     iu_footer_block = IuFooter()
     bootstrap_embed_video = BootstrapEmbedVideo()
+    buttonmore_block = BootstrapButtonMore()
+    HTML_code = RawHTMLBlock()
+    code_to_copy = CodeBlock()
 
 
 class CssStreamBlock(StreamBlock):
