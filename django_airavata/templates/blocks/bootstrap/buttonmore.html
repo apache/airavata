@@ -1,0 +1,4 @@
+<a class="btn {{self.button_color}} {{self.button_size}} {{self.custom_class}}" data-toggle="collapse" href="#{{ self.button_link }}">{{self.button_text}}</a>
+<div id="{% if self.button_link %}{{ self.button_link }}{% endif %}" class="collapse {% if self.custom_class1 %}{{self.custom_class1}}{% endif %}" style="{% if self.custom_class2 %}{{self.custom_class2}}{% endif %}">
+    {{ self.body }} 
+</div>
