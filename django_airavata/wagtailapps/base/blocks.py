@@ -258,10 +258,11 @@ class BootstrapButton(StructBlock):
 
 class BootstrapButtonMore(StructBlock):
     """
-    Custom 'StructBlock' that allows the user to make a bootstrap button
+    Custom 'StructBlock' that allows the user to make a bootstrap button that
+    toggles collapsible rich text block
     """
     button_text = TextBlock()
-    button_link = TextBlock()
+    button_id = TextBlock(help_text="Unique name for this collapsible")
     button_color = ChoiceBlock(choices=[
         ('btn-primary', 'DEFAULT'),
         ('btn-danger', 'RED'),
@@ -274,27 +275,26 @@ class BootstrapButtonMore(StructBlock):
         ('btn-lg', 'LARGE'),
         ('btn-sm', 'SMALL')
     ], blank=True, required=False, help_text="select a button size")
-    custom_class = TextBlock(
+    button_class = TextBlock(
         required=False,
         blank=True,
         help_text="control the look of this button by giving unique class names "
                   "separated by space and styling the class in css")
-    custom_class1 = TextBlock(
+    body_class = TextBlock(
         required=False,
         blank=True,
         help_text="control the look of this body by giving unique class names "
                   "separated by space and styling the class in css")
-    custom_class2 = TextBlock(
+    body_inline_style = TextBlock(
         required=False,
         blank=True,
-        help_text="control the look of this body by giving unique style names "
-                  "separated by space and styling the class in css")
+        help_text="apply inline CSS styles to body")
     body = RichTextBlock()
 
     class Meta:
-        icon = "fa-bold"
+        icon = "collapse-up"
         template = "blocks/bootstrap/buttonmore.html"
-        help_text = "Create a bootstrap button"
+        help_text = "Create a button that will toggle the display of a rich text body of text"
 
 
 class BootstrapAlert(StructBlock):
@@ -522,7 +522,7 @@ class BaseStreamBlock(StreamBlock):
     font_awesome_icon_block = FontAwesomeIcon()
     iu_footer_block = IuFooter()
     bootstrap_embed_video = BootstrapEmbedVideo()
-    buttonmore_block = BootstrapButtonMore()
+    expandable_rich_text_block = BootstrapButtonMore()
     HTML_code = RawHTMLBlock()
     # Using 'snippet' icon for uniqueness (RawHTMLBlock already uses 'code' icon)
     code_snippet = CodeBlock(icon="snippet")

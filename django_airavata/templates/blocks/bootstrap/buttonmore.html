@@ -1,4 +1,7 @@
-<a class="btn {{self.button_color}} {{self.button_size}} {{self.custom_class}}" data-toggle="collapse" href="#{{ self.button_link }}">{{self.button_text}}</a>
-<div id="{% if self.button_link %}{{ self.button_link }}{% endif %}" class="collapse {% if self.custom_class1 %}{{self.custom_class1}}{% endif %}" style="{% if self.custom_class2 %}{{self.custom_class2}}{% endif %}">
-    {{ self.body }} 
+
+<a class="btn {{self.button_color}} {{self.button_size}} {{self.button_class}}" data-toggle="collapse" href="#{{ self.button_id | slugify }}">{{self.button_text}}</a>
+<div id="{{ self.button_id | slugify }}"
+     class="collapse {% if self.body_class %}{{self.body_class}}{% endif %}"
+     {% if self.body_inline_style %}style="{{self.body_inline_style}}"{% endif %}>
+    {{ self.body }}
 </div>
