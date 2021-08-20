@@ -524,7 +524,8 @@ class BaseStreamBlock(StreamBlock):
     bootstrap_embed_video = BootstrapEmbedVideo()
     buttonmore_block = BootstrapButtonMore()
     HTML_code = RawHTMLBlock()
-    code_to_copy = CodeBlock()
+    # Using 'snippet' icon for uniqueness (RawHTMLBlock already uses 'code' icon)
+    code_snippet = CodeBlock(icon="snippet")
 
 
 class CssStreamBlock(StreamBlock):
