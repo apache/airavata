@@ -2,6 +2,7 @@ import logging
 
 from django.shortcuts import redirect
 from wagtail.core import hooks
+from wagtail.admin.rich_text.converters.html_to_contentstate import BlockElementHandler
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,22 @@ def register_custom_style_feature(features):
     features.default_features.append('code')
     features.default_features.append('blockquote')
     # logger.debug(f"default_features={features.default_features}")
+
+    # Add classes to style the rendered blockquote element
+    features.register_converter_rule('contentstate', 'blockquote', {
+        'from_database_format': {'blockquote[class]': BlockElementHandler('blockquote')},
+        'to_database_format': {
+            'block_map': {
+                'blockquote': {
+                    'element': 'blockquote',
+                    'props': {
+                        # Bootstrap styling: 'blockquote' base style plus margin-left
+                        'class': 'blockquote ml-3',
+                    },
+                },
+            },
+        },
+    })
 
 
 DIRECT_SERVE_FILE_EXTENSIONS = ["pdf"]
