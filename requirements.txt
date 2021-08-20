@@ -10,6 +10,7 @@ django-webpack-loader==0.6.0
 wagtail==2.11.7
 wagtailfontawesome==1.2.1
 wagtail-draftail-anchors==0.2.0
+wagtailcodeblock==1.17.1.0
 
 jupyter==1.0.0
 papermill==1.0.1

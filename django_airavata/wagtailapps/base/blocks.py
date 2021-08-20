@@ -13,7 +13,6 @@ from wagtail.core.blocks import (
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
-from wagtailmarkdownblock.blocks import MarkdownBlock
 from wagtailcodeblock.blocks import CodeBlock
 
 
@@ -256,6 +255,7 @@ class BootstrapButton(StructBlock):
         template = "blocks/bootstrap/button.html"
         help_text = "Create a bootstrap button"
 
+
 class BootstrapButtonMore(StructBlock):
     """
     Custom 'StructBlock' that allows the user to make a bootstrap button
@@ -283,19 +283,20 @@ class BootstrapButtonMore(StructBlock):
         required=False,
         blank=True,
         help_text="control the look of this body by giving unique class names "
-                  "separated by space and styling the class in css")   
+                  "separated by space and styling the class in css")
     custom_class2 = TextBlock(
         required=False,
         blank=True,
         help_text="control the look of this body by giving unique style names "
-                  "separated by space and styling the class in css")            
-    body = blocks.RichTextBlock(features=['h1','h2','h3','h4','h5','h6','code','blockquote','bold','italic','ol','ul','hr','link','document-link','image','embed'])
+                  "separated by space and styling the class in css")
+    body = RichTextBlock()
+
     class Meta:
         icon = "fa-bold"
         template = "blocks/bootstrap/buttonmore.html"
-        help_text = "Create a bootstrap button"        
+        help_text = "Create a bootstrap button"
 
-        
+
 class BootstrapAlert(StructBlock):
     """
     Custom 'StructBlock' that allows the user to make a bootstrap alert

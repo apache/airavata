@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'taggit',
     'wagtailfontawesome',
     'wagtail_draftail_anchors',
+    'wagtailcodeblock',
 
     # wagtail custom apps
     'django_airavata.wagtailapps.base.apps.BaseConfig',
@@ -422,8 +423,8 @@ LOGGING = {
     },
 }
 
-#wagtailcodeblock theme and languages
-WAGTAIL_CODE_BLOCK_THEME=None
+# wagtailcodeblock theme and languages
+WAGTAIL_CODE_BLOCK_THEME = None
 WAGTAIL_CODE_BLOCK_LANGUAGES = (
     ('abap', 'ABAP'),
     ('abnf', 'Augmented Backus–Naur form'),
@@ -620,6 +621,7 @@ WAGTAIL_CODE_BLOCK_LANGUAGES = (
     ('yaml', 'YAML'),
     ('zig', 'Zig'),
 )
+
 
 def merge_setting(default, custom_setting):
     # FIXME: only handles dict settings, doesn't handle lists
