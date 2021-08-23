@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name="airavata-django-portal-sdk",
-    version="1.2.0",
+    version="1.2.1",
     url="https://github.com/apache/airavata-django-portal-sdk",
     author="Apache Software Foundation",
     author_email="dev@airavata.apache.org",
