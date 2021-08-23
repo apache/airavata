@@ -272,7 +272,7 @@ django_airavata/apps/myapp):
       "autoprefixer": {}
     }
   },
-  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
+  "browserslist": ["> 1%", "last 2 versions", "not dead"]
 }
 ```
 

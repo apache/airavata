@@ -50,7 +50,7 @@ class KeycloakBackend(object):
                 user = self._process_userinfo(request, userinfo)
                 access_token = token
             # user is already logged in and can use refresh token
-            elif request.user and not utils.is_refresh_token_expired(request):
+            elif request.user.is_authenticated and not utils.is_refresh_token_expired(request):
                 logger.debug("Refreshing token...")
                 token, userinfo = \
                     self._get_token_and_userinfo_from_refresh_token(request)
@@ -173,7 +173,9 @@ class KeycloakBackend(object):
             userinfo = oauth2_session.get(userinfo_url).json()
             return token, userinfo
         except InvalidGrantError as e:
-            logger.warning(f"Failed to refresh token {refresh_token_}: {e}")
+            # probably session was terminated by admin or by user logging out in another client
+            logger.warning(f"Failed to refresh token for user {request.user.username} "
+                           f": {e}")
             return None, None
 
     def _get_userinfo_from_token(self, request, token):

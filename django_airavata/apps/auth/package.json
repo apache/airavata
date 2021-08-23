@@ -13,6 +13,7 @@
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-vue": "2.0.0-rc.26",
+    "browserslist": "^4.16.7",
     "django-airavata-api": "link:../api/",
     "django-airavata-common-ui": "link:../../static/common/",
     "vue": "^2.5.21",
@@ -50,6 +51,6 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not dead"
   ]
 }

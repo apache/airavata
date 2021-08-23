@@ -4,7 +4,7 @@
       v-if="userStoragePath"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
-      @upload-success="uploadSuccess"
+      @upload-finished="uploadFinished"
       @add-directory="addDirectory"
       @delete-dir="deleteDir"
       @delete-file="deleteFile"
@@ -16,20 +16,20 @@
 </template>
 
 <script>
-import {services, utils} from "django-airavata-api";
-import {notifications} from "django-airavata-common-ui";
+import { services, utils } from "django-airavata-api";
+import { notifications } from "django-airavata-common-ui";
 
 export default {
   name: "user-storage-container",
   computed: {
     dataProductUri() {
       return this.$route.query.dataProductUri;
-    }
+    },
   },
   data() {
     return {
       storagePath: null,
-      userStoragePath: null
+      userStoragePath: null,
     };
   },
   methods: {
@@ -40,7 +40,7 @@ export default {
          * TODO fix: storage path is set to home when it's a file referenced by dataProductUri because
          * there's no way of retrieving the path and this is to be fixed once a workaround is found.
          */
-        _storagePath = "~/"
+        _storagePath = "~/";
       } else {
         _storagePath = /~.*$/.exec(this.$route.fullPath);
         if (_storagePath && _storagePath.length > 0) {
@@ -71,29 +71,36 @@ export default {
          * TODO fix: userStoragePath is set manually when it's a file referenced by dataProductUri because
          * there's no way of retrieving the path and this is to be fixed once a workaround is found.
          */
-        return utils.FetchUtils.get(`/api/data-products?product-uri=${this.dataProductUri}`).then((dataProduct) => {
-          this.userStoragePath = {
-            isDir: false,
-            directories: [],
-            files: [{
-              createdTime: dataProduct.creationTime,
-              dataProductURI: this.dataProductUri,
-              downloadURL: dataProduct.downloadURL,
-              mimeType: dataProduct.productMetadata["mime-type"],
-              name: dataProduct.productName,
-              size: dataProduct.productSize
-            }],
-            parts: []
-          }
-        }).catch(_catch);
+        return utils.FetchUtils.get(
+          `/api/data-products?product-uri=${this.dataProductUri}`
+        )
+          .then((dataProduct) => {
+            this.userStoragePath = {
+              isDir: false,
+              directories: [],
+              files: [
+                {
+                  createdTime: dataProduct.creationTime,
+                  dataProductURI: this.dataProductUri,
+                  downloadURL: dataProduct.downloadURL,
+                  mimeType: dataProduct.productMetadata["mime-type"],
+                  name: dataProduct.productName,
+                  size: dataProduct.productSize,
+                },
+              ],
+              parts: [],
+            };
+          })
+          .catch(_catch);
       } else {
         return services.UserStoragePathService.get(
-          {path},
-          {ignoreErrors: true}
+          { path },
+          { ignoreErrors: true }
         )
           .then((result) => {
             this.userStoragePath = result;
-          }).catch(_catch);
+          })
+          .catch(_catch);
       }
     },
     handleMissingPath(path) {
@@ -124,7 +131,7 @@ export default {
     fileContentChanged() {
       this.loadUserStoragePath(this.storagePath);
     },
-    uploadSuccess() {
+    uploadFinished() {
       this.loadUserStoragePath(this.storagePath);
     },
     addDirectory(dirName) {
@@ -147,7 +154,7 @@ export default {
     deleteFile(dataProductURI) {
       utils.FetchUtils.delete(
         "/api/delete-file?data-product-uri=" +
-        encodeURIComponent(dataProductURI)
+          encodeURIComponent(dataProductURI)
       ).then(() => {
         this.loadUserStoragePath(this.storagePath);
       });

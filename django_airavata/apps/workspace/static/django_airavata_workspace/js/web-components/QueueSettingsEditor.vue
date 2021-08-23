@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="queue">
     <div class="card border-default">
       <b-link
         @click="showConfiguration = !showConfiguration"

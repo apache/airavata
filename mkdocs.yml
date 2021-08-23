@@ -13,7 +13,7 @@ nav:
     - Developing the Backend: dev/developing_backend.md
     - Developing a Wagtail Export (theme): dev/wagtail_export.md
   - Customization Guide:
-    - Gateways Tutorial: tutorial/gateways_tutorial.md
+    - Custom UI Tutorial: tutorial/custom_ui_tutorial.md
     - Adding a Custom Django App: dev/custom_django_app.md
     - Adding a Custom Output View Provider: dev/custom_output_view_provider.md
   - Administrator Guide:
@@ -22,8 +22,12 @@ nav:
 
 theme: readthedocs
 
+extra_css:
+  - assets/css/pymdownx.tabbed.css
+
 markdown_extensions:
   - sane_lists # allow restarting numbering of ordered lists
   - admonition
   - toc:
       permalink: true
+  - pymdownx.tabbed

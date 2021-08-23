@@ -4,7 +4,7 @@
       v-if="includeCreateFileAction && userStoragePath && isDir"
       :user-storage-path="userStoragePath"
       :storage-path="storagePath"
-      @upload-success="$emit('upload-success')"
+      @upload-finished="$emit('upload-finished')"
       @add-directory="(dirName) => $emit('add-directory', dirName)"
     />
     <user-storage-path-breadcrumb
@@ -57,6 +57,14 @@
           Select
         </b-button>
 
+        <b-link
+          v-if="data.item.type === 'file'"
+          class="action-link"
+          :href="`${data.item.downloadURL}&download`"
+        >
+          Download File
+          <i class="fa fa-download" aria-hidden="true"></i>
+        </b-link>
         <b-link
           v-if="data.item.type === 'dir'"
           class="action-link"

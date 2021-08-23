@@ -886,7 +886,7 @@ class UserStoragePathSerializer(serializers.Serializer):
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)
     parts = serializers.ListField(child=serializers.CharField())
-    path = serializers.CharField()
+    path = serializers.CharField(required=False)
     # uploaded is populated after a file upload
     uploaded = DataProductSerializer(read_only=True)
 

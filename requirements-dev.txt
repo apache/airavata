@@ -3,8 +3,9 @@ autopep8==1.5.4
 flake8==3.8.4
 flake8-isort==4.0.0
 isort==5.2.2
-mkdocs==1.0.4
+mkdocs==1.1.2
 Markdown==3.2.1
+pymdown-extensions==8.2
 pycodestyle==2.6.0
 pyflakes==2.2.0
 tox==3.20.0
