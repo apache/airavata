@@ -85,6 +85,7 @@ isort .
    "v1.2".
 
    git tag -m VERSION VERSION
+   git push --follow-tags
 
 3. In a clean checkout
 
