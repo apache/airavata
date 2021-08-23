@@ -224,7 +224,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
 
     def _set_storage_id_and_data_dir(self, experiment):
         # Storage ID
-        experiment.userConfigurationData.storageId = user_storage.get_default_storage_resource_id()
+        experiment.userConfigurationData.storageId = user_storage.get_default_storage_resource_id(self.request)
         # Create experiment dir and set it on model
         if not experiment.userConfigurationData.experimentDataDir:
             project = self.request.airavata_client.getProject(
