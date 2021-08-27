@@ -15,50 +15,57 @@
 </template>
 
 <script>
-import { getComputeResourceNames } from "./store";
+import vuestore from "./vuestore";
+import { mapGetters } from "vuex";
+
 export default {
   name: "compute-resource-selector",
   props: {
     value: {
       // compute resource host id
       type: String,
+      required: true,
+    },
+    includedComputeResources: {
+      type: Array,
       default: null,
     },
-    computeResources: {
-      type: Array, // of compute resource host ids
-      default: () => [],
-    },
   },
+  store: vuestore,
   data() {
     return {
       resourceHostId: this.value,
-      computeResourceNames: {},
     };
   },
   created() {
-    this.loadComputeResourceNames();
+    this.$store.dispatch("loadComputeResourceNames");
   },
   computed: {
     computeResourceOptions: function () {
-      const computeResourceOptions = this.computeResources.map(
-        (computeHostId) => {
-          return {
-            value: computeHostId,
-            text:
-              computeHostId in this.computeResourceNames
-                ? this.computeResourceNames[computeHostId]
-                : "",
-          };
+      const computeResourceIds = Object.keys(this.computeResourceNames).filter(
+        (crid) => {
+          if (this.includedComputeResources) {
+            return this.includedComputeResources.includes(crid);
+          } else {
+            return true;
+          }
         }
       );
+      const computeResourceOptions = computeResourceIds.map((computeHostId) => {
+        return {
+          value: computeHostId,
+          text:
+            computeHostId in this.computeResourceNames
+              ? this.computeResourceNames[computeHostId]
+              : "",
+        };
+      });
       computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
       return computeResourceOptions;
     },
+    ...mapGetters(["computeResourceNames"]),
   },
   methods: {
-    async loadComputeResourceNames() {
-      this.computeResourceNames = await getComputeResourceNames();
-    },
     computeResourceChanged() {
       this.emitValueChanged();
     },

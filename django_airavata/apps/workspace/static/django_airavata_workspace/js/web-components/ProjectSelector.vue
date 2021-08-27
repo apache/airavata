@@ -47,15 +47,10 @@ export default {
     };
   },
   async mounted() {
-    await this.$store.dispatch('loadProjects');
-    await this.$store.dispatch('loadDefaultProjectId');
-    if (!this.projectId) {
-      this.projectId = this.defaultProjectId;
-      this.$emit("input", this.projectId);
-    }
+    await this.$store.dispatch("loadProjects");
   },
   computed: {
-    ...mapGetters(["projects", "defaultProjectId"]),
+    ...mapGetters(["projects"]),
     sharedProjectOptions: function () {
       return this.projects
         ? this.projects

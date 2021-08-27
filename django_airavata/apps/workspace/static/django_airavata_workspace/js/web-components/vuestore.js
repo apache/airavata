@@ -1,15 +1,21 @@
-import { services } from "django-airavata-api";
+import { errors, services, utils } from "django-airavata-api";
 import Vue from "vue";
 import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+const PROMISES = {
+  workspacePreferences: null,
+};
 export default new Vuex.Store({
   state: {
     experiment: null,
     projects: null,
-    defaultProjectId: null,
-    computeResourceNames: null,
+    computeResourceNames: {},
+    applicationDeployments: [],
+    groupResourceProfiles: null,
+    applicationModuleId: null,
+    appDeploymentQueues: [],
   },
   mutations: {
     setExperiment(state, { experiment }) {
@@ -27,21 +33,51 @@ export default new Vuex.Store({
     updateProjectId(state, { projectId }) {
       state.experiment.projectId = projectId;
     },
-    updateUserConfigurationData(state, { userConfigurationData }) {
-      state.experiment.userConfigurationData = userConfigurationData;
+    updateGroupResourceProfileId(state, { groupResourceProfileId }) {
+      state.experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
+    },
+    updateResourceHostId(state, { resourceHostId }) {
+      state.experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
+    },
+    updateQueueName(state, { queueName }) {
+      state.experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
+    },
+    updateTotalCPUCount(state, { totalCPUCount }) {
+      state.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = totalCPUCount;
+    },
+    updateNodeCount(state, { nodeCount }) {
+      state.experiment.userConfigurationData.computationalResourceScheduling.nodeCount = nodeCount;
+    },
+    updateWallTimeLimit(state, { wallTimeLimit }) {
+      state.experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit = wallTimeLimit;
+    },
+    updateTotalPhysicalMemory(state, { totalPhysicalMemory }) {
+      state.experiment.userConfigurationData.computationalResourceScheduling.totalPhysicalMemory = totalPhysicalMemory;
     },
     setProjects(state, { projects }) {
       state.projects = projects;
     },
-    setDefaultProjectId(state, { defaultProjectId }) {
-      state.defaultProjectId = defaultProjectId;
-    },
     setComputeResourceNames(state, { computeResourceNames }) {
       state.computeResourceNames = computeResourceNames;
     },
+    setGroupResourceProfiles(state, { groupResourceProfiles }) {
+      state.groupResourceProfiles = groupResourceProfiles;
+    },
+    setWorkspacePreferences(state, { workspacePreferences }) {
+      state.workspacePreferences = workspacePreferences;
+    },
+    setApplicationModuleId(state, { applicationModuleId }) {
+      state.applicationModuleId = applicationModuleId;
+    },
+    setApplicationDeployments(state, { applicationDeployments }) {
+      state.applicationDeployments = applicationDeployments;
+    },
+    setAppDeploymentQueues(state, { appDeploymentQueues }) {
+      state.appDeploymentQueues = appDeploymentQueues;
+    },
   },
   actions: {
-    async loadNewExperiment({ commit }, { applicationId }) {
+    async loadNewExperiment({ commit, dispatch }, { applicationId }) {
       const applicationModule = await services.ApplicationModuleService.retrieve(
         {
           lookup: applicationId,
@@ -58,13 +94,50 @@ export default new Vuex.Store({
         timeStyle: "short",
       });
       experiment.experimentName = `${applicationModule.appModuleName} on ${currentDate}`;
-      commit("setExperiment", { experiment });
+      commit("setApplicationModuleId", { applicationModuleId: applicationId });
+      await dispatch("setExperiment", { experiment });
     },
-    async loadExperiment({ commit }, { experimentId }) {
+    async loadExperiment({ commit, dispatch }, { experimentId }) {
       const experiment = await services.ExperimentService.retrieve({
         lookup: experimentId,
       });
+      const appInterface = await services.ApplicationInterfaceService.retrieve({
+        lookup: experiment.executionId,
+      });
+      commit("setApplicationModuleId", {
+        applicationModuleId: appInterface.applicationModuleId,
+      });
+      await dispatch("setExperiment", { experiment });
+    },
+    async setExperiment({ commit, dispatch }, { experiment }) {
       commit("setExperiment", { experiment });
+      await dispatch("loadExperimentData");
+    },
+    async loadExperimentData({ commit, dispatch, getters }) {
+      await Promise.all([
+        dispatch("loadProjects"),
+        dispatch("loadWorkspacePreferences"),
+        dispatch("loadGroupResourceProfiles"),
+      ]);
+
+      if (!getters.experiment.projectId) {
+        commit("updateProjectId", { projectId: getters.defaultProjectId });
+      }
+      // If there is no groupResourceProfileId set on the experiment, or there
+      // is one set but it is no longer in the list of accessible
+      // groupResourceProfiles, set to the default one
+      if (!getters.groupResourceProfileId || !getters.groupResourceProfile) {
+        commit("updateGroupResourceProfileId", {
+          groupResourceProfileId: getters.defaultGroupResourceProfileId,
+        });
+      }
+      // If experiment has a group resource profile and user has access to it,
+      // load additional necessary data and re-apply group resource profile
+      if (getters.groupResourceProfile) {
+        await dispatch("loadApplicationDeployments");
+        await dispatch("loadAppDeploymentQueues");
+        await dispatch("applyGroupResourceProfile");
+      }
     },
     updateExperimentName({ commit }, { name }) {
       commit("updateExperimentName", { name });
@@ -75,8 +148,181 @@ export default new Vuex.Store({
     updateProjectId({ commit }, { projectId }) {
       commit("updateProjectId", { projectId });
     },
-    updateUserConfigurationData({ commit }, { userConfigurationData }) {
-      commit("updateUserConfigurationData", { userConfigurationData });
+    async updateGroupResourceProfileId(
+      { commit, dispatch },
+      { groupResourceProfileId }
+    ) {
+      commit("updateGroupResourceProfileId", { groupResourceProfileId });
+      await dispatch("loadApplicationDeployments");
+      await dispatch("applyGroupResourceProfile");
+    },
+    async updateComputeResourceHostId(
+      { commit, dispatch, getters },
+      { resourceHostId }
+    ) {
+      if (getters.resourceHostId !== resourceHostId) {
+        commit("updateResourceHostId", { resourceHostId });
+        await dispatch("loadAppDeploymentQueues");
+        await dispatch("setDefaultQueue");
+      }
+    },
+    updateQueueName({ commit, dispatch }, { queueName }) {
+      commit("updateQueueName", { queueName });
+      dispatch("initializeQueue");
+    },
+    updateTotalCPUCount({ commit }, { totalCPUCount }) {
+      commit("updateTotalCPUCount", { totalCPUCount });
+    },
+    updateNodeCount({ commit }, { nodeCount }) {
+      commit("updateNodeCount", { nodeCount });
+    },
+    updateWallTimeLimit({ commit }, { wallTimeLimit }) {
+      commit("updateWallTimeLimit", { wallTimeLimit });
+    },
+    updateTotalPhysicalMemory({ commit }, { totalPhysicalMemory }) {
+      commit("updateTotalPhysicalMemory", { totalPhysicalMemory });
+    },
+    async loadApplicationDeployments({ commit, getters, state }) {
+      const applicationDeployments = await services.ApplicationDeploymentService.list(
+        {
+          appModuleId: state.applicationModuleId,
+          groupResourceProfileId: getters.groupResourceProfileId,
+        },
+        { ignoreErrors: true }
+      )
+        .catch((error) => {
+          // Ignore unauthorized errors, force user to pick another GroupResourceProfile
+          if (!errors.ErrorUtils.isUnauthorizedError(error)) {
+            return Promise.reject(error);
+          } else {
+            return Promise.resolve([]);
+          }
+        })
+        // Report all other error types
+        .catch(utils.FetchUtils.reportError);
+      commit("setApplicationDeployments", { applicationDeployments });
+    },
+    async applyGroupResourceProfile({ dispatch, getters }) {
+      // Make sure that resource host id is in the list of app deployments
+      const computeResourceChanged = await dispatch("initializeResourceHostId");
+      if (computeResourceChanged) {
+        await dispatch("loadAppDeploymentQueues");
+        await dispatch("setDefaultQueue");
+      } else if (!getters.queue) {
+        // allowed queues may have changed. If selected queue isn't in the list
+        // of allowed queues, reset to the default
+        await dispatch("setDefaultQueue");
+      } else {
+        // reapply batchQueueResourcePolicy maximums since they may have changed
+        dispatch("applyBatchQueueResourcePolicy");
+      }
+    },
+    async initializeResourceHostId({ commit, dispatch, getters }) {
+      // if there isn't a selected compute resource or there is but it isn't in
+      // the list of app deployments, set a default one
+      // Returns true if the resourceHostId changed
+      if (
+        !getters.resourceHostId ||
+        !getters.computeResources.find(
+          (crid) => crid === getters.resourceHostId
+        )
+      ) {
+        const defaultResourceHostId = await dispatch(
+          "getDefaultResourceHostId"
+        );
+        commit("updateResourceHostId", {
+          resourceHostId: defaultResourceHostId,
+        });
+        return true;
+      }
+      return false;
+    },
+    async getDefaultResourceHostId({ dispatch, getters }) {
+      await dispatch("loadDefaultComputeResourceId");
+      if (
+        getters.defaultComputeResourceId &&
+        getters.computeResources.find(
+          (crid) => crid === getters.defaultComputeResourceId
+        )
+      ) {
+        return getters.defaultComputeResourceId;
+      } else if (getters.computeResources.length > 0) {
+        // Just pick the first one
+        return getters.computeResources[0];
+      } else {
+        return null;
+      }
+    },
+    async loadDefaultComputeResourceId({ dispatch }) {
+      await dispatch("loadWorkspacePreferences");
+    },
+    async loadAppDeploymentQueues({ commit, getters }) {
+      const applicationDeployment = getters.applicationDeployment;
+      if (applicationDeployment) {
+        const appDeploymentQueues = await services.ApplicationDeploymentService.getQueues(
+          {
+            lookup: applicationDeployment.appDeploymentId,
+          }
+        );
+        commit("setAppDeploymentQueues", { appDeploymentQueues });
+      } else {
+        commit("setAppDeploymentQueues", { appDeploymentQueues: [] });
+      }
+    },
+    async setDefaultQueue({ commit, dispatch, getters }) {
+      // set to the default queue or the first one
+      const defaultQueue = getters.defaultQueue;
+      if (defaultQueue) {
+        commit("updateQueueName", { queueName: defaultQueue.queueName });
+      } else {
+        commit("updateQueueName", { queueName: null });
+      }
+      dispatch("initializeQueue");
+    },
+    initializeQueue({ commit, getters }) {
+      const queue = getters.queue;
+      if (queue) {
+        commit("updateTotalCPUCount", {
+          totalCPUCount: getters.getDefaultCPUCount(queue),
+        });
+        commit("updateNodeCount", {
+          nodeCount: getters.getDefaultNodeCount(queue),
+        });
+        commit("updateWallTimeLimit", {
+          wallTimeLimit: getters.getDefaultWalltime(queue),
+        });
+        commit("updateTotalPhysicalMemory", { totalPhysicalMemory: 0 });
+      } else {
+        commit("updateTotalCPUCount", { totalCPUCount: 0 });
+        commit("updateNodeCount", { nodeCount: 0 });
+        commit("updateWallTimeLimit", { wallTimeLimit: 0 });
+        commit("updateTotalPhysicalMemory", { totalPhysicalMemory: 0 });
+      }
+    },
+    applyBatchQueueResourcePolicy({ commit, getters }) {
+      if (getters.batchQueueResourcePolicy) {
+        const crs =
+          getters.experiment.userConfigurationData
+            .computationalResourceScheduling;
+        commit("updateTotalCPUCount", {
+          totalCPUCount: Math.min(
+            crs.totalCPUCount,
+            getters.batchQueueResourcePolicy.maxAllowedCores
+          ),
+        });
+        commit("updateNodeCount", {
+          nodeCount: Math.min(
+            crs.nodeCount,
+            getters.batchQueueResourcePolicy.maxAllowedNodes
+          ),
+        });
+        commit("updateWallTimeLimit", {
+          wallTimeLimit: Math.min(
+            crs.wallTimeLimit,
+            getters.batchQueueResourcePolicy.maxAllowedWalltime
+          ),
+        });
+      }
     },
     async saveExperiment({ commit, getters }) {
       if (getters.experiment.experimentId) {
@@ -98,18 +344,35 @@ export default new Vuex.Store({
       });
     },
     async loadProjects({ commit }) {
-      const projects = await services.ProjectService.listAll();
+      if (!PROMISES.projects) {
+        PROMISES.projects = services.ProjectService.listAll();
+      }
+      const projects = await PROMISES.projects;
       commit("setProjects", { projects });
     },
-    async loadDefaultProjectId({ commit }) {
-      // TODO: cache the workspace preferences so they aren't loaded more than once
-      const prefs = await services.WorkspacePreferencesService.get();
-      const defaultProjectId = prefs.most_recent_project_id;
-      commit("setDefaultProjectId", { defaultProjectId });
+    async loadWorkspacePreferences({ commit }) {
+      if (!PROMISES.workspacePreferences) {
+        PROMISES.workspacePreferences = services.WorkspacePreferencesService.get();
+      }
+      const workspacePreferences = await PROMISES.workspacePreferences;
+      commit("setWorkspacePreferences", { workspacePreferences });
+    },
+    async loadDefaultProjectId({ dispatch }) {
+      await dispatch("loadWorkspacePreferences");
     },
     async loadComputeResourceNames({ commit }) {
       const computeResourceNames = await services.ComputeResourceService.names();
       commit("setComputeResourceNames", { computeResourceNames });
+    },
+    async loadDefaultGroupResourceProfileId({ dispatch }) {
+      await dispatch("loadWorkspacePreferences");
+    },
+    async loadGroupResourceProfiles({ commit }) {
+      if (!PROMISES.groupResourceProfiles) {
+        PROMISES.groupResourceProfiles = services.GroupResourceProfileService.list();
+      }
+      const groupResourceProfiles = await PROMISES.groupResourceProfiles;
+      commit("setGroupResourceProfiles", { groupResourceProfiles });
     },
   },
   getters: {
@@ -129,7 +392,181 @@ export default new Vuex.Store({
     },
     experiment: (state) => state.experiment,
     projects: (state) => state.projects,
-    defaultProjectId: (state) => state.defaultProjectId,
+    defaultProjectId: (state) =>
+      state.workspacePreferences
+        ? state.workspacePreferences.most_recent_project_id
+        : null,
+    defaultGroupResourceProfileId: (state) =>
+      state.workspacePreferences
+        ? state.workspacePreferences.most_recent_group_resource_profile_id
+        : null,
+    defaultComputeResourceId: (state) =>
+      state.workspacePreferences
+        ? state.workspacePreferences.most_recent_compute_resource_id
+        : null,
     computeResourceNames: (state) => state.computeResourceNames,
+    groupResourceProfiles: (state) => state.groupResourceProfiles,
+    groupResourceProfileId: (state) =>
+      state.experiment
+        ? state.experiment.userConfigurationData.groupResourceProfileId
+        : null,
+    groupResourceProfile: (state, getters) =>
+      state.groupResourceProfiles
+        ? state.groupResourceProfiles.find(
+            (g) => g.groupResourceProfileId === getters.groupResourceProfileId
+          )
+        : null,
+    resourceHostId: (state) =>
+      state.experiment &&
+      state.experiment.userConfigurationData &&
+      state.experiment.userConfigurationData.computationalResourceScheduling
+        ? state.experiment.userConfigurationData.computationalResourceScheduling
+            .resourceHostId
+        : null,
+    computeResources: (state) =>
+      state.applicationDeployments.map((dep) => dep.computeHostId),
+    applicationDeployment: (state, getters) => {
+      if (state.applicationDeployments && getters.resourceHostId) {
+        return state.applicationDeployments.find(
+          (ad) => ad.computeHostId === getters.resourceHostId
+        );
+      } else {
+        return null;
+      }
+    },
+    isQueueInComputeResourcePolicy: (state, getters) => (queueName) => {
+      if (!getters.computeResourcePolicy) {
+        return true;
+      }
+      return getters.computeResourcePolicy.allowedBatchQueues.includes(
+        queueName
+      );
+    },
+    queues: (state, getters) => {
+      return state.appDeploymentQueues
+        ? state.appDeploymentQueues.filter((q) =>
+            getters.isQueueInComputeResourcePolicy(q.queueName)
+          )
+        : [];
+    },
+    defaultQueue: (state, getters) => {
+      const defaultQueue = getters.queues.find((q) => q.isDefaultQueue);
+      if (defaultQueue) {
+        return defaultQueue;
+      } else if (getters.queues.length > 0) {
+        return getters.queues[0];
+      } else {
+        return null;
+      }
+    },
+    queueName: (state) => {
+      return state.experiment &&
+        state.experiment.userConfigurationData &&
+        state.experiment.userConfigurationData.computationalResourceScheduling
+        ? state.experiment.userConfigurationData.computationalResourceScheduling
+            .queueName
+        : null;
+    },
+    queue: (state, getters) => {
+      return getters.queues && getters.queueName
+        ? getters.queues.find((q) => q.queueName === getters.queueName)
+        : null;
+    },
+    getDefaultCPUCount: (state, getters) => (queue) => {
+      const batchQueueResourcePolicy = getters.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedCores,
+          queue.defaultCPUCount
+        );
+      }
+      return queue.defaultCPUCount;
+    },
+    getDefaultNodeCount: (state, getters) => (queue) => {
+      const batchQueueResourcePolicy = getters.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedNodes,
+          queue.defaultNodeCount
+        );
+      }
+      return queue.defaultNodeCount;
+    },
+    getDefaultWalltime: (state, getters) => (queue) => {
+      const batchQueueResourcePolicy = getters.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedWalltime,
+          queue.defaultWalltime
+        );
+      }
+      return queue.defaultWalltime;
+    },
+    computeResourcePolicy: (state, getters) => {
+      if (!getters.groupResourceProfile || !getters.resourceHostId) {
+        return null;
+      }
+      return getters.groupResourceProfile.computeResourcePolicies.find(
+        (crp) => crp.computeResourceId === getters.resourceHostId
+      );
+    },
+    batchQueueResourcePolicies: (state, getters) => {
+      if (!getters.groupResourceProfile || !getters.resourceHostId) {
+        return null;
+      }
+      return getters.groupResourceProfile.batchQueueResourcePolicies.filter(
+        (bqrp) => bqrp.computeResourceId === getters.resourceHostId
+      );
+    },
+    batchQueueResourcePolicy: (state, getters) => {
+      if (!getters.batchQueueResourcePolicies || !getters.queueName) {
+        return null;
+      }
+      return getters.batchQueueResourcePolicies.find(
+        (bqrp) => bqrp.queuename === getters.queueName
+      );
+    },
+    maxAllowedCores: (state, getters) => {
+      if (!getters.queue) {
+        return 0;
+      }
+      const batchQueueResourcePolicy = getters.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedCores,
+          getters.queue.maxProcessors
+        );
+      }
+      return getters.queue.maxProcessors;
+    },
+    maxAllowedNodes: (state, getters) => {
+      if (!getters.queue) {
+        return 0;
+      }
+      const batchQueueResourcePolicy = getters.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedNodes,
+          getters.queue.maxNodes
+        );
+      }
+      return getters.queue.maxNodes;
+    },
+    maxAllowedWalltime: (state, getters) => {
+      if (!getters.queue) {
+        return 0;
+      }
+      const batchQueueResourcePolicy = getters.batchQueueResourcePolicy;
+      if (batchQueueResourcePolicy) {
+        return Math.min(
+          batchQueueResourcePolicy.maxAllowedWalltime,
+          getters.queue.maxRunTime
+        );
+      }
+      return getters.queue.maxRunTime;
+    },
+    maxMemory: (state, getters) => {
+      return getters.queue ? getters.queue.maxMemory : 0;
+    },
   },
 });

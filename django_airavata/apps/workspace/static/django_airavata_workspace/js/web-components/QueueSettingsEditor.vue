@@ -7,31 +7,27 @@
       >
         <div class="card-body">
           <h5 class="card-title mb-4">
-            Settings for queue {{ computationalResourceScheduling.queueName }}
+            Settings for queue {{ localQueueName }}
           </h5>
           <div class="row">
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.nodeCount }}
+                {{ localNodeCount }}
               </h3>
               <span class="text-muted text-uppercase">NODE COUNT</span>
             </div>
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.totalCPUCount }}
+                {{ localTotalCPUCount }}
               </h3>
               <span class="text-muted text-uppercase">CORE COUNT</span>
             </div>
             <div class="col">
-              <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.wallTimeLimit }} minutes
-              </h3>
+              <h3 class="h5 mb-0">{{ localWallTimeLimit }} minutes</h3>
               <span class="text-muted text-uppercase">TIME LIMIT</span>
             </div>
             <div class="col" v-if="maxMemory > 0">
-              <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.totalPhysicalMemory }} MB
-              </h3>
+              <h3 class="h5 mb-0">{{ localTotalPhysicalMemory }} MB</h3>
               <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
             </div>
           </div>
@@ -42,7 +38,7 @@
       <b-form-group label="Select a Queue" label-for="queue">
         <b-form-select
           id="queue"
-          v-model="computationalResourceScheduling.queueName"
+          v-model="localQueueName"
           :options="queueOptions"
           required
           @change="queueChanged"
@@ -56,9 +52,11 @@
           type="number"
           min="1"
           :max="maxAllowedNodes"
-          v-model="computationalResourceScheduling.nodeCount"
+          v-model="localNodeCount"
           required
-          @input.native.stop="emitValueChanged"
+          @input.native.stop="
+            emitValueChanged('node-count-changed', localNodeCount)
+          "
         >
         </b-form-input>
         <div slot="description">
@@ -72,9 +70,11 @@
           type="number"
           min="1"
           :max="maxAllowedCores"
-          v-model="computationalResourceScheduling.totalCPUCount"
+          v-model="localTotalCPUCount"
           required
-          @input.native.stop="emitValueChanged"
+          @input.native.stop="
+            emitValueChanged('total-cpu-count-changed', localTotalCPUCount)
+          "
         >
         </b-form-input>
         <div slot="description">
@@ -89,9 +89,11 @@
             type="number"
             min="1"
             :max="maxAllowedWalltime"
-            v-model="computationalResourceScheduling.wallTimeLimit"
+            v-model="localWallTimeLimit"
             required
-            @input.native.stop="emitValueChanged"
+            @input.native.stop="
+              emitValueChanged('walltime-limit-changed', localWallTimeLimit)
+            "
           >
           </b-form-input>
         </b-input-group>
@@ -111,8 +113,13 @@
             type="number"
             min="0"
             :max="maxMemory"
-            v-model="computationalResourceScheduling.totalPhysicalMemory"
-            @input.native.stop="emitValueChanged"
+            v-model="localTotalPhysicalMemory"
+            @input.native.stop="
+              emitValueChanged(
+                'total-physical-memory-changed',
+                localTotalPhysicalMemory
+              )
+            "
           >
           </b-form-input>
         </b-input-group>
@@ -132,8 +139,10 @@
 </template>
 
 <script>
-import { models, utils } from "django-airavata-api";
+import { utils } from "django-airavata-api";
 import Vue from "vue";
+import vuestore from "./vuestore";
+import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
@@ -146,34 +155,32 @@ config.autoAddCss = false;
 
 export default {
   props: {
-    value: {
-      type: models.ComputationalResourceSchedulingModel,
+    queueName: {
+      type: String,
+      required: true,
+    },
+    totalCpuCount: {
+      type: Number,
+      required: true,
+    },
+    nodeCount: {
+      type: Number,
+      required: true,
+    },
+    wallTimeLimit: {
+      type: Number,
+      required: true,
+    },
+    totalPhysicalMemory: {
+      type: Number,
+      default: 0,
       // required: true,
-    },
-    queues: {
-      type: Array, // of BatchQueue
-      // required: true,
-    },
-    maxAllowedNodes: {
-      type: Number,
-      required: true,
-    },
-    maxAllowedCores: {
-      type: Number,
-      required: true,
-    },
-    maxAllowedWalltime: {
-      type: Number,
-      required: true,
-    },
-    maxMemory: {
-      type: Number,
-      required: true,
     },
   },
   components: {
     FontAwesomeIcon,
   },
+  store: vuestore,
   mounted() {
     // Add font awesome styles
     // https://github.com/FortAwesome/vue-fontawesome#web-components-with-vue-web-component-wrapper
@@ -188,12 +195,25 @@ export default {
     }
   },
   data() {
+    console.log("QueueSettingsEditor.vue: queueName", this.queueName);
     return {
-      computationalResourceScheduling: this.cloneValue(),
+      localQueueName: this.queueName,
+      localTotalCPUCount: this.totalCpuCount,
+      localNodeCount: this.nodeCount,
+      localWallTimeLimit: this.wallTimeLimit,
+      localTotalPhysicalMemory: this.totalPhysicalMemory,
       showConfiguration: false,
     };
   },
   computed: {
+    ...mapGetters([
+      "queue",
+      "queues",
+      "maxAllowedCores",
+      "maxAllowedNodes",
+      "maxAllowedWalltime",
+      "maxMemory",
+    ]),
     queueOptions() {
       if (!this.queues) {
         return [];
@@ -207,50 +227,52 @@ export default {
       utils.StringUtils.sortIgnoreCase(queueOptions, (q) => q.text);
       return queueOptions;
     },
-    queue() {
-      return this.queues
-        ? this.queues.find((q) => q.queueName === this.queueName)
-        : null;
-    },
-    queueName() {
-      return this.computationalResourceScheduling
-        ? this.computationalResourceScheduling.queueName
-        : null;
-    },
-    queueDescription() {
-      return this.queue ? this.queue.queueDescription : null;
-    },
     closeIcon() {
       return faTimes;
     },
     infoIcon() {
       return faInfoCircle;
-    }
+    },
   },
   methods: {
-    cloneValue() {
-      return this.value
-        ? this.value.clone()
-        : new models.ComputationalResourceSchedulingModel();
-    },
-    emitValueChanged() {
-      const inputEvent = new CustomEvent("input", {
-        detail: [this.computationalResourceScheduling.clone()],
+    emitValueChanged(eventName, value) {
+      console.log(
+        "QueueSettingsEditor: emitValueChanged(",
+        eventName,
+        value,
+        ")"
+      );
+      const inputEvent = new CustomEvent(eventName, {
+        detail: [value],
         composed: true,
         bubbles: true,
       });
       this.$el.dispatchEvent(inputEvent);
     },
     queueChanged() {
-      this.emitValueChanged();
+      this.emitValueChanged("queue-name-changed", this.localQueueName);
     },
   },
   watch: {
-    value: {
-      handler() {
-        this.computationalResourceScheduling = this.cloneValue();
-      },
-      deep: true,
+    queueName(value) {
+      console.log("QueueSettingsEditor: watch(queueName)", value);
+      this.localQueueName = value;
+    },
+    // nodes(value, oldValue) {
+    //   console.log("QueueSettingsEditor: watch(nodes)", value, oldValue);
+    //   this.localNodeCount = value;
+    // },
+    nodeCount(value) {
+      this.localNodeCount = value;
+    },
+    totalCpuCount(value) {
+      this.localTotalCPUCount = value;
+    },
+    wallTimeLimit(value) {
+      this.localWallTimeLimit = value;
+    },
+    totalPhysicalMemory(value) {
+      this.localTotalPhysicalMemory = value;
     },
   },
 };

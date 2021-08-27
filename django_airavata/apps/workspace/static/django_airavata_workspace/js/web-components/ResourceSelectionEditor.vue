@@ -1,4 +1,5 @@
 <template>
+<!-- TODO: this is no longer needed -->
   <div v-if="userConfigurationData">
     <div @input.stop="updateGroupResourceProfileId">
       <adpf-group-resource-profile-selector
@@ -395,7 +396,6 @@ export default {
     },
     bindWebComponentProps() {
       this.$nextTick(() => {
-        this.$refs.computeResourceSelector.computeResources = this.computeResources;
         this.$refs.computeResourceSelector.value = this.resourceHostId;
         this.$refs.queueSettingsEditor.value = this.userConfigurationData.computationalResourceScheduling;
         this.$refs.queueSettingsEditor.queues = this.queues;

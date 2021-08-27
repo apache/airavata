@@ -17,12 +17,10 @@
 </template>
 
 <script>
-import {
-  getDefaultGroupResourceProfileId,
-  getGroupResourceProfiles,
-} from "./store";
 import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
+import vuestore from "./vuestore";
+import { mapGetters } from "vuex";
 Vue.use(BootstrapVue);
 
 export default {
@@ -30,23 +28,21 @@ export default {
   props: {
     value: {
       type: String,
+      required: true,
     },
     label: {
       type: String,
       default: "Allocation",
     },
   },
+  store: vuestore,
   data() {
     return {
       groupResourceProfileId: this.value,
-      groupResourceProfiles: [],
-      defaultGroupResourceProfileId: null,
     };
   },
   async mounted() {
-    this.defaultGroupResourceProfileId = await getDefaultGroupResourceProfileId();
-    this.groupResourceProfiles = await getGroupResourceProfiles();
-    this.init();
+    await this.$store.dispatch("loadGroupResourceProfiles");
   },
   computed: {
     groupResourceProfileOptions: function () {
@@ -67,23 +63,9 @@ export default {
         return [];
       }
     },
+    ...mapGetters(["groupResourceProfiles"]),
   },
   methods: {
-    init() {
-      // Default the selected group resource profile
-      if (
-        (!this.value ||
-          !this.selectedValueInGroupResourceProfileList(
-            this.groupResourceProfiles
-          )) &&
-        this.groupResourceProfiles &&
-        this.groupResourceProfiles.length > 0
-      ) {
-        // automatically select the last one user selected
-        this.groupResourceProfileId = this.defaultGroupResourceProfileId;
-        this.emitValueChanged();
-      }
-    },
     groupResourceProfileChanged: function (groupResourceProfileId) {
       this.groupResourceProfileId = groupResourceProfileId;
       this.emitValueChanged();
@@ -95,13 +77,6 @@ export default {
         bubbles: true,
       });
       this.$el.dispatchEvent(inputEvent);
-    },
-    selectedValueInGroupResourceProfileList(groupResourceProfiles) {
-      return (
-        groupResourceProfiles
-          .map((grp) => grp.groupResourceProfileId)
-          .indexOf(this.value) >= 0
-      );
     },
   },
   watch: {

@@ -17,9 +17,54 @@
         <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
-    <div ref="resourceSelectionEditor" @input="updateUserConfigurationData">
-      <!-- programmatically define slot for experiment-resource-selection as
-           native slot (not Vue slots), see #mounted() -->
+    <!-- TODO: programmatically define slot for adpf-group-resource-profile-selector -->
+    <div @input.stop="updateGroupResourceProfileId">
+      <adpf-group-resource-profile-selector
+        :value="experiment.userConfigurationData.groupResourceProfileId"
+      />
+    </div>
+    <!-- TODO: programmatically define slot for adpf-experiment-compute-resource-selector -->
+    <div @input.stop="updateComputeResourceHostId">
+      <adpf-experiment-compute-resource-selector
+        ref="computeResourceSelector"
+        :value="
+          experiment.userConfigurationData.computationalResourceScheduling
+            .resourceHostId
+        "
+      />
+    </div>
+    <!-- TODO: programmatically define slot for adpf-queue-settings-editor -->
+    <div
+      @queue-name-changed="updateQueueName"
+      @node-count-changed="updateNodeCount"
+      @total-cpu-count-change="updateTotalCPUCount"
+      @walltime-limit-changed="updateWallTimeLimit"
+      @total-physical-memory-changed="updateTotalPhysicalMemory"
+    >
+      <adpf-queue-settings-editor
+        ref="queueSettingsEditor"
+        :queue-name="
+          experiment.userConfigurationData.computationalResourceScheduling
+            .queueName
+        "
+        :total-cpu-count="
+          experiment.userConfigurationData.computationalResourceScheduling
+            .totalCPUCount
+        "
+        :node-count="
+          experiment.userConfigurationData.computationalResourceScheduling
+            .nodeCount
+        "
+        :wall-time-limit="
+          experiment.userConfigurationData.computationalResourceScheduling
+            .wallTimeLimit
+        "
+        :total-physical-memory="
+          experiment.userConfigurationData.computationalResourceScheduling
+            .totalPhysicalMemory
+        "
+      />
+
     </div>
     <div ref="experimentButtons">
       <!-- programmatically define slot for experiment-buttons as
@@ -125,19 +170,6 @@ export default {
         this.createSlot("experiment-project", projectSelectorEl)
       );
 
-      const resourceSelectionEditor = document.createElement(
-        "adpf-resource-selection-editor"
-      );
-      this.$refs.resourceSelectionEditor.append(
-        this.createSlot(
-          "experiment-resource-selection",
-          resourceSelectionEditor
-        )
-      );
-      // Can't set objects via attributes, must set as prop
-      resourceSelectionEditor.value = this.experiment.userConfigurationData;
-      resourceSelectionEditor.applicationModuleId = this.applicationId;
-
       /*
        * Experiment (save/launch) Buttons native slot
        */
@@ -202,10 +234,38 @@ export default {
       const [projectId] = event.detail;
       this.$store.dispatch("updateProjectId", { projectId });
     },
-    updateUserConfigurationData(event) {
-      const [userConfigurationData] = event.detail;
-      this.$store.dispatch("updateUserConfigurationData", {
-        userConfigurationData,
+    updateGroupResourceProfileId(event) {
+      const [groupResourceProfileId] = event.detail;
+      this.$store.dispatch("updateGroupResourceProfileId", {
+        groupResourceProfileId,
+      });
+    },
+    updateComputeResourceHostId(event) {
+      const [resourceHostId] = event.detail;
+      this.$store.dispatch("updateComputeResourceHostId", {
+        resourceHostId,
+      });
+    },
+    updateQueueName(event) {
+      const [queueName] = event.detail;
+      this.$store.dispatch("updateQueueName", { queueName });
+    },
+    updateTotalCPUCount(event) {
+      const [totalCPUCount] = event.detail;
+      this.$store.dispatch("updateTotalCPUCount", { totalCPUCount });
+    },
+    updateNodeCount(event) {
+      const [nodeCount] = event.detail;
+      this.$store.dispatch("updateNodeCount", { nodeCount });
+    },
+    updateWallTimeLimit(event) {
+      const [wallTimeLimit] = event.detail;
+      this.$store.dispatch("updateWallTimeLimit", { wallTimeLimit });
+    },
+    updateTotalPhysicalMemory(event) {
+      const [totalPhysicalMemory] = event.detail;
+      this.$store.dispatch("updateTotalPhysicalMemory", {
+        totalPhysicalMemory,
       });
     },
     async onSubmit(event) {
