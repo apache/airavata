@@ -24,6 +24,10 @@ user_data_dir: "{{ real_user_data_dir }}"
 #airavata_django_git_branch: "simccs"
 vhost_servername: "dev.ampgateway.org"
 vhost_ssl: true
+
+airavata_django_extra_dependencies:
+  - "git+ssh://git@gitlab.physik.uni-muenchen.de/git_machrist/trecx-django-app.git#egg=trecx-django-app"
+
 # tus isn't setup yet
 tusd_vhost_servername:
 # sudo certbot --apache certonly -d django.simccs.scigap.org
