@@ -195,7 +195,6 @@ export default {
     }
   },
   data() {
-    console.log("QueueSettingsEditor.vue: queueName", this.queueName);
     return {
       localQueueName: this.queueName,
       localTotalCPUCount: this.totalCpuCount,
@@ -236,12 +235,6 @@ export default {
   },
   methods: {
     emitValueChanged(eventName, value) {
-      console.log(
-        "QueueSettingsEditor: emitValueChanged(",
-        eventName,
-        value,
-        ")"
-      );
       const inputEvent = new CustomEvent(eventName, {
         detail: [value],
         composed: true,
@@ -255,13 +248,8 @@ export default {
   },
   watch: {
     queueName(value) {
-      console.log("QueueSettingsEditor: watch(queueName)", value);
       this.localQueueName = value;
     },
-    // nodes(value, oldValue) {
-    //   console.log("QueueSettingsEditor: watch(nodes)", value, oldValue);
-    //   this.localNodeCount = value;
-    // },
     nodeCount(value) {
       this.localNodeCount = value;
     },
@@ -280,4 +268,9 @@ export default {
 
 <style>
 @import url("./styles.css");
+
+:host {
+  display: block;
+  margin-bottom: 1rem;
+}
 </style>
