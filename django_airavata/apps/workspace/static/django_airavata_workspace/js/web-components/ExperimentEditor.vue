@@ -17,54 +17,17 @@
         <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
-    <!-- TODO: programmatically define slot for adpf-group-resource-profile-selector -->
-    <div @input.stop="updateGroupResourceProfileId">
-      <adpf-group-resource-profile-selector
-        :value="experiment.userConfigurationData.groupResourceProfileId"
-      />
-    </div>
-    <!-- TODO: programmatically define slot for adpf-experiment-compute-resource-selector -->
-    <div @input.stop="updateComputeResourceHostId">
-      <adpf-experiment-compute-resource-selector
-        ref="computeResourceSelector"
-        :value="
-          experiment.userConfigurationData.computationalResourceScheduling
-            .resourceHostId
-        "
-      />
-    </div>
-    <!-- TODO: programmatically define slot for adpf-queue-settings-editor -->
     <div
-      @queue-name-changed="updateQueueName"
-      @node-count-changed="updateNodeCount"
-      @total-cpu-count-change="updateTotalCPUCount"
-      @walltime-limit-changed="updateWallTimeLimit"
-      @total-physical-memory-changed="updateTotalPhysicalMemory"
+      ref="groupResourceProfileSelector"
+      @input.stop="updateGroupResourceProfileId"
     >
-      <adpf-queue-settings-editor
-        ref="queueSettingsEditor"
-        :queue-name="
-          experiment.userConfigurationData.computationalResourceScheduling
-            .queueName
-        "
-        :total-cpu-count="
-          experiment.userConfigurationData.computationalResourceScheduling
-            .totalCPUCount
-        "
-        :node-count="
-          experiment.userConfigurationData.computationalResourceScheduling
-            .nodeCount
-        "
-        :wall-time-limit="
-          experiment.userConfigurationData.computationalResourceScheduling
-            .wallTimeLimit
-        "
-        :total-physical-memory="
-          experiment.userConfigurationData.computationalResourceScheduling
-            .totalPhysicalMemory
-        "
-      />
-
+      <!-- programmatically define slot for adpf-group-resource-profile-selector -->
+    </div>
+    <div ref="computeResourceSelector">
+      <!-- programmatically define slot for adpf-experiment-compute-resource-selector -->
+    </div>
+    <div ref="queueSettingsEditor">
+      <!-- programmatically define slot for adpf-queue-settings-editor -->
     </div>
     <div ref="experimentButtons">
       <!-- programmatically define slot for experiment-buttons as
@@ -105,6 +68,7 @@ export default {
         applicationId: this.applicationId,
       });
     }
+    this.$emit("loaded", this.experiment);
     // vue-web-component-wrapper clones native slots and turns them into Vue
     // slots which means they lose any event listeners and they basically aren't
     // in the DOM any more.  As a workaround, programmatically create native
@@ -170,6 +134,39 @@ export default {
         this.createSlot("experiment-project", projectSelectorEl)
       );
 
+      const groupResourceProfileSelectorEl = document.createElement(
+        "adpf-group-resource-profile-selector"
+      );
+      if (this.groupResourceProfileId) {
+        groupResourceProfileSelectorEl.setAttribute(
+          "value",
+          this.groupResourceProfileId
+        );
+      }
+      this.$refs.groupResourceProfileSelector.append(
+        this.createSlot(
+          "experiment-group-resource-profile",
+          groupResourceProfileSelectorEl
+        )
+      );
+
+      const computeResourceSelectorEl = document.createElement(
+        "adpf-experiment-compute-resource-selector"
+      );
+      this.$refs.computeResourceSelector.append(
+        this.createSlot(
+          "experiment-compute-resource",
+          computeResourceSelectorEl
+        )
+      );
+
+      const queueSettingsEditorEl = document.createElement(
+        "adpf-queue-settings-editor"
+      );
+      this.$refs.queueSettingsEditor.append(
+        this.createSlot("experiment-queue-settings", queueSettingsEditorEl)
+      );
+
       /*
        * Experiment (save/launch) Buttons native slot
        */
@@ -210,7 +207,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters(["experiment"]),
+    ...mapGetters(["experiment", "groupResourceProfileId"]),
   },
   methods: {
     updateExperimentName(event) {
@@ -238,34 +235,6 @@ export default {
       const [groupResourceProfileId] = event.detail;
       this.$store.dispatch("updateGroupResourceProfileId", {
         groupResourceProfileId,
-      });
-    },
-    updateComputeResourceHostId(event) {
-      const [resourceHostId] = event.detail;
-      this.$store.dispatch("updateComputeResourceHostId", {
-        resourceHostId,
-      });
-    },
-    updateQueueName(event) {
-      const [queueName] = event.detail;
-      this.$store.dispatch("updateQueueName", { queueName });
-    },
-    updateTotalCPUCount(event) {
-      const [totalCPUCount] = event.detail;
-      this.$store.dispatch("updateTotalCPUCount", { totalCPUCount });
-    },
-    updateNodeCount(event) {
-      const [nodeCount] = event.detail;
-      this.$store.dispatch("updateNodeCount", { nodeCount });
-    },
-    updateWallTimeLimit(event) {
-      const [wallTimeLimit] = event.detail;
-      this.$store.dispatch("updateWallTimeLimit", { wallTimeLimit });
-    },
-    updateTotalPhysicalMemory(event) {
-      const [totalPhysicalMemory] = event.detail;
-      this.$store.dispatch("updateTotalPhysicalMemory", {
-        totalPhysicalMemory,
       });
     },
     async onSubmit(event) {

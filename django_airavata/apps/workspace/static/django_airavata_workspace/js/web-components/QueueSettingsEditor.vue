@@ -6,28 +6,26 @@
         class="card-link text-dark"
       >
         <div class="card-body">
-          <h5 class="card-title mb-4">
-            Settings for queue {{ localQueueName }}
-          </h5>
+          <h5 class="card-title mb-4">Settings for queue {{ queueName }}</h5>
           <div class="row">
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ localNodeCount }}
+                {{ nodeCount }}
               </h3>
               <span class="text-muted text-uppercase">NODE COUNT</span>
             </div>
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ localTotalCPUCount }}
+                {{ totalCPUCount }}
               </h3>
               <span class="text-muted text-uppercase">CORE COUNT</span>
             </div>
             <div class="col">
-              <h3 class="h5 mb-0">{{ localWallTimeLimit }} minutes</h3>
+              <h3 class="h5 mb-0">{{ wallTimeLimit }} minutes</h3>
               <span class="text-muted text-uppercase">TIME LIMIT</span>
             </div>
             <div class="col" v-if="maxMemory > 0">
-              <h3 class="h5 mb-0">{{ localTotalPhysicalMemory }} MB</h3>
+              <h3 class="h5 mb-0">{{ totalPhysicalMemory }} MB</h3>
               <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
             </div>
           </div>
@@ -38,7 +36,7 @@
       <b-form-group label="Select a Queue" label-for="queue">
         <b-form-select
           id="queue"
-          v-model="localQueueName"
+          :value="queueName"
           :options="queueOptions"
           required
           @change="queueChanged"
@@ -52,11 +50,9 @@
           type="number"
           min="1"
           :max="maxAllowedNodes"
-          v-model="localNodeCount"
+          :value="nodeCount"
           required
-          @input.native.stop="
-            emitValueChanged('node-count-changed', localNodeCount)
-          "
+          @input.native.stop="updateNodeCount"
         >
         </b-form-input>
         <div slot="description">
@@ -70,11 +66,9 @@
           type="number"
           min="1"
           :max="maxAllowedCores"
-          v-model="localTotalCPUCount"
+          :value="totalCPUCount"
           required
-          @input.native.stop="
-            emitValueChanged('total-cpu-count-changed', localTotalCPUCount)
-          "
+          @input.native.stop="updateTotalCPUCount"
         >
         </b-form-input>
         <div slot="description">
@@ -89,11 +83,9 @@
             type="number"
             min="1"
             :max="maxAllowedWalltime"
-            v-model="localWallTimeLimit"
+            :value="wallTimeLimit"
             required
-            @input.native.stop="
-              emitValueChanged('walltime-limit-changed', localWallTimeLimit)
-            "
+            @input.native.stop="updateWallTimeLimit"
           >
           </b-form-input>
         </b-input-group>
@@ -113,13 +105,8 @@
             type="number"
             min="0"
             :max="maxMemory"
-            v-model="localTotalPhysicalMemory"
-            @input.native.stop="
-              emitValueChanged(
-                'total-physical-memory-changed',
-                localTotalPhysicalMemory
-              )
-            "
+            :value="totalPhysicalMemory"
+            @input.native.stop="updateTotalPhysicalMemory"
           >
           </b-form-input>
         </b-input-group>
@@ -154,29 +141,6 @@ import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 config.autoAddCss = false;
 
 export default {
-  props: {
-    queueName: {
-      type: String,
-      required: true,
-    },
-    totalCpuCount: {
-      type: Number,
-      required: true,
-    },
-    nodeCount: {
-      type: Number,
-      required: true,
-    },
-    wallTimeLimit: {
-      type: Number,
-      required: true,
-    },
-    totalPhysicalMemory: {
-      type: Number,
-      default: 0,
-      // required: true,
-    },
-  },
   components: {
     FontAwesomeIcon,
   },
@@ -196,11 +160,6 @@ export default {
   },
   data() {
     return {
-      localQueueName: this.queueName,
-      localTotalCPUCount: this.totalCpuCount,
-      localNodeCount: this.nodeCount,
-      localWallTimeLimit: this.wallTimeLimit,
-      localTotalPhysicalMemory: this.totalPhysicalMemory,
       showConfiguration: false,
     };
   },
@@ -212,6 +171,11 @@ export default {
       "maxAllowedNodes",
       "maxAllowedWalltime",
       "maxMemory",
+      "queueName",
+      "totalCPUCount",
+      "nodeCount",
+      "wallTimeLimit",
+      "totalPhysicalMemory",
     ]),
     queueOptions() {
       if (!this.queues) {
@@ -226,6 +190,9 @@ export default {
       utils.StringUtils.sortIgnoreCase(queueOptions, (q) => q.text);
       return queueOptions;
     },
+    queueDescription() {
+      return this.queue ? this.queue.queueDescription : null;
+    },
     closeIcon() {
       return faTimes;
     },
@@ -234,33 +201,28 @@ export default {
     },
   },
   methods: {
-    emitValueChanged(eventName, value) {
-      const inputEvent = new CustomEvent(eventName, {
-        detail: [value],
-        composed: true,
-        bubbles: true,
+    queueChanged(queueName) {
+      this.$store.dispatch("updateQueueName", { queueName });
+    },
+    updateNodeCount(event) {
+      this.$store.dispatch("updateNodeCount", {
+        nodeCount: event.target.value,
       });
-      this.$el.dispatchEvent(inputEvent);
     },
-    queueChanged() {
-      this.emitValueChanged("queue-name-changed", this.localQueueName);
+    updateTotalCPUCount(event) {
+      this.$store.dispatch("updateTotalCPUCount", {
+        totalCPUCount: event.target.value,
+      });
     },
-  },
-  watch: {
-    queueName(value) {
-      this.localQueueName = value;
+    updateWallTimeLimit(event) {
+      this.$store.dispatch("updateWallTimeLimit", {
+        wallTimeLimit: event.target.value,
+      });
     },
-    nodeCount(value) {
-      this.localNodeCount = value;
-    },
-    totalCpuCount(value) {
-      this.localTotalCPUCount = value;
-    },
-    wallTimeLimit(value) {
-      this.localWallTimeLimit = value;
-    },
-    totalPhysicalMemory(value) {
-      this.localTotalPhysicalMemory = value;
+    updateTotalPhysicalMemory(event) {
+      this.$store.dispatch("updateTotalPhysicalMemory", {
+        totalPhysicalMemory: event.target.value,
+      });
     },
   },
 };

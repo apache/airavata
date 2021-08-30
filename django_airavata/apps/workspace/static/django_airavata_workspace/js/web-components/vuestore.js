@@ -467,6 +467,38 @@ export default new Vuex.Store({
             .queueName
         : null;
     },
+    totalCPUCount: (state) => {
+      return state.experiment &&
+        state.experiment.userConfigurationData &&
+        state.experiment.userConfigurationData.computationalResourceScheduling
+        ? state.experiment.userConfigurationData.computationalResourceScheduling
+            .totalCPUCount
+        : null;
+    },
+    nodeCount: (state) => {
+      return state.experiment &&
+        state.experiment.userConfigurationData &&
+        state.experiment.userConfigurationData.computationalResourceScheduling
+        ? state.experiment.userConfigurationData.computationalResourceScheduling
+            .nodeCount
+        : null;
+    },
+    wallTimeLimit: (state) => {
+      return state.experiment &&
+        state.experiment.userConfigurationData &&
+        state.experiment.userConfigurationData.computationalResourceScheduling
+        ? state.experiment.userConfigurationData.computationalResourceScheduling
+            .wallTimeLimit
+        : null;
+    },
+    totalPhysicalMemory: (state) => {
+      return state.experiment &&
+        state.experiment.userConfigurationData &&
+        state.experiment.userConfigurationData.computationalResourceScheduling
+        ? state.experiment.userConfigurationData.computationalResourceScheduling
+            .totalPhysicalMemory
+        : null;
+    },
     queue: (state, getters) => {
       return getters.queues && getters.queueName
         ? getters.queues.find((q) => q.queueName === getters.queueName)

@@ -6,6 +6,7 @@
       :options="computeResourceOptions"
       required
       @input="computeResourceChanged"
+      :disabled="computeResourceOptions.length === 0"
     >
       <template slot="first">
         <option :value="null" disabled>Select a Compute Resource</option>
@@ -24,7 +25,7 @@ export default {
     value: {
       // compute resource host id
       type: String,
-      required: true,
+      default: null,
     },
     includedComputeResources: {
       type: Array,
