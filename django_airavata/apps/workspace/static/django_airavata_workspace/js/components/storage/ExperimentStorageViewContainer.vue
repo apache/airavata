@@ -4,6 +4,7 @@
       <div class="d-flex justify-content-between">
         <h6 class="mb-0">Experiment Data Directory</h6>
         <b-link
+          v-if="canDownloadDataDirectory"
           :href="`/sdk/download-experiment-dir/${encodeURIComponent(
             experimentId
           )}`"
@@ -32,7 +33,6 @@ import ExperimentStoragePathViewer from "./ExperimentStoragePathViewer.vue";
 
 export default {
   name: "experiment-storage-view-container",
-  computed: {},
   props: {
     experimentId: {
       type: String,
@@ -50,6 +50,11 @@ export default {
   },
   created() {
     return this.loadExperimentStoragePath("");
+  },
+  computed: {
+    canDownloadDataDirectory() {
+      return this.experimentStoragePath && !this.experimentDataDirNotFound;
+    },
   },
   methods: {
     loadExperimentStoragePath(path) {

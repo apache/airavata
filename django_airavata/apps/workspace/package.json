@@ -23,6 +23,7 @@
     "@fortawesome/vue-fontawesome": "^2.0.2",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "2.0.0-rc.26",
+    "browserslist": "^4.16.7",
     "codemirror": "5.52.2",
     "django-airavata-api": "link:../api",
     "django-airavata-common-ui": "link:../../static/common",
@@ -82,6 +83,6 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not dead"
   ]
 }

@@ -42,7 +42,14 @@ export default {
     },
     last: function () {
       if (this.paginator) {
-        return this.paginator.offset + this.paginator.results.length;
+        if (this.paginator.count) {
+          return Math.min(
+            this.paginator.offset + this.paginator.limit,
+            this.paginator.count
+          );
+        } else {
+          return this.paginator.offset + this.paginator.results.length;
+        }
       } else {
         return null;
       }

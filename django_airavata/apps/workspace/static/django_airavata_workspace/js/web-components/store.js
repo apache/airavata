@@ -35,6 +35,12 @@ export async function saveExperiment(experiment) {
   }
 }
 
+export async function launchExperiment(experimentId) {
+  return await services.ExperimentService.launch({
+    lookup: experimentId,
+  });
+}
+
 export async function getWorkspacePreferences() {
   if (!CACHE.WORKSPACE_PREFERENCES) {
     CACHE.WORKSPACE_PREFERENCES = services.WorkspacePreferencesService.get();

@@ -17,7 +17,7 @@
           ref="file-upload"
           :xhr-upload-endpoint="uploadEndpoint"
           :tus-upload-finish-endpoint="uploadEndpoint"
-          @upload-success="uploadSuccess"
+          @upload-finished="uploadFinished"
           multiple
         />
       </div>
@@ -71,9 +71,9 @@ export default {
     },
   },
   methods: {
-    uploadSuccess() {
+    uploadFinished() {
       this.$refs["file-upload"].reset();
-      this.$emit("upload-success");
+      this.$emit("upload-finished");
     },
     addDirectory() {
       this.$emit("add-directory", this.dirName);

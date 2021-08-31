@@ -13,6 +13,7 @@ from wagtail.core.blocks import (
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
+from wagtailcodeblock.blocks import CodeBlock
 
 
 class ImageBlock(StructBlock):
@@ -255,6 +256,47 @@ class BootstrapButton(StructBlock):
         help_text = "Create a bootstrap button"
 
 
+class BootstrapButtonMore(StructBlock):
+    """
+    Custom 'StructBlock' that allows the user to make a bootstrap button that
+    toggles collapsible rich text block
+    """
+    button_text = TextBlock()
+    button_id = TextBlock(help_text="Unique name for this collapsible")
+    button_color = ChoiceBlock(choices=[
+        ('btn-primary', 'DEFAULT'),
+        ('btn-danger', 'RED'),
+        ('btn-secondary', 'GREY'),
+        ('btn-success', 'GREEN'),
+        ('btn-warning', 'ORANGE')
+    ], blank=True, required=False, help_text="select a button color")
+    button_size = ChoiceBlock(choices=[
+        ('', 'DEFAULT'),
+        ('btn-lg', 'LARGE'),
+        ('btn-sm', 'SMALL')
+    ], blank=True, required=False, help_text="select a button size")
+    button_class = TextBlock(
+        required=False,
+        blank=True,
+        help_text="control the look of this button by giving unique class names "
+                  "separated by space and styling the class in css")
+    body_class = TextBlock(
+        required=False,
+        blank=True,
+        help_text="control the look of this body by giving unique class names "
+                  "separated by space and styling the class in css")
+    body_inline_style = TextBlock(
+        required=False,
+        blank=True,
+        help_text="apply inline CSS styles to body")
+    body = RichTextBlock()
+
+    class Meta:
+        icon = "collapse-up"
+        template = "blocks/bootstrap/buttonmore.html"
+        help_text = "Create a button that will toggle the display of a rich text body of text"
+
+
 class BootstrapAlert(StructBlock):
     """
     Custom 'StructBlock' that allows the user to make a bootstrap alert
@@ -480,6 +522,10 @@ class BaseStreamBlock(StreamBlock):
     font_awesome_icon_block = FontAwesomeIcon()
     iu_footer_block = IuFooter()
     bootstrap_embed_video = BootstrapEmbedVideo()
+    expandable_rich_text_block = BootstrapButtonMore()
+    HTML_code = RawHTMLBlock()
+    # Using 'snippet' icon for uniqueness (RawHTMLBlock already uses 'code' icon)
+    code_snippet = CodeBlock(icon="snippet")
 
 
 class CssStreamBlock(StreamBlock):

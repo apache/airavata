@@ -1,5 +1,5 @@
 <template>
-  <img :src="dataUrl" />
+  <img v-if="dataUrl" :src="dataUrl" />
 </template>
 
 <script>
@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     dataUrl() {
-      if (this.viewData) {
+      if (this.viewData && this.viewData.image) {
         return `data:${this.viewData["mime-type"]};base64,${this.viewData["image"]}`;
       } else {
         return null;

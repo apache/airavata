@@ -32,7 +32,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.gzip import gzip_page
-from rest_framework import mixins, status
+from rest_framework import mixins, pagination, status
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
@@ -224,8 +224,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
 
     def _set_storage_id_and_data_dir(self, experiment):
         # Storage ID
-        experiment.userConfigurationData.storageId = \
-            settings.GATEWAY_DATA_STORE_RESOURCE_ID
+        experiment.userConfigurationData.storageId = user_storage.get_default_storage_resource_id(self.request)
         # Create experiment dir and set it on model
         if not experiment.userConfigurationData.experimentDataDir:
             project = self.request.airavata_client.getProject(
@@ -300,7 +299,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 headers = {
                     'Authorization': f'Bearer {request.authz_token.accessToken}'}
                 r = requests.post(
-                    f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/api/experiments/{quote(experiment_id)}/launch/',
+                    f'{remote_api_url}/api/experiments/{quote(experiment_id)}/launch/',
                     headers=headers,
                 )
                 r.raise_for_status()
@@ -314,7 +313,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                     request.authz_token, experiment_id, self.gateway_id)
                 return Response({'success': True})
         except Exception as e:
-            return Response({'success': False, 'errorMessage': e.message})
+            return Response({'success': False, 'errorMessage': str(e)})
 
     @action(methods=['get'], detail=True)
     def jobs(self, request, experiment_id=None):
@@ -1515,13 +1514,15 @@ class UserStoragePathView(APIView):
 
     def get(self, request, path="/", format=None):
         # AIRAVATA-3460 Allow passing path as a query parameter instead
-        path = request.GET.get('path', path)
-        return self._create_response(request, path)
+        path = request.query_params.get('path', path)
+        experiment_id = request.query_params.get('experiment-id')
+        return self._create_response(request, path, experiment_id=experiment_id)
 
     def post(self, request, path="/", format=None):
-        path = request.POST.get('path', path)
-        if not user_storage.dir_exists(request, path):
-            _, resource_path = user_storage.create_user_dir(request, path)
+        path = request.data.get('path', path)
+        experiment_id = request.data.get('experiment-id')
+        if not user_storage.dir_exists(request, path, experiment_id=experiment_id):
+            _, resource_path = user_storage.create_user_dir(request, path, experiment_id=experiment_id)
             # create_user_dir may create the directory with a different name
             # than requested, for example, converting spaces to underscores, so
             # use as the path the path that is returned by create_user_dir
@@ -1532,7 +1533,8 @@ class UserStoragePathView(APIView):
         if 'file' in request.FILES:
             user_file = request.FILES['file']
             data_product = user_storage.save(
-                request, path, user_file, content_type=user_file.content_type)
+                request, path, user_file, content_type=user_file.content_type,
+                experiment_id=experiment_id)
         # Handle a tus upload
         elif 'uploadURL' in request.POST:
             uploadURL = request.POST['uploadURL']
@@ -1540,9 +1542,10 @@ class UserStoragePathView(APIView):
             def save_file(file_path, file_name, file_type):
                 with open(file_path, 'rb') as uploaded_file:
                     return user_storage.save(request, path, uploaded_file,
-                                             name=file_name, content_type=file_type)
+                                             name=file_name, content_type=file_type,
+                                             experiment_id=experiment_id)
             data_product = tus.save_tus_upload(uploadURL, save_file)
-        return self._create_response(request, path, uploaded=data_product)
+        return self._create_response(request, path, uploaded=data_product, experiment_id=experiment_id)
 
     # Accept wither to replace file or to replace file content text.
     def put(self, request, path="/", format=None):
@@ -1564,17 +1567,18 @@ class UserStoragePathView(APIView):
         return self._create_response(request=request, path=path)
 
     def delete(self, request, path="/", format=None):
-        path = request.POST.get('path', path)
-        if user_storage.dir_exists(request, path):
-            user_storage.delete_dir(request, path)
+        path = request.data.get('path', path)
+        experiment_id = request.data.get('experiment-id')
+        if user_storage.dir_exists(request, path, experiment_id=experiment_id):
+            user_storage.delete_dir(request, path, experiment_id=experiment_id)
         else:
-            user_storage.delete_user_file(request, path)
+            user_storage.delete_user_file(request, path, experiment_id=experiment_id)
 
         return Response(status=204)
 
-    def _create_response(self, request, path, uploaded=None):
-        if user_storage.dir_exists(request, path):
-            directories, files = user_storage.listdir(request, path)
+    def _create_response(self, request, path, uploaded=None, experiment_id=None):
+        if user_storage.dir_exists(request, path, experiment_id=experiment_id):
+            directories, files = user_storage.listdir(request, path, experiment_id=experiment_id)
             data = {
                 'isDir': True,
                 'directories': directories,
@@ -1588,7 +1592,7 @@ class UserStoragePathView(APIView):
                 data, context={'request': request})
             return Response(serializer.data)
         else:
-            file = user_storage.get_file(request, path)
+            file = user_storage.get_file_metadata(request, path, experiment_id=experiment_id)
             data = {
                 'isDir': False,
                 'directories': [],
@@ -1811,12 +1815,24 @@ class ExperimentStatisticsView(APIView):
         username = request.GET.get('userName', None)
         application_name = request.GET.get('applicationName', None)
         resource_hostname = request.GET.get('resourceHostName', None)
+        limit = int(request.GET.get('limit', '50'))
+        offset = int(request.GET.get('offset', '0'))
+
         statistics = request.airavata_client.getExperimentStatistics(
             request.authz_token, settings.GATEWAY_ID, from_time, to_time,
-            username, application_name, resource_hostname)
-        serializer = self.serializer_class(
-            statistics, context={'request': request})
-        return Response(serializer.data)
+            username, application_name, resource_hostname, limit, offset)
+        serializer = self.serializer_class(statistics, context={'request': request})
+
+        paginator = pagination.LimitOffsetPagination()
+        paginator.count = statistics.allExperimentCount
+        paginator.limit = limit
+        paginator.offset = offset
+        paginator.request = request
+        response = paginator.get_paginated_response(serializer.data)
+        # Also add limit and offset to the response
+        response.data['limit'] = limit
+        response.data['offset'] = offset
+        return response
 
 
 class UnverifiedEmailUserViewSet(mixins.ListModelMixin,

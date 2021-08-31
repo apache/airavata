@@ -35,23 +35,6 @@ class AiravataClientMiddleware:
             return None
 
 
-def sharing_client(get_response):
-    "Open and close Sharing registry client for each request"
-
-    def middleware(request):
-
-        # If user is logged in create a sharing registry client for the request
-        if request.user.is_authenticated:
-            request.sharing_client = utils.sharing_api_client_pool
-            response = get_response(request)
-        else:
-            response = get_response(request)
-
-        return response
-
-    return middleware
-
-
 def profile_service_client(get_response):
     """Open and close Profile Service client for each request.
 

@@ -30,14 +30,19 @@ export default class PaginationIterator {
     this._next = pagedResponse.next;
     this._previous = pagedResponse.previous;
     if (this.resultType) {
-      this.results = pagedResponse.results.map(
-        (result) => new this.resultType(result)
-      );
+      if (Array.isArray(pagedResponse.results)) {
+        this.results = pagedResponse.results.map(
+          (result) => new this.resultType(result)
+        );
+      } else {
+        this.results = new this.resultType(pagedResponse.results);
+      }
     } else {
       this.results = pagedResponse.results;
     }
     this.offset = pagedResponse.offset;
     this.limit = pagedResponse.limit;
+    this.count = pagedResponse.count;
     return this;
   }
 
