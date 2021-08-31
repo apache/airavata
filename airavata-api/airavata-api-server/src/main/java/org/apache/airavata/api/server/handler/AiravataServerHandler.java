@@ -2224,7 +2224,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         existingExperiment.unsetProcesses();
         existingExperiment.unsetExperimentStatus();
         if(existingExperiment.getUserConfigurationData() != null && existingExperiment.getUserConfigurationData()
-                .getComputationalResourceScheduling() != null){
+                .getComputationalResourceScheduling() != null 
+                && existingExperiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId() != null){
             String compResourceId = existingExperiment.getUserConfigurationData()
                     .getComputationalResourceScheduling().getResourceHostId();
 
