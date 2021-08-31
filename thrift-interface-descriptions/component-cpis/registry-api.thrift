@@ -365,6 +365,13 @@ service RegistryService extends base_api.BaseAPI {
              *
              * @param accessibleExpIds
              *    Experiment IDs which are accessible to the current user.
+             *
+             * @param limit
+             *       Amount of results to be fetched.
+             *
+             * @param offset
+             *       The starting point of the results to be fetched.
+             *
              **/
             experiment_model.ExperimentStatistics getExperimentStatistics(1: required string gatewayId,
                                     2: required i64 fromTime,
@@ -372,7 +379,9 @@ service RegistryService extends base_api.BaseAPI {
                                     4: string userName,
                                     5: string applicationName,
                                     6: string resourceHostName,
-                                    7: list<string> accessibleExpIds)
+                                    7: list<string> accessibleExpIds,
+                                    8: i32 limit = 50,
+                                    9: i32 offset = 0)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 

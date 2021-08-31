@@ -1160,7 +1160,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 sharingFilters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, sharingFilters, 0, -1).stream().forEach(e -> accessibleProjIds.add(e.getEntityId()));
+                        userName + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE).stream().forEach(e -> accessibleProjIds.add(e.getEntityId()));
                 if (accessibleProjIds.isEmpty()) {
                     result = Collections.emptyList();
                 } else {
@@ -1208,17 +1208,81 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             List<String> accessibleExpIds = new ArrayList<>();
-            if (ServerSettings.isEnableSharing()) {
-                List<SearchCriteria> sharingFilters = new ArrayList<>();
-                SearchCriteria searchCriteria = new SearchCriteria();
-                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-                searchCriteria.setValue(gatewayId + ":EXPERIMENT");
-                sharingFilters.add(searchCriteria);
-                sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.getEntityId()));
+            Map<ExperimentSearchFields, String> filtersCopy = new HashMap<>(filters);
+            List<SearchCriteria> sharingFilters = new ArrayList<>();
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+            searchCriteria.setValue(gatewayId + ":EXPERIMENT");
+            sharingFilters.add(searchCriteria);
+
+            // Apply as much of the filters in the sharing API as possible,
+            // removing each filter that can be filtered via the sharing API
+            if (filtersCopy.containsKey(ExperimentSearchFields.FROM_DATE)) {
+                String fromTime = filtersCopy.remove(ExperimentSearchFields.FROM_DATE);
+                SearchCriteria fromCreatedTimeCriteria = new SearchCriteria();
+                fromCreatedTimeCriteria.setSearchField(EntitySearchField.CREATED_TIME);
+                fromCreatedTimeCriteria.setSearchCondition(SearchCondition.GTE);
+                fromCreatedTimeCriteria.setValue(fromTime);
+                sharingFilters.add(fromCreatedTimeCriteria);
             }
-            List<ExperimentSummaryModel> result = regClient.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
+            if (filtersCopy.containsKey(ExperimentSearchFields.TO_DATE)) {
+                String toTime = filtersCopy.remove(ExperimentSearchFields.TO_DATE);
+                SearchCriteria toCreatedTimeCriteria = new SearchCriteria();
+                toCreatedTimeCriteria.setSearchField(EntitySearchField.CREATED_TIME);
+                toCreatedTimeCriteria.setSearchCondition(SearchCondition.LTE);
+                toCreatedTimeCriteria.setValue(toTime);
+                sharingFilters.add(toCreatedTimeCriteria);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.PROJECT_ID)) {
+                String projectId = filtersCopy.remove(ExperimentSearchFields.PROJECT_ID);
+                SearchCriteria projectParentEntityCriteria = new SearchCriteria();
+                projectParentEntityCriteria.setSearchField(EntitySearchField.PARRENT_ENTITY_ID);
+                projectParentEntityCriteria.setSearchCondition(SearchCondition.EQUAL);
+                projectParentEntityCriteria.setValue(projectId);
+                sharingFilters.add(projectParentEntityCriteria);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.USER_NAME)) {
+                String username = filtersCopy.remove(ExperimentSearchFields.USER_NAME);
+                SearchCriteria usernameOwnerCriteria = new SearchCriteria();
+                usernameOwnerCriteria.setSearchField(EntitySearchField.OWNER_ID);
+                usernameOwnerCriteria.setSearchCondition(SearchCondition.EQUAL);
+                usernameOwnerCriteria.setValue(username + "@" + gatewayId);
+                sharingFilters.add(usernameOwnerCriteria);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.EXPERIMENT_NAME)) {
+                String experimentName = filtersCopy.remove(ExperimentSearchFields.EXPERIMENT_NAME);
+                SearchCriteria experimentNameCriteria = new SearchCriteria();
+                experimentNameCriteria.setSearchField(EntitySearchField.NAME);
+                experimentNameCriteria.setSearchCondition(SearchCondition.LIKE);
+                experimentNameCriteria.setValue(experimentName);
+                sharingFilters.add(experimentNameCriteria);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.EXPERIMENT_DESC)) {
+                String experimentDescription = filtersCopy.remove(ExperimentSearchFields.EXPERIMENT_DESC);
+                SearchCriteria experimentDescriptionCriteria = new SearchCriteria();
+                experimentDescriptionCriteria.setSearchField(EntitySearchField.DESCRIPTION);
+                experimentDescriptionCriteria.setSearchCondition(SearchCondition.LIKE);
+                experimentDescriptionCriteria.setValue(experimentDescription);
+                sharingFilters.add(experimentDescriptionCriteria);
+            }
+            // Grab all of the matching experiments in the sharing registry
+            // unless all of the filtering can be done through the sharing API
+            int searchOffset = 0;
+            int searchLimit = Integer.MAX_VALUE;
+            boolean filteredInSharing = filtersCopy.isEmpty();
+            if (filteredInSharing) {
+                searchOffset = offset;
+                searchLimit = limit;
+            }
+            sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                    userName + "@" + gatewayId, sharingFilters, searchOffset, searchLimit).forEach(e -> accessibleExpIds.add(e.getEntityId()));
+            int finalOffset = offset;
+            // If no more filtering to be done (either empty or all done through sharing API), set the offset to 0
+            if (filteredInSharing) {
+                finalOffset = 0;
+            }
+            List<ExperimentSummaryModel> result = regClient.searchExperiments(gatewayId, userName, accessibleExpIds, filtersCopy, limit, finalOffset);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
@@ -1249,7 +1313,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, String gatewayId, long fromTime, long toTime,
-                                                        String userName, String applicationName, String resourceHostName)
+                                                        String userName, String applicationName, String resourceHostName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         // SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
@@ -1278,7 +1342,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             //         userId + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE).forEach(e -> accessibleExpIds.add(e.getEntityId()));
             List<String> accessibleExpIds = null;
 
-            ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds);
+            ExperimentStatistics result = regClient.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds, limit, offset);
             registryClientPool.returnResource(regClient);
             // sharingClientPool.returnResource(sharingClient);
             return result;
