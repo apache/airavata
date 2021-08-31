@@ -3648,7 +3648,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 switch (experimentState){
                     case CREATED: case VALIDATED:
                         if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
-                                .getComputationalResourceScheduling() != null){
+                                .getComputationalResourceScheduling() != null 
+                                && experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId() != null){
                             String compResourceId = experiment.getUserConfigurationData()
                                     .getComputationalResourceScheduling().getResourceHostId();
                             ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
@@ -3750,7 +3751,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
-                    .getComputationalResourceScheduling() != null){
+                    .getComputationalResourceScheduling() != null 
+                    && experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId() != null){
 
                 String compResourceId = experiment.getUserConfigurationData()
                         .getComputationalResourceScheduling().getResourceHostId();
