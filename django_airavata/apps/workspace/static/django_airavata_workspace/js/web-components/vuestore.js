@@ -8,6 +8,7 @@ const PROMISES = {
   workspacePreferences: null,
 };
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== "production",
   state: {
     experiment: null,
     projects: null,
@@ -113,27 +114,37 @@ export default new Vuex.Store({
       commit("setExperiment", { experiment });
       await dispatch("loadExperimentData");
     },
-    async loadExperimentData({ commit, dispatch, getters }) {
+    async loadExperimentData({ commit, dispatch, getters, state }) {
       await Promise.all([
         dispatch("loadProjects"),
         dispatch("loadWorkspacePreferences"),
         dispatch("loadGroupResourceProfiles"),
       ]);
 
-      if (!getters.experiment.projectId) {
-        commit("updateProjectId", { projectId: getters.defaultProjectId });
+      if (!state.experiment.projectId) {
+        commit("updateProjectId", {
+          projectId: state.workspacePreferences.most_recent_project_id,
+        });
       }
       // If there is no groupResourceProfileId set on the experiment, or there
       // is one set but it is no longer in the list of accessible
       // groupResourceProfiles, set to the default one
-      if (!getters.groupResourceProfileId || !getters.groupResourceProfile) {
+      let groupResourceProfileId =
+        state.experiment.userConfigurationData.groupResourceProfileId;
+      if (
+        !groupResourceProfileId ||
+        !getters.findGroupResourceProfile(groupResourceProfileId)
+      ) {
         commit("updateGroupResourceProfileId", {
-          groupResourceProfileId: getters.defaultGroupResourceProfileId,
+          groupResourceProfileId:
+            state.workspacePreferences.most_recent_group_resource_profile_id,
         });
       }
+      groupResourceProfileId =
+        state.experiment.userConfigurationData.groupResourceProfileId;
       // If experiment has a group resource profile and user has access to it,
       // load additional necessary data and re-apply group resource profile
-      if (getters.groupResourceProfile) {
+      if (getters.findGroupResourceProfile(groupResourceProfileId)) {
         await dispatch("loadApplicationDeployments");
         await dispatch("loadAppDeploymentQueues");
         await dispatch("applyGroupResourceProfile");
@@ -410,12 +421,14 @@ export default new Vuex.Store({
       state.experiment
         ? state.experiment.userConfigurationData.groupResourceProfileId
         : null,
-    groupResourceProfile: (state, getters) =>
+    findGroupResourceProfile: (state) => (groupResourceProfileId) =>
       state.groupResourceProfiles
         ? state.groupResourceProfiles.find(
-            (g) => g.groupResourceProfileId === getters.groupResourceProfileId
+            (g) => g.groupResourceProfileId === groupResourceProfileId
           )
         : null,
+    groupResourceProfile: (state, getters) =>
+      getters.findGroupResourceProfile(getters.groupResourceProfileId),
     resourceHostId: (state) =>
       state.experiment &&
       state.experiment.userConfigurationData &&
