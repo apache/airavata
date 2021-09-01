@@ -216,10 +216,6 @@ export default {
       });
     },
     updateInputValue(inputName, event) {
-      if (event.inputType) {
-        // Ignore these fine-grained events about the type of change made
-        return;
-      }
       // web component input events have the current value in a detail array,
       // native input events have the current value in target.value
       const value = Array.isArray(event.detail)

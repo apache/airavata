@@ -1,13 +1,16 @@
 <template>
   <!-- NOTE: experimentInput is late bound, don't create component until it is available -->
-  <string-input-editor
-    v-if="experimentInput"
-    :id="id"
-    :value="data"
-    :experiment-input="experimentInput"
-    :read-only="readOnly"
-    @input="onInput"
-  />
+  <div>
+    <string-input-editor
+      ref="inputEditor"
+      v-if="experimentInput"
+      :id="id"
+      :value="data"
+      :experiment-input="experimentInput"
+      :read-only="readOnly"
+      @input="onInput"
+    />
+  </div>
 </template>
 
 <script>
@@ -30,6 +33,16 @@ export default {
     StringInputEditor,
   },
   store: vuestore,
+  mounted() {
+    this.$nextTick(() => {
+      // Stop wrapped input editor 'input' event from bubbling up so it doesn't
+      // conflict with this component's 'input' event. (see #onInput)
+      this.$refs.inputEditor.$el.addEventListener('input', this.stopPropagation);
+    })
+  },
+  destroyed() {
+    this.$refs.inputEditor.$el.removeEventListener('input', this.stopPropagation);
+  },
   data() {
     return {
       data: this.value,
@@ -58,6 +71,9 @@ export default {
         this.$el.dispatchEvent(inputEvent);
       }
     },
+    stopPropagation(event) {
+      event.stopPropagation();
+    }
   },
 };
 </script>
