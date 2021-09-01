@@ -128,7 +128,7 @@
 <script>
 import { utils } from "django-airavata-api";
 import Vue from "vue";
-import vuestore from "./vuestore";
+import store from "./store";
 import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
@@ -144,7 +144,7 @@ export default {
   components: {
     FontAwesomeIcon,
   },
-  store: vuestore,
+  store: store,
   mounted() {
     // Add font awesome styles
     // https://github.com/FortAwesome/vue-fontawesome#web-components-with-vue-web-component-wrapper

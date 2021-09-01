@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import vuestore from "./vuestore";
+import store from "./store";
 import { mapGetters } from "vuex";
 import ComputeResourceSelector from "./ComputeResourceSelector.vue";
 
 export default {
   name: "experiment-compute-resource-selector",
-  store: vuestore,
+  store: store,
   components: {
     ComputeResourceSelector,
   },

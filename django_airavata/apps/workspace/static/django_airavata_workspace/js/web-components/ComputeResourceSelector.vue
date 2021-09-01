@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import vuestore from "./vuestore";
+import store from "./store";
 import { mapGetters } from "vuex";
 
 export default {
@@ -32,7 +32,7 @@ export default {
       default: null,
     },
   },
-  store: vuestore,
+  store: store,
   data() {
     return {
       resourceHostId: this.value,

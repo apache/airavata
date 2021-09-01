@@ -28,7 +28,7 @@
 
 <script>
 import Vue from "vue";
-import vuestore from "./vuestore";
+import store from "./store";
 import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
@@ -40,7 +40,7 @@ export default {
       default: null,
     },
   },
-  store: vuestore,
+  store: store,
   data() {
     return {
       projectId: this.value,

@@ -19,7 +19,7 @@
 <script>
 import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
-import vuestore from "./vuestore";
+import store from "./store";
 import { mapGetters } from "vuex";
 Vue.use(BootstrapVue);
 
@@ -35,7 +35,7 @@ export default {
       default: "Allocation",
     },
   },
-  store: vuestore,
+  store: store,
   data() {
     return {
       groupResourceProfileId: this.value,

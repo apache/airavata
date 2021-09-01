@@ -19,7 +19,7 @@ import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
 import AsyncComputed from "vue-async-computed";
 import { utils } from "django-airavata-common-ui";
-import vuestore from "../vuestore";
+import store from "../store";
 Vue.use(BootstrapVue);
 Vue.use(AsyncComputed);
 
@@ -32,7 +32,7 @@ export default {
   components: {
     StringInputEditor,
   },
-  store: vuestore,
+  store: store,
   mounted() {
     this.$nextTick(() => {
       // Stop wrapped input editor 'input' event from bubbling up so it doesn't

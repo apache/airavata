@@ -38,7 +38,7 @@
 
 <script>
 import Vue from "vue";
-import vuestore from "./vuestore";
+import store from "./store";
 import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 import urls from "../utils/urls";
@@ -56,7 +56,7 @@ export default {
       required: false,
     },
   },
-  store: vuestore,
+  store: store,
   async created() {},
   async mounted() {
     if (this.experimentId) {
