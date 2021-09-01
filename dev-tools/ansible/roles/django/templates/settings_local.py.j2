@@ -121,11 +121,6 @@ AIRAVATA_API_PORT = {{ api_server_port }}
 AIRAVATA_API_SECURE = False
 {% endif %}
 
-# FIXME: just for backwards compatibility, can be removed once these are no longer referenced in airavata-django-portal
-GATEWAY_DATA_STORE_RESOURCE_ID = '{{ gateway_data_store_resource_id }}'
-GATEWAY_DATA_STORE_DIR = '{{ experiment_data_dir }}'
-GATEWAY_DATA_STORE_HOSTNAME = '{{ gateway_data_store_hostname }}'
-
 USER_STORAGES = {
     'default': {
         'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
