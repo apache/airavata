@@ -1,19 +1,20 @@
 <template>
-  <!-- NOTE: experimentInput is late bound, don't create component until it is available -->
   <div>
-    <string-input-editor
+    <radio-button-input-editor
       v-if="experimentInput"
       :id="id"
       :value="data"
       :experiment-input="experimentInput"
       :read-only="readOnly"
+      :options="options"
       @input="onInput"
     />
   </div>
 </template>
 
 <script>
-import StringInputEditor from "../../components/experiment/input-editors/StringInputEditor.vue";
+import RadioButtonInputEditor from "../../components/experiment/input-editors/RadioButtonInputEditor.vue";
+
 import Vue from "vue";
 import { BootstrapVue } from "bootstrap-vue";
 import AsyncComputed from "vue-async-computed";
@@ -26,11 +27,27 @@ export default {
   props: {
     value: String,
     name: String,
-  },
-  components: {
-    StringInputEditor,
+    options: {
+      type: Array,
+      default: null,
+    },
   },
   store: store,
+  components: {
+    RadioButtonInputEditor,
+  },
+  mounted() {
+    this.$nextTick(() => {
+      for (const key of Object.keys(this.$props)) {
+        // workaround for issues around setting props before WC connected,
+        // see https://github.com/vuejs/vue-web-component-wrapper/pull/81
+
+        // copy properties set on host element to wrapper component
+        // (mostly this is done so that the options array can be set by client code)
+        this.$parent.props[key] = this.$el.getRootNode().host[key];
+      }
+    })
+  },
   data() {
     return {
       data: this.value,
@@ -63,8 +80,8 @@ export default {
   watch: {
     value(value) {
       this.data = value;
-    }
-  }
+    },
+  },
 };
 </script>
 
