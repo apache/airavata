@@ -244,10 +244,11 @@ const readOutputFile = async function (
   });
 };
 
-export { createExperiment, readInputFile, readOutputFile };
+export { createExperiment, readInputFile, readOutputFile, readDataProduct };
 
 export default {
   createExperiment,
   readInputFile,
   readOutputFile,
+  readDataProduct,
 };
