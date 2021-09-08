@@ -7,64 +7,23 @@
       :value="data"
       :experiment-input="experimentInput"
       :read-only="readOnly"
-      @input="onInput"
+      @input="valueChanged"
     />
   </div>
 </template>
 
 <script>
 import StringInputEditor from "../../components/experiment/input-editors/StringInputEditor.vue";
-import Vue from "vue";
-import { BootstrapVue } from "bootstrap-vue";
-import AsyncComputed from "vue-async-computed";
-import { utils } from "django-airavata-common-ui";
-import store from "../store";
-Vue.use(BootstrapVue);
-Vue.use(AsyncComputed);
+import WebComponentInputEditorMixin from "./WebComponentInputEditorMixin.js";
 
 export default {
+  mixins: [WebComponentInputEditorMixin],
   props: {
-    value: String,
-    name: String,
+    ...WebComponentInputEditorMixin.props,
   },
   components: {
     StringInputEditor,
   },
-  store: store,
-  data() {
-    return {
-      data: this.value,
-    };
-  },
-  computed: {
-    readOnly() {
-      return this.experimentInput.isReadOnly;
-    },
-    id() {
-      return utils.sanitizeHTMLId(this.experimentInput.name);
-    },
-    experimentInput() {
-      return this.$store.getters.getExperimentInputByName(this.name);
-    },
-  },
-  methods: {
-    onInput(value) {
-      if (value !== this.data) {
-        this.data = value;
-        const inputEvent = new CustomEvent("input", {
-          detail: [this.data],
-          composed: true,
-          bubbles: true,
-        });
-        this.$el.dispatchEvent(inputEvent);
-      }
-    },
-  },
-  watch: {
-    value(value) {
-      this.data = value;
-    }
-  }
 };
 </script>
 
