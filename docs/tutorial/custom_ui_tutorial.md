@@ -1428,15 +1428,15 @@ $("#run-button").click((e) => {
     the name of the experiment and the experiment's input values.
 
 ```javascript
-        // Construct experiment object
-        utils.ExperimentUtils.createExperiment({
-            applicationInterfaceId: appInterfaceId,
-            computeResourceName: "example-vc.jetstream-cloud.org",
-            experimentName: "Echo " + greeting,
-            experimentInputs: {
-                "Input-to-Echo": greeting
-            }
-        })
+// Construct experiment object
+utils.ExperimentUtils.createExperiment({
+    applicationInterfaceId: appInterfaceId,
+    computeResourceName: "example-vc.jetstream-cloud.org",
+    experimentName: "Echo " + greeting,
+    experimentInputs: {
+        "Input-to-Echo": greeting,
+    },
+});
 ```
 
 4. The `createExperiment` function does a few more things behind the scenes and
@@ -1490,54 +1490,40 @@ bonjour
 We'll read the STDOUT file and display that in our experiment listing table.
 
 1. What we need to do is get the identifier for the experiment's STDOUT file. In
-   Airavata, this identifier is called the _Data Product ID_. Once we have that
-   we can get the DataProduct object which has the files metadata, including a
-   `downloadURL`. For each `exp` we can use the `FullExperimentService` to get
-   these details like so:
+   Airavata, this identifier is called the _Data Product ID_. The experiment
+   metadata includes a list of output files and the `value` of each one is that file's
+   Data Product ID. For each `exp` we can use the `ExperimentService` to load
+   this metadata for the experiment, find the STDOUT output object and get its
+   value, which is the _Data Product ID_.
 
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
-    services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
-        (fullDetails) => {
-            const stdoutDataProductId =
-                fullDetails.experiment.experimentOutputs.find(
-                    (o) => o.name === "Echo-STDOUT"
-                ).value;
-            const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                (dp) => dp.productUri === stdoutDataProductId
-            );
-            if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
-                return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin",
-                }).then((result) => result.text());
-            }
-        }
-    );
+    const experiment = await services.ExperimentService.retrieve({
+        lookup: expSummary.experimentId,
+    });
+    const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+    const dataProductURI = stdoutInput.value;
 }
 ```
 
-2. Then we'll simply display the value in the table.
+2. Then we'll simply download the file and display the value in the table. We'll
+   use `ExperimentUtils.readDataProduct()` to download the file.
 
 ```javascript
-if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
-    services.FullExperimentService.retrieve({ lookup: exp.experimentId })
-        .then((fullDetails) => {
-            const stdoutDataProductId =
-                fullDetails.experiment.experimentOutputs.find(
-                    (o) => o.name === "Echo-STDOUT"
-                ).value;
-            const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                (dp) => dp.productUri === stdoutDataProductId
-            );
-            if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
-                return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin",
-                }).then((result) => result.text());
-            }
-        })
-        .then((text) => {
-            $(`#output_${index}`).text(text);
-        });
+if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
+    const experiment = await services.ExperimentService.retrieve({
+        lookup: expSummary.experimentId,
+    });
+    const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+    const dataProductURI = stdoutInput.value;
+    try {
+        const stdout = await utils.ExperimentUtils.readDataProduct(
+            dataProductURI
+        );
+        $(`#output_${index}`).text(stdout);
+    } catch (error) {
+        $(`#output_${index}`).text("N/A");
+    }
 }
 ```
 
@@ -1566,32 +1552,19 @@ function loadExperiments() {
             );
 
             // STARTING HERE
-            // If experiment has finished, load full details, then parse the stdout file
-            if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
-                services.FullExperimentService.retrieve({
-                    lookup: exp.experimentId,
-                })
-                    .then((fullDetails) => {
-                        const stdoutDataProductId =
-                            fullDetails.experiment.experimentOutputs.find(
-                                (o) => o.name === "Echo-STDOUT"
-                            ).value;
-                        const stdoutDataProduct =
-                            fullDetails.outputDataProducts.find(
-                                (dp) => dp.productUri === stdoutDataProductId
-                            );
-                        if (
-                            stdoutDataProduct &&
-                            stdoutDataProduct.downloadURL
-                        ) {
-                            return fetch(stdoutDataProduct.downloadURL, {
-                                credentials: "same-origin",
-                            }).then((result) => result.text());
-                        }
-                    })
-                    .then((text) => {
-                        $(`#output_${index}`).text(text);
-                    });
+            // If experiment has finished, download and display the stdout file contents
+            if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
+                const experiment = await services.ExperimentService.retrieve({
+                    lookup: expSummary.experimentId
+                });
+                const stdoutInput = experiment.getExperimentOutput('Echo-STDOUT');
+                const dataProductURI = stdoutInput.value;
+                try {
+                    const stdout = await utils.ExperimentUtils.readDataProduct(dataProductURI);
+                    $(`#output_${index}`).text(stdout);
+                } catch (error) {
+                    $(`#output_${index}`).text("N/A");
+                }
             }
             // ENDING HERE
         });
