@@ -1,7 +1,7 @@
 <template>
   <!-- NOTE: experimentInput is late bound, don't create component until it is available -->
   <div>
-    <string-input-editor
+    <file-input-editor
       v-if="experimentInput"
       :id="id"
       :value="data"
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import StringInputEditor from "../../components/experiment/input-editors/StringInputEditor.vue";
+import FileInputEditor from "../../components/experiment/input-editors/FileInputEditor";
 import WebComponentInputEditorMixin from "./WebComponentInputEditorMixin.js";
 
 export default {
@@ -25,13 +25,18 @@ export default {
     ...WebComponentInputEditorMixin.props,
   },
   components: {
-    StringInputEditor,
+    FileInputEditor,
   },
 };
 </script>
 
 <style>
 @import "../styles.css";
+@import "~@uppy/core/dist/style.min.css";
+@import "~@uppy/status-bar/dist/style.min.css";
+@import "~@uppy/drag-drop/dist/style.min.css";
+@import "~codemirror/lib/codemirror.css";
+@import "~codemirror/theme/abcdef.css";
 :host {
   display: block;
 }

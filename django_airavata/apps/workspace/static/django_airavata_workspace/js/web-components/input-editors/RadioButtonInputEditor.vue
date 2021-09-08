@@ -36,4 +36,7 @@ export default {
 
 <style>
 @import "../styles.css";
+:host {
+  display: block;
+}
 </style>

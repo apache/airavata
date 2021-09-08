@@ -56,7 +56,7 @@
         >
         </b-form-input>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Allowed Nodes = {{ maxAllowedNodes }}
         </div>
       </b-form-group>
@@ -72,7 +72,7 @@
         >
         </b-form-input>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Allowed Cores = {{ maxAllowedCores }}
         </div>
       </b-form-group>
@@ -90,7 +90,7 @@
           </b-form-input>
         </b-input-group>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Allowed Wall Time = {{ maxAllowedWalltime }} minutes
         </div>
       </b-form-group>
@@ -111,13 +111,13 @@
           </b-form-input>
         </b-input-group>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Physical Memory = {{ maxMemory }} MB
         </div>
       </b-form-group>
       <div>
         <b-link class="text-secondary" @click="showConfiguration = false">
-          <font-awesome-icon :icon="closeIcon" />
+          <i class="fa fa-times" aria-hidden="true"></i>
           Hide Settings</b-link
         >
       </div>
@@ -133,31 +133,8 @@ import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { config, dom } from "@fortawesome/fontawesome-svg-core";
-import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-
-// Make sure you tell Font Awesome to skip auto-inserting CSS into the <head>
-config.autoAddCss = false;
-
 export default {
-  components: {
-    FontAwesomeIcon,
-  },
   store: store,
-  mounted() {
-    // Add font awesome styles
-    // https://github.com/FortAwesome/vue-fontawesome#web-components-with-vue-web-component-wrapper
-    const { shadowRoot } = this.$parent.$options;
-    const id = "fa-styles";
-
-    if (!shadowRoot.getElementById(`${id}`)) {
-      const faStyles = document.createElement("style");
-      faStyles.setAttribute("id", id);
-      faStyles.textContent = dom.css();
-      shadowRoot.appendChild(faStyles);
-    }
-  },
   data() {
     return {
       showConfiguration: false,
@@ -192,12 +169,6 @@ export default {
     },
     queueDescription() {
       return this.queue ? this.queue.queueDescription : null;
-    },
-    closeIcon() {
-      return faTimes;
-    },
-    infoIcon() {
-      return faInfoCircle;
     },
   },
   methods: {
