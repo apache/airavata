@@ -3,7 +3,7 @@
   propagation on native input events, but we need for this component's input
   events to propagate. So the input editor should not be the root component. -->
   <div>
-    <radio-button-input-editor
+    <checkbox-input-editor
       v-if="experimentInput"
       :id="id"
       :value="data"
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import RadioButtonInputEditor from "../../components/experiment/input-editors/RadioButtonInputEditor.vue";
+import CheckboxInputEditor from "../../components/experiment/input-editors/CheckboxInputEditor.vue";
 import WebComponentInputEditorMixin from "./WebComponentInputEditorMixin.js";
 
 export default {
@@ -32,7 +32,7 @@ export default {
     },
   },
   components: {
-    RadioButtonInputEditor,
+    CheckboxInputEditor,
   },
 };
 </script>

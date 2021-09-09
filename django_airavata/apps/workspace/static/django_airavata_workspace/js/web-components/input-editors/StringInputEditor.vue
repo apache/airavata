@@ -1,5 +1,8 @@
 <template>
   <!-- NOTE: experimentInput is late bound, don't create component until it is available -->
+  <!-- Important that input editor is wrapped in div. Input editor stops
+  propagation on native input events, but we need for this component's input
+  events to propagate. So the input editor should not be the root component. -->
   <div>
     <string-input-editor
       v-if="experimentInput"
