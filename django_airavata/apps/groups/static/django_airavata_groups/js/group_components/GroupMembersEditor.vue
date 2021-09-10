@@ -19,18 +19,25 @@
             
           <b-table
             hover
+            selectable
+            sticky-header
             :items="nonMembers"
             :fields="userFields"
             :filter="userFilter"
-            :select-mode="selectMode"
+            :select-mode="multi"
+            :sort-compare="sortCompare"
             responsive="sm"
             ref="usersTable"
-            selectable
-            @row-selected="onUsersRowSelected"
+            head-variant="light"
             sort-by="name"
-            :sort-compare="sortCompare"
+            @row-selected="onUsersRowSelected"
           >
-              
+           <template slot="cell(selected)" slot-scope="data">
+              <span v-if="isUserSelected(data.item)">
+                <i class="far fa-check-circle"></i>
+              </span>
+           </template>
+           
             <template slot="cell(action)" slot-scope="data">
               <b-button @click="toggleDetails(data)">
                 {{data.detailsShowing ? 'Hide' : 'Show'}} Details
@@ -57,29 +64,37 @@
           <b-button 
             style="margin-top:10px; margin-bottom:10px;"
             variant="primary" 
+            :disabled = "selectedUsers.length<1"
             @click="addSelectedMembers">
-            Add Members
+            <!--Add Selected Members-->
+            <i class="fas fa-angle-right fa-lg"></i>
           </b-button>
           
           <b-button 
             style="margin-top:10px; margin-bottom:10px;"
             variant="primary" 
+            :disabled = "nonMembers.length<1"
             @click="showAdd = true">
-            Add All Members
+            <!--Add All Members-->
+            <i class="fas fa-angle-double-right fa-lg"></i>
           </b-button>
           
           <b-button 
             style="margin-top:10px; margin-bottom:10px;"
             variant="primary" 
+            :disabled = "membersCount<2"
             @click="showRemove = true">
-            Remove All Members
+            <i class="fas fa-angle-double-left fa-lg"></i>
+            <!--Remove All Members-->
           </b-button>
           
           <b-button 
             style="margin-top:10px; margin-bottom:10px;"
-            variant="primary" 
+            variant="primary"
+            :disabled = "selectedMembers.length<1" 
               @click="removeSelectedMembers">
-              Remove Members
+              <i class="fas fa-angle-left fa-lg"></i>
+              <!--Remove Selected Members-->
           </b-button>
           
           <b-modal
@@ -146,19 +161,37 @@
           <b-table
             v-if="membersCount > 0"
             hover
+            selectable
+            sticky-header
             :items="currentMembers"
             :fields="memberFields"
             :filter="memberFilter"
             :select-mode="selectMode"
+            :sort-compare="sortCompare"
+            head-variant="light"
             responsive="sm"
             ref="membersTable"
-            selectable
-            @row-selected="onMembersRowSelected"
             sort-by="name"
-            :sort-compare="sortCompare"
+            @row-selected="onMembersRowSelected"
+            @row-clicked="handleOwnerSelected"
           >
+          
+           <template slot="cell(selected)" slot-scope="data">
+              <span v-if="isMemberSelected(data.item)">
+                <i class="far fa-check-circle"></i>
+              </span>
+           </template>
               
-            <template slot="cell(action)" slot-scope="data">
+            <template slot="cell(username)" slot-scope="data" >
+              {{data.value}}
+              <span 
+                v-if= "data.item.role == 'OWNER'"
+                class="badge badge-primary"> 
+                  Owner 
+              </span>
+            </template>
+
+            <template slot="cell(action)" slot-scope="data" >
               <b-button @click="toggleDetails(data)">
                 {{data.detailsShowing ? 'Hide' : 'Show'}} Details
               </b-button>
@@ -222,39 +255,16 @@ export default {
     admins() {
       return this.group.admins;
     },
-    suggestions() {
-      if (!this.userProfiles) {
-        return [];
-      }
-      return (
-        this.userProfiles
-          // Filter out current members
-          .filter(
-            (userProfile) =>
-              this.group.members.indexOf(userProfile.airavataInternalUserId) < 0
-          )
-          .map((userProfile) => {
-            return {
-              id: userProfile.airavataInternalUserId,
-              name:
-                userProfile.firstName +
-                " " +
-                userProfile.lastName +
-                " (" +
-                userProfile.userId +
-                ")",
-            };
-          })
-      );
-    },
     memberFields() {
       return [
+        { key: "selected", label: "", sortable: false },
         { key: "username", label: "Username", sortable: true },
         { key: "action", label: "Action", sortable: false },
       ];
     },
     userFields() {
       return [
+        { key: "selected", label: "", sortable: false },
         { key: "username", label: "Username", sortable: true },
         { key: "action", label: "Action", sortable: false },
       ];
@@ -295,6 +305,7 @@ export default {
               editable: editable,
               _showDetails: this.showingDetails[m] || false,
               _rowVariant: this.newMembers.indexOf(m) >= 0 ? "success" : null,
+              _selectable: isOwner ? false : true, 
             };
           })
       );
@@ -334,14 +345,30 @@ export default {
   },
 
   methods: {
-    suggestionSelected(suggestion) {
-      this.newMembers.push(suggestion.id);
-      this.$emit("add-member", suggestion.id);
-    },
     toggleDetails(row) {
       row.toggleDetails();
       this.showingDetails[row.item.airavataInternalUserId] = !this
         .showingDetails[row.item.airavataInternalUserId];
+    },
+    isUserSelected(user){
+      if (this.selectedUsers.length>0){
+        for (let i = 0; i<this.selectedUsers.length;i++){
+         if (user==this.selectedUsers[i]){
+           return true;
+          }
+        }
+      }
+      return false;
+    },
+    isMemberSelected(member){
+      if (this.selectedMembers.length>0){
+        for (let i = 0; i<this.selectedMembers.length;i++){
+         if (member==this.selectedMembers[i]){
+           return true;
+          }
+        }
+      }
+      return false;
     },
     addSelectedMembers(){
       this.selectedUsers.forEach((user)=>  {
@@ -352,11 +379,17 @@ export default {
       this.$refs.usersTable.clearSelected();
       this.$refs.membersTable.clearSelected();
       this.selectedUsers=[];  
+      this.selectedMembers=[];
     },
     addAllMembers(){
       this.showAdd = false;
-      this.selectedUsers = this.nonMembers.map((x)=>(x));
+      this.selectedUsers = this.nonMembers.filter(
+      (user) =>
+              this.filterUserProfile(user, this.userFilter)
+          ).map((x)=>(x));
       this.addSelectedMembers();
+      this.userFilter=null;
+      this.memberfilter=null;
     },
     removeSelectedMembers() {
       this.selectedMembers.forEach((member)=>{
@@ -365,11 +398,17 @@ export default {
         }});
       this.$refs.membersTable.clearSelected();
       this.selectedMembers = [];
+      this.selectedUsers=[];
     },
     removeAllMembers(){
       this.showRemove = false;
-      this.selectedMembers = this.currentMembers.map((x)=>(x));
+      this.selectedMembers = this.currentMembers.filter(
+      (member) =>
+              this.filterUserProfile(member, this.memberFilter)
+          ).map((x)=>(x));
       this.removeSelectedMembers();
+      this.memberFilter=null;
+      this.userFields=null;
     },
     onMembersRowSelected(items){
       this.selectedMembers = items;
@@ -396,6 +435,20 @@ export default {
         this.$emit("change-role-to-admin", item[0]);
       } else {
         this.$emit("change-role-to-member", item[0]);
+      }
+    },
+    filterUserProfile(profile, filter){
+      if(filter){
+      return profile.email.includes(filter)||
+              profile.name.includes(filter) ||
+              profile.username.includes(filter);
+      }else{
+        return true;
+      }
+    },
+    handleOwnerSelected(item, index){
+      if(!item._selectable){
+        this.$refs.membersTable.selectRow(index);
       }
     },
     sortCompare(aRow, bRow, key) {
