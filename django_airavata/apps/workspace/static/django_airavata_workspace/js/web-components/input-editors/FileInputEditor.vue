@@ -30,8 +30,8 @@ export default {
 };
 </script>
 
-<style>
-@import "../styles.css";
+<style lang="scss">
+@import "../styles";
 @import "~@uppy/core/dist/style.min.css";
 @import "~@uppy/status-bar/dist/style.min.css";
 @import "~@uppy/drag-drop/dist/style.min.css";

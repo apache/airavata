@@ -33,8 +33,8 @@ export default {
 };
 </script>
 
-<style>
-@import "../styles.css";
+<style lang="scss">
+@import "../styles";
 :host {
   display: block;
 }

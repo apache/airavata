@@ -199,8 +199,8 @@ export default {
 };
 </script>
 
-<style>
-@import url("./styles.css");
+<style lang="scss">
+@import "./styles";
 
 :host {
   display: block;
