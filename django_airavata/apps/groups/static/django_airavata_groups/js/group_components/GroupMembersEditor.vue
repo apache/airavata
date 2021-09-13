@@ -439,9 +439,14 @@ export default {
     },
     filterUserProfile(profile, filter){
       if(filter){
-      return profile.email.includes(filter)||
-              profile.name.includes(filter) ||
-              profile.username.includes(filter);
+      if (profile.email.toLowerCase().includes(filter.toLowerCase())){
+        return true;
+      }
+      else if(profile.name.toLowerCase().includes(filter.toLowerCase())){
+        return true;
+      }else if(profile.username.toLowerCase().includes(filter.toLowerCase())){
+        return true;
+      }else{return false;}
       }else{
         return true;
       }
