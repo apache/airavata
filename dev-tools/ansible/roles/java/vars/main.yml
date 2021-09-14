@@ -22,4 +22,5 @@
 #Variables associated with this role
 
 java_home: "/usr/lib/jvm/java-11"
+openjdk_version: "java-11-openjdk-devel-11.0.11.0.9"
 ...
