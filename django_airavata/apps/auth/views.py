@@ -637,7 +637,7 @@ def download_settings_local(request):
     if hasattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API'):
         context['GATEWAY_DATA_STORE_REMOTE_API'] = settings.GATEWAY_DATA_STORE_REMOTE_API
     else:
-        context['GATEWAY_DATA_STORE_REMOTE_API'] = request.build_absolute_uri()
+        context['GATEWAY_DATA_STORE_REMOTE_API'] = request.build_absolute_uri("/")
     context['PROFILE_SERVICE_HOST'] = settings.PROFILE_SERVICE_HOST
     context['PROFILE_SERVICE_PORT'] = settings.PROFILE_SERVICE_PORT
     context['PROFILE_SERVICE_SECURE'] = settings.PROFILE_SERVICE_SECURE
