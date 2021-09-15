@@ -700,8 +700,18 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
             self.authz_token, self.gateway_id)
 
     def get_instance(self, lookup_value):
-        return self.request.airavata_client.getApplicationInterface(
-            self.authz_token, lookup_value)
+        try:
+            return self.request.airavata_client.getApplicationInterface(
+                self.authz_token, lookup_value)
+        except Exception:
+            # If it failed to load, check to see if it exists at all
+            all_interfaces = self.request.airavata_client.getAllApplicationInterfaces(
+                self.authz_token, self.gateway_id)
+            interface_ids = map(lambda i: i.applicationInterfaceId, all_interfaces)
+            if lookup_value not in interface_ids:
+                raise Http404("Application interface does not exist")
+            else:
+                raise  # re-raise
 
     def perform_create(self, serializer):
         application_interface = serializer.save()

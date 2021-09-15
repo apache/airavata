@@ -18,7 +18,7 @@
 
 <script>
 import urls from "../utils/urls";
-import { models, services } from "django-airavata-api";
+import { errors, models, services, utils } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 export default {
   name: "recent-experiments-container",
@@ -103,10 +103,15 @@ export default {
         .then((applicationInterface) => {
           this.applicationInterfaces[interfaceId] = applicationInterface;
         })
-        .catch(() => {
+        .catch((error) => {
           // ignore if missing
-          this.applicationInterfaces[interfaceId] = null;
-        });
+          if (errors.ErrorUtils.isNotFoundError(error)) {
+            this.applicationInterfaces[interfaceId] = null;
+          } else {
+            throw error;
+          }
+        })
+        .catch(utils.FetchUtils.reportError);
     },
     populateApplicationNames() {
       this.feedItems

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { services } from "django-airavata-api";
+import { errors, services } from "django-airavata-api";
 import { notifications } from "django-airavata-common-ui";
 import ExperimentEditor from "../components/experiment/ExperimentEditor.vue";
 import urls from "../utils/urls";
@@ -67,14 +67,15 @@ export default {
       .then((appModule) => {
         this.appModule = appModule;
       })
-      .catch(() => {
+      .catch((error) => {
+        const message = errors.ErrorUtils.isNotFoundError(error)
+          ? `Application interface (${this.experiment.executionId}) was not found.
+           If it has been deleted then you won't be able to edit this experiment.`
+          : `Unable to load application interface (${this.experiment.executionId}) or module`;
         notifications.NotificationList.add(
           new notifications.Notification({
             type: "ERROR",
-            message:
-              "Unable to load application interface (" +
-              this.experiment.executionId +
-              ") or module. If it has been deleted then you won't be able to edit this experiment.",
+            message,
           })
         );
       });

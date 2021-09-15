@@ -19,4 +19,7 @@ export default {
   isUnauthorizedError(error) {
     return this.isAPIException(error) && error.details.status === 403;
   },
+  isNotFoundError(error) {
+    return this.isAPIException(error) && error.details.status === 404;
+  },
 };

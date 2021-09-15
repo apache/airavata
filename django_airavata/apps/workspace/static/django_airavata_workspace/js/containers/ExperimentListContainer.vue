@@ -8,31 +8,44 @@
     <div class="row">
       <div class="col">
         <div class="card">
-          <div class = "card-body">
+          <div class="card-body">
             <b-input-group class="w-100 mb-2">
-              <b-form-input v-if="defaultOptionSelected" v-model="search" 
+              <b-form-input
+                v-if="defaultOptionSelected"
+                v-model="search"
                 placeholder="Search Experiments"
                 @keydown.native.enter="searchExperiments"
               />
-              <b-form-select v-if="applicationSelected" v-model="applicationSelect" 
-              :options="applicationNameOptions"
+              <b-form-select
+                v-if="applicationSelected"
+                v-model="applicationSelect"
+                :options="applicationNameOptions"
               >
                 <template slot="first">
-                  <option :value="null" disabled>Select an application to search by</option>
+                  <option :value="null" disabled>
+                    Select an application to search by
+                  </option>
                 </template>
               </b-form-select>
-              <b-form-select v-if="projectSelected" v-model="projectSelect" 
-              :options="projectNameOptions"
+              <b-form-select
+                v-if="projectSelected"
+                v-model="projectSelect"
+                :options="projectNameOptions"
               >
                 <template slot="first">
-                  <option :value="null" disabled>Select a project to search by</option>
+                  <option :value="null" disabled>
+                    Select a project to search by
+                  </option>
                 </template>
               </b-form-select>
-              <b-form-select v-model="experimentAttributeSelect" 
-              @input="checkSearchOptions"
+              <b-form-select
+                v-model="experimentAttributeSelect"
+                @input="checkSearchOptions"
               >
                 <template slot="first">
-                  <option :value="null" disabled>Select an attribute to search by</option>
+                  <option :value="null" disabled>
+                    Select an attribute to search by
+                  </option>
                 </template>
                 <option value="USER_NAME">User Name</option>
                 <option value="EXPERIMENT_NAME">Experiment Name</option>
@@ -43,7 +56,9 @@
               </b-form-select>
               <b-form-select v-model="experimentStatusSelect">
                 <template slot="first">
-                  <option :value="null" disabled>Select an experiment status to filter by</option>
+                  <option :value="null" disabled>
+                    Select an experiment status to filter by
+                  </option>
                 </template>
                 <option value="ALL">ALL</option>
                 <option value="CREATED">Created</option>
@@ -57,25 +72,22 @@
               </b-form-select>
               <b-input-group-append>
                 <b-button @click="resetSearch">Reset</b-button>
-                <b-button
-                  variant="primary"
-                  @click="searchExperiments"
-                >Search</b-button>
+                <b-button variant="primary" @click="searchExperiments"
+                  >Search</b-button
+                >
               </b-input-group-append>
             </b-input-group>
             <b-input-group class="w-100 mb-2">
-            <b-input-group-prepend is-text >
-                    <i
-                      class="fa fa-calendar-week"
-                      aria-hidden="true"
-                    ></i>
-                  </b-input-group-prepend>
-                  <flat-pickr v-model="dateSelect"          
-                    :config="dateConfig"
-                    placeholder="Select a date range to filter by"
-                    @on-change="dateRangeChanged"
-                    class="form-control"
-                  />            
+              <b-input-group-prepend is-text>
+                <i class="fa fa-calendar-week" aria-hidden="true"></i>
+              </b-input-group-prepend>
+              <flat-pickr
+                v-model="dateSelect"
+                :config="dateConfig"
+                placeholder="Select a date range to filter by"
+                @on-change="dateRangeChanged"
+                class="form-control"
+              />
             </b-input-group>
           </div>
         </div>
@@ -160,7 +172,7 @@
 </template>
 
 <script>
-import { models, services, utils } from "django-airavata-api";
+import { errors, models, services, utils } from "django-airavata-api";
 import { components as comps } from "django-airavata-common-ui";
 
 import moment from "moment";
@@ -173,18 +185,18 @@ export default {
     return {
       experimentsPaginator: null,
       applicationInterfaces: {},
-      search: null, 
-      applicationSelect: null, 
+      search: null,
+      applicationSelect: null,
       projectSelect: null,
-      dateSelect : null,
-      experimentAttributeSelect: null, 
-      experimentStatusSelect: null, 
+      dateSelect: null,
+      experimentAttributeSelect: null,
+      experimentStatusSelect: null,
       appInterfaces: null,
       projectInterfaces: null,
       fromDate: null,
       toDate: null,
       applicationSelected: false,
-      projectSelected: false, 
+      projectSelected: false,
       defaultOptionSelected: true,
       dateConfig: {
         mode: "range",
@@ -199,11 +211,11 @@ export default {
     "experiment-status-badge": comps.ExperimentStatusBadge,
   },
   methods: {
-    searchExperiments: function(){
+    searchExperiments: function () {
       this.experimentsPaginator = null;
       this.reloadExperiments();
     },
-    resetSearch: function(){
+    resetSearch: function () {
       this.experimentsPaginator = null;
       this.search = null;
       this.experimentAttributeSelect = null;
@@ -216,58 +228,60 @@ export default {
       this.checkSearchOptions();
       this.reloadExperiments();
     },
-    reloadExperiments: function(){
+    reloadExperiments: function () {
       const searchParams = {};
       if (this.experimentAttributeSelect) {
-        if (this.experimentAttributeSelect=="APPLICATION_ID"&& this.applicationSelect){
+        if (
+          this.experimentAttributeSelect == "APPLICATION_ID" &&
+          this.applicationSelect
+        ) {
           searchParams["APPLICATION_ID"] = this.applicationSelect;
-        }
-        else if (this.experimentAttributeSelect=="PROJECT_ID"&& this.projectSelect){
+        } else if (
+          this.experimentAttributeSelect == "PROJECT_ID" &&
+          this.projectSelect
+        ) {
           searchParams["PROJECT_ID"] = this.projectSelect;
-        }
-        else if (this.search){
+        } else if (this.search) {
           searchParams[this.experimentAttributeSelect] = this.search;
         }
       }
-      if (this.experimentStatusSelect){
-        if (this.experimentStatusSelect != "ALL"){
-          searchParams["STATUS"]= this.experimentStatusSelect;
+      if (this.experimentStatusSelect) {
+        if (this.experimentStatusSelect != "ALL") {
+          searchParams["STATUS"] = this.experimentStatusSelect;
         }
       }
-      if (this.fromDate && this.toDate){
+      if (this.fromDate && this.toDate) {
         searchParams["FROM_DATE"] = this.fromDate.getTime();
         searchParams["TO_DATE"] = this.toDate.getTime();
       }
 
       services.ExperimentSearchService.list(searchParams).then(
-        result => (this.experimentsPaginator = result)
-        );
+        (result) => (this.experimentsPaginator = result)
+      );
     },
-    checkSearchOptions: function(){
+    checkSearchOptions: function () {
       this.applicationSelected = false;
       this.projectSelected = false;
       this.defaultOptionSelected = false;
-      if(this.experimentAttributeSelect == "APPLICATION_ID"){
+      if (this.experimentAttributeSelect == "APPLICATION_ID") {
         this.applicationSelected = true;
-      }
-      else if( this.experimentAttributeSelect == "PROJECT_ID"){
-        this.projectSelected=true;
-      }
-      else{
+      } else if (this.experimentAttributeSelect == "PROJECT_ID") {
+        this.projectSelected = true;
+      } else {
         this.defaultOptionSelected = true;
       }
     },
-    loadApplicationInterfaces: function() {
+    loadApplicationInterfaces: function () {
       return services.ApplicationInterfaceService.list().then(
         (appInterfaces) => (this.appInterfaces = appInterfaces)
       );
     },
-    loadProjectInterfaces: function(){
+    loadProjectInterfaces: function () {
       return services.ProjectService.listAll().then(
         (projectInterfaces) => (this.projectInterfaces = projectInterfaces)
       );
     },
-    dateRangeChanged: function(selectedDates) {
+    dateRangeChanged: function (selectedDates) {
       [this.fromDate, this.toDate] = selectedDates;
       if (this.fromDate && this.toDate) {
         this.reloadExperiments();
@@ -310,17 +324,25 @@ export default {
             ignoreErrors: true,
           }
         )
-          .then((result) =>
+          .then((result) => {
             this.$set(
               this.applicationInterfaces,
               experiment.executionId,
               result
-            )
-          )
-          .catch(() => {
-            // Application interface may be deleted
-            this.$set(this.applicationInterfaces, experiment.executionId, null);
-          });
+            );
+          })
+          .catch((error) => {
+            if (errors.ErrorUtils.isNotFoundError(error)) {
+              this.$set(
+                this.applicationInterfaces,
+                experiment.executionId,
+                null
+              );
+            } else {
+              throw error;
+            }
+          })
+          .catch(utils.FetchUtils.reportError);
         this.$set(this.applicationInterfaces, experiment.executionId, request);
       }
       return "...";
@@ -353,7 +375,7 @@ export default {
       }
     },
     projectNameOptions() {
-      if (this.projectInterfaces){
+      if (this.projectInterfaces) {
         const options = this.projectInterfaces.map((projectInterface) => {
           return {
             value: projectInterface.projectID,
@@ -361,7 +383,7 @@ export default {
           };
         });
         return utils.StringUtils.sortIgnoreCase(options, (o) => o.text);
-      } else{
+      } else {
         return [];
       }
     },

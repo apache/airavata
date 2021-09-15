@@ -2,7 +2,7 @@
   <span :class="{ 'font-italic': notAvailable }">{{ applicationName }}</span>
 </template>
 <script>
-import { services } from "django-airavata-api";
+import { errors, services, utils } from "django-airavata-api";
 export default {
   name: "application-name",
   props: {
@@ -27,7 +27,14 @@ export default {
         { ignoreErrors: true, cache: true }
       )
         .then((appInterface) => (this.applicationInterface = appInterface))
-        .catch(() => (this.notAvailable = true));
+        .catch((error) => {
+          if (errors.ErrorUtils.isNotFoundError(error)) {
+            this.notAvailable = true;
+          } else {
+            throw error;
+          }
+        })
+        .catch(utils.FetchUtils.reportError);
     },
   },
   computed: {
