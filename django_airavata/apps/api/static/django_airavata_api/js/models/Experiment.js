@@ -167,6 +167,14 @@ export default class Experiment extends BaseModel {
     }
   }
 
+  getExperimentInput(inputName) {
+    return this.experimentInputs.find(inp => inp.name === inputName);
+  }
+
+  getExperimentOutput(outputName) {
+    return this.experimentOutputs.find(out => out.name === outputName);
+  }
+
   _collectInputValues() {
     const result = {};
     this.experimentInputs.forEach((inp) => {

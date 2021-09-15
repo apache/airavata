@@ -22,7 +22,9 @@ const createExperiment = async function ({
       applicationName
     );
   } else {
-    throw new Error("Either applicationInterfaceId or applicationId or applicationName is required");
+    throw new Error(
+      "Either applicationInterfaceId or applicationId or applicationName is required"
+    );
   }
   const applicationModuleId = applicationInterface.applicationModuleId;
   let computeResourceId = null;
@@ -170,8 +172,83 @@ const loadWorkspacePreferences = async function () {
   return await services.WorkspacePreferencesService.get();
 };
 
-export { createExperiment };
+const loadExperiment = async function (experimentId) {
+  return await services.ExperimentService.retrieve({ lookup: experimentId });
+};
+
+const readDataProduct = async function (
+  dataProductURI,
+  { bodyType = "text" } = {}
+) {
+  return await fetch(
+    `/sdk/download?data-product-uri=${encodeURIComponent(dataProductURI)}`,
+    {
+      credentials: "same-origin",
+    }
+  ).then((r) => {
+    if (r.status === 404) {
+      return null;
+    }
+    if (!r.ok) {
+      throw new Error(r.statusText);
+    }
+    return r[bodyType]();
+  });
+};
+
+const readExperimentDataObject = async function (
+  experimentId,
+  name,
+  dataType,
+  { bodyType = "text" } = {}
+) {
+  if (dataType !== "input" && dataType !== "output") {
+    throw new Error("dataType should be one of 'input' or 'output'");
+  }
+  const experiment = await loadExperiment(experimentId);
+  const dataObjectsField =
+    dataType === "input" ? "experimentInputs" : "experimentOutputs";
+  const dataObject = experiment[dataObjectsField].find(
+    (dataObj) => dataObj.name === name
+  );
+  if (dataObject.value && dataObject.type.isFileValueType) {
+    const downloads = dataObject.value
+      .split(",")
+      .map((dp) => readDataProduct(dp, { bodyType }));
+    if (downloads.length === 1) {
+      return await downloads[0];
+    } else {
+      return await Promise.all(downloads);
+    }
+  }
+  return null;
+};
+
+const readInputFile = async function (
+  experimentId,
+  inputName,
+  { bodyType = "text" } = {}
+) {
+  return await readExperimentDataObject(experimentId, inputName, "input", {
+    bodyType,
+  });
+};
+
+const readOutputFile = async function (
+  experimentId,
+  outputName,
+  { bodyType = "text" } = {}
+) {
+  return await readExperimentDataObject(experimentId, outputName, "output", {
+    bodyType,
+  });
+};
+
+export { createExperiment, readInputFile, readOutputFile, readDataProduct };
 
 export default {
   createExperiment,
+  readInputFile,
+  readOutputFile,
+  readDataProduct,
 };
