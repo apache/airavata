@@ -1317,29 +1317,29 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
    end of the _scripts_ block in `hello.html`:
 
 ```javascript
-// ...
+    // ...
     // STARTING HERE
     const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
 
-    function loadExperiments() {
+    async function loadExperiments() {
 
-        return services.ExperimentSearchService
+        const data = await services.ExperimentSearchService
             .list({limit: 5,
                 [models.ExperimentSearchFields.USER_NAME.name]: session.Session.username,
                 [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
-            })
-            .then(data => {
-                $('#experiment-list').empty();
-                data.results.forEach((exp, index) => {
-                    $('#experiment-list').append(
-                    `<tr>
-                        <td>${exp.name}</td>
-                        <td>${exp.executionId}</td>
-                        <td>${exp.creationTime}</td>
-                        <td>${exp.experimentStatus.name}</td>
-                        <td id="output_${index}"></td>
-                    </tr>`);
-                });
+            });
+
+        $('#experiment-list').empty();
+        data.results.forEach(async (expSummary, index) => {
+
+            $('#experiment-list').append(
+            `<tr>
+                <td>${expSummary.name}</td>
+                <td>${expSummary.executionId}</td>
+                <td>${expSummary.creationTime}</td>
+                <td>${expSummary.experimentStatus.name}</td>
+                <td id="output_${index}"></td>
+            </tr>`);
         });
     }
 
@@ -1367,26 +1367,31 @@ then examine it line by line to see what it is doing.
 // ...
 
 // STARTING HERE
-    $("#run-button").click((e) => {
-        const greeting = $("#greeting-select").val();
+    async function submitExperiment(greeting) {
         // Construct experiment object
-        utils.ExperimentUtils.createExperiment({
+        const experimentData = await utils.ExperimentUtils.createExperiment({
             applicationInterfaceId: appInterfaceId,
             computeResourceName: "example-vc.jetstream-cloud.org",
             experimentName: "Echo " + greeting,
             experimentInputs: {
                 "Input-to-Echo": greeting
             }
-        }).then(experiment=> {
-            // Save experiment
-            return services.ExperimentService.create({ data: experiment });
-        }).then(experiment => {
-            // Launch experiment
-            return services.ExperimentService.launch({
-                lookup: experiment.experimentId,
-            });
-        })
-    });
+        });
+        // Save experiment
+        const experiment = await services.ExperimentService.create({ data: experimentData });
+        // Launch experiment
+        await services.ExperimentService.launch({ lookup: experiment.experimentId });
+    }
+
+    async function runClickHandler() {
+        const greeting = $("#greeting-select").val();
+        await submitExperiment(greeting);
+        // Reload experiments to see the new one
+        loadExperiments();
+    }
+
+    $("#run-button").click(runClickHandler);
+
 // ENDING HERE
 
 </script>
@@ -1398,12 +1403,18 @@ then examine it line by line to see what it is doing.
    handler to the _Run_ button that gets the selected greeting value:
 
 ```javascript
-$("#run-button").click((e) => {
+async function runClickHandler() {
     const greeting = $("#greeting-select").val();
-});
+    await submitExperiment(greeting);
+    // Reload experiments to see the new one
+    loadExperiments();
+}
+
+$("#run-button").click(runClickHandler);
 ```
 
-3. Now the code constructs an experiment object using the utility function
+3. Next, the `submitExperiment` function is called. This code constructs an
+   experiment object using the utility function
    `utils.ExperimentUtils.createExperiment`. In Airavata, Experiments are
    created from Application Interface descriptions, so we'll first pass the
    `applicationInterfaceId`. We already have the `appInterfaceId` in the code
@@ -1428,20 +1439,20 @@ $("#run-button").click((e) => {
     the name of the experiment and the experiment's input values.
 
 ```javascript
-        // Construct experiment object
-        utils.ExperimentUtils.createExperiment({
-            applicationInterfaceId: appInterfaceId,
-            computeResourceName: "example-vc.jetstream-cloud.org",
-            experimentName: "Echo " + greeting,
-            experimentInputs: {
-                "Input-to-Echo": greeting
-            }
-        })
+// Construct experiment object
+const experimentData = await utils.ExperimentUtils.createExperiment({
+    applicationInterfaceId: appInterfaceId,
+    computeResourceName: "example-vc.jetstream-cloud.org",
+    experimentName: "Echo " + greeting,
+    experimentInputs: {
+        "Input-to-Echo": greeting,
+    },
+});
 ```
 
-4. The `createExperiment` function does a few more things behind the scenes and
-   once we run it we can take a look at the REST API calls it makes. In summary
-   `createExperiment`:
+4. The `utils.ExperimentUtils.createExperiment` function does a few more things
+   behind the scenes and once we run it we can take a look at the REST API calls
+   it makes. In summary `utils.ExperimentUtils.createExperiment`:
 
     - loads the Application Interface
     - loads the compute resource ID
@@ -1460,16 +1471,13 @@ $("#run-button").click((e) => {
    (`ExperimentService.create`) and then launch it (`ExperimentService.launch`).
 
 ```javascript
-        // ...
-        }).then(experiment=> {
-            // Save experiment
-            return services.ExperimentService.create({ data: experiment });
-        }).then(experiment => {
-            // Launch experiment
-            return services.ExperimentService.launch({
-                lookup: experiment.experimentId,
-            });
-        })
+// ...
+// Save experiment
+const experiment = await services.ExperimentService.create({
+    data: experimentData,
+});
+// Launch experiment
+await services.ExperimentService.launch({ lookup: experiment.experimentId });
 ```
 
 Now that we can launch the experiment we can go ahead and give it a try.
@@ -1490,54 +1498,40 @@ bonjour
 We'll read the STDOUT file and display that in our experiment listing table.
 
 1. What we need to do is get the identifier for the experiment's STDOUT file. In
-   Airavata, this identifier is called the _Data Product ID_. Once we have that
-   we can get the DataProduct object which has the files metadata, including a
-   `downloadURL`. For each `exp` we can use the `FullExperimentService` to get
-   these details like so:
+   Airavata, this identifier is called the _Data Product ID_. The experiment
+   metadata includes a list of output files and the `value` of each one is that
+   file's Data Product ID. For each `exp` we can use the `ExperimentService` to
+   load this metadata for the experiment, find the STDOUT output object and get
+   its value, which is the _Data Product ID_.
 
 ```javascript
 if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
-    services.FullExperimentService.retrieve({ lookup: exp.experimentId }).then(
-        (fullDetails) => {
-            const stdoutDataProductId =
-                fullDetails.experiment.experimentOutputs.find(
-                    (o) => o.name === "Echo-STDOUT"
-                ).value;
-            const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                (dp) => dp.productUri === stdoutDataProductId
-            );
-            if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
-                return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin",
-                }).then((result) => result.text());
-            }
-        }
-    );
+    const experiment = await services.ExperimentService.retrieve({
+        lookup: expSummary.experimentId,
+    });
+    const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+    const dataProductURI = stdoutInput.value;
 }
 ```
 
-2. Then we'll simply display the value in the table.
+2. Then we'll simply download the file and display the value in the table. We'll
+   use `ExperimentUtils.readDataProduct()` to download the file.
 
 ```javascript
-if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
-    services.FullExperimentService.retrieve({ lookup: exp.experimentId })
-        .then((fullDetails) => {
-            const stdoutDataProductId =
-                fullDetails.experiment.experimentOutputs.find(
-                    (o) => o.name === "Echo-STDOUT"
-                ).value;
-            const stdoutDataProduct = fullDetails.outputDataProducts.find(
-                (dp) => dp.productUri === stdoutDataProductId
-            );
-            if (stdoutDataProduct && stdoutDataProduct.downloadURL) {
-                return fetch(stdoutDataProduct.downloadURL, {
-                    credentials: "same-origin",
-                }).then((result) => result.text());
-            }
-        })
-        .then((text) => {
-            $(`#output_${index}`).text(text);
-        });
+if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
+    const experiment = await services.ExperimentService.retrieve({
+        lookup: expSummary.experimentId,
+    });
+    const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+    const dataProductURI = stdoutInput.value;
+    try {
+        const stdout = await utils.ExperimentUtils.readDataProduct(
+            dataProductURI
+        );
+        $(`#output_${index}`).text(stdout);
+    } catch (error) {
+        $(`#output_${index}`).text("N/A");
+    }
 }
 ```
 
@@ -1546,55 +1540,44 @@ if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
    `loadExperiments` function:
 
 ```javascript
-function loadExperiments() {
-    return services.ExperimentSearchService.list({
+async function loadExperiments() {
+    const data = await services.ExperimentSearchService.list({
         limit: 5,
         [models.ExperimentSearchFields.USER_NAME.name]:
             session.Session.username,
         [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
-    }).then((data) => {
-        $("#experiment-list").empty();
-        data.results.forEach((exp, index) => {
-            $("#experiment-list").append(
-                `<tr>
-                            <td>${exp.name}</td>
-                            <td>${exp.executionId}</td>
-                            <td>${exp.creationTime}</td>
-                            <td>${exp.experimentStatus.name}</td>
-                            <td id="output_${index}"></td>
-                        </tr>`
-            );
+    });
 
-            // STARTING HERE
-            // If experiment has finished, load full details, then parse the stdout file
-            if (exp.experimentStatus === models.ExperimentState.COMPLETED) {
-                services.FullExperimentService.retrieve({
-                    lookup: exp.experimentId,
-                })
-                    .then((fullDetails) => {
-                        const stdoutDataProductId =
-                            fullDetails.experiment.experimentOutputs.find(
-                                (o) => o.name === "Echo-STDOUT"
-                            ).value;
-                        const stdoutDataProduct =
-                            fullDetails.outputDataProducts.find(
-                                (dp) => dp.productUri === stdoutDataProductId
-                            );
-                        if (
-                            stdoutDataProduct &&
-                            stdoutDataProduct.downloadURL
-                        ) {
-                            return fetch(stdoutDataProduct.downloadURL, {
-                                credentials: "same-origin",
-                            }).then((result) => result.text());
-                        }
-                    })
-                    .then((text) => {
-                        $(`#output_${index}`).text(text);
-                    });
+    $("#experiment-list").empty();
+    data.results.forEach(async (expSummary, index) => {
+        $("#experiment-list").append(
+            `<tr>
+                <td>${expSummary.name}</td>
+                <td>${expSummary.executionId}</td>
+                <td>${expSummary.creationTime}</td>
+                <td>${expSummary.experimentStatus.name}</td>
+                <td id="output_${index}"></td>
+            </tr>`
+        );
+
+        // STARTING HERE
+        // If experiment has finished, download and display the stdout file contents
+        if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
+            const experiment = await services.ExperimentService.retrieve({
+                lookup: expSummary.experimentId,
+            });
+            const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+            const dataProductURI = stdoutInput.value;
+            try {
+                const stdout = await utils.ExperimentUtils.readDataProduct(
+                    dataProductURI
+                );
+                $(`#output_${index}`).text(stdout);
+            } catch (error) {
+                $(`#output_${index}`).text("N/A");
             }
-            // ENDING HERE
-        });
+        }
+        // ENDING HERE
     });
 }
 ```
