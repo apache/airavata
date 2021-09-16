@@ -33,8 +33,7 @@ export default {
     };
   },
   created() {
-    // computed properties are only available at *created* step of lifecycle
-    this.sliderValue = this.parseValue(this.value);
+    this.initializeSliderValue();
   },
   computed: {
     min: function () {
@@ -48,6 +47,14 @@ export default {
     },
   },
   methods: {
+    initializeSliderValue() {
+      this.sliderValue = this.parseValue(this.data);
+      // If parsing the value resulted in it changing (failed to parse so
+      // initialized to the 'min'), update the value
+      if (this.data !== this.formatValue(this.sliderValue)) {
+        this.onChange(this.sliderValue);
+      }
+    },
     parseValue(value) {
       // Just remove any percentage signs
       const result = parseInt(value.replaceAll("%", ""));
@@ -75,8 +82,8 @@ export default {
     },
   },
   watch: {
-    data(newValue) {
-      this.sliderValue = this.parseValue(newValue);
+    data() {
+      this.initializeSliderValue();
     },
   },
 };
