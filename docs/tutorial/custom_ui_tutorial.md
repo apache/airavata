@@ -575,7 +575,7 @@ the settings_local.py file for local development. Move or copy it to the
     2. Run the following to create a Docker container called **custom-ui-tutorial**.
 
             cd $HOME/custom_ui_tutorial_app
-            docker run -d --name custom-ui-tutorial -p 8000:8000 -v "${PWD}:/extensions" -v "${PWD}/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
+            docker run --pull always -d --name custom-ui-tutorial -p 8000:8000 -v "${PWD}:/extensions" -v "${PWD}/settings_local.py:/code/django_airavata/settings_local.py" machristie/airavata-django-portal
     3. Wait until the Docker container starts up. Go to <http://localhost:8000>
     and when it loads and you see **Welcome to your new Wagtail site!**, then
     you're ready to proceed to the next step.
@@ -742,6 +742,11 @@ Choose from 1, 2 [1]:
    steps, but you can go ahead and copy and paste the following into
    `gaussian_eigenvalues_view.py`:
 
+<button class="btn" data-clipboard-target="#gaussian_eigenvalues_view">
+    Copy to clipboard
+</button>
+
+<div id="gaussian_eigenvalues_view">
 ```python
 import io
 import os
@@ -804,6 +809,7 @@ class GaussianEigenvaluesViewProvider:
         }
 
 ```
+</div>
 
 5. Let's take a look at the implementation. First we added some imports at the
    top:
