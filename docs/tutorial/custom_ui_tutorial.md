@@ -341,6 +341,11 @@ the application inputs' user interface. What we'll do:
 3. For _Target ID_ (input #1), in the _Advanced Input Field Modification
    Metadata_ box, add the following JSON configuration:
 
+<button class="btn" data-clipboard-target="#target_id">
+    Copy to clipboard
+</button>
+
+<div id="target_id">
 ```json
 {
     "editor": {
@@ -363,6 +368,7 @@ the application inputs' user interface. What we'll do:
     }
 }
 ```
+</div>
 
 It should look something like this:
 
@@ -378,6 +384,11 @@ This JSON configuration customizes the input editor in two ways:
    Libraries_** (input #3), set the _Advanced Input Field Modification Metadata_
    to:
 
+<button class="btn" data-clipboard-target="#screening_libraries">
+    Copy to clipboard
+</button>
+
+<div id="screening_libraries">
 ```json
 {
     "editor": {
@@ -421,6 +432,7 @@ This JSON configuration customizes the input editor in two ways:
     }
 }
 ```
+</div>
 
 This JSON configuration specifies a different UI component to use as the input
 editor, the `checkbox-input-editor`. It also provides a list of text/value pairs
@@ -430,6 +442,10 @@ command line arguments.
 5. Similarly for the _Visualization scripts_ (input #4), provide the following
    JSON configuration:
 
+<button class="btn" data-clipboard-target="#visualization_scripts">
+    Copy to clipboard
+</button>
+<div id="visualization_scripts">
 ```json
 {
     "editor": {
@@ -453,6 +469,7 @@ command line arguments.
     }
 }
 ```
+</div>
 
 6. Click **Save** at the bottom of the page.
 7. Now, go back to the **Workspace** and on the Dashboard click on your
@@ -912,7 +929,11 @@ which the `GaussianEigenvaluesViewProvider` output view provider class is found.
    dependencies. Under `install_requires` add _cclib_, _numpy_ and _matplotlib_,
    so that it looks like:
 
-```ini
+<button class="btn" data-clipboard-target="#install_requires">
+    Copy to clipboard
+</button>
+<div id="install_requires">
+```
 install_requires =
     django >= 2.2
     airavata-django-portal-sdk
@@ -920,6 +941,7 @@ install_requires =
     numpy
     matplotlib
 ```
+</div>
 
 10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
     portal's virtual environment.
@@ -1093,18 +1115,26 @@ get it properly registered with the local Django Portal instance.
 3. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py`
    and add the following `hello_world` view function at the end of the file:
 
+<button class="btn" data-clipboard-target="#hello_world">
+    Copy to clipboard
+</button>
+<div id="hello_world">
 ```python
-
 @login_required
 def hello_world(request):
     return render(request, "custom_ui_tutorial_app/hello.html")
 ```
+</div>
 
 This view will simply display the template created in the previous step.
 
 4. Open the file `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py`
    and add a URL mapping for of `hello/` to the `hello_world` view function:
 
+<button class="btn" data-clipboard-target="#urlspy">
+    Copy to clipboard
+</button>
+<div id="urlspy">
 ```python
 from django.urls import path
 
@@ -1115,8 +1145,8 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('hello/', views.hello_world, name='hello_world'),
 ]
-
 ```
+</div>
 
 This maps the `/hello/` URL to the `hello_world` view.
 
@@ -1124,6 +1154,10 @@ This maps the `/hello/` URL to the `hello_world` view.
    and update the `fa_icon_class` attribute and the `url_home` attribute to the
    `CustomUiTutorialAppConfig` class:
 
+<button class="btn" data-clipboard-target="#appspy">
+    Copy to clipboard
+</button>
+<div id="appspy">
 ```python
 from django.apps import AppConfig
 
@@ -1135,6 +1169,7 @@ class CustomUiTutorialAppConfig(AppConfig):
     fa_icon_class = "fa-comment"
     url_home = "custom_ui_tutorial_app:hello_world"
 ```
+</div>
 
 This the main metadata for this custom Django app. Besides the normal metadata
 that the Django framework expects, this also defines a display name
@@ -1158,12 +1193,21 @@ greetings in several languages.
 1. In the `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py` file,
    we add the following import:
 
+<button class="btn" data-clipboard-target="#jsonresponse">
+    Copy to clipboard
+</button>
+<div id="jsonresponse">
 ```python
 from django.http import JsonResponse
 ```
+</div>
 
 2. Also we add the following view:
 
+<button class="btn" data-clipboard-target="#languages">
+    Copy to clipboard
+</button>
+<div id="languages">
 ```python
 @login_required
 def languages(request):
@@ -1187,17 +1231,28 @@ def languages(request):
         'greeting': 'merhaba'
     }]})
 ```
+</div>
 
 3. In `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py` we add a url
    mapping for the `languages` view:
 
+<button class="btn" data-clipboard-target="#urls_languages">
+    Copy to clipboard
+</button>
+<div id="urls_languages">
 ```python
+from django.urls import path
+
+from . import views
+
+app_name = 'custom_ui_tutorial_app'
 urlpatterns = [
     path('home/', views.home, name='home'),
-    path('hello/', views.hello_world, name="home"),
+    path('hello/', views.hello_world, name="hello_world"),
     path('languages/', views.languages, name="languages"),
 ]
 ```
+</div>
 
 4. In
    `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/templates/custom_ui_tutorial_app/hello.html`,
@@ -1229,6 +1284,23 @@ urlpatterns = [
 ...
 ```
 
+<button class="btn" data-clipboard-target="#greeting-select">
+    Copy to clipboard
+</button>
+<div id="greeting-select">
+```html
+            <div class="card">
+                <div class="card-header">
+                    Run "echo" for different languages
+                </div>
+                <div class="card-body">
+                    <select id="greeting-select"></select>
+                    <button id="run-button" class="btn btn-primary">Run</button>
+                </div>
+            </div>
+```
+</div>
+
 5. The `hello.html` template already has the `{% load static %}` directive and a
    `scripts` block at the end. This will load the AiravataAPI JavaScript library
    which has utilities for interacting with the Django portal's REST API (which
@@ -1238,6 +1310,7 @@ urlpatterns = [
 
     Add to `hello.html` the code between the **STARTING HERE** and **ENDING
     HERE** comments.
+
 
 ```html
 {% block scripts %}
@@ -1259,6 +1332,23 @@ urlpatterns = [
 </script>
 {% endblock scripts %}
 ```
+
+<button class="btn" data-clipboard-target="#fetch_languages">
+    Copy to clipboard
+</button>
+<div id="fetch_languages">
+```javascript
+    utils.FetchUtils.get("/custom_ui_tutorial_app/languages/").then((data) => {
+        data.languages.forEach((language) => {
+            $("#greeting-select").append(
+                `<option value="${language.greeting}">
+                    ${language.lang} - "${language.greeting}"
+                 </option>`
+            );
+        });
+    });
+```
+</div>
 
 Now when you view the custom app at
 [http://localhost:8000/custom_ui_tutorial_app/hello/](http://localhost:8000/custom_ui_tutorial_app/hello/)
@@ -1318,13 +1408,44 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 {% endblock content %}
 ```
 
+<button class="btn" data-clipboard-target="#experiments-table">
+    Copy to clipboard
+</button>
+<div id="experiments-table">
+```html
+            <div class="card">
+                <div class="card-header">
+                    Experiments
+                </div>
+                <div class="card-body">
+                    <button id="refresh-button" class="btn btn-secondary">Refresh</button>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Application</th>
+                                <th scope="col">Creation Time</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Output</th>
+                            </tr>
+                        </thead>
+                        <tbody id="experiment-list">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+```
+</div>
+
 2. Now we'll use the ExperimentSearchService to load the user's most recent 5
    _Echo_ experiments and display them in the table. We add the following to the
    end of the _scripts_ block in `hello.html`:
 
+<button class="btn" data-clipboard-target="#loadExperiments">
+    Copy to clipboard
+</button>
+<div id="loadExperiments">
 ```javascript
-    // ...
-    // STARTING HERE
     const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
 
     async function loadExperiments() {
@@ -1351,12 +1472,8 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
     loadExperiments();
     $("#refresh-button").click(loadExperiments);
-    // ENDING HERE
-
-</script>
-
-{% endblock scripts %}
 ```
+</div>
 
 The user interface should now look something like:
 
@@ -1369,10 +1486,11 @@ then examine it line by line to see what it is doing.
 
 1. Add the following to the end of the _scripts_ block in `hello.html`:
 
+<button class="btn" data-clipboard-target="#submitExperiment">
+    Copy to clipboard
+</button>
+<div id="submitExperiment">
 ```javascript
-// ...
-
-// STARTING HERE
     async function submitExperiment(greeting) {
         // Construct experiment object
         const experimentData = await utils.ExperimentUtils.createExperiment({
@@ -1397,13 +1515,8 @@ then examine it line by line to see what it is doing.
     }
 
     $("#run-button").click(runClickHandler);
-
-// ENDING HERE
-
-</script>
-
-{% endblock scripts %}
 ```
+</div>
 
 2. Going line by line we'll now take a look at this code. We added a click
    handler to the _Run_ button that gets the selected greeting value:
@@ -1575,10 +1688,13 @@ async function loadExperiments() {
             const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
             const dataProductURI = stdoutInput.value;
             try {
-                const stdout = await utils.ExperimentUtils.readDataProduct(
-                    dataProductURI
-                );
-                $(`#output_${index}`).text(stdout);
+                const stdout = await utils.ExperimentUtils.readDataProduct(dataProductURI);
+                // if stdout is null, it means the file wasn't found
+                if (stdout !== null) {
+                    $(`#output_${index}`).text(stdout);
+                } else {
+                    $(`#output_${index}`).text("N/A");
+                }
             } catch (error) {
                 $(`#output_${index}`).text("N/A");
             }
@@ -1587,6 +1703,33 @@ async function loadExperiments() {
     });
 }
 ```
+
+<button class="btn" data-clipboard-target="#readDataProduct">
+    Copy to clipboard
+</button>
+<div id="readDataProduct">
+```javascript
+        // If experiment has finished, download and display the stdout file contents
+        if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
+            const experiment = await services.ExperimentService.retrieve({
+                lookup: expSummary.experimentId,
+            });
+            const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+            const dataProductURI = stdoutInput.value;
+            try {
+                const stdout = await utils.ExperimentUtils.readDataProduct(dataProductURI);
+                // if stdout is null, it means the file wasn't found
+                if (stdout !== null) {
+                    $(`#output_${index}`).text(stdout);
+                } else {
+                    $(`#output_${index}`).text("N/A");
+                }
+            } catch (error) {
+                $(`#output_${index}`).text("N/A");
+            }
+        }
+```
+</div>
 
 ## Resources
 
