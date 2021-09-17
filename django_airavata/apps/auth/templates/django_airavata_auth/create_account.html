@@ -17,7 +17,7 @@
           {% if not options.password.name %}
           <h5 class="card-title">Create an account</h5>
           {% else %}
-          <h5 class="card-title">Create a {{ options.password.name }} account</h5>
+          <h5 class="card-title">Create a{% if options.password.name|first|lower in 'aeiou' %}n{% endif %} {{ options.password.name }} account</h5>
           {% endif %}
           {% include "./partials/messages.html" %}
           {% url 'django_airavata_auth:create_account' as form_url %}
