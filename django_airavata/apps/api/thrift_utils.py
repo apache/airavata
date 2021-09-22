@@ -5,7 +5,6 @@ import copy
 import datetime
 import logging
 
-from django.utils import six
 from rest_framework.serializers import (
     BooleanField,
     CharField,
@@ -116,8 +115,7 @@ def create_serializer_class(thrift_data_type, enable_date_time_conversion=False)
                     attrs[field[2]] = field_serializer
             return super().__new__(cls, name, bases, attrs)
 
-    @six.add_metaclass(CustomSerializerMeta)
-    class CustomSerializer(Serializer):
+    class CustomSerializer(Serializer, metaclass=CustomSerializerMeta):
         """
         Custom Serializer which handle the list fields which holds custom class objects
         """
