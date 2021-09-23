@@ -144,13 +144,13 @@ Let's add a starter home page and urls.py config for this app. Create a
 `urls.py` file in `myapp/`:
 
 ```python
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
 app_name = 'django_airavata_myapp'
 urlpatterns = [
-    url(r'^home$', views.home, name='home'),
+    path('home/', views.home, name='home'),
 ]
 ```
 

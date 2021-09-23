@@ -1,20 +1,19 @@
-from django.conf.urls import url
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
 app_name = 'django_airavata_admin'
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
-    url(r'^applications/', views.app_catalog, name='app_catalog'),
-    url(r'^credentials/', views.credential_store, name='credential_store'),
-    url(r'^experiment-statistics/', views.experiment_statistics,
-        name="experiment-statistics"),
-    url(r'^group-resource-profiles/', views.group_resource_profile,
-        name='group_resource_profile'),
-    url(r'^gateway-resource-profile/', views.gateway_resource_profile,
-        name='gateway_resource_profile'),
-    url(r'^notices/', views.notices, name='notices'),
-    url(r'^users/', views.users, name='users'),
+    re_path(r'^$', views.home, name='home'),
+    re_path(r'^applications/', views.app_catalog, name='app_catalog'),
+    re_path(r'^credentials/', views.credential_store, name='credential_store'),
+    re_path(r'^experiment-statistics/', views.experiment_statistics,
+            name="experiment-statistics"),
+    re_path(r'^group-resource-profiles/', views.group_resource_profile,
+            name='group_resource_profile'),
+    re_path(r'^gateway-resource-profile/', views.gateway_resource_profile,
+            name='gateway_resource_profile'),
+    re_path(r'^notices/', views.notices, name='notices'),
+    re_path(r'^users/', views.users, name='users'),
     path('developers/', views.developers, name='developers'),
 ]
