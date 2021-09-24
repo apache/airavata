@@ -218,19 +218,19 @@
             <div class="col">
               <b-card>
                 <b-table :fields="fields" :items="items">
-                  <template slot="executionId" slot-scope="data">
+                  <template slot="cell(executionId)" slot-scope="data">
                     <application-name :application-interface-id="data.value" />
                   </template>
-                  <template slot="resourceHostId" slot-scope="data">
+                  <template slot="cell(resourceHostId)" slot-scope="data">
                     <compute-resource-name :compute-resource-id="data.value" />
                   </template>
-                  <template slot="creationTime" slot-scope="data">
+                  <template slot="cell(creationTime)" slot-scope="data">
                     <human-date :date="data.value" />
                   </template>
-                  <template slot="experimentStatus" slot-scope="data">
+                  <template slot="cell(experimentStatus)" slot-scope="data">
                     <experiment-status-badge :status-name="data.value.name" />
                   </template>
-                  <template slot="actions" slot-scope="data">
+                  <template slot="cell(actions)" slot-scope="data">
                     <b-link
                       @click="showExperimentDetails(data.item.experimentId)"
                     >

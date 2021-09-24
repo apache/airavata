@@ -15,7 +15,7 @@
           :items="slotProps.items"
           sort-by="computeHostId"
         >
-          <template slot="action" slot-scope="data">
+          <template slot="cell(action)" slot-scope="data">
             <router-link
               class="action-link"
               v-if="!data.item.userHasWriteAccess"

@@ -26,13 +26,13 @@
         <div class="card">
           <div class="card-body">
             <b-table hover :fields="fields" :items="items" :fixed="true">
-              <template slot="creationTime" slot-scope="data">
+              <template slot="cell(creationTime)" slot-scope="data">
                 <human-date :date="data.value" />
               </template>
-              <template slot="groups" slot-scope="data">
+              <template slot="cell(groups)" slot-scope="data">
                 <group-membership-display :groups="data.item.groups" />
               </template>
-              <template slot="action" slot-scope="data">
+              <template slot="cell(action)" slot-scope="data">
                 <b-button
                   v-if="data.item.userHasWriteAccess"
                   @click="toggleDetails(data)"

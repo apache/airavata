@@ -39,7 +39,7 @@
         :items="slotProps.items"
         sort-by="storageResourceId"
       >
-        <template slot="resourceSpecificCredentialStoreToken" slot-scope="data">
+        <template slot="cell(resourceSpecificCredentialStoreToken)" slot-scope="data">
           {{ data.value }}
           <b-badge
             v-if="
@@ -50,7 +50,7 @@
             Default
           </b-badge>
         </template>
-        <template slot="action" slot-scope="data">
+        <template slot="cell(action)" slot-scope="data">
           <b-link
             v-if="!readonly"
             class="action-link"
@@ -71,7 +71,7 @@
             >?
           </delete-link>
         </template>
-        <template slot="row-details" slot-scope="row">
+        <template slot="cell(row-details)" slot-scope="row">
           <b-card>
             <storage-preference-editor
               :value="row.item"

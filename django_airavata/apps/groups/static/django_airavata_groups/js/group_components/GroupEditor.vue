@@ -9,7 +9,7 @@
       {{ showDismissibleAlert.message }}
     </b-alert>
 
-    <b-form>
+    <b-form >
       <b-form-group
         id="group1"
         label="Group Name:"
@@ -38,7 +38,7 @@
         </b-form-textarea>
       </b-form-group>
 
-      <b-card title="Group Members" title-tag="h5">
+      <b-card title="Manage Group Members" title-tag="h5">
         <group-members-editor
           :group="localGroup"
           @add-member="addGroupMember"
@@ -47,9 +47,10 @@
           @change-role-to-admin="changeRoleToAdmin"
         />
       </b-card>
-
-      <b-button @click="submitForm" variant="primary">Submit</b-button>
     </b-form>
+    <div class="fixed-footer">
+      <b-button @click="submitForm" variant="primary">Submit</b-button>  
+    </div>
   </div>
 </template>
 

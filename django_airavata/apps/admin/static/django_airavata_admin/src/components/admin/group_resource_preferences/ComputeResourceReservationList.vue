@@ -48,18 +48,18 @@
     </template>
     <template slot="item-list" slot-scope="slotProps">
       <b-table hover :fields="fields" :items="slotProps.items">
-        <template slot="reservationName" slot-scope="data">
+        <template slot="cell(reservationName)" slot-scope="data">
           {{ data.value }}
           <b-badge v-if="data.item.isExpired">Expired</b-badge>
           <b-badge v-if="data.item.isActive" variant="success">Active</b-badge>
           <b-badge v-if="data.item.isUpcoming" variant="info">Upcoming</b-badge>
         </template>
-        <template slot="queueNames" slot-scope="data">
+        <template slot="cell(queueNames)" slot-scope="data">
           <ul v-for="queueName in data.item.queueNames" :key="queueName">
             <li>{{ queueName }}</li>
           </ul>
         </template>
-        <template slot="action" slot-scope="data">
+        <template slot="cell(action)" slot-scope="data">
           <b-link
             v-if="!readonly"
             class="action-link"
