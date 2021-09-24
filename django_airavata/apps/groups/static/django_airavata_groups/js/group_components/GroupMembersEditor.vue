@@ -3,20 +3,20 @@
     <div class="row">
       <div class="col">
         <b-card title="Gateway Users" title-tag="h6">
-            
+
           <b-form-group>
             <b-input-group>
               <b-input-group-text slot="prepend">
                 <i class="fa fa-filter"></i>
               </b-input-group-text>
-              <b-form-input 
-                v-model="userFilter" 
-                placeholder="Filter list of users"  
+              <b-form-input
+                v-model="userFilter"
+                placeholder="Filter list of users"
                 @change="onUserFilterChange"
               />
             </b-input-group>
           </b-form-group>
-            
+
           <b-table
             hover
             selectable
@@ -37,13 +37,13 @@
                 <i class="far fa-check-circle"></i>
               </span>
            </template>
-           
+
             <template slot="cell(action)" slot-scope="data">
               <b-button @click="toggleDetails(data)">
                 {{data.detailsShowing ? 'Hide' : 'Show'}} Details
               </b-button>
             </template>
-              
+
             <template slot="row-details" slot-scope="data">
               <group-members-details-container
                 :userProfile="data.item"
@@ -52,7 +52,7 @@
                 @change-role="changeRole"
               />
             </template>
-            
+
           </b-table>
 
         </b-card>
@@ -60,48 +60,48 @@
 
       <div>
         <b-button-group vertical>
-          
-          <b-button 
+
+          <b-button
             style="margin-top:10px; margin-bottom:10px;"
-            variant="primary" 
+            variant="primary"
             :disabled = "selectedUsers.length<1"
             @click="addSelectedMembers">
             <!--Add Selected Members-->
             <i class="fas fa-angle-right fa-lg"></i>
           </b-button>
-          
-          <b-button 
+
+          <b-button
             style="margin-top:10px; margin-bottom:10px;"
-            variant="primary" 
+            variant="primary"
             :disabled = "nonMembers.length<1"
             @click="showAdd = true">
             <!--Add All Members-->
             <i class="fas fa-angle-double-right fa-lg"></i>
           </b-button>
-          
-          <b-button 
+
+          <b-button
             style="margin-top:10px; margin-bottom:10px;"
-            variant="primary" 
+            variant="primary"
             :disabled = "membersCount<2"
             @click="showRemove = true">
             <i class="fas fa-angle-double-left fa-lg"></i>
             <!--Remove All Members-->
           </b-button>
-          
-          <b-button 
+
+          <b-button
             style="margin-top:10px; margin-bottom:10px;"
             variant="primary"
-            :disabled = "selectedMembers.length<1" 
+            :disabled = "selectedMembers.length<1"
               @click="removeSelectedMembers">
               <i class="fas fa-angle-left fa-lg"></i>
               <!--Remove Selected Members-->
           </b-button>
-          
+
           <b-modal
             v-model="showRemove"
             title="Are you sure?">
             <p class="my-4">
-              Do you really want to remove all members from 
+              Do you really want to remove all members from
               '<strong>{{group.name}}</strong>'?
             </p>
             <div slot="modal-footer" class="w-100">
@@ -117,12 +117,12 @@
               </b-button>
             </div>
           </b-modal>
-          
+
           <b-modal
             v-model="showAdd"
             title="Are you sure?">
             <p class="my-4">
-              Do you really want to add all users to 
+              Do you really want to add all users to
               '<strong>{{group.name}}</strong>'?
             </p>
             <div slot="modal-footer" class="w-100">
@@ -138,26 +138,26 @@
               </b-button>
             </div>
           </b-modal>
-          
+
         </b-button-group>
       </div>
 
       <div class="col">
         <b-card title="Group Members" title-tag="h6">
-            
+
           <b-form-group>
             <b-input-group>
               <b-input-group-text slot="prepend">
                 <i class="fa fa-filter"></i>
               </b-input-group-text>
-              <b-form-input 
-                v-model="memberFilter" 
-                placeholder="Filter list of members" 
+              <b-form-input
+                v-model="memberFilter"
+                placeholder="Filter list of members"
                 @change="onMemberFilterChange"
               />
             </b-input-group>
           </b-form-group>
-            
+
           <b-table
             v-if="membersCount > 0"
             hover
@@ -175,19 +175,19 @@
             @row-selected="onMembersRowSelected"
             @row-clicked="handleOwnerSelected"
           >
-          
+
            <template slot="cell(selected)" slot-scope="data">
               <span v-if="isMemberSelected(data.item)">
                 <i class="far fa-check-circle"></i>
               </span>
            </template>
-              
+
             <template slot="cell(username)" slot-scope="data" >
               {{data.value}}
-              <span 
+              <span
                 v-if= "data.item.role == 'OWNER'"
-                class="badge badge-primary"> 
-                  Owner 
+                class="badge badge-primary">
+                  Owner
               </span>
             </template>
 
@@ -196,7 +196,7 @@
                 {{data.detailsShowing ? 'Hide' : 'Show'}} Details
               </b-button>
             </template>
-              
+
             <template slot="row-details" slot-scope="data">
               <group-members-details-container
                 :userProfile="data.item"
@@ -218,14 +218,11 @@
 
 <script>
 import { models, services } from "django-airavata-api";
-import { components } from "django-airavata-common-ui";
-import { VueDraggableDirective, draggable } from 'vue-draggable'
 import GroupMembersDetailsContainer from "./GroupMembersDetailsContainer.vue";
 
 export default {
   name: "group-members-editor",
   components: {
-    "autocomplete-text-input": components.AutocompleteTextInput,
     GroupMembersDetailsContainer,
   },
   props: {
@@ -305,7 +302,7 @@ export default {
               editable: editable,
               _showDetails: this.showingDetails[m] || false,
               _rowVariant: this.newMembers.indexOf(m) >= 0 ? "success" : null,
-              _selectable: isOwner ? false : true, 
+              _selectable: isOwner ? false : true,
             };
           })
       );
@@ -337,7 +334,7 @@ export default {
       return this.members.length;
     },
   },
-  
+
   created() {
     services.UserProfileService.list().then((userProfiles) => {
       this.userProfiles = userProfiles;
@@ -378,7 +375,7 @@ export default {
       );
       this.$refs.usersTable.clearSelected();
       this.$refs.membersTable.clearSelected();
-      this.selectedUsers=[];  
+      this.selectedUsers=[];
       this.selectedMembers=[];
     },
     addAllMembers(){
