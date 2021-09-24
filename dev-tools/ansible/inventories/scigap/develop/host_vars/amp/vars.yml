@@ -25,6 +25,10 @@ user_data_dir: "{{ real_user_data_dir }}"
 vhost_servername: "dev.ampgateway.org"
 vhost_ssl: true
 
+# TODO: while developing django app, turn off SELinux, but turn it back on
+# once code execution issues are ironed out
+httpd_selinux_mode: "permissive"
+
 airavata_django_extra_dependencies:
   - "git+ssh://git@gitlab.physik.uni-muenchen.de/git_machrist/trecx-django-app.git#egg=trecx-django-app"
 
