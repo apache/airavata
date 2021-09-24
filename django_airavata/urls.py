@@ -14,10 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -25,22 +25,22 @@ from wagtail.documents import urls as wagtaildocs_urls
 from . import views
 
 urlpatterns = [
-    url(r'^djadmin/', admin.site.urls),
-    url(r'^admin/', include('django_airavata.apps.admin.urls')),
-    url(r'^auth/', include('django_airavata.apps.auth.urls')),
-    url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
-    url(r'^api/', include('django_airavata.apps.api.urls')),
-    url(r'^groups/', include('django_airavata.apps.groups.urls')),
-    url(r'^dataparsers/', include('django_airavata.apps.dataparsers.urls')),
+    re_path(r'^djadmin/', admin.site.urls),
+    re_path(r'^admin/', include('django_airavata.apps.admin.urls')),
+    re_path(r'^auth/', include('django_airavata.apps.auth.urls')),
+    re_path(r'^workspace/', include('django_airavata.apps.workspace.urls')),
+    re_path(r'^api/', include('django_airavata.apps.api.urls')),
+    re_path(r'^groups/', include('django_airavata.apps.groups.urls')),
+    re_path(r'^dataparsers/', include('django_airavata.apps.dataparsers.urls')),
     path('sdk/', include('airavata_django_portal_sdk.urls')),
-    url(r'^home$', views.home, name='home'),
-    url(r'^cms/', include(wagtailadmin_urls)),
-    url(r'^documents/', include(wagtaildocs_urls)),
+    re_path(r'^home$', views.home, name='home'),
+    re_path(r'^cms/', include(wagtailadmin_urls)),
+    re_path(r'^documents/', include(wagtaildocs_urls)),
     # For testing, developing error pages
-    url(r'^400/', views.error400),
-    url(r'^403/', views.error403),
-    url(r'^404/', views.error404),
-    url(r'^500/', views.error500),
+    re_path(r'^400/', views.error400),
+    re_path(r'^403/', views.error403),
+    re_path(r'^404/', views.error404),
+    re_path(r'^500/', views.error500),
 ]
 
 handler400 = views.error400
@@ -56,9 +56,9 @@ for custom_django_app in settings.CUSTOM_DJANGO_APPS:
         custom_django_app,
         'url_prefix',
         custom_django_app.label)
-    urlpatterns.append(url(r'^' + url_prefix + '/',
-                           include(custom_django_app.name + ".urls")))
+    urlpatterns.append(re_path(r'^' + url_prefix + '/',
+                               include(custom_django_app.name + ".urls")))
 
 urlpatterns += [
-    url(r'', include(wagtail_urls)),
+    re_path(r'', include(wagtail_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
