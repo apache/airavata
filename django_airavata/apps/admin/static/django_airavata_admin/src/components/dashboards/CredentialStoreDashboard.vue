@@ -17,17 +17,17 @@
         </span>
       <template slot="item-list" slot-scope="slotProps">
         <b-table striped hover :fields="fields" :items="slotProps.items">
-          <template slot="sharing" slot-scope="data">
+          <template slot="cell(sharing)" slot-scope="data">
             <share-button
               :entity-id="data.item.token"
               :disallow-editing-admin-groups="false"
               :auto-add-admin-groups="false"
             />
           </template>
-          <template slot="persistedTime" slot-scope="data">
+          <template slot="cell(persistedTime)" slot-scope="data">
             <human-date :date="data.value" />
           </template>
-          <template slot="action" slot-scope="data">
+          <template slot="cell(action)" slot-scope="data">
             <clipboard-copy-link
               :text="data.item.publicKey.trim()"
               class="mr-1"
@@ -57,10 +57,10 @@
       <template slot="item-list" slot-scope="slotProps">
 
         <b-table striped hover :fields="fields" :items="slotProps.items">
-          <template slot="sharing" slot-scope="data">
+          <template slot="cell(sharing)" slot-scope="data">
             <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false" :auto-add-admin-groups="false"/>
           </template>
-          <template slot="action" slot-scope="data">
+          <template slot="cell(action)" slot-scope="data">
             <delete-link v-if="data.item.userHasWriteAccess" @delete="deletePasswordCredential(data.item)">
               Are you sure you want to delete the
               <strong>{{ data.item.description }}</strong> password credential?
