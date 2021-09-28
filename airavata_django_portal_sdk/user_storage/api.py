@@ -321,10 +321,13 @@ def user_file_exists(request, path, storage_resource_id=None, experiment_id=None
                                 path_params={"path": path},
                                 params={"experiment-id": experiment_id},
                                 raise_for_status=False)
-        if resp.status_code == HTTPStatus.NOT_FOUND or resp.json()['isDir']:
+        if resp.status_code == HTTPStatus.NOT_FOUND:
             return None
         resp.raise_for_status()
-        return resp.json()['files'][0]['dataProductURI']
+        if resp.json()['isDir']:
+            return None
+        else:
+            return resp.json()['files'][0]['dataProductURI']
     final_path, owner_username = _get_final_path_and_owner_username(request, path, experiment_id)
     backend = get_user_storage_provider(
         request, storage_resource_id=storage_resource_id, owner_username=owner_username)
