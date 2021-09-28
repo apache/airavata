@@ -35,6 +35,7 @@ from django.views.decorators.gzip import gzip_page
 from rest_framework import mixins, pagination, status
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -1725,7 +1726,7 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
                      GenericAPIBackedViewSet):
     serializer_class = serializers.IAMUserProfile
     pagination_class = APIResultPagination
-    permission_classes = (IsInAdminsGroupPermission,)
+    permission_classes = (IsAuthenticated, IsInAdminsGroupPermission,)
     lookup_field = 'user_id'
 
     def get_list(self):
@@ -1850,7 +1851,7 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
                                  GenericAPIBackedViewSet):
     serializer_class = serializers.UnverifiedEmailUserProfile
     pagination_class = APIResultPagination
-    permission_classes = (IsInAdminsGroupPermission,)
+    permission_classes = (IsAuthenticated, IsInAdminsGroupPermission,)
     lookup_field = 'user_id'
 
     def get_list(self):
