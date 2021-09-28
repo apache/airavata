@@ -101,7 +101,7 @@ export const actions = {
     commit("setExperiment", { experiment });
     await dispatch("loadExperimentData");
   },
-  async loadExperimentData({ commit, dispatch, getters, state }) {
+  async loadExperimentData({ commit, dispatch, state }) {
     await Promise.all([
       dispatch("loadProjects"),
       dispatch("loadWorkspacePreferences"),
@@ -113,28 +113,47 @@ export const actions = {
         projectId: state.workspacePreferences.most_recent_project_id,
       });
     }
+
+    dispatch("initializeGroupResourceProfileId");
+    const groupResourceProfileId =
+      state.experiment.userConfigurationData.groupResourceProfileId;
+    // If experiment has a group resource profile, load additional necessary
+    // data and re-apply group resource profile
+    if (groupResourceProfileId) {
+      await dispatch("loadApplicationDeployments");
+      await dispatch("loadAppDeploymentQueues");
+      await dispatch("applyGroupResourceProfile");
+    }
+  },
+  initializeGroupResourceProfileId({ commit, getters, state }) {
     // If there is no groupResourceProfileId set on the experiment, or there
     // is one set but it is no longer in the list of accessible
-    // groupResourceProfiles, set to the default one
+    // groupResourceProfiles, set to the default one, or the first one
     let groupResourceProfileId =
       state.experiment.userConfigurationData.groupResourceProfileId;
     if (
       !groupResourceProfileId ||
       !getters.findGroupResourceProfile(groupResourceProfileId)
     ) {
-      commit("updateGroupResourceProfileId", {
-        groupResourceProfileId:
-          state.workspacePreferences.most_recent_group_resource_profile_id,
-      });
-    }
-    groupResourceProfileId =
-      state.experiment.userConfigurationData.groupResourceProfileId;
-    // If experiment has a group resource profile and user has access to it,
-    // load additional necessary data and re-apply group resource profile
-    if (getters.findGroupResourceProfile(groupResourceProfileId)) {
-      await dispatch("loadApplicationDeployments");
-      await dispatch("loadAppDeploymentQueues");
-      await dispatch("applyGroupResourceProfile");
+      if (
+        getters.findGroupResourceProfile(
+          state.workspacePreferences.most_recent_group_resource_profile_id
+        )
+      ) {
+        commit("updateGroupResourceProfileId", {
+          groupResourceProfileId:
+            state.workspacePreferences.most_recent_group_resource_profile_id,
+        });
+      } else if (state.groupResourceProfiles.length > 0) {
+        commit("updateGroupResourceProfileId", {
+          groupResourceProfileId:
+            state.groupResourceProfiles[0].groupResourceProfileId,
+        });
+      } else {
+        commit("updateGroupResourceProfileId", {
+          groupResourceProfileId: null,
+        });
+      }
     }
   },
   updateExperimentName({ commit }, { name }) {
@@ -263,15 +282,14 @@ export const actions = {
       commit("setAppDeploymentQueues", { appDeploymentQueues: [] });
     }
   },
-  async setDefaultQueue({ commit, dispatch, getters }) {
+  async setDefaultQueue({ dispatch, getters }) {
     // set to the default queue or the first one
     const defaultQueue = getters.defaultQueue;
     if (defaultQueue) {
-      commit("updateQueueName", { queueName: defaultQueue.queueName });
+      dispatch("updateQueueName", { queueName: defaultQueue.queueName });
     } else {
-      commit("updateQueueName", { queueName: null });
+      dispatch("updateQueueName", { queueName: null });
     }
-    dispatch("initializeQueue");
   },
   initializeQueue({ commit, getters }) {
     const queue = getters.queue;

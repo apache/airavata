@@ -1,4 +1,4 @@
-import { actions, mutations } from "@/web-components/store.js";
+import { actions, getters, mutations } from "@/web-components/store.js";
 import { models } from "django-airavata-api";
 
 /*
@@ -160,7 +160,7 @@ test("applyBatchQueueResourcePolicy: maxAllowedWalltime caps wallTimeLimit", (do
       maxAllowedWalltime: 6,
     },
     expectedMutations: [
-      { type: "updateWallTimeLimit", payload: { wallTimeLimit: 6} },
+      { type: "updateWallTimeLimit", payload: { wallTimeLimit: 6 } },
     ],
     done,
   });
@@ -178,8 +178,156 @@ test("applyBatchQueueResourcePolicy: maxAllowedWalltime doesn't affect wallTimeL
       maxAllowedNodes: 2,
       maxAllowedWalltime: 120,
     },
-    expectedMutations: [
-    ],
+    expectedMutations: [],
     done,
   });
+});
+
+test("initializeGroupResourceProfileId: set to most recent group resource profile when null", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.workspacePreferences = new models.WorkspacePreferences();
+  state.workspacePreferences.most_recent_group_resource_profile_id =
+    "ec50a69d-54ea-4b7c-a578-9a2a8da09ba0";
+  state.groupResourceProfiles = [
+    new models.GroupResourceProfile({
+      groupResourceProfileId:
+        state.workspacePreferences.most_recent_group_resource_profile_id,
+    }),
+  ];
+
+  const g = {
+    experiment: state.experiment,
+    findGroupResourceProfile: (groupResourceProfileId) =>
+      getters.findGroupResourceProfile(state)(groupResourceProfileId),
+  };
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: {
+        groupResourceProfileId:
+          state.workspacePreferences.most_recent_group_resource_profile_id,
+      },
+    },
+  ];
+  testAction(
+    actions.initializeGroupResourceProfileId,
+    null,
+    state,
+    g,
+    expectedMutations,
+    done
+  );
+});
+
+test("initializeGroupResourceProfileId: set to most recent group resource profile when no longer has access to grp", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.experiment.userConfigurationData.groupResourceProfileId =
+    "2580d4e6-7a8d-444e-b259-a8e6ae886d66";
+  state.workspacePreferences = new models.WorkspacePreferences();
+  state.workspacePreferences.most_recent_group_resource_profile_id =
+    "ec50a69d-54ea-4b7c-a578-9a2a8da09ba0";
+  state.groupResourceProfiles = [
+    new models.GroupResourceProfile({
+      groupResourceProfileId:
+        state.workspacePreferences.most_recent_group_resource_profile_id,
+    }),
+  ];
+  // experiment's grp isn't in the list of available grps
+  expect(
+    state.groupResourceProfiles.find(
+      (grp) =>
+        grp.groupResourceProfileId ===
+        state.experiment.userConfigurationData.groupResourceProfileId
+    )
+  ).toBeUndefined();
+  const g = {
+    experiment: state.experiment,
+    findGroupResourceProfile: (groupResourceProfileId) =>
+      getters.findGroupResourceProfile(state)(groupResourceProfileId),
+  };
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: {
+        groupResourceProfileId:
+          state.workspacePreferences.most_recent_group_resource_profile_id,
+      },
+    },
+  ];
+  testAction(
+    actions.initializeGroupResourceProfileId,
+    null,
+    state,
+    g,
+    expectedMutations,
+    done
+  );
+});
+
+test("initializeGroupResourceProfileId: set to first group resource profile when no most recent grp", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.experiment.userConfigurationData.groupResourceProfileId =
+    "2580d4e6-7a8d-444e-b259-a8e6ae886d66";
+  state.workspacePreferences = new models.WorkspacePreferences();
+  state.workspacePreferences.most_recent_group_resource_profile_id = null;
+  state.groupResourceProfiles = [
+    new models.GroupResourceProfile({
+      groupResourceProfileId: "c84da77b-8ce6-457f-b5c7-c72a663d7f77",
+    }),
+  ];
+  const g = {
+    experiment: state.experiment,
+    findGroupResourceProfile: (groupResourceProfileId) =>
+      getters.findGroupResourceProfile(state)(groupResourceProfileId),
+  };
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: {
+        groupResourceProfileId: "c84da77b-8ce6-457f-b5c7-c72a663d7f77",
+      },
+    },
+  ];
+  testAction(
+    actions.initializeGroupResourceProfileId,
+    null,
+    state,
+    g,
+    expectedMutations,
+    done
+  );
+});
+
+test("initializeGroupResourceProfileId: set to null when no longer has access", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.experiment.userConfigurationData.groupResourceProfileId =
+    "2580d4e6-7a8d-444e-b259-a8e6ae886d66";
+  state.workspacePreferences = new models.WorkspacePreferences();
+  state.workspacePreferences.most_recent_group_resource_profile_id = null;
+  state.groupResourceProfiles = [];
+  const g = {
+    experiment: state.experiment,
+    findGroupResourceProfile: (groupResourceProfileId) =>
+      getters.findGroupResourceProfile(state)(groupResourceProfileId),
+  };
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: {
+        groupResourceProfileId: null,
+      },
+    },
+  ];
+  testAction(
+    actions.initializeGroupResourceProfileId,
+    null,
+    state,
+    g,
+    expectedMutations,
+    done
+  );
 });
