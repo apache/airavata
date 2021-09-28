@@ -25,9 +25,9 @@ airavata_django_extra_dependencies:
 vhost_servername: "amosgateway.org"
 #vhost_servername: "ampgateway.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/ampgateway.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/ampgateway.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/ampgateway.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/amosgateway.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/amosgateway.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/amosgateway.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "amp"
