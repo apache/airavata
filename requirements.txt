@@ -1,3 +1,4 @@
+airavata-python-sdk==1.0.1
 bcrypt==3.1.7
 cffi==1.14.1
 cryptography==3.0
@@ -18,5 +19,3 @@ scp==0.13.2
 six==1.15.0
 thrift-connector==0.24
 thrift==0.10.0
-
--e git+https://github.com/apache/airavata.git@develop#egg=airavata_python_sdk&subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk
