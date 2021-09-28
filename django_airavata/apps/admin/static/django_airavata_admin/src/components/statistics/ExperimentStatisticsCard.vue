@@ -6,7 +6,9 @@
     class="statistics-card"
   >
     <div slot="header" class="text-right">
-      <div class="statistic-count">{{ count }}</div>
+      <div class="statistic-count text-nowrap">
+        <abbr :title="count">{{ displayedCount }}</abbr>
+      </div>
       <div>{{ title }}</div>
     </div>
     <b-link
@@ -49,14 +51,30 @@ export default {
       default: () => [],
     },
   },
+  computed: {
+    displayedCount() {
+      // Round large numbers and display m for 10^6 and k for 10^3
+      if (this.count >= Math.pow(10, 6)) {
+        return (this.count / Math.pow(10, 6)).toFixed(0) + "m";
+      } else if (this.count >= Math.pow(10, 3)) {
+        return (this.count / Math.pow(10, 3)).toFixed(0) + "k";
+      } else {
+        return this.count;
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .statistic-count {
-  font-size: 3rem;
+  font-size: 2.8rem;
+  overflow: hidden;
 }
 .statistics-card {
   height: calc(100% - 30px);
+}
+abbr {
+  text-decoration: none;
 }
 </style>
