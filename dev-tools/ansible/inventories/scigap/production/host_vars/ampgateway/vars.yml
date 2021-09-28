@@ -52,4 +52,8 @@ portal_title: "Atomic, Molecular, and Optical Science Gateway"
 
 django_google_analytics_tracking_id: "UA-177950242-1"
 
+django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared:
+      path: /var/www/portals/gateway-user-data/amp/shared
 ...
