@@ -65,10 +65,12 @@
           Download File
           <i class="fa fa-download" aria-hidden="true"></i>
         </b-link>
+        <!-- max download directory size is 1GB, see airavata_django_portal_sdk/views.py -->
         <b-link
           v-if="data.item.type === 'dir'"
           class="action-link"
           :href="`/sdk/download-dir?path=${data.item.path}`"
+          :disabled="data.item.size >= Math.pow(10, 9)"
         >
           Download Zip
           <i class="fa fa-file-archive" aria-hidden="true"></i>
@@ -237,5 +239,9 @@ export default {
 <style scoped>
 .action-link + .delete-link {
   margin-left: 0.25rem;
+}
+a.disabled {
+  pointer-events: none;
+  color: var(--secondary);
 }
 </style>
