@@ -16,17 +16,20 @@ test("setExperiment sets state", () => {
  */
 const testAction = (
   action,
-  payload,
-  state,
-  getters,
-  expectedMutations,
-  done
+  {
+    payload = null,
+    state = {},
+    getters = {},
+    expectedMutations = [],
+    done,
+    expectedActions = [],
+  }
 ) => {
-  let count = 0;
+  let mutationCount = 0;
 
   // mock commit
   const commit = (type, payload) => {
-    const mutation = expectedMutations[count] || {};
+    const mutation = expectedMutations[mutationCount] || {};
     try {
       expect(type).toEqual(mutation.type);
       expect(payload).toEqual(mutation.payload);
@@ -34,20 +37,40 @@ const testAction = (
       done(error);
     }
 
-    count++;
-    if (count >= expectedMutations.length) {
+    mutationCount++;
+    if (mutationCount >= expectedMutations.length) {
       done();
     }
   };
 
-  // call the action with mocked store and arguments
-  action({ commit, state, getters }, payload);
+  // mock dispatch
+  let actionCount = 0;
+  const dispatch = (type, payload) => {
+    const action = expectedActions[actionCount] || {};
+    try {
+      expect(type).toEqual(action.type);
+      expect(payload).toEqual(action.payload);
+    } catch (error) {
+      done(error);
+    }
 
-  // check if no mutations should have been dispatched
-  if (expectedMutations.length === 0) {
-    expect(count).toEqual(0);
+    actionCount++;
+    if (actionCount >= expectedActions.length) {
+      done();
+    }
+    return action.result;
+  };
+
+  // call the action with mocked store and arguments
+  const result = action({ commit, dispatch, state, getters }, payload);
+
+  // check if no expectedMutations should have been dispatched
+  if (expectedMutations.length === 0 && expectedActions.length === 0) {
+    expect(mutationCount).toEqual(0);
+    expect(actionCount).toEqual(0);
     done();
   }
+  return result;
 };
 
 const testApplyBatchQueueResourcePolicy = ({
@@ -67,14 +90,12 @@ const testApplyBatchQueueResourcePolicy = ({
     experiment: state.experiment,
     batchQueueResourcePolicy: bqrp,
   };
-  testAction(
-    actions.applyBatchQueueResourcePolicy,
-    null,
+  testAction(actions.applyBatchQueueResourcePolicy, {
     state,
     getters,
     expectedMutations,
-    done
-  );
+    done,
+  });
 };
 
 test("applyBatchQueueResourcePolicy: maxAllowedCores caps totalCPUCount", (done) => {
@@ -210,14 +231,12 @@ test("initializeGroupResourceProfileId: set to most recent group resource profil
       },
     },
   ];
-  testAction(
-    actions.initializeGroupResourceProfileId,
-    null,
+  testAction(actions.initializeGroupResourceProfileId, {
     state,
-    g,
+    getters: g,
     expectedMutations,
-    done
-  );
+    done,
+  });
 });
 
 test("initializeGroupResourceProfileId: set to most recent group resource profile when no longer has access to grp", (done) => {
@@ -256,14 +275,12 @@ test("initializeGroupResourceProfileId: set to most recent group resource profil
       },
     },
   ];
-  testAction(
-    actions.initializeGroupResourceProfileId,
-    null,
+  testAction(actions.initializeGroupResourceProfileId, {
     state,
-    g,
+    getters: g,
     expectedMutations,
-    done
-  );
+    done,
+  });
 });
 
 test("initializeGroupResourceProfileId: set to first group resource profile when no most recent grp", (done) => {
@@ -291,14 +308,12 @@ test("initializeGroupResourceProfileId: set to first group resource profile when
       },
     },
   ];
-  testAction(
-    actions.initializeGroupResourceProfileId,
-    null,
+  testAction(actions.initializeGroupResourceProfileId, {
     state,
-    g,
+    getters: g,
     expectedMutations,
-    done
-  );
+    done,
+  });
 });
 
 test("initializeGroupResourceProfileId: set to null when no longer has access", (done) => {
@@ -322,12 +337,372 @@ test("initializeGroupResourceProfileId: set to null when no longer has access", 
       },
     },
   ];
-  testAction(
-    actions.initializeGroupResourceProfileId,
-    null,
+  testAction(actions.initializeGroupResourceProfileId, {
     state,
-    g,
+    getters: g,
     expectedMutations,
-    done
+    done,
+  });
+});
+
+test("applyGroupResourceProfile: when compute resource changes, dispatches loadAppDeploymentQueues and setDefaultQueue", (done) => {
+  const expectedActions = [
+    {
+      type: "initializeResourceHostId",
+      result: true,
+    },
+    {
+      type: "loadAppDeploymentQueues",
+    },
+    {
+      type: "setDefaultQueue",
+    },
+  ];
+  testAction(actions.applyGroupResourceProfile, {
+    done,
+    expectedActions,
+  });
+});
+
+test("applyGroupResourceProfile: when compute resource doesn't change, but queue no longer allowed, dispatches setDefaultQueue", (done) => {
+  const expectedActions = [
+    {
+      type: "initializeResourceHostId",
+      result: false,
+    },
+    {
+      type: "setDefaultQueue",
+    },
+  ];
+  testAction(actions.applyGroupResourceProfile, {
+    done,
+    expectedActions,
+  });
+});
+
+test("applyGroupResourceProfile: when compute resource doesn't change, and queue doesn't change, dispatches applyBatchQueueResourcePolicy", (done) => {
+  const getters = {
+    queue: new models.BatchQueue({ queueName: "shared" }),
+  };
+  const expectedActions = [
+    {
+      type: "initializeResourceHostId",
+      result: false,
+    },
+    {
+      type: "applyBatchQueueResourcePolicy",
+    },
+  ];
+  testAction(actions.applyGroupResourceProfile, {
+    getters,
+    done,
+    expectedActions,
+  });
+});
+
+test("initializeResourceHostId: experiment has no resourceHostId, should dispatch getDefaultResourceHostId, return true", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.experiment.userConfigurationData.computationalResourceScheduling = new models.ComputationalResourceSchedulingModel();
+  const mockGetters = {
+    resourceHostId: getters.resourceHostId(state),
+  };
+  const expectedActions = [
+    {
+      type: "getDefaultResourceHostId",
+      result: "resourceHostId1",
+    },
+  ];
+  const expectedMutations = [
+    {
+      type: "updateResourceHostId",
+      payload: { resourceHostId: "resourceHostId1" },
+    },
+  ];
+  const result = testAction(actions.initializeResourceHostId, {
+    state,
+    getters: mockGetters,
+    done,
+    expectedActions,
+    expectedMutations,
+  });
+  expect(result).resolves.toBe(true);
+});
+
+test("initializeResourceHostId: experiment has resourceHostId but not in list of app deployments, should dispatch getDefaultResourceHostId, return true", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.experiment.userConfigurationData.computationalResourceScheduling = new models.ComputationalResourceSchedulingModel(
+    {
+      resourceHostId: "resourceHostId1",
+    }
   );
+  // experiment's resourceHostId1 isn't in list of app deployments
+  state.applicationDeployments = [
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId2",
+    }),
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId3",
+    }),
+  ];
+  const mockGetters = {
+    resourceHostId: getters.resourceHostId(state),
+    computeResources: getters.computeResources(state),
+  };
+  expect(mockGetters.resourceHostId).toBe("resourceHostId1");
+  expect(mockGetters.computeResources).toEqual([
+    "resourceHostId2",
+    "resourceHostId3",
+  ]);
+  const expectedActions = [
+    {
+      type: "getDefaultResourceHostId",
+      result: "resourceHostId2",
+    },
+  ];
+  const expectedMutations = [
+    {
+      type: "updateResourceHostId",
+      payload: { resourceHostId: "resourceHostId2" },
+    },
+  ];
+  const result = testAction(actions.initializeResourceHostId, {
+    state,
+    getters: mockGetters,
+    done,
+    expectedActions,
+    expectedMutations,
+  });
+  expect(result).resolves.toBe(true);
+});
+
+test("initializeResourceHostId: experiment has resourceHostId and in list of app deployments, should return false", (done) => {
+  const state = {};
+  state.experiment = new models.Experiment();
+  state.experiment.userConfigurationData.computationalResourceScheduling = new models.ComputationalResourceSchedulingModel(
+    {
+      resourceHostId: "resourceHostId1",
+    }
+  );
+  state.applicationDeployments = [
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId1",
+    }),
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId2",
+    }),
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId3",
+    }),
+  ];
+  const mockGetters = {
+    resourceHostId: getters.resourceHostId(state),
+    computeResources: getters.computeResources(state),
+  };
+  expect(mockGetters.resourceHostId).toBe("resourceHostId1");
+  expect(mockGetters.computeResources).toEqual([
+    "resourceHostId1",
+    "resourceHostId2",
+    "resourceHostId3",
+  ]);
+  const result = testAction(actions.initializeResourceHostId, {
+    state,
+    getters: mockGetters,
+    done,
+  });
+  expect(result).resolves.toBe(false);
+});
+
+test("getDefaultResourceHostId: dispatch loadDefaultComputeResourceId, return defaultComputeResourceId when in deployments list", (done) => {
+  const state = {};
+  state.workspacePreferences = new models.WorkspacePreferences({
+    most_recent_compute_resource_id: "resourceHostId1",
+  });
+  state.applicationDeployments = [
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId1",
+    }),
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId2",
+    }),
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId3",
+    }),
+  ];
+  const mockGetters = {
+    defaultComputeResourceId: getters.defaultComputeResourceId(state),
+    computeResources: getters.computeResources(state),
+  };
+  expect(mockGetters.defaultComputeResourceId).toBe("resourceHostId1");
+  expect(mockGetters.computeResources).toEqual([
+    "resourceHostId1",
+    "resourceHostId2",
+    "resourceHostId3",
+  ]);
+  const expectedActions = [{ type: "loadDefaultComputeResourceId" }];
+  const result = testAction(actions.getDefaultResourceHostId, {
+    state,
+    getters: mockGetters,
+    expectedActions,
+    done,
+  });
+  expect(result).resolves.toBe("resourceHostId1");
+});
+
+test("getDefaultResourceHostId: dispatch loadDefaultComputeResourceId, return first compute resource when defaultComputeResourceId not in deployments list", (done) => {
+  const state = {};
+  state.workspacePreferences = new models.WorkspacePreferences({
+    most_recent_compute_resource_id: "resourceHostId1",
+  });
+  state.applicationDeployments = [
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId2",
+    }),
+    new models.ApplicationDeploymentDescription({
+      computeHostId: "resourceHostId3",
+    }),
+  ];
+  const mockGetters = {
+    defaultComputeResourceId: getters.defaultComputeResourceId(state),
+    computeResources: getters.computeResources(state),
+  };
+  expect(mockGetters.defaultComputeResourceId).toBe("resourceHostId1");
+  expect(mockGetters.computeResources).toEqual([
+    "resourceHostId2",
+    "resourceHostId3",
+  ]);
+  const expectedActions = [{ type: "loadDefaultComputeResourceId" }];
+  const result = testAction(actions.getDefaultResourceHostId, {
+    state,
+    getters: mockGetters,
+    expectedActions,
+    done,
+  });
+  expect(result).resolves.toBe("resourceHostId2");
+});
+
+test("getDefaultResourceHostId: dispatch loadDefaultComputeResourceId, return null when no compute resources", (done) => {
+  const state = {};
+  state.workspacePreferences = new models.WorkspacePreferences({
+    most_recent_compute_resource_id: "resourceHostId1",
+  });
+  state.applicationDeployments = [];
+  const mockGetters = {
+    defaultComputeResourceId: getters.defaultComputeResourceId(state),
+    computeResources: getters.computeResources(state),
+  };
+  expect(mockGetters.defaultComputeResourceId).toBe("resourceHostId1");
+  expect(mockGetters.computeResources).toEqual([]);
+  const expectedActions = [{ type: "loadDefaultComputeResourceId" }];
+  const result = testAction(actions.getDefaultResourceHostId, {
+    state,
+    getters: mockGetters,
+    expectedActions,
+    done,
+  });
+  expect(result).resolves.toBe(null);
+});
+
+test("initializeQueue: when queue selected, when defaults are less than batch queue policy limits, queue settings use defaults", (done) => {
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      queueName: "shared",
+      defaultNodeCount: 1,
+      defaultCPUCount: 8,
+      defaultWalltime: 30,
+    }),
+    batchQueueResourcePolicy: new models.BatchQueueResourcePolicy({
+      queuename: "shared",
+      maxAllowedNodes: 2,
+      maxAllowedCores: 32,
+      maxAllowedWalltime: 60,
+    }),
+  };
+  mockGetters.getDefaultCPUCount = getters.getDefaultCPUCount(
+    null,
+    mockGetters
+  );
+  mockGetters.getDefaultNodeCount = getters.getDefaultNodeCount(
+    null,
+    mockGetters
+  );
+  mockGetters.getDefaultWalltime = getters.getDefaultWalltime(
+    null,
+    mockGetters
+  );
+  expect(mockGetters.getDefaultCPUCount(mockGetters.queue)).toBe(8);
+  expect(mockGetters.getDefaultNodeCount(mockGetters.queue)).toBe(1);
+  expect(mockGetters.getDefaultWalltime(mockGetters.queue)).toBe(30);
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount: 8 } },
+    { type: "updateNodeCount", payload: { nodeCount: 1 } },
+    { type: "updateWallTimeLimit", payload: { wallTimeLimit: 30 } },
+    { type: "updateTotalPhysicalMemory", payload: { totalPhysicalMemory: 0 } },
+  ];
+  testAction(actions.initializeQueue, {
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("initializeQueue: when queue selected, when defaults are more than batch queue policy limits, queue settings use batch queue policy limits", (done) => {
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      queueName: "shared",
+      defaultNodeCount: 4,
+      defaultCPUCount: 16,
+      defaultWalltime: 120,
+    }),
+    batchQueueResourcePolicy: new models.BatchQueueResourcePolicy({
+      queuename: "shared",
+      maxAllowedNodes: 2,
+      maxAllowedCores: 12,
+      maxAllowedWalltime: 45,
+    }),
+  };
+  mockGetters.getDefaultCPUCount = getters.getDefaultCPUCount(
+    null,
+    mockGetters
+  );
+  mockGetters.getDefaultNodeCount = getters.getDefaultNodeCount(
+    null,
+    mockGetters
+  );
+  mockGetters.getDefaultWalltime = getters.getDefaultWalltime(
+    null,
+    mockGetters
+  );
+  expect(mockGetters.getDefaultCPUCount(mockGetters.queue)).toBe(12);
+  expect(mockGetters.getDefaultNodeCount(mockGetters.queue)).toBe(2);
+  expect(mockGetters.getDefaultWalltime(mockGetters.queue)).toBe(45);
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount: 12 } },
+    { type: "updateNodeCount", payload: { nodeCount: 2 } },
+    { type: "updateWallTimeLimit", payload: { wallTimeLimit: 45 } },
+    { type: "updateTotalPhysicalMemory", payload: { totalPhysicalMemory: 0 } },
+  ];
+  testAction(actions.initializeQueue, {
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("initializeQueue: when no queue selected, settings are set to 0", (done) => {
+  const mockGetters = {
+    queue: null,
+  };
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount: 0 } },
+    { type: "updateNodeCount", payload: { nodeCount: 0 } },
+    { type: "updateWallTimeLimit", payload: { wallTimeLimit: 0 } },
+    { type: "updateTotalPhysicalMemory", payload: { totalPhysicalMemory: 0 } },
+  ];
+  testAction(actions.initializeQueue, {
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
 });
