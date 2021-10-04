@@ -1,12 +1,14 @@
 <template>
-  <div v-if="queue">
+  <div>
     <div class="card border-default">
       <b-link
         @click="showConfiguration = !showConfiguration"
         class="card-link text-dark"
       >
         <div class="card-body">
-          <h5 class="card-title mb-4">Settings for queue {{ queueName }}</h5>
+          <h5 class="card-title mb-4">
+            Settings for queue {{ selectedQueueName }}
+          </h5>
           <div class="row">
             <div class="col">
               <h3 class="h5 mb-0">
@@ -36,7 +38,7 @@
       <b-form-group label="Select a Queue" label-for="queue">
         <b-form-select
           id="queue"
-          :value="queueName"
+          :value="selectedQueueName"
           :options="queueOptions"
           required
           @change="queueChanged"
@@ -135,25 +137,35 @@ Vue.use(BootstrapVue);
 
 export default {
   store: store,
+  props: {
+    queueName: {
+      type: String,
+    },
+  },
+  created() {
+    if (this.queueName && this.selectedQueueName !== this.queueName) {
+      this.queueChanged(this.queueName);
+    }
+  },
   data() {
     return {
       showConfiguration: false,
     };
   },
   computed: {
-    ...mapGetters([
-      "queue",
-      "queues",
-      "maxAllowedCores",
-      "maxAllowedNodes",
-      "maxAllowedWalltime",
-      "maxMemory",
-      "queueName",
-      "totalCPUCount",
-      "nodeCount",
-      "wallTimeLimit",
-      "totalPhysicalMemory",
-    ]),
+    ...mapGetters({
+      queue: "queue",
+      queues: "queues",
+      maxAllowedCores: "maxAllowedCores",
+      maxAllowedNodes: "maxAllowedNodes",
+      maxAllowedWalltime: "maxAllowedWalltime",
+      maxMemory: "maxMemory",
+      selectedQueueName: "queueName",
+      totalCPUCount: "totalCPUCount",
+      nodeCount: "nodeCount",
+      wallTimeLimit: "wallTimeLimit",
+      totalPhysicalMemory: "totalPhysicalMemory",
+    }),
     queueOptions() {
       if (!this.queues) {
         return [];
@@ -194,6 +206,13 @@ export default {
       this.$store.dispatch("updateTotalPhysicalMemory", {
         totalPhysicalMemory: event.target.value,
       });
+    },
+  },
+  watch: {
+    queueName(value) {
+      if (value && this.selectedQueueName !== value) {
+        this.queueChanged(value);
+      }
     },
   },
 };

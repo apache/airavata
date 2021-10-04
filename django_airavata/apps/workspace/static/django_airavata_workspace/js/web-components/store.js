@@ -32,6 +32,9 @@ export const mutations = {
   updateQueueName(state, { queueName }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
   },
+  setLazyQueueName(state, { queueName }) {
+    state.queueName = queueName;
+  },
   updateTotalCPUCount(state, { totalCPUCount }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = totalCPUCount;
   },
@@ -97,9 +100,13 @@ export const actions = {
     });
     await dispatch("setExperiment", { experiment });
   },
-  async setExperiment({ commit, dispatch }, { experiment }) {
+  async setExperiment({ commit, dispatch, state }, { experiment }) {
     commit("setExperiment", { experiment });
     await dispatch("loadExperimentData");
+    // Check lazy experiment state properties and apply them
+    if (state.queueName) {
+      dispatch("updateQueueName", { queueName: state.queueName });
+    }
   },
   async loadExperimentData({ commit, dispatch, state }) {
     await Promise.all([
@@ -183,9 +190,13 @@ export const actions = {
       await dispatch("setDefaultQueue");
     }
   },
-  updateQueueName({ commit, dispatch }, { queueName }) {
-    commit("updateQueueName", { queueName });
-    dispatch("initializeQueue");
+  updateQueueName({ commit, dispatch, state }, { queueName }) {
+    if (state.experiment) {
+      commit("updateQueueName", { queueName });
+      dispatch("initializeQueue");
+    } else {
+      commit("setLazyQueueName", { queueName });
+    }
   },
   updateTotalCPUCount({ commit }, { totalCPUCount }) {
     commit("updateTotalCPUCount", { totalCPUCount });
@@ -634,6 +645,8 @@ export default new Vuex.Store({
     groupResourceProfiles: null,
     applicationModuleId: null,
     appDeploymentQueues: [],
+    // Lazy state fields that will be copied to the experiment once it is loaded
+    queueName: null,
   },
   mutations,
   actions,
