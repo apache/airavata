@@ -220,7 +220,9 @@ export default {
       // native input events have the current value in target.value
       const value = Array.isArray(event.detail)
         ? event.detail[0]
-        : event.target.value;
+        : event.target // Backwards compatibility: second argument changed from the value to the 'event'
+        ? event.target.value
+        : event;
       this.$store.dispatch("updateExperimentInputValue", { inputName, value });
     },
     updateProjectId(event) {
