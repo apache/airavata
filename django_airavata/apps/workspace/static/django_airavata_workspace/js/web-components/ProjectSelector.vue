@@ -27,8 +27,9 @@
 </template>
 
 <script>
-import { getDefaultProjectId, getProjects } from "./store";
 import Vue from "vue";
+import store from "./store";
+import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
@@ -39,21 +40,17 @@ export default {
       default: null,
     },
   },
+  store: store,
   data() {
     return {
       projectId: this.value,
-      projects: null,
     };
   },
   async mounted() {
-    this.projects = await getProjects();
-    const defaultProjectId = await getDefaultProjectId();
-    if (!this.projectId) {
-      this.projectId = defaultProjectId;
-      this.$emit("input", this.projectId);
-    }
+    await this.$store.dispatch("loadProjects");
   },
   computed: {
+    ...mapGetters(["projects"]),
     sharedProjectOptions: function () {
       return this.projects
         ? this.projects
@@ -90,6 +87,9 @@ export default {
 };
 </script>
 
-<style>
-@import url("./styles.css");
+<style lang="scss">
+@import "./styles";
+:host {
+  display: block;
+}
 </style>

@@ -12,14 +12,22 @@
       <div
         :ref="input.name"
         :key="input.name"
-        @input="updateInputValue(input.name, $event.target.value)"
+        @input="updateInputValue(input.name, $event)"
       >
         <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
-    <div ref="resourceSelectionEditor" @input="updateUserConfigurationData">
-      <!-- programmatically define slot for experiment-resource-selection as
-           native slot (not Vue slots), see #mounted() -->
+    <div
+      ref="groupResourceProfileSelector"
+      @input.stop="updateGroupResourceProfileId"
+    >
+      <!-- programmatically define slot for adpf-group-resource-profile-selector -->
+    </div>
+    <div ref="computeResourceSelector">
+      <!-- programmatically define slot for adpf-experiment-compute-resource-selector -->
+    </div>
+    <div ref="queueSettingsEditor">
+      <!-- programmatically define slot for adpf-queue-settings-editor -->
     </div>
     <div ref="experimentButtons">
       <!-- programmatically define slot for experiment-buttons as
@@ -29,15 +37,9 @@
 </template>
 
 <script>
-import {
-  getApplicationModule,
-  getApplicationInterfaceForModule,
-  saveExperiment,
-  getExperiment,
-  launchExperiment,
-} from "./store";
-
 import Vue from "vue";
+import store from "./store";
+import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 import urls from "../utils/urls";
 Vue.use(BootstrapVue);
@@ -54,13 +56,19 @@ export default {
       required: false,
     },
   },
+  store: store,
   async created() {},
   async mounted() {
-    this.applicationModule = await getApplicationModule(this.applicationId);
-    this.appInterface = await getApplicationInterfaceForModule(
-      this.applicationId
-    );
-    this.experiment = await this.loadExperiment();
+    if (this.experimentId) {
+      await this.$store.dispatch("loadExperiment", {
+        experimentId: this.experimentId,
+      });
+    } else {
+      await this.$store.dispatch("loadNewExperiment", {
+        applicationId: this.applicationId,
+      });
+    }
+    this.$emit("loaded", this.experiment);
     // vue-web-component-wrapper clones native slots and turns them into Vue
     // slots which means they lose any event listeners and they basically aren't
     // in the DOM any more.  As a workaround, programmatically create native
@@ -71,14 +79,15 @@ export default {
         slot.setAttribute("name", input.name);
         if (input.type.name === "STRING") {
           slot.textContent = `${input.name} `;
-          const textInput = document.createElement("input");
-          textInput.setAttribute("type", "text");
+          const textInput = document.createElement("adpf-string-input-editor");
           textInput.setAttribute("value", input.value);
+          textInput.setAttribute("name", input.name);
           slot.appendChild(textInput);
+          this.$refs[input.name][0].append(slot);
         }
         // TODO: add support for other input types
-        this.$refs[input.name][0].append(slot);
       }
+      // this.injectPropsIntoSlottedInputs();
 
       /*
        * Experiment Name native slot
@@ -125,18 +134,38 @@ export default {
         this.createSlot("experiment-project", projectSelectorEl)
       );
 
-      const resourceSelectionEditor = document.createElement(
-        "adpf-resource-selection-editor"
+      const groupResourceProfileSelectorEl = document.createElement(
+        "adpf-group-resource-profile-selector"
       );
-      this.$refs.resourceSelectionEditor.append(
+      if (this.groupResourceProfileId) {
+        groupResourceProfileSelectorEl.setAttribute(
+          "value",
+          this.groupResourceProfileId
+        );
+      }
+      this.$refs.groupResourceProfileSelector.append(
         this.createSlot(
-          "experiment-resource-selection",
-          resourceSelectionEditor
+          "experiment-group-resource-profile",
+          groupResourceProfileSelectorEl
         )
       );
-      // Can't set objects via attributes, must set as prop
-      resourceSelectionEditor.value = this.experiment.userConfigurationData;
-      resourceSelectionEditor.applicationModuleId = this.applicationId;
+
+      const computeResourceSelectorEl = document.createElement(
+        "adpf-experiment-compute-resource-selector"
+      );
+      this.$refs.computeResourceSelector.append(
+        this.createSlot(
+          "experiment-compute-resource",
+          computeResourceSelectorEl
+        )
+      );
+
+      const queueSettingsEditorEl = document.createElement(
+        "adpf-queue-settings-editor"
+      );
+      this.$refs.queueSettingsEditor.append(
+        this.createSlot("experiment-queue-settings", queueSettingsEditorEl)
+      );
 
       /*
        * Experiment (save/launch) Buttons native slot
@@ -177,30 +206,34 @@ export default {
       );
     });
   },
-  data() {
-    return {
-      applicationModule: null,
-      appInterface: null,
-      experiment: null,
-    };
+  computed: {
+    ...mapGetters(["experiment", "groupResourceProfileId"]),
   },
   methods: {
     updateExperimentName(event) {
-      this.experiment.experimentName = event.target.value;
+      this.$store.dispatch("updateExperimentName", {
+        name: event.target.value,
+      });
     },
-    updateInputValue(inputName, value) {
-      const experimentInput = this.experiment.experimentInputs.find(
-        (i) => i.name === inputName
-      );
-      experimentInput.value = value;
+    updateInputValue(inputName, event) {
+      // web component input events have the current value in a detail array,
+      // native input events have the current value in target.value
+      const value = Array.isArray(event.detail)
+        ? event.detail[0]
+        : event.target // Backwards compatibility: second argument changed from the value to the 'event'
+        ? event.target.value
+        : event;
+      this.$store.dispatch("updateExperimentInputValue", { inputName, value });
     },
     updateProjectId(event) {
       const [projectId] = event.detail;
-      this.experiment.projectId = projectId;
+      this.$store.dispatch("updateProjectId", { projectId });
     },
-    updateUserConfigurationData(event) {
-      const [userConfigurationData] = event.detail;
-      this.experiment.userConfigurationData = userConfigurationData;
+    updateGroupResourceProfileId(event) {
+      const [groupResourceProfileId] = event.detail;
+      this.$store.dispatch("updateGroupResourceProfileId", {
+        groupResourceProfileId,
+      });
     },
     async onSubmit(event) {
       // console.log(event);
@@ -216,14 +249,14 @@ export default {
         return;
       }
       if (event.submitter.name === "save-experiment-button") {
-        await saveExperiment(this.experiment);
+        await this.$store.dispatch("saveExperiment");
         this.postSave();
         return;
       } else {
         // Default submit button handling is save and launch
-        const experiment = await saveExperiment(this.experiment);
-        await launchExperiment(experiment.experimentId);
-        this.postSaveAndLaunch(experiment);
+        await this.$store.dispatch("saveExperiment");
+        await this.$store.dispatch("launchExperiment");
+        this.postSaveAndLaunch(this.experiment);
         return;
       }
     },
@@ -256,21 +289,6 @@ export default {
       }
       urls.navigateToViewExperiment(experiment, { launching: true });
     },
-    async loadExperiment() {
-      if (this.experimentId) {
-        const experiment = await getExperiment(this.experimentId);
-        this.$emit("loaded", experiment);
-        return experiment;
-      } else {
-        const experiment = this.appInterface.createExperiment();
-        experiment.experimentName =
-          this.applicationModule.appModuleName +
-          " on " +
-          new Date().toLocaleString();
-        this.$emit("loaded", experiment);
-        return experiment;
-      }
-    },
     createSlot(name, ...children) {
       const slot = document.createElement("slot");
       slot.setAttribute("name", name);
@@ -281,8 +299,8 @@ export default {
 };
 </script>
 
-<style>
-@import "./styles.css";
+<style lang="scss">
+@import "./styles";
 
 :host {
   display: block;

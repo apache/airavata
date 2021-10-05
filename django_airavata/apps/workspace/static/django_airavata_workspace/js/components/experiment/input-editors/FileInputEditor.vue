@@ -141,6 +141,13 @@ export default {
       this.$emit("uploadend");
     },
   },
+  watch: {
+    value(value, oldValue) {
+      if (this.isDataProductURI && value !== oldValue) {
+        this.loadDataProduct(value);
+      }
+    }
+  }
 };
 </script>
 

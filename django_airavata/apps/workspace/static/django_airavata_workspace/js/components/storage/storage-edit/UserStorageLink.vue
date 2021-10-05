@@ -1,7 +1,9 @@
 <template>
-  <b-link :href="storageFileViewRouteUrl()" @click="showFilePreview($event)">
-    {{ fileName }}
-    <b-modal :title="fileName" ref="modal" scrollable size="lg">
+  <div>
+    <b-link :href="storageFileViewRouteUrl()" @click="showFilePreview($event)">
+      {{ fileName }}
+    </b-link>
+    <b-modal :title="fileName" ref="modal" scrollable size="lg" static lazy>
       <user-storage-file-edit-viewer
         :file-name="fileName"
         :data-product-uri="dataProductUri"
@@ -11,10 +13,12 @@
         "
       />
       <template slot="modal-footer">
-        <a :href="storageFileViewRouteUrl()" target="_blank">Open in a new window</a>
+        <a :href="storageFileViewRouteUrl()" target="_blank"
+          >Open in a new window</a
+        >
       </template>
     </b-modal>
-  </b-link>
+  </div>
 </template>
 
 <script>
@@ -22,21 +26,21 @@ import UserStorageFileEditViewer from "./UserStorageEditViewer";
 
 export default {
   name: "user-storage-link",
-  components: {UserStorageFileEditViewer},
+  components: { UserStorageFileEditViewer },
   props: {
     fileName: {
-      required: true
+      required: true,
     },
     dataProductUri: {
-      required: true
+      required: true,
     },
     mimeType: {
-      required: true
+      required: true,
     },
     allowPreview: {
       default: true,
-      required: false
-    }
+      required: false,
+    },
   },
   methods: {
     showFilePreview(event) {
@@ -48,7 +52,7 @@ export default {
     storageFileViewRouteUrl() {
       // This endpoint can handle XHR upload or a TUS uploadURL
       return `/workspace/storage/~?dataProductUri=${this.dataProductUri}`;
-    }
-  }
+    },
+  },
 };
 </script>
