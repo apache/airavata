@@ -20,7 +20,9 @@
             >{{ appModule.appModuleVersion }}</span
           >
           <p class="card-text card-text--small mt-3 text-secondary">
-            {{ appModule.appModuleDescription }}
+            <linkify>
+              {{ appModule.appModuleDescription }}
+            </linkify>
           </p>
           <p class="card-text">
             <slot name="card-actions"> </slot>
@@ -32,7 +34,9 @@
 </template>
 
 <script>
+import Linkify from "./Linkify.vue";
 export default {
+  components: { Linkify },
   name: "application-card",
   props: ["appModule", "disabled"],
   data: function () {

@@ -28,7 +28,21 @@ export default {
       })
       // Flatten array since text nodes are mapped to arrays
       .flat();
-    return createElement("span", null, children);
+    return createElement(
+      "span",
+      {
+        on: {
+          click: this.clickHandler,
+        },
+      },
+      children
+    );
+  },
+  methods: {
+    clickHandler(e) {
+      // stop click event from bubbling up
+      e.stopPropagation();
+    },
   },
 };
 </script>
