@@ -25,11 +25,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #         'NAME': '...',
 #         'HOST': '...',
 #         'USER': '...',
-#         'PASSWORD': '...'
-#     },
-#     'OPTIONS': {
-#         'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
-#     }
+#         'PASSWORD': '...',
+#         'OPTIONS': {
+#             'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
+#         }
 # }
 
 # Django - Email settings
