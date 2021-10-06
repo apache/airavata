@@ -45,10 +45,10 @@ DATABASES = {
         'NAME': '{{ django_database_name }}',
         'HOST': '{{ django_database_host_ip_address }}',
         'USER': '{{ django_db_username }}',
-        'PASSWORD': '{{ django_db_password }}'
-    },
-    'OPTIONS': {
-        'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
+        'PASSWORD': '{{ django_db_password }}',
+        'OPTIONS': {
+            'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
+        }
     }
 }
 {% endif %}
