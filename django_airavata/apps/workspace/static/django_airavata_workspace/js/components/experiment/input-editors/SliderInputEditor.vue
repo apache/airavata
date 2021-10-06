@@ -57,7 +57,7 @@ export default {
     },
     parseValue(value) {
       // Just remove any percentage signs
-      const result = parseInt(value.replaceAll("%", ""));
+      const result = parseInt(value ? value.replaceAll("%", "") : null);
       return !isNaN(result) ? result : this.min;
     },
     onChange(value) {
