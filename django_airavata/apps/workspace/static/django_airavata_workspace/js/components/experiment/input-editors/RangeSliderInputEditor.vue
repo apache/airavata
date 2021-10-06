@@ -86,7 +86,7 @@ export default {
     initializeSliderValues() {
       this.sliderValues = this.parseValue(this.data);
       // If parsing the value resulted in it changing (failed to parse so
-      // initialized to ['min', 'max']), update the value
+      // initialized to ['sliderMin', 'sliderMax']), update the value
       if (this.data !== this.formatValue(this.sliderValues)) {
         this.onChange(this.sliderValues);
       }
@@ -98,7 +98,7 @@ export default {
         : [];
       return result.length === 2 && !isNaN(result[0]) && !isNaN(result[1])
         ? result
-        : [this.min, this.max];
+        : [this.sliderMin, this.sliderMax];
     },
     onChange(value) {
       this.data = this.formatValue(value);

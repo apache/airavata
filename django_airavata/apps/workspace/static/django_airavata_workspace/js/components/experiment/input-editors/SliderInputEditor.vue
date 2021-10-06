@@ -77,7 +77,7 @@ export default {
     initializeSliderValue() {
       this.sliderValue = this.parseValue(this.data);
       // If parsing the value resulted in it changing (failed to parse so
-      // initialized to the 'min'), update the value
+      // initialized to the 'sliderMin'), update the value
       if (this.data !== this.formatValue(this.sliderValue)) {
         this.onChange(this.sliderValue);
       }
