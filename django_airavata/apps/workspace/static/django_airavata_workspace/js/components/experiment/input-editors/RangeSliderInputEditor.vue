@@ -64,9 +64,8 @@ export default {
     parseValue(value) {
       // Just remove any percentage signs
       const result = value
-        .replaceAll("%", "")
-        .split(this.delimiter)
-        .map(parseFloat);
+        ? value.replaceAll("%", "").split(this.delimiter).map(parseFloat)
+        : [];
       return result.length === 2 && !isNaN(result[0]) && !isNaN(result[1])
         ? result
         : [this.min, this.max];
