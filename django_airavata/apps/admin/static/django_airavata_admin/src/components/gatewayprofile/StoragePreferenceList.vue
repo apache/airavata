@@ -71,7 +71,7 @@
             >?
           </delete-link>
         </template>
-        <template slot="cell(row-details)" slot-scope="row">
+        <template slot="row-details" slot-scope="row">
           <b-card>
             <storage-preference-editor
               :value="row.item"
