@@ -13,7 +13,7 @@
       :items="items"
       sort-by="name"
     >
-      <template slot="name" slot-scope="data">
+      <template slot="cell(name)" slot-scope="data">
         <b-link
           v-if="data.item.type === 'dir'"
           @click="directorySelected(data.item)"
@@ -24,10 +24,10 @@
           {{ data.item.name }}</b-link
         >
       </template>
-      <template slot="createdTimestamp" slot-scope="data">
+      <template slot="cell(createdTimestamp)" slot-scope="data">
         <human-date :date="data.item.createdTime" />
       </template>
-      <template slot="actions" slot-scope="data">
+      <template slot="cell(actions)" slot-scope="data">
         <b-link
           v-if="data.item.type === 'file'"
           class="action-link"
