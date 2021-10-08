@@ -24,6 +24,7 @@ airavata_django_extra_dependencies:
 
 vhost_servername: "amosgateway.org"
 vhost_server_redirect: "ampgateway.org"
+vhost_serveralias: "ampgateway.org"
 
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/amosgateway.org/cert.pem"
