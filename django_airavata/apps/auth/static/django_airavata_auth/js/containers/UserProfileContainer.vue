@@ -1,16 +1,24 @@
 <template>
   <div>
     <h1 class="h4 mb-4">User Profile Editor</h1>
-    <b-alert :show="user && !user.complete"
+    <b-alert v-if="user && !user.username_valid" show variant="danger">
+      Unfortunately the username on your profile is invalid, which prevents
+      creating or updating your user profile. The administrators have been
+      notified and will be able to update your user account with a valid
+      username. Someone will notify you once your username has been updated to a
+      valid value.
+    </b-alert>
+    <b-alert v-else-if="user && !user.complete" show>
       >Please complete your user profile before continuing.</b-alert
     >
     <user-profile-editor
       v-if="user"
       v-model="user"
+      :disabled="!user.username_valid"
       @save="onSave"
       @resend-email-verification="resendEmailVerification"
     />
-    <b-link class="text-muted small" href="/workspace/dashboard"
+    <b-link v-if="user && user.complete" class="text-muted small" href="/workspace/dashboard"
       >Return to Dashboard</b-link
     >
   </div>

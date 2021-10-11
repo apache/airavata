@@ -1,10 +1,10 @@
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from . import forms
-from django.core.exceptions import ValidationError
 
 VERIFY_EMAIL_TEMPLATE = 1
 NEW_USER_EMAIL_TEMPLATE = 2
@@ -75,6 +75,7 @@ class UserProfile(models.Model):
             validates = True
         except ValidationError:
             validates = False
+        # TODO: should be valid if matching an old email address too
         return (validates or (self.is_email_valid and self.user.email == self.user.username))
 
     @property

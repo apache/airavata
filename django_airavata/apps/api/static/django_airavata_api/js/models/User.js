@@ -8,6 +8,7 @@ const FIELDS = [
   "email",
   "pending_email_change",
   "complete",
+  "username_valid"
 ];
 
 export default class User extends BaseModel {

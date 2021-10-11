@@ -1,32 +1,24 @@
 <template>
   <b-card>
-    <b-form-group label="Username">
-      <b-form-input
-        v-model="$v.user.username.$model"
-        :disabled="true"
-        :state="validateState($v.user.username)"
-      />
-      <b-form-invalid-feedback v-if="!$v.user.username.emailOrMatchesRegex">
-        Username can only contain lowercase letters, numbers, underscores and
-        hyphens OR it can be the same as the email address. Only an
-        administrator can update your username to a valid value.
-      </b-form-invalid-feedback>
+    <!-- TODO: add help text that only administrators can change a user's username -->
+    <b-form-group label="Username" :disabled="true">
+      <b-form-input v-model="user.username" />
     </b-form-group>
-    <b-form-group label="First Name">
+    <b-form-group label="First Name" :disabled="disabled">
       <b-form-input
         v-model="$v.user.first_name.$model"
         @keydown.native.enter="save"
         :state="validateState($v.user.first_name)"
       />
     </b-form-group>
-    <b-form-group label="Last Name">
+    <b-form-group label="Last Name" :disabled="disabled">
       <b-form-input
         v-model="$v.user.last_name.$model"
         @keydown.native.enter="save"
         :state="validateState($v.user.last_name)"
       />
     </b-form-group>
-    <b-form-group label="Email">
+    <b-form-group label="Email" :disabled="disabled">
       <b-form-input
         v-model="$v.user.email.$model"
         @keydown.native.enter="save"
@@ -45,7 +37,7 @@
         ></b-alert
       >
     </b-form-group>
-    <b-button variant="primary" @click="save" :disabled="$v.$invalid"
+    <b-button variant="primary" @click="save" :disabled="$v.$invalid || disabled"
       >Save</b-button
     >
   </b-card>
@@ -55,7 +47,7 @@
 import { models } from "django-airavata-api";
 import { errors } from "django-airavata-common-ui";
 import { validationMixin } from "vuelidate";
-import { email, helpers, or, required, sameAs } from "vuelidate/lib/validators";
+import { email, required } from "vuelidate/lib/validators";
 
 export default {
   name: "user-profile-editor",
@@ -65,9 +57,15 @@ export default {
       type: models.User,
       required: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   created() {
-    this.$v.user.$touch();
+    if (!this.disabled) {
+      this.$v.user.$touch();
+    }
   },
   data() {
     return {
@@ -75,14 +73,8 @@ export default {
     };
   },
   validations() {
-    const usernameRegex = helpers.regex("username", /^[a-z0-9_-]+$/);
-    const emailOrMatchesRegex = or(usernameRegex, sameAs("email"));
     return {
       user: {
-        username: {
-          required,
-          emailOrMatchesRegex,
-        },
         first_name: {
           required,
         },
