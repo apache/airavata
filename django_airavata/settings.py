@@ -85,35 +85,6 @@ INSTALLED_APPS = [
 # For example: HIDDEN_AIRAVATA_APPS = ['django_airavata_dataparsers']
 HIDDEN_AIRAVATA_APPS = []
 
-# AppConfig instances from custom Django apps
-CUSTOM_DJANGO_APPS = []
-
-# Add any custom apps installed in the virtual environment
-# Essentially this looks for the entry_points metadata in all installed Python packages. The format of the metadata in setup.py is the following:
-#
-#    setuptools.setup(
-#        ...
-#        entry_points="""
-#    [airavata.djangoapp]
-#    dynamic_djangoapp = dynamic_djangoapp.apps:DynamicDjangoAppConfig
-#    """,
-#        ...
-#    )
-#
-for entry_point in iter_entry_points(group='airavata.djangoapp'):
-    custom_app_class = entry_point.load()
-    custom_app_instance = custom_app_class(
-        entry_point.name, import_module(entry_point.module_name))
-    CUSTOM_DJANGO_APPS.append(custom_app_instance)
-    # Create path to AppConfig class (otherwise the ready() method doesn't get
-    # called)
-    INSTALLED_APPS.append("{}.{}".format(entry_point.module_name,
-                                         entry_point.attrs[0]))
-
-OUTPUT_VIEW_PROVIDERS = {}
-for entry_point in iter_entry_points(group='airavata.output_view_providers'):
-    OUTPUT_VIEW_PROVIDERS[entry_point.name] = entry_point.load()()
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -625,6 +596,41 @@ WAGTAIL_CODE_BLOCK_LANGUAGES = (
 )
 
 
+# Allow all settings to be overridden by settings_local.py file
+try:
+    from django_airavata.settings_local import *  # noqa
+except ImportError:
+    pass
+
+# NOTE: custom code must be loaded last so that the above settings take effect
+# for any views, etc. defined or imported by custom code
+
+# AppConfig instances from custom Django apps
+CUSTOM_DJANGO_APPS = []
+
+# Add any custom apps installed in the virtual environment
+# Essentially this looks for the entry_points metadata in all installed Python packages. The format of the metadata in setup.py is the following:
+#
+#    setuptools.setup(
+#        ...
+#        entry_points="""
+#    [airavata.djangoapp]
+#    dynamic_djangoapp = dynamic_djangoapp.apps:DynamicDjangoAppConfig
+#    """,
+#        ...
+#    )
+#
+for entry_point in iter_entry_points(group='airavata.djangoapp'):
+    custom_app_class = entry_point.load()
+    custom_app_instance = custom_app_class(
+        entry_point.name, import_module(entry_point.module_name))
+    CUSTOM_DJANGO_APPS.append(custom_app_instance)
+    # Create path to AppConfig class (otherwise the ready() method doesn't get
+    # called)
+    INSTALLED_APPS.append("{}.{}".format(entry_point.module_name,
+                                         entry_point.attrs[0]))
+
+
 def merge_setting(default, custom_setting):
     # FIXME: only handles dict settings, doesn't handle lists
     if isinstance(custom_setting, dict):
@@ -643,8 +649,6 @@ for custom_django_app in CUSTOM_DJANGO_APPS:
         s = custom_django_app.settings
         merge_setting(WEBPACK_LOADER, getattr(s, 'WEBPACK_LOADER', {}))
 
-# Allow all settings to be overridden by settings_local.py file
-try:
-    from django_airavata.settings_local import *  # noqa
-except ImportError:
-    pass
+OUTPUT_VIEW_PROVIDERS = {}
+for entry_point in iter_entry_points(group='airavata.output_view_providers'):
+    OUTPUT_VIEW_PROVIDERS[entry_point.name] = entry_point.load()()
