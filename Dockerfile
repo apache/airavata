@@ -62,7 +62,7 @@ RUN yarn run build
 
 
 
-FROM python:3.10-slim as server-stage
+FROM python:3.9-slim as server-stage
 
 ENV PYTHONUNBUFFERED 1
 
