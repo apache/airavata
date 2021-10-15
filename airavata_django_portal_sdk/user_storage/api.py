@@ -166,7 +166,7 @@ def is_input_file(request, data_product=None, data_product_uri=None):
     backend = get_user_storage_provider(request,
                                         owner_username=data_product.ownerName,
                                         storage_resource_id=storage_resource_id)
-    if backend.exists(path):
+    if backend.is_file(path):
         directories, files = backend.get_metadata(path)
         rel_path = files[0]['path']
         return os.path.dirname(rel_path) == TMP_INPUT_FILE_UPLOAD_DIR
@@ -286,7 +286,7 @@ def exists(request, data_product=None, data_product_uri=None):
         backend = get_user_storage_provider(request,
                                             owner_username=data_product.ownerName,
                                             storage_resource_id=storage_resource_id)
-        return backend.exists(path)
+        return backend.is_file(path)
 
 
 def dir_exists(request, path, storage_resource_id=None, experiment_id=None):
