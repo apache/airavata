@@ -37,16 +37,16 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "UCMERCED Gateway"
-#  external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "ucmerced"
 experiment_data_dir: "{{ user_data_dir }}/ucmerced"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbGE2Zb7zHfOx1IwaUQkAsRNr3Y6ieqQ2jnvbvs4XBM0ARw3ME0feMIcJKB3NFjIEQqS67w1mV0tpoCmRVtSK7IVujbCCvyRFUOLh+BOgqF7Xm887FPidOm0qpSh3s46Wbd758uXurqojedC2xJp62e4aSgzdijyX2gBI1giQHaKSE2WW6L5wGkhIQoxSvaL1hSnL7adH6e2RqB1+ePbO6OGr6pRbNIQqCgYZGvNAJBoiP9K1CwQTcGkj0b2Ptr2kD2JWQqivdPM5YVR4PxH2vtovL0HLjHvXmljWdns/b4PQGDyfpUMgKAthlAlq5zGOJZqfIGdBxLnC8AaoZNGiF"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCVQbQuGQ7/MSVxt8UctSdXB7r81ST7UA1gQlnOMWojrg9FOSVR8hwyXuQpdZkbaaQw9m9RVsBTilpDRBAOngeDmvzmqLbfr+WkB2Ry9yho/wdxcjp/KmXlzHUJ/Pv3TX/3hg/zKtB85vqzoGb2dir9xGNpKFFodVD/fgbH9tQtqBlTTwdHHbY3rGtJdKOhpqvQ8zWxzkkGa2vd0L18e96/F1Q8KGOPai+FSf/xxoTeaX0TIPiwpzBdfmdBYprRwz1fy6dvjFosYkveVfaTOL3MPZuNvwN3dxMUDF7Pg644kr/CLXoUnzwHLJgmF+z1/iIH5LVli8KaYAEEhzlt6B2X"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Robert Romero', 'rromero39@ucmerced.edu')]"
 portal_title: "UCMERCED Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
