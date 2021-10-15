@@ -190,11 +190,22 @@
     }
 },
 {
+    "model": "django_airavata_auth.emailtemplate",
+    "pk": 5,
+    "fields": {
+        "subject": "{{first_name}} {{last_name}} ({{username}}), Please Verify Your New Email Address in {{portal_title}}",
+        "body": "<p>\n        Dear {{first_name}} {{last_name}},\n        </p>\n\n        <p>\n        Before your email address change can be processed, you need to verify\n        your new email address ({{email}}). Click the link below to verify your email\n        address:\n        </p>\n\n        <p><a href=\"{{url}}\">{{url}}</a></p>",
+        "created_date": "2021-10-15T13:08:42.753Z",
+        "updated_date": "2021-10-15T13:08:42.753Z"
+    }
+},
+{
     "model": "wagtailembeds.embed",
     "pk": 1,
     "fields": {
         "url": "https://www.youtube.com/watch?v=wNr7YqjjzOY&t=1134s",
         "max_width": null,
+        "hash": "147a040d415d33b901280845fb6fec01",
         "type": "video",
         "html": "<iframe width=\"480\" height=\"270\" src=\"https://www.youtube.com/embed/wNr7YqjjzOY?start=1134&feature=oembed\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>",
         "title": "How to Setup Amazon Web Services EC2 Instance with Apache, PHP, MySQL",
@@ -212,6 +223,7 @@
     "fields": {
         "url": "https://www.youtube.com/watch?v=rsEne1ZiQrk",
         "max_width": null,
+        "hash": "fcfb0b8bd3c648e8906c96011ad928ad",
         "type": "video",
         "html": "<iframe width=\"480\" height=\"270\" src=\"https://www.youtube.com/embed/rsEne1ZiQrk?feature=oembed\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>",
         "title": "The Weeknd - Call Out My Name (Official Audio)",
@@ -229,6 +241,7 @@
     "fields": {
         "url": "https://www.youtube.com/watch?v=BUsL-IxPquA",
         "max_width": null,
+        "hash": "22d7655729ccc5aefd2b563c8f942263",
         "type": "video",
         "html": "<iframe width=\"480\" height=\"270\" src=\"https://www.youtube.com/embed/BUsL-IxPquA?feature=oembed\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>",
         "title": "Dope Tech: Boosted Board 2!",
@@ -257,7 +270,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -277,7 +291,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -297,7 +312,8 @@
         "focal_point_y": 1263,
         "focal_point_width": 3000,
         "focal_point_height": 1386,
-        "file_size": 972529
+        "file_size": 972529,
+        "file_hash": ""
     }
 },
 {
@@ -317,7 +333,8 @@
         "focal_point_y": 1686,
         "focal_point_width": 3333,
         "focal_point_height": 1457,
-        "file_size": 946507
+        "file_size": 946507,
+        "file_hash": ""
     }
 },
 {
@@ -337,7 +354,8 @@
         "focal_point_y": 3615,
         "focal_point_width": 873,
         "focal_point_height": 411,
-        "file_size": 826413
+        "file_size": 826413,
+        "file_hash": ""
     }
 },
 {
@@ -357,7 +375,8 @@
         "focal_point_y": 1179,
         "focal_point_width": 2552,
         "focal_point_height": 1315,
-        "file_size": 873842
+        "file_size": 873842,
+        "file_hash": ""
     }
 },
 {
@@ -377,7 +396,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -397,7 +417,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -417,7 +438,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -437,7 +459,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -457,7 +480,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -477,7 +501,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -497,7 +522,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -517,7 +543,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -537,7 +564,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -557,7 +585,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -577,7 +606,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -597,7 +627,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -617,7 +648,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -637,7 +669,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -657,7 +690,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -677,7 +711,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -697,7 +732,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -717,7 +753,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -737,7 +774,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -757,7 +795,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": 12729
+        "file_size": 12729,
+        "file_hash": ""
     }
 },
 {
@@ -777,7 +816,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -797,7 +837,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -817,7 +858,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -837,7 +879,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -857,7 +900,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -877,7 +921,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -897,7 +942,8 @@
         "focal_point_y": null,
         "focal_point_width": null,
         "focal_point_height": null,
-        "file_size": null
+        "file_size": null,
+        "file_hash": ""
     }
 },
 {
@@ -1764,12 +1810,21 @@
     }
 },
 {
+    "model": "wagtailcore.locale",
+    "pk": 1,
+    "fields": {
+        "language_code": "en"
+    }
+},
+{
     "model": "wagtailcore.page",
     "pk": 1,
     "fields": {
         "path": "0001",
         "depth": 1,
         "numchild": 1,
+        "translation_key": "d3e56793-5903-4ff6-982e-e7e077ed6676",
+        "locale": 1,
         "title": "Root",
         "draft_title": "Root",
         "slug": "root",
@@ -1788,10 +1843,13 @@
         "expire_at": null,
         "expired": false,
         "locked": false,
+        "locked_at": null,
+        "locked_by": null,
         "first_published_at": null,
         "last_published_at": null,
         "latest_revision_created_at": null,
-        "live_revision": null
+        "live_revision": null,
+        "alias_of": null
     }
 },
 {
@@ -1801,6 +1859,8 @@
         "path": "00010001",
         "depth": 2,
         "numchild": 1,
+        "translation_key": "58355365-fa4e-4bb7-a514-0b7ab0297d87",
+        "locale": 1,
         "title": "Welcome to your new Wagtail site!",
         "draft_title": "Welcome to your new Wagtail site!",
         "slug": "home",
@@ -1819,10 +1879,13 @@
         "expire_at": null,
         "expired": false,
         "locked": false,
+        "locked_at": null,
+        "locked_by": null,
         "first_published_at": null,
         "last_published_at": null,
         "latest_revision_created_at": null,
-        "live_revision": null
+        "live_revision": null,
+        "alias_of": null
     }
 },
 {
@@ -1832,6 +1895,8 @@
         "path": "000100010001",
         "depth": 3,
         "numchild": 1,
+        "translation_key": "228900ed-1654-4910-8bce-1d21c7397ba9",
+        "locale": 1,
         "title": "Home",
         "draft_title": "Home",
         "slug": "home",
@@ -1852,10 +1917,13 @@
         "expire_at": null,
         "expired": false,
         "locked": false,
+        "locked_at": null,
+        "locked_by": null,
         "first_published_at": "2018-04-17T22:33:31.457Z",
         "last_published_at": "2020-07-17T18:19:24.108Z",
         "latest_revision_created_at": "2020-07-17T18:19:24.079Z",
-        "live_revision": 272
+        "live_revision": 272,
+        "alias_of": null
     }
 },
 {
@@ -1865,6 +1933,8 @@
         "path": "0001000100010003",
         "depth": 4,
         "numchild": 0,
+        "translation_key": "c2aa3d05-f31f-488e-8abd-1c61ae1b0dfc",
+        "locale": 1,
         "title": "Documentation",
         "draft_title": "Documentation",
         "slug": "documentation",
@@ -1885,10 +1955,13 @@
         "expire_at": null,
         "expired": false,
         "locked": false,
+        "locked_at": null,
+        "locked_by": null,
         "first_published_at": "2018-04-18T21:07:30.881Z",
         "last_published_at": "2018-04-18T21:08:15.126Z",
         "latest_revision_created_at": "2018-04-18T21:08:15.107Z",
-        "live_revision": 52
+        "live_revision": 52,
+        "alias_of": null
     }
 },
 {
@@ -3008,6 +3081,17 @@
     }
 },
 {
+    "model": "wagtailcore.grouppagepermission",
+    "pk": 7,
+    "fields": {
+        "group": [
+            "Moderators"
+        ],
+        "page": 1,
+        "permission_type": "unlock"
+    }
+},
+{
     "model": "wagtailcore.collection",
     "pk": 1,
     "fields": {
@@ -3135,6 +3219,132 @@
             "wagtaildocs",
             "document"
         ]
+    }
+},
+{
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 9,
+    "fields": {
+        "group": [
+            "Editors"
+        ],
+        "collection": 1,
+        "permission": [
+            "choose_document",
+            "wagtaildocs",
+            "document"
+        ]
+    }
+},
+{
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 10,
+    "fields": {
+        "group": [
+            "Moderators"
+        ],
+        "collection": 1,
+        "permission": [
+            "choose_document",
+            "wagtaildocs",
+            "document"
+        ]
+    }
+},
+{
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 11,
+    "fields": {
+        "group": [
+            "Editors"
+        ],
+        "collection": 1,
+        "permission": [
+            "choose_image",
+            "wagtailimages",
+            "image"
+        ]
+    }
+},
+{
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 12,
+    "fields": {
+        "group": [
+            "Moderators"
+        ],
+        "collection": 1,
+        "permission": [
+            "choose_image",
+            "wagtailimages",
+            "image"
+        ]
+    }
+},
+{
+    "model": "wagtailcore.workflowpage",
+    "pk": 1,
+    "fields": {
+        "workflow": 1
+    }
+},
+{
+    "model": "wagtailcore.workflowtask",
+    "pk": 1,
+    "fields": {
+        "sort_order": 0,
+        "workflow": 1,
+        "task": 1
+    }
+},
+{
+    "model": "wagtailcore.task",
+    "pk": 1,
+    "fields": {
+        "name": "Moderators approval",
+        "content_type": [
+            "wagtailcore",
+            "groupapprovaltask"
+        ],
+        "active": true
+    }
+},
+{
+    "model": "wagtailcore.workflow",
+    "pk": 1,
+    "fields": {
+        "name": "Moderators approval",
+        "active": true
+    }
+},
+{
+    "model": "wagtailcore.groupapprovaltask",
+    "pk": 1,
+    "fields": {
+        "groups": [
+            [
+                "Moderators"
+            ]
+        ]
+    }
+},
+{
+    "model": "wagtailcore.pagelogentry",
+    "pk": 1,
+    "fields": {
+        "content_type": [
+            "wagtailcore",
+            "page"
+        ],
+        "label": "Welcome to your new Wagtail site!",
+        "action": "wagtail.delete",
+        "data_json": "\"\"",
+        "timestamp": "2021-10-15T13:13:34.342Z",
+        "user": null,
+        "content_changed": false,
+        "deleted": true,
+        "page": 2,
+        "revision": null
     }
 },
 {
