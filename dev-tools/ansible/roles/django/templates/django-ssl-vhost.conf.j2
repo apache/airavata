@@ -25,6 +25,20 @@
     ServerName {{ vhost_server_redirect }}
     Redirect "/" "https://{{ vhost_servername }}"
 </VirtualHost>
+
+{% if vhost_server_redirect_ssl_certificate_file is defined %}
+<VirtualHost *:{{httpd_default_https_port}}>
+    ServerName {{ vhost_server_redirect }}
+    Redirect "/" "https://{{ vhost_servername }}"
+
+    SSLEngine on
+    # Disable SSLv3 which is vulnerable to the POODLE attack
+    SSLProtocol All -SSLv2 -SSLv3
+    SSLCertificateFile {{ vhost_server_redirect_ssl_certificate_file }}
+    SSLCertificateChainFile {{ vhost_server_redirect_ssl_certificate_chain_file }}
+    SSLCertificateKeyFile {{ vhost_server_redirect_ssl_certificate_key_file }}
+</VirtualHost>
+{% endif %}
 {% endif %}
 
 <VirtualHost *:{{ httpd_default_http_port }}>
