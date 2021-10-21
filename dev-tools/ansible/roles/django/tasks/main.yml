@@ -332,3 +332,11 @@
     create: yes
   become: yes
   when: vhost_ssl
+
+- name: add redirect domain to Zabbix monitoring checklist
+  lineinfile:
+    path: /etc/zabbix/domain_checklist
+    line: "{{ vhost_server_redirect }}"
+    create: yes
+  become: yes
+  when: vhost_ssl and vhost_server_redirect_ssl_certificate_file is defined
