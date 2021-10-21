@@ -1,13 +1,14 @@
 from unittest.mock import patch
 from urllib.parse import urlencode
 
+from airavata.model.user.ttypes import UserProfile
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 
 from django_airavata.apps.auth import models, views
 
@@ -132,6 +133,17 @@ class CreateAccountViewTestCase(TestCase):
             '(?s)type="hidden"[^>]+name="next"[^>]+value="/next/path"')
 
 
+GATEWAY_ID = "gateway-id"
+PORTAL_TITLE = "Airavata Django Portal"
+SERVER_EMAIL = "admin@gateway.org"
+
+
+@override_settings(
+    GATEWAY_ID=GATEWAY_ID,
+    PORTAL_TITLE=PORTAL_TITLE,
+    SERVER_EMAIL=SERVER_EMAIL,
+    PORTAL_ADMINS=[('Gateway Admin', 'admin@gateway.org')]
+)
 class VerifyEmailViewTestCase(TestCase):
 
     def setUp(self):
@@ -193,3 +205,44 @@ class VerifyEmailViewTestCase(TestCase):
         email_verification = models.EmailVerification.objects.get(
             username="testuser")
         self.assertTrue(email_verification.verified)
+
+    @patch('django_airavata.apps.auth.views.iam_admin_client')
+    def test_verify_email_with_new_user_email(self, views_iam_admin_client):
+
+        # create an EmailVerification record
+        email_verification = models.EmailVerification(username='testuser')
+        email_verification.save()
+
+        verify_email_url = reverse(
+            'django_airavata_auth:verify_email', kwargs={
+                'code': email_verification.verification_code})
+        request = self.factory.get(verify_email_url)
+        request.user = AnonymousUser()
+        # Mock using the iam_admin_client to enable the user
+        views_iam_admin_client.is_user_enabled.return_value = False
+        views_iam_admin_client.enable_user.return_value = True
+        user_profile = UserProfile(
+            airavataInternalUserId=f"testuser@{GATEWAY_ID}",
+            userId="testuser",
+            firstName="Test",
+            lastName="User1",
+            emails=["testuser1@example.com"]
+        )
+        views_iam_admin_client.get_user.return_value = user_profile
+        # RequestFactory doesn't load middleware so have to manually call
+        # SessionMiddleware and MessageMiddleware since create_account uses
+        # 'messages' framework
+        response = SessionMiddleware(MessageMiddleware(
+            lambda r: views.verify_email(r,
+                                         email_verification.verification_code)
+        ))(request)
+        self.assertIsInstance(response, HttpResponseRedirect)
+        self.assertEqual(reverse('django_airavata_auth:login'), response.url)
+        email_verification = models.EmailVerification.objects.get(
+            username="testuser")
+        self.assertTrue(email_verification.verified)
+        self.assertEqual(len(mail.outbox), 1)
+        # Make sure from email address is formatted correctly
+        self.assertEqual(mail.outbox[0].from_email, f'"{PORTAL_TITLE}" <{SERVER_EMAIL}>')
+        self.assertEqual(len(mail.outbox[0].to), 1)
+        self.assertEqual(mail.outbox[0].to[0], '"Gateway Admin" <admin@gateway.org>')
