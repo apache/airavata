@@ -131,12 +131,10 @@ def send_new_user_email(request, username, email, first_name, last_name):
     body = Template(new_user_email_template.body).render(context)
     msg = EmailMessage(subject=subject,
                        body=body,
-                       from_email="{} <{}>".format(
-                           settings.PORTAL_TITLE,
-                           settings.SERVER_EMAIL),
-                       to=[a[1] for a in getattr(settings,
-                                                 'PORTAL_ADMINS',
-                                                 settings.ADMINS)])
+                       from_email=f'"{settings.PORTAL_TITLE}" <{settings.SERVER_EMAIL}>',
+                       to=[f'"{a[0]}" <{a[1]}>' for a in getattr(settings,
+                                                                 'PORTAL_ADMINS',
+                                                                 settings.ADMINS)])
     msg.content_subtype = 'html'
     msg.send()
 
