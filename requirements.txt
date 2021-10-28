@@ -20,7 +20,7 @@ google-api-python-client==1.12.8
 grpcio-tools==1.34.1
 grpcio==1.34.1
 
-airavata-django-portal-sdk==1.2.2
+airavata-django-portal-sdk==1.2.3
 airavata-python-sdk==1.0.1
 
 -e "."
