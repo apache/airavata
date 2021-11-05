@@ -323,7 +323,7 @@ def resend_email_link(request):
 
 
 def _create_and_send_email_verification_link(
-        request, username, email, first_name, last_name, next):
+        request, username, email, first_name, last_name, next=None):
 
     email_verification = models.EmailVerification(
         username=username, next=next)

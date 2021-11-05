@@ -2,6 +2,7 @@ from unittest.mock import patch
 from urllib.parse import urlencode
 
 from airavata.model.user.ttypes import UserProfile
+from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -246,3 +247,54 @@ class VerifyEmailViewTestCase(TestCase):
         self.assertEqual(mail.outbox[0].from_email, f'"{PORTAL_TITLE}" <{SERVER_EMAIL}>')
         self.assertEqual(len(mail.outbox[0].to), 1)
         self.assertEqual(mail.outbox[0].to[0], '"Gateway Admin" <admin@gateway.org>')
+
+
+@override_settings(
+    GATEWAY_ID=GATEWAY_ID,
+    PORTAL_TITLE=PORTAL_TITLE,
+    SERVER_EMAIL=SERVER_EMAIL,
+    PORTAL_ADMINS=[('Gateway Admin', 'admin@gateway.org')]
+)
+class ResendEmailLinkTestCase(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    @patch('django_airavata.apps.auth.views.iam_admin_client')
+    def test_resend_email_link(self, views_iam_admin_client):
+        data = {
+            'username': 'testuser',
+        }
+        request = self.factory.post(reverse('django_airavata_auth:resend_email_link'), data)
+        request.user = AnonymousUser()
+
+        views_iam_admin_client.is_user_exist.return_value = True
+        user_profile = UserProfile(
+            airavataInternalUserId=f"testuser@{GATEWAY_ID}",
+            userId="testuser",
+            firstName="Test",
+            lastName="User1",
+            emails=["testuser1@example.com"]
+        )
+        views_iam_admin_client.get_user.return_value = user_profile
+
+        # RequestFactory doesn't load middleware so have to manually call
+        # SessionMiddleware and MessageMiddleware since create_account uses
+        # 'messages' framework
+        response = SessionMiddleware(MessageMiddleware(
+            lambda r: views.resend_email_link(r)
+        ))(request)
+
+        email_verification = models.EmailVerification.objects.get(
+            username="testuser")
+        self.assertFalse(email_verification.verified)
+        self.assertEqual(len(mail.outbox), 1)
+
+        self.assertIsInstance(response, HttpResponseRedirect)
+        self.assertEqual(reverse('django_airavata_auth:resend_email_link'), response.url)
+
+        self.assertEqual(len(messages.get_messages(request)), 1)
+        # get the first/only message
+        for message in messages.get_messages(request):
+            pass
+        self.assertIn('Email verification link sent successfully', str(message))
