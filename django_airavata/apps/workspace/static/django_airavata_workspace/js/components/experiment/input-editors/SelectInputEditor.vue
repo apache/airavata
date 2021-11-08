@@ -2,7 +2,7 @@
   <b-form-select
     :id="id"
     v-model="data"
-    :options="options"
+    :options="selectOptions"
     stacked
     :disabled="readOnly"
     :state="componentValidState"
@@ -23,17 +23,19 @@ export default {
     value: {
       type: String,
     },
+    options: {
+      type: Array,
+    },
   },
   computed: {
-    options: function () {
-      return "options" in this.editorConfig
-        ? this.editorConfig["options"].map((option) => {
-            return {
-              text: option[CONFIG_OPTION_TEXT_KEY],
-              value: option[CONFIG_OPTION_VALUE_KEY],
-            };
-          })
-        : [];
+    selectOptions: function () {
+      const options = this.options || this.editorConfig.options || [];
+      return options.map((option) => {
+        return {
+          text: option[CONFIG_OPTION_TEXT_KEY],
+          value: option[CONFIG_OPTION_VALUE_KEY],
+        };
+      });
     },
   },
 };

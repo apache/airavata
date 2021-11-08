@@ -4,9 +4,9 @@
     @change="onChange"
     :state="componentValidState"
     :disabled="readOnly"
-    :min="min"
-    :max="max"
-    :interval="step"
+    :min="sliderMin"
+    :max="sliderMax"
+    :interval="sliderStep"
     tooltip="always"
     :tooltip-formatter="tooltipFormatter"
   />
@@ -23,6 +23,21 @@ export default {
     value: {
       type: String,
     },
+    min: Number,
+    max: Number,
+    step: Number,
+    valueFormat: {
+      type: String,
+      validator(value) {
+        return ["percentage"].indexOf(value) !== -1;
+      },
+    },
+    displayFormat: {
+      type: String,
+      validator(value) {
+        return ["percentage"].indexOf(value) !== -1;
+      },
+    },
   },
   components: {
     VueSlider,
@@ -36,36 +51,52 @@ export default {
     this.initializeSliderValue();
   },
   computed: {
-    min: function () {
-      return "min" in this.editorConfig ? this.editorConfig.min : 0;
+    sliderMin: function () {
+      return typeof this.min !== "undefined"
+        ? this.min
+        : "min" in this.editorConfig
+        ? this.editorConfig.min
+        : 0;
     },
-    max: function () {
-      return "max" in this.editorConfig ? this.editorConfig.max : 100;
+    sliderMax: function () {
+      return typeof this.max !== "undefined"
+        ? this.max
+        : "max" in this.editorConfig
+        ? this.editorConfig.max
+        : 100;
     },
-    step: function () {
-      return "step" in this.editorConfig ? this.editorConfig.step : 1;
+    sliderStep: function () {
+      return typeof this.step !== "undefined"
+        ? this.step
+        : "step" in this.editorConfig
+        ? this.editorConfig.step
+        : 1;
     },
   },
   methods: {
     initializeSliderValue() {
       this.sliderValue = this.parseValue(this.data);
       // If parsing the value resulted in it changing (failed to parse so
-      // initialized to the 'min'), update the value
+      // initialized to the 'sliderMin'), update the value
       if (this.data !== this.formatValue(this.sliderValue)) {
         this.onChange(this.sliderValue);
       }
     },
     parseValue(value) {
       // Just remove any percentage signs
-      const result = parseInt(value ? value.replaceAll("%", "") : null);
-      return !isNaN(result) ? result : this.min;
+      const result = value ? parseInt(value.replaceAll("%", "")) : NaN;
+      return !isNaN(result) ? result : this.sliderMin;
     },
     onChange(value) {
       this.data = this.formatValue(value);
       this.valueChanged();
     },
     tooltipFormatter(value) {
-      if ("displayFormat" in this.editorConfig) {
+      if (this.displayFormat) {
+        if (this.displayFormat === "percentage") {
+          return `${value}%`;
+        }
+      } else if ("displayFormat" in this.editorConfig) {
         if (this.editorConfig.displayFormat.percentage) {
           return `${value}%`;
         }
@@ -73,7 +104,11 @@ export default {
       return value;
     },
     formatValue(value) {
-      if ("valueFormat" in this.editorConfig) {
+      if (this.valueFormat) {
+        if (this.valueFormat === "percentage") {
+          return `${value}%`;
+        }
+      } else if ("valueFormat" in this.editorConfig) {
         if (this.editorConfig.valueFormat.percentage) {
           return `${value}%`;
         }

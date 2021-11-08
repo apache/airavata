@@ -145,7 +145,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-lg-2 col-md-4">
+            <div class="col-xl-2 col-md-4">
               <experiment-statistics-card
                 bg-variant="primary"
                 header-text-variant="white"
@@ -156,7 +156,7 @@
                 <span slot="link-text">All</span>
               </experiment-statistics-card>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-xl-2 col-md-4">
               <experiment-statistics-card
                 bg-variant="light"
                 :count="experimentStatistics.createdExperimentCount || 0"
@@ -166,7 +166,7 @@
               >
               </experiment-statistics-card>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-xl-2 col-md-4">
               <experiment-statistics-card
                 bg-variant="light"
                 header-text-variant="success"
@@ -177,7 +177,7 @@
               >
               </experiment-statistics-card>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-xl-2 col-md-4">
               <experiment-statistics-card
                 bg-variant="success"
                 header-text-variant="white"
@@ -189,7 +189,7 @@
               >
               </experiment-statistics-card>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-xl-2 col-md-4">
               <experiment-statistics-card
                 bg-variant="warning"
                 header-text-variant="white"
@@ -201,7 +201,7 @@
               >
               </experiment-statistics-card>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-xl-2 col-md-4">
               <experiment-statistics-card
                 bg-variant="danger"
                 header-text-variant="white"

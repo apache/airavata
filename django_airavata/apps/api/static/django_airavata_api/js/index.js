@@ -38,6 +38,7 @@ import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserConfigurationData from "./models/UserConfigurationData";
 import UserPermission from "./models/UserPermission";
+import WorkspacePreferences from "./models/WorkspacePreferences";
 
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
@@ -99,6 +100,7 @@ const models = {
   SummaryType,
   UserConfigurationData,
   UserPermission,
+  WorkspacePreferences,
 };
 
 const services = {

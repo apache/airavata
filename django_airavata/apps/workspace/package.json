@@ -14,8 +14,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:unit:watch": "vue-cli-service test:unit --watch",
     "format": "prettier --write .",
-    "build:wc": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc",
-    "build:wc:watch": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
+    "build:wc": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/**/*.vue' --dest ./static/django_airavata_workspace/wc",
+    "build:wc:watch": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/**/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -34,7 +34,8 @@
     "vue": "^2.5.22",
     "vue-flatpickr-component": "^8.1.2",
     "vue-router": "^3.0.6",
-    "vue-slider-component": "^3.2.9-1"
+    "vue-slider-component": "^3.2.9-1",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.1.1",

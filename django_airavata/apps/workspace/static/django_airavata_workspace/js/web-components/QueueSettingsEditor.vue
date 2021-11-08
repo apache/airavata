@@ -1,5 +1,5 @@
 <template>
-  <div v-if="queue">
+  <div>
     <div class="card border-default">
       <b-link
         @click="showConfiguration = !showConfiguration"
@@ -7,31 +7,27 @@
       >
         <div class="card-body">
           <h5 class="card-title mb-4">
-            Settings for queue {{ computationalResourceScheduling.queueName }}
+            Settings for queue {{ selectedQueueName }}
           </h5>
           <div class="row">
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.nodeCount }}
+                {{ nodeCount }}
               </h3>
               <span class="text-muted text-uppercase">NODE COUNT</span>
             </div>
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.totalCPUCount }}
+                {{ totalCPUCount }}
               </h3>
               <span class="text-muted text-uppercase">CORE COUNT</span>
             </div>
             <div class="col">
-              <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.wallTimeLimit }} minutes
-              </h3>
+              <h3 class="h5 mb-0">{{ wallTimeLimit }} minutes</h3>
               <span class="text-muted text-uppercase">TIME LIMIT</span>
             </div>
             <div class="col" v-if="maxMemory > 0">
-              <h3 class="h5 mb-0">
-                {{ computationalResourceScheduling.totalPhysicalMemory }} MB
-              </h3>
+              <h3 class="h5 mb-0">{{ totalPhysicalMemory }} MB</h3>
               <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
             </div>
           </div>
@@ -42,7 +38,7 @@
       <b-form-group label="Select a Queue" label-for="queue">
         <b-form-select
           id="queue"
-          v-model="computationalResourceScheduling.queueName"
+          :value="selectedQueueName"
           :options="queueOptions"
           required
           @change="queueChanged"
@@ -56,13 +52,13 @@
           type="number"
           min="1"
           :max="maxAllowedNodes"
-          v-model="computationalResourceScheduling.nodeCount"
+          :value="nodeCount"
           required
-          @input.native.stop="emitValueChanged"
+          @input.native.stop="updateNodeCount"
         >
         </b-form-input>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Allowed Nodes = {{ maxAllowedNodes }}
         </div>
       </b-form-group>
@@ -72,13 +68,13 @@
           type="number"
           min="1"
           :max="maxAllowedCores"
-          v-model="computationalResourceScheduling.totalCPUCount"
+          :value="totalCPUCount"
           required
-          @input.native.stop="emitValueChanged"
+          @input.native.stop="updateTotalCPUCount"
         >
         </b-form-input>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Allowed Cores = {{ maxAllowedCores }}
         </div>
       </b-form-group>
@@ -89,14 +85,14 @@
             type="number"
             min="1"
             :max="maxAllowedWalltime"
-            v-model="computationalResourceScheduling.wallTimeLimit"
+            :value="wallTimeLimit"
             required
-            @input.native.stop="emitValueChanged"
+            @input.native.stop="updateWallTimeLimit"
           >
           </b-form-input>
         </b-input-group>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Allowed Wall Time = {{ maxAllowedWalltime }} minutes
         </div>
       </b-form-group>
@@ -111,19 +107,19 @@
             type="number"
             min="0"
             :max="maxMemory"
-            v-model="computationalResourceScheduling.totalPhysicalMemory"
-            @input.native.stop="emitValueChanged"
+            :value="totalPhysicalMemory"
+            @input.native.stop="updateTotalPhysicalMemory"
           >
           </b-form-input>
         </b-input-group>
         <div slot="description">
-          <font-awesome-icon :icon="infoIcon" />
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
           Max Physical Memory = {{ maxMemory }} MB
         </div>
       </b-form-group>
       <div>
         <b-link class="text-secondary" @click="showConfiguration = false">
-          <font-awesome-icon :icon="closeIcon" />
+          <i class="fa fa-times" aria-hidden="true"></i>
           Hide Settings</b-link
         >
       </div>
@@ -132,68 +128,44 @@
 </template>
 
 <script>
-import { models, utils } from "django-airavata-api";
+import { utils } from "django-airavata-api";
 import Vue from "vue";
+import store from "./store";
+import { mapGetters } from "vuex";
 import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { config, dom } from "@fortawesome/fontawesome-svg-core";
-import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-
-// Make sure you tell Font Awesome to skip auto-inserting CSS into the <head>
-config.autoAddCss = false;
-
 export default {
+  store: store,
   props: {
-    value: {
-      type: models.ComputationalResourceSchedulingModel,
-      // required: true,
-    },
-    queues: {
-      type: Array, // of BatchQueue
-      // required: true,
-    },
-    maxAllowedNodes: {
-      type: Number,
-      required: true,
-    },
-    maxAllowedCores: {
-      type: Number,
-      required: true,
-    },
-    maxAllowedWalltime: {
-      type: Number,
-      required: true,
-    },
-    maxMemory: {
-      type: Number,
-      required: true,
+    queueName: {
+      type: String,
     },
   },
-  components: {
-    FontAwesomeIcon,
-  },
-  mounted() {
-    // Add font awesome styles
-    // https://github.com/FortAwesome/vue-fontawesome#web-components-with-vue-web-component-wrapper
-    const { shadowRoot } = this.$parent.$options;
-    const id = "fa-styles";
-
-    if (!shadowRoot.getElementById(`${id}`)) {
-      const faStyles = document.createElement("style");
-      faStyles.setAttribute("id", id);
-      faStyles.textContent = dom.css();
-      shadowRoot.appendChild(faStyles);
+  created() {
+    if (this.queueName && this.selectedQueueName !== this.queueName) {
+      this.queueChanged(this.queueName);
     }
   },
   data() {
     return {
-      computationalResourceScheduling: this.cloneValue(),
       showConfiguration: false,
     };
   },
   computed: {
+    ...mapGetters({
+      queue: "queue",
+      queues: "queues",
+      maxAllowedCores: "maxAllowedCores",
+      maxAllowedNodes: "maxAllowedNodes",
+      maxAllowedWalltime: "maxAllowedWalltime",
+      maxMemory: "maxMemory",
+      selectedQueueName: "queueName",
+      totalCPUCount: "totalCPUCount",
+      nodeCount: "nodeCount",
+      wallTimeLimit: "wallTimeLimit",
+      totalPhysicalMemory: "totalPhysicalMemory",
+    }),
     queueOptions() {
       if (!this.queues) {
         return [];
@@ -207,55 +179,50 @@ export default {
       utils.StringUtils.sortIgnoreCase(queueOptions, (q) => q.text);
       return queueOptions;
     },
-    queue() {
-      return this.queues
-        ? this.queues.find((q) => q.queueName === this.queueName)
-        : null;
-    },
-    queueName() {
-      return this.computationalResourceScheduling
-        ? this.computationalResourceScheduling.queueName
-        : null;
-    },
     queueDescription() {
       return this.queue ? this.queue.queueDescription : null;
     },
-    closeIcon() {
-      return faTimes;
-    },
-    infoIcon() {
-      return faInfoCircle;
-    }
   },
   methods: {
-    cloneValue() {
-      return this.value
-        ? this.value.clone()
-        : new models.ComputationalResourceSchedulingModel();
+    queueChanged(queueName) {
+      this.$store.dispatch("updateQueueName", { queueName });
     },
-    emitValueChanged() {
-      const inputEvent = new CustomEvent("input", {
-        detail: [this.computationalResourceScheduling.clone()],
-        composed: true,
-        bubbles: true,
+    updateNodeCount(event) {
+      this.$store.dispatch("updateNodeCount", {
+        nodeCount: event.target.value,
       });
-      this.$el.dispatchEvent(inputEvent);
     },
-    queueChanged() {
-      this.emitValueChanged();
+    updateTotalCPUCount(event) {
+      this.$store.dispatch("updateTotalCPUCount", {
+        totalCPUCount: event.target.value,
+      });
+    },
+    updateWallTimeLimit(event) {
+      this.$store.dispatch("updateWallTimeLimit", {
+        wallTimeLimit: event.target.value,
+      });
+    },
+    updateTotalPhysicalMemory(event) {
+      this.$store.dispatch("updateTotalPhysicalMemory", {
+        totalPhysicalMemory: event.target.value,
+      });
     },
   },
   watch: {
-    value: {
-      handler() {
-        this.computationalResourceScheduling = this.cloneValue();
-      },
-      deep: true,
+    queueName(value) {
+      if (value && this.selectedQueueName !== value) {
+        this.queueChanged(value);
+      }
     },
   },
 };
 </script>
 
-<style>
-@import url("./styles.css");
+<style lang="scss">
+@import "./styles";
+
+:host {
+  display: block;
+  margin-bottom: 1rem;
+}
 </style>
