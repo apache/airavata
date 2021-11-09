@@ -38,13 +38,13 @@ auth_options:
   password:
     name: "DeepPDB Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "deeppdb"
 experiment_data_dir: "{{ user_data_dir }}/deeppdb"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCVQbQuGQ7/MSVxt8UctSdXB7r81ST7UA1gQlnOMWojrg9FOSVR8hwyXuQpdZkbaaQw9m9RVsBTilpDRBAOngeDmvzmqLbfr+WkB2Ry9yho/wdxcjp/KmXlzHUJ/Pv3TX/3hg/zKtB85vqzoGb2dir9xGNpKFFodVD/fgbH9tQtqBlTTwdHHbY3rGtJdKOhpqvQ8zWxzkkGa2vd0L18e96/F1Q8KGOPai+FSf/xxoTeaX0TIPiwpzBdfmdBYprRwz1fy6dvjFosYkveVfaTOL3MPZuNvwN3dxMUDF7Pg644kr/CLXoUnzwHLJgmF+z1/iIH5LVli8KaYAEEhzlt6B2X"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrEsPVkjeYfFXWEtY397sFPgxb/3wSue0jOdfES3VDYd9S885FyAB2RQz1aZT8T1jRxYhWGmKD8dhs7on/hdgVXIAuiIXLhPZKtB+A17rz2nW6oYUXs8UCXaIIMh5NImWHEn+EqPGij3b8uLWKULWs7TT6v2ulQN2CngA3ROqmA8AjiLRP0LI29G+mSlyi/kJgmIh6RSQkfUpaOnK4cKbYHTKAM8leSopP3jNzAmQXLZcthL9wS8vX/kakkZKOSff0nide5kBVApHwipyJ48EfA+fVdU50fzd18lobct9XUh48EZlNVZyT+qmY9pGAXcXwN8hFNL+7lsHg5D0tAh93"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "DeepPDB Gateway"
