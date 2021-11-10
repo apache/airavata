@@ -690,10 +690,10 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
     data directory.
     """
     if _is_remote_api():
-        logger.debug(f"path={path}")
+        full_path = os.path.join(path, *dir_names)
         resp = _call_remote_api(request,
                                 "/user-storage/~/{path}",
-                                path_params={"path": path},
+                                path_params={"path": full_path},
                                 data={"experiment-id": experiment_id},
                                 method="post")
         json = resp.json()
