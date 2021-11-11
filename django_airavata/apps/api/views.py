@@ -4,9 +4,7 @@ import logging
 import os
 import warnings
 from datetime import datetime, timedelta
-from urllib.parse import quote
 
-import requests
 from airavata.model.appcatalog.computeresource.ttypes import (
     CloudJobSubmission,
     GlobusJobSubmission,
@@ -25,7 +23,7 @@ from airavata.model.data.movement.ttypes import (
 from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
-from airavata_django_portal_sdk import user_storage
+from airavata_django_portal_sdk import experiment_util, user_storage
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import Http404, HttpResponse, JsonResponse
@@ -223,60 +221,6 @@ class ExperimentViewSet(mixins.CreateModelMixin,
             group_resource_profile_id=experiment.userConfigurationData.groupResourceProfileId,
             compute_resource_id=experiment.userConfigurationData.computationalResourceScheduling.resourceHostId)
 
-    def _set_storage_id_and_data_dir(self, experiment):
-        # Storage ID
-        experiment.userConfigurationData.storageId = user_storage.get_default_storage_resource_id(self.request)
-        # Create experiment dir and set it on model
-        if not experiment.userConfigurationData.experimentDataDir:
-            project = self.request.airavata_client.getProject(
-                self.authz_token, experiment.projectId)
-            exp_dir = user_storage.get_experiment_dir(
-                self.request, project.name, experiment.experimentName)
-            experiment.userConfigurationData.experimentDataDir = exp_dir
-        else:
-            # get_experiment_dir will also validate that absolute paths are
-            # inside the user's storage directory
-            exp_dir = user_storage.get_experiment_dir(
-                self.request,
-                path=experiment.userConfigurationData.experimentDataDir)
-            experiment.userConfigurationData.experimentDataDir = exp_dir
-
-    def _move_tmp_input_file_uploads_to_data_dir(self, experiment):
-        exp_data_dir = experiment.userConfigurationData.experimentDataDir
-        for experiment_input in experiment.experimentInputs:
-            if experiment_input.type == DataType.URI:
-                if experiment_input.value:
-                    experiment_input.value = \
-                        self._move_if_tmp_input_file_upload(
-                            experiment_input.value, exp_data_dir)
-            elif experiment_input.type == DataType.URI_COLLECTION:
-                data_product_uris = experiment_input.value.split(
-                    ",") if experiment_input.value else []
-                moved_data_product_uris = []
-                for data_product_uri in data_product_uris:
-                    moved_data_product_uris.append(
-                        self._move_if_tmp_input_file_upload(data_product_uri,
-                                                            exp_data_dir))
-                experiment_input.value = ",".join(moved_data_product_uris)
-
-    def _move_if_tmp_input_file_upload(
-            self, data_product_uri, experiment_data_dir):
-        """
-        Conditionally moves tmp input file to data dir and returns new dp URI.
-        """
-        data_product = self.request.airavata_client.getDataProduct(
-            self.authz_token, data_product_uri)
-        if user_storage.is_input_file(
-                self.request, data_product):
-            moved_data_product = \
-                user_storage.move_input_file(
-                    self.request,
-                    data_product,
-                    experiment_data_dir)
-            return moved_data_product.productUri
-        else:
-            return data_product_uri
-
     @action(methods=['post'], detail=True)
     def launch(self, request, experiment_id=None):
         try:
@@ -286,33 +230,8 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 experiment.emailAddresses = [request.user.email]
             request.airavata_client.updateExperiment(
                 self.authz_token, experiment_id, experiment)
-            if getattr(
-                settings,
-                'GATEWAY_DATA_STORE_REMOTE_API',
-                    None) is not None:
-                remote_api_url = settings.GATEWAY_DATA_STORE_REMOTE_API
-                if remote_api_url.endswith("/api"):
-                    warnings.warn(f"Set GATEWAY_DATA_STORE_REMOTE_API to \"{remote_api_url}\". /api is no longer needed.", DeprecationWarning)
-                    remote_api_url = remote_api_url[0:remote_api_url.rfind("/api")]
-                # Proxy the launch/ request to the remote Django portal
-                # instance since it must setup the experiment data directory
-                # which is only on the remote Django portal instance
-                headers = {
-                    'Authorization': f'Bearer {request.authz_token.accessToken}'}
-                r = requests.post(
-                    f'{remote_api_url}/api/experiments/{quote(experiment_id)}/launch/',
-                    headers=headers,
-                )
-                r.raise_for_status()
-                return Response(r.json())
-            else:
-                self._set_storage_id_and_data_dir(experiment)
-                self._move_tmp_input_file_uploads_to_data_dir(experiment)
-                request.airavata_client.updateExperiment(
-                    self.authz_token, experiment_id, experiment)
-                request.airavata_client.launchExperiment(
-                    request.authz_token, experiment_id, self.gateway_id)
-                return Response({'success': True})
+            experiment_util.launch(request, experiment_id)
+            return Response({'success': True})
         except Exception as e:
             return Response({'success': False, 'errorMessage': str(e)})
 
@@ -326,46 +245,12 @@ class ExperimentViewSet(mixins.CreateModelMixin,
 
     @action(methods=['post'], detail=True)
     def clone(self, request, experiment_id=None):
-        if getattr(
-            settings,
-            'GATEWAY_DATA_STORE_REMOTE_API',
-                None) is not None:
-            # Proxy the clone/ request to the remote Django portal instance
-            # since it must locally copy input files, which are only on the
-            # remote Django portal instance
-            headers = {
-                'Authorization': f'Bearer {request.authz_token.accessToken}'}
-            r = requests.post(
-                f'{settings.GATEWAY_DATA_STORE_REMOTE_API}/experiments/{quote(experiment_id)}/clone/',
-                headers=headers,
-            )
-            r.raise_for_status()
-            return Response(r.json())
-        else:
-            # figure what project to clone into
-            experiment = self.request.airavata_client.getExperiment(
-                self.authz_token, experiment_id)
-            project_id = self._get_writeable_project(experiment)
-
-            # clone experiment
-            cloned_experiment_id = request.airavata_client.cloneExperiment(
-                self.authz_token, experiment_id,
-                "Clone of {}".format(experiment.experimentName), project_id)
-            cloned_experiment = request.airavata_client.getExperiment(
-                self.authz_token, cloned_experiment_id)
-
-            # Create a copy of the experiment input files
-            self._copy_cloned_experiment_input_uris(cloned_experiment)
-
-            # Null out experimentDataDir so a new one will get created at launch
-            # time
-            cloned_experiment.userConfigurationData.experimentDataDir = None
-            request.airavata_client.updateExperiment(
-                self.authz_token, cloned_experiment.experimentId, cloned_experiment
-            )
-            serializer = self.serializer_class(
-                cloned_experiment, context={'request': request})
-            return Response(serializer.data)
+        cloned_experiment_id = experiment_util.clone(request, experiment_id)
+        cloned_experiment = request.airavata_client.getExperiment(
+            self.authz_token, cloned_experiment_id)
+        serializer = self.serializer_class(
+            cloned_experiment, context={'request': request})
+        return Response(serializer.data)
 
     @action(methods=['post'], detail=True)
     def cancel(self, request, experiment_id=None):
@@ -376,75 +261,6 @@ class ExperimentViewSet(mixins.CreateModelMixin,
         except Exception as e:
             log.error("Cancel action has thrown the following error: ", e)
             raise e
-
-    def _get_writeable_project(self, experiment):
-        # figure what project to clone into:
-        # 1) project of this experiment if writeable
-        # 2) most recently used project if writeable
-        # 3) else, first writeable project
-        project_id = experiment.projectId
-        if self._can_write(project_id):
-            return project_id
-        workspace_preferences = models.WorkspacePreferences.objects.filter(
-            username=self.username).first()
-        if (workspace_preferences and self._can_write(
-                workspace_preferences.most_recent_project_id)):
-            return workspace_preferences.most_recent_project_id
-        user_projects = self.request.airavata_client.getUserProjects(
-            self.authz_token, self.gateway_id, self.username, -1, 0)
-        for user_project in user_projects:
-            if self._can_write(user_project.projectID):
-                return user_project.projectID
-        raise Exception(
-            "Could not find writeable project for user {} in "
-            "gateway {}".format(self.username, self.gateway_id))
-
-    def _can_write(self, entity_id):
-        return self.request.airavata_client.userHasAccess(
-            self.authz_token, entity_id, ResourcePermissionType.WRITE)
-
-    def _copy_cloned_experiment_input_uris(self, cloned_experiment):
-        # update the experimentInputs of type URI, copying input files into the
-        # tmp input files directory of the data store
-        for experiment_input in cloned_experiment.experimentInputs:
-            # skip inputs without values
-            if not experiment_input.value:
-                continue
-            if experiment_input.type == DataType.URI:
-                cloned_data_product = self._copy_experiment_input_uri(
-                    experiment_input.value)
-                if cloned_data_product is None:
-                    log.warning("Setting cloned input {} to null".format(
-                        experiment_input.name))
-                    experiment_input.value = None
-                else:
-                    experiment_input.value = cloned_data_product.productUri
-            elif experiment_input.type == DataType.URI_COLLECTION:
-                data_product_uris = experiment_input.value.split(
-                    ",") if experiment_input.value else []
-                cloned_data_product_uris = []
-                for data_product_uri in data_product_uris:
-                    cloned_data_product = self._copy_experiment_input_uri(
-                        data_product_uri)
-                    if cloned_data_product is None:
-                        log.warning(
-                            "Omitting a cloned input value for {}".format(
-                                experiment_input.name))
-                    else:
-                        cloned_data_product_uris.append(
-                            cloned_data_product.productUri)
-                experiment_input.value = ",".join(cloned_data_product_uris)
-
-    def _copy_experiment_input_uri(
-            self,
-            data_product_uri):
-        if user_storage.exists(self.request, data_product_uri=data_product_uri):
-            return user_storage.copy_input_file(
-                self.request, data_product_uri=data_product_uri)
-        else:
-            log.warning("Could not find file for source data "
-                        "product {}".format(data_product_uri))
-            return None
 
     def _update_workspace_preferences(self, project_id,
                                       group_resource_profile_id,
