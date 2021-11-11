@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class DefaultViewProvider:
     display_type = 'default'
-    immediate = True
+    immediate = False
     name = "Default"
 
     def generate_data(
