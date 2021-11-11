@@ -15,7 +15,7 @@ from airavata.model.security.ttypes import AuthzToken
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase, override_settings
 
-from airavata_django_portal_sdk import user_storage
+from airavata_django_portal_sdk.user_storage import api as user_storage
 
 GATEWAY_ID = 'test-gateway'
 
@@ -162,7 +162,7 @@ class CopyInputFileUploadTests(BaseTestCase):
                     filePath=replica_path,
                     replicaLocationCategory=replica_category)]
 
-            data_product_copy = user_storage.copy_input_file(
+            data_product_copy = user_storage._copy_input_file(
                 self.request, data_product)
 
             self.request.airavata_client.registerDataProduct.\

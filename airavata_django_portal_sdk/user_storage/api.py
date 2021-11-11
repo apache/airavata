@@ -9,7 +9,6 @@ import warnings
 from http import HTTPStatus
 from urllib.parse import quote, unquote, urlencode, urlparse
 
-import requests
 from airavata.model.data.replica.ttypes import (
     DataProductModel,
     DataProductType,
@@ -21,6 +20,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 
+from airavata_django_portal_sdk import remoteapi
 from airavata_django_portal_sdk.user_storage.backends.base import (
     ProvidesDownloadUrl
 )
@@ -85,17 +85,17 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
     `experiment_id` provided then the path will be relative to the experiment
     data directory.
     """
-    if _is_remote_api():
+    if remoteapi.is_remote_api_configured():
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
                  if content_type is not None else (name, file)}
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                data={"experiment-id": experiment_id},
-                                method="post",
-                                files=files)
+        resp = remoteapi.call(request,
+                              "/user-storage/~/{path}",
+                              path_params={"path": path},
+                              data={"experiment-id": experiment_id},
+                              method="post",
+                              files=files)
         data = resp.json()
         product_uri = data['uploaded']['productUri']
         data_product = request.airavata_client.getDataProduct(
@@ -112,15 +112,15 @@ def save(request, path, file, name=None, content_type=None, storage_resource_id=
 
 def save_input_file(request, file, name=None, content_type=None, storage_resource_id=None):
     """Save input file in staging area for input files."""
-    if _is_remote_api():
+    if remoteapi.is_remote_api_configured():
         if name is None and hasattr(file, 'name'):
             name = os.path.basename(file.name)
         files = {'file': (name, file, content_type)
                  if content_type is not None else (name, file)}
-        resp = _call_remote_api(request,
-                                "/upload",
-                                method="post",
-                                files=files)
+        resp = remoteapi.call(request,
+                              "/upload",
+                              method="post",
+                              files=files)
         data = resp.json()
         product_uri = data['data-product']['productUri']
         data_product = request.airavata_client.getDataProduct(
@@ -137,7 +137,7 @@ def save_input_file(request, file, name=None, content_type=None, storage_resourc
         return data_product
 
 
-def copy_input_file(request, data_product=None, data_product_uri=None, storage_resource_id=None):
+def _copy_input_file(request, data_product=None, data_product_uri=None, storage_resource_id=None):
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     source_storage_resource_id, source_resource_path = _get_replica_resource_id_and_filepath(data_product)
@@ -154,8 +154,8 @@ def copy_input_file(request, data_product=None, data_product_uri=None, storage_r
 def is_input_file(request, data_product=None, data_product_uri=None):
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        resp = _call_remote_api(
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(
             request,
             "/data-products/",
             params={'product-uri': data_product.productUri})
@@ -192,16 +192,11 @@ def move(request, data_product=None, path=None, data_product_uri=None, storage_r
     return data_product_copy
 
 
-def move_input_file(request, data_product=None, path=None, data_product_uri=None, storage_resource_id=None):
-    warnings.warn("Use 'move' instead.", DeprecationWarning)
-    return move(request, data_product=data_product, path=path, data_product_uri=data_product_uri, storage_resource_id=storage_resource_id)
-
-
 def get_download_url(request, data_product=None, data_product_uri=None, force_download=False, mime_type=None):
     "Return URL for downloading data product. One of `data_product` or `data_product_uri` is required."
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
+    if remoteapi.is_remote_api_configured():
         # Build a local /sdk/download-file URL that will stream the file from the remote server
         return _build_download_url(request, data_product, force_download=force_download, mime_type=mime_type)
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
@@ -240,14 +235,14 @@ def open_file(request, data_product=None, data_product_uri=None):
     """
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        resp = _call_remote_api(
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(
             request,
             "/download",
             params={'data-product-uri': data_product.productUri},
             base_url="/sdk",
             raise_for_status=False)
-        _raise_404(resp, f"File does not exist for data product {data_product.productUri}")
+        remoteapi.raise_if_404(resp, f"File does not exist for data product {data_product.productUri}")
         resp.raise_for_status()
         file = io.BytesIO(resp.content)
         disposition = resp.headers['Content-Disposition']
@@ -270,8 +265,8 @@ def exists(request, data_product=None, data_product_uri=None):
     """
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        resp = _call_remote_api(
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(
             request,
             "/data-products/",
             params={'product-uri': data_product.productUri},
@@ -294,11 +289,11 @@ def dir_exists(request, path, storage_resource_id=None, experiment_id=None):
     Return True if path exists in user's data store. If `experiment_id` provided
     then the path will be relative to the experiment data directory.
     """
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                params={"path": path, "experiment-id": experiment_id},
-                                raise_for_status=False)
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/user-storage/~/",
+                              params={"path": path, "experiment-id": experiment_id},
+                              raise_for_status=False)
         if resp.status_code == HTTPStatus.NOT_FOUND:
             return False
         resp.raise_for_status()
@@ -315,12 +310,12 @@ def user_file_exists(request, path, storage_resource_id=None, experiment_id=None
     If file exists, return data product URI, else None. If `experiment_id`
     provided then the path will be relative to the experiment data directory.
     """
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                params={"experiment-id": experiment_id},
-                                raise_for_status=False)
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/user-storage/~/{path}",
+                              path_params={"path": path},
+                              params={"experiment-id": experiment_id},
+                              raise_for_status=False)
         if resp.status_code == HTTPStatus.NOT_FOUND:
             return None
         resp.raise_for_status()
@@ -346,14 +341,14 @@ def delete_dir(request, path, storage_resource_id=None, experiment_id=None):
     Delete path in user's data store, if it exists. If `experiment_id` provided
     then the path will be relative to the experiment data directory.
     """
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                data={"experiment-id": experiment_id},
-                                method="delete",
-                                raise_for_status=False)
-        _raise_404(resp, f"File path does not exist {path}")
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/user-storage/~/{path}",
+                              path_params={"path": path},
+                              data={"experiment-id": experiment_id},
+                              method="delete",
+                              raise_for_status=False)
+        remoteapi.raise_if_404(resp, f"File path does not exist {path}")
         resp.raise_for_status()
         return
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
@@ -363,14 +358,14 @@ def delete_dir(request, path, storage_resource_id=None, experiment_id=None):
 
 def delete_user_file(request, path, storage_resource_id=None, experiment_id=None):
     """Delete file in user's data store, if it exists."""
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                data={"experiment-id": experiment_id},
-                                method="delete",
-                                raise_for_status=False)
-        _raise_404(resp, f"File path does not exist {path}")
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/user-storage/~/{path}",
+                              path_params={"path": path},
+                              data={"experiment-id": experiment_id},
+                              method="delete",
+                              raise_for_status=False)
+        remoteapi.raise_if_404(resp, f"File path does not exist {path}")
         resp.raise_for_status()
         return
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
@@ -379,13 +374,13 @@ def delete_user_file(request, path, storage_resource_id=None, experiment_id=None
 
 
 def update_file_content(request, path, fileContentText, storage_resource_id=None):
-    if _is_remote_api():
-        _call_remote_api(request,
-                         "/user-storage/~/{path}",
-                         path_params={"path": path},
-                         method="put",
-                         data={"fileContentText": fileContentText}
-                         )
+    if remoteapi.is_remote_api_configured():
+        remoteapi.call(request,
+                       "/user-storage/~/{path}",
+                       path_params={"path": path},
+                       method="put",
+                       data={"fileContentText": fileContentText}
+                       )
         return
     else:
         backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
@@ -396,27 +391,27 @@ def update_file_content(request, path, fileContentText, storage_resource_id=None
 def update_data_product_content(request, data_product=None, fileContentText="", data_product_uri=None):
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        _call_remote_api(request,
-                         "/data-products/",
-                         params={'product-uri': data_product.productUri},
-                         method="put",
-                         data={"fileContentText": fileContentText},
-                         )
+    if remoteapi.is_remote_api_configured():
+        remoteapi.call(request,
+                       "/data-products/",
+                       params={'product-uri': data_product.productUri},
+                       method="put",
+                       data={"fileContentText": fileContentText},
+                       )
         return
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
     update_file_content(request, path, fileContentText, storage_resource_id=storage_resource_id)
 
 
 def get_file_metadata(request, path, storage_resource_id=None, experiment_id=None):
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": path},
-                                params={"experiment-id": experiment_id},
-                                raise_for_status=False
-                                )
-        _raise_404(resp, "User storage file path does not exist")
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/user-storage/~/{path}",
+                              path_params={"path": path},
+                              params={"experiment-id": experiment_id},
+                              raise_for_status=False
+                              )
+        remoteapi.raise_if_404(resp, "User storage file path does not exist")
         data = resp.json()
         if data["isDir"]:
             raise Exception("User storage path is a directory, not a file")
@@ -453,8 +448,8 @@ def get_data_product_metadata(request, data_product=None, data_product_uri=None)
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
     storage_resource_id, path = _get_replica_resource_id_and_filepath(data_product)
-    if _is_remote_api():
-        resp = _call_remote_api(
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(
             request,
             "/data-products/",
             params={'product-uri': data_product.productUri})
@@ -505,8 +500,8 @@ def delete(request, data_product=None, data_product_uri=None):
     """
     if data_product is None:
         data_product = _get_data_product(request, data_product_uri)
-    if _is_remote_api():
-        _call_remote_api(
+    if remoteapi.is_remote_api_configured():
+        remoteapi.call(
             request,
             "/delete-file",
             params={'data-product-uri': data_product.productUri},
@@ -534,11 +529,11 @@ def listdir(request, path, storage_resource_id=None, experiment_id=None):
     data directory.
     """
 
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/user-storage/~/",
-                                params={"path": path, "experiment-id": experiment_id},
-                                )
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/user-storage/~/",
+                              params={"path": path, "experiment-id": experiment_id},
+                              )
         data = resp.json()
         for directory in data['directories']:
             # Convert JSON ISO8601 timestamp to datetime instance
@@ -584,12 +579,12 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
     List files, directories in experiment data directory. Returns a tuple,
     see `listdir`.
     """
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/experiment-storage/{experiment_id}/{path}",
-                                path_params={"path": path,
-                                             "experiment_id": experiment_id},
-                                )
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/experiment-storage/{experiment_id}/{path}",
+                              path_params={"path": path,
+                                           "experiment_id": experiment_id},
+                              )
         data = resp.json()
         for directory in data['directories']:
             # Convert JSON ISO8601 timestamp to datetime instance
@@ -640,12 +635,12 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
 
 def experiment_dir_exists(request, experiment_id, path="", storage_resource_id=None):
     "Returns True if the path exists in the given experiment's data directory."
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/experiment-storage/{experiment_id}/{path}",
-                                path_params={"path": path,
-                                             "experiment_id": experiment_id},
-                                raise_for_status=False)
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/experiment-storage/{experiment_id}/{path}",
+                              path_params={"path": path,
+                                           "experiment_id": experiment_id},
+                              raise_for_status=False)
         if resp.status_code == HTTPStatus.NOT_FOUND:
             return False
         resp.raise_for_status()
@@ -660,15 +655,6 @@ def experiment_dir_exists(request, experiment_id, path="", storage_resource_id=N
                                         storage_resource_id=storage_resource_id,
                                         owner_username=experiment.userName)
     return backend.exists(exp_data_path)
-
-
-def get_experiment_dir(request, project_name=None, experiment_name=None, path=None, storage_resource_id=None):
-    warnings.warn("Use 'create_user_dir' instead.", DeprecationWarning)
-    storage_resource_id, resource_path = create_user_dir(request,
-                                                         dir_names=[project_name, experiment_name],
-                                                         create_unique=True,
-                                                         storage_resource_id=storage_resource_id)
-    return resource_path
 
 
 def create_user_dir(request, path="", dir_names=(), create_unique=False, storage_resource_id=None, experiment_id=None):
@@ -689,13 +675,13 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
     If `experiment_id` provided then the path will be relative to the experiment
     data directory.
     """
-    if _is_remote_api():
+    if remoteapi.is_remote_api_configured():
         full_path = os.path.join(path, *dir_names)
-        resp = _call_remote_api(request,
-                                "/user-storage/~/{path}",
-                                path_params={"path": full_path},
-                                data={"experiment-id": experiment_id},
-                                method="post")
+        resp = remoteapi.call(request,
+                              "/user-storage/~/{path}",
+                              path_params={"path": full_path},
+                              data={"experiment-id": experiment_id},
+                              method="post")
         json = resp.json()
         # 'path' is a new response attribute, for backwards compatibility check if it exists first
         if 'path' in json:
@@ -718,7 +704,7 @@ def create_user_dir(request, path="", dir_names=(), create_unique=False, storage
 
 def create_symlink(request, src_path, dest_path, storage_resource_id=None):
     """Create link named dest_path pointing to src_path on storage resource."""
-    if _is_remote_api():
+    if remoteapi.is_remote_api_configured():
         logger.warning("create_symlink isn't supported in Remote API mode")
         return
     backend = get_user_storage_provider(request, storage_resource_id=storage_resource_id)
@@ -728,10 +714,10 @@ def create_symlink(request, src_path, dest_path, storage_resource_id=None):
 def get_rel_experiment_dir(request, experiment_id, storage_resource_id=None):
     """Return experiment data dir path relative to user's directory."""
     warnings.warn("Use 'list_experiment_dir' instead.", DeprecationWarning)
-    if _is_remote_api():
-        resp = _call_remote_api(request,
-                                "/experiments/{experimentId}/",
-                                path_params={"experimentId": experiment_id})
+    if remoteapi.is_remote_api_configured():
+        resp = remoteapi.call(request,
+                              "/experiments/{experimentId}/",
+                              path_params={"experimentId": experiment_id})
         resp.raise_for_status()
         return resp.json()['relativeExperimentDataDir']
 
@@ -932,44 +918,3 @@ def _get_final_path_and_owner_username(request, path, experiment_id):
         exp_data_dir = experiment.userConfigurationData.experimentDataDir
         return os.path.join(exp_data_dir, path), experiment.userName
     return final_path, None
-
-
-def _is_remote_api():
-    return getattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API', None) is not None
-
-
-def _call_remote_api(
-        request,
-        path,
-        path_params=None,
-        method="get",
-        raise_for_status=True,
-        base_url="/api",
-        **kwargs):
-
-    headers = {
-        'Authorization': f'Bearer {request.authz_token.accessToken}'}
-    encoded_path_params = {}
-    if path_params is not None:
-        for pk, pv in path_params.items():
-            encoded_path_params[pk] = quote(pv)
-    encoded_path = path.format(**encoded_path_params)
-    logger.debug(f"encoded_path={encoded_path}")
-    remote_api_url = settings.GATEWAY_DATA_STORE_REMOTE_API
-    if remote_api_url.endswith("/api"):
-        warnings.warn(f"Set GATEWAY_DATA_STORE_REMOTE_API to \"{remote_api_url}\". /api is no longer needed.", DeprecationWarning)
-        remote_api_url = remote_api_url[0:remote_api_url.rfind("/api")]
-    r = requests.request(
-        method,
-        f'{remote_api_url}{base_url}{encoded_path}',
-        headers=headers,
-        **kwargs,
-    )
-    if raise_for_status:
-        r.raise_for_status()
-    return r
-
-
-def _raise_404(response, msg, exception_class=ObjectDoesNotExist):
-    if response.status_code == 404:
-        raise exception_class(msg)

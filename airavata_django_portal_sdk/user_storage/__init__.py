@@ -1,5 +1,4 @@
 from .api import (
-    copy_input_file,
     create_symlink,
     create_user_dir,
     delete,
@@ -11,7 +10,6 @@ from .api import (
     get_data_product_metadata,
     get_default_storage_resource_id,
     get_download_url,
-    get_experiment_dir,
     get_file,
     get_file_metadata,
     get_lazy_download_url,
@@ -20,7 +18,6 @@ from .api import (
     list_experiment_dir,
     listdir,
     move,
-    move_input_file,
     open_file,
     save,
     save_input_file,
@@ -30,7 +27,6 @@ from .api import (
 )
 
 __all__ = [
-    'copy_input_file',
     'create_symlink',
     'create_user_dir',
     'delete',
@@ -42,7 +38,6 @@ __all__ = [
     'get_data_product_metadata',
     'get_default_storage_resource_id',
     'get_download_url',
-    'get_experiment_dir',
     'get_file',
     'get_file_metadata',
     'get_rel_experiment_dir',
@@ -51,7 +46,6 @@ __all__ = [
     'list_experiment_dir',
     'listdir',
     'move',
-    'move_input_file',
     'open_file',
     'save',
     'save_input_file',
