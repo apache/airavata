@@ -12,11 +12,15 @@ logger = logging.getLogger(__name__)
 
 def launch(request, experiment_id):
     if remoteapi.is_remote_api_configured():
-        remoteapi.call(request,
-                       "/experiments/{experiment_id}/launch/",
-                       path_params={"experiment_id": experiment_id},
-                       base_url="/api",
-                       method="post")
+        resp = remoteapi.call(request,
+                              "/experiments/{experiment_id}/launch/",
+                              path_params={"experiment_id": experiment_id},
+                              base_url="/api",
+                              method="post")
+        data = resp.json()
+        if not data["success"]:
+            logger.error(f"Failed to launch experiment {experiment_id}: {data['errorMessage']})")
+            raise Exception(data["errorMessage"])
         return
     else:
         experiment = request.airavata_client.getExperiment(
@@ -71,7 +75,7 @@ def _set_storage_id_and_data_dir(request, experiment):
     if not experiment.userConfigurationData.experimentDataDir:
         project = request.airavata_client.getProject(
             request.authz_token, experiment.projectId)
-        exp_dir = user_storage.create_user_dir(
+        _, exp_dir = user_storage.create_user_dir(
             request,
             dir_names=(project.name, experiment.experimentName),
             create_unique=True)
@@ -79,7 +83,7 @@ def _set_storage_id_and_data_dir(request, experiment):
     else:
         # create_user_dir will also validate that absolute paths are
         # inside the user's storage directory
-        exp_dir = user_storage.create_user_dir(
+        _, exp_dir = user_storage.create_user_dir(
             request,
             path=experiment.userConfigurationData.experimentDataDir)
         experiment.userConfigurationData.experimentDataDir = exp_dir
