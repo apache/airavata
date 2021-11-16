@@ -233,6 +233,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
             experiment_util.launch(request, experiment_id)
             return Response({'success': True})
         except Exception as e:
+            log.exception(f"Failed to launch experiment {experiment_id}")
             return Response({'success': False, 'errorMessage': str(e)})
 
     @action(methods=['get'], detail=True)
