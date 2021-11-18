@@ -15,7 +15,12 @@ export default {
             if (t.isLink) {
               return createElement(
                 "a",
-                { attrs: { href: t.toHref("https"), target: "_blank" } },
+                {
+                  attrs: { href: t.toHref("https"), target: "_blank" },
+                  on: {
+                    click: this.clickHandler,
+                  },
+                },
                 t.toString()
               );
             } else {
@@ -28,15 +33,7 @@ export default {
       })
       // Flatten array since text nodes are mapped to arrays
       .flat();
-    return createElement(
-      "span",
-      {
-        on: {
-          click: this.clickHandler,
-        },
-      },
-      children
-    );
+    return createElement("span", null, children);
   },
   methods: {
     clickHandler(e) {
