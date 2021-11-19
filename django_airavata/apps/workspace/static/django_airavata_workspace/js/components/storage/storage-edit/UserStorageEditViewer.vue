@@ -99,7 +99,7 @@ export default {
       return /pdf/.test(this.mimeType);
     },
     downloadUrl() {
-      return `/sdk/download?data-product-uri=${this.dataProductUri}`;
+      return `/sdk/download/?data-product-uri=${this.dataProductUri}`;
     }
   },
   components: {

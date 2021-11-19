@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     downloadUrl() {
-      return `/sdk/download?data-product-uri=${this.dataProductUri}`;
+      return `/sdk/download/?data-product-uri=${this.dataProductUri}`;
     }
   }
 };

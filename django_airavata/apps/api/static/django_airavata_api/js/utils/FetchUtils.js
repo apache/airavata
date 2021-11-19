@@ -43,7 +43,9 @@ const responseCache = new Cache();
 export default {
   showSpinner: function (promise) {
     incrementCount();
-    return promise.then(decrementCount, decrementCount);
+    promise.then(decrementCount, decrementCount);
+    // return the promise so that it can be chained
+    return promise;
   },
   getCSRFToken: function () {
     var csrfToken = document.cookie
@@ -80,6 +82,7 @@ export default {
       mediaType = "application/json",
       ignoreErrors = false,
       showSpinner = true,
+      responseType = "json",
     } = {}
   ) {
     var headers = this.createHeaders(mediaType);
@@ -98,6 +101,7 @@ export default {
       credentials: "same-origin",
       ignoreErrors,
       showSpinner,
+      responseType,
     });
   },
   put: function (
@@ -107,6 +111,7 @@ export default {
       mediaType = "application/json",
       ignoreErrors = false,
       showSpinner = true,
+      responseType = "json",
     } = {}
   ) {
     var headers = this.createHeaders(mediaType);
@@ -124,6 +129,7 @@ export default {
       credentials: "same-origin",
       ignoreErrors,
       showSpinner,
+      responseType,
     });
   },
   get: function (
@@ -134,8 +140,8 @@ export default {
       ignoreErrors = false,
       showSpinner = true,
       cache = false,
-    } = {},
-    responseType = "json"
+      responseType = "json",
+    } = {}
   ) {
     if (queryParams && typeof queryParams != "string") {
       queryParams = Object.keys(queryParams)
@@ -154,23 +160,23 @@ export default {
       }
     }
     var headers = new Headers({ Accept: mediaType });
-    const fetchRequest = this.processFetch(
-      url,
-      {
-        method: "get",
-        headers: headers,
-        credentials: "same-origin",
-        ignoreErrors,
-        showSpinner,
-      },
-      responseType
-    );
+    const fetchRequest = this.processFetch(url, {
+      method: "get",
+      headers: headers,
+      credentials: "same-origin",
+      ignoreErrors,
+      showSpinner,
+      responseType,
+    });
     if (cache) {
       responseCache.put({ key: url, value: fetchRequest });
     }
     return fetchRequest;
   },
-  delete: function (url, { ignoreErrors = false, showSpinner = true } = {}) {
+  delete: function (
+    url,
+    { ignoreErrors = false, showSpinner = true, responseType = "json" } = {}
+  ) {
     var headers = this.createHeaders();
     return this.processFetch(url, {
       method: "delete",
@@ -178,6 +184,7 @@ export default {
       credentials: "same-origin",
       ignoreErrors,
       showSpinner,
+      responseType,
     });
   },
   processFetch: function (
@@ -189,8 +196,8 @@ export default {
       body,
       ignoreErrors = false,
       showSpinner = true,
-    },
-    responseType = "json"
+      responseType = "json",
+    }
   ) {
     const fetchConfig = {
       method,
@@ -253,14 +260,14 @@ export default {
           }
         },
         (error) => {
-          if (showSpinner) {
-            decrementCount();
-          }
           error.details = this.createErrorDetails({ url, body });
           throw error;
         }
       )
       .catch((error) => {
+        if (showSpinner) {
+          decrementCount();
+        }
         if (!ignoreErrors) {
           this.reportError(error);
         }

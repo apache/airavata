@@ -41,7 +41,7 @@
           class="action-link"
           :href="`/sdk/download-experiment-dir/${encodeURIComponent(
             experimentId
-          )}?path=${data.item.path}`"
+          )}/?path=${data.item.path}`"
         >
           Download Zip
           <i class="fa fa-file-archive" aria-hidden="true"></i>

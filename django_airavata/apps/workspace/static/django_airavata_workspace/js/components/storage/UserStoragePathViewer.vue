@@ -69,7 +69,7 @@
         <b-link
           v-if="data.item.type === 'dir'"
           class="action-link"
-          :href="`/sdk/download-dir?path=${data.item.path}`"
+          :href="`/sdk/download-dir/?path=${data.item.path}`"
           :disabled="data.item.size >= Math.pow(10, 9)"
         >
           Download Zip

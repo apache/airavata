@@ -181,7 +181,7 @@ const readDataProduct = async function (
   { bodyType = "text" } = {}
 ) {
   return await fetch(
-    `/sdk/download?data-product-uri=${encodeURIComponent(dataProductURI)}`,
+    `/sdk/download/?data-product-uri=${encodeURIComponent(dataProductURI)}`,
     {
       credentials: "same-origin",
     }

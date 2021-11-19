@@ -7,7 +7,7 @@
           v-if="canDownloadDataDirectory"
           :href="`/sdk/download-experiment-dir/${encodeURIComponent(
             experimentId
-          )}`"
+          )}/`"
         >
           Download Zip
           <i class="fa fa-file-archive" aria-hidden="true"></i>
