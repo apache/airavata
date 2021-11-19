@@ -4,6 +4,7 @@ import os
 import tempfile
 import uuid
 import zipfile
+from string import Template
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import FileResponse, Http404
@@ -116,7 +117,8 @@ def download_experiments(request, download_id=None):
     elif request.method == 'GET' and download_id is not None:
         download_key = f"download_experiments:{download_id}"
         if download_key in request.session:
-            experiments = request.session[download_key]['experiments']
+            download_spec = request.session[download_key]
+            experiments = download_spec['experiments']
             fp = tempfile.TemporaryFile()
             with zipfile.ZipFile(fp, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
                 for experiment in experiments:
@@ -129,7 +131,9 @@ def download_experiments(request, download_id=None):
                         zipfile_prefix=os.path.join(get_valid_filename(experiment_model.experimentName), path),
                         includes=experiment['includes'], excludes=experiment['excludes'])
 
-            filename = "experiments.zip"
+            filename = download_spec.get("filename")
+            if filename is None:
+                filename = "experiments.zip"
             fp.seek(0)
             # FileResponse will automatically close the temporary file
             return FileResponse(fp, as_attachment=True, filename=filename)
@@ -153,10 +157,10 @@ def _add_directory_to_zipfile(request, zf, path, directory=""):
 def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory="", zipfile_prefix="", includes=None, excludes=None):
     directories, files = user_storage.list_experiment_dir(request, experiment_id, os.path.join(path, directory))
     for file in files:
-        matches = _matches_filters(file['name'], includes=includes, excludes=excludes)
+        matches, rename = _matches_filters(file['name'], includes=includes, excludes=excludes)
         if matches:
             o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
-            zf.writestr(os.path.join(zipfile_prefix, directory, file['name']), o.read())
+            zf.writestr(os.path.join(zipfile_prefix, directory, rename if rename is not None else file['name']), o.read())
             if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
                 raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
     for d in directories:
@@ -166,15 +170,23 @@ def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, direc
 
 
 def _matches_filters(filename, includes=None, excludes=None):
+    """Return as a tuple True if matching and a new name for the file if renamed."""
     # excludes take precedence
     if excludes is not None and len(excludes) > 0:
         for exclude in excludes:
             if fnmatch.fnmatch(filename, exclude['pattern']):
-                return False
+                return False, None
     # if there are no include patterns, default to include all
     if includes is None or len(includes) == 0:
-        return True
+        return True, None
     for include in includes:
         if fnmatch.fnmatch(filename, include['pattern']):
-            return True
-    return False
+            rename = include.get('rename')
+            if rename:
+                root, ext = os.path.splitext(filename)
+                template = Template(rename)
+                new_filename = template.safe_substitute(root=root, ext=ext)
+                return True, new_filename
+            else:
+                return True, None
+    return False, None

@@ -6,7 +6,13 @@ class FilenamePatternSerializer(serializers.Serializer):
 
 
 class IncludeFilenamePatternSerializer(FilenamePatternSerializer):
-    rename = serializers.CharField(required=False)
+    rename = serializers.CharField(
+        required=False,
+        help_text="""
+            New name of matching file. Can be a pattern where $root is the original
+            filename without the extension and $ext is the extension including the
+            leading period.
+        """)
 
 
 class ExperimentDownloadSerializer(serializers.Serializer):
@@ -18,4 +24,4 @@ class ExperimentDownloadSerializer(serializers.Serializer):
 
 class MultiExperimentDownloadSerializer(serializers.Serializer):
     experiments = ExperimentDownloadSerializer(many=True)
-    # TODO: filename parameter?
+    filename = serializers.CharField(default=None)
