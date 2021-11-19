@@ -1,12 +1,19 @@
 from rest_framework import serializers
 
-# class DownloadIncludeSerializer(serializers.Serializer):
-#     pattern = serializers.CharField()
+
+class FilenamePatternSerializer(serializers.Serializer):
+    pattern = serializers.CharField()
+
+
+class IncludeFilenamePatternSerializer(FilenamePatternSerializer):
+    rename = serializers.CharField(required=False)
 
 
 class ExperimentDownloadSerializer(serializers.Serializer):
     experiment_id = serializers.CharField()
-    # includes = DownloadIncludeSerializer(many=True)
+    path = serializers.CharField(default="")
+    includes = IncludeFilenamePatternSerializer(many=True, required=False, default=None)
+    excludes = FilenamePatternSerializer(many=True, required=False, default=None)
 
 
 class MultiExperimentDownloadSerializer(serializers.Serializer):

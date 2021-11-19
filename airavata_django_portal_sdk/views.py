@@ -1,3 +1,4 @@
+import fnmatch
 import logging
 import os
 import tempfile
@@ -121,9 +122,12 @@ def download_experiments(request, download_id=None):
                 for experiment in experiments:
                     experiment_id = experiment['experiment_id']
                     # Load experiment to make sure user has access to experiment
-                    experiment = request.airavata_client.getExperiment(request.authz_token, experiment_id)
-                    _add_experiment_directory_to_zipfile(request, zf, experiment_id, path="",
-                                                         zipfile_prefix=get_valid_filename(experiment.experimentName))
+                    experiment_model = request.airavata_client.getExperiment(request.authz_token, experiment_id)
+                    path = experiment['path']
+                    _add_experiment_directory_to_zipfile(
+                        request, zf, experiment_id, path,
+                        zipfile_prefix=os.path.join(get_valid_filename(experiment_model.experimentName), path),
+                        includes=experiment['includes'], excludes=experiment['excludes'])
 
             filename = "experiments.zip"
             fp.seek(0)
@@ -146,14 +150,31 @@ def _add_directory_to_zipfile(request, zf, path, directory=""):
         _add_directory_to_zipfile(request, zf, path, os.path.join(directory, d['name']))
 
 
-def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory="", zipfile_prefix=""):
+def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory="", zipfile_prefix="", includes=None, excludes=None):
     directories, files = user_storage.list_experiment_dir(request, experiment_id, os.path.join(path, directory))
     for file in files:
-        o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
-        zf.writestr(os.path.join(zipfile_prefix, directory, file['name']), o.read())
-        if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
-            raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
+        matches = _matches_filters(file['name'], includes=includes, excludes=excludes)
+        if matches:
+            o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
+            zf.writestr(os.path.join(zipfile_prefix, directory, file['name']), o.read())
+            if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
+                raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
     for d in directories:
         _add_experiment_directory_to_zipfile(request, zf, experiment_id, path,
                                              directory=os.path.join(directory, d['name']),
                                              zipfile_prefix=zipfile_prefix)
+
+
+def _matches_filters(filename, includes=None, excludes=None):
+    # excludes take precedence
+    if excludes is not None and len(excludes) > 0:
+        for exclude in excludes:
+            if fnmatch.fnmatch(filename, exclude['pattern']):
+                return False
+    # if there are no include patterns, default to include all
+    if includes is None or len(includes) == 0:
+        return True
+    for include in includes:
+        if fnmatch.fnmatch(filename, include['pattern']):
+            return True
+    return False
