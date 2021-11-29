@@ -134,6 +134,7 @@ def download_experiments(request, download_id=None):
             filename = download_spec.get("filename")
             if filename is None:
                 filename = "experiments.zip"
+            filename = get_valid_filename(filename)
             fp.seek(0)
             # FileResponse will automatically close the temporary file
             return FileResponse(fp, as_attachment=True, filename=filename)
@@ -186,6 +187,7 @@ def _matches_filters(filename, includes=None, excludes=None):
                 root, ext = os.path.splitext(filename)
                 template = Template(rename)
                 new_filename = template.safe_substitute(root=root, ext=ext)
+                new_filename = get_valid_filename(new_filename)
                 return True, new_filename
             else:
                 return True, None
