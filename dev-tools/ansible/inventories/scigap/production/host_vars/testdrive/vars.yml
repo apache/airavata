@@ -20,7 +20,7 @@
 
 ---
 airavata_django_extra_dependencies:
-  - git+https://github.com/machristie/custom_ui_tutorial_app.git@main#egg=custom_ui_tutorial_app
+  - git+https://github.com/machristie/custom_ui_tutorial_app_solution.git@main#egg=custom_ui_tutorial_app
 airavata_django_git_branch: "staging"
 vhost_servername: "testdrive.airavata.org"
 vhost_ssl: True
