@@ -40,3 +40,6 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_server_email: "{{ portal_email_username }}"
 admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
 django_error_emails: "[('SciGaP Errors', 'bugs@scigap.org')]"
+
+# AIRAVATA-3524: workaround for timeout when adding all users to group
+vhost_timeout: 300

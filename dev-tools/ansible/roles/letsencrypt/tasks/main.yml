@@ -23,9 +23,10 @@
 - name: install certbot and dependencies
   yum: name={{ item }} state=installed update_cache=yes
   with_items:
-    - certbot
-    - python2-acme
-    - python2-certbot-apache
+    - certbot-1.11.0
+    - python2-acme-1.11.0
+    - python2-certbot-apache-1.11.0
+    - ca-certificates-2021.2.50
   become_user: root
   when: ansible_os_family == "RedHat"
 

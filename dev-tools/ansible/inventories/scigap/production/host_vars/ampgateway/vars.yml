@@ -22,11 +22,17 @@
 airavata_django_extra_dependencies:
   - git+https://github.com/SciGaP/amp-gateway-django-app.git#egg=amp_gateway_django_app
 
-vhost_servername: "ampgateway.org"
+vhost_servername: "amosgateway.org"
+
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/ampgateway.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/ampgateway.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/ampgateway.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/amosgateway.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/amosgateway.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/amosgateway.org/privkey.pem"
+
+vhost_server_redirect: "ampgateway.org"
+vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/ampgateway.org/cert.pem"
+vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/ampgateway.org/fullchain.pem"
+vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/ampgateway.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "amp"
@@ -35,7 +41,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "Atomic and Molecular Physics and Optics Gateway"
+    name: "Atomic, Molecular, and Optical Science Gateway"
   external:
     - name: "existing institution credentials"
       idp_alias: "cilogon"
@@ -46,8 +52,12 @@ experiment_data_dir: "{{ user_data_dir }}/amp"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCAfFAdLrGC/om63ipx9RhuzcGnMlVQkKsuy5NtUgK7I4OdTJ1Ck1H/ARBwiWNQy08GO2HETfM7StCROwW+tlZ6n+THBkbei4G8q6xV6UXlC3BJxuDlwkxnyOFSYEt8Qd2g8IC/X0qo9/m5Ea9Z5axzTk+n2OZlV87DrLheV+OVhgf+yYGVo9egTZ7Kg/TV/Hl1xeU5JgRcPPrLrWYn8vEQo7xT5boS3X9y2o7FgNTdUf5K10ZJ37RWcLQpzZ+7zEKs/P/I/QU+BUhxRRfnEf/4e4L3OFE36SQ4DSFmu3lKU4BcQQb3A6SfQGC1PwQdD5y9MUkpit4hMCSJLjVBTN3H"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Barry Schneider', '	bis@nist.gov')]"
-portal_title: "Atomic and Molecular Physics and Optics Gateway"
+portal_title: "Atomic, Molecular, and Optical Science Gateway"
 
 django_google_analytics_tracking_id: "UA-177950242-1"
 
+django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared:
+      path: /var/www/portals/gateway-user-data/amp/shared
 ...
