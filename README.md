@@ -85,7 +85,8 @@ isort .
    "v1.2".
 
    ```
-   git tag -m VERSION VERSION
+   VERSION=...
+   git tag -m $VERSION $VERSION
    git push --follow-tags
    ```
 
@@ -93,7 +94,7 @@ isort .
 
    ```
    cd /tmp/
-   git clone /path/to/airavata-django-portal-sdk/ -b VERSION
+   git clone /path/to/airavata-django-portal-sdk/ -b $VERSION
    cd airavata-django-portal-sdk
    python3 -m venv venv
    source venv/bin/activate
