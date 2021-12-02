@@ -27,6 +27,7 @@
     - python2-acme-1.11.0
     - python2-certbot-apache-1.11.0
     - ca-certificates-2021.2.50
+  become: true
   become_user: root
   when: ansible_os_family == "RedHat"
 
