@@ -78,7 +78,7 @@ class KeycloakBackend(object):
                 user = self._process_userinfo(request, userinfo)
                 if idp_alias is not None:
                     self._store_idp_userinfo(user, token, idp_alias)
-                # TODO: if idp_alias, add idp userinfo too
+                    self._check_username_initialization(request, user)
                 access_token = token['access_token']
             # authz_token_middleware has already run, so must manually add
             # the `request.authz_token` attribute
@@ -216,9 +216,9 @@ class KeycloakBackend(object):
         logger.debug("userinfo: {}".format(userinfo))
         sub = userinfo['sub']
         username = userinfo['preferred_username']
-        email = userinfo['email']
-        first_name = userinfo['given_name']
-        last_name = userinfo['family_name']
+        email = userinfo.get('email', '')
+        first_name = userinfo.get('given_name', None)
+        last_name = userinfo.get('family_name', None)
 
         user = self._get_or_create_user(sub, username)
         user_profile = user.user_profile
@@ -323,3 +323,25 @@ class KeycloakBackend(object):
                     user_profile.idp_userinfo.create(idp_alias=idp_alias, claim=claim, value=value)
         except Exception:
             logger.exception(f"Failed to store IDP userinfo for {user.username} from IDP {idp_alias}")
+
+    def _check_username_initialization(self, request, user):
+        # Check if the username assigned to the user was based on the user's
+        # email address or if it was assigned some random string (Keycloak's
+        # sub). If the latter, we'll want to alert the admins so that they can
+        # assign a proper username for the user.
+        user_profile = user.user_profile
+        if (not user_profile.username_initialized and
+            user_profile.userinfo_set.filter(claim='email').exists() and
+            user_profile.userinfo_set.filter(claim='preferred_username').exists() and
+                user_profile.userinfo_set.get(claim='email').value == user_profile.userinfo_set.get(claim='preferred_username').value):
+            user_profile.username_initialized = True
+            user_profile.save()
+
+        # TODO: also check idp_userinfo.preferred_username if it exists
+
+        if not user_profile.username_initialized:
+            try:
+                utils.send_admin_alert_about_uninitialized_username(
+                    request, user.username, user.email, user.first_name, user.last_name)
+            except Exception:
+                logger.exception(f"Failed to send alert about username being uninitialized: {user.username}")

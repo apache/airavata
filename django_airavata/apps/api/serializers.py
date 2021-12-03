@@ -952,6 +952,7 @@ class IAMUserProfile(serializers.Serializer):
         lookup_field='userId',
         lookup_url_kwarg='user_id')
     userHasWriteAccess = serializers.SerializerMethodField()
+    newUsername = serializers.CharField(write_only=True)
 
     def update(self, instance, validated_data):
         existing_group_ids = [group.id for group in instance['groups']]

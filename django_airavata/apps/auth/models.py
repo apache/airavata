@@ -58,6 +58,7 @@ class UserProfile(models.Model):
     # TODO: maybe this can be derived from whether there exists an Airavata
     # User Profile for the user's username
     username_locked = models.BooleanField(default=False)
+    username_initialized = models.BooleanField(default=False)
 
     @property
     def is_complete(self):

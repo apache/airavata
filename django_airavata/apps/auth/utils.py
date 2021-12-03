@@ -184,6 +184,50 @@ def send_admin_alert_about_invalid_username(request, username, email, first_name
     msg.send()
 
 
+def send_admin_alert_about_uninitialized_username(request, username, email, first_name, last_name):
+    domain, port = split_domain_port(request.get_host())
+    context = Context({
+        "username": username,
+        "email": email,
+        "first_name": first_name,
+        "last_name": last_name,
+        "portal_title": settings.PORTAL_TITLE,
+        "gateway_id": settings.GATEWAY_ID,
+        "http_host": domain,
+    })
+    subject = Template("Please fix username: a user of {{portal_title}} ({{http_host}}) has been assigned a random username ({{username}})").render(context)
+    body = Template("""
+    <p>
+    Dear Admin,
+    </p>
+
+    <p>
+    The following user has a random username because the system could not
+    determine a proper username:
+    </p>
+
+    <p>Username: {{username}}</p>
+    <p>Name: {{first_name}} {{last_name}}</p>
+    <p>Email: {{email}}</p>
+
+    <p>
+    This likely happened because there was no appropriate user attribute to use
+    for the user's username when the user logged in through an external identity
+    provider.  Please update the username to the user's email address or some
+    other appropriate value in the <a href="https://{{http_host}}/admin/users/">Manage
+    Users</a> view in the portal.
+    </p>
+    """.strip()).render(context)
+    msg = EmailMessage(subject=subject,
+                       body=body,
+                       from_email=f'"{settings.PORTAL_TITLE}" <{settings.SERVER_EMAIL}>',
+                       to=[f'"{a[0]}" <{a[1]}>' for a in getattr(settings,
+                                                                 'PORTAL_ADMINS',
+                                                                 settings.ADMINS)])
+    msg.content_subtype = 'html'
+    msg.send()
+
+
 def send_email_to_user(template_id, context):
     email_template = models.EmailTemplate.objects.get(pk=template_id)
     subject = Template(email_template.subject).render(context)

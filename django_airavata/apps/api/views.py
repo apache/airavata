@@ -25,6 +25,7 @@ from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import experiment_util, user_storage
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect
@@ -1597,13 +1598,22 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
                                            context={'request': request})
         return Response(serializer.data)
 
-    @action(methods=['put'], detail=True)
-    def update_username(self, request, user_id=None):
+    @action(methods=['put'], detail=False)
+    def update_username(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        old_username = user_id
-        new_username = serializer.validated_data['userId']
+        old_username = serializer.validated_data['userId']
+        new_username = serializer.validated_data['newUsername']
         iam_admin_client.update_username(old_username, new_username)
+        # set username_initialized to True so it is treated as valid.
+        django_user = get_user_model().objects.get(username=old_username)
+        django_user.user_profile.username_initialized = True
+        django_user.user_profile.save()
+        # Not strictly necessary since next time the user logs in, the Django
+        # user record for the user will get updated to have the new username.
+        # But this is done to keep it consistent.
+        django_user.username = new_username
+        django_user.save()
         instance = self.get_instance(new_username)
         serializer = self.serializer_class(instance=instance,
                                            context={'request': request})

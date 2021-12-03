@@ -288,7 +288,7 @@ export default {
         modelClass: IAMUserProfile,
       },
       updateUsername: {
-        url: "/api/iam-user-profiles/<lookup>/update_username/",
+        url: "/api/iam-user-profiles/update_username/",
         bodyParams: {
           name: "data",
         },

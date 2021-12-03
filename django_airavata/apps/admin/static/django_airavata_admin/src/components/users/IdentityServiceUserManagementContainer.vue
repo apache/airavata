@@ -207,9 +207,8 @@ export default {
     },
     updateUsername(userProfile, username, newUsername) {
       const updatedUserProfile = userProfile.clone();
-      updatedUserProfile.userId = newUsername;
+      updatedUserProfile.newUsername = newUsername;
       services.IAMUserProfileService.updateUsername({
-        lookup: username,
         data: updatedUserProfile,
       }).finally(() => this.reloadUserProfiles());
     },

@@ -38,7 +38,10 @@ def gateway_groups_middleware(get_response):
         request.is_gateway_admin = False
         request.is_read_only_gateway_admin = False
 
-        if not request.user.is_authenticated or not request.authz_token or not request.user.user_profile.is_complete:
+        if (not request.user.is_authenticated or
+            not request.authz_token or
+            (hasattr(request.user, "user_profile") and
+                not request.user.user_profile.is_complete)):
             return get_response(request)
 
         try:
@@ -87,7 +90,8 @@ def user_profile_completeness_check(get_response):
             reverse('django_airavata_auth:user_profile'),
             reverse('django_airavata_auth:logout'),
         ]
-        if (not request.user.user_profile.is_complete and
+        if (hasattr(request.user, "user_profile") and
+            not request.user.user_profile.is_complete and
             request.path not in allowed_paths and
                 'text/html' in request.META['HTTP_ACCEPT']):
             return redirect('django_airavata_auth:user_profile')
