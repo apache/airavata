@@ -360,7 +360,11 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-            'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s'
+            'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s',
+        },
+        'verbose-safe': {
+            '()': 'anticrlf.LogFormatter',
+            'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s',
         },
     },
     'handlers': {
@@ -374,7 +378,7 @@ LOGGING = {
         'console': {
             'filters': ['require_debug_false'],
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'verbose-safe',
             'level': 'INFO'
         },
         'mail_admins': {

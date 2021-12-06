@@ -6,6 +6,7 @@ thrift==0.10.0
 thrift_connector==0.24
 djangorestframework==3.12.4
 django-webpack-loader==0.6.0
+logging-formatter-anticrlf==1.2
 
 wagtail==2.13.4
 wagtailfontawesome==1.2.1
