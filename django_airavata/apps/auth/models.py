@@ -55,9 +55,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, related_name="user_profile")
-    # TODO: maybe this can be derived from whether there exists an Airavata
-    # User Profile for the user's username
-    username_locked = models.BooleanField(default=False)
     # This flag is only used for external IDP users. It indicates that the
     # username was properly initialized when the user logged in through the
     # external IDP. As for now that means that the username was set to the
