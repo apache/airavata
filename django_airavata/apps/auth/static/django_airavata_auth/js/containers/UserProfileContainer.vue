@@ -5,8 +5,8 @@
       Unfortunately the username on your profile is invalid, which prevents
       creating or updating your user profile. The administrators have been
       notified and will be able to update your user account with a valid
-      username. Someone will notify you once your username has been updated to a
-      valid value.
+      username. An administrator will notify you once your username has been
+      updated to a valid value.
     </b-alert>
     <b-alert v-else-if="user && !user.complete" show>
       >Please complete your user profile before continuing.</b-alert

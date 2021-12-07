@@ -58,6 +58,12 @@ class UserProfile(models.Model):
     # TODO: maybe this can be derived from whether there exists an Airavata
     # User Profile for the user's username
     username_locked = models.BooleanField(default=False)
+    # This flag is only used for external IDP users. It indicates that the
+    # username was properly initialized when the user logged in through the
+    # external IDP. As for now that means that the username was set to the
+    # user's email address. Sometimes the automatic assignment of username fails
+    # and an administrator needs to intervene. When an administrator sets the
+    # user's username this flag will also be set to true.
     username_initialized = models.BooleanField(default=False)
 
     @property
@@ -69,6 +75,11 @@ class UserProfile(models.Model):
 
     @property
     def is_username_valid(self):
+
+        # Username was provided either by external IDP or manually set by an admin
+        if self.username_initialized:
+            return True
+
         # use forms.USERNAME_VALIDATOR with an exception when the username is
         # equal to the email
         try:
@@ -76,8 +87,7 @@ class UserProfile(models.Model):
             validates = True
         except ValidationError:
             validates = False
-        # TODO: should be valid if matching an old email address too
-        return (validates or (self.is_email_valid and self.user.email == self.user.username))
+        return validates
 
     @property
     def is_first_name_valid(self):
