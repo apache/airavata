@@ -8,6 +8,8 @@ from django.template import Context
 from django.urls import reverse
 from rest_framework import serializers
 
+from django_airavata.apps.auth import iam_admin_client
+
 from . import models, utils
 
 logger = logging.getLogger(__name__)
@@ -30,6 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['id', 'username', 'first_name', 'last_name', 'email',
                   'pending_email_change', 'complete', 'username_valid']
+        read_only_fields = ('username',)
 
     def get_pending_email_change(self, instance):
         request = self.context['request']
@@ -61,17 +64,21 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         # save in the user profile service too
         user_profile_client = request.profile_service['user_profile']
-        # Check if user profile exists and create it if not first. User Profile
-        # doesn't get created until the profile is complete, so it may not exist yet.
-        if not user_profile_client.doesUserExist(request.authz_token,
-                                                 request.user.username,
-                                                 settings.GATEWAY_ID):
-            user_profile_client.initializeUserProfile(request.authz_token)
-        airavata_user_profile = user_profile_client.getUserProfileById(
-            request.authz_token, request.user.username, settings.GATEWAY_ID)
-        airavata_user_profile.firstName = instance.first_name
-        airavata_user_profile.lastName = instance.last_name
-        user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+
+        # update the Airavata profile if it exists
+        if user_profile_client.doesUserExist(request.authz_token,
+                                             request.user.username,
+                                             settings.GATEWAY_ID):
+            airavata_user_profile = user_profile_client.getUserProfileById(
+                request.authz_token, request.user.username, settings.GATEWAY_ID)
+            airavata_user_profile.firstName = instance.first_name
+            airavata_user_profile.lastName = instance.last_name
+            user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+        # otherwise, update in Keycloak user store
+        else:
+            iam_admin_client.update_user(request.user.username,
+                                         first_name=instance.first_name,
+                                         last_name=instance.last_name)
         return instance
 
     def _send_email_verification_link(self, request, pending_email_change):

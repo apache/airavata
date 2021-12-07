@@ -593,11 +593,19 @@ class UserViewSet(viewsets.ModelViewSet):
         user.refresh_from_db()
 
         try:
+            # only update the airavata profile if it exists
             user_profile_client = request.profile_service['user_profile']
-            airavata_user_profile = user_profile_client.getUserProfileById(
-                request.authz_token, user.username, settings.GATEWAY_ID)
-            airavata_user_profile.emails = [pending_email_change.email_address]
-            user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+            if user_profile_client.doesUserExist(request.authz_token,
+                                                 request.user.username,
+                                                 settings.GATEWAY_ID):
+                airavata_user_profile = user_profile_client.getUserProfileById(
+                    request.authz_token, user.username, settings.GATEWAY_ID)
+                airavata_user_profile.emails = [pending_email_change.email_address]
+                user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+            # otherwise, update the user's email in the Keycloak user store
+            else:
+                iam_admin_client.update_user(request.user.username,
+                                             email=pending_email_change.email_address)
         except Exception as e:
             raise Exception(f"Failed to update Airavata User Profile with new email address: {e}") from e
         serializer = self.get_serializer(user)

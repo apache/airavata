@@ -95,3 +95,35 @@ def update_username(username, new_username):
                      json=user,
                      headers=headers)
     r.raise_for_status()
+
+
+def update_user(username, first_name=None, last_name=None, email=None):
+    # fetch user representation
+    authz_token = utils.get_service_account_authz_token()
+    headers = {'Authorization': f'Bearer {authz_token.accessToken}'}
+    parsed = urlparse(settings.KEYCLOAK_AUTHORIZE_URL)
+    r = requests.get(f"{parsed.scheme}://{parsed.netloc}/auth/admin/realms/{settings.GATEWAY_ID}/users",
+                     params={'username': username},
+                     headers=headers)
+    r.raise_for_status()
+    user_list = r.json()
+    user = None
+    # The users search finds partial matches. Loop to find the exact match.
+    for u in user_list:
+        if u['username'] == username:
+            user = u
+            break
+    if user is None:
+        raise Exception(f"Could not find user {username}")
+
+    # update user
+    if first_name is not None:
+        user['firstName'] = first_name
+    if last_name is not None:
+        user['lastName'] = last_name
+    if email is not None:
+        user['email'] = email
+    r = requests.put(f"{parsed.scheme}://{parsed.netloc}/auth/admin/realms/{settings.GATEWAY_ID}/users/{user['id']}",
+                     json=user,
+                     headers=headers)
+    r.raise_for_status()

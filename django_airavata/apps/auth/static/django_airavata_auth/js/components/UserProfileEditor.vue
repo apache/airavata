@@ -1,7 +1,6 @@
 <template>
   <b-card>
-    <!-- TODO: add help text that only administrators can change a user's username -->
-    <b-form-group label="Username" :disabled="true">
+    <b-form-group label="Username" :disabled="true" description="Only administrators can update a username.">
       <b-form-input v-model="user.username" />
     </b-form-group>
     <b-form-group label="First Name" :disabled="disabled">
