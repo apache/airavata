@@ -1,45 +1,49 @@
 <template>
-  <div>
-    <b-card header="Edit Groups">
-      <user-group-membership-editor
+  <b-tabs content-class="mt-3 px-2">
+    <b-tab
+      title="User Profile"
+      :active="iamUserProfile.airavataUserProfileExists"
+    >
+      <edit-groups-panel
         v-if="iamUserProfile.airavataUserProfileExists"
-        v-model="localIAMUserProfile.groups"
+        :value="localIAMUserProfile.groups"
         :editable-groups="editableGroups"
         :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
+        @save="groupsUpdated"
       />
-      <b-button
-        @click="groupsUpdated"
-        variant="primary"
-        :disabled="!areGroupsUpdated"
-        >Save</b-button
-      >
-    </b-card>
-    <activate-user-panel
-      v-if="
-        iamUserProfile.enabled &&
-        iamUserProfile.emailVerified &&
-        !iamUserProfile.airavataUserProfileExists
-      "
-      :username="iamUserProfile.userId"
-      @activate-user="$emit('enable-user', $event)"
-    />
-    <enable-user-panel
-      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
-      :username="iamUserProfile.userId"
-      :email="iamUserProfile.email"
-      @enable-user="$emit('enable-user', $event)"
-    />
-    <delete-user-panel
-      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
-      :username="iamUserProfile.userId"
-      @delete-user="$emit('delete-user', $event)"
-    />
-    <change-username-panel
-      :username="iamUserProfile.userId"
-      :email="iamUserProfile.email"
-      @update-username="$emit('update-username', $event)"
-    />
-  </div>
+    </b-tab>
+    <b-tab
+      title="Troubleshooting"
+      :active="!iamUserProfile.airavataUserProfileExists"
+    >
+      <activate-user-panel
+        v-if="
+          iamUserProfile.enabled &&
+          iamUserProfile.emailVerified &&
+          !iamUserProfile.airavataUserProfileExists
+        "
+        :username="iamUserProfile.userId"
+        @activate-user="$emit('enable-user', $event)"
+      />
+      <enable-user-panel
+        v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+        :username="iamUserProfile.userId"
+        :email="iamUserProfile.email"
+        @enable-user="$emit('enable-user', $event)"
+      />
+      <delete-user-panel
+        v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+        :username="iamUserProfile.userId"
+        @delete-user="$emit('delete-user', $event)"
+      />
+      <change-username-panel
+        :username="iamUserProfile.userId"
+        :email="iamUserProfile.email"
+        :airavata-user-profile-exists="iamUserProfile.airavataUserProfileExists"
+        @update-username="$emit('update-username', $event)"
+      />
+    </b-tab>
+  </b-tabs>
 </template>
 <script>
 import { models } from "django-airavata-api";
@@ -48,6 +52,7 @@ import ActivateUserPanel from "./ActivateUserPanel";
 import EnableUserPanel from "./EnableUserPanel";
 import DeleteUserPanel from "./DeleteUserPanel";
 import ChangeUsernamePanel from "./ChangeUsernamePanel.vue";
+import EditGroupsPanel from "./EditGroupsPanel.vue";
 
 export default {
   name: "user-details-container",
@@ -67,6 +72,7 @@ export default {
     DeleteUserPanel,
     ActivateUserPanel,
     ChangeUsernamePanel,
+    EditGroupsPanel,
   },
   data() {
     return {
@@ -79,36 +85,11 @@ export default {
     },
   },
   methods: {
-    groupsUpdated() {
+    groupsUpdated(groups) {
+      this.localIAMUserProfile.groups = groups;
       this.$emit("groups-updated", this.localIAMUserProfile);
     },
   },
-  computed: {
-    currentGroupIds() {
-      const groupIds = this.iamUserProfile.groups.map((g) => g.id);
-      groupIds.sort();
-      return groupIds;
-    },
-    updatedGroupIds() {
-      const groupIds = this.localIAMUserProfile.groups.map((g) => g.id);
-      groupIds.sort();
-      return groupIds;
-    },
-    areGroupsUpdated() {
-      for (const groupId of this.currentGroupIds) {
-        // Check if a group was removed
-        if (this.updatedGroupIds.indexOf(groupId) < 0) {
-          return true;
-        }
-      }
-      for (const groupId of this.updatedGroupIds) {
-        // Check if a group was added
-        if (this.currentGroupIds.indexOf(groupId) < 0) {
-          return true;
-        }
-      }
-      return false;
-    },
-  },
+  computed: {},
 };
 </script>

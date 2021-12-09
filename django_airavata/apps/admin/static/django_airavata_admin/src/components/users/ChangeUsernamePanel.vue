@@ -1,12 +1,18 @@
 <template>
   <b-card header="Change Username">
     <p class="card-text">
-      This will change the user's username in the identity service. NOTE: if
-      this user already has an Airavata User Profile, giving the user a new
-      username will result in the user getting a new Airavata User Profile and
-      losing the old one. Also, after updating the username the user will need
-      to log out and log back in.
+      This will change the user's username in the identity service. Typically,
+      you would only change the user's username when they login through an
+      external identity provider and are automatically assigned an invalid
+      username. Also, after updating the username the user will need to log out
+      and log back in.
     </p>
+    <b-alert variant="warning" :show="airavataUserProfileExists">
+      This user already has an Airavata User Profile. Giving the user a new
+      username will result in the user getting a new Airavata User Profile and
+      losing the old one and everything (projects, experiments, etc.) associated
+      with it.
+    </b-alert>
     <b-form-group label="New Username" label-for="new-username">
       <b-input-group>
         <b-form-input
@@ -60,6 +66,10 @@ export default {
     email: {
       type: String,
       required: true,
+    },
+    airavataUserProfileExists: {
+      type: Boolean,
+      default: false,
     },
   },
   components: {
