@@ -30,6 +30,7 @@ GATEWAY_ID = "gateway-id"
     KEYCLOAK_VERIFY_SSL=KEYCLOAK_VERIFY_SSL,
     AUTHENTICATION_OPTIONS=AUTHENTICATION_OPTIONS,
     GATEWAY_ID=GATEWAY_ID,
+    PORTAL_ADMINS=[('Admin Name', 'admin@example.org')],
 )
 class KeycloakBackendTestCase(TestCase):
 
