@@ -35,18 +35,21 @@
     <confirmation-button
       variant="primary"
       @confirmed="updateUsername"
-      :disabled="$v.$invalid"
+      :disabled="$v.$invalid || username === newUsername"
       dialog-title="Please confirm username change"
     >
       Please confirm that you want to change the user's username to
       <strong>{{ newUsername }}</strong
-      >. NOTE: if this user already has an Airavata User Profile, giving the
-      user a new username will result in
-      <strong
-        >the user getting a new Airavata User Profile and losing the old
-        one</strong
-      >. Also, after updating the username the user will need to log out and log
-      back in.
+      >. After updating the username the user will need to log out and log back
+      in.
+      <b-alert variant="danger" :show="airavataUserProfileExists">
+        This user already has an Airavata User Profile. Giving the user a new
+        username will result in the user getting a new Airavata User Profile and
+        <strong
+          >losing the old one and everything (projects, experiments, etc.)
+          associated with it</strong
+        >.
+      </b-alert>
     </confirmation-button>
   </b-card>
 </template>
