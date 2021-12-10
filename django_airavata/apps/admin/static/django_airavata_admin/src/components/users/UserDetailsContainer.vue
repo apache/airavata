@@ -4,6 +4,19 @@
       title="User Profile"
       :active="iamUserProfile.airavataUserProfileExists"
     >
+      <b-alert
+        variant="warning"
+        show
+        v-if="!iamUserProfile.userProfileComplete"
+      >
+        This user has not completed their user profile. An incomplete user
+        profile is shown below.
+      </b-alert>
+      <b-alert variant="danger" show v-if="isUsernameInvalid">
+        The user has an invalid username. Please use
+        <strong>Change Username</strong> under the
+        <strong>Troubleshooting</strong> tab to fix the user's username.
+      </b-alert>
       <edit-groups-panel
         v-if="iamUserProfile.airavataUserProfileExists"
         :value="localIAMUserProfile.groups"
@@ -11,6 +24,7 @@
         :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
         @save="groupsUpdated"
       />
+      <user-profile-panel :iamUserProfile="iamUserProfile" />
       <external-idp-user-info-panel
         v-if="hasExternalIDPUserInfo"
         :externalIDPUserInfo="localIAMUserProfile.externalIDPUserInfo"
@@ -24,6 +38,7 @@
         v-if="
           iamUserProfile.enabled &&
           iamUserProfile.emailVerified &&
+          iamUserProfile.userProfileComplete &&
           !iamUserProfile.airavataUserProfileExists
         "
         :username="iamUserProfile.userId"
@@ -40,6 +55,10 @@
         :username="iamUserProfile.userId"
         @delete-user="$emit('delete-user', $event)"
       />
+      <b-alert variant="danger" show v-if="isUsernameInvalid">
+        The user has an invalid username. Please fix the user's username so that
+        they can complete their user profile.
+      </b-alert>
       <change-username-panel
         :username="iamUserProfile.userId"
         :email="iamUserProfile.email"
@@ -58,6 +77,7 @@ import DeleteUserPanel from "./DeleteUserPanel";
 import ChangeUsernamePanel from "./ChangeUsernamePanel.vue";
 import EditGroupsPanel from "./EditGroupsPanel.vue";
 import ExternalIDPUserInfoPanel from "./ExternalIDPUserInfoPanel.vue";
+import UserProfilePanel from "./UserProfilePanel.vue";
 
 export default {
   name: "user-details-container",
@@ -79,6 +99,7 @@ export default {
     ChangeUsernamePanel,
     EditGroupsPanel,
     "external-idp-user-info-panel": ExternalIDPUserInfoPanel,
+    UserProfilePanel,
   },
   data() {
     return {
@@ -100,6 +121,11 @@ export default {
     hasExternalIDPUserInfo() {
       return (
         Object.keys(this.localIAMUserProfile.externalIDPUserInfo).length !== 0
+      );
+    },
+    isUsernameInvalid() {
+      return (
+        this.iamUserProfile.userProfileInvalidFields.indexOf("username") >= 0
       );
     },
   },

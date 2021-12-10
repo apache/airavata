@@ -23,10 +23,14 @@ const FIELDS = [
   },
   "userHasWriteAccess",
   "externalIDPUserInfo",
+  "userProfileInvalidFields",
 ];
 
 export default class IAMUserProfile extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
+  }
+  get userProfileComplete() {
+    return this.userProfileInvalidFields.length === 0;
   }
 }

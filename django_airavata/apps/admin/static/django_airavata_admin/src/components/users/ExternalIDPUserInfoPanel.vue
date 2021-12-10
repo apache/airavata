@@ -2,8 +2,10 @@
   <b-card header="External IDP Userinfo">
     <b-table :items="items" small borderless sort-by="claim" />
     <small class="text-muted"
-      >IDP alias is {{ externalIDPUserInfo.idp_alias || "N/A" }}</small
-    >
+      >This is the user information provided by the user's authentication
+      provider. The IDP alias used is
+      {{ externalIDPUserInfo.idp_alias || "N/A" }}.
+    </small>
   </b-card>
 </template>
 

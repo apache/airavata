@@ -65,10 +65,7 @@ class UserProfile(models.Model):
 
     @property
     def is_complete(self):
-        return (self.is_username_valid and
-                self.is_first_name_valid and
-                self.is_last_name_valid and
-                self.is_email_valid)
+        return len(self.invalid_fields) == 0
 
     @property
     def is_username_valid(self):
@@ -99,6 +96,19 @@ class UserProfile(models.Model):
         # Only checking for non-empty only; assumption is that email is verified
         # before it is set or updated
         return self.is_non_empty(self.user.email)
+
+    @property
+    def invalid_fields(self):
+        result = []
+        if not self.is_username_valid:
+            result.append('username')
+        if not self.is_email_valid:
+            result.append('email')
+        if not self.is_first_name_valid:
+            result.append('first_name')
+        if not self.is_last_name_valid:
+            result.append('last_name')
+        return result
 
     def is_non_empty(self, value: str):
         return value is not None and value.strip() != ""

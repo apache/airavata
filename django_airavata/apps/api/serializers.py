@@ -955,6 +955,7 @@ class IAMUserProfile(serializers.Serializer):
     userHasWriteAccess = serializers.SerializerMethodField()
     newUsername = serializers.CharField(write_only=True, required=False)
     externalIDPUserInfo = serializers.SerializerMethodField()
+    userProfileInvalidFields = serializers.SerializerMethodField()
 
     def update(self, instance, validated_data):
         existing_group_ids = [group.id for group in instance['groups']]
@@ -970,7 +971,6 @@ class IAMUserProfile(serializers.Serializer):
         return request.is_gateway_admin
 
     def get_externalIDPUserInfo(self, userProfile):
-
         result = {}
         try:
             if get_user_model().objects.filter(username=userProfile['userId']).exists():
@@ -984,6 +984,21 @@ class IAMUserProfile(serializers.Serializer):
         except Exception as e:
             log.warning(f"Failed to load idp_userinfo for {userProfile['userId']}", exc_info=e)
         return result
+
+    def get_userProfileInvalidFields(self, userProfile):
+        try:
+            User = get_user_model()
+            if User.objects.filter(username=userProfile['userId']).exists():
+                django_user = User.objects.get(username=userProfile['userId'])
+                if hasattr(django_user, 'user_profile'):
+                    return django_user.user_profile.invalid_fields
+                else:
+                    # For backwards compatibility, return True if no user_profile
+                    return []
+        except Exception as e:
+            log.warning(f"Failed to get user_profile.invalid_fields for {userProfile['userId']}", exc_info=e)
+        return []
+
 
 
 class AckNotificationSerializer(serializers.ModelSerializer):
