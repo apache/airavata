@@ -5,9 +5,9 @@ import logging
 from django.conf import settings
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.urls import reverse
 
 from . import utils
-from django.urls import reverse
 
 log = logging.getLogger(__name__)
 

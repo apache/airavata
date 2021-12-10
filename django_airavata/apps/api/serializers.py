@@ -1000,7 +1000,6 @@ class IAMUserProfile(serializers.Serializer):
         return []
 
 
-
 class AckNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User_Notifications
