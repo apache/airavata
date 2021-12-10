@@ -22,6 +22,7 @@ const FIELDS = [
     list: true,
   },
   "userHasWriteAccess",
+  "externalIDPUserInfo",
 ];
 
 export default class IAMUserProfile extends BaseModel {

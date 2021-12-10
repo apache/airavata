@@ -11,6 +11,10 @@
         :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
         @save="groupsUpdated"
       />
+      <external-idp-user-info-panel
+        v-if="hasExternalIDPUserInfo"
+        :externalIDPUserInfo="localIAMUserProfile.externalIDPUserInfo"
+      />
     </b-tab>
     <b-tab
       title="Troubleshooting"
@@ -53,6 +57,7 @@ import EnableUserPanel from "./EnableUserPanel";
 import DeleteUserPanel from "./DeleteUserPanel";
 import ChangeUsernamePanel from "./ChangeUsernamePanel.vue";
 import EditGroupsPanel from "./EditGroupsPanel.vue";
+import ExternalIDPUserInfoPanel from "./ExternalIDPUserInfoPanel.vue";
 
 export default {
   name: "user-details-container",
@@ -73,6 +78,7 @@ export default {
     ActivateUserPanel,
     ChangeUsernamePanel,
     EditGroupsPanel,
+    "external-idp-user-info-panel": ExternalIDPUserInfoPanel,
   },
   data() {
     return {
@@ -90,6 +96,12 @@ export default {
       this.$emit("groups-updated", this.localIAMUserProfile);
     },
   },
-  computed: {},
+  computed: {
+    hasExternalIDPUserInfo() {
+      return (
+        Object.keys(this.localIAMUserProfile.externalIDPUserInfo).length !== 0
+      );
+    },
+  },
 };
 </script>
