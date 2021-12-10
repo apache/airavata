@@ -39,6 +39,8 @@ auth_options:
     - name: "existing institution credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
+      idp_token_url: "{{ oauth_service_url }}/realms/{{ tenant_domain }}/broker/cilogon/token"
+      userinfo_url: "{{ cilogon_userinfo_url }}"
 
 gateway_id: "default"
 experiment_data_dir: "{{ user_data_dir }}/testdrive"
