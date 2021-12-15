@@ -31,6 +31,7 @@ import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
+import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
 import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -100,6 +101,13 @@ public class PreWorkflowManager extends WorkflowManager {
         String taskDag = processModel.getTaskDag();
         List<TaskModel> taskList = processModel.getTasks();
 
+        boolean intermediateTransfer = taskList.stream()
+                .anyMatch(task -> task.getTaskType() == TaskTypes.OUTPUT_FETCHING);
+
+        if (intermediateTransfer) {
+            logger.info("Process {} contains intermediate file transfers", processId);
+        }
+
         String[] taskIds = taskDag.split(",");
         final List<AiravataTask> allTasks = new ArrayList<>();
 
@@ -111,7 +119,14 @@ public class PreWorkflowManager extends WorkflowManager {
             if (model.isPresent()) {
                 TaskModel taskModel = model.get();
                 AiravataTask airavataTask = null;
-                if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
+
+                if (intermediateTransfer) {
+                    if (taskModel.getTaskType() == TaskTypes.OUTPUT_FETCHING) {
+                        airavataTask = new OutputDataStagingTask();
+                        airavataTask.setForceRunTask(true);
+                    }
+
+                } else if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
                     airavataTask = new EnvSetupTask();
                     airavataTask.setForceRunTask(true);
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {

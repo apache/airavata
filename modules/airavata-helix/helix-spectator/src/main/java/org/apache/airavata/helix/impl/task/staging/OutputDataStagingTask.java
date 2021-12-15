@@ -30,7 +30,9 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.task.DataStageType;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
@@ -61,6 +63,7 @@ public class OutputDataStagingTask extends DataStagingTask {
         try {
             // Get and validate data staging task model
             DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();
+            boolean onlyUpdateProcess = taskContext.getCurrentTaskModel().getTaskType() == TaskTypes.OUTPUT_FETCHING;
 
             // Fetch and validate input data type from data staging task model
             OutputDataObjectType processOutput = dataStagingTaskModel.getProcessOutput();
@@ -169,7 +172,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 }
                 if (!destinationURIs.isEmpty()) {
                     if (processOutput.getType() == DataType.URI) {
-                        saveExperimentOutput(processOutput.getName(), destinationURIs.get(0).toString());
+                        saveExperimentOutput(processOutput.getName(), destinationURIs.get(0).toString(), onlyUpdateProcess);
                     } else if (processOutput.getType() == DataType.URI_COLLECTION) {
                         saveExperimentOutputCollection(processOutput.getName(), destinationURIs.stream().map(URI::toString).collect(Collectors.toList()));
                     }
@@ -181,7 +184,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 assert processOutput != null;
                 boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                 if (transferred) {
-                    saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                    saveExperimentOutput(processOutput.getName(), destinationURI.toString(), onlyUpdateProcess);
                 } else {
                     logger.warn("File " + sourceFileName + " did not transfer");
                 }
