@@ -1940,6 +1940,14 @@ public class AiravataServerHandler implements Airavata.Iface {
         return null;
     }
 
+    @Override
+    public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
+            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
+            AiravataSystemException, AuthorizationException, TException {
+        // TODO Publish message to experiment channel with MessageType.INTERMEDIATE_OUTPUTS
+        // TODO create an event of type ExperimentIntermediateOutputsEvent
+    }
+
     @SecurityCheck
     public Map<String, JobStatus> getJobStatuses(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, TException {
