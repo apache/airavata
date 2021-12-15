@@ -259,7 +259,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveExperimentOutput(String outputName, String outputVal) throws TaskOnFailException {
+    public void saveExperimentOutput(String outputName, String outputVal, boolean onlyUpdateProcess) throws TaskOnFailException {
         try {
             ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
@@ -268,8 +268,13 @@ public abstract class AiravataTask extends AbstractTask {
                     if (expOutput.getName().equals(outputName)) {
                         String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
                         expOutput.setValue(productUri);
-                        getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
-                                Collections.singletonList(expOutput), experimentId);
+
+                        if (!onlyUpdateProcess) {
+                            getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
+                                    Collections.singletonList(expOutput), experimentId);
+                        }
+                        getRegistryServiceClient().addExperimentProcessOutputs("PROCESS_OUTPUT",
+                                Collections.singletonList(expOutput), processId);
                     }
                 }
             }
