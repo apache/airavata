@@ -71,6 +71,7 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -1944,8 +1945,13 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
-        // TODO Publish message to experiment channel with MessageType.INTERMEDIATE_OUTPUTS
-        // TODO create an event of type ExperimentIntermediateOutputsEvent
+        // TODO: Verify user has access to experiment
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            submitExperimentIntermediateOutputsEvent(gatewayId, airavataExperimentId, outputNames);
+        } catch (AiravataException e) {
+            throw new RuntimeException("Failed to submit intermediate outputs event", e);
+        }
     }
 
     @SecurityCheck
@@ -6176,6 +6182,13 @@ public class AiravataServerHandler implements Airavata.Iface {
     private void submitCancelExperiment(String gatewayId, String experimentId) throws AiravataException {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT_CANCEL, "CANCEL.EXP-" + UUID.randomUUID().toString(), gatewayId);
+        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+        experimentPublisher.publish(messageContext);
+    }
+
+    private void submitExperimentIntermediateOutputsEvent(String gatewayId, String experimentId, List<String> outputNames) throws AiravataException {
+        ExperimentIntermediateOutputsEvent event = new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
+        MessageContext messageContext = new MessageContext(event, MessageType.INTERMEDIATE_OUTPUTS, "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
     }
