@@ -1,5 +1,5 @@
 # Pin these dependencies
-Django==3.2.8
+Django==3.2.10
 requests==2.25.1
 requests-oauthlib==0.7.0
 thrift==0.10.0
