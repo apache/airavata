@@ -19,10 +19,8 @@
  */
 package org.apache.airavata.server;
 
-import ch.qos.logback.classic.LoggerContext;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.logging.kafka.KafkaAppender;
 import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
@@ -170,7 +168,7 @@ public class ServerMain {
 //		});
 //	}
 	
-	public static void main(String args[]) throws ParseException, IOException, AiravataException {
+	public static void main(String args[]) throws IOException, AiravataException, ParseException {
 		ServerSettings.mergeSettingsCommandLineArgs(args);
 		ServerSettings.setServerRoles(ApplicationSettings.getSetting(SERVERS_KEY, "all").split(","));
 
@@ -183,37 +181,11 @@ public class ServerMain {
 			Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
 		}
 
-		if (ServerSettings.isEnabledKafkaLogging()) {
-			final ILoggerFactory iLoggerFactory = LoggerFactory.getILoggerFactory();
-			if (iLoggerFactory instanceof LoggerContext) {
-				final KafkaAppender kafkaAppender = new KafkaAppender(ServerSettings.getKafkaBrokerList(),
-						ServerSettings.getKafkaTopicPrefix());
-				kafkaAppender.setContext((LoggerContext) iLoggerFactory);
-				kafkaAppender.setName("kafka-appender");
-				kafkaAppender.clearAllFilters();
-				kafkaAppender.start();
-				// Until AIRAVATA-2073 filter org.apache.kafka logs
-				((LoggerContext) iLoggerFactory).getLogger("org.apache.airavata").addAppender(kafkaAppender);
-				((LoggerContext) iLoggerFactory).getLogger("org.apache.zookeeper").addAppender(kafkaAppender);
-				((LoggerContext) iLoggerFactory).getLogger("org.apache.derby").addAppender(kafkaAppender);
-				((LoggerContext) iLoggerFactory).getLogger("org.apache.commons").addAppender(kafkaAppender);
-				((LoggerContext) iLoggerFactory).getLogger("org.apache.thrift").addAppender(kafkaAppender);
-				((LoggerContext) iLoggerFactory).getLogger("com").addAppender(kafkaAppender);
-				((LoggerContext) iLoggerFactory).getLogger("net").addAppender(kafkaAppender);
-			} else {
-				logger.warn("Kafka logging is enabled but cannot find logback LoggerContext, found", iLoggerFactory.getClass().toString());
-				throw new AiravataException("Kafka logging is enabled but cannot find logback LoggerContext");
-			}
-		} else {
-			logger.info("Kafka logging is disabled in airavata server configurations");
-		}
-
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);
-        }else{
-            AiravataZKUtils.startEmbeddedZK(cnxnFactory);
-            performServerStart(args);
+        } else {
+			performServerStart(args);
 		}
     }
 
