@@ -47,10 +47,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.7</version>
@@ -75,11 +71,6 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>3.4.0</version>
         </dependency>
     </dependencies>
 </project>
