@@ -116,9 +116,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String ENABLE_EMAIL_BASED_MONITORING = "enable.email.based.monitoring";
 
     private static final String IS_RUNNING_ON_AWS = "isRunningOnAws";
-    private static final String ENABLE_KAFKA_LOGGING = "enable.kafka.logging";
-    private static final String KAFKA_BROKER_LIST = "kafka.broker.list";
-    private static final String KAFKA_TOPIC_PREFIX = "kafka.topic.prefix";
     private static final String SERVER_ROLES = "server.roles";
 
     //User Profile onstants
@@ -449,18 +446,6 @@ public class ServerSettings extends ApplicationSettings {
     }
     public static boolean isRunningOnAws() {
         return Boolean.valueOf(getSetting(IS_RUNNING_ON_AWS, "false"));
-    }
-
-    public static String getKafkaBrokerList() {
-        return getSetting(KAFKA_BROKER_LIST, null);
-    }
-
-    public static String getKafkaTopicPrefix() {
-        return getSetting(KAFKA_TOPIC_PREFIX, "all");
-    }
-
-    public static boolean isEnabledKafkaLogging() {
-        return Boolean.valueOf(getSetting(ENABLE_KAFKA_LOGGING, "false"));
     }
 
     public static void setServerRoles(String[] roles) {

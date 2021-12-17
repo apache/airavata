@@ -47,10 +47,6 @@
             <artifactId>jsch</artifactId>
             <version>0.1.50</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
         <!-- apache directory ldap api! -->
         <dependency>
             <groupId>org.apache.directory.api</groupId>

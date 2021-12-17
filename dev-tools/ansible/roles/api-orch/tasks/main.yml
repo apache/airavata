@@ -66,8 +66,8 @@
             mode="u=rw,g=r,o=r"
 
 - name: Copy logback configuration file
-  template: src=logback.xml.j2
-            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/logback.xml"
+  template: src=log4j2.xml.j2
+            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/log4j2.xml"
             owner={{ user }}
             group={{ group }}
             mode="u=rw,g=r,o=r"
