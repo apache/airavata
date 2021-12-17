@@ -52,7 +52,7 @@
   - "{{ email_monitor_dist_name }}"
   - "{{ realtime_monitor_dist_name }}"
 
-# Copy properties files, logback.xml files & config files
+# Copy properties files, log4j2.xml files & config files
 
 - name: Copy Airavata server properties files
   template: "src={{ item.name }}/airavata-server.properties.j2
@@ -65,8 +65,8 @@
   - { name: realtime-monitor, dir: "{{ realtime_monitor_version }}" }
 
 - name: Copy logback configuration file
-  template: "src={{ item.name }}/logback.xml.j2
-            dest={{ helix_dir }}/{{ item.dir }}/conf/logback.xml
+  template: "src={{ item.name }}/log4j2.xml.j2
+            dest={{ helix_dir }}/{{ item.dir }}/conf/log4j2.xml
             owner={{ user }}
             group={{ group }}
             mode=\"u=rw,g=r,o=r\""
