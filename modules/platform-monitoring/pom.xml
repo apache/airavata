@@ -33,11 +33,6 @@
 
 
     <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>1.7.25</version>
-        </dependency>
         <!-- The client -->
         <dependency>
             <groupId>io.prometheus</groupId>

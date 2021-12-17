@@ -36,11 +36,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.10</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-sharing-registry-stubs</artifactId>
             <version>${project.parent.version}</version>
