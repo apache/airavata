@@ -184,7 +184,9 @@ public class ServerMain {
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);
-        }
+        } else {
+			performServerStart(args);
+		}
     }
 
 
