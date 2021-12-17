@@ -48,6 +48,7 @@
   - { command: ./bin/participant-daemon.sh stop, dir: "{{ helix_participant_version }}" }
   - { command: ./bin/pre-wm-daemon.sh stop, dir: "{{ helix_pre_wm_version }}" }
   - { command: ./bin/post-wm-daemon.sh stop, dir: "{{ helix_post_wm_version }}" }
+  - { command: ./bin/parser-wm-daemon.sh stop, dir: "{{ helix_parser_wm_version }}" }
   ignore_errors: yes
 
 - name: Delete lib, conf, bin directories of the distributions
@@ -67,6 +68,9 @@
   - "{{ helix_post_wm_version }}/lib"
   - "{{ helix_post_wm_version }}/bin"
   - "{{ helix_post_wm_version }}/conf"
+  - "{{ helix_parser_wm_version }}/bin"
+  - "{{ helix_parser_wm_version }}/conf"
+  - "{{ helix_parser_wm_version }}/lib"
   ignore_errors: yes
 
 # Copy required distributions to the deployment directory
