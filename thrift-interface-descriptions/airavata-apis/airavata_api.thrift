@@ -987,6 +987,26 @@ service Airavata extends base_api.BaseAPI {
                 5: airavata_errors.AuthorizationException ae)
 
   /**
+   * Request fetching of output files for an experiment that is still executing.
+   * This method results in a new Process being created for the Experiment with
+   * tasks for fetching each output file.
+   *
+   * @param authzToken
+   *
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   *
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   */
+  void fetchIntermediateOutputs(1: required security_model.AuthzToken authzToken, 2: required string airavataExperimentId, 3: required list<string> outputNames)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.ExperimentNotFoundException enf,
+                3: airavata_errors.AiravataClientException ace,
+                4: airavata_errors.AiravataSystemException ase,
+                5: airavata_errors.AuthorizationException ae)
+
+  /**
   *
   * Get Job Statuses for an Experiment
   * This method to be used when need to get the job status of an Experiment. An experiment may have one or many jobs; there for one or many job statuses may turnup
