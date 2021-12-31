@@ -29,10 +29,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
-import org.apache.airavata.model.messaging.event.Message;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -67,12 +64,11 @@ public class ExperimentConsumer extends QueueingConsumer {
             ThriftUtils.createThriftFromBytes(body, message);
             long deliveryTag = envelope.getDeliveryTag();
 
+            TBase event = null;
+            String gatewayId = null;
             if (message.getMessageType() == MessageType.EXPERIMENT ||
-                    message.getMessageType() == MessageType.EXPERIMENT_CANCEL ||
-                    message.getMessageType() == MessageType.INTERMEDIATE_OUTPUTS) {
+                    message.getMessageType() == MessageType.EXPERIMENT_CANCEL) {
 
-                TBase event = null;
-                String gatewayId = null;
                 ExperimentSubmitEvent experimentEvent = new ExperimentSubmitEvent();
                 ThriftUtils.createThriftFromBytes(message.getEvent(), experimentEvent);
                 log.info(" Message Received with message id '" + message.getMessageId()
@@ -87,7 +83,23 @@ public class ExperimentConsumer extends QueueingConsumer {
                 messageContext.setIsRedeliver(envelope.isRedeliver());
                 handler.onMessage(messageContext);
 
-            } else {
+            } else if (message.getMessageType() == MessageType.INTERMEDIATE_OUTPUTS) {
+
+                ExperimentIntermediateOutputsEvent intermediateOutEvt = new ExperimentIntermediateOutputsEvent();
+                ThriftUtils.createThriftFromBytes(message.getEvent(), intermediateOutEvt);
+                log.info(" Message Received with message id '" + message.getMessageId()
+                        + "' and with message type '" + message.getMessageType() + "'  for experimentId:" +
+                        " " +
+                        intermediateOutEvt.getExperimentId());
+                event = intermediateOutEvt;
+                gatewayId = intermediateOutEvt.getGatewayId();
+                MessageContext messageContext = new MessageContext(event, message.getMessageType(),
+                        message.getMessageId(), gatewayId, deliveryTag);
+                messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
+                messageContext.setIsRedeliver(envelope.isRedeliver());
+                handler.onMessage(messageContext);
+
+            }else {
                 log.error("{} message type is not handle in ProcessLaunch Subscriber. Sending ack for " +
                         "delivery tag {} ", message.getMessageType().name(), deliveryTag);
                 sendAck(deliveryTag);
