@@ -387,15 +387,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		UserConfigurationDataModel userConfigurationData = experimentModel.getUserConfigurationData();
 		String token = null;
 		final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
+
 		if (groupResourceProfileId == null) {
 			throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
 		}
+
 		GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
 				userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
 				groupResourceProfileId);
+
 		if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
 			token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 		}
+
 		if (token == null || token.isEmpty()){
 			// try with group resource profile level token
 			GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
@@ -780,7 +784,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			} catch (TException e) {
 				log.error("Error while fetching intermediate outputs", e);
 				throw new RuntimeException("Error while fetching intermediate outputs", e);
-			}finally {
+			} finally {
 				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			}
 

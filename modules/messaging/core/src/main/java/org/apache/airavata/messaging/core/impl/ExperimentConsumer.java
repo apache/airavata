@@ -66,7 +66,11 @@ public class ExperimentConsumer extends QueueingConsumer {
         try {
             ThriftUtils.createThriftFromBytes(body, message);
             long deliveryTag = envelope.getDeliveryTag();
-            if (message.getMessageType() == MessageType.EXPERIMENT || message.getMessageType() == MessageType.EXPERIMENT_CANCEL) {
+
+            if (message.getMessageType() == MessageType.EXPERIMENT ||
+                    message.getMessageType() == MessageType.EXPERIMENT_CANCEL ||
+                    message.getMessageType() == MessageType.INTERMEDIATE_OUTPUTS) {
+
                 TBase event = null;
                 String gatewayId = null;
                 ExperimentSubmitEvent experimentEvent = new ExperimentSubmitEvent();
@@ -82,6 +86,7 @@ public class ExperimentConsumer extends QueueingConsumer {
                 messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                 messageContext.setIsRedeliver(envelope.isRedeliver());
                 handler.onMessage(messageContext);
+
             } else {
                 log.error("{} message type is not handle in ProcessLaunch Subscriber. Sending ack for " +
                         "delivery tag {} ", message.getMessageType().name(), deliveryTag);
