@@ -279,7 +279,7 @@ public abstract class AiravataTask extends AbstractTask {
                 }
             }
 
-        } catch (TException e) {
+        } catch (Exception e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
             throw new TaskOnFailException(msg, true, e);
         }
@@ -303,13 +303,13 @@ public abstract class AiravataTask extends AbstractTask {
                 }
             }
 
-        } catch (TException e) {
+        } catch (Exception e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
             throw new TaskOnFailException(msg, true, e);
         }
     }
 
-    private String saveDataProduct(String outputName, String outputVal, String outputMetadata) throws TException {
+    private String saveDataProduct(String outputName, String outputVal, String outputMetadata) throws Exception {
 
         DataProductModel dataProductModel = new DataProductModel();
         dataProductModel.setGatewayId(getGatewayId());
