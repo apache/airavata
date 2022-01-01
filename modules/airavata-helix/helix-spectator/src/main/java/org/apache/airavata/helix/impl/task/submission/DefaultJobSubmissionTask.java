@@ -57,16 +57,18 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         defaultJSTaskCounter.inc();
         String jobId = null;
         AgentAdaptor adaptor;
+        String computeId = null;
 
         try {
+            computeId = getTaskContext().getComputeResourceId();
             adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
                     getTaskContext().getGatewayId(),
-                    getTaskContext().getComputeResourceId(),
+                    computeId,
                     getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
-            return onFail("Failed to fetch adaptor to connect to " + getTaskContext().getComputeResourceId(), true, e);
+            return onFail("Failed to fetch adaptor to connect to " + computeId, true, e);
         }
 
         try {

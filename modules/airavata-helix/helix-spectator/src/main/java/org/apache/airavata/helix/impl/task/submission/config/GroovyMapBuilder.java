@@ -382,8 +382,7 @@ public class GroovyMapBuilder {
         }
     }
 
-    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws
-            ApplicationSettingsException, TException, TaskOnFailException {
+    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws Exception {
 
         ProcessModel processModel =  taskContext.getProcessModel();
         String emailIds = null;
@@ -420,7 +419,7 @@ public class GroovyMapBuilder {
         }
     }
 
-    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws TException, TaskOnFailException {
+    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws Exception {
         JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
         JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {

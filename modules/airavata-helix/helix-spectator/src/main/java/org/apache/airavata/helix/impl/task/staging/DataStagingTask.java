@@ -69,7 +69,7 @@ public abstract class DataStagingTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected StorageResourceDescription getStorageResource() throws TaskOnFailException {
+    protected StorageResourceDescription getStorageResource() throws Exception {
         StorageResourceDescription storageResource = getTaskContext().getStorageResourceDescription();
         if (storageResource == null) {
             throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), false, null);
@@ -79,7 +79,9 @@ public abstract class DataStagingTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected StorageResourceAdaptor getStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        String storageId = null;
         try {
+            storageId = getTaskContext().getStorageResourceId();
             StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
                     getGatewayId(),
                     getTaskContext().getStorageResourceId(),
@@ -91,23 +93,25 @@ public abstract class DataStagingTask extends AiravataTask {
                 throw new TaskOnFailException("Storage resource adaptor for " + getTaskContext().getStorageResourceId() + " can not be null", true, null);
             }
             return storageResourceAdaptor;
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + getTaskContext().getStorageResourceId() +
+        } catch (Exception e) {
+            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + storageId +
                     " in task " + getTaskId(), false, e);
         }
     }
 
     @SuppressWarnings("WeakerAccess")
     protected AgentAdaptor getComputeResourceAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        String computeId = null;
         try {
+            computeId = getTaskContext().getComputeResourceId();
             return adaptorSupport.fetchAdaptor(
                     getTaskContext().getGatewayId(),
-                    getTaskContext().getComputeResourceId(),
+                    computeId,
                     getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for compute resource " + getTaskContext().getComputeResourceId() +
+            throw new TaskOnFailException("Failed to obtain adaptor for compute resource " + computeId +
                     " in task " + getTaskId(), false, e);
         }
     }
