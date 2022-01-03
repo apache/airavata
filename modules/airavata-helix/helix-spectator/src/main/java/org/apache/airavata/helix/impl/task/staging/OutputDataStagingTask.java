@@ -63,7 +63,6 @@ public class OutputDataStagingTask extends DataStagingTask {
         try {
             // Get and validate data staging task model
             DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();
-            boolean onlyUpdateProcess = taskContext.getCurrentTaskModel().getTaskType() == TaskTypes.OUTPUT_FETCHING;
 
             // Fetch and validate input data type from data staging task model
             OutputDataObjectType processOutput = dataStagingTaskModel.getProcessOutput();
@@ -172,7 +171,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 }
                 if (!destinationURIs.isEmpty()) {
                     if (processOutput.getType() == DataType.URI) {
-                        saveExperimentOutput(processOutput.getName(), destinationURIs.get(0).toString(), onlyUpdateProcess);
+                        saveExperimentOutput(processOutput.getName(), destinationURIs.get(0).toString());
                     } else if (processOutput.getType() == DataType.URI_COLLECTION) {
                         saveExperimentOutputCollection(processOutput.getName(), destinationURIs.stream().map(URI::toString).collect(Collectors.toList()));
                     }
@@ -184,7 +183,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 assert processOutput != null;
                 boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                 if (transferred) {
-                    saveExperimentOutput(processOutput.getName(), destinationURI.toString(), onlyUpdateProcess);
+                    saveExperimentOutput(processOutput.getName(), destinationURI.toString());
                 } else {
                     logger.warn("File " + sourceFileName + " did not transfer");
                 }
