@@ -143,6 +143,7 @@ struct ExperimentIntermediateOutputsEvent {
     1: required string experimentId;
     2: required string gatewayId;
     3: required list<string> outputNames;
+    4: required string parentProcessId;
 }
 
 struct Message {
