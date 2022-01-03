@@ -1942,13 +1942,14 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
+    public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames,
+                                         String parentProcessId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
         // TODO: Verify user has access to experiment
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            submitExperimentIntermediateOutputsEvent(gatewayId, airavataExperimentId, outputNames);
+            submitExperimentIntermediateOutputsEvent(gatewayId, airavataExperimentId, outputNames, parentProcessId);
         } catch (AiravataException e) {
             throw new RuntimeException("Failed to submit intermediate outputs event", e);
         }
@@ -6187,8 +6188,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         experimentPublisher.publish(messageContext);
     }
 
-    private void submitExperimentIntermediateOutputsEvent(String gatewayId, String experimentId, List<String> outputNames) throws AiravataException {
-        ExperimentIntermediateOutputsEvent event = new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
+    private void submitExperimentIntermediateOutputsEvent(String gatewayId, String experimentId,
+                                                          List<String> outputNames, String parentProcessId)
+            throws AiravataException {
+
+        ExperimentIntermediateOutputsEvent event = new ExperimentIntermediateOutputsEvent(
+                experimentId, gatewayId, outputNames, parentProcessId);
         MessageContext messageContext = new MessageContext(event, MessageType.INTERMEDIATE_OUTPUTS, "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
