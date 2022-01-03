@@ -229,7 +229,7 @@ public class PostWorkflowManager extends WorkflowManager {
         jobVerificationTask.setProcessId(processModel.getProcessId());
         jobVerificationTask.setTaskId("Job-Verification-Task-" + UUID.randomUUID().toString() +"-");
         jobVerificationTask.setForceRunTask(forceRun);
-        jobVerificationTask.setSkipTaskStatusPublish(true);
+        jobVerificationTask.setSkipAllStatusPublish(true);
 
         allTasks.add(jobVerificationTask);
 
@@ -280,7 +280,7 @@ public class PostWorkflowManager extends WorkflowManager {
         completingTask.setProcessId(processModel.getProcessId());
         completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() +"-");
         completingTask.setForceRunTask(forceRun);
-        completingTask.setSkipTaskStatusPublish(true);
+        completingTask.setSkipAllStatusPublish(true);
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
         }
@@ -291,7 +291,7 @@ public class PostWorkflowManager extends WorkflowManager {
         parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
         parsingTriggeringTask.setProcessId(processModel.getProcessId());
         parsingTriggeringTask.setTaskId("Parsing-Triggering-Task");
-        parsingTriggeringTask.setSkipTaskStatusPublish(true);
+        parsingTriggeringTask.setSkipAllStatusPublish(true);
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(parsingTriggeringTask.getTaskId(), parsingTriggeringTask));
         }
