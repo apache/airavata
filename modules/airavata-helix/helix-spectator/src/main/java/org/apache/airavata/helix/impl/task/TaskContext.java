@@ -177,9 +177,9 @@ public class TaskContext {
 
     public String getWorkingDir() throws Exception {
         if (workingDir == null) {
-            if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null){
+            if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null) {
                 workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
-            }else {
+            } else {
                 String scratchLocation = getScratchLocation();
                 workingDir = (scratchLocation.endsWith("/") ? scratchLocation + processId : scratchLocation + "/" +
                         processId);
@@ -566,7 +566,7 @@ public class TaskContext {
         if (isValid(getGatewayStorageResourcePreference().getResourceSpecificCredentialStoreToken())) {
             return getGatewayStorageResourcePreference().getResourceSpecificCredentialStoreToken();
         } else {
-            return gatewayResourceProfile.getCredentialStoreToken();
+            return getGatewayResourceProfile().getCredentialStoreToken();
         }
     }
 
