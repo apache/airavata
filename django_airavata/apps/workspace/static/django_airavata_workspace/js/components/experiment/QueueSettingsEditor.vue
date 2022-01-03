@@ -102,8 +102,8 @@
             <div slot="description">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Cores = {{ maxCPUCount
-              }}<template v-if="queue && queue.cpuPerNode > 0"
-                >. There are {{ queue.cpuPerNode }} cores per node.
+              }}<template v-if="selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0"
+                >. There are {{ selectedQueueDefault.cpuPerNode }} cores per node.
               </template>
             </div>
           </b-form-group>
