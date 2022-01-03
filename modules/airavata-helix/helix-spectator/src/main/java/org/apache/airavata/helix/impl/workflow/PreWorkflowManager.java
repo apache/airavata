@@ -124,6 +124,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     if (taskModel.getTaskType() == TaskTypes.OUTPUT_FETCHING) {
                         airavataTask = new OutputDataStagingTask();
                         airavataTask.setForceRunTask(true);
+                        airavataTask.setSkipExperimentStatusPublish(true);
                     }
 
                 } else if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
@@ -210,7 +211,7 @@ public class PreWorkflowManager extends WorkflowManager {
         rjct.setExperimentId(experimentId);
         rjct.setProcessId(processId);
         rjct.setGatewayId(gateway);
-        rjct.setSkipTaskStatusPublish(true);
+        rjct.setSkipAllStatusPublish(true);
 
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() -1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
@@ -222,7 +223,7 @@ public class PreWorkflowManager extends WorkflowManager {
         cct.setExperimentId(experimentId);
         cct.setProcessId(processId);
         cct.setGatewayId(gateway);
-        cct.setSkipTaskStatusPublish(true);
+        cct.setSkipAllStatusPublish(true);
 
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() -1).setNextTask(new OutPort(cct.getTaskId(), cct));
