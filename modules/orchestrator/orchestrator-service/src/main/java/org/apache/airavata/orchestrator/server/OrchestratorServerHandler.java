@@ -350,10 +350,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-	public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames) throws TException {
+	public void fetchIntermediateOutputs(String experimentId, String parentProcessId, String gatewayId, List<String> outputNames) throws TException {
 		final RegistryService.Client registryClient = getRegistryServiceClient();
 		try {
-			submitIntermediateOutputsProcess(registryClient, experimentId, gatewayId, outputNames);
+			submitIntermediateOutputsProcess(registryClient, experimentId, parentProcessId, gatewayId, outputNames);
 		} catch (Exception e) {
 			log.error("expId : " + experimentId + " :- Error while fetching intermediate", e);
 		} finally {
@@ -363,14 +363,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-	private void submitIntermediateOutputsProcess(Client registryClient, String experimentId, String gatewayId, List<String> outputNames) throws Exception {
+	private void submitIntermediateOutputsProcess(Client registryClient, String experimentId, String parentProcessId,
+												  String gatewayId, List<String> outputNames) throws Exception {
 
 		ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
 		ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
 		processModel.setExperimentDataDir(processModel.getExperimentDataDir() + "/intermediates");
-		List<OutputDataObjectType> outputs = processModel.getProcessOutputs();
+
+		List<OutputDataObjectType> applicationOutputs = registryClient.getApplicationOutputs(
+				experimentModel.getExecutionId()); // This is to get a clean output object set
 		List<OutputDataObjectType> requestedOutputs = new ArrayList<>();
-		for (OutputDataObjectType output : outputs) {
+
+		for (OutputDataObjectType output : applicationOutputs) {
 			if (outputNames.contains(output.getName())) {
 				requestedOutputs.add(output);
 			}
@@ -378,7 +382,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		processModel.setProcessOutputs(requestedOutputs);
 		String processId = registryClient.addProcess(processModel, experimentId);
 		processModel.setProcessId(processId);
-		String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(gatewayId, processModel);
+		String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(gatewayId, processModel,
+				parentProcessId);
 		processModel.setTaskDag(taskDag);
 
 		registryClient.updateProcess(processModel, processModel.getProcessId());
@@ -780,7 +785,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				ExperimentIntermediateOutputsEvent event =  new ExperimentIntermediateOutputsEvent();
 				ThriftUtils.createThriftFromBytes(bytes, event);
 				log.info("INTERMEDIATE_OUTPUTS event for experimentId: {} gateway Id: {} outputs: {}", event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
-				fetchIntermediateOutputs(event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
+				fetchIntermediateOutputs(event.getExperimentId(), event.getParentProcessId(),
+						event.getGatewayId(), event.getOutputNames());
 			} catch (TException e) {
 				log.error("Error while fetching intermediate outputs", e);
 				throw new RuntimeException("Error while fetching intermediate outputs", e);

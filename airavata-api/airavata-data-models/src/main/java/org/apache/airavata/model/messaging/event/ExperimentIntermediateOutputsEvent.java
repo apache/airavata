@@ -31,6 +31,7 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField OUTPUT_NAMES_FIELD_DESC = new org.apache.thrift.protocol.TField("outputNames", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField PARENT_PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parentProcessId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ExperimentIntermediateOutputsEventStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ExperimentIntermediateOutputsEventTupleSchemeFactory();
@@ -38,12 +39,14 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
   private java.lang.String experimentId; // required
   private java.lang.String gatewayId; // required
   private java.util.List<java.lang.String> outputNames; // required
+  private java.lang.String parentProcessId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     EXPERIMENT_ID((short)1, "experimentId"),
     GATEWAY_ID((short)2, "gatewayId"),
-    OUTPUT_NAMES((short)3, "outputNames");
+    OUTPUT_NAMES((short)3, "outputNames"),
+    PARENT_PROCESS_ID((short)4, "parentProcessId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -64,6 +67,8 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
           return GATEWAY_ID;
         case 3: // OUTPUT_NAMES
           return OUTPUT_NAMES;
+        case 4: // PARENT_PROCESS_ID
+          return PARENT_PROCESS_ID;
         default:
           return null;
       }
@@ -114,6 +119,8 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
     tmpMap.put(_Fields.OUTPUT_NAMES, new org.apache.thrift.meta_data.FieldMetaData("outputNames", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.PARENT_PROCESS_ID, new org.apache.thrift.meta_data.FieldMetaData("parentProcessId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentIntermediateOutputsEvent.class, metaDataMap);
   }
@@ -124,12 +131,14 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
   public ExperimentIntermediateOutputsEvent(
     java.lang.String experimentId,
     java.lang.String gatewayId,
-    java.util.List<java.lang.String> outputNames)
+    java.util.List<java.lang.String> outputNames,
+    java.lang.String parentProcessId)
   {
     this();
     this.experimentId = experimentId;
     this.gatewayId = gatewayId;
     this.outputNames = outputNames;
+    this.parentProcessId = parentProcessId;
   }
 
   /**
@@ -146,6 +155,9 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
       java.util.List<java.lang.String> __this__outputNames = new java.util.ArrayList<java.lang.String>(other.outputNames);
       this.outputNames = __this__outputNames;
     }
+    if (other.isSetParentProcessId()) {
+      this.parentProcessId = other.parentProcessId;
+    }
   }
 
   public ExperimentIntermediateOutputsEvent deepCopy() {
@@ -157,6 +169,7 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
     this.experimentId = null;
     this.gatewayId = null;
     this.outputNames = null;
+    this.parentProcessId = null;
   }
 
   public java.lang.String getExperimentId() {
@@ -243,6 +256,29 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
     }
   }
 
+  public java.lang.String getParentProcessId() {
+    return this.parentProcessId;
+  }
+
+  public void setParentProcessId(java.lang.String parentProcessId) {
+    this.parentProcessId = parentProcessId;
+  }
+
+  public void unsetParentProcessId() {
+    this.parentProcessId = null;
+  }
+
+  /** Returns true if field parentProcessId is set (has been assigned a value) and false otherwise */
+  public boolean isSetParentProcessId() {
+    return this.parentProcessId != null;
+  }
+
+  public void setParentProcessIdIsSet(boolean value) {
+    if (!value) {
+      this.parentProcessId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case EXPERIMENT_ID:
@@ -269,6 +305,14 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
       }
       break;
 
+    case PARENT_PROCESS_ID:
+      if (value == null) {
+        unsetParentProcessId();
+      } else {
+        setParentProcessId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -282,6 +326,9 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
 
     case OUTPUT_NAMES:
       return getOutputNames();
+
+    case PARENT_PROCESS_ID:
+      return getParentProcessId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -300,6 +347,8 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
       return isSetGatewayId();
     case OUTPUT_NAMES:
       return isSetOutputNames();
+    case PARENT_PROCESS_ID:
+      return isSetParentProcessId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -346,6 +395,15 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
         return false;
     }
 
+    boolean this_present_parentProcessId = true && this.isSetParentProcessId();
+    boolean that_present_parentProcessId = true && that.isSetParentProcessId();
+    if (this_present_parentProcessId || that_present_parentProcessId) {
+      if (!(this_present_parentProcessId && that_present_parentProcessId))
+        return false;
+      if (!this.parentProcessId.equals(that.parentProcessId))
+        return false;
+    }
+
     return true;
   }
 
@@ -364,6 +422,10 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
     hashCode = hashCode * 8191 + ((isSetOutputNames()) ? 131071 : 524287);
     if (isSetOutputNames())
       hashCode = hashCode * 8191 + outputNames.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetParentProcessId()) ? 131071 : 524287);
+    if (isSetParentProcessId())
+      hashCode = hashCode * 8191 + parentProcessId.hashCode();
 
     return hashCode;
   }
@@ -402,6 +464,16 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
     }
     if (isSetOutputNames()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.outputNames, other.outputNames);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetParentProcessId()).compareTo(other.isSetParentProcessId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParentProcessId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parentProcessId, other.parentProcessId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -449,6 +521,14 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
       sb.append(this.outputNames);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("parentProcessId:");
+    if (this.parentProcessId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.parentProcessId);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -465,6 +545,10 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
 
     if (!isSetOutputNames()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'outputNames' is unset! Struct:" + toString());
+    }
+
+    if (!isSetParentProcessId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parentProcessId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -538,6 +622,14 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // PARENT_PROCESS_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.parentProcessId = iprot.readString();
+              struct.setParentProcessIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -573,6 +665,11 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
         }
         oprot.writeFieldEnd();
       }
+      if (struct.parentProcessId != null) {
+        oprot.writeFieldBegin(PARENT_PROCESS_ID_FIELD_DESC);
+        oprot.writeString(struct.parentProcessId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -599,6 +696,7 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
           oprot.writeString(_iter12);
         }
       }
+      oprot.writeString(struct.parentProcessId);
     }
 
     @Override
@@ -619,6 +717,8 @@ public class ExperimentIntermediateOutputsEvent implements org.apache.thrift.TBa
         }
       }
       struct.setOutputNamesIsSet(true);
+      struct.parentProcessId = iprot.readString();
+      struct.setParentProcessIdIsSet(true);
     }
   }
 
