@@ -998,6 +998,9 @@ service Airavata extends base_api.BaseAPI {
    *
    * @param outputNames
    *     List of names of the experiment's outputs to fetch.
+   *
+   * @param parentProcessId
+   *    ID of the parent process which is responsible for job submission
    */
   void fetchIntermediateOutputs(1: required security_model.AuthzToken authzToken, 2: required string airavataExperimentId,
                 3: required list<string> outputNames, 4: required string parentProcessId)
