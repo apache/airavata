@@ -342,14 +342,26 @@ public abstract class DataStagingTask extends AiravataTask {
             }
 
             if (!fileExists) {
-                logger.warn("Ignoring the file " + sourcePath + " transfer as it is not available");
+                logger.warn("Ignoring the file {} transfer as it is not available", sourcePath);
                 return false;
             }
         } catch (AgentException e) {
-            logger.error("Error while checking the file " + sourcePath + " existence");
+            logger.error("Error while checking the file {} existence", sourcePath, e);
             throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", false, e);
         }
 
+        String parentDir = destPath.substring(0, destPath.lastIndexOf(File.separator));
+        try {
+            logger.info("Checking whether the parent directory {} in storage exists", parentDir);
+            Boolean exists = storageResourceAdaptor.doesFileExist(parentDir);
+            if (!exists) {
+                logger.info("Parent directory {} on storage does not exist. So creating it recursively", parentDir);
+                storageResourceAdaptor.createDirectory(parentDir, true);
+            }
+        } catch (AgentException e) {
+            logger.error("Failed in validating the parent directory {} in storage side", parentDir, e);
+            throw new TaskOnFailException("Failed in validating the parent directory " + parentDir + " in storage side", false, e);
+        }
 
         if  (ServerSettings.isSteamingEnabled()) {
             passThroughTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath);

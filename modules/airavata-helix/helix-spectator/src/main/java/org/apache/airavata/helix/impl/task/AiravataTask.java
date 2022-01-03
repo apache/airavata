@@ -50,7 +50,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
-import org.apache.thrift.TException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -86,15 +85,21 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "gatewayId")
     private String gatewayId;
 
-    @TaskParam(name = "Skip Status Publish")
-    private boolean skipTaskStatusPublish = false;
+    @TaskParam(name = "Skip All Status Publish")
+    private boolean skipAllStatusPublish = false;
+
+    @TaskParam(name = "Skip Process Status Publish")
+    private boolean skipProcessStatusPublish = false;
+
+    @TaskParam(name = "Skip Experiment Status Publish")
+    private boolean skipExperimentStatusPublish = false;
 
     @TaskParam(name ="Force Run Task")
     private boolean forceRunTask = false;
 
     protected TaskResult onSuccess(String message) {
         logger.info(message);
-        if (!skipTaskStatusPublish) {
+        if (!skipAllStatusPublish) {
             publishTaskState(TaskState.COMPLETED);
         }
 
@@ -156,12 +161,18 @@ public abstract class AiravataTask extends AbstractTask {
             errorModel.setActualErrorMessage(errors.toString());
             errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 
-            if (!skipTaskStatusPublish) {
+            if (!skipAllStatusPublish) {
                 publishTaskState(TaskState.FAILED);
-                saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
-                saveExperimentError(errorModel);
-                saveProcessError(errorModel);
                 saveTaskError(errorModel);
+
+                if (!skipProcessStatusPublish) {
+                    saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
+                    saveProcessError(errorModel);
+                }
+
+                if (!skipExperimentStatusPublish) {
+                    saveExperimentError(errorModel);
+                }
             }
 
             try {
@@ -198,31 +209,36 @@ public abstract class AiravataTask extends AbstractTask {
 
     }
     protected void saveAndPublishProcessStatus(ProcessState state) {
-        ProcessStatus processStatus = new ProcessStatus(state);
-        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        if (getTaskContext() != null) {
-            getTaskContext().setProcessStatus(processStatus);
-        } else {
-            logger.warn("Task context is null. So can not store the process status in the context");
+
+        if (!skipProcessStatusPublish) {
+            ProcessStatus processStatus = new ProcessStatus(state);
+            processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            if (getTaskContext() != null) {
+                getTaskContext().setProcessStatus(processStatus);
+            } else {
+                logger.warn("Task context is null. So can not store the process status in the context");
+            }
+            saveAndPublishProcessStatus((taskContext != null ? taskContext.getProcessStatus() : processStatus));
         }
-        saveAndPublishProcessStatus((taskContext != null ? taskContext.getProcessStatus() : processStatus));
     }
 
     @SuppressWarnings("WeakerAccess")
     protected void saveAndPublishProcessStatus(ProcessStatus status) {
         try {
-            if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
-                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            } else {
-                status.setTimeOfStateChange(status.getTimeOfStateChange());
+            if (!skipProcessStatusPublish) {
+                if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0) {
+                    status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                } else {
+                    status.setTimeOfStateChange(status.getTimeOfStateChange());
+                }
+                getRegistryServiceClient().addProcessStatus(status, getProcessId());
+                ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
+                ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
+                MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
+                        AiravataUtils.getId(MessageType.PROCESS.name()), getGatewayId());
+                msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                getStatusPublisher().publish(msgCtx);
             }
-            getRegistryServiceClient().addProcessStatus(status, getProcessId());
-            ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
-            ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
-            MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
-                    AiravataUtils.getId(MessageType.PROCESS.name()), getGatewayId());
-            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             logger.error("Failed to save process status of process " + getProcessId(), e);
         }
@@ -259,7 +275,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveExperimentOutput(String outputName, String outputVal, boolean onlyUpdateProcess) throws TaskOnFailException {
+    public void saveExperimentOutput(String outputName, String outputVal) throws TaskOnFailException {
         try {
             ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
@@ -269,12 +285,15 @@ public abstract class AiravataTask extends AbstractTask {
                         String productUri = saveDataProduct(outputName, outputVal, expOutput.getMetaData());
                         expOutput.setValue(productUri);
 
-                        if (!onlyUpdateProcess) {
+                        if (!skipExperimentStatusPublish) {
                             getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
                                     Collections.singletonList(expOutput), experimentId);
                         }
-                        getRegistryServiceClient().addExperimentProcessOutputs("PROCESS_OUTPUT",
-                                Collections.singletonList(expOutput), processId);
+
+                        if (!skipProcessStatusPublish) {
+                            getRegistryServiceClient().addExperimentProcessOutputs("PROCESS_OUTPUT",
+                                    Collections.singletonList(expOutput), processId);
+                        }
                     }
                 }
             }
@@ -400,12 +419,12 @@ public abstract class AiravataTask extends AbstractTask {
                     TaskState taskState = taskContext.getTaskState();
                     if (taskState != null && taskState != TaskState.CREATED) {
                         logger.warn("Task " + getTaskId() + " is not in CREATED state. So skipping execution");
-                        skipTaskStatusPublish = false;
+                        skipAllStatusPublish = false;
                         return onSuccess("Task " + getTaskId() + " is not in CREATED state. So skipping execution");
                     }
                 }
             }
-            if (!skipTaskStatusPublish) {
+            if (!skipAllStatusPublish) {
                 publishTaskState(TaskState.EXECUTING);
             }
             return onRun(helper, getTaskContext());
@@ -427,7 +446,7 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("process", getProcessId());
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
-            if (!skipTaskStatusPublish) {
+            if (!skipAllStatusPublish) {
                 publishTaskState(TaskState.CANCELED);
             }
 
@@ -540,12 +559,28 @@ public abstract class AiravataTask extends AbstractTask {
         return processModel;
     }
 
-    public void setSkipTaskStatusPublish(boolean skipTaskStatusPublish) {
-        this.skipTaskStatusPublish = skipTaskStatusPublish;
+    public void setSkipAllStatusPublish(boolean skipAllStatusPublish) {
+        this.skipAllStatusPublish = skipAllStatusPublish;
     }
 
-    public boolean isSkipTaskStatusPublish() {
-        return skipTaskStatusPublish;
+    public boolean isSkipAllStatusPublish() {
+        return skipAllStatusPublish;
+    }
+
+    public boolean isSkipProcessStatusPublish() {
+        return skipProcessStatusPublish;
+    }
+
+    public void setSkipProcessStatusPublish(boolean skipProcessStatusPublish) {
+        this.skipProcessStatusPublish = skipProcessStatusPublish;
+    }
+
+    public boolean isSkipExperimentStatusPublish() {
+        return skipExperimentStatusPublish;
+    }
+
+    public void setSkipExperimentStatusPublish(boolean skipExperimentStatusPublish) {
+        this.skipExperimentStatusPublish = skipExperimentStatusPublish;
     }
 
     public boolean isForceRunTask() {
