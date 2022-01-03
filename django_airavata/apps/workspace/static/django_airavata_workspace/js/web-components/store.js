@@ -198,11 +198,27 @@ export const actions = {
       commit("setLazyQueueName", { queueName });
     }
   },
-  updateTotalCPUCount({ commit }, { totalCPUCount }) {
+  updateTotalCPUCount({ commit, getters }, { totalCPUCount }) {
     commit("updateTotalCPUCount", { totalCPUCount });
+    if (getters.queue.cpuPerNode > 0) {
+      const totalCPUCountInt = parseInt(totalCPUCount);
+      const nodeCount = Math.min(
+        Math.ceil(totalCPUCountInt / getters.queue.cpuPerNode),
+        getters.maxAllowedNodes
+      );
+      commit("updateNodeCount", { nodeCount });
+    }
   },
-  updateNodeCount({ commit }, { nodeCount }) {
+  updateNodeCount({ commit, getters }, { nodeCount }) {
     commit("updateNodeCount", { nodeCount });
+    if (getters.queue.cpuPerNode > 0) {
+      const nodeCountInt = parseInt(nodeCount);
+      const totalCPUCount = Math.min(
+        nodeCountInt * getters.queue.cpuPerNode,
+        getters.maxAllowedCores
+      );
+      commit("updateTotalCPUCount", { totalCPUCount });
+    }
   },
   updateWallTimeLimit({ commit }, { wallTimeLimit }) {
     commit("updateWallTimeLimit", { wallTimeLimit });

@@ -75,7 +75,10 @@
         </b-form-input>
         <div slot="description">
           <i class="fa fa-info-circle" aria-hidden="true"></i>
-          Max Allowed Cores = {{ maxAllowedCores }}
+          Max Allowed Cores = {{ maxAllowedCores
+          }}<template v-if="queue && queue.cpuPerNode > 0"
+            >. There are {{ queue.cpuPerNode }} cores per node.
+          </template>
         </div>
       </b-form-group>
       <b-form-group label="Wall Time Limit" label-for="walltime-limit">
