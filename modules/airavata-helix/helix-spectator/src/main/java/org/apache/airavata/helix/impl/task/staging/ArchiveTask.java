@@ -153,6 +153,7 @@ public class ArchiveTask extends DataStagingTask {
             } else {
                 logger.error(e.getReason());
             }
+            logger.error("Failed while un-archiving the data", e);
             return onFail(e.getReason(), e.isCritical(), e.getError());
 
         } catch (Exception e) {
