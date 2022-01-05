@@ -173,6 +173,45 @@ public class IdentityManagementClient extends Connector {
     }
 
 
+    public JSONObject getTokenFromPasswordGrantType(String username, String password) throws Exception {
+
+        String openIdConnectUrl = getOpenIDConfigurationUrl(getProperties().getProperty(Constants.IAM_REALM_ID));
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
+        String urlString = openIdConnectConfig.getString("token_endpoint");
+        CloseableHttpClient httpClient = HttpClients.createSystem();
+
+        HttpPost httpPost = new HttpPost(urlString);
+        String encoded = Base64.getEncoder().encodeToString((this.iamClientId + ":" + this.iamClientSec).getBytes(StandardCharsets.UTF_8));
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded);
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair("grant_type", "password"));
+        formParams.add(new BasicNameValuePair("username", username));
+        formParams.add(new BasicNameValuePair("client_id", this.iamClientId));
+        formParams.add(new BasicNameValuePair("client_secret", this.iamClientSec));
+        formParams.add(new BasicNameValuePair("password", "password"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+        httpPost.setEntity(entity);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            try {
+                String responseBody = EntityUtils.toString(response.getEntity());
+                JSONObject tokenInfo = new JSONObject(responseBody);
+                return tokenInfo;
+            } finally {
+                response.close();
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
     public void logout(String refreshToken) throws Exception {
         String openIdConnectUrl = getOpenIDConfigurationUrl(getProperties().getProperty(Constants.IAM_REALM_ID));
         JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
