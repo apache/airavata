@@ -30,7 +30,7 @@ vhost_servername: "geo-gateway.org"
 vhost_ssl: True
 vhost_redirects:
   - from: "^/$"
-    to: "/geogateway_django_app/#/maptools"
+    to: "/geogateway_django_app"
     regex: true
 ssl_certificate_file: "/etc/letsencrypt/live/geo-gateway.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/geo-gateway.org/fullchain.pem"
