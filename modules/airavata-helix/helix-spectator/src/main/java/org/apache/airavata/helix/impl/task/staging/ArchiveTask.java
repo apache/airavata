@@ -110,15 +110,21 @@ public class ArchiveTask extends DataStagingTask {
 
                     String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
                     final String storageArchiveDir = "ARCHIVE";
-                    String unArchiveTarCommand = "mkdir -p " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
-                            + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -f -R " + storageArchiveDir + "/*";
-                    logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
+                    String[] unarchiveCommands = {
+                            "mkdir -p " + storageArchiveDir,
+                            "tar -xvf " + archiveFileName + " -C " + storageArchiveDir,
+                            "rm " + archiveFileName,
+                            "chmod 755 -f -R " + storageArchiveDir + "/*"
+                    };
 
                     try {
-                        CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(unArchiveTarCommand, destParent);
-                        if (unTarCommandOutput.getExitCode() != 0) {
-                            throw new TaskOnFailException("Failed while running the untar command " + unTarCommandOutput + ". Sout : " +
-                                    unTarCommandOutput.getStdOut() + ". Serr " + unTarCommandOutput.getStdError(), false, null);
+                        for (String command : unarchiveCommands) {
+                            logger.info("Running command {} as a part of the un-archiving process", command);
+                            CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(command, destParent);
+                            if (unTarCommandOutput.getExitCode() != 0) {
+                                throw new TaskOnFailException("Failed while running the un-archiving command " + command + ". Sout : " +
+                                        unTarCommandOutput.getStdOut() + ". Serr : " + unTarCommandOutput.getStdError(), false, null);
+                            }
                         }
                     } catch (AgentException e) {
                         throw new TaskOnFailException("Failed while running the untar command " + tarringCommand, false, null);
