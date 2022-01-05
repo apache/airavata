@@ -39,7 +39,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -48,15 +47,14 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.registry.api.RegistryService;
@@ -76,6 +74,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
@@ -350,10 +349,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-	public void fetchIntermediateOutputs(String experimentId, String parentProcessId, String gatewayId, List<String> outputNames) throws TException {
+	public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames) throws TException {
 		final RegistryService.Client registryClient = getRegistryServiceClient();
 		try {
-			submitIntermediateOutputsProcess(registryClient, experimentId, parentProcessId, gatewayId, outputNames);
+			submitIntermediateOutputsProcess(registryClient, experimentId, gatewayId, outputNames);
 		} catch (Exception e) {
 			log.error("expId : " + experimentId + " :- Error while fetching intermediate", e);
 		} finally {
@@ -363,7 +362,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-	private void submitIntermediateOutputsProcess(Client registryClient, String experimentId, String parentProcessId,
+	private void submitIntermediateOutputsProcess(Client registryClient, String experimentId,
 												  String gatewayId, List<String> outputNames) throws Exception {
 
 		ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
@@ -382,8 +381,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		processModel.setProcessOutputs(requestedOutputs);
 		String processId = registryClient.addProcess(processModel, experimentId);
 		processModel.setProcessId(processId);
+		// Find the process that is responsible for main experiment workflow by
+		// looking for the process that has the JOB_SUBMISSION task
+		Optional<ProcessModel> jobSubmissionProcess = experimentModel.getProcesses().stream()
+				.filter(p -> p.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.JOB_SUBMISSION))
+				.findFirst();
+		if (!jobSubmissionProcess.isPresent()) {
+			throw new Exception(MessageFormat.format(
+					"Could not find job submission process for experiment {0}, unable to fetch intermediate outputs {1}",
+					experimentId, outputNames));
+		}
 		String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(gatewayId, processModel,
-				parentProcessId);
+				jobSubmissionProcess.get());
 		processModel.setTaskDag(taskDag);
 
 		registryClient.updateProcess(processModel, processModel.getProcessId());
@@ -785,8 +794,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				ExperimentIntermediateOutputsEvent event =  new ExperimentIntermediateOutputsEvent();
 				ThriftUtils.createThriftFromBytes(bytes, event);
 				log.info("INTERMEDIATE_OUTPUTS event for experimentId: {} gateway Id: {} outputs: {}", event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
-				fetchIntermediateOutputs(event.getExperimentId(), event.getParentProcessId(),
-						event.getGatewayId(), event.getOutputNames());
+				fetchIntermediateOutputs(event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
 			} catch (TException e) {
 				log.error("Error while fetching intermediate outputs", e);
 				throw new RuntimeException("Error while fetching intermediate outputs", e);
