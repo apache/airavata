@@ -83,7 +83,10 @@ public class ArchiveTask extends DataStagingTask {
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
             // Creating the tar file in the output path of the compute resource
-            String tarringCommand = "cd " + tarDirPath + " && tar -cvf " + tarCreationAbsPath + " ./* ";
+            // Finds the list of files that do not include directories and symlinks
+            String tarringCommand = "cd " + tarDirPath +
+                    " && find ./ -not -type l -not -type d -print0 | tar --null --files-from - -cvf " + tarCreationAbsPath;
+
             logger.info("Running tar creation command " + tarringCommand);
 
             try {
