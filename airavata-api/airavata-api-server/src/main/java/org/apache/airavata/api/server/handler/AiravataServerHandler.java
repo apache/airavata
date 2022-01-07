@@ -75,12 +75,17 @@ import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEv
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
@@ -1945,12 +1950,83 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
             AiravataSystemException, AuthorizationException, TException {
-        // TODO: Verify user has access to experiment
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+
+        RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+
+            // Verify that user has WRITE access to experiment
+            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+            if (!hasAccess) {
+                throw new AuthorizationException("User does not have WRITE access this experiment");
+            }
+
+            // Verify that the experiment is currently EXECUTING
+            ExperimentModel existingExperiment = regClient.getExperiment(airavataExperimentId);
+            ExperimentStatus experimentStatus = regClient.getExperimentStatus(airavataExperimentId);
+            if (experimentStatus.getState() != ExperimentState.EXECUTING) {
+                throw new InvalidRequestException("Experiment is not currently executing");
+            }
+
+            // Figure out if there are any currently running intermediate output fetching processes for outputNames
+            // First, find any existing intermediate output fetch processes for outputNames
+            List<ProcessModel> intermediateOutputFetchProcesses = existingExperiment.getProcesses().stream()
+                    .filter(p -> {
+                        // Filter out completed or failed processes
+                        if (p.getProcessStatusesSize() > 0) {
+                            ProcessStatus latestStatus = p.getProcessStatuses().get(p.getProcessStatusesSize() - 1);
+                            if (latestStatus.getState() == ProcessState.COMPLETED || latestStatus.getState() == ProcessState.FAILED) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
+                    .filter(p -> p.getProcessOutputs().stream().anyMatch(o -> outputNames.contains(o.getName())))
+                    .collect(Collectors.toList());
+            // FIXME: currently these processes don't always get a final COMPLETED/FAILED status so need to look at task status
+            // Second, get the last (most recent) status of all of the intermediate output fetching tasks
+            List<TaskStatus> lastOutputFetchTaskStatuses = intermediateOutputFetchProcesses.stream()
+                    .flatMap(p -> p.getTasks().stream().map(t -> t.getTaskStatuses().get(t.getTaskStatusesSize() - 1)))
+                    .collect(Collectors.toList());
+            // Third, check if any of those tasks are still running
+            boolean anyOutputFetchesStillRunning = lastOutputFetchTaskStatuses.stream().anyMatch(ts -> {
+                boolean stillRunning = true;
+                switch (ts.getState()) {
+                    case CREATED:
+                    case EXECUTING:
+                        stillRunning = true;
+                        break;
+                    case CANCELED:
+                    case COMPLETED:
+                    case FAILED:
+                        stillRunning = false;
+                        break;
+                }
+                return stillRunning;
+            });
+            if (anyOutputFetchesStillRunning) {
+                throw new InvalidRequestException(
+                        "There are already intermediate output fetching tasks running for those outputs.");
+            }
+
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             submitExperimentIntermediateOutputsEvent(gatewayId, airavataExperimentId, outputNames);
-        } catch (AiravataException e) {
-            throw new RuntimeException("Failed to submit intermediate outputs event", e);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+        } catch (InvalidRequestException | AuthorizationException e) {
+            logger.error(e.getMessage(), e);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error while processing request to fetch intermediate outputs for experiment: " + airavataExperimentId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while processing request to fetch intermediate outputs for experiment. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
+            throw exception;
         }
     }
 
