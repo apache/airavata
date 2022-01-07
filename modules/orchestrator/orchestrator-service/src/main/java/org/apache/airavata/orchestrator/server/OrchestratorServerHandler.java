@@ -47,6 +47,7 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.util.ExperimentModelUtil;
@@ -381,47 +382,59 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		processModel.setProcessOutputs(requestedOutputs);
 		String processId = registryClient.addProcess(processModel, experimentId);
 		processModel.setProcessId(processId);
-		// Find the process that is responsible for main experiment workflow by
-		// looking for the process that has the JOB_SUBMISSION task
-		Optional<ProcessModel> jobSubmissionProcess = experimentModel.getProcesses().stream()
-				.filter(p -> p.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.JOB_SUBMISSION))
-				.findFirst();
-		if (!jobSubmissionProcess.isPresent()) {
-			throw new Exception(MessageFormat.format(
-					"Could not find job submission process for experiment {0}, unable to fetch intermediate outputs {1}",
-					experimentId, outputNames));
-		}
-		String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(gatewayId, processModel,
-				jobSubmissionProcess.get());
-		processModel.setTaskDag(taskDag);
 
-		registryClient.updateProcess(processModel, processModel.getProcessId());
+		try {
+			// Find the process that is responsible for main experiment workflow by
+			// looking for the process that has the JOB_SUBMISSION task
+			Optional<ProcessModel> jobSubmissionProcess = experimentModel.getProcesses().stream()
+					.filter(p -> p.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.JOB_SUBMISSION))
+					.findFirst();
+			if (!jobSubmissionProcess.isPresent()) {
+				throw new Exception(MessageFormat.format(
+						"Could not find job submission process for experiment {0}, unable to fetch intermediate outputs {1}",
+						experimentId, outputNames));
+			}
+			String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(gatewayId, processModel,
+					jobSubmissionProcess.get());
+			processModel.setTaskDag(taskDag);
 
-		// Figure out the credential token
-		UserConfigurationDataModel userConfigurationData = experimentModel.getUserConfigurationData();
-		String token = null;
-		final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
-		if (groupResourceProfileId == null) {
-			throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
+			registryClient.updateProcess(processModel, processModel.getProcessId());
+
+			// Figure out the credential token
+			UserConfigurationDataModel userConfigurationData = experimentModel.getUserConfigurationData();
+			String token = null;
+			final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
+			if (groupResourceProfileId == null) {
+				throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
+			}
+			GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+					userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
+					groupResourceProfileId);
+			if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
+				token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+			}
+			if (token == null || token.isEmpty()){
+				// try with group resource profile level token
+				GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+				token = groupResourceProfile.getDefaultCredentialStoreToken();
+			}
+			// still the token is empty, then we fail the experiment
+			if (token == null || token.isEmpty()){
+				throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
+						" Please provide the correct token at group resource profile or compute resource preference.");
+			}
+			orchestrator.launchProcess(processModel, token);
+		} catch (Exception e) {
+			log.error("Failed to launch process for intermediate output fetching", e);
+
+			// Update Process status to FAILED
+			ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
+			status.setReason("Intermediate output fetching process failed to launch: " + e.getMessage());
+			status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+			registryClient.addProcessStatus(status, processId);
+
+			throw e;
 		}
-		GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-				userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-				groupResourceProfileId);
-		if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
-			token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-		}
-		if (token == null || token.isEmpty()){
-			// try with group resource profile level token
-			GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
-			token = groupResourceProfile.getDefaultCredentialStoreToken();
-		}
-		// still the token is empty, then we fail the experiment
-		if (token == null || token.isEmpty()){
-			throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
-					" Please provide the correct token at group resource profile or compute resource preference.");
-		}
-		// TODO: handle errors by updating the PROCESS status
-		orchestrator.launchProcess(processModel, token);
 	}
 
 	private String getAiravataUserName() {
