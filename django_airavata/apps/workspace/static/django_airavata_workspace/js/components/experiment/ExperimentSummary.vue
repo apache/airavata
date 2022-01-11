@@ -267,6 +267,7 @@
                       header="Error"
                     >
                       <p>{{ error.userFriendlyMessage }}</p>
+                      <pre class="pre-scrollable">{{ error.actualErrorMessage }}</pre>
                     </b-card>
                   </td>
                 </tr>
