@@ -144,7 +144,7 @@
           <b-form-group
             label="Email Settings"
           >
-            <b-form-checkbox 
+            <b-form-checkbox
               v-model="localExperiment.enableEmailNotification"
             >
               Receive email notification of experiment status
@@ -308,7 +308,7 @@ export default {
       return utils.getProperty(this.localExperiment.validate(), properties);
     },
     getValidationState: function (properties) {
-      return this.getValidationFeedback(properties) ? "invalid" : null;
+      return this.getValidationFeedback(properties) ? false : null;
     },
     recordInvalidInputEditorValue: function (experimentInputName) {
       if (!this.invalidInputs.includes(experimentInputName)) {

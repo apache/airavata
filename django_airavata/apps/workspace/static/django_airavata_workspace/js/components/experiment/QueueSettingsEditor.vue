@@ -102,8 +102,12 @@
             <div slot="description">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
               Max Allowed Cores = {{ maxCPUCount
-              }}<template v-if="selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0"
-                >. There are {{ selectedQueueDefault.cpuPerNode }} cores per node.
+              }}<template
+                v-if="
+                  selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0
+                "
+                >. There are {{ selectedQueueDefault.cpuPerNode }} cores per
+                node.
               </template>
             </div>
           </b-form-group>
@@ -399,9 +403,9 @@ export default {
     },
     getValidationState: function (properties, showValidState) {
       return this.getValidationFeedback(properties)
-        ? "invalid"
+        ? false
         : showValidState
-        ? "valid"
+        ? true
         : null;
     },
     applyBatchQueueResourcePolicy() {
