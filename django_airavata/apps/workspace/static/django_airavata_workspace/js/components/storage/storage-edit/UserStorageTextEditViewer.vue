@@ -104,15 +104,11 @@ export default {
     setFileContent() {
       this.loadDataProduct().then(() => {
         if (this.editAvailable) {
-          utils.FetchUtils.get(
-            this.downloadUrl,
-            "",
-            {
-              ignoreErrors: false,
-              showSpinner: true,
-            },
-            "text"
-          ).then((res) => {
+          utils.FetchUtils.get(this.downloadUrl, "", {
+            ignoreErrors: false,
+            showSpinner: true,
+            responseType: "text",
+          }).then((res) => {
             this.fileContent = res;
             this.setFileContentEditor(this.fileContent);
           });
