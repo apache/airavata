@@ -60,6 +60,7 @@
         they can complete their user profile.
       </b-alert>
       <change-username-panel
+        v-if="isUsernameInvalid"
         :username="iamUserProfile.userId"
         :email="iamUserProfile.email"
         :airavata-user-profile-exists="iamUserProfile.airavataUserProfileExists"

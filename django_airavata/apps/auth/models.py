@@ -74,8 +74,7 @@ class UserProfile(models.Model):
         if self.username_initialized:
             return True
 
-        # use forms.USERNAME_VALIDATOR with an exception when the username is
-        # equal to the email
+        # use forms.USERNAME_VALIDATOR
         try:
             forms.USERNAME_VALIDATOR(self.user.username)
             validates = True

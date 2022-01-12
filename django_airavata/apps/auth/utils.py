@@ -166,11 +166,12 @@ def send_admin_alert_about_uninitialized_username(request, username, email, firs
     <p>Email: {{email}}</p>
 
     <p>
-    This likely happened because there was no appropriate user attribute to use
-    for the user's username when the user logged in through an external identity
-    provider.  Please update the username to the user's email address or some
-    other appropriate value in the <a href="https://{{http_host}}/admin/users/">Manage
-    Users</a> view in the portal.
+    This likely happened because there was no appropriate user attribute
+    (typically email address) to use for the user's username when the user
+    logged in through an external identity provider.  Please update the username
+    to the user's email address or some other appropriate value in the <a
+    href="https://{{http_host}}/admin/users/">Manage Users</a> view in the
+    portal.
     </p>
     """.strip()).render(context)
     msg = EmailMessage(subject=subject,

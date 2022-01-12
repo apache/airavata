@@ -330,7 +330,7 @@ class KeycloakBackend(object):
 
         # TODO: also check idp_userinfo.preferred_username if it exists
 
-        if not user_profile.username_initialized:
+        if not user_profile.username_initialized and not user_profile.is_username_valid:
             try:
                 utils.send_admin_alert_about_uninitialized_username(
                     request, user.username, user.email, user.first_name, user.last_name)
