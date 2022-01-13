@@ -46,18 +46,20 @@ information on how to install yarn.
 
 2.  Create a local settings file.
 
-    - You can either copy `django_airavata/settings_local.py.sample` to
+    - Option 1 (**recommended**). The best way to get a local settings file is
+      to download one from an existing Airavata Django Portal instance. If you
+      have Admin access, you can log in, go to _Settings_ and then _Developer
+      Console_ (/admin/developers) and download a `settings_local.py` file for
+      local development. Save it to the `django_airavata/` directory.
+
+    - Option 2. Otherwise, if you know the hostname and ports of an Airavata
+      deployment, you can copy `django_airavata/settings_local.py.sample` to
       `django_airavata/settings_local.py` and edit the contents to match your
       Keycloak and Airavata server deployments.
 
       ```
       cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
       ```
-
-    - Or, if you have Admin access to an Airavata Django Portal instance, you
-      can log in, go to _Settings_ and then _Developer Console_
-      (/admin/developers) and download a `settings_local.py` file for local
-      development. Save it to the `django_airavata/` directory.
 
 3.  Run Django migrations
 
