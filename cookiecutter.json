@@ -2,7 +2,7 @@
   "project_name": "My Custom Django App",
   "project_slug": "{{ cookiecutter.project_name | slugify(separator='_')}}",
   "project_short_description": "Custom Django app with everything needed to be installed in the airavata-django-portal",
-  "app_config_class_name": "{{ cookiecutter.project_name | title | replace(' ', '') }}Config",
+  "app_config_class_name": "{{ cookiecutter.project_name | slugify(separator=' ') | title | replace(' ', '') }}Config",
   "version": "0.1.0",
   "_copy_without_render": [
       "*.html"
