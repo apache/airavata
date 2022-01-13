@@ -517,6 +517,7 @@ class FullExperimentSerializer(serializers.Serializer):
         lookup_field='experimentId',
         lookup_url_kwarg='experiment_id')
     experiment = ExperimentSerializer()
+    experimentId = serializers.CharField(read_only=True)
     outputDataProducts = DataProductSerializer(many=True, read_only=True)
     inputDataProducts = DataProductSerializer(many=True, read_only=True)
     applicationModule = ApplicationModuleSerializer(read_only=True)
