@@ -377,7 +377,24 @@ public class TaskContext {
         this.applicationInterfaceDescription = applicationInterfaceDescription;
     }
 
-    public String getStdoutLocation() {
+    public String getStdoutLocation() throws Exception {
+        if (stdoutLocation == null) {
+            List<OutputDataObjectType> applicationOutputs = getApplicationInterfaceDescription().getApplicationOutputs();
+            if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
+                for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
+                    if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
+                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
+                            String stdOut = (getWorkingDir().endsWith(File.separator) ? getWorkingDir() : getWorkingDir() + File.separator)
+                                    + getApplicationInterfaceDescription().getApplicationName() + ".stdout";
+                            outputDataObjectType.setValue(stdOut);
+                            stdoutLocation = stdOut;
+                        } else {
+                            stdoutLocation = outputDataObjectType.getValue();
+                        }
+                    }
+                }
+            }
+        }
         return stdoutLocation;
     }
 
@@ -385,7 +402,24 @@ public class TaskContext {
         this.stdoutLocation = stdoutLocation;
     }
 
-    public String getStderrLocation() {
+    public String getStderrLocation() throws Exception {
+        if (stderrLocation == null) {
+            List<OutputDataObjectType> applicationOutputs = getApplicationInterfaceDescription().getApplicationOutputs();
+            if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
+                for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
+                    if (outputDataObjectType.getType().equals(DataType.STDERR)) {
+                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
+                            String stderrLocation = (getWorkingDir().endsWith(File.separator) ? getWorkingDir() : getWorkingDir() + File.separator)
+                                    + getApplicationInterfaceDescription().getApplicationName() + ".stderr";
+                            outputDataObjectType.setValue(stderrLocation);
+                            this.stderrLocation = stderrLocation;
+                        } else {
+                            this.stderrLocation = outputDataObjectType.getValue();
+                        }
+                    }
+                }
+            }
+        }
         return stderrLocation;
     }
 
