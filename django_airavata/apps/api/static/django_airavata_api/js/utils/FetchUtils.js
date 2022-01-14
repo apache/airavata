@@ -221,10 +221,8 @@ export default {
             if (response.status === 204) {
               return Promise.resolve();
             } else {
-              incrementCount();
               return Promise.resolve(
                 response[responseType]().then((responseData) => {
-                  decrementCount();
                   return responseData;
                 })
               );
