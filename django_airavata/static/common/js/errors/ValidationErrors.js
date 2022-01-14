@@ -12,7 +12,7 @@ export default {
         if (errorMessages) {
           validationFeedback[fieldName] = {
             invalidFeedback: errorMessages,
-            state: "invalid",
+            state: false,
           };
         } else {
           validationFeedback[fieldName] = {
