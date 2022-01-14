@@ -39,11 +39,11 @@ public class JobUtil {
 				return JobState.ACTIVE;
 //			} else if ("T".equals(status)) {
 //				return JobState.HELD;
-			} else if ("W".equals(status) || "PD".equals(status)) {
+			} else if ("W".equals(status) || "PD".equals(status) || "I".equals(status)) {
 				return JobState.QUEUED;
 			} else if ("S".equals(status) || "PSUSP".equals(status) || "USUSP".equals(status) || "SSUSP".equals(status)) {
 				return JobState.SUSPENDED;
-			} else if ("CA".equals(status)) {
+			} else if ("CA".equals(status) || "X".equals(status)) {
 				return JobState.CANCELED;
 			} else if ("F".equals(status) || "NF".equals(status) || "TO".equals(status) || "EXIT".equals(status)) {
 				return JobState.FAILED;
