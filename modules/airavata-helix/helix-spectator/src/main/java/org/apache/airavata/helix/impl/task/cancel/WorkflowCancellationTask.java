@@ -49,6 +49,17 @@ public class WorkflowCancellationTask extends AbstractTask {
         } catch (Exception e) {
             logger.error("Failed to build Helix Task driver in " + taskName, e);
             throw new RuntimeException("Failed to build Helix Task driver in " + taskName, e);
+        } finally {
+
+            try {
+                if (helixManager != null) {
+                    if (helixManager.isConnected()) {
+                        helixManager.disconnect();
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to disconnect helix manager", e);
+            }
         }
     }
 
@@ -56,43 +67,46 @@ public class WorkflowCancellationTask extends AbstractTask {
     public TaskResult onRun(TaskHelper helper) {
         logger.info("Cancelling workflow " + cancellingWorkflowName);
 
-        if (taskDriver.getWorkflowConfig(cancellingWorkflowName) == null) {
-            // Workflow could be already deleted by cleanup agents
-            logger.warn("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
-            return onSuccess("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
-        }
-
         try {
-            WorkflowContext workflowContext = taskDriver.getWorkflowContext(cancellingWorkflowName);
-
-            // if the workflow can not be found, ignore it
-            if (workflowContext == null) {
-                logger.warn("Can not find a workflow with id " + cancellingWorkflowName + ". So ignoring");
-                return onSuccess("Can not find a workflow with id " + cancellingWorkflowName + ". So ignoring");
+            if (taskDriver.getWorkflowConfig(cancellingWorkflowName) == null) {
+                // Workflow could be already deleted by cleanup agents
+                logger.warn("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
+                return onSuccess("Can not find a workflow with name " + cancellingWorkflowName + " but continuing");
             }
 
-            TaskState workflowState = workflowContext.getWorkflowState();
-            logger.info("Current state of workflow " + cancellingWorkflowName + " : " + workflowState.name());
+            try {
+                WorkflowContext workflowContext = taskDriver.getWorkflowContext(cancellingWorkflowName);
 
-            taskDriver.stop(cancellingWorkflowName);
+                // if the workflow can not be found, ignore it
+                if (workflowContext == null) {
+                    logger.warn("Can not find a workflow with id " + cancellingWorkflowName + ". So ignoring");
+                    return onSuccess("Can not find a workflow with id " + cancellingWorkflowName + ". So ignoring");
+                }
 
-        } catch (Exception e) {
-            logger.error("Failed to stop workflow " + cancellingWorkflowName, e);
-            // in case of an error, retry
-            return onFail("Failed to stop workflow " + cancellingWorkflowName + ": " + e.getMessage(), false);
-        }
+                TaskState workflowState = workflowContext.getWorkflowState();
+                logger.info("Current state of workflow " + cancellingWorkflowName + " : " + workflowState.name());
 
-        try {
-            logger.info("Waiting maximum " + waitTime +"s for workflow " + cancellingWorkflowName + " state to change");
-            TaskState newWorkflowState = taskDriver.pollForWorkflowState(cancellingWorkflowName, waitTime * 1000,
-                    TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED, TaskState.NOT_STARTED);
+                taskDriver.stop(cancellingWorkflowName);
 
-            logger.info("Workflow " + cancellingWorkflowName + " state changed to " + newWorkflowState.name());
-            return onSuccess("Successfully cancelled workflow " + cancellingWorkflowName);
+            } catch (Exception e) {
+                logger.error("Failed to stop workflow " + cancellingWorkflowName, e);
+                // in case of an error, retry
+                return onFail("Failed to stop workflow " + cancellingWorkflowName + ": " + e.getMessage(), false);
+            }
 
-        } catch (Exception e) {
-            logger.warn("Failed while watching workflow to stop " + cancellingWorkflowName, e);
-            return onSuccess("Failed while watching workflow to stop " + cancellingWorkflowName +". But continuing");
+            try {
+                logger.info("Waiting maximum " + waitTime + "s for workflow " + cancellingWorkflowName + " state to change");
+                TaskState newWorkflowState = taskDriver.pollForWorkflowState(cancellingWorkflowName, waitTime * 1000,
+                        TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED, TaskState.NOT_STARTED);
+
+                logger.info("Workflow " + cancellingWorkflowName + " state changed to " + newWorkflowState.name());
+                return onSuccess("Successfully cancelled workflow " + cancellingWorkflowName);
+
+            } catch (Exception e) {
+                logger.warn("Failed while watching workflow to stop " + cancellingWorkflowName, e);
+                return onSuccess("Failed while watching workflow to stop " + cancellingWorkflowName + ". But continuing");
+
+            }
 
         } finally {
 
