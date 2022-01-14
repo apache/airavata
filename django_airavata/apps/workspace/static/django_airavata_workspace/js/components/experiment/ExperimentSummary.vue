@@ -270,6 +270,19 @@
                     </b-card>
                   </td>
                 </tr>
+                <template v-if="failedJobs.length > 0">
+                  <tr v-for="job in failedJobs" :key="job.jobId">
+                    <th scope="row">Job Submission Response</th>
+                    <td>
+                      <b-card v-if="job.stdOut" :header="job.jobName + ' STDOUT'">
+                        <pre class="pre-scrollable">{{ job.stdOut }}</pre>
+                      </b-card>
+                      <b-card v-if="job.stdErr" :header="job.jobName + ' STDERR'">
+                        <pre class="pre-scrollable">{{ job.stdErr }}</pre>
+                      </b-card>
+                    </td>
+                  </tr>
+                </template>
               </tbody>
             </table>
           </div>
@@ -382,6 +395,18 @@ export default {
     },
     isCancelable() {
       return this.localFullExperiment.experiment.isCancelable;
+    },
+    failedJobs() {
+      if (this.fullExperiment && this.fullExperiment.jobDetails) {
+        return this.fullExperiment.jobDetails.filter(
+          (job) =>
+            this.experiment.latestStatus.state ===
+              models.ExperimentState.FAILED ||
+            job.latestJobStatus.jobState === models.JobState.FAILED
+        );
+      } else {
+        return [];
+      }
     },
   },
   methods: {
