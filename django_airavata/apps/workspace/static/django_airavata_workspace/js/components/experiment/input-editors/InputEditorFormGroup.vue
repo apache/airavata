@@ -34,7 +34,7 @@ export default {
       required: true
     },
     state: {
-      type: String
+      type: Boolean
     },
     feedbackMessages: {
       type: Array

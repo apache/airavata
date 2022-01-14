@@ -112,7 +112,7 @@ class KeycloakBackendTestCase(TestCase):
         # email = 'testuser@example.org'
         mock_userinfo.json.return_value = {
             'sub': 'sub-123',
-            'preferred_username': 'some-random-username',
+            'preferred_username': 'some-random-&invalid//-username',
             # 'email': email,
             'given_name': 'Test',
             'family_name': 'User',
@@ -159,7 +159,7 @@ class KeycloakBackendTestCase(TestCase):
         email = 'testuser@example.org'
         mock_userinfo.json.return_value = {
             'sub': 'sub-123',
-            'preferred_username': 'some-random-username',
+            'preferred_username': 'some-random-&invalid//-username',
             'email': email,
             'given_name': 'Test',
             'family_name': 'User',

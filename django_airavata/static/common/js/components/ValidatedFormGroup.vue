@@ -36,7 +36,7 @@ export default {
   },
   computed: {
     state() {
-      return this.valid ? null : "invalid";
+      return this.valid ? null : false;
     },
   },
 };
