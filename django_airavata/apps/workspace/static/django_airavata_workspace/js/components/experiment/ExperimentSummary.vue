@@ -27,13 +27,7 @@
       </div>
     </div>
     <template v-for="output in experiment.experimentOutputs">
-      <div
-        class="row"
-        v-if="
-          experiment.isFinished && outputDataProducts[output.name].length > 0
-        "
-        :key="output.name"
-      >
+      <div class="row" v-if="finishedOrExecuting" :key="output.name">
         <div class="col">
           <output-display-container
             :experiment-output="output"
@@ -44,7 +38,7 @@
         </div>
       </div>
     </template>
-    <div class="row" v-if="experiment.isFinished">
+    <div class="row" v-if="finishedOrExecuting">
       <div class="col">
         <experiment-storage-view-container
           :experimentId="experiment.experimentId"
@@ -301,7 +295,7 @@ import urls from "../../utils/urls";
 import moment from "moment";
 import ExperimentStorageViewContainer from "../storage/ExperimentStorageViewContainer.vue";
 import DataProductViewer from "django-airavata-common-ui/js/components/DataProductViewer.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   name: "experiment-summary",
@@ -318,6 +312,7 @@ export default {
       "launching",
       "clonedExperiment",
     ]),
+    ...mapGetters("viewExperiment", ["finishedOrExecuting"]),
     localFullExperiment() {
       return this.fullExperiment;
     },

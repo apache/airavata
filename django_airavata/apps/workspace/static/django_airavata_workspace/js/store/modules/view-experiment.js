@@ -1,4 +1,5 @@
-import { services } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
+import ExperimentState from "django-airavata-api/static/django_airavata_api/js/models/ExperimentState";
 
 // const PROMISES = {
 //   workspacePreferences: null,
@@ -103,11 +104,59 @@ export const actions = {
     });
     dispatch("loadExperiment", { experimentId: getters.experimentId });
   },
+  async submitFetchIntermediateOutputs({ dispatch, getters }, { outputNames }) {
+    await services.ExperimentService.fetchIntermediateOutputs({
+      lookup: getters.experimentId,
+      data: {
+        outputNames,
+      },
+    });
+    dispatch("loadExperiment", { experimentId: getters.experimentId });
+  },
 };
+
+function getDataProducts(io, collection) {
+  if (!io.value || !collection) {
+    return [];
+  }
+  let dataProducts = null;
+  if (io.type === models.DataType.URI_COLLECTION) {
+    const dataProductURIs = io.value.split(",");
+    dataProducts = dataProductURIs.map((uri) =>
+      collection.find((dp) => dp.productUri === uri)
+    );
+  } else {
+    const dataProductURI = io.value;
+    dataProducts = collection.filter((dp) => dp.productUri === dataProductURI);
+  }
+  return dataProducts ? dataProducts.filter((dp) => (dp ? true : false)) : [];
+}
 
 export const getters = {
   isPolling: (state) => state.polling,
-  experimentId: (state) => state.fullExperiment.experimentId,
+  experimentId: (state) =>
+    state.fullExperiment ? state.fullExperiment.experimentId : null,
+  experiment: (state) =>
+    state.fullExperiment ? state.fullExperiment.experiment : null,
+  isExecuting: (state, getters) =>
+    getters.experiment &&
+    getters.experiment.latestStatus &&
+    getters.experiment.latestStatus.state === ExperimentState.EXECUTING,
+  finishedOrExecuting: (state, getters) =>
+    getters.experiment &&
+    (getters.experiment.isFinished || getters.isExecuting),
+  outputDataProducts(state) {
+    const result = {};
+    if (state.fullExperiment && state.fullExperiment.outputDataProducts) {
+      state.fullExperiment.experiment.experimentOutputs.forEach((output) => {
+        result[output.name] = getDataProducts(
+          output,
+          state.fullExperiment.outputDataProducts
+        );
+      });
+    }
+    return result;
+  },
 };
 
 export default {

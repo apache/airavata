@@ -4,10 +4,10 @@
       <h6>{{ experimentOutput.name }}</h6>
       <b-dropdown v-if="showMenu" :text="currentView['name']" class="ml-auto">
         <b-dropdown-item
-          v-for="view in outputViews"
+          v-for="(view, index) in outputViews"
           :key="view['provider-id']"
           :active="view['provider-id'] === currentView['provider-id']"
-          @click="selectView(view)"
+          @click="selectView(index)"
           >{{ view["name"] }}</b-dropdown-item
         >
       </b-dropdown>
@@ -24,6 +24,15 @@
       :parameters="viewData.interactive"
       @input="parametersUpdated"
     />
+    <div slot="footer" v-if="dataProducts.length > 0 || isExecuting">
+      <template v-if="isExecuting">
+        <b-btn size="sm" @click="fetchLatest">Fetch Latest</b-btn>
+      </template>
+      <template v-else>
+        <!-- TODO: support downloading URI_COLLECTIONs as well -->
+        <b-btn size="sm" :href="dataProducts[0].downloadURL">Download</b-btn>
+      </template>
+    </div>
   </b-card>
 </template>
 
@@ -37,25 +46,13 @@ import LinkOutputDisplay from "./LinkOutputDisplay";
 import NotebookOutputDisplay from "./NotebookOutputDisplay";
 import InteractiveParametersPanel from "./interactive-parameters/InteractiveParametersPanel";
 import OutputViewDataLoader from "./OutputViewDataLoader";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   name: "output-viewer-container",
   props: {
     experimentOutput: {
       type: models.OutputDataObjectType,
-      required: true,
-    },
-    outputViews: {
-      type: Array,
-      required: true,
-    },
-    dataProducts: {
-      type: Array,
-      required: false,
-      default: null,
-    },
-    experimentId: {
-      type: String,
       required: true,
     },
   },
@@ -69,25 +66,46 @@ export default {
     InteractiveParametersPanel,
   },
   created() {
-    if (this.providerId !== "default") {
+    if (this.providerId && this.providerId !== "default") {
       this.loader = this.createLoader();
       this.loader.load();
     }
   },
   data() {
     return {
-      currentView: this.outputViews[0],
+      currentViewIndex: 0,
       loader: null,
     };
   },
   computed: {
+    ...mapState("viewExperiment", ["fullExperiment"]),
+    ...mapGetters("viewExperiment", [
+      "outputDataProducts",
+      "experimentId",
+      "isExecuting",
+    ]),
+    outputViews() {
+      return this.fullExperiment
+        ? this.fullExperiment.outputViews[this.experimentOutput.name]
+        : [];
+    },
+    dataProducts() {
+      return this.outputDataProducts[this.experimentOutput.name];
+    },
+    currentView() {
+      return this.outputViews.length > this.currentViewIndex
+        ? this.outputViews[this.currentViewIndex]
+        : null;
+    },
     viewData() {
       return this.loader && this.loader.data
         ? this.loader.data
         : this.outputViewData;
     },
     outputViewData() {
-      return this.currentView.data ? this.currentView.data : {};
+      return this.currentView && this.currentView.data
+        ? this.currentView.data
+        : {};
     },
     displayTypeData() {
       return {
@@ -114,7 +132,7 @@ export default {
       };
     },
     displayType() {
-      return this.currentView["display-type"];
+      return this.currentView ? this.currentView["display-type"] : null;
     },
     outputDisplayComponentName() {
       if (this.displayType in this.displayTypeData) {
@@ -134,15 +152,16 @@ export default {
       return this.outputViews.length > 1;
     },
     providerId() {
-      return this.currentView["provider-id"];
+      return this.currentView ? this.currentView["provider-id"] : null;
     },
     hasInteractiveParameters() {
       return this.viewData && this.viewData.interactive;
     },
   },
   methods: {
-    selectView(outputView) {
-      this.currentView = outputView;
+    ...mapActions("viewExperiment", ["submitFetchIntermediateOutputs"]),
+    selectView(outputViewIndex) {
+      this.currentViewIndex = outputViewIndex;
       if (this.outputDataURL === null) {
         this.loader = null;
       } else {
@@ -166,6 +185,11 @@ export default {
         experimentId: this.experimentId,
         experimentOutputName: this.experimentOutput.name,
         providerId: this.providerId,
+      });
+    },
+    fetchLatest() {
+      this.submitFetchIntermediateOutputs({
+        outputNames: [this.experimentOutput.name],
       });
     },
   },
