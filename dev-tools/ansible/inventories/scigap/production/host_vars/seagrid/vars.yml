@@ -42,6 +42,8 @@ auth_options:
   external:
     - name: "CILogon"
       idp_alias: "cilogon"
+      idp_token_url: "{{ oauth_service_url }}/realms/{{ tenant_domain }}/broker/cilogon/token"
+      userinfo_url: "{{ cilogon_userinfo_url }}"
 
 gateway_id: "seagrid"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
