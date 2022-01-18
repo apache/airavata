@@ -4,6 +4,7 @@ import AutocompleteTextInput from "./components/AutocompleteTextInput.vue";
 import ClipboardCopyButton from "./components/ClipboardCopyButton.vue";
 import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
 import ComputeResourceName from "./components/ComputeResourceName";
+import ConfirmationButton from "./components/ConfirmationButton.vue";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 import DataProductViewer from "./components/DataProductViewer";
 import DeleteButton from "./components/DeleteButton.vue";
@@ -47,6 +48,7 @@ const components = {
   ClipboardCopyButton,
   ClipboardCopyLink,
   ComputeResourceName,
+  ConfirmationButton,
   ConfirmationDialog,
   DataProductViewer,
   DeleteButton,

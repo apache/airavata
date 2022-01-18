@@ -73,6 +73,7 @@
               :max="maxNodes"
               v-model="data.nodeCount"
               required
+              @input="nodeCountChanged"
               :state="getValidationState('nodeCount', true)"
             >
             </b-form-input>
@@ -94,12 +95,20 @@
               :max="maxCPUCount"
               v-model="data.totalCPUCount"
               required
+              @input="cpuCountChanged"
               :state="getValidationState('totalCPUCount', true)"
             >
             </b-form-input>
             <div slot="description">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
-              Max Allowed Cores = {{ maxCPUCount }}
+              Max Allowed Cores = {{ maxCPUCount
+              }}<template
+                v-if="
+                  selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0
+                "
+                >. There are {{ selectedQueueDefault.cpuPerNode }} cores per
+                node.
+              </template>
             </div>
           </b-form-group>
           <b-form-group
@@ -394,9 +403,9 @@ export default {
     },
     getValidationState: function (properties, showValidState) {
       return this.getValidationFeedback(properties)
-        ? "invalid"
+        ? false
         : showValidState
-        ? "valid"
+        ? true
         : null;
     },
     applyBatchQueueResourcePolicy() {
@@ -411,6 +420,26 @@ export default {
           this.data.wallTimeLimit,
           this.maxWalltime
         );
+      }
+    },
+    nodeCountChanged() {
+      if (this.selectedQueueDefault.cpuPerNode > 0) {
+        const nodeCount = parseInt(this.data.nodeCount);
+        this.data.totalCPUCount = Math.min(
+          nodeCount * this.selectedQueueDefault.cpuPerNode,
+          this.maxCPUCount
+        );
+      }
+    },
+    cpuCountChanged() {
+      if (this.selectedQueueDefault.cpuPerNode > 0) {
+        const cpuCount = parseInt(this.data.totalCPUCount);
+        if (cpuCount > 0) {
+          this.data.nodeCount = Math.min(
+            Math.ceil(cpuCount / this.selectedQueueDefault.cpuPerNode),
+            this.maxNodes
+          );
+        }
       }
     },
   },

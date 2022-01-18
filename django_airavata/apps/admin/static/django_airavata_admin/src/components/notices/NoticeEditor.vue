@@ -202,7 +202,7 @@ export default {
       if (this.userBeginsInput == false) {
         return null;
       }
-      return this.getValidationFeedback(properties) ? "invalid" : "valid";
+      return this.getValidationFeedback(properties) ? false : true;
     },
     cancelNewNotice() {
       return this.$emit("cancelNewNotice");

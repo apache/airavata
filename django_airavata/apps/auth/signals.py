@@ -42,11 +42,16 @@ def initialize_user_profile(sender, request, user, **kwargs):
         if not user_profile_client_pool.doesUserExist(request.authz_token,
                                                       user.username,
                                                       settings.GATEWAY_ID):
-            user_profile_client_pool.initializeUserProfile(request.authz_token)
-            log.info("initialized user profile for {}".format(user.username))
-            # Since user profile created, inform admins of new user
-            utils.send_new_user_email(
-                request, user.username, user.email, user.first_name, user.last_name)
-            log.info("sent new user email for user {}".format(user.username))
+            if user.user_profile.is_complete:
+                user_profile_client_pool.initializeUserProfile(request.authz_token)
+                log.info("initialized user profile for {}".format(user.username))
+                # Since user profile created, inform admins of new user
+                utils.send_new_user_email(
+                    request, user.username, user.email, user.first_name, user.last_name)
+                log.info("sent new user email for user {}".format(user.username))
+            else:
+                log.info(f"user profile not complete for {user.username}, "
+                         "skipping initializing Airavata user profile")
+
     else:
         log.warning(f"Logged in user {user.username} has no access token")

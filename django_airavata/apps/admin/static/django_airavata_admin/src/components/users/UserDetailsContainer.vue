@@ -1,40 +1,73 @@
 <template>
-  <div>
-    <b-card header="Edit Groups">
-      <user-group-membership-editor
+  <b-tabs content-class="mt-3 px-2">
+    <b-tab
+      title="User Profile"
+      :active="iamUserProfile.airavataUserProfileExists"
+    >
+      <b-alert
+        variant="warning"
+        show
+        v-if="!iamUserProfile.userProfileComplete"
+      >
+        This user has not completed their user profile. An incomplete user
+        profile is shown below.
+      </b-alert>
+      <b-alert variant="danger" show v-if="isUsernameInvalid">
+        The user has an invalid username. Please use
+        <strong>Change Username</strong> under the
+        <strong>Troubleshooting</strong> tab to fix the user's username.
+      </b-alert>
+      <edit-groups-panel
         v-if="iamUserProfile.airavataUserProfileExists"
-        v-model="localIAMUserProfile.groups"
+        :value="localIAMUserProfile.groups"
         :editable-groups="editableGroups"
         :airavata-internal-user-id="iamUserProfile.airavataInternalUserId"
+        @save="groupsUpdated"
       />
-      <b-button
-        @click="groupsUpdated"
-        variant="primary"
-        :disabled="!areGroupsUpdated"
-        >Save</b-button
-      >
-    </b-card>
-    <activate-user-panel
-      v-if="
-        iamUserProfile.enabled &&
-        iamUserProfile.emailVerified &&
-        !iamUserProfile.airavataUserProfileExists
-      "
-      :username="iamUserProfile.userId"
-      @activate-user="$emit('enable-user', $event)"
-    />
-    <enable-user-panel
-      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
-      :username="iamUserProfile.userId"
-      :email="iamUserProfile.email"
-      @enable-user="$emit('enable-user', $event)"
-    />
-    <delete-user-panel
-      v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
-      :username="iamUserProfile.userId"
-      @delete-user="$emit('delete-user', $event)"
-    />
-  </div>
+      <user-profile-panel :iamUserProfile="iamUserProfile" />
+      <external-idp-user-info-panel
+        v-if="hasExternalIDPUserInfo"
+        :externalIDPUserInfo="localIAMUserProfile.externalIDPUserInfo"
+      />
+    </b-tab>
+    <b-tab
+      title="Troubleshooting"
+      :active="!iamUserProfile.airavataUserProfileExists"
+    >
+      <activate-user-panel
+        v-if="
+          iamUserProfile.enabled &&
+          iamUserProfile.emailVerified &&
+          iamUserProfile.userProfileComplete &&
+          !iamUserProfile.airavataUserProfileExists
+        "
+        :username="iamUserProfile.userId"
+        @activate-user="$emit('enable-user', $event)"
+      />
+      <enable-user-panel
+        v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+        :username="iamUserProfile.userId"
+        :email="iamUserProfile.email"
+        @enable-user="$emit('enable-user', $event)"
+      />
+      <delete-user-panel
+        v-if="!iamUserProfile.enabled && !iamUserProfile.emailVerified"
+        :username="iamUserProfile.userId"
+        @delete-user="$emit('delete-user', $event)"
+      />
+      <b-alert variant="danger" show v-if="isUsernameInvalid">
+        The user has an invalid username. Please fix the user's username so that
+        they can complete their user profile.
+      </b-alert>
+      <change-username-panel
+        v-if="isUsernameInvalid"
+        :username="iamUserProfile.userId"
+        :email="iamUserProfile.email"
+        :airavata-user-profile-exists="iamUserProfile.airavataUserProfileExists"
+        @update-username="$emit('update-username', $event)"
+      />
+    </b-tab>
+  </b-tabs>
 </template>
 <script>
 import { models } from "django-airavata-api";
@@ -42,6 +75,10 @@ import UserGroupMembershipEditor from "./UserGroupMembershipEditor";
 import ActivateUserPanel from "./ActivateUserPanel";
 import EnableUserPanel from "./EnableUserPanel";
 import DeleteUserPanel from "./DeleteUserPanel";
+import ChangeUsernamePanel from "./ChangeUsernamePanel.vue";
+import EditGroupsPanel from "./EditGroupsPanel.vue";
+import ExternalIDPUserInfoPanel from "./ExternalIDPUserInfoPanel.vue";
+import UserProfilePanel from "./UserProfilePanel.vue";
 
 export default {
   name: "user-details-container",
@@ -60,6 +97,10 @@ export default {
     EnableUserPanel,
     DeleteUserPanel,
     ActivateUserPanel,
+    ChangeUsernamePanel,
+    EditGroupsPanel,
+    "external-idp-user-info-panel": ExternalIDPUserInfoPanel,
+    UserProfilePanel,
   },
   data() {
     return {
@@ -72,35 +113,21 @@ export default {
     },
   },
   methods: {
-    groupsUpdated() {
+    groupsUpdated(groups) {
+      this.localIAMUserProfile.groups = groups;
       this.$emit("groups-updated", this.localIAMUserProfile);
     },
   },
   computed: {
-    currentGroupIds() {
-      const groupIds = this.iamUserProfile.groups.map((g) => g.id);
-      groupIds.sort();
-      return groupIds;
+    hasExternalIDPUserInfo() {
+      return (
+        Object.keys(this.localIAMUserProfile.externalIDPUserInfo).length !== 0
+      );
     },
-    updatedGroupIds() {
-      const groupIds = this.localIAMUserProfile.groups.map((g) => g.id);
-      groupIds.sort();
-      return groupIds;
-    },
-    areGroupsUpdated() {
-      for (const groupId of this.currentGroupIds) {
-        // Check if a group was removed
-        if (this.updatedGroupIds.indexOf(groupId) < 0) {
-          return true;
-        }
-      }
-      for (const groupId of this.updatedGroupIds) {
-        // Check if a group was added
-        if (this.currentGroupIds.indexOf(groupId) < 0) {
-          return true;
-        }
-      }
-      return false;
+    isUsernameInvalid() {
+      return (
+        this.iamUserProfile.userProfileInvalidFields.indexOf("username") >= 0
+      );
     },
   },
 };

@@ -63,7 +63,7 @@ export default {
     },
     componentValidState: function () {
       if (this.inputHasBegun) {
-        return this.valid ? "valid" : "invalid";
+        return this.valid;
       } else {
         return null;
       }

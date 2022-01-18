@@ -58,6 +58,7 @@ from airavata.model.workspace.ttypes import (
 )
 from airavata_django_portal_sdk import user_storage
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import serializers
 
@@ -952,6 +953,9 @@ class IAMUserProfile(serializers.Serializer):
         lookup_field='userId',
         lookup_url_kwarg='user_id')
     userHasWriteAccess = serializers.SerializerMethodField()
+    newUsername = serializers.CharField(write_only=True, required=False)
+    externalIDPUserInfo = serializers.SerializerMethodField()
+    userProfileInvalidFields = serializers.SerializerMethodField()
 
     def update(self, instance, validated_data):
         existing_group_ids = [group.id for group in instance['groups']]
@@ -965,6 +969,35 @@ class IAMUserProfile(serializers.Serializer):
     def get_userHasWriteAccess(self, userProfile):
         request = self.context['request']
         return request.is_gateway_admin
+
+    def get_externalIDPUserInfo(self, userProfile):
+        result = {}
+        try:
+            if get_user_model().objects.filter(username=userProfile['userId']).exists():
+                django_user = get_user_model().objects.get(username=userProfile['userId'])
+                claims = django_user.user_profile.idp_userinfo.all()
+                if claims.exists():
+                    result['idp_alias'] = claims.first().idp_alias
+                    result['userinfo'] = {}
+                for claim in claims:
+                    result['userinfo'][claim.claim] = claim.value
+        except Exception as e:
+            log.warning(f"Failed to load idp_userinfo for {userProfile['userId']}", exc_info=e)
+        return result
+
+    def get_userProfileInvalidFields(self, userProfile):
+        try:
+            User = get_user_model()
+            if User.objects.filter(username=userProfile['userId']).exists():
+                django_user = User.objects.get(username=userProfile['userId'])
+                if hasattr(django_user, 'user_profile'):
+                    return django_user.user_profile.invalid_fields
+                else:
+                    # For backwards compatibility, return True if no user_profile
+                    return []
+        except Exception as e:
+            log.warning(f"Failed to get user_profile.invalid_fields for {userProfile['userId']}", exc_info=e)
+        return []
 
 
 class AckNotificationSerializer(serializers.ModelSerializer):

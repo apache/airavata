@@ -287,6 +287,14 @@ export default {
         requestType: "post",
         modelClass: IAMUserProfile,
       },
+      updateUsername: {
+        url: "/api/iam-user-profiles/update_username/",
+        bodyParams: {
+          name: "data",
+        },
+        requestType: "put",
+        modelClass: IAMUserProfile,
+      },
     },
     queryParams: ["limit", "offset", "search"],
     modelClass: IAMUserProfile,

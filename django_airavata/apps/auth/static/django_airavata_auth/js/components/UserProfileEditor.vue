@@ -1,23 +1,23 @@
 <template>
   <b-card>
-    <b-form-group label="Username">
-      <b-form-input disabled :value="user.username" />
+    <b-form-group label="Username" :disabled="true" description="Only administrators can update a username.">
+      <b-form-input v-model="user.username" />
     </b-form-group>
-    <b-form-group label="First Name">
+    <b-form-group label="First Name" :disabled="disabled">
       <b-form-input
         v-model="$v.user.first_name.$model"
         @keydown.native.enter="save"
         :state="validateState($v.user.first_name)"
       />
     </b-form-group>
-    <b-form-group label="Last Name">
+    <b-form-group label="Last Name" :disabled="disabled">
       <b-form-input
         v-model="$v.user.last_name.$model"
         @keydown.native.enter="save"
         :state="validateState($v.user.last_name)"
       />
     </b-form-group>
-    <b-form-group label="Email">
+    <b-form-group label="Email" :disabled="disabled">
       <b-form-input
         v-model="$v.user.email.$model"
         @keydown.native.enter="save"
@@ -36,7 +36,7 @@
         ></b-alert
       >
     </b-form-group>
-    <b-button variant="primary" @click="save" :disabled="$v.$invalid"
+    <b-button variant="primary" @click="save" :disabled="$v.$invalid || disabled"
       >Save</b-button
     >
   </b-card>
@@ -56,6 +56,15 @@ export default {
       type: models.User,
       required: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  created() {
+    if (!this.disabled) {
+      this.$v.user.$touch();
+    }
   },
   data() {
     return {

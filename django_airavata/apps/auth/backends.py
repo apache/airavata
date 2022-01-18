@@ -29,7 +29,8 @@ class KeycloakBackend(object):
                      request=None,
                      username=None,
                      password=None,
-                     refresh_token=None):
+                     refresh_token=None,
+                     idp_alias=None):
         try:
             user = None
             access_token = None
@@ -75,6 +76,9 @@ class KeycloakBackend(object):
                     request)
                 self._process_token(request, token)
                 user = self._process_userinfo(request, userinfo)
+                if idp_alias is not None:
+                    self._store_idp_userinfo(user, token, idp_alias)
+                    self._check_username_initialization(request, user)
                 access_token = token['access_token']
             # authz_token_middleware has already run, so must manually add
             # the `request.authz_token` attribute
@@ -212,9 +216,9 @@ class KeycloakBackend(object):
         logger.debug("userinfo: {}".format(userinfo))
         sub = userinfo['sub']
         username = userinfo['preferred_username']
-        email = userinfo['email']
-        first_name = userinfo['given_name']
-        last_name = userinfo['family_name']
+        email = userinfo.get('email', '')
+        first_name = userinfo.get('given_name', None)
+        last_name = userinfo.get('family_name', None)
 
         user = self._get_or_create_user(sub, username)
         user_profile = user.user_profile
@@ -230,10 +234,12 @@ class KeycloakBackend(object):
 
         # Update User model fields
         user = user_profile.user
+        user.username = username
         user.email = email
         user.first_name = first_name
         user.last_name = last_name
         user.save()
+
         return user
 
     def _get_or_create_user(self, sub, username):
@@ -269,3 +275,64 @@ class KeycloakBackend(object):
                 user_profile.save()
                 user_profile.userinfo_set.create(claim='sub', value=sub)
                 return user
+
+    def _store_idp_userinfo(self, user, token, idp_alias):
+        try:
+            idp_token_url = None
+            userinfo_url = None
+            for auth_option in settings.AUTHENTICATION_OPTIONS['external']:
+                if auth_option['idp_alias'] == idp_alias:
+                    idp_token_url = auth_option.get('idp_token_url')
+                    userinfo_url = auth_option.get('userinfo_url')
+                    break
+            if idp_token_url is None or userinfo_url is None:
+                logger.debug(f"idp_token_url and/or userinfo_url not set for {idp_alias} "
+                             "in AUTHENTICATION_OPTIONS, skipping retrieval of external IDP userinfo")
+                return
+            access_token = token['access_token']
+            logger.debug(f"access_token={access_token} for idp_alias={idp_alias}")
+            # fetch the idp's token
+            headers = {'Authorization': f'Bearer {access_token}'}
+            # For the following to work, in Keycloak the IDP should have 'Store
+            # Tokens' and 'Stored Tokens Readable' enabled and the user needs
+            # the broker/read-token role
+            r = requests.get(idp_token_url, headers=headers)
+            idp_token = r.json()
+            idp_headers = {'Authorization': f"Bearer {idp_token['access_token']}"}
+            r = requests.get(userinfo_url, headers=idp_headers)
+            userinfo = r.json()
+            logger.debug(f"userinfo={userinfo}")
+
+            # Save the idp user info claims
+            user_profile = user.user_profile
+            for (claim, value) in userinfo.items():
+                if user_profile.idp_userinfo.filter(idp_alias=idp_alias, claim=claim).exists():
+                    userinfo_claim = user_profile.idp_userinfo.get(idp_alias=idp_alias, claim=claim)
+                    userinfo_claim.value = value
+                    userinfo_claim.save()
+                else:
+                    user_profile.idp_userinfo.create(idp_alias=idp_alias, claim=claim, value=value)
+        except Exception:
+            logger.exception(f"Failed to store IDP userinfo for {user.username} from IDP {idp_alias}")
+
+    def _check_username_initialization(self, request, user):
+        # Check if the username assigned to the user was based on the user's
+        # email address or if it was assigned some random string (Keycloak's
+        # sub). If the latter, we'll want to alert the admins so that they can
+        # assign a proper username for the user.
+        user_profile = user.user_profile
+        if (not user_profile.username_initialized and
+            user_profile.userinfo_set.filter(claim='email').exists() and
+            user_profile.userinfo_set.filter(claim='preferred_username').exists() and
+                user_profile.userinfo_set.get(claim='email').value == user_profile.userinfo_set.get(claim='preferred_username').value):
+            user_profile.username_initialized = True
+            user_profile.save()
+
+        # TODO: also check idp_userinfo.preferred_username if it exists
+
+        if not user_profile.username_initialized and not user_profile.is_username_valid:
+            try:
+                utils.send_admin_alert_about_uninitialized_username(
+                    request, user.username, user.email, user.first_name, user.last_name)
+            except Exception:
+                logger.exception(f"Failed to send alert about username being uninitialized: {user.username}")

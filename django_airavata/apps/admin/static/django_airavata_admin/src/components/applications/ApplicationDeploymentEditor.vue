@@ -117,6 +117,9 @@
             :max="maxCPUCount"
             :disabled="defaultQueueAttributesDisabled"
           ></b-form-input>
+          <template #description v-if="cpuPerNode > 0">
+            There are {{ cpuPerNode }} cores per node.
+          </template>
         </b-form-group>
         <b-form-group
           label="Default Walltime (in minutes)"
@@ -228,6 +231,14 @@ export default {
           )
         : null;
       return queue ? queue.maxRuntime : 0;
+    },
+    cpuPerNode() {
+      const queue = this.computeResource
+        ? this.computeResource.batchQueues.find(
+            (q) => q.queueName === this.data.defaultQueueName
+          )
+        : null;
+      return queue ? queue.cpuPerNode : 0;
     },
     defaultQueueAttributesDisabled() {
       return !this.data.defaultQueueName || this.readonly;

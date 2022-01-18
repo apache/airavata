@@ -706,3 +706,134 @@ test("initializeQueue: when no queue selected, settings are set to 0", (done) =>
     done,
   });
 });
+
+test("updateNodeCount: only update nodeCount when cpuPerNode <= 0", (done) => {
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      cpuPerNode: 0,
+    }),
+  };
+  const expectedMutations = [
+    { type: "updateNodeCount", payload: { nodeCount: 7 } },
+  ];
+  testAction(actions.updateNodeCount, {
+    payload: {
+      nodeCount: 7,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) => {
+  const nodeCount = 4;
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      cpuPerNode: 24,
+    }),
+    maxAllowedCores: 1000,
+  };
+  const expectedMutations = [
+    { type: "updateNodeCount", payload: { nodeCount } },
+    { type: "updateTotalCPUCount", payload: { totalCPUCount: 96 } },
+  ];
+  testAction(actions.updateNodeCount, {
+    payload: {
+      nodeCount,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateNodeCount: update totalCPUCount when cpuPerNode > 0, but apply maximums", (done) => {
+  const nodeCount = 4;
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      cpuPerNode: 24,
+    }),
+    maxAllowedCores: 50,
+  };
+  const expectedMutations = [
+    { type: "updateNodeCount", payload: { nodeCount } },
+    { type: "updateTotalCPUCount", payload: { totalCPUCount: 50 } },
+  ];
+  testAction(actions.updateNodeCount, {
+    payload: {
+      nodeCount,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateTotalCPUCount: only update totalCPUCount when cpuPerNode <= 0", (done) => {
+  const totalCPUCount = 23;
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      cpuPerNode: 0,
+    }),
+  };
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount } },
+  ];
+  testAction(actions.updateTotalCPUCount, {
+    payload: {
+      totalCPUCount,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) => {
+  const nodeCount = 4;
+  const totalCPUCount = 96;
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      cpuPerNode: 24,
+    }),
+    maxAllowedNodes: 1000,
+  };
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount } },
+    { type: "updateNodeCount", payload: { nodeCount } },
+  ];
+  testAction(actions.updateTotalCPUCount, {
+    payload: {
+      totalCPUCount,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateTotalCPUCount: update nodeCount when cpuPerNode > 0, but apply maximums", (done) => {
+  const totalCPUCount = 96;
+  const mockGetters = {
+    queue: new models.BatchQueue({
+      cpuPerNode: 24,
+    }),
+    maxAllowedNodes: 2,
+  };
+  expect(totalCPUCount / mockGetters.queue.cpuPerNode).toBeGreaterThan(
+    mockGetters.maxAllowedNodes
+  );
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount } },
+    { type: "updateNodeCount", payload: { nodeCount: 2 } },
+  ];
+  testAction(actions.updateTotalCPUCount, {
+    payload: {
+      totalCPUCount,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});

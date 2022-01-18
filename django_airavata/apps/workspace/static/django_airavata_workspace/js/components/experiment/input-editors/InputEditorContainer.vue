@@ -113,12 +113,12 @@ export default {
   },
   methods: {
     recordValidInputEditorValue: function () {
-      this.state = "valid";
+      this.state = true;
       this.$emit("valid");
     },
     recordInvalidInputEditorValue: function (feedbackMessages) {
       this.feedbackMessages = feedbackMessages;
-      this.state = "invalid";
+      this.state = false;
       this.$emit("invalid", feedbackMessages);
     },
     valueChanged: function () {

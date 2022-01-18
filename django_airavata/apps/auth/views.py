@@ -146,7 +146,9 @@ def start_logout(request):
 def callback(request):
     try:
         login_desktop = request.GET.get('login_desktop', "false") == "true"
-        user = authenticate(request=request)
+        idp_alias = request.GET.get('idp_alias')
+        user = authenticate(request=request, idp_alias=idp_alias)
+
         if user is not None:
             login(request, user)
             if login_desktop:
@@ -161,7 +163,6 @@ def callback(request):
         messages.error(
             request,
             "Failed to process OAuth2 callback: {}".format(str(err)))
-        idp_alias = request.GET.get('idp_alias')
         if login_desktop:
             return _create_login_desktop_failed_response(
                 request, idp_alias=idp_alias)
@@ -592,11 +593,19 @@ class UserViewSet(viewsets.ModelViewSet):
         user.refresh_from_db()
 
         try:
+            # only update the airavata profile if it exists
             user_profile_client = request.profile_service['user_profile']
-            airavata_user_profile = user_profile_client.getUserProfileById(
-                request.authz_token, user.username, settings.GATEWAY_ID)
-            airavata_user_profile.emails = [pending_email_change.email_address]
-            user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+            if user_profile_client.doesUserExist(request.authz_token,
+                                                 request.user.username,
+                                                 settings.GATEWAY_ID):
+                airavata_user_profile = user_profile_client.getUserProfileById(
+                    request.authz_token, user.username, settings.GATEWAY_ID)
+                airavata_user_profile.emails = [pending_email_change.email_address]
+                user_profile_client.updateUserProfile(request.authz_token, airavata_user_profile)
+            # otherwise, update the user's email in the Keycloak user store
+            else:
+                iam_admin_client.update_user(request.user.username,
+                                             email=pending_email_change.email_address)
         except Exception as e:
             raise Exception(f"Failed to update Airavata User Profile with new email address: {e}") from e
         serializer = self.get_serializer(user)

@@ -1,7 +1,10 @@
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from . import forms
 
 VERIFY_EMAIL_TEMPLATE = 1
 NEW_USER_EMAIL_TEMPLATE = 2
@@ -52,29 +55,91 @@ class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, related_name="user_profile")
-    # TODO: maybe this can be derived from whether there exists an Airavata
-    # User Profile for the user's username
-    username_locked = models.BooleanField(default=False)
+    # This flag is only used for external IDP users. It indicates that the
+    # username was properly initialized when the user logged in through the
+    # external IDP. As for now that means that the username was set to the
+    # user's email address. Sometimes the automatic assignment of username fails
+    # and an administrator needs to intervene. When an administrator sets the
+    # user's username this flag will also be set to true.
+    username_initialized = models.BooleanField(default=False)
 
     @property
     def is_complete(self):
-        # TODO: implement this to check if there are any missing fields on the
-        # User model (email, first_name, last_name) or if the username was is
-        # invalid (for example if defaulted to the IdP's 'sub' claim) or if
-        # there are any extra profile fields that are not valid
-        return False
+        return len(self.invalid_fields) == 0
+
+    @property
+    def is_username_valid(self):
+
+        # Username was provided either by external IDP or manually set by an admin
+        if self.username_initialized:
+            return True
+
+        # use forms.USERNAME_VALIDATOR
+        try:
+            forms.USERNAME_VALIDATOR(self.user.username)
+            validates = True
+        except ValidationError:
+            validates = False
+        return validates
+
+    @property
+    def is_first_name_valid(self):
+        return self.is_non_empty(self.user.first_name)
+
+    @property
+    def is_last_name_valid(self):
+        return self.is_non_empty(self.user.last_name)
+
+    @property
+    def is_email_valid(self):
+        # Only checking for non-empty only; assumption is that email is verified
+        # before it is set or updated
+        return self.is_non_empty(self.user.email)
+
+    @property
+    def invalid_fields(self):
+        result = []
+        if not self.is_username_valid:
+            result.append('username')
+        if not self.is_email_valid:
+            result.append('email')
+        if not self.is_first_name_valid:
+            result.append('first_name')
+        if not self.is_last_name_valid:
+            result.append('last_name')
+        return result
+
+    def is_non_empty(self, value: str):
+        return value is not None and value.strip() != ""
 
 
 class UserInfo(models.Model):
     claim = models.CharField(max_length=64)
     value = models.CharField(max_length=255)
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ['user_profile', 'claim']
 
     def __str__(self):
         return f"{self.claim}={self.value}"
+
+
+class IDPUserInfo(models.Model):
+    idp_alias = models.CharField(max_length=64)
+    claim = models.CharField(max_length=64)
+    value = models.CharField(max_length=255)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="idp_userinfo")
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user_profile', 'claim', 'idp_alias']
+
+    def __str__(self):
+        return f"{self.idp_alias}: {self.claim}={self.value}"
 
 
 class PendingEmailChange(models.Model):

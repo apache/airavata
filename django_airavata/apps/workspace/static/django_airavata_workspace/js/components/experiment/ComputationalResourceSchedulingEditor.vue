@@ -243,7 +243,7 @@ export default {
       return utils.getProperty(this.validation, properties);
     },
     getValidationState: function (properties) {
-      return this.getValidationFeedback(properties) ? "invalid" : null;
+      return this.getValidationFeedback(properties) ? false : null;
     },
   },
   watch: {

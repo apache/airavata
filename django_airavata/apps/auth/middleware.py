@@ -4,6 +4,8 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from . import utils
 
@@ -33,7 +35,13 @@ def gateway_groups_middleware(get_response):
     """Add 'is_gateway_admin' and 'is_read_only_gateway_admin' to request."""
     def middleware(request):
 
-        if not request.user.is_authenticated or not request.authz_token:
+        request.is_gateway_admin = False
+        request.is_read_only_gateway_admin = False
+
+        if (not request.user.is_authenticated or
+            not request.authz_token or
+            (hasattr(request.user, "user_profile") and
+                not request.user.user_profile.is_complete)):
             return get_response(request)
 
         try:
@@ -66,8 +74,27 @@ def gateway_groups_middleware(get_response):
         except Exception as e:
             log.warning("Failed to set is_gateway_admin, "
                         "is_read_only_gateway_admin for user", exc_info=e)
-            request.is_gateway_admin = False
-            request.is_read_only_gateway_admin = False
 
         return get_response(request)
+    return middleware
+
+
+def user_profile_completeness_check(get_response):
+    """Check if user profile is complete and if not, redirect to user profile editor."""
+    def middleware(request):
+
+        if not request.user.is_authenticated:
+            return get_response(request)
+
+        allowed_paths = [
+            reverse('django_airavata_auth:user_profile'),
+            reverse('django_airavata_auth:logout'),
+        ]
+        if (hasattr(request.user, "user_profile") and
+            not request.user.user_profile.is_complete and
+            request.path not in allowed_paths and
+                'text/html' in request.META['HTTP_ACCEPT']):
+            return redirect('django_airavata_auth:user_profile')
+        else:
+            return get_response(request)
     return middleware
