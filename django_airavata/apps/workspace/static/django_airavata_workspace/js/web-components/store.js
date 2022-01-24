@@ -23,8 +23,11 @@ export const mutations = {
   updateProjectId(state, { projectId }) {
     state.experiment.projectId = projectId;
   },
-  updateGroupResourceProfileId(state, { groupResourceProfileId }) {
+  updateExperimentGroupResourceProfileId(state, { groupResourceProfileId }) {
     state.experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
+  },
+  updateGroupResourceProfileId(state, { groupResourceProfileId }) {
+    state.groupResourceProfileId = groupResourceProfileId;
   },
   updateResourceHostId(state, { resourceHostId }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
@@ -112,7 +115,6 @@ export const actions = {
     await Promise.all([
       dispatch("loadProjects"),
       dispatch("loadWorkspacePreferences"),
-      dispatch("loadGroupResourceProfiles"),
     ]);
 
     if (!state.experiment.projectId) {
@@ -121,8 +123,13 @@ export const actions = {
       });
     }
 
-    dispatch("initializeGroupResourceProfileId");
-    const groupResourceProfileId =
+    let groupResourceProfileId =
+      state.experiment.userConfigurationData.groupResourceProfileId;
+    await dispatch("initializeGroupResourceProfileId", {
+      groupResourceProfileId,
+    });
+
+    groupResourceProfileId =
       state.experiment.userConfigurationData.groupResourceProfileId;
     // If experiment has a group resource profile, load additional necessary
     // data and re-apply group resource profile
@@ -132,35 +139,39 @@ export const actions = {
       await dispatch("applyGroupResourceProfile");
     }
   },
-  initializeGroupResourceProfileId({ commit, getters, state }) {
-    // If there is no groupResourceProfileId set on the experiment, or there
-    // is one set but it is no longer in the list of accessible
-    // groupResourceProfiles, set to the default one, or the first one
-    let groupResourceProfileId =
-      state.experiment.userConfigurationData.groupResourceProfileId;
+  async initializeGroupResourceProfileId(
+    { commit, dispatch, getters, state },
+    { groupResourceProfileId = null }
+  ) {
+    await dispatch("loadGroupResourceProfiles");
+    await dispatch("loadWorkspacePreferences");
+    let result = groupResourceProfileId;
     if (
       !groupResourceProfileId ||
       !getters.findGroupResourceProfile(groupResourceProfileId)
     ) {
+      // Figure out a default value for groupResourceProfileId
       if (
         getters.findGroupResourceProfile(
           state.workspacePreferences.most_recent_group_resource_profile_id
         )
       ) {
-        commit("updateGroupResourceProfileId", {
-          groupResourceProfileId:
-            state.workspacePreferences.most_recent_group_resource_profile_id,
-        });
+        result =
+          state.workspacePreferences.most_recent_group_resource_profile_id;
       } else if (state.groupResourceProfiles.length > 0) {
-        commit("updateGroupResourceProfileId", {
-          groupResourceProfileId:
-            state.groupResourceProfiles[0].groupResourceProfileId,
-        });
+        result = state.groupResourceProfiles[0].groupResourceProfileId;
       } else {
-        commit("updateGroupResourceProfileId", {
-          groupResourceProfileId: null,
-        });
+        result = null;
       }
+    }
+    if (state.experiment) {
+      commit("updateExperimentGroupResourceProfileId", {
+        groupResourceProfileId: result,
+      });
+    } else {
+      commit("updateGroupResourceProfileId", {
+        groupResourceProfileId: result,
+      });
     }
   },
   updateExperimentName({ commit }, { name }) {
@@ -173,12 +184,21 @@ export const actions = {
     commit("updateProjectId", { projectId });
   },
   async updateGroupResourceProfileId(
-    { commit, dispatch },
+    { commit, dispatch, getters, state },
     { groupResourceProfileId }
   ) {
-    commit("updateGroupResourceProfileId", { groupResourceProfileId });
-    await dispatch("loadApplicationDeployments");
-    await dispatch("applyGroupResourceProfile");
+    const oldValue = getters.groupResourceProfileId;
+    if (state.experiment) {
+      commit("updateExperimentGroupResourceProfileId", {
+        groupResourceProfileId,
+      });
+    } else {
+      commit("updateGroupResourceProfileId", { groupResourceProfileId });
+    }
+    if (oldValue !== groupResourceProfileId && state.applicationModuleId) {
+      await dispatch("loadApplicationDeployments");
+      await dispatch("applyGroupResourceProfile");
+    }
   },
   async updateComputeResourceHostId(
     { commit, dispatch, getters },
@@ -458,7 +478,7 @@ export const getters = {
   groupResourceProfileId: (state) =>
     state.experiment
       ? state.experiment.userConfigurationData.groupResourceProfileId
-      : null,
+      : state.groupResourceProfileId,
   findGroupResourceProfile: (state) => (groupResourceProfileId) =>
     state.groupResourceProfiles
       ? state.groupResourceProfiles.find(
@@ -661,8 +681,10 @@ export default new Vuex.Store({
     groupResourceProfiles: null,
     applicationModuleId: null,
     appDeploymentQueues: [],
+    workspacePreferences: null,
     // Lazy state fields that will be copied to the experiment once it is loaded
     queueName: null,
+    groupResourceProfileId: null,
   },
   mutations,
   actions,

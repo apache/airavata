@@ -2,10 +2,11 @@
   <b-form-group :label="label" label-for="group-resource-profile">
     <b-form-select
       id="group-resource-profile"
-      v-model="groupResourceProfileId"
+      :value="groupResourceProfileId"
       :options="groupResourceProfileOptions"
       required
       @change="groupResourceProfileChanged"
+      @input.native.stop
     >
       <template slot="first">
         <option :value="null" disabled>
@@ -28,7 +29,7 @@ export default {
   props: {
     value: {
       type: String,
-      required: true,
+      default: null,
     },
     label: {
       type: String,
@@ -36,15 +37,13 @@ export default {
     },
   },
   store: store,
-  data() {
-    return {
-      groupResourceProfileId: this.value,
-    };
-  },
   async mounted() {
-    await this.$store.dispatch("loadGroupResourceProfiles");
+    await this.$store.dispatch("initializeGroupResourceProfileId", {
+      groupResourceProfileId: this.value,
+    });
   },
   computed: {
+    ...mapGetters(["groupResourceProfileId"]),
     groupResourceProfileOptions: function () {
       if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
         const groupResourceProfileOptions = this.groupResourceProfiles.map(
@@ -67,7 +66,9 @@ export default {
   },
   methods: {
     groupResourceProfileChanged: function (groupResourceProfileId) {
-      this.groupResourceProfileId = groupResourceProfileId;
+      this.$store.dispatch("updateGroupResourceProfileId", {
+        groupResourceProfileId,
+      });
       this.emitValueChanged();
     },
     emitValueChanged: function () {
@@ -80,8 +81,12 @@ export default {
     },
   },
   watch: {
-    value() {
-      this.groupResourceProfileId = this.value;
+    value(newValue) {
+      if (newValue !== this.groupResourceProfileId) {
+        this.$store.dispatch("updateGroupResourceProfileId", {
+          groupResourceProfileId: newValue,
+        });
+      }
     },
   },
 };
