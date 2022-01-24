@@ -37,7 +37,7 @@ export default {
     },
   },
   store: store,
-  async mounted() {
+  async created() {
     await this.$store.dispatch("initializeGroupResourceProfileId", {
       groupResourceProfileId: this.value,
     });

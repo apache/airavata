@@ -29,8 +29,11 @@ export const mutations = {
   updateGroupResourceProfileId(state, { groupResourceProfileId }) {
     state.groupResourceProfileId = groupResourceProfileId;
   },
-  updateResourceHostId(state, { resourceHostId }) {
+  updateExperimentResourceHostId(state, { resourceHostId }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
+  },
+  updateResourceHostId(state, { resourceHostId }) {
+    state.resourceHostId = resourceHostId;
   },
   updateQueueName(state, { queueName }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
@@ -281,7 +284,19 @@ export const actions = {
       dispatch("applyBatchQueueResourcePolicy");
     }
   },
-  async initializeResourceHostId({ commit, dispatch, getters }) {
+  async initializeComputeResources(
+    { commit, dispatch },
+    { applicationModuleId, groupResourceProfileId }
+  ) {
+    commit("setApplicationModuleId", { applicationModuleId });
+
+    if (groupResourceProfileId) {
+      await dispatch("loadApplicationDeployments");
+      await dispatch("loadAppDeploymentQueues");
+      await dispatch("applyGroupResourceProfile");
+    }
+  },
+  async initializeResourceHostId({ commit, dispatch, getters, state }) {
     // if there isn't a selected compute resource or there is but it isn't in
     // the list of app deployments, set a default one
     // Returns true if the resourceHostId changed
@@ -290,9 +305,15 @@ export const actions = {
       !getters.computeResources.find((crid) => crid === getters.resourceHostId)
     ) {
       const defaultResourceHostId = await dispatch("getDefaultResourceHostId");
-      commit("updateResourceHostId", {
-        resourceHostId: defaultResourceHostId,
-      });
+      if (state.experiment) {
+        commit("updateExperimentResourceHostId", {
+          resourceHostId: defaultResourceHostId,
+        });
+      } else {
+        commit("updateResourceHostId", {
+          resourceHostId: defaultResourceHostId,
+        });
+      }
       return true;
     }
     return false;
@@ -493,7 +514,7 @@ export const getters = {
     state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .resourceHostId
-      : null,
+      : state.resourceHostId,
   computeResources: (state) =>
     state.applicationDeployments.map((dep) => dep.computeHostId),
   applicationDeployment: (state, getters) => {
@@ -685,6 +706,7 @@ export default new Vuex.Store({
     // Lazy state fields that will be copied to the experiment once it is loaded
     queueName: null,
     groupResourceProfileId: null,
+    resourceHostId: null,
   },
   mutations,
   actions,

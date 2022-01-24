@@ -13,6 +13,17 @@ import ComputeResourceSelector from "./ComputeResourceSelector.vue";
 
 export default {
   name: "experiment-compute-resource-selector",
+  props: {
+    applicationModuleId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      initialized: false,
+    };
+  },
   store: store,
   components: {
     ComputeResourceSelector,
@@ -22,6 +33,7 @@ export default {
       // compute resources for the current set of application deployments
       "computeResources",
       "resourceHostId",
+      "groupResourceProfileId",
     ]),
   },
   methods: {
@@ -30,6 +42,17 @@ export default {
       this.$store.dispatch("updateComputeResourceHostId", {
         computeResourceId,
       });
+    },
+  },
+  watch: {
+    groupResourceProfileId(groupResourceProfileId) {
+      if (!this.initialized && groupResourceProfileId) {
+        this.$store.dispatch("initializeComputeResources", {
+          applicationModuleId: this.applicationModuleId,
+          groupResourceProfileId: groupResourceProfileId,
+        });
+        this.initialized = true;
+      }
     },
   },
 };
