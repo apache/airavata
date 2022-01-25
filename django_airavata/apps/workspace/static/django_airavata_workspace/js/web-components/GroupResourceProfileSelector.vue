@@ -37,10 +37,11 @@ export default {
     },
   },
   store: store,
-  async created() {
-    await this.$store.dispatch("initializeGroupResourceProfileId", {
+  created() {
+    this.$store.dispatch("initializeGroupResourceProfileId", {
       groupResourceProfileId: this.value,
     });
+    this.$store.dispatch("loadGroupResourceProfiles");
   },
   computed: {
     ...mapGetters(["groupResourceProfileId"]),

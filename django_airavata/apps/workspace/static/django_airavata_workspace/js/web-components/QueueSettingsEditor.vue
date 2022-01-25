@@ -12,22 +12,22 @@
           <div class="row">
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ nodeCount }}
+                {{ getNodeCount }}
               </h3>
               <span class="text-muted text-uppercase">NODE COUNT</span>
             </div>
             <div class="col">
               <h3 class="h5 mb-0">
-                {{ totalCPUCount }}
+                {{ getTotalCPUCount }}
               </h3>
               <span class="text-muted text-uppercase">CORE COUNT</span>
             </div>
             <div class="col">
-              <h3 class="h5 mb-0">{{ wallTimeLimit }} minutes</h3>
+              <h3 class="h5 mb-0">{{ getWallTimeLimit }} minutes</h3>
               <span class="text-muted text-uppercase">TIME LIMIT</span>
             </div>
             <div class="col" v-if="maxMemory > 0">
-              <h3 class="h5 mb-0">{{ totalPhysicalMemory }} MB</h3>
+              <h3 class="h5 mb-0">{{ getTotalPhysicalMemory }} MB</h3>
               <span class="text-muted text-uppercase">PHYSICAL MEMORY</span>
             </div>
           </div>
@@ -52,7 +52,7 @@
           type="number"
           min="1"
           :max="maxAllowedNodes"
-          :value="nodeCount"
+          :value="getNodeCount"
           required
           @input.native.stop="updateNodeCount"
         >
@@ -68,7 +68,7 @@
           type="number"
           min="1"
           :max="maxAllowedCores"
-          :value="totalCPUCount"
+          :value="getTotalCPUCount"
           required
           @input.native.stop="updateTotalCPUCount"
         >
@@ -88,7 +88,7 @@
             type="number"
             min="1"
             :max="maxAllowedWalltime"
-            :value="wallTimeLimit"
+            :value="getWallTimeLimit"
             required
             @input.native.stop="updateWallTimeLimit"
           >
@@ -110,7 +110,7 @@
             type="number"
             min="0"
             :max="maxMemory"
-            :value="totalPhysicalMemory"
+            :value="getTotalPhysicalMemory"
             @input.native.stop="updateTotalPhysicalMemory"
           >
           </b-form-input>
@@ -144,11 +144,27 @@ export default {
     queueName: {
       type: String,
     },
+    nodeCount: {
+      type: String,
+    },
+    "total-cpu-count": {
+      type: String,
+    },
+    wallTimeLimit: {
+      type: String
+    },
+    totalPhysicalMemory: {
+      type: String
+    }
   },
   created() {
-    if (this.queueName && this.selectedQueueName !== this.queueName) {
-      this.queueChanged(this.queueName);
-    }
+    this.$store.dispatch("initializeQueueSettings", {
+      queueName: this.queueName,
+      nodeCount: this.nodeCount,
+      totalCPUCount: this.totalCPUCount,
+      wallTimeLimit: this.wallTimeLimit,
+      totalPhysicalMemory: this.totalPhysicalMemory,
+    });
   },
   data() {
     return {
@@ -164,11 +180,14 @@ export default {
       maxAllowedWalltime: "maxAllowedWalltime",
       maxMemory: "maxMemory",
       selectedQueueName: "queueName",
-      totalCPUCount: "totalCPUCount",
-      nodeCount: "nodeCount",
-      wallTimeLimit: "wallTimeLimit",
-      totalPhysicalMemory: "totalPhysicalMemory",
+      getTotalCPUCount: "totalCPUCount",
+      getNodeCount: "nodeCount",
+      getWallTimeLimit: "wallTimeLimit",
+      getTotalPhysicalMemory: "totalPhysicalMemory",
     }),
+    totalCPUCount() {
+      return this.totalCpuCount
+    },
     queueOptions() {
       if (!this.queues) {
         return [];
@@ -215,6 +234,26 @@ export default {
     queueName(value) {
       if (value && this.selectedQueueName !== value) {
         this.queueChanged(value);
+      }
+    },
+    nodeCount(value) {
+      if (value && this.getNodeCount !== value) {
+        this.$store.dispatch("updateNodeCount", {nodeCount: value})
+      }
+    },
+    totalCPUCount(value) {
+      if (value && this.getTotalCPUCount !== value) {
+        this.$store.dispatch("updateTotalCPUCount", {totalCPUCount: value})
+      }
+    },
+    wallTimeLimit(value) {
+      if (value && this.getWallTimeLimit !== value) {
+        this.$store.dispatch("updateWallTimeLimit", {wallTimeLimit: value})
+      }
+    },
+    totalPhysicalMemory(value) {
+      if (value && this.getTotalPhysicalMemory !== value) {
+        this.$store.dispatch("updateTotalPhysicalMemory", {totalPhysicalMemory: value})
       }
     },
   },

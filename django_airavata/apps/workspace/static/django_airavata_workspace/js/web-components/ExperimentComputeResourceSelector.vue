@@ -14,15 +14,20 @@ import ComputeResourceSelector from "./ComputeResourceSelector.vue";
 export default {
   name: "experiment-compute-resource-selector",
   props: {
+    value: {
+      type: String,
+      default: null,
+    },
     applicationModuleId: {
       type: String,
       required: true,
     },
   },
-  data() {
-    return {
-      initialized: false,
-    };
+  created() {
+    this.$store.dispatch("initializeComputeResources", {
+      applicationModuleId: this.applicationModuleId,
+      resourceHostId: this.value,
+    });
   },
   store: store,
   components: {
@@ -45,13 +50,11 @@ export default {
     },
   },
   watch: {
-    groupResourceProfileId(groupResourceProfileId) {
-      if (!this.initialized && groupResourceProfileId) {
-        this.$store.dispatch("initializeComputeResources", {
-          applicationModuleId: this.applicationModuleId,
-          groupResourceProfileId: groupResourceProfileId,
+    value(value) {
+      if (value && value !== this.resourceHostId) {
+        this.$store.dispatch("updateComputeResourceHostId", {
+          computeResourceId: value,
         });
-        this.initialized = true;
       }
     },
   },
