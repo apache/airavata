@@ -44,7 +44,7 @@ export default {
     this.$store.dispatch("loadGroupResourceProfiles");
   },
   computed: {
-    ...mapGetters(["groupResourceProfileId"]),
+    ...mapGetters(["groupResourceProfileId", "groupResourceProfiles"]),
     groupResourceProfileOptions: function () {
       if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
         const groupResourceProfileOptions = this.groupResourceProfiles.map(
@@ -63,14 +63,12 @@ export default {
         return [];
       }
     },
-    ...mapGetters(["groupResourceProfiles"]),
   },
   methods: {
     groupResourceProfileChanged: function (groupResourceProfileId) {
       this.$store.dispatch("updateGroupResourceProfileId", {
         groupResourceProfileId,
       });
-      this.emitValueChanged();
     },
     emitValueChanged: function () {
       const inputEvent = new CustomEvent("input", {
@@ -88,6 +86,9 @@ export default {
           groupResourceProfileId: newValue,
         });
       }
+    },
+    groupResourceProfileId() {
+      this.emitValueChanged();
     },
   },
 };

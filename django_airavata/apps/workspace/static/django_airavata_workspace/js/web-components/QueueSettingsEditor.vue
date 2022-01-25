@@ -42,6 +42,7 @@
           :options="queueOptions"
           required
           @change="queueChanged"
+          @input.native.stop
         >
         </b-form-select>
         <div slot="description">{{ queueDescription }}</div>
@@ -151,11 +152,11 @@ export default {
       type: String,
     },
     wallTimeLimit: {
-      type: String
+      type: String,
     },
     totalPhysicalMemory: {
-      type: String
-    }
+      type: String,
+    },
   },
   created() {
     this.$store.dispatch("initializeQueueSettings", {
@@ -186,7 +187,7 @@ export default {
       getTotalPhysicalMemory: "totalPhysicalMemory",
     }),
     totalCPUCount() {
-      return this.totalCpuCount
+      return this.totalCpuCount;
     },
     queueOptions() {
       if (!this.queues) {
@@ -203,6 +204,15 @@ export default {
     },
     queueDescription() {
       return this.queue ? this.queue.queueDescription : null;
+    },
+    currentQueueSettings() {
+      return {
+        queueName: this.selectedQueueName,
+        totalCPUCount: this.getTotalCPUCount,
+        nodeCount: this.getNodeCount,
+        wallTimeLimit: this.getWallTimeLimit,
+        totalPhysicalMemory: this.getTotalPhysicalMemory,
+      };
     },
   },
   methods: {
@@ -229,6 +239,14 @@ export default {
         totalPhysicalMemory: event.target.value,
       });
     },
+    emitValueChanged: function () {
+      const inputEvent = new CustomEvent("input", {
+        detail: [this.currentQueueSettings],
+        composed: true,
+        bubbles: true,
+      });
+      this.$el.dispatchEvent(inputEvent);
+    },
   },
   watch: {
     queueName(value) {
@@ -238,23 +256,28 @@ export default {
     },
     nodeCount(value) {
       if (value && this.getNodeCount !== value) {
-        this.$store.dispatch("updateNodeCount", {nodeCount: value})
+        this.$store.dispatch("updateNodeCount", { nodeCount: value });
       }
     },
     totalCPUCount(value) {
       if (value && this.getTotalCPUCount !== value) {
-        this.$store.dispatch("updateTotalCPUCount", {totalCPUCount: value})
+        this.$store.dispatch("updateTotalCPUCount", { totalCPUCount: value });
       }
     },
     wallTimeLimit(value) {
       if (value && this.getWallTimeLimit !== value) {
-        this.$store.dispatch("updateWallTimeLimit", {wallTimeLimit: value})
+        this.$store.dispatch("updateWallTimeLimit", { wallTimeLimit: value });
       }
     },
     totalPhysicalMemory(value) {
       if (value && this.getTotalPhysicalMemory !== value) {
-        this.$store.dispatch("updateTotalPhysicalMemory", {totalPhysicalMemory: value})
+        this.$store.dispatch("updateTotalPhysicalMemory", {
+          totalPhysicalMemory: value,
+        });
       }
+    },
+    currentQueueSettings() {
+      this.emitValueChanged();
     },
   },
 };
