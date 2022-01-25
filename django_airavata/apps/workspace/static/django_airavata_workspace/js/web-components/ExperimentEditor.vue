@@ -150,6 +150,10 @@ export default {
       const computeResourceSelectorEl = document.createElement(
         "adpf-experiment-compute-resource-selector"
       );
+      computeResourceSelectorEl.setAttribute(
+        "application-module-id",
+        this.applicationId
+      );
       this.$refs.computeResourceSelector.append(
         this.createSlot(
           "experiment-compute-resource",

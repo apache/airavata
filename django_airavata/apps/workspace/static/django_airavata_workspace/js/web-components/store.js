@@ -12,6 +12,8 @@ let resourceHostIdIsSet = false;
 let queueSettingsAreSet = false;
 let applicationModuleIdIsSet = false;
 
+// For non-experiment editing case, need to defer compute resource settings
+// initialization until each components' settings have been set
 const areAllComputeResourceSettingsSet = () =>
   groupResourceProfileIdIsSet &&
   resourceHostIdIsSet &&
@@ -36,7 +38,6 @@ export const mutations = {
   },
   updateExperimentGroupResourceProfileId(state, { groupResourceProfileId }) {
     state.experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
-    groupResourceProfileIdIsSet = true;
   },
   updateGroupResourceProfileId(state, { groupResourceProfileId }) {
     state.groupResourceProfileId = groupResourceProfileId;
@@ -44,7 +45,6 @@ export const mutations = {
   },
   updateExperimentResourceHostId(state, { resourceHostId }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
-    resourceHostIdIsSet = true;
   },
   updateResourceHostId(state, { resourceHostId }) {
     state.resourceHostId = resourceHostId;
@@ -52,8 +52,6 @@ export const mutations = {
   },
   updateExperimentQueueName(state, { queueName }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
-    // Assume all queue settings are initialized at once
-    queueSettingsAreSet = true;
   },
   updateQueueName(state, { queueName }) {
     state.queueName = queueName;
@@ -217,16 +215,11 @@ export const actions = {
     { commit, dispatch, state },
     { groupResourceProfileId }
   ) {
-    if (state.experiment) {
-      commit("updateExperimentGroupResourceProfileId", {
-        groupResourceProfileId,
-      });
-    } else {
-      commit("updateGroupResourceProfileId", {
-        groupResourceProfileId,
-      });
-    }
-    if (areAllComputeResourceSettingsSet()) {
+    commit("updateGroupResourceProfileId", {
+      groupResourceProfileId,
+    });
+    // only for non-experiment loading case do we call initializeComputeResourceSettings
+    if (!state.experiment && areAllComputeResourceSettingsSet()) {
       dispatch("initializeComputeResourceSettings");
     }
   },
@@ -274,21 +267,14 @@ export const actions = {
     { commit, dispatch, state },
     { queueName, nodeCount, totalCPUCount, wallTimeLimit, totalPhysicalMemory }
   ) {
-    if (state.experiment) {
-      commit("updateExperimentQueueName", { queueName });
-      commit("updateExperimentNodeCount", { nodeCount });
-      commit("updateExperimentTotalCPUCount", { totalCPUCount });
-      commit("updateExperimentWallTimeLimit", { wallTimeLimit });
-      commit("updateExperimentTotalPhysicalMemory", { totalPhysicalMemory });
-    } else {
-      commit("updateQueueName", { queueName });
-      commit("updateNodeCount", { nodeCount });
-      commit("updateTotalCPUCount", { totalCPUCount });
-      commit("updateWallTimeLimit", { wallTimeLimit });
-      commit("updateTotalPhysicalMemory", { totalPhysicalMemory });
-    }
+    commit("updateQueueName", { queueName });
+    commit("updateNodeCount", { nodeCount });
+    commit("updateTotalCPUCount", { totalCPUCount });
+    commit("updateWallTimeLimit", { wallTimeLimit });
+    commit("updateTotalPhysicalMemory", { totalPhysicalMemory });
 
-    if (areAllComputeResourceSettingsSet()) {
+    // only for non-experiment loading case do we call initializeComputeResourceSettings
+    if (!state.experiment && areAllComputeResourceSettingsSet()) {
       dispatch("initializeComputeResourceSettings");
     }
   },
@@ -389,19 +375,14 @@ export const actions = {
   },
   async initializeComputeResources(
     { commit, dispatch, state },
-    { applicationModuleId, resourceHostId }
+    { applicationModuleId, resourceHostId = null }
   ) {
     commit("setApplicationModuleId", { applicationModuleId });
-    if (state.experiment) {
-      commit("updateExperimentResourceHostId", {
-        resourceHostId,
-      });
-    } else {
-      commit("updateResourceHostId", {
-        resourceHostId,
-      });
-    }
-    if (areAllComputeResourceSettingsSet()) {
+    commit("updateResourceHostId", {
+      resourceHostId,
+    });
+    // only for non-experiment loading case do we call initializeComputeResourceSettings
+    if (!state.experiment && areAllComputeResourceSettingsSet()) {
       dispatch("initializeComputeResourceSettings");
     }
   },
