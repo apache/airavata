@@ -216,6 +216,14 @@ test("initializeGroupResourceProfileId: set to most recent group resource profil
         state.workspacePreferences.most_recent_group_resource_profile_id,
     }),
   ];
+  const expectedActions = [
+    {
+      type: "loadGroupResourceProfiles",
+    },
+    {
+      type: "loadWorkspacePreferences",
+    },
+  ];
 
   const g = {
     experiment: state.experiment,
@@ -224,18 +232,19 @@ test("initializeGroupResourceProfileId: set to most recent group resource profil
   };
   const expectedMutations = [
     {
-      type: "updateGroupResourceProfileId",
+      type: "updateExperimentGroupResourceProfileId",
       payload: {
         groupResourceProfileId:
           state.workspacePreferences.most_recent_group_resource_profile_id,
       },
     },
   ];
-  testAction(actions.initializeGroupResourceProfileId, {
+  testAction(actions.initializeGroupResourceProfile, {
     state,
     getters: g,
     expectedMutations,
     done,
+    expectedActions,
   });
 });
 
@@ -253,6 +262,14 @@ test("initializeGroupResourceProfileId: set to most recent group resource profil
         state.workspacePreferences.most_recent_group_resource_profile_id,
     }),
   ];
+  const expectedActions = [
+    {
+      type: "loadGroupResourceProfiles",
+    },
+    {
+      type: "loadWorkspacePreferences",
+    },
+  ];
   // experiment's grp isn't in the list of available grps
   expect(
     state.groupResourceProfiles.find(
@@ -268,18 +285,19 @@ test("initializeGroupResourceProfileId: set to most recent group resource profil
   };
   const expectedMutations = [
     {
-      type: "updateGroupResourceProfileId",
+      type: "updateExperimentGroupResourceProfileId",
       payload: {
         groupResourceProfileId:
           state.workspacePreferences.most_recent_group_resource_profile_id,
       },
     },
   ];
-  testAction(actions.initializeGroupResourceProfileId, {
+  testAction(actions.initializeGroupResourceProfile, {
     state,
     getters: g,
     expectedMutations,
     done,
+    expectedActions,
   });
 });
 
@@ -295,6 +313,14 @@ test("initializeGroupResourceProfileId: set to first group resource profile when
       groupResourceProfileId: "c84da77b-8ce6-457f-b5c7-c72a663d7f77",
     }),
   ];
+  const expectedActions = [
+    {
+      type: "loadGroupResourceProfiles",
+    },
+    {
+      type: "loadWorkspacePreferences",
+    },
+  ];
   const g = {
     experiment: state.experiment,
     findGroupResourceProfile: (groupResourceProfileId) =>
@@ -302,17 +328,18 @@ test("initializeGroupResourceProfileId: set to first group resource profile when
   };
   const expectedMutations = [
     {
-      type: "updateGroupResourceProfileId",
+      type: "updateExperimentGroupResourceProfileId",
       payload: {
         groupResourceProfileId: "c84da77b-8ce6-457f-b5c7-c72a663d7f77",
       },
     },
   ];
-  testAction(actions.initializeGroupResourceProfileId, {
+  testAction(actions.initializeGroupResourceProfile, {
     state,
     getters: g,
     expectedMutations,
     done,
+    expectedActions,
   });
 });
 
@@ -324,6 +351,14 @@ test("initializeGroupResourceProfileId: set to null when no longer has access", 
   state.workspacePreferences = new models.WorkspacePreferences();
   state.workspacePreferences.most_recent_group_resource_profile_id = null;
   state.groupResourceProfiles = [];
+  const expectedActions = [
+    {
+      type: "loadGroupResourceProfiles",
+    },
+    {
+      type: "loadWorkspacePreferences",
+    },
+  ];
   const g = {
     experiment: state.experiment,
     findGroupResourceProfile: (groupResourceProfileId) =>
@@ -331,17 +366,18 @@ test("initializeGroupResourceProfileId: set to null when no longer has access", 
   };
   const expectedMutations = [
     {
-      type: "updateGroupResourceProfileId",
+      type: "updateExperimentGroupResourceProfileId",
       payload: {
         groupResourceProfileId: null,
       },
     },
   ];
-  testAction(actions.initializeGroupResourceProfileId, {
+  testAction(actions.initializeGroupResourceProfile, {
     state,
     getters: g,
     expectedMutations,
     done,
+    expectedActions,
   });
 });
 
@@ -415,7 +451,7 @@ test("initializeResourceHostId: experiment has no resourceHostId, should dispatc
   ];
   const expectedMutations = [
     {
-      type: "updateResourceHostId",
+      type: "updateExperimentResourceHostId",
       payload: { resourceHostId: "resourceHostId1" },
     },
   ];
@@ -463,7 +499,7 @@ test("initializeResourceHostId: experiment has resourceHostId but not in list of
   ];
   const expectedMutations = [
     {
-      type: "updateResourceHostId",
+      type: "updateExperimentResourceHostId",
       payload: { resourceHostId: "resourceHostId2" },
     },
   ];
