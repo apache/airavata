@@ -83,7 +83,10 @@ public class ArchiveTask extends DataStagingTask {
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
             // Creating the tar file in the output path of the compute resource
-            String tarringCommand = "cd " + tarDirPath + " && tar -cvf " + tarCreationAbsPath + " ./* ";
+            // Finds the list of files that do not include directories and symlinks
+            String tarringCommand = "cd " + tarDirPath +
+                    " && find ./ -not -type l -not -type d -print0 | tar --null --files-from - -cvf " + tarCreationAbsPath;
+
             logger.info("Running tar creation command " + tarringCommand);
 
             try {
@@ -110,15 +113,21 @@ public class ArchiveTask extends DataStagingTask {
 
                     String destParent = destFilePath.substring(0, destFilePath.lastIndexOf("/"));
                     final String storageArchiveDir = "ARCHIVE";
-                    String unArchiveTarCommand = "mkdir -p " + storageArchiveDir + " && tar -xvf " + archiveFileName + " -C "
-                            + storageArchiveDir + " && rm " + archiveFileName + " && chmod 755 -f -R " + storageArchiveDir + "/*";
-                    logger.info("Running Un archiving command on storage resource " + unArchiveTarCommand);
+                    String[] unarchiveCommands = {
+                            "mkdir -p " + storageArchiveDir,
+                            "tar -xvf " + archiveFileName + " -C " + storageArchiveDir,
+                            "rm " + archiveFileName,
+                            "chmod 755 -f -R " + storageArchiveDir + "/*"
+                    };
 
                     try {
-                        CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(unArchiveTarCommand, destParent);
-                        if (unTarCommandOutput.getExitCode() != 0) {
-                            throw new TaskOnFailException("Failed while running the untar command " + unTarCommandOutput + ". Sout : " +
-                                    unTarCommandOutput.getStdOut() + ". Serr " + unTarCommandOutput.getStdError(), false, null);
+                        for (String command : unarchiveCommands) {
+                            logger.info("Running command {} as a part of the un-archiving process", command);
+                            CommandOutput unTarCommandOutput = storageResourceAdaptor.executeCommand(command, destParent);
+                            if (unTarCommandOutput.getExitCode() != 0) {
+                                throw new TaskOnFailException("Failed while running the un-archiving command " + command + ". Sout : " +
+                                        unTarCommandOutput.getStdOut() + ". Serr : " + unTarCommandOutput.getStdError(), false, null);
+                            }
                         }
                     } catch (AgentException e) {
                         throw new TaskOnFailException("Failed while running the untar command " + tarringCommand, false, null);
@@ -153,6 +162,7 @@ public class ArchiveTask extends DataStagingTask {
             } else {
                 logger.error(e.getReason());
             }
+            logger.error("Failed while un-archiving the data", e);
             return onFail(e.getReason(), e.isCritical(), e.getError());
 
         } catch (Exception e) {
