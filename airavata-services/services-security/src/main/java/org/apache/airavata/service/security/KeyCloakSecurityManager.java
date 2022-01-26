@@ -117,6 +117,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final static String CREDENTIAL_TOKEN_METHODS = "/airavata/getCredentialSummary|/airavata/getAllCredentialSummaries|/airavata/generateAndRegisterSSHKeys|/airavata/registerPwdCredential|/airavata/deleteSSHPubKey|/airavata/deletePWDCredential";
     // Misc. other methods needed for group based authorization
     private final static String GROUP_BASED_AUTH_METHODS = "/airavata/getGatewayGroups";
+    private final static String INTERMEDIATE_OUTPUTS_METHODS = "/airavata/fetchIntermediateOutputs|/airavata/getIntermediateOutputProcessStatus";
 
     private RegistryService.Client registryServiceClient = null;
     private SharingRegistryService.Client sharingRegistryServiceClient = null;
@@ -172,7 +173,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
                 "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
                 "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS + "|" + APPLICATION_MODULE_METHODS +
-                "|" + CREDENTIAL_TOKEN_METHODS);
+                "|" + CREDENTIAL_TOKEN_METHODS + "|" + INTERMEDIATE_OUTPUTS_METHODS);
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
@@ -190,7 +191,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|/airavata/getAllAppModules|/airavata/getApplicationModule|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
                 SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|" + GROUP_RESOURCE_PROFILE_METHODS +
                 "|" + APPLICATION_DEPLOYMENT_METHODS + "|" + GROUP_BASED_AUTH_METHODS + "|" + APPLICATION_MODULE_METHODS +
-                "|" + CREDENTIAL_TOKEN_METHODS);
+                "|" + CREDENTIAL_TOKEN_METHODS + "|" + INTERMEDIATE_OUTPUTS_METHODS);
 
         initializeSecurityInfra();
     }
