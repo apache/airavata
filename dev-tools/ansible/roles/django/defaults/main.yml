@@ -74,6 +74,7 @@ django_portal_js_build_dirs:
   - "django_airavata/apps/groups/static/django_airavata_groups/dist"
   - "django_airavata/apps/auth/static/django_airavata_auth/dist"
   - "django_airavata/apps/workspace/static/django_airavata_workspace/dist"
+  - "django_airavata/apps/workspace/static/django_airavata_workspace/wc"
   - "django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist"
 
 ## Keycloak related variables
