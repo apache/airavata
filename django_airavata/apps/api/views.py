@@ -619,18 +619,17 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
             self.authz_token, app_deployment_id)
         compute_resource = request.airavata_client.getComputeResource(
             request.authz_token, app_deployment.computeHostId)
-        # Override defaults with app deployment defaults
+        # Override defaults with app deployment default queue, if defined
         batch_queues = []
         for batch_queue in compute_resource.batchQueues:
             if app_deployment.defaultQueueName:
-                batch_queue.isDefaultQueue = (
-                    app_deployment.defaultQueueName == batch_queue.queueName)
-            if app_deployment.defaultNodeCount:
-                batch_queue.defaultNodeCount = app_deployment.defaultNodeCount
-            if app_deployment.defaultCPUCount:
-                batch_queue.defaultCPUCount = app_deployment.defaultCPUCount
-            if app_deployment.defaultWalltime:
-                batch_queue.defaultWalltime = app_deployment.defaultWalltime
+                if app_deployment.defaultQueueName == batch_queue.queueName:
+                    batch_queue.isDefaultQueue = True
+                    batch_queue.defaultNodeCount = app_deployment.defaultNodeCount
+                    batch_queue.defaultCPUCount = app_deployment.defaultCPUCount
+                    batch_queue.defaultWalltime = app_deployment.defaultWalltime
+                else:
+                    batch_queue.isDefaultQueue = False
             batch_queues.append(batch_queue)
         serializer = serializers.BatchQueueSerializer(
             batch_queues, many=True, context={'request': request})
