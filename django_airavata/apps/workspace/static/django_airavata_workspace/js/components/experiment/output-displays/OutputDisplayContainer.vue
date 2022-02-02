@@ -26,7 +26,15 @@
     />
     <div slot="footer" v-if="dataProducts.length > 0 || isExecuting">
       <template v-if="isExecuting">
-        <b-btn size="sm" @click="fetchLatest">Fetch Latest</b-btn>
+        <span v-if="experimentOutput.intermediateOutput.processStatus"
+          >Status of intermediate output fetch:
+          {{
+            experimentOutput.intermediateOutput.processStatus.state.name
+          }}</span
+        >
+        <b-btn size="sm" @click="fetchLatest" :disabled="fetchLatestDisabled"
+          >Fetch Latest</b-btn
+        >
       </template>
       <template v-else>
         <!-- TODO: support downloading URI_COLLECTIONs as well -->
@@ -156,6 +164,16 @@ export default {
     },
     hasInteractiveParameters() {
       return this.viewData && this.viewData.interactive;
+    },
+    canFetchIntermediateOutput() {
+      return (
+        this.isExecuting &&
+        (!this.experimentOutput.intermediateOutput.processStatus ||
+          this.experimentOutput.intermediateOutput.processStatus.isFinished)
+      );
+    },
+    fetchLatestDisabled() {
+      return !this.canFetchIntermediateOutput;
     },
   },
   methods: {

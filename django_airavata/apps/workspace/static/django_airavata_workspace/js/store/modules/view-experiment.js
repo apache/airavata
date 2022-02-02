@@ -43,10 +43,10 @@ export const actions = {
       dispatch("initPollingExperiment");
     }
   },
-  async loadExperiment({ commit }, { experimentId }) {
+  async loadExperiment({ commit }, { experimentId, showSpinner = false }) {
     const fullExperiment = await services.FullExperimentService.retrieve(
       { lookup: experimentId },
-      { ignoreErrors: true, showSpinner: false }
+      { ignoreErrors: true, showSpinner }
     );
     commit("setFullExperiment", { fullExperiment });
   },
@@ -111,7 +111,11 @@ export const actions = {
         outputNames,
       },
     });
-    dispatch("loadExperiment", { experimentId: getters.experimentId });
+    // Block UI until we get the current status of intermediate output fetches
+    dispatch("loadExperiment", {
+      experimentId: getters.experimentId,
+      showSpinner: true,
+    });
   },
 };
 
