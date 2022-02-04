@@ -24,21 +24,19 @@
       :parameters="viewData.interactive"
       @input="parametersUpdated"
     />
-    <div slot="footer" v-if="dataProducts.length > 0 || isExecuting">
+    <div slot="footer" v-if="dataProducts.length > 0 || isExecuting" class="d-flex justify-content-end align-items-baseline">
       <template v-if="isExecuting">
-        <span v-if="experimentOutput.intermediateOutput.processStatus"
-          >Status of intermediate output fetch:
-          {{
-            experimentOutput.intermediateOutput.processStatus.state.name
-          }}</span
+        <span class="small text-muted mr-2">
+          {{ fetchIntermediateOutputStatusMessage }}</span
         >
-        <b-btn size="sm" @click="fetchLatest" :disabled="fetchLatestDisabled"
-          >Fetch Latest</b-btn
+        <b-btn size="sm" @click="fetchLatest" :disabled="fetchLatestDisabled">
+          <b-spinner small v-if="fetchLatestDisabled"></b-spinner>
+          Fetch Latest</b-btn
         >
       </template>
       <template v-else>
         <!-- TODO: support downloading URI_COLLECTIONs as well -->
-        <b-btn size="sm" :href="dataProducts[0].downloadURL">Download</b-btn>
+        <b-btn size="sm" :href="dataProducts[0].downloadURL + '&download'">Download</b-btn>
       </template>
     </div>
   </b-card>
@@ -55,6 +53,7 @@ import NotebookOutputDisplay from "./NotebookOutputDisplay";
 import InteractiveParametersPanel from "./interactive-parameters/InteractiveParametersPanel";
 import OutputViewDataLoader from "./OutputViewDataLoader";
 import { mapActions, mapGetters, mapState } from "vuex";
+import ProcessState from "django-airavata-api/static/django_airavata_api/js/models/ProcessState";
 
 export default {
   name: "output-viewer-container",
@@ -168,12 +167,46 @@ export default {
     canFetchIntermediateOutput() {
       return (
         this.isExecuting &&
-        (!this.experimentOutput.intermediateOutput.processStatus ||
-          this.experimentOutput.intermediateOutput.processStatus.isFinished)
+        (!this.experimentOutput.intermediateOutput ||
+          !this.experimentOutput.intermediateOutput.processStatus ||
+          (this.experimentOutput.intermediateOutput.processStatus &&
+            this.experimentOutput.intermediateOutput.processStatus.isFinished))
       );
     },
     fetchLatestDisabled() {
       return !this.canFetchIntermediateOutput;
+    },
+    fetchIntermediateOutputStatusMessage() {
+      let msg = "";
+      if (
+        this.experimentOutput.intermediateOutput &&
+        this.experimentOutput.intermediateOutput.dataProducts &&
+        this.experimentOutput.intermediateOutput.dataProducts.length > 0
+      ) {
+        const timestamp = this.experimentOutput.intermediateOutput
+          .dataProducts[0].lastModifiedTime;
+        msg +=
+          "Latest output fetched on " +
+          timestamp.toLocaleString([], {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }) +
+          ". ";
+      }
+      if (
+        this.experimentOutput.intermediateOutput &&
+        this.experimentOutput.intermediateOutput.processStatus
+      ) {
+        if (
+          this.experimentOutput.intermediateOutput.processStatus.state ===
+          ProcessState.FAILED
+        ) {
+          msg += "Last fetch failed, please try again.";
+        }
+      }
+      return msg;
+      // TODO: show timestamp for data products
+      // TODO: show failure message if failed
     },
   },
   methods: {

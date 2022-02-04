@@ -1,18 +1,43 @@
 <template>
   <div>
-    <div v-for="dp in dataProducts" :key="dp.productUri">
-      <img
-        v-if="dp.isImage && dp.downloadURL"
-        class="image-preview rounded"
-        :src="dp.downloadURL"
+    <!-- Show the final data products if available, otherwise, display intermediate outputs -->
+    <template v-if="dataProducts.length > 0">
+      <pre v-if="finalOutputText">
+        {{ finalOutputText }}
+      </pre>
+      <div v-else v-for="dp in dataProducts" :key="dp.productUri">
+        <img
+          v-if="dp.isImage && dp.downloadURL"
+          class="image-preview rounded"
+          :src="dp.downloadURL"
+        />
+        <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
+      </div>
+    </template>
+
+    <template v-else-if="intermediateOutputDataProduct">
+      <pre v-if="intermediateOutputText">
+        {{ intermediateOutputText }}
+      </pre>
+      <data-product-viewer
+        v-else
+        :data-product="intermediateOutputDataProduct"
+        :mime-type="fileMimeType"
       />
-      <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
-    </div>
+    </template>
+    <template v-else-if="intermediateOutputMultipleDataProducts">
+      <div
+        v-for="dp in intermediateOutputMultipleDataProducts"
+        :key="dp.productUri"
+      >
+        <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
-import { models } from "django-airavata-api";
+import { models, utils } from "django-airavata-api";
 import DataProductViewer from "django-airavata-common-ui/js/components/DataProductViewer.vue";
 
 export default {
@@ -30,6 +55,17 @@ export default {
   components: {
     DataProductViewer,
   },
+  data() {
+    return {
+      intermediateOutputText: null,
+      finalOutputText: null,
+    };
+  },
+  async created() {
+    // Check and load intermediate or final output as text if available and applicable
+    this.loadIntermediateOutputText();
+    this.loadFinalOutputText();
+  },
   computed: {
     fileMimeType() {
       if (this.experimentOutput.fileMetadataMimeType) {
@@ -43,6 +79,92 @@ export default {
         return null;
       }
     },
+    intermediateOutputProcessStatusState() {
+      if (
+        this.experimentOutput &&
+        this.experimentOutput.intermediateOutput &&
+        this.experimentOutput.intermediateOutput.processStatus
+      ) {
+        return this.experimentOutput.intermediateOutput.processStatus.state;
+      } else {
+        return null;
+      }
+    },
+    intermediateOutputDataProduct() {
+      if (
+        this.experimentOutput &&
+        this.experimentOutput.intermediateOutput &&
+        this.experimentOutput.intermediateOutput.dataProducts &&
+        this.experimentOutput.intermediateOutput.dataProducts.length === 1
+      ) {
+        return this.experimentOutput.intermediateOutput.dataProducts[0];
+      } else {
+        return null;
+      }
+    },
+    intermediateOutputMultipleDataProducts() {
+      if (
+        this.experimentOutput &&
+        this.experimentOutput.intermediateOutput &&
+        this.experimentOutput.intermediateOutput.dataProducts &&
+        this.experimentOutput.intermediateOutput.dataProducts.length > 1
+      ) {
+        return this.experimentOutput.intermediateOutput.dataProducts;
+      } else {
+        return null;
+      }
+    },
+    intermediateOutputFileSize() {
+      if (this.intermediateOutputDataProduct) {
+        return this.intermediateOutputDataProduct.filesize;
+      } else {
+        return -1;
+      }
+    },
+  },
+  methods: {
+    async loadIntermediateOutputText() {
+      if (
+        this.intermediateOutputDataProduct &&
+        (this.intermediateOutputDataProduct.isText ||
+          this.fileMimeType === "text/plain") &&
+        this.intermediateOutputDataProduct.downloadURL
+      ) {
+        this.intermediateOutputText = await utils.FetchUtils.get(
+          this.intermediateOutputDataProduct.downloadURL,
+          "",
+          {
+            responseType: "text",
+          }
+        );
+      }
+    },
+    async loadFinalOutputText() {
+      if (
+        this.dataProducts &&
+        this.dataProducts.length === 1 &&
+        (this.dataProducts[0].isText || this.fileMimeType === "text/plain") &&
+        this.dataProducts[0].downloadURL
+      ) {
+        this.finalOutputText = await utils.FetchUtils.get(
+          this.dataProducts[0].downloadURL,
+          "",
+          {
+            responseType: "text",
+          }
+        );
+      }
+    },
+  },
+  watch: {
+    intermediateOutputFileSize() {
+      this.loadIntermediateOutputText();
+    },
+    dataProducts(value, oldValue) {
+      if ((!oldValue || oldValue.length === 0) && value && value.length > 0) {
+        this.loadFinalOutputText();
+      }
+    },
   },
 };
 </script>
@@ -51,5 +173,17 @@ export default {
   display: block;
   max-width: 100%;
   max-height: 120px;
+}
+pre {
+  max-height: 340px;
+  overflow: auto;
+  max-width: 100%;
+  margin-bottom: 0;
+  /* background-color: #efefef; */
+  background-color: var(--light);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--gray);
+  border-radius: 3px;
 }
 </style>
