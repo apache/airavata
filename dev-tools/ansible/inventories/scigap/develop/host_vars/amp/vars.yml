@@ -57,7 +57,7 @@ gateway_data_store_resource_id: "dev.ampgateway.org_b8228bc7-fad2-45db-8ed1-47de
 gateway_data_store_hostname: "dev.ampgateway.org"
 # gateway_data_store_ssh_public_key: "TODO"
 
-django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu')]"
+django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
