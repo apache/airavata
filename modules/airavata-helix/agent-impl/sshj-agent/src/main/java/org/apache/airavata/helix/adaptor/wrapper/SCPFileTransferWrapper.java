@@ -59,9 +59,7 @@ public class SCPFileTransferWrapper implements FileTransfer, Closeable {
     @Override
     public void download(String remotePath, LocalDestFile localFile) throws IOException {
         // Handle the remote file paths that has spaces.
-        if (remotePath.contains(" ")) {
-            remotePath = "\"" + remotePath + "\"";
-        }
+        remotePath = remotePath.replace(" ", "\\ ");
 
         scpFileTransfer.download(remotePath, localFile);
     }
