@@ -53,8 +53,8 @@ from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import (
     ExperimentState,
     ExperimentStatus,
-    ProcessStatus,
-    TaskState
+    ProcessState,
+    ProcessStatus
 )
 from airavata.model.task.ttypes import TaskTypes
 from airavata.model.user.ttypes import UserProfile
@@ -469,7 +469,7 @@ class ExperimentSerializer(
 
     def _add_intermediate_output_information(self, experiment, representation):
         request = self.context['request']
-        # sort the processes and filter to just the output fetching ones
+        # sort the processes (most recent first) and filter to just the output fetching ones
         processes = sorted(experiment.processes, key=lambda p: p.creationTime, reverse=True) if experiment.processes else []
         output_fetching_processes = []
         for process in processes:
@@ -490,10 +490,8 @@ class ExperimentSerializer(
                     output["intermediateOutput"] = {"processStatus": serializer.data}
                     most_recent_completed_process_output = None
                     for process in output_fetching_processes:
-                        tasks = process.tasks
-                        last_task_statuses = map(lambda t: t.taskStatuses[-1], tasks)
-                        # If any tasks aren't complete, skip this process
-                        if any(map(lambda ts: ts.state != TaskState.COMPLETED, last_task_statuses)):
+                        # Skip over any processes that aren't completed
+                        if (len(process.processStatuses) == 0 or process.processStatuses[-1].state != ProcessState.COMPLETED):
                             continue
                         for process_output in process.processOutputs:
                             if process_output.name == output["name"]:
@@ -506,15 +504,6 @@ class ExperimentSerializer(
                         data_product_uris = []
                         if most_recent_completed_process_output.value.startswith('airavata-dp://'):
                             data_product_uris = most_recent_completed_process_output.value.split(',')
-                        else:
-                            # TODO: should really find the process and use the data
-                            # product uris from the process outputs instead, this is
-                            # just a temporary workaround
-                            data_product_uri = user_storage.user_file_exists(
-                                request, os.path.join("intermediates", most_recent_completed_process_output.value),
-                                experiment_id=experiment.experimentId)
-                            if data_product_uri:
-                                data_product_uris.append(data_product_uri)
                         data_products = []
                         for data_product_uri in data_product_uris:
                             data_product = request.airavata_client.getDataProduct(
