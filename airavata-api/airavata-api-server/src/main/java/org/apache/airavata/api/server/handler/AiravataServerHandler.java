@@ -1986,14 +1986,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
                     .filter(p -> p.getProcessOutputs().stream().anyMatch(o -> outputNames.contains(o.getName())))
                     .collect(Collectors.toList());
-            // FIXME: currently these processes don't always get a final COMPLETED/FAILED status so need to look at task status
-            // Second, get the last (most recent) status of all of the intermediate output fetching tasks
-            List<TaskStatus> lastOutputFetchTaskStatuses = intermediateOutputFetchProcesses.stream()
-                    .flatMap(p -> p.getTasks().stream().map(t -> t.getTaskStatuses().get(t.getTaskStatusesSize() - 1)))
-                    .collect(Collectors.toList());
-            // Third, check if any of those tasks are still running
-            boolean anyOutputFetchesStillRunning = anyTasksStillRunning(lastOutputFetchTaskStatuses);
-            if (anyOutputFetchesStillRunning) {
+            if (!intermediateOutputFetchProcesses.isEmpty()) {
                 throw new InvalidRequestException(
                         "There are already intermediate output fetching tasks running for those outputs.");
             }
@@ -2055,23 +2048,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             // Determine the most recent status for the most recent process
             ProcessModel process = mostRecentOutputFetchProcess.get();
             if (process.getProcessStatusesSize() > 0) {
-                List<TaskStatus> lastOutputFetchTaskStatuses = process.getTasks().stream()
-                        .map(t -> t.getTaskStatuses().get(t.getTaskStatusesSize() - 1))
-                        .collect(Collectors.toList());
-                boolean anyOutputFetchesStillRunning = anyTasksStillRunning(lastOutputFetchTaskStatuses);
-
-                ProcessStatus mostRecentProcessStatus = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
-                if (anyOutputFetchesStillRunning || mostRecentProcessStatus.getState() == ProcessState.COMPLETED || mostRecentProcessStatus.getState() == ProcessState.FAILED) {
-                    result = mostRecentProcessStatus;
-                } else {
-                    // FIXME: for now simulating a final process status based on task status
-                    boolean anyFailures = lastOutputFetchTaskStatuses.stream().anyMatch(ts -> ts.getState() == TaskState.FAILED);
-                    if (anyFailures) {
-                        result = new ProcessStatus(ProcessState.FAILED);
-                    } else {
-                        result = new ProcessStatus(ProcessState.COMPLETED);
-                    }
-                }
+                result = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
             } else {
                 // Process has no statuses so it must be created but not yet running
                 result = new ProcessStatus(ProcessState.CREATED);
@@ -2081,7 +2058,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (InvalidRequestException | AuthorizationException e) {
-            logger.error(e.getMessage(), e);
+            logger.debug(e.getMessage(), e);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             throw e;
@@ -6337,30 +6314,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         MessageContext messageContext = new MessageContext(event, MessageType.INTERMEDIATE_OUTPUTS, "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
-    }
-
-    /**
-     * Return true if any of the most recent task statuses indicate a task is still running.
-     * @param mostRecentTaskStatuses
-     * @return
-     */
-    private boolean anyTasksStillRunning(List<TaskStatus> mostRecentTaskStatuses) {
-        boolean anyTasksStillRunning = mostRecentTaskStatuses.stream().anyMatch(ts -> {
-            boolean stillRunning = true;
-            switch (ts.getState()) {
-                case CREATED:
-                case EXECUTING:
-                    stillRunning = true;
-                    break;
-                case CANCELED:
-                case COMPLETED:
-                case FAILED:
-                    stillRunning = false;
-                    break;
-            }
-            return stillRunning;
-        });
-        return anyTasksStillRunning;
     }
 
     private void shareEntityWithAdminGatewayGroups(RegistryService.Client regClient, SharingRegistryService.Client sharingClient, Entity entity) throws TException {
