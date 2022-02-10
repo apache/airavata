@@ -316,8 +316,15 @@ public abstract class AiravataTask extends AbstractTask {
                             productUris.add(productUri);
                         }
                         expOutput.setValue(String.join(",", productUris));
-                        getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
-                                Collections.singletonList(expOutput), experimentId);
+                        if (!skipExperimentStatusPublish) {
+                            getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
+                                    Collections.singletonList(expOutput), experimentId);
+                        }
+
+                        if (!skipProcessStatusPublish) {
+                            getRegistryServiceClient().addExperimentProcessOutputs("PROCESS_OUTPUT",
+                                    Collections.singletonList(expOutput), processId);
+                        }
                     }
                 }
             }
