@@ -670,8 +670,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					ExperimentStatus status = new ExperimentStatus();
 					ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
 					log.info("expId: {}, processId: {} :- Process status changed event received for status {}",
-							processIdentity.getExperimentId(), processIdentity.getProcessId(),
-							processStatusChangeEvent.getState().name());
+					processIdentity.getExperimentId(), processIdentity.getProcessId(),
+					processStatusChangeEvent.getState().name());
+					try {
+						ProcessModel process = OrchestratorUtils.getProcess(processIdentity.getProcessId());
+						boolean isIntermediateOutputFetchingProcess = process.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING);
+						if (isIntermediateOutputFetchingProcess) {
+							log.info("Not updating experiment status because process is an intermediate output fetching one");
+							return;
+						}
+					} catch (ApplicationSettingsException e) {
+						throw new RuntimeException("Error getting process " + processIdentity.getProcessId(), e);
+					}
 					switch (processStatusChangeEvent.getState()) {
 //						case CREATED:
 //						case VALIDATED:

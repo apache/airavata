@@ -29,6 +29,7 @@ import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
 import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
+import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
@@ -153,6 +154,21 @@ public class PreWorkflowManager extends WorkflowManager {
                     allTasks.add(airavataTask);
                 }
             }
+        }
+
+        // For intermediate transfers add a final CompletingTask
+        if (intermediateTransfer) {
+            CompletingTask completingTask = new CompletingTask();
+            completingTask.setGatewayId(experimentModel.getGatewayId());
+            completingTask.setExperimentId(experimentModel.getExperimentId());
+            completingTask.setProcessId(processModel.getProcessId());
+            completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() + "-");
+            completingTask.setForceRunTask(forceRun);
+            completingTask.setSkipAllStatusPublish(true);
+            if (allTasks.size() > 0) {
+                allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
+            }
+            allTasks.add(completingTask);
         }
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
