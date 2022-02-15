@@ -146,6 +146,8 @@ export const getters = {
     getters.experiment &&
     getters.experiment.latestStatus &&
     getters.experiment.latestStatus.state === ExperimentState.EXECUTING,
+  isFinished: (state, getters) =>
+    getters.experiment && getters.experiment.isFinished,
   finishedOrExecuting: (state, getters) =>
     getters.experiment &&
     (getters.experiment.isFinished || getters.isExecuting),

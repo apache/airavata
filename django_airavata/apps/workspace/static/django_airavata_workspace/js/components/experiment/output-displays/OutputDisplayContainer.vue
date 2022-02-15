@@ -24,7 +24,11 @@
       :parameters="viewData.interactive"
       @input="parametersUpdated"
     />
-    <div slot="footer" v-if="dataProducts.length > 0 || isExecuting" class="d-flex justify-content-end align-items-baseline">
+    <div
+      slot="footer"
+      v-if="dataProducts.length > 0 || isExecuting"
+      class="d-flex justify-content-end align-items-baseline"
+    >
       <template v-if="isExecuting">
         <span class="small text-muted mr-2">
           {{ fetchIntermediateOutputStatusMessage }}</span
@@ -36,7 +40,9 @@
       </template>
       <template v-else>
         <!-- TODO: support downloading URI_COLLECTIONs as well -->
-        <b-btn size="sm" :href="dataProducts[0].downloadURL + '&download'">Download</b-btn>
+        <b-btn size="sm" :href="dataProducts[0].downloadURL + '&download'"
+          >Download</b-btn
+        >
       </template>
     </div>
   </b-card>
@@ -73,6 +79,15 @@ export default {
     InteractiveParametersPanel,
   },
   created() {
+    // Only show the default output view while executing or if no output dataProducts
+    if (
+      this.outputViews.length > 0 &&
+      (!this.isFinished || this.dataProducts.length === 0)
+    ) {
+      this.currentViewIndex = this.outputViews.findIndex(
+        (ov) => ov["provider-id"] === "default"
+      );
+    }
     if (this.providerId && this.providerId !== "default") {
       this.loader = this.createLoader();
       this.loader.load();
@@ -90,6 +105,7 @@ export default {
       "outputDataProducts",
       "experimentId",
       "isExecuting",
+      "isFinished",
     ]),
     outputViews() {
       return this.fullExperiment
@@ -156,7 +172,11 @@ export default {
       }
     },
     showMenu() {
-      return this.outputViews.length > 1;
+      return (
+        this.isFinished &&
+        this.outputViews.length > 1 &&
+        this.dataProducts.length > 0
+      );
     },
     providerId() {
       return this.currentView ? this.currentView["provider-id"] : null;

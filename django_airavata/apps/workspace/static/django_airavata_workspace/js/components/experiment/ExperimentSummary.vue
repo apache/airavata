@@ -29,12 +29,7 @@
     <template v-for="output in experiment.experimentOutputs">
       <div class="row" v-if="finishedOrExecuting" :key="output.name">
         <div class="col">
-          <output-display-container
-            :experiment-output="output"
-            :data-products="outputDataProducts[output.name]"
-            :output-views="localFullExperiment.outputViews[output.name]"
-            :experiment-id="experiment.experimentId"
-          />
+          <output-display-container :experiment-output="output" />
         </div>
       </div>
     </template>
@@ -268,10 +263,16 @@
                   <tr v-for="job in failedJobs" :key="job.jobId">
                     <th scope="row">Job Submission Response</th>
                     <td>
-                      <b-card v-if="job.stdOut" :header="job.jobName + ' STDOUT'">
+                      <b-card
+                        v-if="job.stdOut"
+                        :header="job.jobName + ' STDOUT'"
+                      >
                         <pre class="pre-scrollable">{{ job.stdOut }}</pre>
                       </b-card>
-                      <b-card v-if="job.stdErr" :header="job.jobName + ' STDERR'">
+                      <b-card
+                        v-if="job.stdErr"
+                        :header="job.jobName + ' STDERR'"
+                      >
                         <pre class="pre-scrollable">{{ job.stdErr }}</pre>
                       </b-card>
                     </td>
