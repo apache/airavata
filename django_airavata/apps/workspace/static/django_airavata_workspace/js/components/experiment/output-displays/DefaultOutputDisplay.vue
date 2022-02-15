@@ -40,6 +40,8 @@
 import { models, utils } from "django-airavata-api";
 import DataProductViewer from "django-airavata-common-ui/js/components/DataProductViewer.vue";
 
+const MAX_DISPLAY_TEXT_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
 export default {
   name: "default-output-viewer",
   props: {
@@ -121,15 +123,28 @@ export default {
         return -1;
       }
     },
-  },
-  methods: {
-    async loadIntermediateOutputText() {
-      if (
+    isIntermediateOutputFileDisplayable() {
+      return (
         this.intermediateOutputDataProduct &&
         (this.intermediateOutputDataProduct.isText ||
           this.fileMimeType === "text/plain") &&
-        this.intermediateOutputDataProduct.downloadURL
-      ) {
+        this.intermediateOutputDataProduct.downloadURL &&
+        this.intermediateOutputDataProduct.filesize < MAX_DISPLAY_TEXT_FILE_SIZE
+      );
+    },
+    isFinalOutputFileDisplayable() {
+      return (
+        this.dataProducts &&
+        this.dataProducts.length === 1 &&
+        (this.dataProducts[0].isText || this.fileMimeType === "text/plain") &&
+        this.dataProducts[0].downloadURL &&
+        this.dataProducts[0].filesize < MAX_DISPLAY_TEXT_FILE_SIZE
+      );
+    },
+  },
+  methods: {
+    async loadIntermediateOutputText() {
+      if (this.isIntermediateOutputFileDisplayable) {
         this.intermediateOutputText = await utils.FetchUtils.get(
           this.intermediateOutputDataProduct.downloadURL,
           "",
@@ -140,12 +155,7 @@ export default {
       }
     },
     async loadFinalOutputText() {
-      if (
-        this.dataProducts &&
-        this.dataProducts.length === 1 &&
-        (this.dataProducts[0].isText || this.fileMimeType === "text/plain") &&
-        this.dataProducts[0].downloadURL
-      ) {
+      if (this.isFinalOutputFileDisplayable) {
         this.finalOutputText = await utils.FetchUtils.get(
           this.dataProducts[0].downloadURL,
           "",
