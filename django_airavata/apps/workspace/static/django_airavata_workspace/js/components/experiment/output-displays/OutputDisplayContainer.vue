@@ -106,6 +106,7 @@ export default {
       "experimentId",
       "isExecuting",
       "isFinished",
+      "currentlyRunningIntermediateOutputFetches",
     ]),
     outputViews() {
       return this.fullExperiment
@@ -187,10 +188,9 @@ export default {
     canFetchIntermediateOutput() {
       return (
         this.isExecuting &&
-        (!this.experimentOutput.intermediateOutput ||
-          !this.experimentOutput.intermediateOutput.processStatus ||
-          (this.experimentOutput.intermediateOutput.processStatus &&
-            this.experimentOutput.intermediateOutput.processStatus.isFinished))
+        !this.currentlyRunningIntermediateOutputFetches[
+          this.experimentOutput.name
+        ]
       );
     },
     fetchLatestDisabled() {
@@ -200,11 +200,10 @@ export default {
       let msg = "";
       if (
         this.experimentOutput.intermediateOutput &&
-        this.experimentOutput.intermediateOutput.dataProducts &&
-        this.experimentOutput.intermediateOutput.dataProducts.length > 0
+        this.experimentOutput.intermediateOutput.processStatus &&
+        this.experimentOutput.intermediateOutput.processStatus.isFinished
       ) {
-        const timestamp = this.experimentOutput.intermediateOutput
-          .dataProducts[0].lastModifiedTime;
+        const timestamp = this.experimentOutput.intermediateOutput.processStatus.timeOfStateChange;
         msg +=
           "Latest output fetched on " +
           timestamp.toLocaleString([], {
@@ -225,8 +224,6 @@ export default {
         }
       }
       return msg;
-      // TODO: show timestamp for data products
-      // TODO: show failure message if failed
     },
   },
   methods: {

@@ -20,6 +20,12 @@ export const mutations = {
   setClonedExperiment(state, { clonedExperiment }) {
     state.clonedExperiment = clonedExperiment;
   },
+  setRunningIntermediateOutputFetches(
+    state,
+    { runningIntermediateOutputFetches }
+  ) {
+    state.runningIntermediateOutputFetches = runningIntermediateOutputFetches;
+  },
 };
 export const actions = {
   async setInitialFullExperimentData(
@@ -52,13 +58,13 @@ export const actions = {
   },
   async pollExperiment({ commit, dispatch, state }) {
     if (!state.fullExperiment) {
+      commit("stopPolling");
       return;
     }
     if (
       (state.launching && !state.fullExperiment.experiment.hasLaunched) ||
       state.fullExperiment.experiment.isProgressing
     ) {
-      commit("startPolling");
       try {
         await dispatch("loadExperiment", {
           experimentId: state.fullExperiment.experimentId,
@@ -76,9 +82,10 @@ export const actions = {
       commit("stopPolling");
     }
   },
-  initPollingExperiment({ dispatch, getters }) {
+  initPollingExperiment({ commit, dispatch, getters }) {
     // Only start polling if we aren't already polling
     if (!getters.isPolling) {
+      commit("startPolling");
       dispatch("pollExperiment");
     }
   },
@@ -104,18 +111,25 @@ export const actions = {
     });
     dispatch("loadExperiment", { experimentId: getters.experimentId });
   },
-  async submitFetchIntermediateOutputs({ dispatch, getters }, { outputNames }) {
+  async submitFetchIntermediateOutputs(
+    { commit, getters, state },
+    { outputNames }
+  ) {
     await services.ExperimentService.fetchIntermediateOutputs({
       lookup: getters.experimentId,
       data: {
         outputNames,
       },
     });
-    // Block UI until we get the current status of intermediate output fetches
-    dispatch("loadExperiment", {
-      experimentId: getters.experimentId,
-      showSpinner: true,
-    });
+    // add an entry for each output name in a runningIntermediateOutputFetches, with timestamp
+    for (const outputName of outputNames) {
+      commit("setRunningIntermediateOutputFetches", {
+        runningIntermediateOutputFetches: {
+          ...state.runningIntermediateOutputFetches,
+          [outputName]: new Date(),
+        },
+      });
+    }
   },
 };
 
@@ -163,16 +177,49 @@ export const getters = {
     }
     return result;
   },
+  // getter that derives a map of output names and whether they are currently executing
+  currentlyRunningIntermediateOutputFetches(state, getters) {
+    const result = {};
+    if (getters.experiment) {
+      for (const output of getters.experiment.experimentOutputs) {
+        const runningIntermediateOutputFetchTimestamp =
+          state.runningIntermediateOutputFetches[output.name];
+        const processStatus = output.intermediateOutput
+          ? output.intermediateOutput.processStatus
+          : null;
+        const processStatusTimestamp = processStatus
+          ? processStatus.timeOfStateChange
+          : null;
+        result[output.name] = false;
+        // If our most recent timestamp for the intermediate output is the
+        // request to fetch it, the assume it is currently running
+        if (
+          runningIntermediateOutputFetchTimestamp &&
+          (!processStatusTimestamp ||
+            processStatusTimestamp < runningIntermediateOutputFetchTimestamp)
+        ) {
+          result[output.name] = true;
+        }
+        // intermediate output fetch is still running if process isn't finished
+        else if (processStatus) {
+          result[output.name] = !processStatus.isFinished;
+        }
+      }
+    }
+    return result;
+  },
 };
 
+const state = {
+  fullExperiment: null,
+  launching: false,
+  polling: false,
+  clonedExperiment: null,
+  runningIntermediateOutputFetches: {},
+};
 export default {
   namespaced: true,
-  state: {
-    fullExperiment: null,
-    launching: false,
-    polling: false,
-    clonedExperiment: null,
-  },
+  state,
   mutations,
   actions,
   getters,
