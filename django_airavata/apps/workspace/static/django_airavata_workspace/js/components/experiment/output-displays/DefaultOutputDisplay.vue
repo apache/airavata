@@ -33,12 +33,18 @@
         <data-product-viewer :data-product="dp" :mime-type="fileMimeType" />
       </div>
     </template>
+    <template v-else-if="!isExecuting && dataProducts.length === 0">
+      <div class="d-flex justify-content-center text-secondary">
+        There are no files for this application output.
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 import { models, utils } from "django-airavata-api";
 import DataProductViewer from "django-airavata-common-ui/js/components/DataProductViewer.vue";
+import { mapGetters } from 'vuex';
 
 const MAX_DISPLAY_TEXT_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -69,6 +75,7 @@ export default {
     this.loadFinalOutputText();
   },
   computed: {
+    ...mapGetters("viewExperiment", ["isExecuting"]),
     fileMimeType() {
       if (this.experimentOutput.fileMetadataMimeType) {
         return this.experimentOutput.fileMetadataMimeType;
