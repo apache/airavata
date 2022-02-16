@@ -80,6 +80,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -1963,11 +1964,18 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new AuthorizationException("User does not have WRITE access to this experiment");
             }
 
-            // Verify that the experiment is currently EXECUTING
+            // Verify that the experiment's job is currently ACTIVE
             ExperimentModel existingExperiment = regClient.getExperiment(airavataExperimentId);
-            ExperimentStatus experimentStatus = regClient.getExperimentStatus(airavataExperimentId);
-            if (experimentStatus.getState() != ExperimentState.EXECUTING) {
-                throw new InvalidRequestException("Experiment is not currently executing");
+            List<JobModel> jobs = regClient.getJobDetails(airavataExperimentId);
+            boolean anyJobIsActive = jobs.stream().anyMatch(j -> {
+                if (j.getJobStatusesSize() > 0) {
+                    return j.getJobStatuses().get(j.getJobStatusesSize() - 1).getJobState() == JobState.ACTIVE;
+                } else {
+                    return false;
+                }
+            });
+            if (!anyJobIsActive) {
+                throw new InvalidRequestException("Experiment does not have currently ACTIVE job");
             }
 
             // Figure out if there are any currently running intermediate output fetching processes for outputNames
