@@ -85,6 +85,7 @@
         :disabled="readonly"
       />
     </b-form-group>
+    <b-button size="sm" @click="setPlainText">Plain Text</b-button>
   </b-card>
 </template>
 
@@ -136,6 +137,12 @@ export default {
     },
     deleteApplicationOutput() {
       this.$emit("delete");
+    },
+    setPlainText() {
+      const metadata = this.data.metaData || {};
+      metadata["file-metadata"] = { "mime-type": "text/plain" };
+      // Clone so that JSONEditor updates with new value
+      this.data.metaData = JSON.parse(JSON.stringify(metadata));
     },
   },
   mounted() {
