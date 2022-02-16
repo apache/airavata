@@ -2020,8 +2020,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
 
-            // Verify that user has WRITE access to experiment
-            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+            // Verify that user has READ access to experiment
+            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.READ);
             if (!hasAccess) {
                 throw new AuthorizationException("User does not have WRITE access to this experiment");
             }
