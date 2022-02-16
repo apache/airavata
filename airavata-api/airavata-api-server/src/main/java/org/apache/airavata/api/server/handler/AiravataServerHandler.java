@@ -80,6 +80,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -1963,11 +1964,18 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new AuthorizationException("User does not have WRITE access to this experiment");
             }
 
-            // Verify that the experiment is currently EXECUTING
+            // Verify that the experiment's job is currently ACTIVE
             ExperimentModel existingExperiment = regClient.getExperiment(airavataExperimentId);
-            ExperimentStatus experimentStatus = regClient.getExperimentStatus(airavataExperimentId);
-            if (experimentStatus.getState() != ExperimentState.EXECUTING) {
-                throw new InvalidRequestException("Experiment is not currently executing");
+            List<JobModel> jobs = regClient.getJobDetails(airavataExperimentId);
+            boolean anyJobIsActive = jobs.stream().anyMatch(j -> {
+                if (j.getJobStatusesSize() > 0) {
+                    return j.getJobStatuses().get(j.getJobStatusesSize() - 1).getJobState() == JobState.ACTIVE;
+                } else {
+                    return false;
+                }
+            });
+            if (!anyJobIsActive) {
+                throw new InvalidRequestException("Experiment does not have currently ACTIVE job");
             }
 
             // Figure out if there are any currently running intermediate output fetching processes for outputNames
@@ -1986,14 +1994,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
                     .filter(p -> p.getProcessOutputs().stream().anyMatch(o -> outputNames.contains(o.getName())))
                     .collect(Collectors.toList());
-            // FIXME: currently these processes don't always get a final COMPLETED/FAILED status so need to look at task status
-            // Second, get the last (most recent) status of all of the intermediate output fetching tasks
-            List<TaskStatus> lastOutputFetchTaskStatuses = intermediateOutputFetchProcesses.stream()
-                    .flatMap(p -> p.getTasks().stream().map(t -> t.getTaskStatuses().get(t.getTaskStatusesSize() - 1)))
-                    .collect(Collectors.toList());
-            // Third, check if any of those tasks are still running
-            boolean anyOutputFetchesStillRunning = anyTasksStillRunning(lastOutputFetchTaskStatuses);
-            if (anyOutputFetchesStillRunning) {
+            if (!intermediateOutputFetchProcesses.isEmpty()) {
                 throw new InvalidRequestException(
                         "There are already intermediate output fetching tasks running for those outputs.");
             }
@@ -2027,8 +2028,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
 
-            // Verify that user has WRITE access to experiment
-            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+            // Verify that user has READ access to experiment
+            final boolean hasAccess = userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.READ);
             if (!hasAccess) {
                 throw new AuthorizationException("User does not have WRITE access to this experiment");
             }
@@ -2055,23 +2056,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             // Determine the most recent status for the most recent process
             ProcessModel process = mostRecentOutputFetchProcess.get();
             if (process.getProcessStatusesSize() > 0) {
-                List<TaskStatus> lastOutputFetchTaskStatuses = process.getTasks().stream()
-                        .map(t -> t.getTaskStatuses().get(t.getTaskStatusesSize() - 1))
-                        .collect(Collectors.toList());
-                boolean anyOutputFetchesStillRunning = anyTasksStillRunning(lastOutputFetchTaskStatuses);
-
-                ProcessStatus mostRecentProcessStatus = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
-                if (anyOutputFetchesStillRunning || mostRecentProcessStatus.getState() == ProcessState.COMPLETED || mostRecentProcessStatus.getState() == ProcessState.FAILED) {
-                    result = mostRecentProcessStatus;
-                } else {
-                    // FIXME: for now simulating a final process status based on task status
-                    boolean anyFailures = lastOutputFetchTaskStatuses.stream().anyMatch(ts -> ts.getState() == TaskState.FAILED);
-                    if (anyFailures) {
-                        result = new ProcessStatus(ProcessState.FAILED);
-                    } else {
-                        result = new ProcessStatus(ProcessState.COMPLETED);
-                    }
-                }
+                result = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
             } else {
                 // Process has no statuses so it must be created but not yet running
                 result = new ProcessStatus(ProcessState.CREATED);
@@ -2081,7 +2066,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (InvalidRequestException | AuthorizationException e) {
-            logger.error(e.getMessage(), e);
+            logger.debug(e.getMessage(), e);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             throw e;
@@ -6338,30 +6323,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         MessageContext messageContext = new MessageContext(event, MessageType.INTERMEDIATE_OUTPUTS, "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
-    }
-
-    /**
-     * Return true if any of the most recent task statuses indicate a task is still running.
-     * @param mostRecentTaskStatuses
-     * @return
-     */
-    private boolean anyTasksStillRunning(List<TaskStatus> mostRecentTaskStatuses) {
-        boolean anyTasksStillRunning = mostRecentTaskStatuses.stream().anyMatch(ts -> {
-            boolean stillRunning = true;
-            switch (ts.getState()) {
-                case CREATED:
-                case EXECUTING:
-                    stillRunning = true;
-                    break;
-                case CANCELED:
-                case COMPLETED:
-                case FAILED:
-                    stillRunning = false;
-                    break;
-            }
-            return stillRunning;
-        });
-        return anyTasksStillRunning;
     }
 
     private void shareEntityWithAdminGatewayGroups(RegistryService.Client regClient, SharingRegistryService.Client sharingClient, Entity entity) throws TException {
