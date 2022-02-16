@@ -41,8 +41,7 @@
           Fetch Latest</b-btn
         >
       </template>
-      <template v-else>
-        <!-- TODO: support downloading URI_COLLECTIONs as well -->
+      <template v-else-if="dataProducts.length === 1">
         <b-btn size="sm" :href="dataProducts[0].downloadURL + '&download'"
           >Download</b-btn
         >
