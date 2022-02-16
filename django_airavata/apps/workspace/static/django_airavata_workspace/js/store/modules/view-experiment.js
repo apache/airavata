@@ -208,6 +208,9 @@ export const getters = {
     }
     return result;
   },
+  userHasWriteAccess(state, getters) {
+    return getters.experiment ? getters.experiment.userHasWriteAccess : false;
+  },
 };
 
 const state = {

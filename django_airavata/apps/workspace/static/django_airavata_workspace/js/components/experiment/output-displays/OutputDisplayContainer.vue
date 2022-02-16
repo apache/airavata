@@ -34,7 +34,10 @@
           {{ fetchIntermediateOutputStatusMessage }}</span
         >
         <b-btn size="sm" @click="fetchLatest" :disabled="fetchLatestDisabled">
-          <b-spinner small v-if="fetchLatestDisabled"></b-spinner>
+          <b-spinner
+            small
+            v-if="currentlyRunningIntermediateOutputFetch"
+          ></b-spinner>
           Fetch Latest</b-btn
         >
       </template>
@@ -107,6 +110,7 @@ export default {
       "isExecuting",
       "isFinished",
       "currentlyRunningIntermediateOutputFetches",
+      "userHasWriteAccess",
     ]),
     outputViews() {
       return this.fullExperiment
@@ -185,16 +189,16 @@ export default {
     hasInteractiveParameters() {
       return this.viewData && this.viewData.interactive;
     },
+    currentlyRunningIntermediateOutputFetch() {
+      return this.currentlyRunningIntermediateOutputFetches[
+        this.experimentOutput.name
+      ];
+    },
     canFetchIntermediateOutput() {
-      return (
-        this.isExecuting &&
-        !this.currentlyRunningIntermediateOutputFetches[
-          this.experimentOutput.name
-        ]
-      );
+      return this.isExecuting && !this.currentlyRunningIntermediateOutputFetch;
     },
     fetchLatestDisabled() {
-      return !this.canFetchIntermediateOutput;
+      return !this.canFetchIntermediateOutput || !this.userHasWriteAccess;
     },
     fetchIntermediateOutputStatusMessage() {
       let msg = "";
@@ -203,7 +207,8 @@ export default {
         this.experimentOutput.intermediateOutput.processStatus &&
         this.experimentOutput.intermediateOutput.processStatus.isFinished
       ) {
-        const timestamp = this.experimentOutput.intermediateOutput.processStatus.timeOfStateChange;
+        const timestamp = this.experimentOutput.intermediateOutput.processStatus
+          .timeOfStateChange;
         msg +=
           "Latest output fetched on " +
           timestamp.toLocaleString([], {
