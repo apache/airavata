@@ -1,5 +1,6 @@
 import { models, services } from "django-airavata-api";
 import ExperimentState from "django-airavata-api/static/django_airavata_api/js/models/ExperimentState";
+import JobState from "django-airavata-api/static/django_airavata_api/js/models/JobState";
 
 // const PROMISES = {
 //   workspacePreferences: null,
@@ -210,6 +211,16 @@ export const getters = {
   },
   userHasWriteAccess(state, getters) {
     return getters.experiment ? getters.experiment.userHasWriteAccess : false;
+  },
+  isJobActive(state) {
+    return (
+      state.fullExperiment &&
+      state.fullExperiment.jobDetails &&
+      state.fullExperiment.jobDetails.some(
+        (job) =>
+          job.latestJobStatus && job.latestJobStatus.jobState === JobState.ACTIVE
+      )
+    );
   },
 };
 

@@ -107,6 +107,7 @@ export default {
       "outputDataProducts",
       "experimentId",
       "isExecuting",
+      "isJobActive",
       "isFinished",
       "currentlyRunningIntermediateOutputFetches",
       "userHasWriteAccess",
@@ -194,7 +195,7 @@ export default {
       ];
     },
     canFetchIntermediateOutput() {
-      return this.isExecuting && !this.currentlyRunningIntermediateOutputFetch;
+      return this.isJobActive && !this.currentlyRunningIntermediateOutputFetch;
     },
     fetchLatestDisabled() {
       return !this.canFetchIntermediateOutput || !this.userHasWriteAccess;
