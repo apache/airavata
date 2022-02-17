@@ -50,7 +50,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   getUserProjects(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
     print('   searchProjects(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
     print('   searchExperiments(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
-    print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime, string userName, string applicationName, string resourceHostName)')
+    print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime, string userName, string applicationName, string resourceHostName, i32 limit, i32 offset)')
     print('   getExperimentsInProject(AuthzToken authzToken, string projectId, i32 limit, i32 offset)')
     print('   getUserExperiments(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
     print('  string createExperiment(AuthzToken authzToken, string gatewayId, ExperimentModel experiment)')
@@ -66,6 +66,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  ExperimentStatus getExperimentStatus(AuthzToken authzToken, string airavataExperimentId)')
     print('   getExperimentOutputs(AuthzToken authzToken, string airavataExperimentId)')
     print('   getIntermediateOutputs(AuthzToken authzToken, string airavataExperimentId)')
+    print('  void fetchIntermediateOutputs(AuthzToken authzToken, string airavataExperimentId,  outputNames)')
+    print('  ProcessStatus getIntermediateOutputProcessStatus(AuthzToken authzToken, string airavataExperimentId,  outputNames)')
     print('   getJobStatuses(AuthzToken authzToken, string airavataExperimentId)')
     print('   getJobDetails(AuthzToken authzToken, string airavataExperimentId)')
     print('  string cloneExperiment(AuthzToken authzToken, string existingExperimentID, string newExperimentName, string newExperimentProjectId)')
@@ -452,10 +454,10 @@ elif cmd == 'searchExperiments':
     pp.pprint(client.searchExperiments(eval(args[0]), args[1], args[2], eval(args[3]), eval(args[4]), eval(args[5]),))
 
 elif cmd == 'getExperimentStatistics':
-    if len(args) != 7:
-        print('getExperimentStatistics requires 7 args')
+    if len(args) != 9:
+        print('getExperimentStatistics requires 9 args')
         sys.exit(1)
-    pp.pprint(client.getExperimentStatistics(eval(args[0]), args[1], eval(args[2]), eval(args[3]), args[4], args[5], args[6],))
+    pp.pprint(client.getExperimentStatistics(eval(args[0]), args[1], eval(args[2]), eval(args[3]), args[4], args[5], args[6], eval(args[7]), eval(args[8]),))
 
 elif cmd == 'getExperimentsInProject':
     if len(args) != 4:
@@ -546,6 +548,18 @@ elif cmd == 'getIntermediateOutputs':
         print('getIntermediateOutputs requires 2 args')
         sys.exit(1)
     pp.pprint(client.getIntermediateOutputs(eval(args[0]), args[1],))
+
+elif cmd == 'fetchIntermediateOutputs':
+    if len(args) != 3:
+        print('fetchIntermediateOutputs requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.fetchIntermediateOutputs(eval(args[0]), args[1], eval(args[2]),))
+
+elif cmd == 'getIntermediateOutputProcessStatus':
+    if len(args) != 3:
+        print('getIntermediateOutputProcessStatus requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getIntermediateOutputProcessStatus(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'getJobStatuses':
     if len(args) != 2:
