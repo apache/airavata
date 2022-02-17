@@ -233,7 +233,8 @@ export default {
         url: "/api/experiment-storage/<experimentId>/<path>",
         requestType: "get",
         modelClass: ExperimentStoragePath,
-        encodePathParams: true,
+        // NOTE: caller needs to explicitly escape experimentId, but path shouldn't be escaped
+        encodePathParams: false,
       },
     },
   },
