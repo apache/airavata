@@ -60,7 +60,9 @@ export default {
     loadExperimentStoragePath(path) {
       return services.ExperimentStoragePathService.get(
         {
-          experimentId: this.experimentId,
+          // ExperimentStoragePathService doesn't encode path parameters so must
+          // explicitly encode experiment id
+          experimentId: encodeURIComponent(this.experimentId),
           path,
         },
         { ignoreErrors: true }
