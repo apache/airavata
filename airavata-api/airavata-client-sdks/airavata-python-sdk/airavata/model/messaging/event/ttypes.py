@@ -47,6 +47,7 @@ class MessageType(object):
     TERMINATEPROCESS = 6
     PROCESSOUTPUT = 7
     DB_EVENT = 8
+    INTERMEDIATE_OUTPUTS = 9
 
     _VALUES_TO_NAMES = {
         0: "EXPERIMENT",
@@ -58,6 +59,7 @@ class MessageType(object):
         6: "TERMINATEPROCESS",
         7: "PROCESSOUTPUT",
         8: "DB_EVENT",
+        9: "INTERMEDIATE_OUTPUTS",
     }
 
     _NAMES_TO_VALUES = {
@@ -70,6 +72,7 @@ class MessageType(object):
         "TERMINATEPROCESS": 6,
         "PROCESSOUTPUT": 7,
         "DB_EVENT": 8,
+        "INTERMEDIATE_OUTPUTS": 9,
     }
 
 
@@ -1279,6 +1282,104 @@ class JobStatusChangeRequestEvent(object):
             raise TProtocolException(message='Required field state is unset!')
         if self.jobIdentity is None:
             raise TProtocolException(message='Required field jobIdentity is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class ExperimentIntermediateOutputsEvent(object):
+    """
+    Attributes:
+     - experimentId
+     - gatewayId
+     - outputNames
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'experimentId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
+        (3, TType.LIST, 'outputNames', (TType.STRING, 'UTF8', False), None, ),  # 3
+    )
+
+    def __init__(self, experimentId=None, gatewayId=None, outputNames=None,):
+        self.experimentId = experimentId
+        self.gatewayId = gatewayId
+        self.outputNames = outputNames
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.experimentId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.LIST:
+                    self.outputNames = []
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.outputNames.append(_elem12)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('ExperimentIntermediateOutputsEvent')
+        if self.experimentId is not None:
+            oprot.writeFieldBegin('experimentId', TType.STRING, 1)
+            oprot.writeString(self.experimentId.encode('utf-8') if sys.version_info[0] == 2 else self.experimentId)
+            oprot.writeFieldEnd()
+        if self.gatewayId is not None:
+            oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+            oprot.writeFieldEnd()
+        if self.outputNames is not None:
+            oprot.writeFieldBegin('outputNames', TType.LIST, 3)
+            oprot.writeListBegin(TType.STRING, len(self.outputNames))
+            for iter13 in self.outputNames:
+                oprot.writeString(iter13.encode('utf-8') if sys.version_info[0] == 2 else iter13)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.experimentId is None:
+            raise TProtocolException(message='Required field experimentId is unset!')
+        if self.gatewayId is None:
+            raise TProtocolException(message='Required field gatewayId is unset!')
+        if self.outputNames is None:
+            raise TProtocolException(message='Required field outputNames is unset!')
         return
 
     def __repr__(self):
