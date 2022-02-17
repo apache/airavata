@@ -1,6 +1,7 @@
 import BaseModel from "./BaseModel";
 import DataType from "./DataType";
 import uuidv4 from "uuid/v4";
+import IntermediateOutput from "./IntermediateOutput";
 
 const FIELDS = [
   "name",
@@ -35,6 +36,10 @@ const FIELDS = [
   },
   "storageResourceId",
   "metaData",
+  {
+    name: "intermediateOutput",
+    type: IntermediateOutput,
+  }
 ];
 
 export default class OutputDataObjectType extends BaseModel {

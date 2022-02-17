@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="localFullExperiment">
     <div class="row">
       <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
@@ -12,39 +12,28 @@
           Edit
           <i class="fa fa-edit" aria-hidden="true"></i>
         </b-link>
-        <b-link v-if="isLaunchable" class="btn btn-primary" @click="launch">
+        <b-link v-if="isLaunchable" class="btn btn-primary" @click="onLaunch">
           Launch
           <i class="fa fa-running" aria-hidden="true"></i>
         </b-link>
-        <b-btn v-if="isClonable" variant="primary" @click="clone">
+        <b-btn v-if="isClonable" variant="primary" @click="onClone">
           Clone
           <i class="fa fa-copy" aria-hidden="true"></i>
         </b-btn>
-        <b-btn v-if="isCancelable" variant="primary" @click="cancel">
+        <b-btn v-if="isCancelable" variant="primary" @click="onCancel">
           Cancel
           <i class="fa fa-window-close" aria-hidden="true"></i>
         </b-btn>
       </div>
     </div>
     <template v-for="output in experiment.experimentOutputs">
-      <div
-        class="row"
-        v-if="
-          experiment.isFinished && outputDataProducts[output.name].length > 0
-        "
-        :key="output.name"
-      >
+      <div class="row" v-if="finishedOrExecuting" :key="output.name">
         <div class="col">
-          <output-display-container
-            :experiment-output="output"
-            :data-products="outputDataProducts[output.name]"
-            :output-views="localFullExperiment.outputViews[output.name]"
-            :experiment-id="experiment.experimentId"
-          />
+          <output-display-container :experiment-output="output" />
         </div>
       </div>
     </template>
-    <div class="row" v-if="experiment.isFinished">
+    <div class="row" v-if="finishedOrExecuting">
       <div class="col">
         <experiment-storage-view-container
           :experimentId="experiment.experimentId"
@@ -274,10 +263,16 @@
                   <tr v-for="job in failedJobs" :key="job.jobId">
                     <th scope="row">Job Submission Response</th>
                     <td>
-                      <b-card v-if="job.stdOut" :header="job.jobName + ' STDOUT'">
+                      <b-card
+                        v-if="job.stdOut"
+                        :header="job.jobName + ' STDOUT'"
+                      >
                         <pre class="pre-scrollable">{{ job.stdOut }}</pre>
                       </b-card>
-                      <b-card v-if="job.stdErr" :header="job.jobName + ' STDERR'">
+                      <b-card
+                        v-if="job.stdErr"
+                        :header="job.jobName + ' STDERR'"
+                      >
                         <pre class="pre-scrollable">{{ job.stdErr }}</pre>
                       </b-card>
                     </td>
@@ -293,7 +288,7 @@
 </template>
 
 <script>
-import { models, services } from "django-airavata-api";
+import { models } from "django-airavata-api";
 import { components, notifications } from "django-airavata-common-ui";
 import OutputDisplayContainer from "./output-displays/OutputDisplayContainer";
 import urls from "../../utils/urls";
@@ -301,24 +296,10 @@ import urls from "../../utils/urls";
 import moment from "moment";
 import ExperimentStorageViewContainer from "../storage/ExperimentStorageViewContainer.vue";
 import DataProductViewer from "django-airavata-common-ui/js/components/DataProductViewer.vue";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   name: "experiment-summary",
-  props: {
-    fullExperiment: {
-      type: models.FullExperiment,
-      required: true,
-    },
-    launching: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      localFullExperiment: this.fullExperiment.clone(),
-    };
-  },
   components: {
     "clipboard-copy-link": components.ClipboardCopyLink,
     "share-button": components.ShareButton,
@@ -327,6 +308,15 @@ export default {
     DataProductViewer,
   },
   computed: {
+    ...mapState("viewExperiment", [
+      "fullExperiment",
+      "launching",
+      "clonedExperiment",
+    ]),
+    ...mapGetters("viewExperiment", ["finishedOrExecuting"]),
+    localFullExperiment() {
+      return this.fullExperiment;
+    },
     inputDataProducts() {
       const result = {};
       if (
@@ -410,57 +400,23 @@ export default {
     },
   },
   methods: {
-    loadExperiment: function () {
-      return services.FullExperimentService.retrieve(
-        { lookup: this.localFullExperiment.experiment.experimentId },
-        { ignoreErrors: true, showSpinner: false }
-      ).then((exp) => (this.localFullExperiment = exp));
+    ...mapActions("viewExperiment", ["clone", "launch", "cancel"]),
+    async onClone() {
+      await this.clone();
+      urls.navigateToEditExperiment(this.clonedExperiment);
     },
-    initPollingExperiment: function () {
-      var pollExperiment = function () {
-        if (
-          (this.launching &&
-            !this.localFullExperiment.experiment.hasLaunched) ||
-          this.localFullExperiment.experiment.isProgressing
-        ) {
-          this.loadExperiment()
-            .then(() => {
-              setTimeout(pollExperiment.bind(this), 3000);
-            })
-            .catch(() => {
-              // Wait 30 seconds after an error and then try again
-              setTimeout(pollExperiment.bind(this), 30000);
-            });
-        }
-      }.bind(this);
-      setTimeout(pollExperiment, 3000);
+    onLaunch() {
+      this.launch();
     },
-    clone() {
-      services.ExperimentService.clone({
-        lookup: this.experiment.experimentId,
-      }).then((clonedExperiment) => {
-        urls.navigateToEditExperiment(clonedExperiment);
-      });
-    },
-    launch() {
-      services.ExperimentService.launch({
-        lookup: this.experiment.experimentId,
-      }).then(() => {
-        this.$emit("Launched");
-      });
-    },
-    cancel() {
-      services.ExperimentService.cancel({
-        lookup: this.experiment.experimentId,
-      }).then(() => {
-        notifications.NotificationList.add(
-          new notifications.Notification({
-            type: "SUCCESS",
-            message: "Cancel-experiment requested",
-            duration: 5,
-          })
-        );
-      });
+    async onCancel() {
+      await this.cancel();
+      notifications.NotificationList.add(
+        new notifications.Notification({
+          type: "SUCCESS",
+          message: "Cancel-experiment requested",
+          duration: 5,
+        })
+      );
     },
     getDataProducts(io, collection) {
       if (!io.value || !collection) {
@@ -482,16 +438,6 @@ export default {
         ? dataProducts.filter((dp) => (dp ? true : false))
         : [];
     },
-  },
-  watch: {
-    launching: function (val) {
-      if (val == true) {
-        this.initPollingExperiment();
-      }
-    },
-  },
-  mounted: function () {
-    this.initPollingExperiment();
   },
 };
 </script>

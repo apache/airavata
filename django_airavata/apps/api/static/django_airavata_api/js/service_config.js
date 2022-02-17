@@ -189,6 +189,13 @@ export default {
         requestType: "post",
         modelClass: Experiment,
       },
+      fetchIntermediateOutputs: {
+        url: "/api/experiments/<lookup>/fetch_intermediate_outputs/",
+        requestType: "post",
+        bodyParams: {
+          name: "data",
+        },
+      },
     },
     modelClass: Experiment,
   },

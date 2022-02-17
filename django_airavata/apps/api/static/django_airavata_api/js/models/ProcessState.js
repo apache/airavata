@@ -1,6 +1,16 @@
 import BaseEnum from "./BaseEnum";
 
-export default class ProcessState extends BaseEnum {}
+export default class ProcessState extends BaseEnum {
+
+  get isFinished() {
+    const finishedStates = [
+      ProcessState.CANCELED,
+      ProcessState.COMPLETED,
+      ProcessState.FAILED,
+    ];
+    return finishedStates.indexOf(this) >= 0;
+  }
+}
 ProcessState.init([
   "CREATED",
   "VALIDATED",

@@ -2,6 +2,7 @@ import copy
 import datetime
 import json
 import logging
+import os
 from urllib.parse import quote
 
 from airavata.model.appcatalog.appdeployment.ttypes import (
@@ -49,7 +50,13 @@ from airavata.model.experiment.ttypes import (
 )
 from airavata.model.group.ttypes import GroupModel, ResourcePermissionType
 from airavata.model.job.ttypes import JobModel
-from airavata.model.status.ttypes import ExperimentStatus
+from airavata.model.status.ttypes import (
+    ExperimentState,
+    ExperimentStatus,
+    ProcessState,
+    ProcessStatus
+)
+from airavata.model.task.ttypes import TaskTypes
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import (
     Notification,
@@ -407,6 +414,11 @@ class ExperimentStatusSerializer(
     timeOfStateChange = UTCPosixTimestampDateTimeField()
 
 
+class ProcessStatusSerializer(
+        thrift_utils.create_serializer_class(ProcessStatus)):
+    timeOfStateChange = UTCPosixTimestampDateTimeField()
+
+
 class ExperimentSerializer(
         thrift_utils.create_serializer_class(ExperimentModel)):
     class Meta:
@@ -449,6 +461,59 @@ class ExperimentSerializer(
         return request.airavata_client.userHasAccess(
             request.authz_token, experiment.experimentId,
             ResourcePermissionType.WRITE)
+
+    def to_representation(self, experiment):
+        result = super().to_representation(experiment)
+        self._add_intermediate_output_information(experiment, result)
+        return result
+
+    def _add_intermediate_output_information(self, experiment, representation):
+        request = self.context['request']
+        # sort the processes (most recent first) and filter to just the output fetching ones
+        processes = sorted(experiment.processes, key=lambda p: p.creationTime, reverse=True) if experiment.processes else []
+        output_fetching_processes = []
+        for process in processes:
+            if any(map(lambda t: t.taskType == TaskTypes.OUTPUT_FETCHING, process.tasks)):
+                output_fetching_processes.append(process)
+
+        # If there are output_fetching processes and experiment is EXECUTING,
+        # add intermediateOutput information to experiment outputs
+        if (len(output_fetching_processes) > 0 and
+            experiment.experimentStatus and
+                experiment.experimentStatus[-1].state == ExperimentState.EXECUTING):
+            for output in representation["experimentOutputs"]:
+                try:
+                    process_status = request.airavata_client.getIntermediateOutputProcessStatus(
+                        request.authz_token, experiment.experimentId, [output["name"]])
+                    serializer = ProcessStatusSerializer(
+                        process_status, context={'request': request})
+                    output["intermediateOutput"] = {"processStatus": serializer.data}
+                    most_recent_completed_process_output = None
+                    for process in output_fetching_processes:
+                        # Skip over any processes that aren't completed
+                        if (len(process.processStatuses) == 0 or process.processStatuses[-1].state != ProcessState.COMPLETED):
+                            continue
+                        for process_output in process.processOutputs:
+                            if process_output.name == output["name"]:
+                                most_recent_completed_process_output = process_output
+                                break
+                        if most_recent_completed_process_output is not None:
+                            break
+                    if most_recent_completed_process_output is not None:
+
+                        data_product_uris = []
+                        if most_recent_completed_process_output.value.startswith('airavata-dp://'):
+                            data_product_uris = most_recent_completed_process_output.value.split(',')
+                        data_products = []
+                        for data_product_uri in data_product_uris:
+                            data_product = request.airavata_client.getDataProduct(
+                                request.authz_token, data_product_uri)
+                            data_products.append(data_product)
+                        data_product_serializer = DataProductSerializer(
+                            data_products, context={'request': request}, many=True)
+                        output["intermediateOutput"]["dataProducts"] = data_product_serializer.data
+                except Exception:
+                    output["intermediateOutput"] = {"processStatus": None}
 
 
 class DataReplicaLocationSerializer(
@@ -517,6 +582,7 @@ class FullExperimentSerializer(serializers.Serializer):
         lookup_field='experimentId',
         lookup_url_kwarg='experiment_id')
     experiment = ExperimentSerializer()
+    experimentId = serializers.CharField(read_only=True)
     outputDataProducts = DataProductSerializer(many=True, read_only=True)
     inputDataProducts = DataProductSerializer(many=True, read_only=True)
     applicationModule = ApplicationModuleSerializer(read_only=True)

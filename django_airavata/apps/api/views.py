@@ -264,6 +264,18 @@ class ExperimentViewSet(mixins.CreateModelMixin,
             log.error("Cancel action has thrown the following error: ", e)
             raise e
 
+    @action(methods=['post'], detail=True)
+    def fetch_intermediate_outputs(self, request, experiment_id=None):
+        if "outputNames" not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            request.airavata_client.fetchIntermediateOutputs(
+                request.authz_token, experiment_id, request.data["outputNames"])
+            return Response({'success': True})
+        except Exception as e:
+            log.error("fetchIntermediateOutputs failed with the following error: ", e)
+            raise e
+
     def _update_workspace_preferences(self, project_id,
                                       group_resource_profile_id,
                                       compute_resource_id):
