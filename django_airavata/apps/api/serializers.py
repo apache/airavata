@@ -2,7 +2,6 @@ import copy
 import datetime
 import json
 import logging
-import os
 from urllib.parse import quote
 
 from airavata.model.appcatalog.appdeployment.ttypes import (
