@@ -13,8 +13,6 @@ class UserFiles(models.Model):
 
     class Meta:
         indexes = [
-            # FIXME: ideally we would include file_path in the index to make
-            # lookups faster, but Django/MariaDB don't support key length on a
-            # TEXT column which is required to create an index
+            # See also migration #0003 which adds an index on file_path
             models.Index(fields=['username'], name='userfiles_username_idx')
         ]
