@@ -60,57 +60,72 @@
               {{ queueDescription }}
             </div>
           </b-form-group>
-          <b-form-group
-            label="Node Count"
-            label-for="node-count"
-            :invalid-feedback="getValidationFeedback('nodeCount')"
-            :state="getValidationState('nodeCount', true)"
-          >
-            <b-form-input
-              id="node-count"
-              type="number"
-              min="1"
-              :max="maxNodes"
-              v-model="data.nodeCount"
-              required
-              @input="nodeCountChanged"
-              :state="getValidationState('nodeCount', true)"
-            >
-            </b-form-input>
-            <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
-              Max Allowed Nodes = {{ maxNodes }}
+          <div class="d-flex flex-row">
+            <div class="flex-fill">
+              <b-form-group
+                label="Node Count"
+                label-for="node-count"
+                :invalid-feedback="getValidationFeedback('nodeCount')"
+                :state="getValidationState('nodeCount', true)"
+              >
+                <b-form-input
+                  id="node-count"
+                  type="number"
+                  min="1"
+                  :max="maxNodes"
+                  v-model="data.nodeCount"
+                  required
+                  @input="nodeCountChanged"
+                  :state="getValidationState('nodeCount', true)"
+                >
+                </b-form-input>
+                <div slot="description">
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
+                  Max Allowed Nodes = {{ maxNodes }}
+                </div>
+              </b-form-group>
+              <b-form-group
+                label="Total Core Count"
+                label-for="core-count"
+                :invalid-feedback="getValidationFeedback('totalCPUCount')"
+                :state="getValidationState('totalCPUCount', true)"
+              >
+                <b-form-input
+                  id="core-count"
+                  type="number"
+                  min="1"
+                  :max="maxCPUCount"
+                  v-model="data.totalCPUCount"
+                  required
+                  @input="cpuCountChanged"
+                  :state="getValidationState('totalCPUCount', true)"
+                >
+                </b-form-input>
+                <div slot="description">
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
+                  Max Allowed Cores = {{ maxCPUCount
+                  }}<template
+                    v-if="
+                      selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0
+                    "
+                    >. There are {{ selectedQueueDefault.cpuPerNode }} cores per
+                    node.
+                  </template>
+                </div>
+              </b-form-group>
             </div>
-          </b-form-group>
-          <b-form-group
-            label="Total Core Count"
-            label-for="core-count"
-            :invalid-feedback="getValidationFeedback('totalCPUCount')"
-            :state="getValidationState('totalCPUCount', true)"
-          >
-            <b-form-input
-              id="core-count"
-              type="number"
-              min="1"
-              :max="maxCPUCount"
-              v-model="data.totalCPUCount"
-              required
-              @input="cpuCountChanged"
-              :state="getValidationState('totalCPUCount', true)"
-            >
-            </b-form-input>
-            <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
-              Max Allowed Cores = {{ maxCPUCount
-              }}<template
-                v-if="
-                  selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0
-                "
-                >. There are {{ selectedQueueDefault.cpuPerNode }} cores per
-                node.
-              </template>
+            <div class="d-flex flex-column">
+              <div class="flex-fill"
+                   style="border: 1px solid #6c757d;border-top-right-radius: 10px;margin-top: 51px;border-left-width: 0px;border-bottom-width: 0px;margin-right: 15px;"></div>
+              <b-button size="sm" pill variant="outline-secondary"
+                        v-on:click="enableNodeCountToCpuCheck = !enableNodeCountToCpuCheck">
+                <i v-if="enableNodeCountToCpuCheck" class="fa fa-lock" aria-hidden="true"></i>
+                <i v-else class="fa fa-unlock" aria-hidden="true"></i>
+              </b-button>
+              <div class="flex-fill"
+                   style="border: 1px solid #6c757d;border-bottom-right-radius: 10px;margin-bottom: 57px;border-left-width: 0px;border-top-width: 0px;margin-right: 15px;"></div>
             </div>
-          </b-form-group>
+          </div>
           <b-form-group
             label="Wall Time Limit"
             label-for="walltime-limit"
@@ -201,6 +216,7 @@ export default {
     return {
       showConfiguration: false,
       appDeploymentQueues: null,
+      enableNodeCountToCpuCheck: true
     };
   },
   computed: {
@@ -423,7 +439,7 @@ export default {
       }
     },
     nodeCountChanged() {
-      if (this.selectedQueueDefault.cpuPerNode > 0) {
+      if (this.enableNodeCountToCpuCheck && this.selectedQueueDefault.cpuPerNode > 0) {
         const nodeCount = parseInt(this.data.nodeCount);
         this.data.totalCPUCount = Math.min(
           nodeCount * this.selectedQueueDefault.cpuPerNode,
@@ -432,7 +448,7 @@ export default {
       }
     },
     cpuCountChanged() {
-      if (this.selectedQueueDefault.cpuPerNode > 0) {
+      if (this.enableNodeCountToCpuCheck && this.selectedQueueDefault.cpuPerNode > 0) {
         const cpuCount = parseInt(this.data.totalCPUCount);
         if (cpuCount > 0) {
           this.data.nodeCount = Math.min(
