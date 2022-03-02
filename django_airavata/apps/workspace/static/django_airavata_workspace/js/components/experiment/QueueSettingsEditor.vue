@@ -460,6 +460,11 @@ export default {
     },
   },
   watch: {
+    enableNodeCountToCpuCheck() {
+      if (this.enableNodeCountToCpuCheck) {
+        this.nodeCountChanged();
+      }
+    },
     appDeploymentId() {
       this.loadAppDeploymentQueues().then(() => this.setDefaultQueue());
     },
