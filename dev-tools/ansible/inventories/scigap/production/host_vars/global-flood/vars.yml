@@ -22,8 +22,8 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-airavata_django_extra_dependencies:
-  - "git+https://github.com/Global-Flood-Assessment/global-floods-django-app.git#egg=global_floods_django_app"
+# airavata_django_extra_dependencies:
+#   - "git+https://github.com/Global-Flood-Assessment/global-floods-django-app.git#egg=global_floods_django_app"
 
 vhost_servername: "global-floods-monitoring.scigap.org"
 vhost_ssl: True
