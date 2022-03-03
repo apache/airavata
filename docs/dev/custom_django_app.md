@@ -135,7 +135,13 @@ framework expects, this also defines a display name (`verbose_name`) and an icon
 details on available properties here. Note that `app_order` isn't supported for
 custom Django apps. Only `name`, `label` and `verbose_name` are required. See
 [Django project documentation on AppConfig](https://docs.djangoproject.com/en/1.11/ref/applications/#application-configuration)
-for description of these properties.
+for description of these properties. Additionally, custom Django apps can
+specify the following properties:
+
+-   **url_prefix**: specify the URL prefix for all of the custom Django apps
+    URLs. By default, the app's `label` property is used as the URL prefix, but
+    by setting `url_prefix` you can override that. (Example:
+    [SimCCS](https://github.com/SciGaP/simccs-maptool/blob/dev/simccs_maptool/apps.py#L34))
 
 ### views.py
 

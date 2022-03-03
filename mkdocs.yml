@@ -16,6 +16,7 @@ nav:
     - Custom UI Tutorial: tutorial/custom_ui_tutorial.md
     - Adding a Custom Django App: dev/custom_django_app.md
     - Adding a Custom Output View Provider: dev/custom_output_view_provider.md
+    - HOWTOs: dev/customization_howto.md
   - Administrator Guide:
     - Application Input Customization: admin/app_inputs.md
     - Tusd Installation: admin/tusd.md
