@@ -66,26 +66,26 @@
             </div>
           </b-form-group>
           <b-form-group label="Total Core Count" label-for="core-count">
-        <b-form-input
-          id="core-count"
-          type="number"
-          min="1"
-          :max="maxAllowedCores"
-          :value="getTotalCPUCount"
-          required
-          @input.native.stop="updateTotalCPUCount"
-        >
-        </b-form-input>
-        <div slot="description">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          Max Allowed Cores = {{ maxAllowedCores
-          }}<template v-if="queue && queue.cpuPerNode > 0"
-            >. There are {{ queue.cpuPerNode }} cores per node.
-          </template>
+          <b-form-input
+            id="core-count"
+            type="number"
+            min="1"
+            :max="maxAllowedCores"
+            :value="getTotalCPUCount"
+            required
+            @input.native.stop="updateTotalCPUCount"
+          >
+          </b-form-input>
+          <div slot="description">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+            Max Allowed Cores = {{ maxAllowedCores
+            }}<template v-if="queue && queue.cpuPerNode > 0"
+              >. There are {{ queue.cpuPerNode }} cores per node.
+            </template>
+          </div>
+        </b-form-group>
         </div>
-      </b-form-group>
-        </div>
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" v-if="queue && queue.cpuPerNode > 0">
           <div class="flex-fill"
                style="border: 1px solid #6c757d;border-top-right-radius: 10px;margin-top: 51px;border-left-width: 0px;border-bottom-width: 0px;margin-right: 15px;"></div>
           <b-button size="sm" pill variant="outline-secondary"

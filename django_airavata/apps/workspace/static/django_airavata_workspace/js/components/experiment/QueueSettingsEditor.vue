@@ -114,7 +114,7 @@
                 </div>
               </b-form-group>
             </div>
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column" v-if="selectedQueueDefault && selectedQueueDefault.cpuPerNode > 0">
               <div class="flex-fill"
                    style="border: 1px solid #6c757d;border-top-right-radius: 10px;margin-top: 51px;border-left-width: 0px;border-bottom-width: 0px;margin-right: 15px;"></div>
               <b-button size="sm" pill variant="outline-secondary"
