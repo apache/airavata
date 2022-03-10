@@ -47,41 +47,56 @@
         </b-form-select>
         <div slot="description">{{ queueDescription }}</div>
       </b-form-group>
-      <b-form-group label="Node Count" label-for="node-count">
-        <b-form-input
-          id="node-count"
-          type="number"
-          min="1"
-          :max="maxAllowedNodes"
-          :value="getNodeCount"
-          required
-          @input.native.stop="updateNodeCount"
-        >
-        </b-form-input>
-        <div slot="description">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          Max Allowed Nodes = {{ maxAllowedNodes }}
+      <div class="d-flex flex-row">
+        <div class="flex-fill">
+          <b-form-group label="Node Count" label-for="node-count">
+            <b-form-input
+              id="node-count"
+              type="number"
+              min="1"
+              :max="maxAllowedNodes"
+              :value="getNodeCount"
+              required
+              @input.native.stop="updateNodeCount"
+            >
+            </b-form-input>
+            <div slot="description">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              Max Allowed Nodes = {{ maxAllowedNodes }}
+            </div>
+          </b-form-group>
+          <b-form-group label="Total Core Count" label-for="core-count">
+          <b-form-input
+            id="core-count"
+            type="number"
+            min="1"
+            :max="maxAllowedCores"
+            :value="getTotalCPUCount"
+            required
+            @input.native.stop="updateTotalCPUCount"
+          >
+          </b-form-input>
+          <div slot="description">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+            Max Allowed Cores = {{ maxAllowedCores
+            }}<template v-if="queue && queue.cpuPerNode > 0"
+              >. There are {{ queue.cpuPerNode }} cores per node.
+            </template>
+          </div>
+        </b-form-group>
         </div>
-      </b-form-group>
-      <b-form-group label="Total Core Count" label-for="core-count">
-        <b-form-input
-          id="core-count"
-          type="number"
-          min="1"
-          :max="maxAllowedCores"
-          :value="getTotalCPUCount"
-          required
-          @input.native.stop="updateTotalCPUCount"
-        >
-        </b-form-input>
-        <div slot="description">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          Max Allowed Cores = {{ maxAllowedCores
-          }}<template v-if="queue && queue.cpuPerNode > 0"
-            >. There are {{ queue.cpuPerNode }} cores per node.
-          </template>
+        <div class="d-flex flex-column" v-if="queue && queue.cpuPerNode > 0">
+          <div class="flex-fill"
+               style="border: 1px solid #6c757d;border-top-right-radius: 10px;margin-top: 51px;border-left-width: 0px;border-bottom-width: 0px;margin-right: 15px;"></div>
+          <b-button size="sm" pill variant="outline-secondary"
+                    v-on:click="enableNodeCountToCpuCheck = !enableNodeCountToCpuCheck">
+            <i v-if="enableNodeCountToCpuCheck" class="fa fa-lock" aria-hidden="true"></i>
+            <i v-else class="fa fa-unlock" aria-hidden="true"></i>
+          </b-button>
+          <div class="flex-fill"
+               style="border: 1px solid #6c757d;border-bottom-right-radius: 10px;margin-bottom: 57px;border-left-width: 0px;border-top-width: 0px;margin-right: 15px;"></div>
         </div>
-      </b-form-group>
+      </div>
       <b-form-group label="Wall Time Limit" label-for="walltime-limit">
         <b-input-group append="minutes">
           <b-form-input
@@ -170,6 +185,7 @@ export default {
   data() {
     return {
       showConfiguration: false,
+      enableNodeCountToCpuCheck: true
     };
   },
   computed: {
@@ -222,11 +238,13 @@ export default {
     updateNodeCount(event) {
       this.$store.dispatch("updateNodeCount", {
         nodeCount: event.target.value,
+        enableNodeCountToCpuCheck: this.enableNodeCountToCpuCheck
       });
     },
     updateTotalCPUCount(event) {
       this.$store.dispatch("updateTotalCPUCount", {
         totalCPUCount: event.target.value,
+        enableNodeCountToCpuCheck: this.enableNodeCountToCpuCheck
       });
     },
     updateWallTimeLimit(event) {
@@ -249,6 +267,14 @@ export default {
     },
   },
   watch: {
+    enableNodeCountToCpuCheck() {
+      if (this.enableNodeCountToCpuCheck) {
+        this.$store.dispatch("updateNodeCount", {
+          nodeCount: this.getNodeCount,
+          enableNodeCountToCpuCheck: this.enableNodeCountToCpuCheck
+        });
+      }
+    },
     queueName(value) {
       if (value && this.selectedQueueName !== value) {
         this.queueChanged(value);
@@ -256,12 +282,18 @@ export default {
     },
     nodeCount(value) {
       if (value && this.getNodeCount !== value) {
-        this.$store.dispatch("updateNodeCount", { nodeCount: value });
+        this.$store.dispatch("updateNodeCount", {
+          nodeCount: value,
+          enableNodeCountToCpuCheck: this.enableNodeCountToCpuCheck
+        });
       }
     },
     totalCPUCount(value) {
       if (value && this.getTotalCPUCount !== value) {
-        this.$store.dispatch("updateTotalCPUCount", { totalCPUCount: value });
+        this.$store.dispatch("updateTotalCPUCount", {
+          totalCPUCount: value,
+          enableNodeCountToCpuCheck: this.enableNodeCountToCpuCheck
+        });
       }
     },
     wallTimeLimit(value) {

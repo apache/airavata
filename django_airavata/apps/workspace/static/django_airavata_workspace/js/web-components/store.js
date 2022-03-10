@@ -286,13 +286,13 @@ export const actions = {
     }
     dispatch("initializeQueue");
   },
-  updateTotalCPUCount({ commit, getters, state }, { totalCPUCount }) {
+  updateTotalCPUCount({ commit, getters, state }, { totalCPUCount, enableNodeCountToCpuCheck }) {
     if (state.experiment) {
       commit("updateExperimentTotalCPUCount", { totalCPUCount });
     } else {
       commit("updateTotalCPUCount", { totalCPUCount });
     }
-    if (getters.queue.cpuPerNode > 0) {
+    if (enableNodeCountToCpuCheck && getters.queue.cpuPerNode > 0) {
       const totalCPUCountInt = parseInt(totalCPUCount);
       const nodeCount = Math.min(
         Math.ceil(totalCPUCountInt / getters.queue.cpuPerNode),
@@ -305,13 +305,13 @@ export const actions = {
       }
     }
   },
-  updateNodeCount({ commit, getters, state }, { nodeCount }) {
+  updateNodeCount({ commit, getters, state }, { nodeCount, enableNodeCountToCpuCheck }) {
     if (state.experiment) {
       commit("updateExperimentNodeCount", { nodeCount });
     } else {
       commit("updateNodeCount", { nodeCount });
     }
-    if (getters.queue.cpuPerNode > 0) {
+    if (enableNodeCountToCpuCheck && getters.queue.cpuPerNode > 0) {
       const nodeCountInt = parseInt(nodeCount);
       const totalCPUCount = Math.min(
         nodeCountInt * getters.queue.cpuPerNode,
