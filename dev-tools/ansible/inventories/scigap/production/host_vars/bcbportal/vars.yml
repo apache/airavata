@@ -21,6 +21,10 @@
 ---
 
 
+# TODO: requires MariaDB 10.2.7+
+# airavata_django_extra_dependencies:
+#   - git+https://github.com/SciGaP/adexplorer-django-apps.git#egg=adexplorer-django-apps
+
 vhost_servername: "bcbportal.medicine.iu.edu"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/bcbportal.medicine.iu.edu/cert.pem"
