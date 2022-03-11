@@ -28,6 +28,7 @@ from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from django_airavata.apps.api.view_utils import IsInAdminsGroupPermission
 from django_airavata.apps.auth import serializers
 
 from . import forms, iam_admin_client, models, utils
@@ -701,3 +702,19 @@ def get_client_secret(access_token, client_endpoint):
     r = requests.get(client_endpoint + "/client-secret", headers=headers)
     r.raise_for_status()
     return r.json()['value']
+
+
+class ExtendedUserProfileFieldViewset(viewsets.ModelViewSet):
+    serializer_class = serializers.ExtendedUserProfileFieldSerializer
+    queryset = models.ExtendedUserProfileField.objects.all().order_by('order')
+    permission_classes = [IsInAdminsGroupPermission]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            queryset = queryset.filter(deleted=False)
+        return queryset
+
+    def perform_destroy(self, instance):
+        instance.deleted = True
+        instance.save()

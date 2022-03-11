@@ -149,3 +149,112 @@ class PendingEmailChange(models.Model):
         max_length=36, unique=True, default=uuid.uuid4)
     created_date = models.DateTimeField(auto_now_add=True)
     verified = models.BooleanField(default=False)
+
+
+class ExtendedUserProfileField(models.Model):
+    name = models.CharField(max_length=64)
+    help_text = models.TextField(blank=True)
+    order = models.IntegerField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.id})"
+
+    @property
+    def field_type(self):
+        if hasattr(self, 'text'):
+            return 'text'
+        elif hasattr(self, 'single_choice'):
+            return 'single_choice'
+        elif hasattr(self, 'multi_choice'):
+            return 'multi_choice'
+        elif hasattr(self, 'user_agreement'):
+            return 'user_agreement'
+        else:
+            raise Exception("Could not determine field_type")
+
+
+class ExtendedUserProfileTextField(ExtendedUserProfileField):
+    field_ptr = models.OneToOneField(ExtendedUserProfileField,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="text")
+
+
+class ExtendedUserProfileSingleChoiceField(ExtendedUserProfileField):
+    field_ptr = models.OneToOneField(ExtendedUserProfileField,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="single_choice")
+    other = models.BooleanField(default=False)
+
+
+class ExtendedUserProfileFieldChoice(models.Model):
+    display_text = models.CharField(max_length=255)
+    order = models.IntegerField()
+    deleted = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self) -> str:
+        return f"{self.display_text} ({self.id})"
+
+
+class ExtendedUserProfileSingleChoiceFieldChoice(ExtendedUserProfileFieldChoice):
+    single_choice_field = models.ForeignKey(ExtendedUserProfileSingleChoiceField, on_delete=models.CASCADE, related_name="choices")
+
+
+class ExtendedUserProfileMultiChoiceField(ExtendedUserProfileField):
+    field_ptr = models.OneToOneField(ExtendedUserProfileField,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="multi_choice")
+    other = models.BooleanField(default=False)
+
+
+class ExtendedUserProfileMultiChoiceFieldChoice(ExtendedUserProfileFieldChoice):
+    multi_choice_field = models.ForeignKey(ExtendedUserProfileMultiChoiceField, on_delete=models.CASCADE, related_name="choices")
+
+
+class ExtendedUserProfileAgreementField(ExtendedUserProfileField):
+    field_ptr = models.OneToOneField(ExtendedUserProfileField,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="user_agreement")
+    # if no checkbox label, then some default text will be used
+    checkbox_label = models.TextField(blank=True)
+
+
+class ExtendedUserProfileFieldLink(models.Model):
+    label = models.TextField()
+    url = models.URLField()
+    order = models.IntegerField()
+    display_link = models.BooleanField(default=True)
+    display_inline = models.BooleanField(default=False)
+    # Technically any field can have links
+    field = models.ForeignKey(ExtendedUserProfileField, on_delete=models.CASCADE, related_name="links")
+
+    def __str__(self) -> str:
+        return f"{self.label} {self.url}"
+
+
+class ExtendedUserProfileInfo(models.Model):
+    ext_user_profile_field = models.ForeignKey(ExtendedUserProfileField, on_delete=models.SET_NULL, null=True)
+    id_value = models.BigIntegerField(null=True)
+    text_value = models.CharField(max_length=255, blank=True)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="extended_profile")
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        if self.id_value:
+            return f"{self.ext_user_profile_field.name} {self.id_value}"
+        else:
+            return f"{self.ext_user_profile_field.name} {self.text_value}"

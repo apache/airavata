@@ -98,3 +98,123 @@ class UserSerializer(serializers.ModelSerializer):
             "url": verification_uri,
         })
         utils.send_email_to_user(models.VERIFY_EMAIL_CHANGE_TEMPLATE, context)
+
+
+class ExtendedUserProfileFieldChoiceSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    display_text = serializers.CharField()
+    order = serializers.IntegerField()
+
+
+class ExtendedUserProfileFieldLinkSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    label = serializers.CharField()
+    url = serializers.URLField()
+    order = serializers.IntegerField()
+    display_link = serializers.BooleanField(default=True)
+    display_inline = serializers.BooleanField(default=False)
+
+
+class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
+    field_type = serializers.ChoiceField(choices=["text", "single_choice", "multi_choice", "user_agreement"])
+    other = serializers.BooleanField(required=False)
+    choices = ExtendedUserProfileFieldChoiceSerializer(required=False, many=True)
+    checkbox_label = serializers.CharField(allow_blank=True, required=False)
+    links = ExtendedUserProfileFieldLinkSerializer(required=False, many=True)
+
+    class Meta:
+        model = models.ExtendedUserProfileField
+        fields = ['id', 'name', 'help_text', 'order', 'created_date',
+                  'updated_date', 'field_type', 'other', 'choices', 'checkbox_label', 'links']
+        read_only_fields = ('created_date', 'updated_date')
+
+    def to_representation(self, instance):
+        result = super().to_representation(instance)
+        if instance.field_type == 'single_choice':
+            result['other'] = instance.single_choice.other
+            result['choices'] = ExtendedUserProfileFieldChoiceSerializer(instance.single_choice.choices.filter(deleted=False).order_by('order'), many=True).data
+        if instance.field_type == 'multi_choice':
+            result['other'] = instance.multi_choice.other
+            result['choices'] = ExtendedUserProfileFieldChoiceSerializer(instance.multi_choice.choices.filter(deleted=False).order_by('order'), many=True).data
+        if instance.field_type == 'user_agreement':
+            result['checkbox_label'] = instance.user_agreement.checkbox_label
+        result['links'] = ExtendedUserProfileFieldLinkSerializer(instance.links.order_by('order'), many=True).data
+        return result
+
+    def create(self, validated_data):
+        field_type = validated_data.pop('field_type')
+        other = validated_data.pop('other', False)
+        choices = validated_data.pop('choices', [])
+        checkbox_label = validated_data.pop('checkbox_label', '')
+        links = validated_data.pop('links', [])
+        if field_type == 'text':
+            instance = models.ExtendedUserProfileTextField.objects.create(**validated_data)
+        elif field_type == 'single_choice':
+            instance = models.ExtendedUserProfileSingleChoiceField.objects.create(**validated_data, other=other)
+            # add choices
+            for choice in choices:
+                choice.pop('id', None)
+                instance.choices.create(**choice)
+        elif field_type == 'multi_choice':
+            instance = models.ExtendedUserProfileMultiChoiceField.objects.create(**validated_data, other=other)
+            # add choices
+            for choice in choices:
+                choice.pop('id', None)
+                instance.choices.create(**choice)
+        elif field_type == 'user_agreement':
+            instance = models.ExtendedUserProfileAgreementField.objects.create(**validated_data, checkbox_label=checkbox_label)
+        else:
+            raise Exception(f"Unrecognized field type: {field_type}")
+        # create links
+        for link in links:
+            link.pop('id', None)
+            instance.links.create(**link)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data['name']
+        instance.help_text = validated_data['help_text']
+        instance.order = validated_data['order']
+        # logger.debug(f"instance.field_type={instance.field_type}, validated_data={validated_data}")
+        if instance.field_type == 'single_choice':
+            instance.single_choice.other = validated_data.get('other', instance.single_choice.other)
+            choices = validated_data.pop('choices', None)
+            if choices:
+                choice_ids = [choice['id'] for choice in choices if 'id' in choice]
+                # Soft delete any choices that are not in the list
+                instance.single_choice.choices.exclude(id__in=choice_ids).update(deleted=True)
+                for choice in choices:
+                    choice_id = choice.pop('id', None)
+                    models.ExtendedUserProfileSingleChoiceFieldChoice.objects.update_or_create(
+                        id=choice_id,
+                        defaults=choice,
+                    )
+        elif instance.field_type == 'multi_choice':
+            instance.multi_choice.other = validated_data.get('other', instance.multi_choice.other)
+            choices = validated_data.pop('choices', None)
+            if choices:
+                choice_ids = [choice['id'] for choice in choices if 'id' in choice]
+                # Soft delete any choices that are not in the list
+                instance.multi_choice.choices.exclude(id__in=choice_ids).update(deleted=True)
+                for choice in choices:
+                    choice_id = choice.pop('id', None)
+                    models.ExtendedUserProfileMultiChoiceFieldChoice.objects.update_or_create(
+                        id=choice_id,
+                        defaults=choice,
+                    )
+        elif instance.field_type == 'user_agreement':
+            instance.user_agreement.checkbox_label = validated_data.pop('checkbox_label', instance.user_agreement.checkbox_label)
+
+        # update links
+        links = validated_data.pop('links', [])
+        link_ids = [link['id'] for link in links if 'id' in link]
+        instance.links.exclude(id__in=link_ids).delete()
+        for link in links:
+            link_id = link.pop('id', None)
+            models.ExtendedUserProfileFieldLink.objects.update_or_create(
+                id=link_id,
+                defaults=link,
+            )
+
+        instance.save()
+        return instance
