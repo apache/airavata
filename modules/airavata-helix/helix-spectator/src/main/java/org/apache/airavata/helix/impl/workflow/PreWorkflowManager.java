@@ -29,8 +29,10 @@ import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
 import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
+import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
+import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
 import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -100,6 +102,13 @@ public class PreWorkflowManager extends WorkflowManager {
         String taskDag = processModel.getTaskDag();
         List<TaskModel> taskList = processModel.getTasks();
 
+        boolean intermediateTransfer = taskList.stream()
+                .anyMatch(task -> task.getTaskType() == TaskTypes.OUTPUT_FETCHING);
+
+        if (intermediateTransfer) {
+            logger.info("Process {} contains intermediate file transfers", processId);
+        }
+
         String[] taskIds = taskDag.split(",");
         final List<AiravataTask> allTasks = new ArrayList<>();
 
@@ -111,7 +120,15 @@ public class PreWorkflowManager extends WorkflowManager {
             if (model.isPresent()) {
                 TaskModel taskModel = model.get();
                 AiravataTask airavataTask = null;
-                if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
+
+                if (intermediateTransfer) {
+                    if (taskModel.getTaskType() == TaskTypes.OUTPUT_FETCHING) {
+                        airavataTask = new OutputDataStagingTask();
+                        airavataTask.setForceRunTask(true);
+                        airavataTask.setSkipExperimentStatusPublish(true);
+                    }
+
+                } else if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
                     airavataTask = new EnvSetupTask();
                     airavataTask.setForceRunTask(true);
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
@@ -137,6 +154,21 @@ public class PreWorkflowManager extends WorkflowManager {
                     allTasks.add(airavataTask);
                 }
             }
+        }
+
+        // For intermediate transfers add a final CompletingTask
+        if (intermediateTransfer) {
+            CompletingTask completingTask = new CompletingTask();
+            completingTask.setGatewayId(experimentModel.getGatewayId());
+            completingTask.setExperimentId(experimentModel.getExperimentId());
+            completingTask.setProcessId(processModel.getProcessId());
+            completingTask.setTaskId("Completing-Task-" + UUID.randomUUID().toString() + "-");
+            completingTask.setForceRunTask(forceRun);
+            completingTask.setSkipAllStatusPublish(true);
+            if (allTasks.size() > 0) {
+                allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
+            }
+            allTasks.add(completingTask);
         }
 
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
@@ -195,7 +227,7 @@ public class PreWorkflowManager extends WorkflowManager {
         rjct.setExperimentId(experimentId);
         rjct.setProcessId(processId);
         rjct.setGatewayId(gateway);
-        rjct.setSkipTaskStatusPublish(true);
+        rjct.setSkipAllStatusPublish(true);
 
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() -1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
@@ -207,7 +239,7 @@ public class PreWorkflowManager extends WorkflowManager {
         cct.setExperimentId(experimentId);
         cct.setProcessId(processId);
         cct.setGatewayId(gateway);
-        cct.setSkipTaskStatusPublish(true);
+        cct.setSkipAllStatusPublish(true);
 
         if (allTasks.size() > 0) {
             allTasks.get(allTasks.size() -1).setNextTask(new OutPort(cct.getTaskId(), cct));

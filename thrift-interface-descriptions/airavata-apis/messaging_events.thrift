@@ -43,7 +43,8 @@ enum MessageType {
     LAUNCHPROCESS,
     TERMINATEPROCESS,
     PROCESSOUTPUT,
-    DB_EVENT
+    DB_EVENT,
+    INTERMEDIATE_OUTPUTS,
 }
 
 struct ExperimentStatusChangeEvent {
@@ -136,6 +137,12 @@ struct JobStatusChangeEvent {
 struct JobStatusChangeRequestEvent {
     1: required status_models.JobState state;
     2: required JobIdentifier jobIdentity;
+}
+
+struct ExperimentIntermediateOutputsEvent {
+    1: required string experimentId;
+    2: required string gatewayId;
+    3: required list<string> outputNames;
 }
 
 struct Message {

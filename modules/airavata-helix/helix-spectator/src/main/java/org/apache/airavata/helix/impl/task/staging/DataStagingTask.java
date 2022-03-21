@@ -69,7 +69,7 @@ public abstract class DataStagingTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected StorageResourceDescription getStorageResource() throws TaskOnFailException {
+    protected StorageResourceDescription getStorageResource() throws Exception {
         StorageResourceDescription storageResource = getTaskContext().getStorageResourceDescription();
         if (storageResource == null) {
             throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), false, null);
@@ -79,7 +79,9 @@ public abstract class DataStagingTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected StorageResourceAdaptor getStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        String storageId = null;
         try {
+            storageId = getTaskContext().getStorageResourceId();
             StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
                     getGatewayId(),
                     getTaskContext().getStorageResourceId(),
@@ -91,23 +93,25 @@ public abstract class DataStagingTask extends AiravataTask {
                 throw new TaskOnFailException("Storage resource adaptor for " + getTaskContext().getStorageResourceId() + " can not be null", true, null);
             }
             return storageResourceAdaptor;
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + getTaskContext().getStorageResourceId() +
+        } catch (Exception e) {
+            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + storageId +
                     " in task " + getTaskId(), false, e);
         }
     }
 
     @SuppressWarnings("WeakerAccess")
     protected AgentAdaptor getComputeResourceAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        String computeId = null;
         try {
+            computeId = getTaskContext().getComputeResourceId();
             return adaptorSupport.fetchAdaptor(
                     getTaskContext().getGatewayId(),
-                    getTaskContext().getComputeResourceId(),
+                    computeId,
                     getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for compute resource " + getTaskContext().getComputeResourceId() +
+            throw new TaskOnFailException("Failed to obtain adaptor for compute resource " + computeId +
                     " in task " + getTaskId(), false, e);
         }
     }
@@ -338,14 +342,26 @@ public abstract class DataStagingTask extends AiravataTask {
             }
 
             if (!fileExists) {
-                logger.warn("Ignoring the file " + sourcePath + " transfer as it is not available");
+                logger.warn("Ignoring the file {} transfer as it is not available", sourcePath);
                 return false;
             }
         } catch (AgentException e) {
-            logger.error("Error while checking the file " + sourcePath + " existence");
+            logger.error("Error while checking the file {} existence", sourcePath, e);
             throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", false, e);
         }
 
+        String parentDir = destPath.substring(0, destPath.lastIndexOf(File.separator));
+        try {
+            logger.info("Checking whether the parent directory {} in storage exists", parentDir);
+            Boolean exists = storageResourceAdaptor.doesFileExist(parentDir);
+            if (!exists) {
+                logger.info("Parent directory {} on storage does not exist. So creating it recursively", parentDir);
+                storageResourceAdaptor.createDirectory(parentDir, true);
+            }
+        } catch (AgentException e) {
+            logger.error("Failed in validating the parent directory {} in storage side", parentDir, e);
+            throw new TaskOnFailException("Failed in validating the parent directory " + parentDir + " in storage side", false, e);
+        }
 
         if  (ServerSettings.isSteamingEnabled()) {
             passThroughTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath);
