@@ -218,3 +218,132 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
+    text_value = serializers.CharField(required=False, allow_blank=True)
+    choices = serializers.ListField(child=serializers.IntegerField(), required=False, allow_empty=False, min_length=1)
+    other_value = serializers.CharField(required=False, allow_blank=True)
+    agreement_value = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = models.ExtendedUserProfileValue
+        fields = ['id', 'value_type', 'ext_user_profile_field', 'text_value',
+                  'choices', 'other_value', 'agreement_value']
+        read_only_fields = ['value_type']
+
+    def to_representation(self, instance):
+        result = super().to_representation(instance)
+        if instance.value_type == 'text':
+            result['text_value'] = instance.text.text_value
+        elif instance.value_type == 'single_choice':
+            choices = []
+            if instance.single_choice.choice is not None:
+                choices.append(instance.single_choice.choice)
+            result['choices'] = choices
+            result['other_value'] = instance.single_choice.other_value
+        elif instance.value_type == 'multi_choice':
+            result['choices'] = list(map(lambda c: c.value, instance.multi_choice.choices.all()))
+            result['other_value'] = instance.multi_choice.other_value
+        elif instance.value_type == 'user_agreement':
+            result['agreement_value'] = instance.user_agreement.agreement_value
+        return result
+
+    def create(self, validated_data):
+        request = self.context['request']
+        user = request.user
+        user_profile = user.user_profile
+
+        ext_user_profile_field = validated_data.pop('ext_user_profile_field')
+        if ext_user_profile_field.field_type == 'text':
+            text_value = validated_data.pop('text_value')
+            return models.ExtendedUserProfileTextValue.objects.create(
+                ext_user_profile_field=ext_user_profile_field,
+                user_profile=user_profile,
+                text_value=text_value)
+        elif ext_user_profile_field.field_type == 'single_choice':
+            choices = validated_data.pop('choices', [])
+            choice = choices[0] if len(choices) > 0 else None
+            other_value = validated_data.pop('other_value', '')
+            return models.ExtendedUserProfileSingleChoiceValue.objects.create(
+                ext_user_profile_field=ext_user_profile_field,
+                user_profile=user_profile,
+                choice=choice,
+                other_value=other_value,
+            )
+        elif ext_user_profile_field.field_type == 'multi_choice':
+            choices = validated_data.pop('choices', [])
+            other_value = validated_data.pop('other_value', '')
+            value = models.ExtendedUserProfileMultiChoiceValue.objects.create(
+                ext_user_profile_field=ext_user_profile_field,
+                user_profile=user_profile,
+                other_value=other_value,
+            )
+            for choice in choices:
+                models.ExtendedUserProfileMultiChoiceValueChoice.objects.create(
+                    value=choice,
+                    multi_choice_value=value
+                )
+            return value
+        elif ext_user_profile_field.field_type == 'user_agreement':
+            agreement_value = validated_data.get('agreement_value')
+            return models.ExtendedUserProfileAgreementValue.objects.create(
+                ext_user_profile_field=ext_user_profile_field,
+                user_profile=user_profile,
+                agreement_value=agreement_value
+            )
+
+    def update(self, instance, validated_data):
+        if instance.value_type == 'text':
+            text_value = validated_data.pop('text_value')
+            instance.text.text_value = text_value
+            instance.text.save()
+        elif instance.value_type == 'single_choice':
+            choices = validated_data.pop('choices', [])
+            choice = choices[0] if len(choices) > 0 else None
+            other_value = validated_data.pop('other_value', '')
+            instance.single_choice.choice = choice
+            instance.single_choice.other_value = other_value
+            instance.single_choice.save()
+        elif instance.value_type == 'multi_choice':
+            choices = validated_data.pop('choices', [])
+            other_value = validated_data.pop('other_value', '')
+            # Delete any that are no longer in the set
+            instance.multi_choice.choices.exclude(value__in=choices).delete()
+            # Create records as needed for new entries
+            for choice in choices:
+                models.ExtendedUserProfileMultiChoiceValueChoice.objects.update_or_create(
+                    value=choice, multi_choice_value=instance.multi_choice)
+            instance.multi_choice.other_value = other_value
+            instance.multi_choice.save()
+        elif instance.value_type == 'user_agreement':
+            agreement_value = validated_data.pop('agreement_value')
+            instance.user_agreement.agreement_value = agreement_value
+            instance.user_agreement.save()
+        instance.save()
+        return instance
+
+    def validate(self, attrs):
+        ext_user_profile_field = attrs['ext_user_profile_field']
+        # validate that id_value is only provided for choice fields, and 'text_value' only for the others
+        if ext_user_profile_field.field_type == 'single_choice':
+            choices = attrs.get('choices', [])
+            other_value = attrs.get('other_value', '')
+            # Check that choices are valid
+            for choice in choices:
+                if not ext_user_profile_field.single_choice.choices.filter(id=choice, deleted=False).exists():
+                    raise serializers.ValidationError({'choices': 'Invalid choice.'})
+            if len(choices) > 1:
+                raise serializers.ValidationError({'choices': "Must specify only a single choice."})
+            if len(choices) == 1 and other_value != '':
+                raise serializers.ValidationError("Must specify only a single choice or the other choice, but not both.")
+            if len(choices) == 0 and other_value == '':
+                raise serializers.ValidationError("Must specify one of a single choice or the other choice (but not both).")
+        elif ext_user_profile_field.field_type == 'multi_choice':
+            choices = attrs.get('choices', [])
+            other_value = attrs.get('other_value', '')
+            # Check that choices are valid
+            for choice in choices:
+                if not ext_user_profile_field.multi_choice.choices.filter(id=choice, deleted=False).exists():
+                    raise serializers.ValidationError({'choices': 'Invalid choice.'})
+        return attrs

@@ -24,7 +24,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
-from rest_framework import permissions, viewsets
+from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -718,3 +718,34 @@ class ExtendedUserProfileFieldViewset(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.deleted = True
         instance.save()
+
+
+class IsExtendedUserProfileOwnerOrReadOnlyForAdmins(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if (request.method in permissions.SAFE_METHODS and
+                request.is_gateway_admin):
+            return True
+        return obj.user_profile.user == request.user
+
+
+class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
+                                      mixins.RetrieveModelMixin,
+                                      mixins.UpdateModelMixin,
+                                      mixins.ListModelMixin,
+                                      viewsets.GenericViewSet):
+    serializer_class = serializers.ExtendedUserProfileValueSerializer
+    permission_classes = [IsExtendedUserProfileOwnerOrReadOnlyForAdmins]
+
+    def get_queryset(self):
+        user = self.request.user
+        if self.request.is_gateway_admin:
+            queryset = models.ExtendedUserProfileValue.objects.all()
+            user = self.request.query_params.get('user')
+            if user is not None:
+                queryset = queryset.filter(user_profile__user_id=user)
+        else:
+            queryset = user.user_profile.extended_profile.all()
+        return queryset

@@ -245,16 +245,64 @@ class ExtendedUserProfileFieldLink(models.Model):
         return f"{self.label} {self.url}"
 
 
-class ExtendedUserProfileInfo(models.Model):
+class ExtendedUserProfileValue(models.Model):
     ext_user_profile_field = models.ForeignKey(ExtendedUserProfileField, on_delete=models.SET_NULL, null=True)
-    id_value = models.BigIntegerField(null=True)
-    text_value = models.CharField(max_length=255, blank=True)
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="extended_profile")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
-    def __str__(self) -> str:
-        if self.id_value:
-            return f"{self.ext_user_profile_field.name} {self.id_value}"
+    @property
+    def value_type(self):
+        if hasattr(self, 'text'):
+            return 'text'
+        elif hasattr(self, 'single_choice'):
+            return 'single_choice'
+        elif hasattr(self, 'multi_choice'):
+            return 'multi_choice'
+        elif hasattr(self, 'user_agreement'):
+            return 'user_agreement'
         else:
-            return f"{self.ext_user_profile_field.name} {self.text_value}"
+            raise Exception("Could not determine value_type")
+
+
+class ExtendedUserProfileTextValue(ExtendedUserProfileValue):
+    value_ptr = models.OneToOneField(ExtendedUserProfileValue,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="text")
+    text_value = models.TextField()
+
+
+class ExtendedUserProfileSingleChoiceValue(ExtendedUserProfileValue):
+    value_ptr = models.OneToOneField(ExtendedUserProfileValue,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="single_choice")
+    # Only one of value or other_value should be populated, not both
+    choice = models.BigIntegerField(null=True)
+    other_value = models.TextField(blank=True)
+
+
+class ExtendedUserProfileMultiChoiceValue(ExtendedUserProfileValue):
+    value_ptr = models.OneToOneField(ExtendedUserProfileValue,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="multi_choice")
+    other_value = models.TextField(blank=True)
+
+
+class ExtendedUserProfileMultiChoiceValueChoice(models.Model):
+    value = models.BigIntegerField()
+    multi_choice_value = models.ForeignKey(ExtendedUserProfileMultiChoiceValue, on_delete=models.CASCADE, related_name="choices")
+
+
+class ExtendedUserProfileAgreementValue(ExtendedUserProfileValue):
+    value_ptr = models.OneToOneField(ExtendedUserProfileValue,
+                                     on_delete=models.CASCADE,
+                                     parent_link=True,
+                                     primary_key=True,
+                                     related_name="user_agreement")
+    agreement_value = models.BooleanField()
