@@ -37,6 +37,33 @@ To build without running tests, use `mvn clean install -Dmaven.test.skip=true`.
 The compressed binary distribution is created at
 PROJECT_DIR/modules/distribution/target.
 
+### Build and run docker distribution (Experimental and not recommended for production deployments)
+
+* This requires docker and docker-compose installed in your system
+
+* Build the source and docker images for each microservice
+```
+    git clone https://github.com/apache/airavata.git
+    cd airavata
+    mvn clean install 
+    mvn docker:build -pl modules/distribution
+```
+* Start supporting services and Airavata miroservices (API Server, Helix Components and the Job Monitors)
+```
+     docker-compose -f modules/ide-integration/src/main/containers/docker-compose.yml -f modules/distribution/src/main/docker/docker-compose.yml up
+```
+
+* Django portal and PGA Portal can be pointed to airavata.host:8930 (API) , airavata.host:8962 (Profile Service), airavata.host:8443 (Keycloak). 
+Make sure that you add a host entry that maps airavata.host -> 127.0.0.1
+
+* To stop all the services
+```
+    docker-compose -f modules/ide-integration/src/main/containers/docker-compose.yml -f modules/distribution/src/main/docker/docker-compose.yml down
+```
+
+* If you do any code change and need to reflect them in the deployment, stop the docker deployment, rebuild docker images and start the docker deployment
+ 
+ 
 ## Getting Started
 
 The easiest way to get started with running Airavata locally and setting up a

@@ -19,3 +19,7 @@ config:
      emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
      resourceEmailAddresses:
        - ls4.tacc.utexas.edu # contain Lonestar
+
+   - jobManagerType: HTCONDOR
+     emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
+     resourceEmailAddresses:

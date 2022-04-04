@@ -37,6 +37,8 @@
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
     - role: django_setup
       when: inventory_hostname == groups['django_' +  ansible_hostname][0]
+    - role: tusd
+      when: inventory_hostname == groups['django_' +  ansible_hostname][0] and tusd_vhost_servername is defined and tusd_vhost_servername
 
 # Create a django virtual host
 - hosts: django

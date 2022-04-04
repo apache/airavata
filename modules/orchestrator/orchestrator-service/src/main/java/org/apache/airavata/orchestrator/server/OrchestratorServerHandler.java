@@ -817,7 +817,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			} catch (TException e) {
 				log.error("Error while fetching intermediate outputs", e);
 				throw new RuntimeException("Error while fetching intermediate outputs", e);
-			}finally {
+			} finally {
 				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			}
 

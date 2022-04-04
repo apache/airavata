@@ -38,7 +38,7 @@
     <artifactId>airavata</artifactId>
     <packaging>pom</packaging>
     <name>Airavata</name>
-    <version>0.20-SNAPSHOT</version>
+    <version>0.21-SNAPSHOT</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
@@ -119,6 +119,7 @@
         <jmockit.version>1.44</jmockit.version>
         <commons.lang.version>2.6</commons.lang.version>
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
+        <helix.version>0.9.7</helix.version>
     </properties>
 
     <developers>
