@@ -1,0 +1,54 @@
+version: '3'
+services:
+  keycloak:
+    image: jboss/keycloak:2.5.4.Final
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    ports:
+      - "18080:8080"
+      - "8443:8443"
+    volumes:
+      - ./keycloak/Default-export.json:/opt/keycloak/Default-export.json
+      - ../resources/keystores/airavata.jks:/opt/jboss/keycloak/standalone/configuration/keystores/airavata.jks
+      - ./keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml
+    command: ["-b", "0.0.0.0", "-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=singleFile", "-Dkeycloak.migration.file=/opt/keycloak/Default-export.json", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
+  db:
+    image: mariadb:10.4.13
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=airavata
+      - MYSQL_PASSWORD=123456
+    volumes:
+      - ./database_scripts/init:/docker-entrypoint-initdb.d
+      - ./database_data:/var/lib/mysql
+    ports:
+        - "13306:3306"
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=']
+  rabbitmq:
+    image: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=develop
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  zookeeper:
+    image: zookeeper
+    restart: always
+    hostname: zk
+    ports:
+      - "12181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  sshd:
+    image: dimuthuupe/sshd:1.0
+    volumes:
+      - /tmp:/tmp
+    ports:
+      - "22222:22"

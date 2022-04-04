@@ -181,13 +181,17 @@ public class ApplicationSettings {
     }
     
     public String getSettingImpl(String key) throws ApplicationSettingsException{
-    	String rawValue=null;
-    	if (System.getProperties().containsKey(key)){
-    		rawValue=System.getProperties().getProperty(key);
-    	}else{
+    	String rawValue;
+    	if (System.getProperties().containsKey(key)) {
+            rawValue = System.getProperties().getProperty(key);
+
+        } else if (System.getenv().containsKey(key)) {
+    	    rawValue = System.getenv().get(key);
+
+    	} else {
     		validateSuccessfulPropertyFileLoad();
 	    	if (properties.containsKey(key)){
-	    		rawValue=properties.getProperty(key);
+	    		rawValue = properties.getProperty(key);
 	    	}else{
 	    		throw new ApplicationSettingsException(key);
 	    	}
