@@ -95,6 +95,11 @@ config:
      resourceEmailAddresses:
        - iu.xsede.edu # test resource mail address
        - tcs.tulsahpc.org #Tandy
+   
+   - jobManagerType: HTCONDOR
+     emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
+     resourceEmailAddresses:
+       - condor@js-169-152.jetstream-cloud.org
 
 #   - jobManagerType: HTCondor
 #     emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
