@@ -153,10 +153,10 @@ export default class InputDataObjectType extends BaseModel {
    *   "editor": {
    *     "dependencies": {
    *       "show": {
-   *         "AND": [              // Boolean operator ("AND", "OR")
-   *           "INPUT_1": {        // Name of other application input
-   *             "type": "equals", // Name of comparison type
-   *             "value": "1"      // Value to compare with
+   *         "AND": [                     // Boolean operator ("AND", "OR")
+   *           "INPUT_1": {               // Name of other application input
+   *             "comparison": "equals",  // Name of comparison type
+   *             "value": "1"             // Value to compare with
    *           },
    *           "NOT": {            // "NOT" is given a single input comparison or "AND" or "OR" expression
    *             "INPUT_2": {
