@@ -17,10 +17,9 @@
       >Please complete your user profile before continuing.</b-alert
     >
     <user-profile-editor
-      v-if="user"
-      v-model="user"
+      ref="userProfileEditor"
       @save="onSave"
-      @resend-email-verification="resendEmailVerification"
+      @resend-email-verification="handleResendEmailVerification"
     />
     <b-link
       v-if="user && user.complete"
@@ -32,36 +31,46 @@
 </template>
 
 <script>
-import { services } from "django-airavata-api";
 import UserProfileEditor from "../components/UserProfileEditor.vue";
 import { notifications } from "django-airavata-common-ui";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   components: { UserProfileEditor },
   name: "user-profile-container",
-  created() {
-    services.UserService.current()
-      .then((user) => {
-        this.user = user;
-      })
-      .then(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        if (queryParams.has("code")) {
-          this.verifyEmailChange(queryParams.get("code"));
-        }
-      });
+  async created() {
+    await this.loadCurrentUser();
+
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has("code")) {
+      await this.verifyEmailChange({ code: queryParams.get("code") });
+      notifications.NotificationList.add(
+        new notifications.Notification({
+          type: "SUCCESS",
+          message: "Email address verified and updated",
+          duration: 5,
+        })
+      );
+      // Update URL, removing the code from the query string
+      window.history.replaceState({}, "", "/auth/user-profile/");
+    }
   },
   data() {
-    return {
-      user: null,
-    };
+    return {};
+  },
+  computed: {
+    ...mapGetters("userProfile", ["user"]),
   },
   methods: {
-    onSave(value) {
-      services.UserService.update({
-        lookup: value.id,
-        data: value,
-      }).then((user) => {
+    ...mapActions("userProfile", [
+      "loadCurrentUser",
+      "verifyEmailChange",
+      "updateUser",
+      "resendEmailVerification",
+    ]),
+    async onSave() {
+      if (this.$refs.userProfileEditor.valid) {
+        await this.updateUser();
         notifications.NotificationList.add(
           new notifications.Notification({
             type: "SUCCESS",
@@ -69,39 +78,17 @@ export default {
             duration: 5,
           })
         );
-        this.user = user;
-      });
+      }
     },
-    resendEmailVerification() {
-      services.UserService.resendEmailVerification({
-        lookup: this.user.id,
-      }).then(() => {
-        notifications.NotificationList.add(
-          new notifications.Notification({
-            type: "SUCCESS",
-            message: "Verification link sent",
-            duration: 5,
-          })
-        );
-      });
-    },
-    verifyEmailChange(code) {
-      services.UserService.verifyEmailChange({
-        lookup: this.user.id,
-        data: { code: code },
-      }).then((user) => {
-        // User now updated with email change
-        this.user = user;
-        notifications.NotificationList.add(
-          new notifications.Notification({
-            type: "SUCCESS",
-            message: "Email address verified and updated",
-            duration: 5,
-          })
-        );
-        // Update URL, removing the code from the query string
-        window.history.replaceState({}, "", "/auth/user-profile/");
-      });
+    async handleResendEmailVerification() {
+      await this.resendEmailVerification();
+      notifications.NotificationList.add(
+        new notifications.Notification({
+          type: "SUCCESS",
+          message: "Verification link sent",
+          duration: 5,
+        })
+      );
     },
   },
 };
