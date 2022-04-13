@@ -23,7 +23,7 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 airavata_django_extra_dependencies:
-  - git+https://github.com/NCAR/lrose-sgci.git@main#egg=my-custom-django-app
+  - git+https://github.com/NCAR/lrose-sgci.git@production#egg=my-custom-django-app
 
 vhost_servername: "gateway.lrose.net"
 vhost_ssl: True
