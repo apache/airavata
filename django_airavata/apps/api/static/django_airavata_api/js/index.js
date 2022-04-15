@@ -120,6 +120,12 @@ const services = {
   ExperimentStoragePathService: ServiceFactory.service(
     "ExperimentStoragePaths"
   ),
+  ExtendedUserProfileFieldService: ServiceFactory.service(
+    "ExtendedUserProfileFields"
+  ),
+  ExtendedUserProfileValueService: ServiceFactory.service(
+    "ExtendedUserProfileValues"
+  ),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfile"

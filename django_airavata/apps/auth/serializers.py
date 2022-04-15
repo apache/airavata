@@ -222,7 +222,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
 
 class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
     text_value = serializers.CharField(required=False, allow_blank=True)
-    choices = serializers.ListField(child=serializers.IntegerField(), required=False, allow_empty=False, min_length=1)
+    choices = serializers.ListField(child=serializers.IntegerField(), required=False)
     other_value = serializers.CharField(required=False, allow_blank=True)
     agreement_value = serializers.BooleanField(required=False)
 

@@ -10,6 +10,7 @@ import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentStatistics from "./models/ExperimentStatistics";
 import ExperimentStoragePath from "./models/ExperimentStoragePath";
 import ExperimentSummary from "./models/ExperimentSummary";
+import ExtendedUserProfileField from "./models/ExtendedUserProfileField";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
@@ -236,6 +237,15 @@ export default {
         encodePathParams: false,
       },
     },
+  },
+  ExtendedUserProfileFields: {
+    url: "/auth/extended-user-profile-fields",
+    viewSet: true,
+    modelClass: ExtendedUserProfileField,
+  },
+  ExtendedUserProfileValues: {
+    url: "/auth/extended-user-profile-values",
+    viewSet: true,
   },
   FullExperiments: {
     url: "/api/full-experiments",

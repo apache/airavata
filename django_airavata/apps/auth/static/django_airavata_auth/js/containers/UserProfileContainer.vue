@@ -21,6 +21,9 @@
       @save="onSave"
       @resend-email-verification="handleResendEmailVerification"
     />
+    <!-- TODO: include both forms in the same card -->
+    <!-- include extended-user-profile-editor if there are extendedUserProfileFields -->
+    <extended-user-profile-editor v-if="extendedUserProfileFields && extendedUserProfileFields.length > 0"/>
     <b-link
       v-if="user && user.complete"
       class="text-muted small"
@@ -34,12 +37,15 @@
 import UserProfileEditor from "../components/UserProfileEditor.vue";
 import { notifications } from "django-airavata-common-ui";
 import { mapActions, mapGetters } from "vuex";
+import ExtendedUserProfileEditor from '../components/ExtendedUserProfileEditor.vue';
 
 export default {
-  components: { UserProfileEditor },
+  components: { UserProfileEditor, ExtendedUserProfileEditor },
   name: "user-profile-container",
   async created() {
     await this.loadCurrentUser();
+    await this.loadExtendedUserProfileFields();
+    await this.loadExtendedUserProfileValues();
 
     const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.has("code")) {
@@ -60,6 +66,7 @@ export default {
   },
   computed: {
     ...mapGetters("userProfile", ["user"]),
+    ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
   },
   methods: {
     ...mapActions("userProfile", [
@@ -68,7 +75,10 @@ export default {
       "updateUser",
       "resendEmailVerification",
     ]),
+    ...mapActions("extendedUserProfile", ["loadExtendedUserProfileFields", "loadExtendedUserProfileValues", "saveExtendedUserProfileValues"]),
     async onSave() {
+      // TODO: only save if both standard and extended user profiles are valid
+      this.saveExtendedUserProfileValues();
       if (this.$refs.userProfileEditor.valid) {
         await this.updateUser();
         notifications.NotificationList.add(
