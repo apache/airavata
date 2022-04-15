@@ -66,4 +66,8 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_server_email: "{{ portal_email_username }}"
 portal_title: "Dev AMP Gateway"
+
+django_extra_settings:
+  TRECX:
+    TRECX_APPLICATION_ID: "tRecX_70fc89f8-424f-4495-99e3-f3aa6a75f967"
 ...
