@@ -19,11 +19,13 @@
 #
 
 ---
-vhost_servername: "django.seagrid.org"
+vhost_servername: "js2.seagrid.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/django.seagrid.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.seagrid.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.seagrid.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 
 ## Keycloak related variables
 tenant_domain: "seagrid"
@@ -33,6 +35,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "SEAGrid"
+    hidden: true
   external:
     - name: "CILogon"
       idp_alias: "oidc"

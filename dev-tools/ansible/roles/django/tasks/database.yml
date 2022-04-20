@@ -22,16 +22,25 @@
 
 - name: Adds Python MySQL support on Debian/Ubuntu
   apt: pkg="python-mysqldb" state=present
-  become_user: root
+  become: true
   when: ansible_os_family == 'Debian'
 
-- name: Adds Python MySQL support on RedHat/CentOS
-  yum: name=MySQL-python state=present
-  become_user: root
-  when: ansible_os_family == 'RedHat'
+# - name: inventory_hostname var
+#   debug:
+#     var: inventory_hostname
+
+# - name: user var
+#   debug:
+#     var: user
+
+# TODO: fix propagating delegation and become_user
+# - include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+#   when: ansible_os_family == "RedHat"
 
 - name: create django database ({{ django_database_name }})
   mysql_db: name="{{ django_database_name }}" state=present encoding=utf8 collation=utf8_bin
+  # become: true
+  # become_user: "{{user}}"
 
 - name: give access to {{ django_db_username }} from remote (internal ip)
   mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ ansible_default_ipv4.address }}"

@@ -20,18 +20,17 @@
 
 ---
 #airavata_django_git_branch: "simccs"
-#vhost_servername: "django.interactwel.scigap.org"
-vhost_servername: "interactwel.org"
-vhost_server_redirect: "www.interactwel.org"
-vhost_ssl: true
-# sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/interactwel.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/interactwel.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/interactwel.org/privkey.pem"
+vhost_servername: "interactwel.js2.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 
 interactwel_django_app_branch: "api-integration"
 airavata_django_extra_dependencies:
-  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+  # - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
 
 django_extra_settings:
   LOGIN_REDIRECT_URL: "/interactwel/"
@@ -44,6 +43,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "InterACTWEL"
+    hidden: true
   external:
     - name: "CILogon"
       idp_alias: "cilogon"

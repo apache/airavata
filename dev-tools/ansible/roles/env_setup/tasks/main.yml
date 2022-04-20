@@ -73,24 +73,25 @@
 
 # Automatic security updates installation
 
-- name: Install yum-cron, yum-utils (RedHat)
-  yum: name={{ item }} state=latest update_cache=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
-  with_items:
-    - yum-cron
-    - yum-utils
+# TODO: switch to dnf-automatic for Rocky Linux
+# - name: Install yum-cron, yum-utils (RedHat)
+#   yum: name={{ item }} state=latest update_cache=yes
+#   become: yes
+#   when: ansible_os_family == "RedHat"
+#   with_items:
+#     - yum-cron
+#     - yum-utils
 
-- name: Copy yum-cron.conf config file
-  copy:
-    src: yum-cron.conf
-    dest: /etc/yum/yum-cron.conf
-    backup: yes
-  become: yes
-  when: ansible_os_family == "RedHat"
+# - name: Copy yum-cron.conf config file
+#   copy:
+#     src: yum-cron.conf
+#     dest: /etc/yum/yum-cron.conf
+#     backup: yes
+#   become: yes
+#   when: ansible_os_family == "RedHat"
 
-- name: Enable and start yum-cron
-  service: name=yum-cron state=started enabled=yes daemon_reload=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
+# - name: Enable and start yum-cron
+#   service: name=yum-cron state=started enabled=yes daemon_reload=yes
+#   become: yes
+#   when: ansible_os_family == "RedHat"
 ...

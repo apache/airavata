@@ -20,15 +20,7 @@
 
 ---
 
-- name: install certbot and dependencies
-  yum: name={{ item }} state=installed update_cache=yes
-  with_items:
-    - certbot-1.11.0
-    - python2-acme-1.11.0
-    - python2-certbot-apache-1.11.0
-    - ca-certificates-2021.2.50
-  become: true
-  become_user: root
+- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
   when: ansible_os_family == "RedHat"
 
 - name: add Certbot PPA repository

@@ -21,6 +21,10 @@
 ---
 ansible_connection: ssh
 ansible_user: centos
+# https://stackoverflow.com/a/41431540
+# ansible_python_interpreter: /usr/bin/python3
+# ansible_python_interpreter: /usr/bin/python2
+
 
 user: airavata
 group: airavata

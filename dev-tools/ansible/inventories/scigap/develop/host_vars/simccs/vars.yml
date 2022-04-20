@@ -31,14 +31,18 @@ airavata_django_extra_dependencies:
   - pyjnius
 # vhost_servername: "beta.simccs.org"
 # Temporary use a *.scigap.org domain name
-vhost_servername: "beta.simccs.scigap.org"
+
+vhost_servername: "simccs.js2.scigap.org"
 vhost_ssl: True
-# Some of the maptool views call into Java code and can take 2-3 minutes to execute
-vhost_timeout: 300
-# sudo certbot --apache certonly -d django.simccs.scigap.org
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+
+# Some of the maptool views call into Java code and can take 2-3 minutes to execute
+vhost_timeout: 300
+
 # Custom vhost config file to specify the geoserver reverse proxy
 django_ssl_vhost_template: "{{ inventory_dir }}/host_vars/simccs/files/django-ssl-vhost.conf.j2"
 
@@ -50,6 +54,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "SimCCS"
+    hidden: true
   external:
     - name: "CILogon"
       idp_alias: "cilogon"
