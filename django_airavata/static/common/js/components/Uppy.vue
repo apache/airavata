@@ -55,6 +55,7 @@ export default {
       uppy: null,
       restrictionFailedMessage: null,
       settings: null,
+      uploadFilesCount: 0,
     };
   },
   computed: {
@@ -106,6 +107,7 @@ export default {
             showSpinner: false,
           }).then((result) => {
             this.$emit("upload-success", result);
+            this.fileFinishedUploading();
           });
         });
       } else {
@@ -119,18 +121,28 @@ export default {
         });
         this.uppy.on("upload-success", (file, response) => {
           this.$emit("upload-success", response.body);
+          this.fileFinishedUploading();
         });
       }
-      this.uppy.on("upload", () => {
+      this.uppy.on("upload", (data) => {
         this.$emit("upload-started");
+        this.uploadFilesCount = data.fileIDs.length;
       });
       this.uppy.on("complete", () => {
-        this.$emit("upload-finished");
         this.restrictionFailedMessage = null;
       });
       this.uppy.on("restriction-failed", (file, error) => {
         this.restrictionFailedMessage = `${file.name}: ${error.message}`;
       });
+      this.uppy.on("upload-error", () => {
+        this.fileFinishedUploading();
+      });
+    },
+    fileFinishedUploading() {
+      this.uploadFilesCount--;
+      if (this.uploadFilesCount <= 0) {
+        this.$emit("upload-finished");
+      }
     },
     reset() {
       this.uppy.reset();
