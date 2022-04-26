@@ -189,6 +189,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
                         id=choice_id,
                         defaults=choice,
                     )
+            instance.single_choice.save()
         elif instance.field_type == 'multi_choice':
             instance.multi_choice.other = validated_data.get('other', instance.multi_choice.other)
             choices = validated_data.pop('choices', None)
@@ -202,8 +203,10 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
                         id=choice_id,
                         defaults=choice,
                     )
+            instance.multi_choice.save()
         elif instance.field_type == 'user_agreement':
             instance.user_agreement.checkbox_label = validated_data.pop('checkbox_label', instance.user_agreement.checkbox_label)
+            instance.user_agreement.save()
 
         # update links
         links = validated_data.pop('links', [])
@@ -211,6 +214,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
         instance.links.exclude(id__in=link_ids).delete()
         for link in links:
             link_id = link.pop('id', None)
+            link['field'] = instance
             models.ExtendedUserProfileFieldLink.objects.update_or_create(
                 id=link_id,
                 defaults=link,
