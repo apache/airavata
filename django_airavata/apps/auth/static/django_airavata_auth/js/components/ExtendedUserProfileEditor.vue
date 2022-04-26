@@ -15,7 +15,7 @@ import { mapGetters } from "vuex";
 import ExtendedUserProfileMultiChoiceFieldEditor from "./ExtendedUserProfileMultiChoiceFieldEditor.vue";
 import ExtendedUserProfileSingleChoiceFieldEditor from "./ExtendedUserProfileSingleChoiceFieldEditor.vue";
 import ExtendedUserProfileTextFieldEditor from "./ExtendedUserProfileTextFieldEditor.vue";
-import ExtendedUserProfileUserAgreementFieldEditor from './ExtendedUserProfileUserAgreementFieldEditor.vue';
+import ExtendedUserProfileUserAgreementFieldEditor from "./ExtendedUserProfileUserAgreementFieldEditor.vue";
 export default {
   computed: {
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),

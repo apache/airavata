@@ -1,19 +1,18 @@
 <template>
-  <b-form-group
-    :label="extendedUserProfileField.name"
-    :description="extendedUserProfileField.help_text"
-  >
+  <extended-user-profile-field-editor v-bind="$props">
     <b-form-checkbox-group
       v-model="value"
       :options="options"
       stacked
     ></b-form-checkbox-group>
-  </b-form-group>
+  </extended-user-profile-field-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 export default {
+  components: { ExtendedUserProfileFieldEditor },
   props: ["extendedUserProfileField"],
   computed: {
     ...mapGetters("extendedUserProfile", ["getMultiChoiceValue"]),

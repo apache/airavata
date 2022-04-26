@@ -1,17 +1,16 @@
 <template>
-  <b-form-group
-    :label="extendedUserProfileField.name"
-    :description="extendedUserProfileField.help_text"
-  >
+  <extended-user-profile-field-editor v-bind="$props">
     <b-form-checkbox v-model="value" :unchecked-value="false">
       {{ extendedUserProfileField.checkbox_label }}
     </b-form-checkbox>
-  </b-form-group>
+  </extended-user-profile-field-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 export default {
+  components: { ExtendedUserProfileFieldEditor },
   props: ["extendedUserProfileField"],
   computed: {
     ...mapGetters("extendedUserProfile", ["getUserAgreementValue"]),
@@ -32,5 +31,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

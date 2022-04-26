@@ -1,15 +1,14 @@
 <template>
-  <b-form-group
-    :label="extendedUserProfileField.name"
-    :description="extendedUserProfileField.help_text"
-  >
+  <extended-user-profile-field-editor v-bind="$props">
     <b-form-select v-model="value" :options="options"></b-form-select>
-  </b-form-group>
+  </extended-user-profile-field-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 export default {
+  components: { ExtendedUserProfileFieldEditor },
   props: ["extendedUserProfileField"],
   computed: {
     ...mapGetters("extendedUserProfile", ["getSingleChoiceValue"]),

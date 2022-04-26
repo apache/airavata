@@ -101,7 +101,7 @@ export default {
     },
     valid() {
       return !this.$v.$invalid;
-    }
+    },
   },
   validations() {
     return {
