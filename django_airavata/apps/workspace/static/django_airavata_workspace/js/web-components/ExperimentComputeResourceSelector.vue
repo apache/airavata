@@ -1,6 +1,6 @@
 <template>
   <compute-resource-selector
-    :value="resourceHostId"
+    :value="resourceHostId" :disabled="disabled"
     :includedComputeResources="computeResources"
     @input.stop="computeResourceChanged"
   />
@@ -22,6 +22,10 @@ export default {
       type: String,
       required: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
   },
   created() {
     this.$store.dispatch("initializeComputeResources", {
