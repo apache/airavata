@@ -24,6 +24,16 @@ const getters = {
       return null;
     }
   },
+  getMultiChoiceValue: (state) => (id) => {
+    const value = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    if (value && value.choices) {
+      return value.choices;
+    } else {
+      return null;
+    }
+  },
 };
 
 const actions = {
@@ -86,6 +96,21 @@ const mutations = {
         value_type: "single_choice",
         ext_user_profile_field: id,
         choices: [value],
+      });
+    }
+  },
+  setMultiChoiceValue(state, { value, id }) {
+    const profileValue = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    if (profileValue) {
+      profileValue.choices = value;
+      profileValue.other_value = "";
+    } else {
+      state.extendedUserProfileValues.push({
+        value_type: "multi_choice",
+        ext_user_profile_field: id,
+        choices: value,
       });
     }
   },

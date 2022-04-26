@@ -12,6 +12,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import ExtendedUserProfileMultiChoiceFieldEditor from "./ExtendedUserProfileMultiChoiceFieldEditor.vue";
 import ExtendedUserProfileSingleChoiceFieldEditor from "./ExtendedUserProfileSingleChoiceFieldEditor.vue";
 import ExtendedUserProfileTextFieldEditor from "./ExtendedUserProfileTextFieldEditor.vue";
 export default {
@@ -23,6 +24,7 @@ export default {
       const fieldTypeEditors = {
         text: ExtendedUserProfileTextFieldEditor,
         single_choice: ExtendedUserProfileSingleChoiceFieldEditor,
+        multi_choice: ExtendedUserProfileMultiChoiceFieldEditor,
       };
 
       if (extendedUserProfileField.field_type in fieldTypeEditors) {
