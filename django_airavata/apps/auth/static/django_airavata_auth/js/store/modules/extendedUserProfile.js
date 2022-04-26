@@ -34,6 +34,12 @@ const getters = {
       return null;
     }
   },
+  getUserAgreementValue: (state) => (id) => {
+    const value = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    return value && value.agreement_value;
+  },
 };
 
 const actions = {
@@ -111,6 +117,20 @@ const mutations = {
         value_type: "multi_choice",
         ext_user_profile_field: id,
         choices: value,
+      });
+    }
+  },
+  setUserAgreementValue(state, { value, id }) {
+    const profileValue = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    if (profileValue) {
+      profileValue.agreement_value = value;
+    } else {
+      state.extendedUserProfileValues.push({
+        value_type: "user_agreement",
+        ext_user_profile_field: id,
+        agreement_value: value,
       });
     }
   },
