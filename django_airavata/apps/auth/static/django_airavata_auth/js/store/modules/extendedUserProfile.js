@@ -24,6 +24,12 @@ const getters = {
       return null;
     }
   },
+  getSingleChoiceOther: (state) => (id) => {
+    const value = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    return value ? value.other_value : null;
+  },
   getMultiChoiceValue: (state) => (id) => {
     const value = state.extendedUserProfileValues.find(
       (v) => v.ext_user_profile_field === id
@@ -31,8 +37,14 @@ const getters = {
     if (value && value.choices) {
       return value.choices;
     } else {
-      return null;
+      return [];
     }
+  },
+  getMultiChoiceOther: (state) => (id) => {
+    const value = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    return value ? value.other_value : null;
   },
   getUserAgreementValue: (state) => (id) => {
     const value = state.extendedUserProfileValues.find(
@@ -105,18 +117,48 @@ const mutations = {
       });
     }
   },
+  setSingleChoiceOther(state, { value, id }) {
+    const profileValue = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    if (profileValue) {
+      profileValue.choices = [];
+      profileValue.other_value = value;
+    } else {
+      state.extendedUserProfileValues.push({
+        value_type: "single_choice",
+        ext_user_profile_field: id,
+        choices: [],
+        other_value: value,
+      });
+    }
+  },
   setMultiChoiceValue(state, { value, id }) {
     const profileValue = state.extendedUserProfileValues.find(
       (v) => v.ext_user_profile_field === id
     );
     if (profileValue) {
       profileValue.choices = value;
-      profileValue.other_value = "";
     } else {
       state.extendedUserProfileValues.push({
         value_type: "multi_choice",
         ext_user_profile_field: id,
         choices: value,
+      });
+    }
+  },
+  setMultiChoiceOther(state, { value, id }) {
+    const profileValue = state.extendedUserProfileValues.find(
+      (v) => v.ext_user_profile_field === id
+    );
+    if (profileValue) {
+      profileValue.other_value = value;
+    } else {
+      state.extendedUserProfileValues.push({
+        value_type: "multi_choice",
+        ext_user_profile_field: id,
+        choices: [],
+        other_value: value,
       });
     }
   },
