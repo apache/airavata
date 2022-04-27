@@ -7,6 +7,7 @@
       required
       @change="groupResourceProfileChanged"
       @input.native.stop
+      :disabled="disabled"
     >
       <template slot="first">
         <option :value="null" disabled>
@@ -35,6 +36,10 @@ export default {
       type: String,
       default: "Allocation",
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
   },
   store: store,
   created() {
