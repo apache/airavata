@@ -104,18 +104,22 @@ export const mutations = {
   setAppDeploymentQueues(state, { appDeploymentQueues }) {
     state.appDeploymentQueues = appDeploymentQueues;
   },
+  setApplicationInterface(state, { applicationInterface }) {
+    state.applicationInterface = applicationInterface;
+  },
 };
 export const actions = {
   async loadNewExperiment({ commit, dispatch }, { applicationId }) {
     const applicationModule = await services.ApplicationModuleService.retrieve({
       lookup: applicationId,
     });
-    const appInterface = await services.ApplicationModuleService.getApplicationInterface(
+    const applicationInterface = await services.ApplicationModuleService.getApplicationInterface(
       {
         lookup: applicationId,
       }
     );
-    const experiment = appInterface.createExperiment();
+    commit("setApplicationInterface", { applicationInterface });
+    const experiment = applicationInterface.createExperiment();
     const currentDate = new Date().toLocaleString([], {
       dateStyle: "medium",
       timeStyle: "short",
@@ -128,11 +132,14 @@ export const actions = {
     const experiment = await services.ExperimentService.retrieve({
       lookup: experimentId,
     });
-    const appInterface = await services.ApplicationInterfaceService.retrieve({
-      lookup: experiment.executionId,
-    });
+    const applicationInterface = await services.ApplicationInterfaceService.retrieve(
+      {
+        lookup: experiment.executionId,
+      }
+    );
+    commit("setApplicationInterface", { applicationInterface });
     commit("setApplicationModuleId", {
-      applicationModuleId: appInterface.applicationModuleId,
+      applicationModuleId: applicationInterface.applicationModuleId,
     });
     await dispatch("setExperiment", { experiment });
   },
@@ -286,7 +293,10 @@ export const actions = {
     }
     dispatch("initializeQueue");
   },
-  updateTotalCPUCount({ commit, getters, state }, { totalCPUCount, enableNodeCountToCpuCheck }) {
+  updateTotalCPUCount(
+    { commit, getters, state },
+    { totalCPUCount, enableNodeCountToCpuCheck }
+  ) {
     if (state.experiment) {
       commit("updateExperimentTotalCPUCount", { totalCPUCount });
     } else {
@@ -305,7 +315,10 @@ export const actions = {
       }
     }
   },
-  updateNodeCount({ commit, getters, state }, { nodeCount, enableNodeCountToCpuCheck }) {
+  updateNodeCount(
+    { commit, getters, state },
+    { nodeCount, enableNodeCountToCpuCheck }
+  ) {
     if (state.experiment) {
       commit("updateExperimentNodeCount", { nodeCount });
     } else {
@@ -804,6 +817,10 @@ export const getters = {
   maxMemory: (state, getters) => {
     return getters.queue ? getters.queue.maxMemory : 0;
   },
+  showQueueSettings: (state) =>
+    state.applicationInterface
+      ? state.applicationInterface.showQueueSettings
+      : false,
 };
 
 export default new Vuex.Store({
@@ -826,6 +843,7 @@ export default new Vuex.Store({
     totalPhysicalMemory: null,
     groupResourceProfileId: null,
     resourceHostId: null,
+    applicationInterface: null,
   },
   mutations,
   actions,

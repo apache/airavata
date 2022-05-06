@@ -59,3 +59,8 @@ class ApplicationTemplateContextProcessor(models.Model):
 
     def __str__(self):
         return self.callable_path
+
+
+class ApplicationSettings(models.Model):
+    application_module_id = models.CharField(max_length=255, unique=True)
+    show_queue_settings = models.BooleanField(default=True)

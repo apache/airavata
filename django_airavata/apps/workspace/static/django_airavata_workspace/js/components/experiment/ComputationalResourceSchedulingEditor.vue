@@ -31,6 +31,7 @@
         <queue-settings-editor
           v-model="data"
           v-if="appDeploymentId"
+          :app-module-id="appModuleId"
           :app-deployment-id="appDeploymentId"
           :compute-resource-policy="selectedComputeResourcePolicy"
           :batch-queue-resource-policies="batchQueueResourcePolicies"

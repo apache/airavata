@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="showQueueSettings">
     <div class="card border-default">
       <b-link
         @click="showConfiguration = !showConfiguration"
@@ -201,6 +201,7 @@ export default {
       getNodeCount: "nodeCount",
       getWallTimeLimit: "wallTimeLimit",
       getTotalPhysicalMemory: "totalPhysicalMemory",
+      showQueueSettings: "showQueueSettings",
     }),
     totalCPUCount() {
       return this.totalCpuCount;

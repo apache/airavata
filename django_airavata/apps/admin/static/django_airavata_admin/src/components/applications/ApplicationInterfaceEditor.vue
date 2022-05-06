@@ -22,19 +22,19 @@
       </div>
       <div class="col">
         <b-form-group
-          label="Enable Optional File Inputs"
-          label-for="optional-file-inputs"
+          label="Show Queue Settings"
+          label-for="show-queue-settings"
         >
           <b-form-radio-group
-            id="optional-file-inputs"
-            v-model="data.hasOptionalFileInputs"
+            id="show-queue-settings"
+            v-model="data.showQueueSettings"
             :options="trueFalseOptions"
-            :disabled="true"
+            :disabled="readonly"
           >
           </b-form-radio-group>
           <div slot="description">
-            <b>Removed</b>: please add an input of Type URI_COLLECTION with
-            Required set to False instead.
+            Show a queue selector along with queue related settings (nodes,
+            cores, walltime limit).
           </div>
         </b-form-group>
       </div>
