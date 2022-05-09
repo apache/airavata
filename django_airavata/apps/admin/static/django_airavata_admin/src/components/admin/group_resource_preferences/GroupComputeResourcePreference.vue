@@ -53,6 +53,11 @@
           :items="slotProps.items"
           sort-by="computeResourceId"
         >
+          <template slot="cell(computeResourceId)" slot-scope="row">
+            <compute-resource-name
+              :compute-resource-id="row.item.computeResourceId"
+            />
+          </template>
           <template slot="cell(policy)" slot-scope="row">
             <compute-resource-policy-summary
               :compute-resource-id="row.item.computeResourceId"
@@ -116,9 +121,10 @@
             >
               Are you sure you want to remove the preferences for compute
               resource
-              <strong>{{
-                getComputeResourceName(row.item.computeResourceId)
-              }}</strong
+              <strong>
+                <compute-resource-name
+                  :compute-resource-id="row.item.computeResourceId"
+                /> </strong
               >?
             </delete-link>
           </template>
@@ -127,9 +133,9 @@
     </list-layout>
     <div class="fixed-footer">
       <b-button
-      variant="primary"
-      :disabled="!userHasWriteAccess"
-      @click="saveGroupResourceProfile"
+        variant="primary"
+        :disabled="!userHasWriteAccess"
+        @click="saveGroupResourceProfile"
         >Save</b-button
       >
       <delete-button
@@ -182,7 +188,7 @@ export default {
           (grp) => {
             this.data = grp;
             this.userHasWriteAccess = this.data.userHasWriteAccess;
-            }
+          }
         );
       }
       // Load information about the owner of this GroupResourceProfile
@@ -191,8 +197,7 @@ export default {
       }).then((sharedEntity) => {
         this.sharedEntity = sharedEntity;
       });
-    }
-    else{
+    } else {
       this.userHasWriteAccess = true;
     }
   },
@@ -208,7 +213,6 @@ export default {
           label: "Name",
           key: "computeResourceId",
           sortable: true,
-          formatter: (value) => this.getComputeResourceName(value),
         },
         {
           label: "Username",
@@ -243,6 +247,7 @@ export default {
     ComputeResourcesModal,
     "ssh-credential-selector": SSHCredentialSelector,
     ComputeResourceReservationsSummary,
+    "compute-resource-name": comps.ComputeResourceName,
   },
   computed: {
     excludedComputeResourceIds() {
@@ -293,12 +298,6 @@ export default {
       persist.then(() => {
         this.$router.push("/group-resource-profiles");
       });
-    },
-    getComputeResourceName: function (computeResourceId) {
-      // TODO: load compute resources to get the real name
-      return computeResourceId && computeResourceId.indexOf("_") > 0
-        ? computeResourceId.split("_")[0]
-        : computeResourceId;
     },
     cancel: function () {
       this.$router.push("/group-resource-profiles");
