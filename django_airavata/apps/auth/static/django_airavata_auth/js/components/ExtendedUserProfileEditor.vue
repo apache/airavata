@@ -2,6 +2,7 @@
   <b-card>
     <template v-for="extendedUserProfileField in extendedUserProfileFields">
       <component
+        ref="extendedUserProfileFieldComponents"
         :key="extendedUserProfileField.id"
         :is="getEditor(extendedUserProfileField)"
         :extended-user-profile-field="extendedUserProfileField"
@@ -19,6 +20,11 @@ import ExtendedUserProfileUserAgreementFieldEditor from "./ExtendedUserProfileUs
 export default {
   computed: {
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
+    valid() {
+      return this.$refs.extendedUserProfileFieldComponents.every(
+        (c) => c.valid
+      );
+    },
   },
   methods: {
     getEditor(extendedUserProfileField) {

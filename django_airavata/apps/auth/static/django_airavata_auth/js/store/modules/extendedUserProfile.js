@@ -50,7 +50,7 @@ const getters = {
     const value = state.extendedUserProfileValues.find(
       (v) => v.ext_user_profile_field === id
     );
-    return value && value.agreement_value;
+    return value ? value.agreement_value : false;
   },
 };
 

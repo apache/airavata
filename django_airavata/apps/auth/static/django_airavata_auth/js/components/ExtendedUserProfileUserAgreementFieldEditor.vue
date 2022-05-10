@@ -1,15 +1,29 @@
 <template>
   <extended-user-profile-field-editor v-bind="$props">
-    <b-form-checkbox v-model="value" :unchecked-value="false">
+    <b-form-checkbox
+      v-model="value"
+      :unchecked-value="false"
+      :value="true"
+      :state="validateStateErrorOnly($v.value)"
+    >
       {{ extendedUserProfileField.checkbox_label }}
     </b-form-checkbox>
+    <b-form-invalid-feedback :state="validateState($v.value)"
+      >This field is required.</b-form-invalid-feedback
+    >
   </extended-user-profile-field-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import { validationMixin } from "vuelidate";
+import { errors } from "django-airavata-common-ui";
 import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
+
+const mustBeTrue = (value) => value === true;
+
 export default {
+  mixins: [validationMixin],
   components: { ExtendedUserProfileFieldEditor },
   props: ["extendedUserProfileField"],
   computed: {
@@ -23,11 +37,25 @@ export default {
           value,
           id: this.extendedUserProfileField.id,
         });
+        this.$v.value.$touch();
       },
     },
+    valid() {
+      return !this.$v.$invalid;
+    },
+  },
+  validations() {
+    const validations = {
+      value: {
+        mustBeTrue,
+      },
+    };
+    return validations;
   },
   methods: {
     ...mapMutations("extendedUserProfile", ["setUserAgreementValue"]),
+    validateState: errors.vuelidateHelpers.validateState,
+    validateStateErrorOnly: errors.vuelidateHelpers.validateStateErrorOnly,
   },
 };
 </script>

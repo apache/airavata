@@ -1,25 +1,48 @@
 <template>
   <extended-user-profile-field-editor v-bind="$props">
-    <b-form-select v-model="value" :options="options" @change="onChange">
+    <b-form-select
+      v-model="value"
+      :options="options"
+      @change="onChange"
+      :state="validateStateErrorOnly($v.value)"
+    >
+      <template #first>
+        <b-form-select-option :value="null" disabled
+          >-- Please select an option --</b-form-select-option
+        >
+      </template>
+
       <b-form-select-option :value="otherOptionValue"
         >Other (please specify)</b-form-select-option
       >
     </b-form-select>
+    <b-form-invalid-feedback :state="validateState($v.value)"
+      >This field is required.</b-form-invalid-feedback
+    >
     <b-form-input
       class="mt-2"
       v-if="showOther"
       v-model="other"
       placeholder="Please specify"
+      :state="validateState($v.other)"
+      @input="onInput"
     />
+    <b-form-invalid-feedback :state="validateState($v.other)"
+      >Please specify a value for 'Other'.</b-form-invalid-feedback
+    >
   </extended-user-profile-field-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import { validationMixin } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
+import { errors } from "django-airavata-common-ui";
 import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 const OTHER_OPTION = new Object(); // sentinel value
 
 export default {
+  mixins: [validationMixin],
   components: { ExtendedUserProfileFieldEditor },
   props: ["extendedUserProfileField"],
   data() {
@@ -46,6 +69,7 @@ export default {
             value,
             id: this.extendedUserProfileField.id,
           });
+          this.$v.value.$touch();
         }
       },
     },
@@ -58,6 +82,7 @@ export default {
           value,
           id: this.extendedUserProfileField.id,
         });
+        this.$v.other.$touch();
       },
     },
     showOther() {
@@ -78,6 +103,21 @@ export default {
     otherOptionValue() {
       return OTHER_OPTION;
     },
+    valid() {
+      return !this.$v.$invalid;
+    },
+  },
+  validations() {
+    const validations = {
+      value: {},
+      other: {},
+    };
+    if (this.showOther) {
+      validations.other = { required };
+    } else {
+      validations.value = { required };
+    }
+    return validations;
   },
   methods: {
     ...mapMutations("extendedUserProfile", [
@@ -87,6 +127,14 @@ export default {
     onChange(value) {
       this.otherOptionSelected = value === this.otherOptionValue;
     },
+    onInput() {
+      // Handle case where initially there is an other value. If the user
+      // deletes the other value, then we still want to keep the other text box
+      // until the user unchecks the other option.
+      this.otherOptionSelected = true;
+    },
+    validateState: errors.vuelidateHelpers.validateState,
+    validateStateErrorOnly: errors.vuelidateHelpers.validateStateErrorOnly,
   },
 };
 </script>
