@@ -125,7 +125,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ExtendedUserProfileField
         fields = ['id', 'name', 'help_text', 'order', 'created_date',
-                  'updated_date', 'field_type', 'other', 'choices', 'checkbox_label', 'links']
+                  'updated_date', 'field_type', 'other', 'choices', 'checkbox_label', 'links', 'required']
         read_only_fields = ('created_date', 'updated_date')
 
     def to_representation(self, instance):
@@ -175,6 +175,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
         instance.name = validated_data['name']
         instance.help_text = validated_data['help_text']
         instance.order = validated_data['order']
+        instance.required = validated_data.get('required', instance.required)
         # logger.debug(f"instance.field_type={instance.field_type}, validated_data={validated_data}")
         if instance.field_type == 'single_choice':
             instance.single_choice.other = validated_data.get('other', instance.single_choice.other)
