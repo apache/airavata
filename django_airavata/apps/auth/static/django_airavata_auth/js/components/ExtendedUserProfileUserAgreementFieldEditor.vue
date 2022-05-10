@@ -20,8 +20,6 @@ import { validationMixin } from "vuelidate";
 import { errors } from "django-airavata-common-ui";
 import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 
-const mustBeTrue = (value) => value === true;
-
 export default {
   mixins: [validationMixin],
   components: { ExtendedUserProfileFieldEditor },
@@ -43,17 +41,28 @@ export default {
     valid() {
       return !this.$v.$invalid;
     },
+    required() {
+      return this.extendedUserProfileField.required;
+    },
   },
   validations() {
     const validations = {
       value: {
-        mustBeTrue,
+        mustBeTrue: this.mustBeTrue,
       },
     };
     return validations;
   },
   methods: {
     ...mapMutations("extendedUserProfile", ["setUserAgreementValue"]),
+    mustBeTrue(value) {
+      if (this.required) {
+        return value === true;
+      } else {
+        // If not required, always valid
+        return true;
+      }
+    },
     validateState: errors.vuelidateHelpers.validateState,
     validateStateErrorOnly: errors.vuelidateHelpers.validateStateErrorOnly,
   },

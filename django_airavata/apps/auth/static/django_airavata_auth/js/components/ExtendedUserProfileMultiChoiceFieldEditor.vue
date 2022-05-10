@@ -32,7 +32,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
+import { requiredIf } from "vuelidate/lib/validators";
 import { errors } from "django-airavata-common-ui";
 import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 const OTHER_OPTION = new Object(); // sentinel value
@@ -101,16 +101,19 @@ export default {
     valid() {
       return !this.$v.$invalid;
     },
+    required() {
+      return this.extendedUserProfileField.required;
+    },
   },
   validations() {
     const validations = {
       value: {
-        required,
+        required: requiredIf("required"),
       },
       other: {},
     };
     if (this.showOther) {
-      validations.other = { required };
+      validations.other = { required: requiredIf("required") };
     }
     return validations;
   },

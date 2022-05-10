@@ -30,6 +30,7 @@ const FIELDS = [
     type: ExtendedUserProfileFieldChoice,
   },
   "other",
+  "required",
 ];
 
 export default class ExtendedUserProfileField extends BaseModel {

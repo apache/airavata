@@ -10,7 +10,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
+import { requiredIf } from "vuelidate/lib/validators";
 import { errors } from "django-airavata-common-ui";
 import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 export default {
@@ -31,11 +31,14 @@ export default {
     valid() {
       return !this.$v.$invalid;
     },
+    required() {
+      return this.extendedUserProfileField.required;
+    },
   },
   validations() {
     return {
       value: {
-        required,
+        required: requiredIf("required"),
       },
     };
   },
