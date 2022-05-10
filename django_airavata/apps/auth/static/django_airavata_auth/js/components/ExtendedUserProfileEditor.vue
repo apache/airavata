@@ -1,5 +1,5 @@
 <template>
-  <b-card>
+  <div>
     <template v-for="extendedUserProfileField in extendedUserProfileFields">
       <component
         ref="extendedUserProfileFieldComponents"
@@ -8,7 +8,7 @@
         :extended-user-profile-field="extendedUserProfileField"
       />
     </template>
-  </b-card>
+  </div>
 </template>
 
 <script>

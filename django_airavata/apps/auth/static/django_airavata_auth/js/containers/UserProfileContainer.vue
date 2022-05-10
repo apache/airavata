@@ -16,16 +16,22 @@
     <b-alert v-else-if="user && !user.complete" show>
       >Please complete your user profile before continuing.</b-alert
     >
-    <user-profile-editor
-      ref="userProfileEditor"
-      @save="onSave"
-      @resend-email-verification="handleResendEmailVerification"
-    />
-    <!-- TODO: include both forms in the same card -->
-    <!-- include extended-user-profile-editor if there are extendedUserProfileFields -->
-    <extended-user-profile-editor
-      v-if="extendedUserProfileFields && extendedUserProfileFields.length > 0"
-    />
+    <b-card>
+      <user-profile-editor
+        ref="userProfileEditor"
+        @save="onSave"
+        @resend-email-verification="handleResendEmailVerification"
+      />
+      <!-- include extended-user-profile-editor if there are extendedUserProfileFields -->
+      <template
+        v-if="extendedUserProfileFields && extendedUserProfileFields.length > 0"
+      >
+        <hr />
+        <extended-user-profile-editor ref="extendedUserProfileEditor" />
+      </template>
+
+      <b-button variant="primary" @click="onSave">Save</b-button>
+    </b-card>
     <b-link
       v-if="user && user.complete"
       class="text-muted small"
@@ -64,7 +70,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      invalidForm: false,
+    };
   },
   computed: {
     ...mapGetters("userProfile", ["user"]),
@@ -83,14 +91,25 @@ export default {
       "saveExtendedUserProfileValues",
     ]),
     async onSave() {
-      // TODO: only save if both standard and extended user profiles are valid
-      this.saveExtendedUserProfileValues();
-      if (this.$refs.userProfileEditor.valid) {
+      if (
+        this.$refs.userProfileEditor.valid &&
+        this.$refs.extendedUserProfileEditor.valid
+      ) {
         await this.updateUser();
+        await this.saveExtendedUserProfileValues();
         notifications.NotificationList.add(
           new notifications.Notification({
             type: "SUCCESS",
             message: "User profile saved",
+            duration: 5,
+          })
+        );
+      } else {
+        // TODO: make sure to highlight which fields are invalid
+        notifications.NotificationList.add(
+          new notifications.Notification({
+            type: "WARNING",
+            message: "The form is invalid. Please fix and try again.",
             duration: 5,
           })
         );

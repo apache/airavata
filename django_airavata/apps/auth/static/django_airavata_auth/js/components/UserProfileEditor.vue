@@ -1,5 +1,5 @@
 <template>
-  <b-card v-if="user">
+  <div v-if="user">
     <b-form-group
       label="Username"
       :disabled="true"
@@ -40,14 +40,7 @@
         ></b-alert
       >
     </b-form-group>
-    <!-- TODO: move save button up to container -->
-    <b-button
-      variant="primary"
-      @click="save"
-      :disabled="$v.$invalid || disabled"
-      >Save</b-button
-    >
-  </b-card>
+  </div>
 </template>
 
 <script>
