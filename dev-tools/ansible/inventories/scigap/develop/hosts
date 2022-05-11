@@ -26,7 +26,8 @@ seagrid ansible_host=149.165.156.46
 simvascular ansible_host=149.165.156.46
 simccs ansible_host=149.165.156.46
 interactwel ansible_host=149.165.156.46
-usd ansible_host=149.165.156.46
+# disable usd/southdakota until we can get valid SSL certificate
+# usd ansible_host=149.165.156.46
 csbglsu ansible_host=149.165.156.46
 nexttdb ansible_host=149.165.156.46
 saver-x ansible_host=149.165.156.46
