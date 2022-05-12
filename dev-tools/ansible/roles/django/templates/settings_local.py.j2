@@ -38,18 +38,20 @@ DEBUG = {{ django_debug | ternary("True", "False") }}
 STATIC_ROOT = "{{ doc_root_dir }}/static/"
 ALLOWED_HOSTS = ['{{ vhost_servername }}']
 
+{% if django_database_backend == "mysql" %}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': '{{ django_database_name }}',
-        'HOST': '{{ db_server }}',
+        'HOST': '{{ django_database_host_ip_address }}',
         'USER': '{{ django_db_username }}',
-        'PASSWORD': '{{ django_db_password }}'
-    },
-    'OPTIONS': {
-        'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
+        'PASSWORD': '{{ django_db_password }}',
+        'OPTIONS': {
+            'init_command': 'SET default_storage_engine=INNODB,collation_connection=utf8_bin',
+        }
     }
 }
+{% endif %}
 
 # Django - Email settings
 # Uncomment and specify the following for sending emails (default email backend
@@ -88,6 +90,9 @@ AUTHENTICATION_OPTIONS = {
         {% if auth_options.password.logo is defined %}
         'logo': '{{ auth_options.password.logo }}',
         {% endif %}
+        {% if auth_options.password.hidden is defined %}
+        'hidden': {{ auth_options.password.hidden | ternary('True', 'False') }},
+        {% endif %}
     },
     {% endif %}
     {% if auth_options.external is defined and auth_options.external %}
@@ -98,6 +103,12 @@ AUTHENTICATION_OPTIONS = {
             'name': '{{ external.name }}',
             {% if external.logo is defined %}
             'logo': '{{ external.logo }}',
+            {% endif %}
+            {% if external.idp_token_url is defined %}
+            'idp_token_url': '{{ external.idp_token_url }}',
+            {% endif %}
+            {% if external.userinfo_url is defined %}
+            'userinfo_url': '{{ external.userinfo_url }}',
             {% endif %}
         },
         {% endfor %}
@@ -115,9 +126,17 @@ AIRAVATA_API_SECURE = True
 AIRAVATA_API_PORT = {{ api_server_port }}
 AIRAVATA_API_SECURE = False
 {% endif %}
-GATEWAY_DATA_STORE_RESOURCE_ID = '{{ gateway_data_store_resource_id }}'
-GATEWAY_DATA_STORE_DIR = '{{ experiment_data_dir }}'
-GATEWAY_DATA_STORE_HOSTNAME = '{{ gateway_data_store_hostname }}'
+
+USER_STORAGES = {
+    'default': {
+        'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
+        'STORAGE_RESOURCE_ID': '{{ gateway_data_store_resource_id }}',
+        'OPTIONS': {
+            'directory': '{{ experiment_data_dir }}',
+        }
+    }
+}
+
 FILE_UPLOAD_TEMP_DIR = "{{ file_upload_tmp_dir }}"
 
 # Profile Service Configuration
@@ -136,10 +155,10 @@ PORTAL_TITLE = '{{ portal_title }}'
 # Hidden Airavata apps (not all gateways need all functionality)
 HIDDEN_AIRAVATA_APPS = {{ django_hidden_airavata_apps }}
 
-{% if django_tus_endpoint is defined and django_tus_endpoint %}
+{% if tusd_vhost_servername is defined and tusd_vhost_servername %}
 # Tus uploads
-TUS_ENDPOINT = "{{ django_tus_endpoint }}"
-TUS_DATA_DIR = "{{ django_tus_data_dir }}"
+TUS_ENDPOINT = "https://{{ tusd_vhost_servername }}/files/"
+TUS_DATA_DIR = "{{ tusd_upload_dir }}"
 {% endif %}
 
 FILE_UPLOAD_MAX_FILE_SIZE = {{ django_file_upload_max_file_size_mb }} * 1024 * 1024

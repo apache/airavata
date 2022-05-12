@@ -1,0 +1,54 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+#gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
+
+vhost_servername: "geoact.sdsc.edu"
+vhost_server_redirect: "geoact.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/geoact.sdsc.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/geoact.sdsc.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/geoact.sdsc.edu/privkey.pem"
+
+
+## Keycloak related variables
+tenant_domain: "covid-geoact"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Covid GeoAct Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "covid-geoact"
+experiment_data_dir: "{{ user_data_dir }}/covid-geoact"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZpB6Q2bMcB9eTpMXBf6adFysDWE++Q7cNFfo3bTZgfH9YqZlvBLCDgQ7dWB5fiag2y/AGm0DPnEerIbG8df9HpJ/pOvqGjHKzkoz+Xi1J0n8FFCiPtuOE2sWwnFNniAwQeAKzCiBn1oL84IiYsJ2nTmRXcl6qIREsBOfG6oDMGYbI3fOaGKwVscJSKFjfRVhaHRgwcOuvsuf1Z/E4X9C1uhIE4BSFA7BoTbtTictTVp7lo4XvCorBziO3fZacFI9gCMVSNnI4OUZu5rXqXPjXfmIV2tDz9kGMTzW5OIk3xdU6MHGprwUkXPttdERVGTbFha+HJk3S2jaeV1pnDxlt"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'), ('Ilya Zaslavsky', 'zaslavsk@sdsc.edu'), ('Kaushik Ganapathy', 'krganapa@ucsd.edu'), ('Johnny Lei', 'jil1119@ucsd.edu')]"
+portal_title: "Covid GeoAct Gateway"
+
+#django_google_analytics_tracking_id: "UA-178055994-1"
+...

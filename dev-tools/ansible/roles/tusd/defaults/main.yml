@@ -1,0 +1,40 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+tusd_httpd_confd_file_location:
+  RedHat: "/etc/httpd/conf.d/tus.conf"
+  Debian: "/etc/apache2/sites-available/tus.conf"
+httpd_name:
+  Debian: apache2
+  RedHat: httpd
+
+tusd_install_dir: "/home/{{user}}"
+tusd_url: "https://github.com/tus/tusd/releases/download/0.13.3/tusd_linux_amd64.tar.gz"
+tusd_tarball_dest: "{{tusd_install_dir}}/{{tusd_url | basename}}"
+tusd_dir: "{{tusd_install_dir}}/tusd_linux_amd64"
+tusd_upload_dir: "{{real_user_data_dir}}/tus-temp-dir"
+tusd_port: 10080
+tusd_ssl_certificate_file:
+  "/etc/letsencrypt/live/{{ tusd_vhost_servername }}/cert.pem"
+tusd_ssl_certificate_chain_file:
+  "/etc/letsencrypt/live/{{ tusd_vhost_servername }}/fullchain.pem"
+tusd_ssl_certificate_key_file:
+  "/etc/letsencrypt/live/{{ tusd_vhost_servername }}/privkey.pem"

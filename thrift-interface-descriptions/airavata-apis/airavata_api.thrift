@@ -515,6 +515,12 @@ service Airavata extends base_api.BaseAPI {
      * @param resourceHostName
      *       Hostname id substring with which to further filter statistics.
      *
+     * @param limit
+     *       Amount of results to be fetched.
+     *
+     * @param offset
+     *       The starting point of the results to be fetched.
+     *
      **/
     experiment_model.ExperimentStatistics getExperimentStatistics(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
@@ -522,7 +528,9 @@ service Airavata extends base_api.BaseAPI {
                             4: required i64 toTime,
                             5: string userName,
                             6: string applicationName,
-                            7: string resourceHostName)
+                            7: string resourceHostName,
+                            8: i32 limit = 50,
+                            9: i32 offset = 0)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
@@ -972,6 +980,48 @@ service Airavata extends base_api.BaseAPI {
   **/
    list<application_io_models.OutputDataObjectType> getIntermediateOutputs (1: required security_model.AuthzToken authzToken,
                 2: required string airavataExperimentId)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.ExperimentNotFoundException enf,
+                3: airavata_errors.AiravataClientException ace,
+                4: airavata_errors.AiravataSystemException ase,
+                5: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Request fetching of output files for an experiment that is still executing.
+   * This method results in a new Process being created for the Experiment with
+   * tasks for fetching each output file.
+   *
+   * @param authzToken
+   *
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   *
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   *
+   */
+  void fetchIntermediateOutputs(1: required security_model.AuthzToken authzToken, 2: required string airavataExperimentId,
+                3: required list<string> outputNames)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.ExperimentNotFoundException enf,
+                3: airavata_errors.AiravataClientException ace,
+                4: airavata_errors.AiravataSystemException ase,
+                5: airavata_errors.AuthorizationException ae)
+
+  /**
+   * Get the status of the most recent intermediate output fetching process for the given output names.
+   *
+   * @param authzToken
+   *
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   *
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   *
+   */
+  status_models.ProcessStatus getIntermediateOutputProcessStatus(1: required security_model.AuthzToken authzToken, 2: required string airavataExperimentId,
+                3: required list<string> outputNames)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.ExperimentNotFoundException enf,
                 3: airavata_errors.AiravataClientException ace,

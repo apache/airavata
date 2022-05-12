@@ -27,6 +27,8 @@ import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
+import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.patform.monitoring.GaugeMonitor;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -48,6 +50,11 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractTask extends UserContentStore implements Task {
 
     private final static Logger logger = LoggerFactory.getLogger(AbstractTask.class);
+    private final static CountMonitor taskInitCounter = new CountMonitor("task_init_count");
+    private final static GaugeMonitor taskRunGauge = new GaugeMonitor("task_run_gauge");
+    private final static CountMonitor taskCancelCounter = new CountMonitor("task_cancel_count");
+    private final static CountMonitor taskFailCounter = new CountMonitor("task_fail_count");
+    private final static CountMonitor taskCompleteCounter = new CountMonitor("task_complete_count");
 
     private static final String NEXT_JOB = "next-job";
     private static final String WORKFLOW_STARTED = "workflow-started";
@@ -71,9 +78,11 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
         try {
+            taskInitCounter.inc();
             TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
         } catch (Exception e) {
-            e.printStackTrace();
+            taskFailCounter.inc();
+            logger.error("Deserialization of task parameters failed", e);
         }
         if (participant != null) {
             participant.registerRunningTask(this);
@@ -85,6 +94,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     @Override
     public final TaskResult run() {
         try {
+            taskRunGauge.inc();
             boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
                     this.callbackContext.getJobConfig().getJobId()
                             .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
@@ -102,6 +112,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     @Override
     public final void cancel() {
         try {
+            taskRunGauge.dec();
+            taskCancelCounter.inc();
             logger.info("Cancelling task " + taskId);
             onCancel();
         } finally {
@@ -118,12 +130,16 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     public abstract void onCancel();
 
     protected TaskResult onSuccess(String message) {
+        taskRunGauge.dec();
+        taskCompleteCounter.inc();
         String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
         return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
     }
 
     protected TaskResult onFail(String reason, boolean fatal) {
+        taskRunGauge.dec();
+        taskFailCounter.inc();
         return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, reason);
     }
 

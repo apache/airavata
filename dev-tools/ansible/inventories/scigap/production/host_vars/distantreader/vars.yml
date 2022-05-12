@@ -26,7 +26,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/distantreader.org/fullchain.p
 ssl_certificate_key_file: "/etc/letsencrypt/live/distantreader.org/privkey.pem"
 
 django_file_upload_max_file_size_mb: 256
-django_pga_url: "https://distantreader.scigap.org"
+#django_pga_url: "https://distantreader.scigap.org"
 
 ## Keycloak related variables
 tenant_domain: "distantreader"
@@ -48,4 +48,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCCgAWz
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Eric Morgan','emorgan@nd.edu')]"
 portal_title: "Distant Reader Portal"
 
+django_google_analytics_tracking_id: "UA-177994029-1"
 ...

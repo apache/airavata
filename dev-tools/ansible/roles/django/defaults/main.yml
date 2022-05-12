@@ -27,10 +27,12 @@ real_user_data_dir: "{{ user_data_dir }}"
 vhost_servername: "{{ groups['django'][0] }}"
 vhost_ssl: False
 vhost_aliases: []
+vhost_redirects: []
 vhost_timeout: 60
+django_vhost_conf_name: "django-{{ gateway_id }}"
 httpd_confd_file_location:
- RedHat: "/etc/httpd/conf.d/django-{{ gateway_id }}.conf"
- Debian: "/etc/apache2/sites-available/django-{{ gateway_id }}.conf"
+ RedHat: "/etc/httpd/conf.d/{{ django_vhost_conf_name }}.conf"
+ Debian: "/etc/apache2/sites-available/{{ django_vhost_conf_name }}.conf"
 httpd_name:
  Debian: apache2
  RedHat: httpd
@@ -43,9 +45,12 @@ django_ssl_vhost_template: "django-ssl-vhost.conf.j2"
 django_settings_local_template: "settings_local.py.j2"
 django_extra_settings: {}
 django_database_name: "django_{{ gateway_id }}"
+django_database_backend: "mysql"
 django_hidden_airavata_apps: "[]"
-django_tus_data_dir: "{{user_data_dir}}/tus-temp-dir"
 django_file_upload_max_file_size_mb: 64
+django_database_hosts: "{{ groups['database'] }}"
+django_db_username: "django"
+django_database_host_ip_address: "{{ groups['database'][0] }}"
 
 # Should be a python expression that evaluates to a string representing a file path. For example:
 # django_keycloak_ca_certfile_path: "/etc/ca.pem"
@@ -67,7 +72,9 @@ django_portal_js_build_dirs:
   - "django_airavata/static/common/dist"
   - "django_airavata/apps/admin/static/django_airavata_admin/dist"
   - "django_airavata/apps/groups/static/django_airavata_groups/dist"
+  - "django_airavata/apps/auth/static/django_airavata_auth/dist"
   - "django_airavata/apps/workspace/static/django_airavata_workspace/dist"
+  - "django_airavata/apps/workspace/static/django_airavata_workspace/wc"
   - "django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist"
 
 ## Keycloak related variables

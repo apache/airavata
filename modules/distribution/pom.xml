@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -53,10 +53,6 @@
             <groupId>org.apache.derby</groupId>
             <artifactId>derbytools</artifactId>
             <version>${derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -378,12 +374,6 @@
             <artifactId>kafka-clients</artifactId>
             <version>${kafka-clients.version}</version>
         </dependency>
-        <!-- Use logback as the runtime binding for SLF4J -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
@@ -577,21 +567,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>platform-monitor-distribution-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${platform.monitor.dist.name}</finalName>
-                            <descriptors>
-                                <descriptor>src/main/assembly/platform-monitor-bin-assembly.xml</descriptor>
-                            </descriptors>
-                            <attach>false</attach>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>email-monitor-distribution-package</id>
                         <phase>package</phase>
                         <goals>
@@ -623,11 +598,213 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-api-server-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.api.server.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${docker.api.server.image.src.root}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${api.server.dist.name}-bin.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-controller-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.controller.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${docker.controller.image.src.root}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${controller.dist.name}-bin.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-pre-wm-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.pre.wm.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${docker.pre.wm.image.src.root}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${pre.wm.dist.name}-bin.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-post-wm-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.post.wm.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${docker.post.wm.image.src.root}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${post.wm.dist.name}-bin.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-participant-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.participant.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${docker.participant.image.src.root}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${participant.dist.name}-bin.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-email-monitor-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.email.monitor.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${docker.email.monitor.image.src.root}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${email.monitor.dist.name}-bin.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.33.0</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>airavata/api-server</name>
+                            <build>
+                                <dockerFile>${docker.api.server.build.directory}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                        <image>
+                            <name>airavata/controller</name>
+                            <build>
+                                <dockerFile>${docker.controller.build.directory}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                        <image>
+                            <name>airavata/pre-wm</name>
+                            <build>
+                                <dockerFile>${docker.pre.wm.build.directory}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                        <image>
+                            <name>airavata/post-wm</name>
+                            <build>
+                                <dockerFile>${docker.post.wm.build.directory}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                        <image>
+                            <name>airavata/participant</name>
+                            <build>
+                                <dockerFile>${docker.participant.build.directory}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                        <image>
+                            <name>airavata/email-monitor</name>
+                            <build>
+                                <dockerFile>${docker.email.monitor.build.directory}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
 
     <properties>
+
+        <docker.api.server.build.directory>${project.build.directory}/api_server_docker_img_build</docker.api.server.build.directory>
+        <docker.api.server.image.src.root>src/main/docker/api-server</docker.api.server.image.src.root>
+
+        <docker.controller.build.directory>${project.build.directory}/controller_docker_img_build</docker.controller.build.directory>
+        <docker.controller.image.src.root>src/main/docker/controller</docker.controller.image.src.root>
+
+        <docker.pre.wm.build.directory>${project.build.directory}/pre_wm_docker_img_build</docker.pre.wm.build.directory>
+        <docker.pre.wm.image.src.root>src/main/docker/pre-wm</docker.pre.wm.image.src.root>
+
+        <docker.post.wm.build.directory>${project.build.directory}/post_wm_docker_img_build</docker.post.wm.build.directory>
+        <docker.post.wm.image.src.root>src/main/docker/post-wm</docker.post.wm.image.src.root>
+
+        <docker.participant.build.directory>${project.build.directory}/participant_docker_img_build</docker.participant.build.directory>
+        <docker.participant.image.src.root>src/main/docker/participant</docker.participant.image.src.root>
+
+        <docker.email.monitor.build.directory>${project.build.directory}/email_monitor_docker_img_build</docker.email.monitor.build.directory>
+        <docker.email.monitor.image.src.root>src/main/docker/email-monitor</docker.email.monitor.image.src.root>
+
         <jersey.version>1.13</jersey.version>
         <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -637,7 +814,6 @@
         <pre.wm.dist.name>apache-airavata-pre-wm-${project.version}</pre.wm.dist.name>
         <post.wm.dist.name>apache-airavata-post-wm-${project.version}</post.wm.dist.name>
         <parser.wm.dist.name>apache-airavata-parser-wm-${project.version}</parser.wm.dist.name>
-        <platform.monitor.dist.name>apache-airavata-platform-monitor-${project.version}</platform.monitor.dist.name>
         <email.monitor.dist.name>apache-airavata-email-monitor-${project.version}</email.monitor.dist.name>
         <realtime.monitor.dist.name>apache-airavata-realtime-monitor-${project.version}</realtime.monitor.dist.name>
     </properties>

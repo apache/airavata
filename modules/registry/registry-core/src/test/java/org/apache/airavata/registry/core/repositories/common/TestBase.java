@@ -32,7 +32,7 @@ public class TestBase {
     @Before
     public void setUp() throws Exception {
         try {
-            DerbyUtil.startDerbyInServerMode("0.0.0.0", 20000, "airavata", "airavata");
+            DerbyUtil.startDerbyInServerMode("127.0.0.1", 20000, "airavata", "airavata");
 
             for (Database database: databases) {
                 logger.info("Creating database " + database.name());

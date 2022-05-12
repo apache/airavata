@@ -93,6 +93,15 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         experimentModelTwo.setDescription("descriptionTwo");
         experimentModelTwo.setExecutionId("executionIdTwo");
 
+        ExperimentModel experimentModelThree = new ExperimentModel();
+        experimentModelThree.setProjectId(projectId);
+        experimentModelThree.setGatewayId(gatewayId);
+        experimentModelThree.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+        experimentModelThree.setUserName("userThree");
+        experimentModelThree.setExperimentName("nameThree");
+        experimentModelThree.setDescription("descriptionThree");
+        experimentModelThree.setExecutionId("executionIdThree");
+
         String experimentIdOne = experimentRepository.addExperiment(experimentModelOne);
         assertTrue(experimentIdOne != null);
         // Reload experiment to get its status' identifier
@@ -103,6 +112,11 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         // Reload experiment to get its status' identifier
         experimentModelTwo = experimentRepository.getExperiment(experimentIdTwo);
 
+        String experimentIdThree = experimentRepository.addExperiment(experimentModelThree);
+        assertTrue(experimentIdThree != null);
+        // Reload experiment to get its status' identifier
+        experimentModelThree = experimentRepository.getExperiment(experimentIdThree);
+
         Timestamp timeOne = Timestamp.valueOf("2010-01-01 09:00:00");
         experimentModelOne.setCreationTime(timeOne.getTime());
         experimentRepository.updateExperiment(experimentModelOne, experimentIdOne);
@@ -111,14 +125,18 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         experimentModelTwo.setCreationTime(timeTwo.getTime());
         experimentRepository.updateExperiment(experimentModelTwo, experimentIdTwo);
 
+        Timestamp timeThree = Timestamp.valueOf("2020-01-01 09:00:00");
+        experimentModelThree.setCreationTime(timeThree.getTime());
+        experimentRepository.updateExperiment(experimentModelThree, experimentIdThree);
+
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.Experiment.PROJECT_ID, projectId);
 
-        List<String> allExperimentIds = Arrays.asList( experimentIdOne, experimentIdTwo);
+        List<String> allExperimentIds = Arrays.asList( experimentIdOne, experimentIdTwo, experimentIdThree);
         List<ExperimentSummaryModel> experimentSummaryModelList = experimentSummaryRepository.
                 searchAllAccessibleExperiments(allExperimentIds, filters, -1, 0, null, null);
-        assertEquals(2, experimentSummaryModelList.size());
+        assertEquals(3, experimentSummaryModelList.size());
 
         filters.put(DBConstants.Experiment.EXECUTION_ID, "executionIdTwo");
 
@@ -166,6 +184,32 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         assertEquals("should return only userOne's exp", 1, experimentSummaryModelList.size());
         assertEquals("userOne", experimentSummaryModelList.get(0).getUserName());
 
+        // Test with pagination
+        filters.clear();
+        filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, 2, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should only return 2 experiments since limit=2", 2, experimentSummaryModelList.size());
+        assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
+        assertEquals(experimentIdTwo, experimentSummaryModelList.get(1).getExperimentId());
+        // page 2
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, 2, 2,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should only return 1 experiment since limit=2 but partial last page", 1, experimentSummaryModelList.size());
+        assertEquals(experimentIdThree, experimentSummaryModelList.get(0).getExperimentId());
+        // Test with offset at the end (should return empty list)
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, 3, 3,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return 0 since we're just past the last page (page size of 3)", 0, experimentSummaryModelList.size());
+        // Test with offset past the end (should return empty list)
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, 3, 10,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return 0 since we're well past the last page (page size of 3)", 0, experimentSummaryModelList.size());
+
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.Experiment.USER_NAME, "userTwo");
@@ -174,12 +218,12 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         filters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
         filters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
 
-        ExperimentStatistics experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
+        ExperimentStatistics experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters, 10, 0);
         assertTrue(experimentStatistics.getAllExperimentCount() == 0);
 
         filters.remove(DBConstants.Experiment.RESOURCE_HOST_ID);
 
-        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters, 10, 0);
         assertTrue(experimentStatistics.getAllExperimentCount() == 1);
         assertEquals(experimentStatistics.getAllExperiments().get(0).getExperimentId(), experimentIdTwo);
 
@@ -194,27 +238,69 @@ public class ExperimentSummaryRepositoryTest extends TestBase{
         String statusIdTwo = experimentStatusRepository.addExperimentStatus(experimentStatusTwo, experimentIdTwo);
         assertTrue(statusIdTwo != null);
 
-        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
-        assertTrue(experimentStatistics.getAllExperimentCount() == 1);
+        ExperimentStatus experimentStatusThree = new ExperimentStatus(ExperimentState.CANCELED);
+        String statusIdThree = experimentStatusRepository.addExperimentStatus(experimentStatusThree, experimentIdThree);
+        assertTrue(statusIdThree != null);
+
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters, 10, 0);
+        assertEquals(2, experimentStatistics.getAllExperimentCount());
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
-        assertEquals(experimentIdTwo, experimentStatistics.getAllExperiments().get(0).getExperimentId());
+        // Experiment 3 is most recent
+        assertEquals(experimentIdThree, experimentStatistics.getAllExperiments().get(0).getExperimentId());
 
         filters.remove(DBConstants.ExperimentSummary.FROM_DATE);
         filters.remove(DBConstants.ExperimentSummary.TO_DATE);
 
-        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters);
-        assertTrue(experimentStatistics.getAllExperimentCount() == 2);
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters, 10, 0);
+        assertTrue(experimentStatistics.getAllExperimentCount() == 3);
         assertTrue(experimentStatistics.getCreatedExperimentCount() == 1);
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
 
+        // Test searchAllAccessibleExperiments with status filtering
+        // Only CREATED status
+        filters = new HashMap<>();
+        filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+        filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.CREATED.name());
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, -1, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return only one CREATED exp", 1, experimentSummaryModelList.size());
+        assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
+        // Only EXECUTING status
+        filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.EXECUTING.name());
+        experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
+                                allExperimentIds, filters, -1, 0,
+                                DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
+        assertEquals("should return only one EXECUTING exp", 1, experimentSummaryModelList.size());
+        assertEquals(experimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
+
         // Experiment 2 is EXECUTING and should be the only one returned
-        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(Collections.singletonList(experimentIdTwo), filters);
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(Collections.singletonList(experimentIdTwo), filters, 10, 0);
         assertTrue(experimentStatistics.getAllExperimentCount() == 1);
         assertTrue(experimentStatistics.getCreatedExperimentCount() == 0);
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
 
+        // Check pagination
+        filters = new HashMap<>();
+        filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
+        // First page
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters, 1, 0);
+        // Should still return total count even when only returning the first page of experiment summaries
+        assertEquals(3, experimentStatistics.getAllExperimentCount());
+        // experiment 3 is most recent
+        assertEquals(1, experimentStatistics.getAllExperimentsSize());
+        assertEquals(experimentIdThree, experimentStatistics.getAllExperiments().get(0).getExperimentId());
+        // Second page
+        experimentStatistics = experimentSummaryRepository.getAccessibleExperimentStatistics(allExperimentIds, filters, 1, 1);
+        // Should still return total count even when only returning the first page of experiment summaries
+        assertEquals(3, experimentStatistics.getAllExperimentCount());
+        // experiment 2 is less recent
+        assertEquals(1, experimentStatistics.getAllExperimentsSize());
+        assertEquals(experimentIdTwo, experimentStatistics.getAllExperiments().get(0).getExperimentId());
+
         experimentRepository.removeExperiment(experimentIdOne);
         experimentRepository.removeExperiment(experimentIdTwo);
+        experimentRepository.removeExperiment(experimentIdThree);
 
         gatewayRepository.removeGateway(gatewayId);
         projectRepository.removeProject(projectId);

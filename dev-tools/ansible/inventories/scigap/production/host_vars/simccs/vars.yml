@@ -24,9 +24,8 @@
 gateway_data_store_hostname: "scigap11.sciencegateways.iu.edu"
 gateway_data_store_resource_id: "scigap11.sciencegateways.iu.edu_96b8dcec-ac84-438a-9927-91baaf87758b"
 
-django_tus_endpoint: "https://tus.simccs.scigap.org/files/"
-# simccs_maptool_branch: "master"
-simccs_maptool_branch: "dev"
+tusd_vhost_servername: "tus.simccs.scigap.org"
+simccs_maptool_branch: "master"
 airavata_django_extra_dependencies:
   # Need to separately install cython in the VM or do two deploys, one with
   # just cython, then a second with the other dependencies. Reason: pyjnius
@@ -41,7 +40,8 @@ django_extra_settings:
   MAPTOOL_SETTINGS:
     CPLEX_APPLICATION_ID: "cplex-solver_99721933-c9e4-4285-9ef1-d035ca82b541"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
-    JAVA_OPTIONS: "-Xmx4g"
+    JAVA_OPTIONS: "-Xmx16g"
+  LOGIN_REDIRECT_URL: "simccs_maptool:home"
 
 vhost_servername: "simccs.org"
 vhost_ssl: true

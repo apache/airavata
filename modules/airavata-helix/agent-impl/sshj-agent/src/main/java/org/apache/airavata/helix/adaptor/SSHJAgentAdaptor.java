@@ -468,9 +468,11 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         } catch (Exception e) {
             throw new AgentException(e);
         }*/
+        /*
         if (fileName.endsWith("*")) {
             throw new AgentException("Wildcards that ends with * does not support for security reasons. Specify an extension");
         }
+        */
 
         CommandOutput commandOutput = executeCommand("ls " + fileName, parentPath); // This has a risk of returning folders also
         String[] filesTmp = commandOutput.getStdOut().split("\n");

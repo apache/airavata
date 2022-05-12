@@ -9,7 +9,12 @@ import time
 
 BASE_DIR = "/var/www/portals"
 IGNORE_DIRS = ['node_modules', 'venv']
-REGEX = re.compile(r"^([\w-]+)\.([a-f0-9]{8})\.(js|js\.map|css|css\.map)$")
+# Example filenames:
+# - pattern: [name].[checksum].[ext]
+#   - example: "chunk-common.c7db5bee.js"
+# - pattern: [name].[checksum].chunk.[ext]
+#   - example: "main.bbfe2914.chunk.css"
+REGEX = re.compile(r"^([\w-]+)\.([a-f0-9]{8})\.((?:chunk\.)?(?:js|js\.map|css|css\.map))$")
 MAX_ATIME_AGE_HOURS = 24
 
 parser = argparse.ArgumentParser()

@@ -29,11 +29,26 @@
   yum: name=https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm state=present
   become: yes
 
-- name: open rabbitmq ports
-  firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
+- name: allow only selected networks to access Airavata RabbitMQ
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ rabbitmq_port }}" protocol=tcp accept
+    immediate: yes
   with_items:
-    - "{{ rabbitmq_port }}/tcp"
-    - "{{ management_plugin_port }}/tcp"
+    - "{{ rabbitmq_subnets }}"
+  become: yes
+
+- name: allow only selected networks to access Airavata RabbitMQ Management Console
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ management_plugin_port }}" protocol=tcp accept
+  with_items:
+    - "{{ rabbitmq_subnets }}"
   become: yes
 
 - name: Edit /etc/hosts file

@@ -54,7 +54,8 @@ enum ResourceJobManagerType {
     LSF,
     UGE,
     CLOUD,
-    AIRAVATA_CUSTOM
+    AIRAVATA_CUSTOM,
+    HTCONDOR
 }
 
 /**

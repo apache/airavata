@@ -69,7 +69,7 @@ public class RabbitMQPublisher implements Publisher {
             });
             log.info("connected to rabbitmq: " + connection + " for " + properties.getExchangeName());
         } catch (Exception e) {
-            String msg = "RabbitMQ connection issue for exchange : " + properties.getExchangeName();
+            String msg = "RabbitMQ connection issue for exchange : " + properties.getExchangeName() + " with broker url " + properties.getBrokerUrl();
             log.error(msg);
             throw new AiravataException(msg, e);
         }

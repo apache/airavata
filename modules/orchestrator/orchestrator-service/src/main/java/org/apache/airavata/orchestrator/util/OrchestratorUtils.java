@@ -23,10 +23,12 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
@@ -39,8 +41,10 @@ public class OrchestratorUtils {
 	private static final Logger log = LoggerFactory.getLogger(OrchestratorUtils.class);
 
 	public static void updateAndPublishExperimentStatus(String experimentId, ExperimentStatus status, Publisher publisher, String gatewayId) throws TException {
+		RegistryService.Client registryClient = null;
 		try {
-			getRegistryServiceClient().updateExperimentStatus(status,
+			registryClient = getRegistryServiceClient();
+			registryClient.updateExperimentStatus(status,
 					experimentId);
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(status.getState(),
                     experimentId,
@@ -51,13 +55,36 @@ public class OrchestratorUtils {
             publisher.publish(messageContext);
 		} catch (AiravataException e) {
             log.error("expId : " + experimentId + " Error while publishing experiment status to " + status.toString(), e);
-        }
+        } finally {
+			if (registryClient != null) {
+				ThriftUtils.close(registryClient);
+			}
+		}
     }
 
 	public static ExperimentStatus getExperimentStatus(String experimentId) throws TException, ApplicationSettingsException {
-		return getRegistryServiceClient().getExperimentStatus(experimentId);
+		RegistryService.Client registryClient = null;
+		try {
+			registryClient = getRegistryServiceClient();
+			return registryClient.getExperimentStatus(experimentId);
+		} finally {
+			if (registryClient != null) {
+				ThriftUtils.close(registryClient);
+			}
+		}
 	}
 
+	public static ProcessModel getProcess(String processId) throws TException, ApplicationSettingsException {
+		RegistryService.Client registryClient = null;
+		try {
+			registryClient = getRegistryServiceClient();
+			return registryClient.getProcess(processId);
+		} finally {
+			if (registryClient != null) {
+				ThriftUtils.close(registryClient);
+			}
+		}
+	}
 
 	private static RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
 		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());

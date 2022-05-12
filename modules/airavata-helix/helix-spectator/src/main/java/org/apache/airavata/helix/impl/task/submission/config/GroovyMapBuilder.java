@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,10 +76,17 @@ public class GroovyMapBuilder {
         mapData.setQueueSpecificMacros(taskContext.getQueueSpecificMacros());
         mapData.setAccountString(taskContext.getAllocationProjectNumber());
         mapData.setReservation(taskContext.getReservation());
-        mapData.setJobName("A" + String.valueOf(generateJobName()));
+        if(this.taskContext.getResourceJobManager().getResourceJobManagerType() == ResourceJobManagerType.HTCONDOR)
+            mapData.setJobName("HTCondor");
+        else
+            mapData.setJobName("A" + String.valueOf(generateJobName()));
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
+
+        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
+        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+        mapData.setCurrentTime(gmtDateFormat.format(new Date()));
 
         //List<String> emails = taskContext.getUserProfile().getEmails();
         //if (emails != null && emails.size() > 0) {
@@ -89,12 +97,22 @@ public class GroovyMapBuilder {
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));
         mapData.setInputs(inputValues);
 
+        List<String> inputFiles = getProcessInputFiles(taskContext.getProcessModel().getProcessInputs(), false);
+        mapData.setInputFiles(inputFiles);
+
         List<String> inputValuesAll = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), false);
         inputValuesAll.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), false));
         mapData.setInputsAll(inputValuesAll);
 
         mapData.setUserName(taskContext.getComputeResourceLoginUserName());
         mapData.setShellName("/bin/bash");
+
+        String hostName = taskContext.getComputeResourceDescription().getHostName();
+        List<String> hostAliases = taskContext.getComputeResourceDescription().getHostAliases();
+        if (hostAliases != null && hostAliases.size() > 0) {
+            hostName = hostAliases.get(0);
+        }
+        mapData.setComputeHostName(hostName);
 
         if (taskContext != null) {
             try {
@@ -181,7 +199,7 @@ public class GroovyMapBuilder {
         if (moduleCmds != null) {
             List<String> modulesCmdCollect = moduleCmds.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                    .map(map -> map.getCommand())
+                    .map(map -> parseCommands(map.getCommand(), mapData))
                     .collect(Collectors.toList());
             mapData.setModuleCommands(modulesCmdCollect);
         }
@@ -293,6 +311,55 @@ public class GroovyMapBuilder {
         return inputValues;
     }
 
+    private static List<String> getProcessInputFiles(List<InputDataObjectType> processInputs, boolean commandLineOnly) {
+        List<String> inputFiles = new ArrayList<String>();
+        if (processInputs != null) {
+
+            // sort the inputs first and then build the command ListR
+            Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+                @Override
+                public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                    return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+                }
+            };
+            Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+            for (InputDataObjectType input : processInputs) {
+                sortedInputSet.add(input);
+            }
+            for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+                if (!inputDataObjectType.isIsRequired() &&
+                        (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
+                    // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
+                    continue;
+                }
+
+                if (inputDataObjectType.getValue() != null
+                        && !inputDataObjectType.getValue().equals("")) {
+                    if (inputDataObjectType.getType() == DataType.URI) {
+                        if (inputDataObjectType.getOverrideFilename() != null) {
+                            inputFiles.add(inputDataObjectType.getOverrideFilename());
+                        } else {
+                            // set only the relative path
+                            String filePath = inputDataObjectType.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputFiles.add(filePath);
+                        }
+                    } else if (inputDataObjectType.getType() == DataType.URI_COLLECTION) {
+                        String filePaths = inputDataObjectType.getValue();
+                        String[] paths = filePaths.split(MULTIPLE_INPUTS_SPLITTER);
+
+                        for (int i = 0; i < paths.length; i++) {
+                            paths[i] = paths[i].substring(paths[i].lastIndexOf(File.separatorChar) + 1);
+                        }
+
+                        inputFiles.add(String.join(" ", paths));
+                    }
+                }
+            }
+        }
+        return inputFiles;
+    }
+
     private static List<String> getProcessOutputValues(List<OutputDataObjectType> processOutputs, boolean commandLineOnly) {
         List<String> inputValues = new ArrayList<>();
         if (processOutputs != null) {
@@ -370,8 +437,7 @@ public class GroovyMapBuilder {
         }
     }
 
-    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws
-            ApplicationSettingsException, TException, TaskOnFailException {
+    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws Exception {
 
         ProcessModel processModel =  taskContext.getProcessModel();
         String emailIds = null;
@@ -408,7 +474,7 @@ public class GroovyMapBuilder {
         }
     }
 
-    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws TException, TaskOnFailException {
+    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws Exception {
         JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
         JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {

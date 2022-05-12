@@ -58,6 +58,7 @@ import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
@@ -85,6 +86,7 @@ import java.util.stream.Collectors;
 public class DataParsingTask extends AbstractTask {
 
     private final static Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
+    private final static CountMonitor parsingTaskCounter = new CountMonitor("parsing_task_counter");
 
     @TaskParam(name = "Parser Id")
     private String parserId;
@@ -107,7 +109,7 @@ public class DataParsingTask extends AbstractTask {
     @Override
     public TaskResult onRun(TaskHelper helper) {
         logger.info("Starting data parsing task " + getTaskId());
-
+        parsingTaskCounter.inc();
         try {
 
             Parser parser = getRegistryServiceClient().getParser(parserId, gatewayId);

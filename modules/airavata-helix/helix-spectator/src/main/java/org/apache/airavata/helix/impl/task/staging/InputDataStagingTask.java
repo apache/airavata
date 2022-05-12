@@ -29,6 +29,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +41,13 @@ import java.net.URISyntaxException;
 public class InputDataStagingTask extends DataStagingTask {
 
     private final static Logger logger = LoggerFactory.getLogger(InputDataStagingTask.class);
+    private final static CountMonitor inputDSTaskCounter = new CountMonitor("input_ds_task_counter");
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting Input Data Staging Task " + getTaskId());
+
+        inputDSTaskCounter.inc();
 
         saveAndPublishProcessStatus(ProcessState.INPUT_DATA_STAGING);
 

@@ -24,6 +24,16 @@ user_data_dir: "{{ real_user_data_dir }}"
 #airavata_django_git_branch: "simccs"
 vhost_servername: "dev.ampgateway.org"
 vhost_ssl: true
+
+# TODO: while developing django app, turn off SELinux, but turn it back on
+# once code execution issues are ironed out
+httpd_selinux_mode: "permissive"
+
+airavata_django_extra_dependencies:
+  - "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
+
+# tus isn't setup yet
+tusd_vhost_servername:
 # sudo certbot --apache certonly -d django.simccs.scigap.org
 ssl_certificate_file: "/etc/letsencrypt/live/dev.ampgateway.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.ampgateway.org/fullchain.pem"
@@ -43,7 +53,11 @@ auth_options:
 
 gateway_id: "amp"
 experiment_data_dir: "{{ user_data_dir }}/django-amp"
+gateway_data_store_resource_id: "dev.ampgateway.org_b8228bc7-fad2-45db-8ed1-47de359a54a5"
+gateway_data_store_hostname: "dev.ampgateway.org"
 # gateway_data_store_ssh_public_key: "TODO"
+
+django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
 
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
@@ -52,4 +66,8 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_server_email: "{{ portal_email_username }}"
 portal_title: "Dev AMP Gateway"
+
+django_extra_settings:
+  TRECX:
+    TRECX_APPLICATION_ID: "tRecX_70fc89f8-424f-4495-99e3-f3aa6a75f967"
 ...

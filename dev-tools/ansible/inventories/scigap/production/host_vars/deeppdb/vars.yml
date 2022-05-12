@@ -1,0 +1,53 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+#gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
+
+vhost_servername: "deeppdb.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/deeppdb.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/deeppdb.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/deeppdb.scigap.org/privkey.pem"
+
+
+## Keycloak related variables
+tenant_domain: "deeppdb"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "DeepPDB Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "deeppdb"
+experiment_data_dir: "{{ user_data_dir }}/deeppdb"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrEsPVkjeYfFXWEtY397sFPgxb/3wSue0jOdfES3VDYd9S885FyAB2RQz1aZT8T1jRxYhWGmKD8dhs7on/hdgVXIAuiIXLhPZKtB+A17rz2nW6oYUXs8UCXaIIMh5NImWHEn+EqPGij3b8uLWKULWs7TT6v2ulQN2CngA3ROqmA8AjiLRP0LI29G+mSlyi/kJgmIh6RSQkfUpaOnK4cKbYHTKAM8leSopP3jNzAmQXLZcthL9wS8vX/kakkZKOSff0nide5kBVApHwipyJ48EfA+fVdU50fzd18lobct9XUh48EZlNVZyT+qmY9pGAXcXwN8hFNL+7lsHg5D0tAh93"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+portal_title: "DeepPDB Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...
