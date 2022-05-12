@@ -132,7 +132,8 @@ public class DataProductRepositoryTest extends TestBase {
         assertEquals(1, retrievedDataProductModel1.getReplicaLocationsSize());
         DataReplicaLocationModel retrievedReplicaLocationModel1 = retrievedDataProductModel1.getReplicaLocations().get(0);
         assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());
-        assertFalse(retrievedReplicaLocationModel1.isSetValidUntilTime());
+        // validUntilTime has a default value
+        assertEquals(0, retrievedReplicaLocationModel1.getValidUntilTime());
 
         dataProductRepository.removeDataProduct(productUri1);
         assertFalse(dataProductRepository.isDataProductExists(productUri1));

@@ -75,6 +75,11 @@ config:
        - SLURM resource manager <slurm@helix-slurm-headnode.novalocal> # Jetstream Helix cluster
        - SLURM resource manager <slurm@pearc19-headnode.novalocal>
        - slurm@sdsc.edu
+       - super user <root@localhost> # Bigred3
+       - SLURM resource manager <slurm@lrose-vc.novalocal>
+       - SLURM resource manager <slurm@testvc.novalocal>
+       - Slurm <slurm@br003.ib.bridges2.psc.edu>
+       - slurm@pinnacles.ucmerced.edu #Pinnacle UCMerced Cluster
 
    - jobManagerType: UGE
      emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
@@ -90,3 +95,7 @@ config:
      resourceEmailAddresses:
        - iu.xsede.edu # test resource mail address
        - tcs.tulsahpc.org #Tandy
+
+   - jobManagerType: HTCondor
+     emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
+     resourceEmailAddresses:

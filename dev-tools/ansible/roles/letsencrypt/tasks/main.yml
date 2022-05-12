@@ -23,19 +23,39 @@
 - name: install certbot and dependencies
   yum: name={{ item }} state=installed update_cache=yes
   with_items:
-    - certbot
-    - python2-acme
-    - python2-certbot-apache
+    - certbot-1.11.0
+    - python2-acme-1.11.0
+    - python2-certbot-apache-1.11.0
+    - ca-certificates-2021.2.50
+  become: true
   become_user: root
+  when: ansible_os_family == "RedHat"
+
+- name: add Certbot PPA repository
+  apt_repository:
+    repo: "ppa:certbot/certbot"
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Certbot and dependencies (Debian)
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - certbot
+    - python-certbot-apache
+  become: yes
+  when: ansible_os_family == "Debian"
+
+# Note: on Ubuntu crontab is automatically created to run cert renewal. Only
+# CentOS requires enabling the certbot-renew timer.
 
 - name: enable certbot (letsencrypt) renewal
   systemd:
-    state: started
     enabled: true
     name: certbot-renew
     daemon_reload: true
   become: true
   become_user: root
+  when: ansible_os_family == "RedHat"
 
 - name: enable certbot (letsencrypt) renewal timer
   systemd:
@@ -45,3 +65,4 @@
     daemon_reload: true
   become: true
   become_user: root
+  when: ansible_os_family == "RedHat"

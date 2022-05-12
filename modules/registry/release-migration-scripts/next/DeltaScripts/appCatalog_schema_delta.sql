@@ -19,8 +19,3 @@
 --
 
 use app_catalog;
-
--- AIRAVATA-3327: Remove deprecated reservation fields
-alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION;
-alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION_START_TIME;
-alter table GROUP_COMPUTE_RESOURCE_PREFERENCE drop column IF EXISTS RESERVATION_END_TIME;

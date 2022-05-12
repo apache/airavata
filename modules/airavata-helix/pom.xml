@@ -24,11 +24,11 @@
     <parent>
         <artifactId>airavata</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
-    <version>0.20-SNAPSHOT</version>
+    <version>0.21-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <name>Airavata Helix</name>
     <artifactId>airavata-helix</artifactId>
@@ -40,7 +40,6 @@
         <module>task-core</module>
         <module>workflow-impl</module>
         <module>helix-spectator</module>
-        <module>platform-monitor</module>
     </modules>
 
 </project>

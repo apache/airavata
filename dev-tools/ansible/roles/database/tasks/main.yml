@@ -142,10 +142,13 @@
 - include: keycloak.yml
   when: "'keycloak' in groups"
 
-- include: django.yml
-  when: "'django' in groups"
-
-- name: open firewall port {{ db_server_port }}
-  firewalld: port="{{ db_server_port }}/tcp"
-             zone=public permanent=true state=enabled immediate=yes
+- name: allow only selected networks to access DB
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ db_server_port }}" protocol=tcp accept
+  with_items:
+    - "{{ db_subnets }}"
   become_user: root

@@ -26,7 +26,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/www.searchsra.org/fullchain.p
 ssl_certificate_key_file: "/etc/letsencrypt/live/www.searchsra.org/privkey.pem"
 
 django_file_upload_max_file_size_mb: 60
-django_pga_url: "https://pga.searchsra.scigap.org"
+#django_pga_url: "https://pga.searchsra.scigap.org"
 
 ## Keycloak related variables
 tenant_domain: "searching-sra"
@@ -36,7 +36,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "SEARCH-SRA"
-#  external:
+  external:
 #    - name: "existing institution credentials"
 #      idp_alias: "cilogon"
 #      logo: "images/cilogon-logo-24x24-b.png"
@@ -45,7 +45,8 @@ gateway_id: "searching-sra"
 experiment_data_dir: "{{ user_data_dir }}/searching-sra"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx981DispO1AnkOAwq1oJ3iaYUW6KT4jn4OPSrvIb1fJyjkNdBK8KQUTviBMgqLH9+FlIx/FYjN7sVLelGUmfOgguIWB4Ea2epAyvGFfrVeF83w5A4uILfrd5AJQuk0sZkNjnnGmmpx6z60IThaof2f14uD7JPcn5Kf0xnfmhJGIo2DYJRp8DYJ4Upd1ENu4p3CqylZGBFTx0ROe3hCNj28BxCY+kTgKTQJQHdwuHK9WxovQHdv2ZrN9GeSyIPUX8W1PpYKqM2i8xGaagPUamHON9TonHyuAdd84CagonwuaG54+jbFbB9uW/zhhnP5vNRxK8aSNIhszOucE2g8xzL"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Robert Edwards', 'redwards@sdsu.edu'),('Mats Rynge','rynge@isi.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Robert Edwards', 'raedwards@gmail.com'),('Robert Edwards', 'redwards@sdsu.edu'), ('Mats Rynge','rynge@isi.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 portal_title: "Search-SRA Portal"
 
+django_google_analytics_tracking_id: "UA-177998970-1"
 ...

@@ -62,10 +62,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
-        ResteasyClient resteasyClient = new ResteasyClientBuilder()
-                .connectionPoolSize(10)
-                .trustStore(loadKeyStore())
-                .build();
+        ResteasyClient resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
                 .serverUrl(adminUrl)
                 .realm(realm)
@@ -78,16 +75,26 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static Keycloak getClient(String adminUrl, String realm, String accessToken) {
 
-        ResteasyClient resteasyClient = new ResteasyClientBuilder()
-                .connectionPoolSize(10)
-                .trustStore(loadKeyStore())
-                .build();
+        ResteasyClient resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
                 .serverUrl(adminUrl)
                 .realm(realm)
                 .authorization(accessToken)
                 .resteasyClient(resteasyClient)
                 .build();
+    }
+
+    private static ResteasyClient getResteasyClient() {
+
+        ResteasyClientBuilder builder = new ResteasyClientBuilder().connectionPoolSize(10);
+        try {
+            if (ServerSettings.isTrustStorePathDefined()) {
+                builder.trustStore(loadKeyStore());
+            }
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException("Failed to read application settings", e);
+        }
+        return builder.build();
     }
 
     private static KeyStore loadKeyStore() {
@@ -147,6 +154,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             // Default access token lifespan to 30 minutes, SSO session idle to 60 minutes
             newRealmDetails.setAccessTokenLifespan(1800);
             newRealmDetails.setSsoSessionIdleTimeout(3600);
+            newRealmDetails.setEditUsernameAllowed(true);
             RealmRepresentation realmWithRoles = TenantManagementKeycloakImpl.createDefaultRoles(newRealmDetails);
             client.realms().create(realmWithRoles);
             return gatewayDetails;
@@ -296,15 +304,15 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             Response httpResponse = client.realms().realm(gatewayDetails.getGatewayId()).clients().create(pgaClient);
             logger.info("Tenant Client configuration exited with code : " + httpResponse.getStatus()+" : " +httpResponse.getStatusInfo());
 
-            // Add the manage-users role to the web client
+            // Add the manage-users and manage-clients roles to the web client
             UserRepresentation serviceAccountUserRepresentation = getUserByUsername(client, gatewayDetails.getGatewayId(), "service-account-" + pgaClient.getClientId());
             UserResource serviceAccountUser = client.realms().realm(gatewayDetails.getGatewayId()).users().get(serviceAccountUserRepresentation.getId());
             String realmManagementClientId = getRealmManagementClientId(client, gatewayDetails.getGatewayId());
-            List<RoleRepresentation> manageUsersRole = serviceAccountUser.roles().clientLevel(realmManagementClientId).listAvailable()
+            List<RoleRepresentation> manageUsersAndManageClientsRoles = serviceAccountUser.roles().clientLevel(realmManagementClientId).listAvailable()
                     .stream()
-                    .filter(r -> r.getName().equals("manage-users"))
+                    .filter(r -> r.getName().equals("manage-users") || r.getName().equals("manage-clients"))
                     .collect(Collectors.toList());
-            serviceAccountUser.roles().clientLevel(realmManagementClientId).add(manageUsersRole);
+            serviceAccountUser.roles().clientLevel(realmManagementClientId).add(manageUsersAndManageClientsRoles);
 
             if(httpResponse.getStatus() == 201){
                 String ClientUUID = client.realms().realm(gatewayDetails.getGatewayId()).clients().findByClientId(pgaClient.getClientId()).get(0).getId();
@@ -833,8 +841,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     public static void main(String[] args) throws IamAdminServicesException, ApplicationSettingsException {
         TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
-        ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
-        ServerSettings.setSetting("trust.store.password", "airavata");
+        // If testing with self-signed certificate, load certificate into modules/configuration/server/src/main/resources/client_truststore.jks and uncomment the following
+        // ServerSettings.setSetting("trust.store", "./modules/configuration/server/src/main/resources/client_truststore.jks");
+        // ServerSettings.setSetting("trust.store.password", "airavata");
         ServerSettings.setSetting("iam.server.url", "");
         String accessToken = "";
         String tenantId = "";

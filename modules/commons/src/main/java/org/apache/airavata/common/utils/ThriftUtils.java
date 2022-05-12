@@ -34,6 +34,7 @@ public class ThriftUtils {
 	public static Object getSubTaskModel(TaskModel taskModel) throws TException {
 		switch (taskModel.getTaskType()) {
 			case DATA_STAGING:
+			case OUTPUT_FETCHING:
 				DataStagingTaskModel dataStagingTaskModel = new DataStagingTaskModel();
 				ThriftUtils.createThriftFromBytes(taskModel.getSubTaskModel(), dataStagingTaskModel);
 				return dataStagingTaskModel;

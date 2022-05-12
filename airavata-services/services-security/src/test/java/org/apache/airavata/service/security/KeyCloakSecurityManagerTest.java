@@ -77,6 +77,7 @@ public class KeyCloakSecurityManagerTest {
     @Before
     public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
         new Expectations() {{
+            mockServerSettings.isTrustStorePathDefined(); result = true;
             mockTrustStoreManager.initializeTrustStoreManager(anyString, anyString);
             mockServerSettings.isAPISecured(); result = true;
             mockServerSettings.getRegistryServerHost(); result = "localhost"; minTimes = 0;

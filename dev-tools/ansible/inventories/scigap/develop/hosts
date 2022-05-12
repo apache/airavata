@@ -1,8 +1,7 @@
----
 # inventory file : scigap develop deployment
 
 [zookeeper]
-149.165.156.195
+149.165.157.37
 
 [rabbitmq]
 149.165.156.195
@@ -27,16 +26,21 @@ seagrid ansible_host=149.165.156.46
 simvascular ansible_host=149.165.156.46
 simccs ansible_host=149.165.156.46
 interactwel ansible_host=149.165.156.46
-usd ansible_host=149.165.156.46
+# disable usd/southdakota until we can get valid SSL certificate
+# usd ansible_host=149.165.156.46
 csbglsu ansible_host=149.165.156.46
 nexttdb ansible_host=149.165.156.46
 saver-x ansible_host=149.165.156.46
 pfec-hydro ansible_host=149.165.156.46
 cyberwater ansible_host=149.165.156.46
 mines ansible_host=149.165.156.46
-distantr ansible_host=149.165.156.46
-amp ansible_host=149.165.169.129
+amp ansible_host=149.165.170.199
 geo ansible_host=149.165.156.46
+delta ansible_host=149.165.169.250
+custos-testdrive ansible_host=pgadev.scigap.org
+rnamake ansible_host=149.165.156.46
+
+#149.165.169.129
 
 [helix]
 149.165.157.37

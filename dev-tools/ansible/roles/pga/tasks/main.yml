@@ -129,13 +129,6 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
-- name: Enable https and http service on public zone
-  firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
-  with_items:
-    - http
-    - https
-  become: yes
-
 - name: copy virtual host config file
   template: src={{ pga_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
@@ -150,19 +143,12 @@
     - restart httpd
   when: vhost_ssl
 
-- name: copy default virtual host file
-  template: src={{ pga_default_conf_template }} dest={{ default_conf_file_location[ansible_os_family] }} backup=yes
+- name: Enable site in Apache (Debian)
+  command: a2ensite pga-{{ gateway_id }}
   become: yes
   notify:
     - restart httpd
-
-- name: copy modified ssl.conf file
-  template: src={{ pga_ssl_conf_template }} dest={{ ssl_conf_file_location[ansible_os_family] }} backup=yes
-  become: yes
-  notify:
-    - restart httpd
-  # TODO: make the same fix (disabling SSLv3) on Debian systems too
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "Debian"
 
 - name: copy pga user's SSH key for the gateway data store
   authorized_key:
@@ -170,13 +156,3 @@
     key: "{{ gateway_data_store_ssh_public_key }}"
   become: yes
   when: gateway_data_store_ssh_public_key != ""
-
-- name: open firewall port {{ pga_default_http_port }}
-  firewalld: port="{{ pga_default_http_port }}/tcp"
-             zone=public permanent=true state=enabled immediate=yes
-  become: yes
-
-- name: open firewall port {{ pga_default_https_port }}
-  firewalld: port="{{ pga_default_https_port }}/tcp"
-             zone=public permanent=true state=enabled immediate=yes
-  become: yes

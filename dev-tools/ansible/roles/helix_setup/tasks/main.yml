@@ -48,6 +48,7 @@
   - { command: ./bin/participant-daemon.sh stop, dir: "{{ helix_participant_version }}" }
   - { command: ./bin/pre-wm-daemon.sh stop, dir: "{{ helix_pre_wm_version }}" }
   - { command: ./bin/post-wm-daemon.sh stop, dir: "{{ helix_post_wm_version }}" }
+  - { command: ./bin/parser-wm-daemon.sh stop, dir: "{{ helix_parser_wm_version }}" }
   ignore_errors: yes
 
 - name: Delete lib, conf, bin directories of the distributions
@@ -67,6 +68,9 @@
   - "{{ helix_post_wm_version }}/lib"
   - "{{ helix_post_wm_version }}/bin"
   - "{{ helix_post_wm_version }}/conf"
+  - "{{ helix_parser_wm_version }}/bin"
+  - "{{ helix_parser_wm_version }}/conf"
+  - "{{ helix_parser_wm_version }}/lib"
   ignore_errors: yes
 
 # Copy required distributions to the deployment directory
@@ -80,7 +84,7 @@
   - "{{ helix_post_wm_dist_name }}"
   - "{{ helix_parser_wm_dist_name }}"
 
-# Copy properties files & logback.xml files
+# Copy properties files & log4j2.xml files
 
 - name: Copy Airavata server properties files
   template: "src={{ item.name }}/airavata-server.properties.j2
@@ -96,8 +100,8 @@
   - { name: parser-wm, dir: "{{ helix_parser_wm_version }}" }
 
 - name: Copy logback configuration file
-  template: "src={{ item.name }}/logback.xml.j2
-            dest={{ helix_dir }}/{{ item.dir }}/conf/logback.xml
+  template: "src={{ item.name }}/log4j2.xml.j2
+            dest={{ helix_dir }}/{{ item.dir }}/conf/log4j2.xml
             owner={{ user }}
             group={{ group }}
             mode=\"u=rw,g=r,o=r\""
@@ -135,6 +139,50 @@
   - { command: ./bin/pre-wm-daemon.sh start, dir: "{{ helix_pre_wm_version }}" }
   - { command: ./bin/post-wm-daemon.sh start, dir: "{{ helix_post_wm_version }}" }
   - { command: ./bin/parser-wm-daemon.sh start, dir: "{{ helix_parser_wm_version }}" }
+
+- name: Openning Participant Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ participant_monitoring_port }}" protocol=tcp accept
+  with_items:
+    - "{{ monitoring_subnets }}"
+  become_user: root
+
+- name: Openning Pre Workflow Manager Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ pre_workflow_manager_monitoring_port }}" protocol=tcp accept
+  with_items:
+    - "{{ monitoring_subnets }}"
+  become_user: root
+
+- name: Openning Post Workflow Manager Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ post_workflow_manager_monitoring_port }}" protocol=tcp accept
+  with_items:
+    - "{{ monitoring_subnets }}"
+  become_user: root
+
+- name: Openning Parser Workflow Manager Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ parser_workflow_manager_monitoring_port }}" protocol=tcp accept
+  with_items:
+    - "{{ monitoring_subnets }}"
+  become_user: root
 
 #- name: systemd install helix setup service scripts
 #  template: src={{ item.template }}

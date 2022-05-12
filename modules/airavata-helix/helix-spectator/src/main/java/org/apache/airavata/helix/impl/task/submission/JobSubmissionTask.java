@@ -61,7 +61,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         addMonitoringCommands(groovyMapData);
 
-        String scriptAsString = groovyMapData.getAsString(jobManagerConfiguration.getJobDescriptionTemplateName());
+        String scriptAsString = groovyMapData.loadFromFile(jobManagerConfiguration.getJobDescriptionTemplateName());
         logger.info("Generated job submission script : " + scriptAsString);
 
         int number = new SecureRandom().nextInt();

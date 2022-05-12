@@ -57,7 +57,7 @@
             <outputDirectory>conf</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>
-                <include>logback.xml</include>
+                <include>log4j2.xml</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -129,9 +129,12 @@
                 <include>com.jcraft:jzlib:jar</include>
                 <include>org.apache.kafka:kafka-clients:jar</include>
                 <include>org.apache.thrift:libthrift:jar</include>
+                <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.slf4j:log4j-over-slf4j:jar</include>
-                <include>ch.qos.logback:logback-classic:jar</include>
-                <include>ch.qos.logback:logback-core:jar</include>
+                <include>org.apache.logging.log4j:log4j-api</include>
+                <include>org.apache.logging.log4j:log4j-core</include>
+                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
+                <include>org.apache.logging.log4j:log4j-1.2-api</include>
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.lz4:lz4-java:jar</include>
@@ -143,7 +146,6 @@
                 <include>org.apache.airavata:registry-api-service:jar</include>
                 <include>org.apache.airavata:registry-api-stubs:jar</include>
                 <include>net.sourceforge.serp:serp:jar</include>
-                <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
                 <include>org.xerial.snappy:snappy-java:jar</include>
                 <include>org.apache.airavata:ssh-agent:jar</include>
@@ -164,10 +166,15 @@
                 <include>org.apache.airavata:airavata-security:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
+
+                <include>org.apache.airavata:platform-monitoring:jar</include>
+                <include>io.prometheus:simpleclient:jar</include>
+                <include>io.prometheus:simpleclient_httpserver:jar</include>
+                <include>io.prometheus:simpleclient_common:jar</include>
+                <include>org.apache.commons:commons-lang3</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
-                <exclude>log4j:log4j:jar</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

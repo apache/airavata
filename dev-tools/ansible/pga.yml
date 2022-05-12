@@ -23,6 +23,7 @@
   tags: pga
   roles:
     - env_setup
+    - httpd
     - letsencrypt
     - pga
 

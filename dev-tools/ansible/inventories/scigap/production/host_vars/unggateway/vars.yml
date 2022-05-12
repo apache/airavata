@@ -1,0 +1,53 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+#gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
+
+vhost_servername: "gateway.ung.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.ung.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.ung.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.ung.scigap.org/privkey.pem"
+
+
+## Keycloak related variables
+tenant_domain: "gateway-ung"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "UNG Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "gateway-ung"
+experiment_data_dir: "{{ user_data_dir }}/gateway-ung"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbGE2Zb7zHfOx1IwaUQkAsRNr3Y6ieqQ2jnvbvs4XBM0ARw3ME0feMIcJKB3NFjIEQqS67w1mV0tpoCmRVtSK7IVujbCCvyRFUOLh+BOgqF7Xm887FPidOm0qpSh3s46Wbd758uXurqojedC2xJp62e4aSgzdijyX2gBI1giQHaKSE2WW6L5wGkhIQoxSvaL1hSnL7adH6e2RqB1+ePbO6OGr6pRbNIQqCgYZGvNAJBoiP9K1CwQTcGkj0b2Ptr2kD2JWQqivdPM5YVR4PxH2vtovL0HLjHvXmljWdns/b4PQGDyfpUMgKAthlAlq5zGOJZqfIGdBxLnC8AaoZNGiF"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Luis Parra','Luis.CuevaParra@ung.edu'),('Smit Patel','snpate8729@ung.edu')]"
+portal_title: "UNG Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...

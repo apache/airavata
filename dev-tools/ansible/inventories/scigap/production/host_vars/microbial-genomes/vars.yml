@@ -20,12 +20,15 @@
 
 ---
 
+airavata_django_extra_dependencies:
+  - "git+https://github.com/bio-miga/miga-autocomplete.git#egg=miga_djangoapp"
 
-vhost_servername: "clades.microbial-genomes.org"
+#vhost_servername: "clades.microbial-genomes.org" #Changed on Miguel's request on 06/25/2020
+vhost_servername: "xsede.microbial-genomes.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/clades.microbial-genomes.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "microbial-genomes"
@@ -35,16 +38,20 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Microbial Genomes Gateway"
+    hidden: true
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
+      idp_token_url: "{{ oauth_service_url }}/realms/{{ tenant_domain }}/broker/cilogon/token"
+      userinfo_url: "{{ cilogon_userinfo_url }}"
 
 gateway_id: "microbial-genomes"
 experiment_data_dir: "{{ user_data_dir }}/microbial-genomes"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCG/syNtrxrgfdHpxln172epFN36uztXhblac4uqNYW9Qlp8K5YI1MICxCW+HJu1mOkIvOLseYaZm1m8Vt7KwTvp/RP6iyZ8M/fWMPO+v9ZLjGupi/iDLA8JNfD0trpwXzW4PCFaqPG2+LtpzsfsI8Bx6UwFXbHKdEo5eC548Cc5EVkZ9xFEChCQHdUcxWI7zs7+S9wsAOY3Qbsrg/UtLAe4P8ZFxABSgBdirKusxdbw/0LgVhkj1aTKIE7n+7b7b11m4A1bzvsvhNLBlN+hRXG9ZiOOYExO1T5p3rX+HHIeUNAi1AMlc6KTa833ni0FWK3EYbGEwC1og6hSfl2ZGRp"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Luis Rodriguez Rojas', 'lrr@gatech.edu')]"
+admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Luis Rodriguez Rojas', 'miguel.rodriguez@uibk.ac.at'),('Konstantinos Konstantinidis','kostas@ce.gatech.edu'),('Luis Rodriguez Rojas','lmrodriguezr@gmail.com')]"
 portal_title: "Microbial Genomes Gateway"
 
+django_google_analytics_tracking_id: "UA-177964723-1"
 ...

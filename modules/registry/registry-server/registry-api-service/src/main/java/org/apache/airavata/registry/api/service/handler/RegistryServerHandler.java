@@ -82,6 +82,7 @@ import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
@@ -148,6 +149,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
     private UserRepository userRepository = new UserRepository();
     private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+    private GatewayUsageReportingCommandRepository usageReportingCommandRepository = new GatewayUsageReportingCommandRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -434,7 +436,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param toTime    Ending data time.
      */
     @Override
-    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime, String userName, String applicationName, String resourceHostName, List<String> accessibleExpIds) throws RegistryServiceException, TException {
+    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime, String userName, String applicationName, String resourceHostName, List<String> accessibleExpIds, int limit, int offset) throws RegistryServiceException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -459,7 +461,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 filters.put(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID, resourceHostName);
             }
 
-            ExperimentStatistics result = experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters);
+            // Cap the max returned experiment summaries at 1000
+            limit = Math.min(limit, 1000);
+
+            ExperimentStatistics result = experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters, limit, offset);
             logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : " + AiravataUtils.getTime(fromTime) + " and " + AiravataUtils.getTime(toTime));
             return result;
         }catch (Exception e) {
@@ -3643,7 +3648,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 switch (experimentState){
                     case CREATED: case VALIDATED:
                         if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
-                                .getComputationalResourceScheduling() != null){
+                                .getComputationalResourceScheduling() != null 
+                                && experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId() != null){
                             String compResourceId = experiment.getUserConfigurationData()
                                     .getComputationalResourceScheduling().getResourceHostId();
                             ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
@@ -3745,7 +3751,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
 
             if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
-                    .getComputationalResourceScheduling() != null){
+                    .getComputationalResourceScheduling() != null 
+                    && experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId() != null){
 
                 String compResourceId = experiment.getUserConfigurationData()
                         .getComputationalResourceScheduling().getResourceHostId();
@@ -5056,6 +5063,69 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error(message, e);
             RegistryServiceException rse = new RegistryServiceException();
             rse.setMessage(message + " More info: " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public boolean isGatewayUsageReportingAvailable(String gatewayId, String computeResourceId) throws RegistryServiceException, TException {
+        try {
+            return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId);
+        } catch (Exception e) {
+            String message = "Failed to check the availability to find the reporting information for the gateway "
+                                                        + gatewayId + " and compute resource " + computeResourceId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }    }
+
+    @Override
+    public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId, String computeResourceId) throws RegistryServiceException, TException {
+        try {
+            if (usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
+                return usageReportingCommandRepository.getGatewayUsageReportingCommand(gatewayId, computeResourceId);
+            } else {
+                String message = "No usage reporting information for the gateway " + gatewayId + " and compute resource " + computeResourceId;
+                logger.error(message);
+                throw new RegistryServiceException(message);
+            }
+        } catch (RegistryServiceException e) {
+            throw e; // re-throw
+
+        } catch (Exception e) {
+            String message = "Failed to check the availability to find the reporting information for the gateway " +
+                                gatewayId + " and compute resource " + computeResourceId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }      }
+
+    @Override
+    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException, TException {
+        try {
+            usageReportingCommandRepository.addGatewayUsageReportingCommand(command);
+        } catch (Exception e) {
+            String message = "Failed to add the reporting information for the gateway " + command.getGatewayId()
+                                + " and compute resource " + command.getComputeResourceId();
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
+            throw rse;
+        }
+    }
+
+    @Override
+    public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId) throws RegistryServiceException, TException {
+        try {
+            usageReportingCommandRepository.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
+        } catch (Exception e) {
+            String message = "Failed to add the reporting information for the gateway " + gatewayId +
+                                " and compute resource " + computeResourceId;
+            logger.error(message, e);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage(message + ". More info " + e.getMessage());
             throw rse;
         }
     }

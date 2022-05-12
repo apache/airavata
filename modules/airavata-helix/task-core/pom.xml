@@ -24,7 +24,7 @@
     <parent>
         <artifactId>airavata-helix</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.21-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -45,6 +45,11 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>sshj-agent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>platform-monitoring</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

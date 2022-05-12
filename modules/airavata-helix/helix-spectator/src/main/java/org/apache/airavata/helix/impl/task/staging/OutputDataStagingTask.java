@@ -30,7 +30,10 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.task.DataStageType;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -48,11 +51,13 @@ import java.util.stream.Collectors;
 public class OutputDataStagingTask extends DataStagingTask {
 
     private final static Logger logger = LoggerFactory.getLogger(OutputDataStagingTask.class);
+    private final static CountMonitor outputDSTaskCounter = new CountMonitor("output_ds_task_counter");
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         logger.info("Starting output data staging task " + getTaskId() + " in experiment " + getExperimentId());
+        outputDSTaskCounter.inc();
         saveAndPublishProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
 
         try {

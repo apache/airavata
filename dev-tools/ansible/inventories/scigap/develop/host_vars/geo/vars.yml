@@ -19,15 +19,24 @@
 #
 
 ---
+
+airavata_django_extra_dependencies:
+  - "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
+
 # No symlink, user_data_dir is same as real_user_data_dir
 user_data_dir: "{{ real_user_data_dir }}"
 #airavata_django_git_branch: "simccs"
 vhost_servername: "beta.geogateway.scigap.org"
 vhost_ssl: true
+# tus isn't setup yet
+tusd_vhost_servername:
 # sudo certbot --apache certonly -d django.simccs.scigap.org
 ssl_certificate_file: "/etc/letsencrypt/live/beta.geogateway.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.geogateway.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/beta.geogateway.scigap.org/privkey.pem"
+
+django_extra_settings:
+  LOGIN_REDIRECT_URL: "/geogateway_django_app/"
 
 ## Keycloak related variables
 tenant_domain: "beta-geo"
@@ -37,9 +46,9 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Beta GEO"
-#  external:
-#    - name: "Existing Institute Login"
-#     idp_alias: "cilogon"
+  external:
+    - name: "Existing Institute Login"
+      idp_alias: "cilogon"
 
 gateway_id: "beta-geo"
 experiment_data_dir: "{{ user_data_dir }}/django-geo"
