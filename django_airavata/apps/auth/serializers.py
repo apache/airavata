@@ -188,7 +188,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
                     choice_id = choice.pop('id', None)
                     models.ExtendedUserProfileSingleChoiceFieldChoice.objects.update_or_create(
                         id=choice_id,
-                        defaults=choice,
+                        defaults={**choice, "single_choice_field": instance.single_choice},
                     )
             instance.single_choice.save()
         elif instance.field_type == 'multi_choice':
@@ -202,7 +202,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
                     choice_id = choice.pop('id', None)
                     models.ExtendedUserProfileMultiChoiceFieldChoice.objects.update_or_create(
                         id=choice_id,
-                        defaults=choice,
+                        defaults={**choice, "multi_choice_field": instance.multi_choice},
                     )
             instance.multi_choice.save()
         elif instance.field_type == 'user_agreement':
