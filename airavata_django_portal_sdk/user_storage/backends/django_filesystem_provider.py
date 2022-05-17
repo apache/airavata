@@ -98,7 +98,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
 
     def update(self, resource_path, file):
         full_path = self.datastore.path(resource_path)
-        with open(full_path, 'w') as f:
+        with open(full_path, 'w', encoding='utf-8') as f:
             f.write(file.read())
 
     def create_dirs(self, resource_path, dir_names=[], create_unique=False):
