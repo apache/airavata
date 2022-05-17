@@ -136,6 +136,17 @@ export default {
     },
     validateState: errors.vuelidateHelpers.validateState,
     validateStateErrorOnly: errors.vuelidateHelpers.validateStateErrorOnly,
+    touch() {
+      this.$v.$touch();
+    },
+  },
+  watch: {
+    valid: {
+      handler(valid) {
+        this.$emit(valid ? "valid" : "invalid");
+      },
+      immediate: true,
+    },
   },
 };
 </script>

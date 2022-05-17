@@ -3,6 +3,14 @@
     :label="extendedUserProfileField.name"
     :description="extendedUserProfileField.help_text"
   >
+    <template #label>
+      {{ extendedUserProfileField.name }}
+      <small
+        v-if="!extendedUserProfileField.required"
+        class="text-muted text-small"
+        >(Optional)</small
+      >
+    </template>
     <b-card
       v-for="link in extendedUserProfileField.links"
       :key="link.id"

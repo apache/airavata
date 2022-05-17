@@ -105,14 +105,7 @@ export default {
           })
         );
       } else {
-        // TODO: make sure to highlight which fields are invalid
-        notifications.NotificationList.add(
-          new notifications.Notification({
-            type: "WARNING",
-            message: "The form is invalid. Please fix and try again.",
-            duration: 5,
-          })
-        );
+        this.$refs.extendedUserProfileEditor.touch();
       }
     },
     async handleResendEmailVerification() {

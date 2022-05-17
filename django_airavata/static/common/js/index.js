@@ -31,6 +31,7 @@ import * as vuelidateHelpers from "./errors/vuelidateHelpers.js";
 
 import ListLayout from "./layouts/ListLayout.vue";
 
+import ValidationParent from "./mixins/ValidationParent";
 import VModelMixin from "./mixins/VModelMixin";
 
 import Notification from "./notifications/Notification";
@@ -80,6 +81,7 @@ const layouts = {
 };
 
 const mixins = {
+  ValidationParent,
   VModelMixin,
 };
 

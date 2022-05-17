@@ -6,6 +6,8 @@
         :key="extendedUserProfileField.id"
         :is="getEditor(extendedUserProfileField)"
         :extended-user-profile-field="extendedUserProfileField"
+        @valid="recordValidChildComponent(extendedUserProfileField.id)"
+        @invalid="recordInvalidChildComponent(extendedUserProfileField.id)"
       />
     </template>
   </div>
@@ -17,13 +19,13 @@ import ExtendedUserProfileMultiChoiceFieldEditor from "./ExtendedUserProfileMult
 import ExtendedUserProfileSingleChoiceFieldEditor from "./ExtendedUserProfileSingleChoiceFieldEditor.vue";
 import ExtendedUserProfileTextFieldEditor from "./ExtendedUserProfileTextFieldEditor.vue";
 import ExtendedUserProfileUserAgreementFieldEditor from "./ExtendedUserProfileUserAgreementFieldEditor.vue";
+import { mixins } from "django-airavata-common-ui";
 export default {
+  mixins: [mixins.ValidationParent],
   computed: {
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
     valid() {
-      return this.$refs.extendedUserProfileFieldComponents.every(
-        (c) => c.valid
-      );
+      return this.childComponentsAreValid;
     },
   },
   methods: {
@@ -44,6 +46,9 @@ export default {
           extendedUserProfileField.field_type
         );
       }
+    },
+    touch() {
+      this.$refs.extendedUserProfileFieldComponents.forEach((c) => c.touch());
     },
   },
 };

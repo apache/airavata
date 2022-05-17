@@ -45,6 +45,17 @@ export default {
   methods: {
     ...mapMutations("extendedUserProfile", ["setTextValue"]),
     validateState: errors.vuelidateHelpers.validateState,
+    touch() {
+      this.$v.$touch();
+    },
+  },
+  watch: {
+    valid: {
+      handler(valid) {
+        this.$emit(valid ? "valid" : "invalid");
+      },
+      immediate: true,
+    },
   },
 };
 </script>
