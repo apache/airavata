@@ -7,7 +7,9 @@
       @change="onChange"
       :state="validateStateErrorOnly($v.value)"
     >
-      <b-form-checkbox :value="otherOptionValue"
+      <b-form-checkbox
+        :value="otherOptionValue"
+        v-if="extendedUserProfileField.other"
         >Other (please specify)</b-form-checkbox
       >
 
@@ -15,24 +17,25 @@
         >This field is required.</b-form-invalid-feedback
       >
     </b-form-checkbox-group>
-    <b-form-input
-      class="mt-2"
-      v-if="showOther"
-      v-model="other"
-      placeholder="Please specify"
-      :state="validateState($v.other)"
-      @input="onInput"
-    />
-    <b-form-invalid-feedback :state="validateState($v.other)"
-      >Please specify a value for 'Other'.</b-form-invalid-feedback
-    >
+    <template v-if="showOther">
+      <b-form-input
+        class="mt-2"
+        v-model="other"
+        placeholder="Please specify"
+        :state="validateState($v.other)"
+        @input="onInput"
+      />
+      <b-form-invalid-feedback :state="validateState($v.other)"
+        >Please specify a value for 'Other'.</b-form-invalid-feedback
+      >
+    </template>
   </extended-user-profile-field-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
-import { requiredIf } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import { errors } from "django-airavata-common-ui";
 import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
 const OTHER_OPTION = new Object(); // sentinel value
@@ -113,7 +116,7 @@ export default {
       other: {},
     };
     if (this.showOther) {
-      validations.other = { required: requiredIf("required") };
+      validations.other = { required };
     }
     return validations;
   },

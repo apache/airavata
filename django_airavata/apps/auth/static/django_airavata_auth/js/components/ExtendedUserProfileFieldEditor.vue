@@ -15,6 +15,7 @@
       v-for="link in extendedUserProfileField.links"
       :key="link.id"
       :header="link.label"
+      class="ml-3 mb-3"
     >
       <b-card-text v-if="link.display_inline">
         <iframe :src="link.url" />
