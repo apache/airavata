@@ -113,12 +113,10 @@ export const actions = {
     const applicationModule = await services.ApplicationModuleService.retrieve({
       lookup: applicationId,
     });
-    const applicationInterface = await services.ApplicationModuleService.getApplicationInterface(
-      {
-        lookup: applicationId,
-      }
+    const applicationInterface = await dispatch(
+      "initializeApplicationInterface",
+      { applicationModuleId: applicationId }
     );
-    commit("setApplicationInterface", { applicationInterface });
     const experiment = applicationInterface.createExperiment();
     const currentDate = new Date().toLocaleString([], {
       dateStyle: "medium",
@@ -168,7 +166,7 @@ export const actions = {
     // assumed to be initialized so we can do the cross component initialization
     dispatch("initializeComputeResourceSettings");
   },
-  async initializeComputeResourceSettings({ dispatch, getters }) {
+  async initializeComputeResourceSettings({ dispatch, getters, state }) {
     // This method initializes GroupResourceProfile, ApplicationDeployments and
     // Queue settings at once since there they are interdependent.
     // This method should only be called after groupResourceProfileId,
@@ -176,6 +174,12 @@ export const actions = {
     // areAllComputeResourceSettingsSet).
 
     await dispatch("initializeGroupResourceProfile");
+    // applicationInterface is initialized already when creating/editing an
+    // experiment but needs to be done explicitly when using other web
+    // components standalone
+    await dispatch("initializeApplicationInterface", {
+      applicationModuleId: state.applicationModuleId,
+    });
     const groupResourceProfileId = getters.groupResourceProfileId;
     // If there is a group resource profile, load additional necessary
     // data and re-apply group resource profile
@@ -184,6 +188,15 @@ export const actions = {
       await dispatch("loadAppDeploymentQueues");
       await dispatch("applyGroupResourceProfile");
     }
+  },
+  async initializeApplicationInterface({ commit }, { applicationModuleId }) {
+    const applicationInterface = await services.ApplicationModuleService.getApplicationInterface(
+      {
+        lookup: applicationModuleId,
+      }
+    );
+    commit("setApplicationInterface", { applicationInterface });
+    return applicationInterface;
   },
   async initializeGroupResourceProfile({ commit, dispatch, getters, state }) {
     await dispatch("loadGroupResourceProfiles");
