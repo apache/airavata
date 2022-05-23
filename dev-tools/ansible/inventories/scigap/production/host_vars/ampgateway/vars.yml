@@ -21,6 +21,7 @@
 ---
 airavata_django_extra_dependencies:
   - git+https://github.com/SciGaP/amp-gateway-django-app.git#egg=amp_gateway_django_app
+  - "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
 
 vhost_servername: "amosgateway.org"
 
@@ -60,4 +61,6 @@ django_extra_settings:
   GATEWAY_DATA_SHARED_DIRECTORIES:
     shared:
       path: /var/www/portals/gateway-user-data/amp/shared
+  TRECX:
+    TRECX_APPLICATION_ID: "tRecX-parallel_7b3b3d0a-2308-47e2-a41a-bbc815fba373"
 ...

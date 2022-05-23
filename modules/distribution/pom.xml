@@ -66,7 +66,7 @@
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.2</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -223,22 +223,22 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-xc</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
@@ -305,17 +305,6 @@
         <!-- dependency> <groupId>org.ogce</groupId> <artifactId>bcgss</artifactId>
             <version>146</version> </dependency> -->
         <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-            <version>${xmlbeans.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>stax</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
             <version>${thrift.version}</version>
@@ -324,17 +313,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.4</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.4</version>
+            <version>${jackson.core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.4</version>
+            <version>${jackson.core.version}</version>
         </dependency>
         <!-- zookeeper dependencies -->
 

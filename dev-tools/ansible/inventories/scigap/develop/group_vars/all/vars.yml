@@ -147,8 +147,8 @@ keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
 keycloak_vhost_servername: "iamdev.scigap.org"
 
 # Helix
-helix_version: 0.7.1
-helix_url: https://archive.apache.org/dist/helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
+helix_version: 0.9.9
+helix_url: https://downloads.apache.org/helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
 helix_dir: "{{ deployment_dir }}/airavata-helix"
 helix_cluster_name: "AiravataDevCluster"
 snapshot_version: "0.21-SNAPSHOT"
