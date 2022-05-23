@@ -261,7 +261,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})
         except Exception as e:
-            log.error("Cancel action has thrown the following error: ", e)
+            log.exception("Cancel action has thrown the following error")
             raise e
 
     @action(methods=['post'], detail=True)
@@ -273,7 +273,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request.authz_token, experiment_id, request.data["outputNames"])
             return Response({'success': True})
         except Exception as e:
-            log.error("fetchIntermediateOutputs failed with the following error: ", e)
+            log.exception("fetchIntermediateOutputs failed with the following error")
             raise e
 
     def _update_workspace_preferences(self, project_id,
