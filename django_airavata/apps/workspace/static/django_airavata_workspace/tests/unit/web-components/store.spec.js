@@ -764,6 +764,7 @@ test("updateNodeCount: only update nodeCount when cpuPerNode <= 0", (done) => {
 
 test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) => {
   const nodeCount = 4;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -777,6 +778,7 @@ test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) =>
   testAction(actions.updateNodeCount, {
     payload: {
       nodeCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
@@ -786,6 +788,7 @@ test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) =>
 
 test("updateNodeCount: update totalCPUCount when cpuPerNode > 0, but apply maximums", (done) => {
   const nodeCount = 4;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -799,6 +802,7 @@ test("updateNodeCount: update totalCPUCount when cpuPerNode > 0, but apply maxim
   testAction(actions.updateNodeCount, {
     payload: {
       nodeCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
@@ -829,6 +833,7 @@ test("updateTotalCPUCount: only update totalCPUCount when cpuPerNode <= 0", (don
 test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) => {
   const nodeCount = 4;
   const totalCPUCount = 96;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -842,6 +847,7 @@ test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) =>
   testAction(actions.updateTotalCPUCount, {
     payload: {
       totalCPUCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
@@ -851,6 +857,7 @@ test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) =>
 
 test("updateTotalCPUCount: update nodeCount when cpuPerNode > 0, but apply maximums", (done) => {
   const totalCPUCount = 96;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -867,6 +874,7 @@ test("updateTotalCPUCount: update nodeCount when cpuPerNode > 0, but apply maxim
   testAction(actions.updateTotalCPUCount, {
     payload: {
       totalCPUCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
