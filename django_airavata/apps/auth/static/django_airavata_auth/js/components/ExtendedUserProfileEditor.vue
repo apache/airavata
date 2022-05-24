@@ -15,10 +15,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import ExtendedUserProfileMultiChoiceFieldEditor from "./ExtendedUserProfileMultiChoiceFieldEditor.vue";
-import ExtendedUserProfileSingleChoiceFieldEditor from "./ExtendedUserProfileSingleChoiceFieldEditor.vue";
-import ExtendedUserProfileTextFieldEditor from "./ExtendedUserProfileTextFieldEditor.vue";
-import ExtendedUserProfileUserAgreementFieldEditor from "./ExtendedUserProfileUserAgreementFieldEditor.vue";
+import ExtendedUserProfileMultiChoiceValueEditor from "./ExtendedUserProfileMultiChoiceValueEditor.vue";
+import ExtendedUserProfileSingleChoiceValueEditor from "./ExtendedUserProfileSingleChoiceValueEditor.vue";
+import ExtendedUserProfileTextValueEditor from "./ExtendedUserProfileTextValueEditor.vue";
+import ExtendedUserProfileUserAgreementValueEditor from "./ExtendedUserProfileUserAgreementValueEditor.vue";
 import { mixins } from "django-airavata-common-ui";
 export default {
   mixins: [mixins.ValidationParent],
@@ -31,10 +31,10 @@ export default {
   methods: {
     getEditor(extendedUserProfileField) {
       const fieldTypeEditors = {
-        text: ExtendedUserProfileTextFieldEditor,
-        single_choice: ExtendedUserProfileSingleChoiceFieldEditor,
-        multi_choice: ExtendedUserProfileMultiChoiceFieldEditor,
-        user_agreement: ExtendedUserProfileUserAgreementFieldEditor,
+        text: ExtendedUserProfileTextValueEditor,
+        single_choice: ExtendedUserProfileSingleChoiceValueEditor,
+        multi_choice: ExtendedUserProfileMultiChoiceValueEditor,
+        user_agreement: ExtendedUserProfileUserAgreementValueEditor,
       };
 
       if (extendedUserProfileField.field_type in fieldTypeEditors) {

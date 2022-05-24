@@ -1,5 +1,5 @@
 <template>
-  <extended-user-profile-field-editor v-bind="$props">
+  <extended-user-profile-value-editor v-bind="$props">
     <b-form-select
       v-model="value"
       :options="options"
@@ -33,7 +33,7 @@
         >Please specify a value for 'Other'.</b-form-invalid-feedback
       >
     </template>
-  </extended-user-profile-field-editor>
+  </extended-user-profile-value-editor>
 </template>
 
 <script>
@@ -41,12 +41,12 @@ import { mapGetters, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
 import { required, requiredIf } from "vuelidate/lib/validators";
 import { errors } from "django-airavata-common-ui";
-import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
+import ExtendedUserProfileValueEditor from "./ExtendedUserProfileValueEditor.vue";
 const OTHER_OPTION = new Object(); // sentinel value
 
 export default {
   mixins: [validationMixin],
-  components: { ExtendedUserProfileFieldEditor },
+  components: { ExtendedUserProfileValueEditor },
   props: ["extendedUserProfileField"],
   data() {
     return {

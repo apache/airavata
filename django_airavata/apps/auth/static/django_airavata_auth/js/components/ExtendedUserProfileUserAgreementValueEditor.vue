@@ -1,5 +1,5 @@
 <template>
-  <extended-user-profile-field-editor v-bind="$props">
+  <extended-user-profile-value-editor v-bind="$props">
     <b-form-checkbox
       v-model="value"
       :unchecked-value="false"
@@ -11,18 +11,18 @@
     <b-form-invalid-feedback :state="validateState($v.value)"
       >This field is required.</b-form-invalid-feedback
     >
-  </extended-user-profile-field-editor>
+  </extended-user-profile-value-editor>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
 import { errors } from "django-airavata-common-ui";
-import ExtendedUserProfileFieldEditor from "./ExtendedUserProfileFieldEditor.vue";
+import ExtendedUserProfileValueEditor from "./ExtendedUserProfileValueEditor.vue";
 
 export default {
   mixins: [validationMixin],
-  components: { ExtendedUserProfileFieldEditor },
+  components: { ExtendedUserProfileValueEditor },
   props: ["extendedUserProfileField"],
   computed: {
     ...mapGetters("extendedUserProfile", ["getUserAgreementValue"]),

@@ -176,7 +176,7 @@ const mutations = {
       });
     }
   },
-  updateExperimentInputValue(state, { extendedUserProfileValue }) {
+  updateExtendedUserProfileValue(state, { extendedUserProfileValue }) {
     const index = state.extendedUserProfileValues.findIndex(
       (v) =>
         v.ext_user_profile_field ===
