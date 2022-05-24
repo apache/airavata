@@ -5,32 +5,36 @@
         <h1 class="h4 mb-4">Extended User Profile Editor</h1>
       </div>
     </div>
-    <div v-for="field in fields" class="row" :key="field.id">
+    <div v-for="field in extendedUserProfileFields" class="row" :key="field.id">
       <div class="col">
         <b-card :title="'Field: ' + field.name">
           <b-form-group label="Name">
             <b-form-input v-model="field.name" />
           </b-form-group>
-          <b-form-group label="Description">
-            <b-form-input v-model="field.description" />
+          <b-form-group label="Help text">
+            <b-form-input v-model="field.help_text" />
           </b-form-group>
           <b-form-group label="Required">
             <b-form-checkbox v-model="field.required" />
           </b-form-group>
           <b-form-group label="Type">
-            <b-form-select v-model="field.type" :options="fieldTypeOptions" />
+            <b-form-select
+              v-model="field.field_type"
+              :options="fieldTypeOptions"
+            />
           </b-form-group>
           <b-card
             title="Options"
             v-if="
-              field.type === 'single-select' || field.type === 'multi-select'
+              field.field_type === 'single_choice' ||
+              field.field_type === 'multi_choice'
             "
           >
-            <template v-for="option in field.options">
-              <b-input-group :key="option.id">
-                <b-form-input v-model="option.name" />
+            <template v-for="choice in field.choices">
+              <b-input-group :key="choice.id">
+                <b-form-input v-model="choice.display_text" />
                 <b-input-group-append>
-                  <b-button @click="deleteOption(field, option)"
+                  <b-button @click="deleteOption(field, choice)"
                     >Delete</b-button
                   >
                 </b-input-group-append>
@@ -40,8 +44,8 @@
           </b-card>
           <template v-if="field.links && field.links.length > 0">
             <b-card title="Links" v-for="link in field.links" :key="link.id">
-              <b-form-group label="Title">
-                <b-form-input v-model="link.title" />
+              <b-form-group label="Label">
+                <b-form-input v-model="link.label" />
               </b-form-group>
               <b-form-group label="URL">
                 <b-form-input v-model="link.url" />
@@ -57,41 +61,6 @@
           <b-button v-if="!field.links" @click="addLink(field)"
             >Add Link</b-button
           >
-          <template v-if="field.conditional">
-            <b-card title="Conditional">
-              When
-              <br />
-              <template v-for="condition in field.conditional.conditions">
-                <div :key="condition.id">
-                  <b-form-select
-                    :options="getConditionFieldOptions(field)"
-                    v-model="condition.field"
-                  />
-                  =
-                  <b-form-select
-                    v-if="
-                      (condition.field &&
-                        condition.field.type === 'multi-select') ||
-                      condition.field.type === 'single-select' ||
-                      condition.field.type === 'user-agreement'
-                    "
-                    :disabled="condition.field"
-                    :options="getConditionFieldValueOptions(condition.field)"
-                    v-model="condition.value"
-                  />
-                  <b-form-input
-                    v-else-if="
-                      condition.field && condition.field.type === 'text'
-                    "
-                    v-model="condition.value"
-                  />
-                </div>
-              </template>
-            </b-card>
-          </template>
-          <b-button v-if="!field.conditional" @click="addConditional(field)"
-            >Add Conditional</b-button
-          >
         </b-card>
       </div>
     </div>
@@ -105,18 +74,22 @@
         <b-button variant="primary" @click="save">Save</b-button>
       </div>
     </div>
-    <pre>{{ JSON.stringify(fields, null, 4) }}</pre>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 export default {
   data() {
     return {
       fields: [],
     };
   },
+  created() {
+    this.loadExtendedUserProfileFields();
+  },
   methods: {
+    ...mapActions("extendedUserProfile", ["loadExtendedUserProfileFields"]),
     addField() {
       // TODO: post an empty field to the API
       this.fields.push({
@@ -168,12 +141,13 @@ export default {
     save() {},
   },
   computed: {
+    ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
     fieldTypeOptions() {
       return [
         { value: "text", text: "Text" },
-        { value: "single-select", text: "Single Select" },
-        { value: "multi-select", text: "Multi Select" },
-        { value: "user-agreement", text: "User Agreement" },
+        { value: "single_choice", text: "Single Choice" },
+        { value: "multi_choice", text: "Multi Choice" },
+        { value: "user_agreement", text: "User Agreement" },
       ];
     },
   },
