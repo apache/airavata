@@ -27,6 +27,10 @@ airavata_django_extra_dependencies:
 
 vhost_servername: "global-floods-monitoring.scigap.org"
 vhost_ssl: True
+vhost_redirects:
+  - from: "^/$"
+    to: "/global_floods_django_app"
+    regex: true
 ssl_certificate_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/privkey.pem"
