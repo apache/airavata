@@ -4,6 +4,7 @@
     <div class="row">
       <div class="col">
         <h1 class="h4 mb-4">Dashboard</h1>
+        <workspace-notices-management-container/>
         <h2 class="h6 mb-2 text-uppercase text-muted">Applications</h2>
       </div>
     </div>
@@ -72,6 +73,7 @@ import { services, session } from "django-airavata-api";
 import { components as comps } from "django-airavata-common-ui";
 import urls from "../utils/urls";
 import PgaLink from "../components/PgaLink";
+import WorkspaceNoticesManagementContainer from "../components/notices/WorkspaceNoticesManagementContainer";
 
 export default {
   name: "dashboard-container",
@@ -84,6 +86,7 @@ export default {
     };
   },
   components: {
+    WorkspaceNoticesManagementContainer,
     "application-card": comps.ApplicationCard,
     "favorite-toggle": comps.FavoriteToggle,
     "pga-link": PgaLink,
