@@ -45,10 +45,17 @@
         label-for="application-description"
       >
         <b-form-textarea
-          id="application-description"
-          v-model="data.applicationDescription" size="500"
+          id="application-description" :rows="5"
+          v-model="data.applicationDescription"
+          :state="!data.applicationDescription || data.applicationDescription.length < 500"
         >
         </b-form-textarea>
+        <b-form-valid-feedback v-if="!!data.applicationDescription.length">
+          {{ data.applicationDescription.length }} / 500
+        </b-form-valid-feedback>
+        <b-form-invalid-feedback>
+          Application instructions text is limited to 500 characters maximum.
+        </b-form-invalid-feedback>
       </b-form-group>
     </div>
     <div class="row">
