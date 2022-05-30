@@ -1524,26 +1524,7 @@ class ManageNotificationViewSet(APIBackedViewSet):
             self.authz_token, notification)
         notification.notificationId = notificationId
 
-        # print("##### serializer ", serializer)
-        # print("##### notification ", notification)
-        # print("##### serializer.showInDashboard ", notification.showInDashboard)
-        #
-
         serializer.update_notification_extension(self.request, notification)
-
-        # if "showInDashboard" in self.request.data:
-        #     existing_entries = models.NotificationExtension.objects.filter(notification_id=notificationId)
-        #
-        #     if len(existing_entries) > 0:
-        #         models.NotificationExtension.objects.update(
-        #             notification_id=notificationId,
-        #             showInDashboard=self.request.data["showInDashboard"]
-        #         )
-        #     else:
-        #         models.NotificationExtension.objects.create(
-        #             notification_id=notificationId,
-        #             showInDashboard=self.request.data["showInDashboard"]
-        #         )
 
     def perform_update(self, serializer):
         notification = serializer.save()

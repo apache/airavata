@@ -1081,40 +1081,16 @@ class NotificationSerializer(
     publishedTime = UTCPosixTimestampDateTimeField()
     expirationTime = UTCPosixTimestampDateTimeField()
     userHasWriteAccess = serializers.SerializerMethodField()
-    # extension = NotificationExtensionSerializer(allow_null=True)
     showInDashboard = serializers.BooleanField(default=False)
 
     def get_userHasWriteAccess(self, userProfile):
         request = self.context['request']
         return request.is_gateway_admin
 
-    # def get_showInDashboard(self, userProfile):
-    #     request = self.context['request']
-    #     return request.is_gateway_admin
-
     def validate(self, attrs):
         del attrs["showInDashboard"]
 
         return attrs
-
-    # def save(self, *args, **kwargs):
-    #     notification = super().save(*args, **kwargs)
-    #
-    #     print("###### notification : ", notification)
-    #     print("###### self.validated_data : ", self.validated_data)
-    #
-    #     request = self.context['request']
-    #     showInDashboard = request.data["showInDashboard"]
-    #     if showInDashboard is not None:
-    #         models.NotificationExtension.objects.create(
-    #             notification_id=notification.notificationId,
-    #             showInDashboard=showInDashboard
-    #         )
-    #         setattr(notification, "showInDashboard", showInDashboard)
-    #     else:
-    #         setattr(notification, "showInDashboard", False)
-    #
-    #     return notification
 
     def to_representation(self, notification):
         notification_extension_list = models.NotificationExtension.objects.filter(
@@ -1138,37 +1114,6 @@ class NotificationSerializer(
                     notification_id=notification.notificationId,
                     showInDashboard=request.data["showInDashboard"]
                 )
-
-    # def create(self, validated_data):
-    #     notification = super().create(validated_data)
-    #     notificationId = self.request.airavata_client.createNotification(
-    #         self.authz_token, notification)
-    #     notification.notificationId = notificationId
-    #
-    #     return notification
-
-    # showInDashboard = validated_data["showInDashboard"]
-    # del validated_data["showInDashboard"]
-    # request = self.context["request"]
-    # print("####### validated_data ", validated_data)
-    # notification = super().create(validated_data)
-    #
-    # print("####### notification ", notification)
-    # print("####### notification.notificationId : ", notification.notificationId)
-    #
-    # if showInDashboard is not None:
-    #     models.NotificationExtension.objects.create(
-    #         notification_id=notification.notificationId,
-    #         showInDashboard=request.data["showInDashboard"]
-    #     )
-    #     setattr(notification, "showInDashboard", showInDashboard)
-    # else:
-    #     setattr(notification, "showInDashboard", False)
-    #
-    # return notification
-
-    # @transaction.atomic
-    # def get(self, validated_data):
 
 
 class ExperimentStatisticsSerializer(
