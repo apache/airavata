@@ -1105,8 +1105,7 @@ class NotificationSerializer(
             existing_entries = models.NotificationExtension.objects.filter(notification_id=notification.notificationId)
 
             if len(existing_entries) > 0:
-                models.NotificationExtension.objects.update(
-                    notification_id=notification.notificationId,
+                existing_entries.update(
                     showInDashboard=request.data["showInDashboard"]
                 )
             else:
