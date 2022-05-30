@@ -26,6 +26,13 @@ class ApplicationPreferences(models.Model):
     class Meta:
         unique_together = (('username', 'application_id'),)
 
+class NotificationExtension(models.Model):
+    class Meta:
+        unique_together = (('notification_id', ),)
+
+    notification_id = models.CharField(max_length=255)
+    showInDashboard = models.BooleanField(default=False)
+
 
 class User_Notifications(models.Model):
     class Meta:
