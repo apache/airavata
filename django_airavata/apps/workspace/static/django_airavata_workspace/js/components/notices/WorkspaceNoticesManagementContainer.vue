@@ -5,7 +5,7 @@
         <b-alert show>
           <div class="d-flex flex-row">
             <strong class="flex-fill" style="white-space: pre;">{{ notice.title }}</strong>
-            <human-date :date="notice.publishedTime" style="font-size: 10px;"/>
+            <human-date v-if="notice.publishedTime" :date="notice.publishedTime" style="font-size: 10px;"/>
           </div>
           <div style="white-space: pre;font-size: 12px;">{{ notice.notificationMessage }}</div>
         </b-alert>
@@ -20,6 +20,7 @@ import {components} from "django-airavata-common-ui";
 
 export default {
   name: "workspace-notices-management-container",
+  props: ["data"],
   data() {
     return {
       notices: null
@@ -30,15 +31,19 @@ export default {
   },
   created() {
     const now = new Date();
-    services.ManageNotificationService.list().then(notices => {
-      if (!!notices && Array.isArray(notices)) {
-        this.notices = notices.filter(({showInDashboard, expirationTime}) => {
-          return !!showInDashboard && new Date(expirationTime) > now
-        });
-      } else {
-        this.notices = [];
-      }
-    });
+    if (this.data) {
+      this.notices = this.data;
+    } else {
+      services.ManageNotificationService.list().then(notices => {
+        if (!!notices && Array.isArray(notices)) {
+          this.notices = notices.filter(({showInDashboard, expirationTime}) => {
+            return !!showInDashboard && new Date(expirationTime) > now
+          });
+        } else {
+          this.notices = [];
+        }
+      });
+    }
   }
 };
 </script>

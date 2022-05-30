@@ -53,6 +53,7 @@ export default {
     Promise.all([loadAppModule, loadAppInterface])
       .then(([appModule, appInterface]) => {
         const experiment = appInterface.createExperiment();
+        experiment.appInterface = appInterface;
         experiment.experimentName =
           appModule.appModuleName + " on " + moment().format("lll");
         this.appModule = appModule;
