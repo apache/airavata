@@ -27,8 +27,8 @@
     </div>
     <div class="w-100">
       <workspace-notices-management-container
-        v-if="experiment.appInterface.applicationDescription"
-        :data="[{notificationMessage: experiment.appInterface.applicationDescription}]"/>
+        v-if="appInterface.applicationDescription"
+        :data="[{notificationMessage: appInterface.applicationDescription}]"/>
     </div>
     <b-form novalidate>
       <div class="row">
@@ -197,6 +197,10 @@ export default {
     },
     appModule: {
       type: models.ApplicationModule,
+      required: true,
+    },
+    appInterface: {
+      type: models.ApplicationInterfaceDefinition,
       required: true,
     },
   },

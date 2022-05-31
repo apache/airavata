@@ -7,7 +7,9 @@
             <strong class="flex-fill" style="white-space: pre;">{{ notice.title }}</strong>
             <human-date v-if="notice.publishedTime" :date="notice.publishedTime" style="font-size: 10px;"/>
           </div>
-          <div style="white-space: pre;font-size: 12px;">{{ notice.notificationMessage }}</div>
+          <div style="white-space: pre;font-size: 12px;">
+            <linkify>{{ notice.notificationMessage }}</linkify>
+          </div>
         </b-alert>
       </li>
     </ul>
@@ -27,7 +29,8 @@ export default {
     };
   },
   components: {
-    "human-date": components.HumanDate
+    "human-date": components.HumanDate,
+    linkify: components.Linkify
   },
   created() {
     const now = new Date();
