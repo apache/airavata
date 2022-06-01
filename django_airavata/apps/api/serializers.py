@@ -52,17 +52,15 @@ from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import (
     ExperimentState,
     ExperimentStatus,
-    ProcessState,
     ProcessStatus
 )
-from airavata.model.task.ttypes import TaskTypes
 from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import (
     Notification,
     NotificationPriority,
     Project
 )
-from airavata_django_portal_sdk import user_storage
+from airavata_django_portal_sdk import experiment_util, user_storage
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -499,51 +497,29 @@ class ExperimentSerializer(
 
     def _add_intermediate_output_information(self, experiment, representation):
         request = self.context['request']
-        # sort the processes (most recent first) and filter to just the output fetching ones
-        processes = sorted(experiment.processes, key=lambda p: p.creationTime, reverse=True) if experiment.processes else []
-        output_fetching_processes = []
-        for process in processes:
-            if any(map(lambda t: t.taskType == TaskTypes.OUTPUT_FETCHING, process.tasks)):
-                output_fetching_processes.append(process)
 
-        # If there are output_fetching processes and experiment is EXECUTING,
-        # add intermediateOutput information to experiment outputs
-        if (len(output_fetching_processes) > 0 and
-            experiment.experimentStatus and
+        # If experiment is EXECUTING, add intermediateOutput information to
+        # experiment outputs
+        if (experiment.experimentStatus and
                 experiment.experimentStatus[-1].state == ExperimentState.EXECUTING):
             for output in representation["experimentOutputs"]:
+                output["intermediateOutput"] = {"processStatus": None}
                 try:
-                    process_status = request.airavata_client.getIntermediateOutputProcessStatus(
-                        request.authz_token, experiment.experimentId, [output["name"]])
-                    serializer = ProcessStatusSerializer(
-                        process_status, context={'request': request})
-                    output["intermediateOutput"] = {"processStatus": serializer.data}
-                    most_recent_completed_process_output = None
-                    for process in output_fetching_processes:
-                        # Skip over any processes that aren't completed
-                        if (len(process.processStatuses) == 0 or process.processStatuses[-1].state != ProcessState.COMPLETED):
-                            continue
-                        for process_output in process.processOutputs:
-                            if process_output.name == output["name"]:
-                                most_recent_completed_process_output = process_output
-                                break
-                        if most_recent_completed_process_output is not None:
-                            break
-                    if most_recent_completed_process_output is not None:
-
-                        data_product_uris = []
-                        if most_recent_completed_process_output.value.startswith('airavata-dp://'):
-                            data_product_uris = most_recent_completed_process_output.value.split(',')
-                        data_products = []
-                        for data_product_uri in data_product_uris:
-                            data_product = request.airavata_client.getDataProduct(
-                                request.authz_token, data_product_uri)
-                            data_products.append(data_product)
-                        data_product_serializer = DataProductSerializer(
-                            data_products, context={'request': request}, many=True)
-                        output["intermediateOutput"]["dataProducts"] = data_product_serializer.data
+                    can_fetch = experiment_util.intermediate_output.can_fetch_intermediate_output(request, experiment, output["name"])
+                    output["intermediateOutput"]["canFetch"] = can_fetch
+                    process_status = experiment_util.intermediate_output.get_intermediate_output_process_status(
+                        request, experiment, output["name"])
+                    if process_status:
+                        serializer = ProcessStatusSerializer(
+                            process_status, context={'request': request})
+                        output["intermediateOutput"]["processStatus"] = serializer.data
+                    data_products = experiment_util.intermediate_output.get_intermediate_output_data_products(
+                        request, experiment=experiment, output_name=output["name"])
+                    data_product_serializer = DataProductSerializer(
+                        data_products, context={'request': request}, many=True)
+                    output["intermediateOutput"]["dataProducts"] = data_product_serializer.data
                 except Exception:
-                    output["intermediateOutput"] = {"processStatus": None}
+                    log.debug("Failed to get intermediate output status", exc_info=True)
 
 
 class DataReplicaLocationSerializer(

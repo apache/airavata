@@ -269,8 +269,8 @@ class ExperimentViewSet(mixins.CreateModelMixin,
         if "outputNames" not in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            request.airavata_client.fetchIntermediateOutputs(
-                request.authz_token, experiment_id, request.data["outputNames"])
+            experiment_util.intermediate_output.fetch_intermediate_output(
+                request, experiment_id, *request.data["outputNames"])
             return Response({'success': True})
         except Exception as e:
             log.exception("fetchIntermediateOutputs failed with the following error")
