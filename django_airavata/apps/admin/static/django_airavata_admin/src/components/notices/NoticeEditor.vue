@@ -100,6 +100,19 @@
         </b-form-select>
       </b-form-group>
 
+      <b-form-group
+        label="Show In Dashboard"
+        label-for="showInDashboard"
+        :state="getValidationState('showInDashboard')"
+      >
+        <b-form-checkbox
+          id="showInDashboard"
+          v-model="data.showInDashboard"
+          :state="getValidationState('showInDashboard')"
+        >
+        </b-form-checkbox>
+      </b-form-group>
+
       <template v-if="!editNotification" name="buttons">
         <div class="row">
           <div id="col-exp-buttons" class="col">
@@ -158,6 +171,7 @@ export default {
         .utc()
         .format();
       this.data.priority = this.value.priority.name;
+      this.data.showInDashboard = this.value.showInDashboard;
       this.today = new moment(this.value.expirationTime.toISOString()).format();
     }
   },

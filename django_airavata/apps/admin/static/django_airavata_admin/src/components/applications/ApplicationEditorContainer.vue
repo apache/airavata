@@ -298,7 +298,6 @@ export default {
     },
     saveApplicationInterface(appInterface) {
       appInterface.applicationName = this.appModule.appModuleName;
-      appInterface.applicationDescription = this.appModule.appModuleDescription;
       appInterface.applicationModules = [this.id];
       return appInterface.applicationInterfaceId
         ? this.updateApplicationInterface(appInterface)

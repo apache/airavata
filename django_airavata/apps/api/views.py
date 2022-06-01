@@ -1524,10 +1524,14 @@ class ManageNotificationViewSet(APIBackedViewSet):
             self.authz_token, notification)
         notification.notificationId = notificationId
 
+        serializer.update_notification_extension(self.request, notification)
+
     def perform_update(self, serializer):
         notification = serializer.save()
         self.request.airavata_client.updateNotification(
             self.authz_token, notification)
+
+        serializer.update_notification_extension(self.request, notification)
 
 
 class AckNotificationViewSet(APIView):

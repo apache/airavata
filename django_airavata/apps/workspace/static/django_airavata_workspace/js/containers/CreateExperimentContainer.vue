@@ -3,6 +3,7 @@
     v-if="experiment"
     :experiment="experiment"
     :app-module="appModule"
+    :app-interface="appInterface"
     @saved="handleSavedExperiment"
     @savedAndLaunched="handleSavedAndLaunchedExperiment"
   >
@@ -25,6 +26,7 @@ export default {
     return {
       experiment: null,
       appModule: null,
+      appInterface: null
     };
   },
   components: {
@@ -56,6 +58,7 @@ export default {
         experiment.experimentName =
           appModule.appModuleName + " on " + moment().format("lll");
         this.appModule = appModule;
+        this.appInterface = appInterface;
         if (this.userInputValues) {
           Object.keys(this.userInputValues).forEach((k) => {
             const experimentInput = experiment.experimentInputs.find(

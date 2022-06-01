@@ -136,6 +136,10 @@ export default {
           key: "priority.name",
         },
         {
+          label: "Show In Dashboard",
+          key: "showInDashboard",
+        },
+        {
           label: "Action",
           key: "action",
         },

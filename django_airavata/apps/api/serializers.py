@@ -1077,8 +1077,7 @@ class AckNotificationSerializer(serializers.ModelSerializer):
         model = models.User_Notifications
 
 
-class NotificationSerializer(
-        thrift_utils.create_serializer_class(Notification)):
+class NotificationSerializer(thrift_utils.create_serializer_class(Notification)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:manage-notifications-detail',
         lookup_field='notificationId',
@@ -1088,10 +1087,38 @@ class NotificationSerializer(
     publishedTime = UTCPosixTimestampDateTimeField()
     expirationTime = UTCPosixTimestampDateTimeField()
     userHasWriteAccess = serializers.SerializerMethodField()
+    showInDashboard = serializers.BooleanField(default=False)
 
     def get_userHasWriteAccess(self, userProfile):
         request = self.context['request']
         return request.is_gateway_admin
+
+    def validate(self, attrs):
+        del attrs["showInDashboard"]
+
+        return attrs
+
+    def to_representation(self, notification):
+        notification_extension_list = models.NotificationExtension.objects.filter(
+            notification_id=notification.notificationId)
+        setattr(notification, "showInDashboard",
+                False if len(notification_extension_list) == 0 else notification_extension_list[0].showInDashboard)
+
+        return super().to_representation(notification)
+
+    def update_notification_extension(self, request, notification):
+        if "showInDashboard" in request.data:
+            existing_entries = models.NotificationExtension.objects.filter(notification_id=notification.notificationId)
+
+            if len(existing_entries) > 0:
+                existing_entries.update(
+                    showInDashboard=request.data["showInDashboard"]
+                )
+            else:
+                models.NotificationExtension.objects.create(
+                    notification_id=notification.notificationId,
+                    showInDashboard=request.data["showInDashboard"]
+                )
 
 
 class ExperimentStatisticsSerializer(

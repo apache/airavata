@@ -39,6 +39,25 @@
         </b-form-group>
       </div>
     </div>
+    <div class="w-100">
+      <b-form-group
+        label="Application Instructions"
+        label-for="application-description"
+      >
+        <b-form-textarea
+          id="application-description" :rows="5"
+          v-model="data.applicationDescription"
+          :state="!data.applicationDescription || data.applicationDescription.length < 500"
+        >
+        </b-form-textarea>
+        <b-form-valid-feedback v-if="!!data.applicationDescription.length">
+          {{ data.applicationDescription.length }} / 500
+        </b-form-valid-feedback>
+        <b-form-invalid-feedback>
+          Application instructions text is limited to 500 characters maximum.
+        </b-form-invalid-feedback>
+      </b-form-group>
+    </div>
     <div class="row">
       <div class="col">
         <h1 class="h5 mb-4">Input Fields</h1>
@@ -101,8 +120,8 @@
 </template>
 
 <script>
-import { models } from "django-airavata-api";
-import { mixins } from "django-airavata-common-ui";
+import {models} from "django-airavata-api";
+import {mixins} from "django-airavata-common-ui";
 import ApplicationInputFieldEditor from "./ApplicationInputFieldEditor.vue";
 import ApplicationOutputFieldEditor from "./ApplicationOutputFieldEditor.vue";
 
@@ -128,8 +147,8 @@ export default {
   computed: {
     trueFalseOptions() {
       return [
-        { text: "True", value: true },
-        { text: "False", value: false },
+        {text: "True", value: true},
+        {text: "False", value: false},
       ];
     },
   },

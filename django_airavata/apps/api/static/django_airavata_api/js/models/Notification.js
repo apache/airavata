@@ -23,6 +23,7 @@ const FIELDS = [
     type: NotificationPriority,
   },
   "userHasWriteAccess",
+  "showInDashboard"
 ];
 
 export default class Notification extends BaseModel {
