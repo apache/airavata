@@ -431,7 +431,8 @@ export default {
           (job) =>
             this.experiment.latestStatus.state ===
               models.ExperimentState.FAILED ||
-            job.latestJobStatus.jobState === models.JobState.FAILED
+            (job.latestJobStatus &&
+              job.latestJobStatus.jobState === models.JobState.FAILED)
         );
       } else {
         return [];
