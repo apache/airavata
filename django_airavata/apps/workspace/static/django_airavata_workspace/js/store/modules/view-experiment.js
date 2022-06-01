@@ -27,21 +27,27 @@ export const mutations = {
   ) {
     state.runningIntermediateOutputFetches = runningIntermediateOutputFetches;
   },
+  setApplicationInterface(state, { applicationInterface }) {
+    state.applicationInterface = applicationInterface;
+  },
 };
 export const actions = {
-  async setInitialFullExperimentData(
-    { commit, dispatch },
-    { fullExperimentData }
-  ) {
+  async setInitialFullExperimentData({ dispatch }, { fullExperimentData }) {
     const fullExperiment = await services.FullExperimentService.retrieve({
       lookup: fullExperimentData.experimentId,
       initialFullExperimentData: fullExperimentData,
     });
-    commit("setFullExperiment", { fullExperiment });
-    dispatch("initPollingExperiment");
+    dispatch("setFullExperiment", { fullExperiment });
   },
-  setFullExperiment({ dispatch, commit }, { fullExperiment }) {
+  async setFullExperiment({ dispatch, commit }, { fullExperiment }) {
     commit("setFullExperiment", { fullExperiment });
+    const appInterfaceId = fullExperiment.experiment.executionId;
+    const applicationInterface = await services.ApplicationInterfaceService.retrieve(
+      {
+        lookup: appInterfaceId,
+      }
+    );
+    commit("setApplicationInterface", { applicationInterface });
     dispatch("initPollingExperiment");
   },
   setLaunching({ dispatch, commit }, { launching }) {
@@ -218,9 +224,15 @@ export const getters = {
       state.fullExperiment.jobDetails &&
       state.fullExperiment.jobDetails.some(
         (job) =>
-          job.latestJobStatus && job.latestJobStatus.jobState === JobState.ACTIVE
+          job.latestJobStatus &&
+          job.latestJobStatus.jobState === JobState.ACTIVE
       )
     );
+  },
+  showQueueSettings(state) {
+    return state.applicationInterface
+      ? state.applicationInterface.showQueueSettings
+      : false;
   },
 };
 
@@ -230,6 +242,7 @@ const state = {
   polling: false,
   clonedExperiment: null,
   runningIntermediateOutputFetches: {},
+  applicationInterface: null,
 };
 export default {
   namespaced: true,

@@ -104,18 +104,20 @@ export const mutations = {
   setAppDeploymentQueues(state, { appDeploymentQueues }) {
     state.appDeploymentQueues = appDeploymentQueues;
   },
+  setApplicationInterface(state, { applicationInterface }) {
+    state.applicationInterface = applicationInterface;
+  },
 };
 export const actions = {
   async loadNewExperiment({ commit, dispatch }, { applicationId }) {
     const applicationModule = await services.ApplicationModuleService.retrieve({
       lookup: applicationId,
     });
-    const appInterface = await services.ApplicationModuleService.getApplicationInterface(
-      {
-        lookup: applicationId,
-      }
+    const applicationInterface = await dispatch(
+      "initializeApplicationInterface",
+      { applicationModuleId: applicationId }
     );
-    const experiment = appInterface.createExperiment();
+    const experiment = applicationInterface.createExperiment();
     const currentDate = new Date().toLocaleString([], {
       dateStyle: "medium",
       timeStyle: "short",
@@ -128,11 +130,14 @@ export const actions = {
     const experiment = await services.ExperimentService.retrieve({
       lookup: experimentId,
     });
-    const appInterface = await services.ApplicationInterfaceService.retrieve({
-      lookup: experiment.executionId,
-    });
+    const applicationInterface = await services.ApplicationInterfaceService.retrieve(
+      {
+        lookup: experiment.executionId,
+      }
+    );
+    commit("setApplicationInterface", { applicationInterface });
     commit("setApplicationModuleId", {
-      applicationModuleId: appInterface.applicationModuleId,
+      applicationModuleId: applicationInterface.applicationModuleId,
     });
     await dispatch("setExperiment", { experiment });
   },
@@ -161,7 +166,7 @@ export const actions = {
     // assumed to be initialized so we can do the cross component initialization
     dispatch("initializeComputeResourceSettings");
   },
-  async initializeComputeResourceSettings({ dispatch, getters }) {
+  async initializeComputeResourceSettings({ dispatch, getters, state }) {
     // This method initializes GroupResourceProfile, ApplicationDeployments and
     // Queue settings at once since there they are interdependent.
     // This method should only be called after groupResourceProfileId,
@@ -169,6 +174,12 @@ export const actions = {
     // areAllComputeResourceSettingsSet).
 
     await dispatch("initializeGroupResourceProfile");
+    // applicationInterface is initialized already when creating/editing an
+    // experiment but needs to be done explicitly when using other web
+    // components standalone
+    await dispatch("initializeApplicationInterface", {
+      applicationModuleId: state.applicationModuleId,
+    });
     const groupResourceProfileId = getters.groupResourceProfileId;
     // If there is a group resource profile, load additional necessary
     // data and re-apply group resource profile
@@ -177,6 +188,15 @@ export const actions = {
       await dispatch("loadAppDeploymentQueues");
       await dispatch("applyGroupResourceProfile");
     }
+  },
+  async initializeApplicationInterface({ commit }, { applicationModuleId }) {
+    const applicationInterface = await services.ApplicationModuleService.getApplicationInterface(
+      {
+        lookup: applicationModuleId,
+      }
+    );
+    commit("setApplicationInterface", { applicationInterface });
+    return applicationInterface;
   },
   async initializeGroupResourceProfile({ commit, dispatch, getters, state }) {
     await dispatch("loadGroupResourceProfiles");
@@ -286,7 +306,10 @@ export const actions = {
     }
     dispatch("initializeQueue");
   },
-  updateTotalCPUCount({ commit, getters, state }, { totalCPUCount, enableNodeCountToCpuCheck }) {
+  updateTotalCPUCount(
+    { commit, getters, state },
+    { totalCPUCount, enableNodeCountToCpuCheck }
+  ) {
     if (state.experiment) {
       commit("updateExperimentTotalCPUCount", { totalCPUCount });
     } else {
@@ -305,7 +328,10 @@ export const actions = {
       }
     }
   },
-  updateNodeCount({ commit, getters, state }, { nodeCount, enableNodeCountToCpuCheck }) {
+  updateNodeCount(
+    { commit, getters, state },
+    { nodeCount, enableNodeCountToCpuCheck }
+  ) {
     if (state.experiment) {
       commit("updateExperimentNodeCount", { nodeCount });
     } else {
@@ -804,6 +830,10 @@ export const getters = {
   maxMemory: (state, getters) => {
     return getters.queue ? getters.queue.maxMemory : 0;
   },
+  showQueueSettings: (state) =>
+    state.applicationInterface
+      ? state.applicationInterface.showQueueSettings
+      : false,
 };
 
 export default new Vuex.Store({
@@ -826,6 +856,7 @@ export default new Vuex.Store({
     totalPhysicalMemory: null,
     groupResourceProfileId: null,
     resourceHostId: null,
+    applicationInterface: null,
   },
   mutations,
   actions,

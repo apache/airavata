@@ -337,6 +337,37 @@ class ApplicationInterfaceDescriptionSerializer(
         allow_null=True)
     applicationOutputs = OutputDataObjectTypeSerializer(many=True)
     userHasWriteAccess = serializers.SerializerMethodField()
+    showQueueSettings = serializers.BooleanField(required=False)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        application_module_id = instance.applicationModules[0]
+        application_settings, created = models.ApplicationSettings.objects.get_or_create(
+            application_module_id=application_module_id)
+        representation["showQueueSettings"] = application_settings.show_queue_settings
+        return representation
+
+    def create(self, validated_data):
+        showQueueSettings = validated_data.pop("showQueueSettings", None)
+        application_interface = super().create(validated_data)
+        application_module_id = application_interface.applicationModules[0]
+        if showQueueSettings is not None:
+            models.ApplicationSettings.objects.update_or_create(
+                application_module_id=application_module_id,
+                defaults={"show_queue_settings": showQueueSettings}
+            )
+        return application_interface
+
+    def update(self, instance, validated_data):
+        showQueueSettings = validated_data.pop("showQueueSettings", None)
+        application_interface = super().update(instance, validated_data)
+        application_module_id = application_interface.applicationModules[0]
+        if showQueueSettings is not None:
+            models.ApplicationSettings.objects.update_or_create(
+                application_module_id=application_module_id,
+                defaults={"show_queue_settings": showQueueSettings}
+            )
+        return application_interface
 
     def get_userHasWriteAccess(self, appDeployment):
         request = self.context['request']

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="showQueueSettings">
     <div class="row">
       <div class="col">
         <div class="card border-default" :class="{ 'border-danger': !valid }">
@@ -203,6 +203,10 @@ export default {
       type: String,
       required: true,
     },
+    appModuleId: {
+      type: String,
+      required: true,
+    },
     computeResourcePolicy: {
       type: models.ComputeResourcePolicy,
       required: false,
@@ -216,7 +220,8 @@ export default {
     return {
       showConfiguration: false,
       appDeploymentQueues: null,
-      enableNodeCountToCpuCheck: true
+      enableNodeCountToCpuCheck: true,
+      applicationInterface: null,
     };
   },
   computed: {
@@ -326,6 +331,11 @@ export default {
     },
     valid() {
       return Object.keys(this.validation).length === 0;
+    },
+    showQueueSettings() {
+      return this.applicationInterface
+        ? this.applicationInterface.showQueueSettings
+        : false;
     },
   },
   methods: {
@@ -458,6 +468,14 @@ export default {
         }
       }
     },
+    loadApplicationInterface() {
+      services.ApplicationModuleService.getApplicationInterface({
+        lookup: this.appModuleId,
+      }).then(
+        (applicationInterface) =>
+          (this.applicationInterface = applicationInterface)
+      );
+    },
   },
   watch: {
     enableNodeCountToCpuCheck() {
@@ -492,6 +510,7 @@ export default {
       }
     });
     this.$on("input", () => this.validate());
+    this.loadApplicationInterface();
   },
 };
 </script>
