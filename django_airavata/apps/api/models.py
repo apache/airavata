@@ -26,6 +26,7 @@ class ApplicationPreferences(models.Model):
     class Meta:
         unique_together = (('username', 'application_id'),)
 
+
 class NotificationExtension(models.Model):
     class Meta:
         unique_together = (('notification_id', ),)

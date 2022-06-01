@@ -1101,8 +1101,7 @@ class AckNotificationSerializer(serializers.ModelSerializer):
         model = models.User_Notifications
 
 
-class NotificationSerializer(
-    thrift_utils.create_serializer_class(Notification)):
+class NotificationSerializer(thrift_utils.create_serializer_class(Notification)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:manage-notifications-detail',
         lookup_field='notificationId',
