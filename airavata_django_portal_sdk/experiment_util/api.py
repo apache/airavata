@@ -1,6 +1,7 @@
 import logging
 
 from airavata.model.application.io.ttypes import DataType
+from airavata.model.experiment.ttypes import ExperimentModel
 from airavata.model.group.ttypes import ResourcePermissionType
 from django.conf import settings
 
@@ -8,6 +9,10 @@ from airavata_django_portal_sdk import remoteapi
 from airavata_django_portal_sdk.user_storage import api as user_storage
 
 logger = logging.getLogger(__name__)
+
+
+def get_experiment(request, experiment_id: str) -> ExperimentModel:
+    return request.airavata_client.getExperiment(request.authz_token, experiment_id)
 
 
 def launch(request, experiment_id):
