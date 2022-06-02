@@ -25,11 +25,6 @@
         />
       </div>
     </div>
-    <div class="w-100">
-      <workspace-notices-management-container
-        v-if="appInterface.applicationDescription"
-        :data="[{notificationMessage: appInterface.applicationDescription}]"/>
-    </div>
     <b-form novalidate>
       <div class="row">
         <div class="col">
@@ -91,6 +86,11 @@
             </b-form-select>
           </b-form-group>
         </div>
+      </div>
+      <div class="row">
+        <workspace-notices-management-container
+          v-if="appInterface.applicationDescription"
+          :data="[{notificationMessage: appInterface.applicationDescription}]"/>
       </div>
       <div class="row">
         <div class="col">
