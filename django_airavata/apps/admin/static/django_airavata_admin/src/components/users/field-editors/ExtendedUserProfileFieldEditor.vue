@@ -76,26 +76,52 @@
         Allow user to type in an "Other" option
       </b-form-checkbox>
     </b-card>
-    <!--
-          <template v-if="field.links && field.links.length > 0">
-            <b-card title="Links" v-for="link in field.links" :key="link.id">
-              <b-form-group label="Label">
-                <b-form-input v-model="link.label" />
-              </b-form-group>
-              <b-form-group label="URL">
-                <b-form-input v-model="link.url" />
-              </b-form-group>
-              <b-form-group label="Show as link?">
-                <b-form-checkbox v-model="link.display_link" />
-              </b-form-group>
-              <b-form-group label="Show inline?">
-                <b-form-checkbox v-model="link.display_inline" />
-              </b-form-group>
-            </b-card>
-          </template>
-          <b-button v-if="!field.links" @click="addLink(field)"
-            >Add Link</b-button
-          > -->
+
+    <template
+      v-if="
+        extendedUserProfileField.links &&
+        extendedUserProfileField.links.length > 0
+      "
+    >
+      <transition-group name="fade">
+        <b-card
+          :title="`Link: ${link.label}`"
+          v-for="link in extendedUserProfileField.links"
+          :key="link.key"
+        >
+          <b-form-group label="Label">
+            <b-form-input
+              :value="link.label"
+              @input="handleLinkLabelChanged(link, $event)"
+            />
+          </b-form-group>
+          <b-form-group label="URL">
+            <b-form-input
+              :value="link.url"
+              @input="handleLinkURLChanged(link, $event)"
+            />
+          </b-form-group>
+          <b-form-group label="Show as link?">
+            <b-form-checkbox
+              :checked="link.display_link"
+              @input="handleLinkDisplayLinkChanged(link, $event)"
+            />
+          </b-form-group>
+          <b-form-group label="Show inline?">
+            <b-form-checkbox
+              :checked="link.display_inline"
+              @input="handleLinkDisplayInlineChanged(link, $event)"
+            />
+          </b-form-group>
+          <b-button @click="handleLinkDeleted(link)" variant="danger">
+            Delete Link
+          </b-button>
+        </b-card>
+      </transition-group>
+    </template>
+    <b-button @click="addLink({ field: extendedUserProfileField })"
+      >Add Link</b-button
+    >
   </b-card>
 </template>
 
@@ -158,6 +184,12 @@ export default {
       "updateChoiceDisplayText",
       "deleteChoice",
       "updateChoiceIndex",
+      "addLink",
+      "updateLinkLabel",
+      "updateLinkURL",
+      "updateLinkDisplayLink",
+      "updateLinkDisplayInline",
+      "deleteLink",
     ]),
     handleChoiceDisplayTextChanged(choice, display_text) {
       this.updateChoiceDisplayText({ choice, display_text });
@@ -182,6 +214,21 @@ export default {
         choice,
         index,
       });
+    },
+    handleLinkLabelChanged(link, label) {
+      this.updateLinkLabel({ link, label });
+    },
+    handleLinkURLChanged(link, url) {
+      this.updateLinkURL({ link, url });
+    },
+    handleLinkDisplayLinkChanged(link, display_link) {
+      this.updateLinkDisplayLink({ link, display_link });
+    },
+    handleLinkDisplayInlineChanged(link, display_inline) {
+      this.updateLinkDisplayInline({ link, display_inline });
+    },
+    handleLinkDeleted(link) {
+      this.deleteLink({ field: this.extendedUserProfileField, link });
     },
   },
 };

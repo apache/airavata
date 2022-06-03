@@ -23,6 +23,10 @@ const actions = {
           commit("setChoiceOrder", { choice, order: index });
         }
       }
+      for (let index = 0; index < field.links.length; index++) {
+        const link = field.links[index];
+        commit("setLinkOrder", { link, order: index });
+      }
       // Create or update each field
       if (field.id) {
         await services.ExtendedUserProfileFieldService.update({
@@ -109,6 +113,35 @@ const mutations = {
   deleteChoice(state, { field, choice }) {
     const index = field.choices.indexOf(choice);
     field.choices.splice(index, 1);
+  },
+  addLink(state, { field }) {
+    field.links.push(
+      new models.ExtendedUserProfileFieldLink({
+        label: "",
+        url: "",
+        display_link: true,
+        display_inline: false,
+      })
+    );
+  },
+  updateLinkLabel(state, { link, label }) {
+    link.label = label;
+  },
+  updateLinkURL(state, { link, url }) {
+    link.url = url;
+  },
+  updateLinkDisplayLink(state, { link, display_link }) {
+    link.display_link = display_link;
+  },
+  updateLinkDisplayInline(state, { link, display_inline }) {
+    link.display_inline = display_inline;
+  },
+  setLinkOrder(state, { link, order }) {
+    link.order = order;
+  },
+  deleteLink(state, { field, link }) {
+    const index = field.links.indexOf(link);
+    field.links.splice(index, 1);
   },
 };
 
