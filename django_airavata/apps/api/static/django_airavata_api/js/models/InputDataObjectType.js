@@ -154,13 +154,17 @@ export default class InputDataObjectType extends BaseModel {
    *     "dependencies": {
    *       "show": {
    *         "AND": [                     // Boolean operator ("AND", "OR")
-   *           "INPUT_1": {               // Name of other application input
-   *             "comparison": "equals",  // Name of comparison type
-   *             "value": "1"             // Value to compare with
+   *           {
+   *             "INPUT_1": {               // Name of other application input
+   *               "comparison": "equals",  // Name of comparison type
+   *               "value": "1"             // Value to compare with
+   *             }
    *           },
-   *           "NOT": {            // "NOT" is given a single input comparison or "AND" or "OR" expression
-   *             "INPUT_2": {
-   *               ...
+   *           {
+   *             "NOT": {            // "NOT" is given a single input comparison or "AND" or "OR" expression
+   *               "INPUT_2": {
+   *                 ...
+   *               }
    *             }
    *           }
    *           ... additional boolean expressions ("AND", "OR", "NOT")
