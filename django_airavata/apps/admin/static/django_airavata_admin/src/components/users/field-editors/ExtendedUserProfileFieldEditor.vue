@@ -1,16 +1,16 @@
 <template>
   <b-card :title="title">
-    <b-form-group label="Name">
+    <b-form-group label="Name" label-cols="3">
       <b-form-input v-model="name" :state="validateState($v.name)" />
       <b-form-invalid-feedback :state="validateState($v.name)"
         >This field is required.</b-form-invalid-feedback
       >
     </b-form-group>
-    <b-form-group label="Help text">
+    <b-form-group label="Help text" label-cols="3">
       <b-form-input v-model="help_text" />
     </b-form-group>
-    <b-form-group label="Required">
-      <b-form-checkbox v-model="required" />
+    <b-form-group>
+      <b-form-checkbox v-model="required" switch> Required </b-form-checkbox>
     </b-form-group>
     <b-card title="Options" v-if="extendedUserProfileField.supportsChoices">
       <transition-group name="fade">
@@ -65,34 +65,43 @@
             >
           </b-form-group>
         </template>
-        <b-input-group :key="'other'" v-if="extendedUserProfileField.other">
-          <b-form-input placeholder="Please specify" disabled />
-          <b-input-group-append>
-            <b-button disabled>
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-            </b-button>
-            <b-button disabled>
-              <i class="fa fa-arrow-down" aria-hidden="true"></i>
-            </b-button>
-            <b-button
-              @click="other = false"
-              variant="danger"
-              v-b-tooltip.hover.left
-              title="Remove Other option"
-            >
-              <i class="fa fa-trash" aria-hidden="true"></i>
-            </b-button>
-          </b-input-group-append>
-        </b-input-group>
+        <b-form-group :key="'other'" v-if="extendedUserProfileField.other">
+          <b-input-group>
+            <b-form-input
+              placeholder="User will see: Other (please specify)"
+              disabled
+            />
+            <b-input-group-append>
+              <b-button disabled>
+                <i class="fa fa-arrow-up" aria-hidden="true"></i>
+              </b-button>
+              <b-button disabled>
+                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+              </b-button>
+              <b-button
+                @click="other = false"
+                variant="danger"
+                v-b-tooltip.hover.left
+                title="Remove Other option"
+              >
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </b-form-group>
       </transition-group>
-      <div>
-        <b-button @click="addChoice({ field: extendedUserProfileField })"
+      <b-form-group>
+        <b-button
+          @click="addChoice({ field: extendedUserProfileField })"
+          size="sm"
           >Add Option</b-button
         >
-      </div>
-      <b-form-checkbox v-model="other" switch>
-        Allow user to type in an "Other" option
-      </b-form-checkbox>
+      </b-form-group>
+      <b-form-group>
+        <b-form-checkbox v-model="other" switch>
+          Allow user to type in an "Other" option
+        </b-form-checkbox>
+      </b-form-group>
     </b-card>
 
     <template v-if="links && links.length > 0">
@@ -103,7 +112,7 @@
             .$each.$iter"
           :key="link.key"
         >
-          <b-form-group label="Label">
+          <b-form-group label="Label" label-cols="3">
             <b-form-input
               :value="link.label"
               @input="handleLinkLabelChanged(link, $event, $v_label)"
@@ -113,7 +122,7 @@
               >This field is required.</b-form-invalid-feedback
             >
           </b-form-group>
-          <b-form-group label="URL">
+          <b-form-group label="URL" label-cols="3">
             <b-form-input
               :value="link.url"
               @input="handleLinkURLChanged(link, $event, $v_url)"
@@ -123,25 +132,37 @@
               >This field is required.</b-form-invalid-feedback
             >
           </b-form-group>
-          <b-form-group label="Show as link?">
-            <b-form-checkbox
-              :checked="link.display_link"
-              @input="handleLinkDisplayLinkChanged(link, $event)"
-            />
-          </b-form-group>
-          <b-form-group label="Show inline?">
-            <b-form-checkbox
-              :checked="link.display_inline"
-              @input="handleLinkDisplayInlineChanged(link, $event)"
-            />
-          </b-form-group>
-          <b-button @click="handleLinkDeleted(link)" variant="danger">
+          <b-row>
+            <b-col>
+              <b-form-group>
+                <b-form-checkbox
+                  :checked="link.display_link"
+                  @input="handleLinkDisplayLinkChanged(link, $event)"
+                  switch
+                >
+                  Show as link?
+                </b-form-checkbox>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group>
+                <b-form-checkbox
+                  :checked="link.display_inline"
+                  @input="handleLinkDisplayInlineChanged(link, $event)"
+                  switch
+                >
+                  Show inline?
+                </b-form-checkbox>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-button @click="handleLinkDeleted(link)" variant="danger" size="sm">
             Delete Link
           </b-button>
         </b-card>
       </transition-group>
     </template>
-    <b-button @click="addLink({ field: extendedUserProfileField })"
+    <b-button @click="addLink({ field: extendedUserProfileField })" size="sm"
       >Add Link</b-button
     >
     <b-button
@@ -149,6 +170,7 @@
       :disabled="
         extendedUserProfileFields.indexOf(extendedUserProfileField) === 0
       "
+      size="sm"
       >Move Up</b-button
     >
     <b-button
@@ -157,9 +179,10 @@
         extendedUserProfileFields.indexOf(extendedUserProfileField) ===
         extendedUserProfileFields.length - 1
       "
+      size="sm"
       >Move Down</b-button
     >
-    <b-button @click="handleDelete" variant="danger">Delete</b-button>
+    <b-button @click="handleDelete" variant="danger" size="sm">Delete</b-button>
   </b-card>
 </template>
 

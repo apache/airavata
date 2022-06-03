@@ -1,8 +1,12 @@
 <template>
-  <div>
-    <div class="row">
+  <div class="has-fixed-footer">
+    <div class="row mb-2">
       <div class="col-auto mr-auto">
-        <h1 class="h4 mb-4">Extended User Profile Editor</h1>
+        <h1 class="h4">Extended User Profile Editor</h1>
+        <p class="text-muted small">
+          Add and edit additional user profile fields for gateway users to
+          complete.
+        </p>
       </div>
     </div>
     <transition-group name="fade">
@@ -20,28 +24,23 @@
         </div>
       </div>
     </transition-group>
-    <div class="row">
-      <div class="col">
-        <b-dropdown text="Add Field">
-          <b-dropdown-item @click="addField('text')">Text</b-dropdown-item>
-          <b-dropdown-item @click="addField('single_choice')"
-            >Single Choice</b-dropdown-item
-          >
-          <b-dropdown-item @click="addField('multi_choice')"
-            >Multi Choice</b-dropdown-item
-          >
-          <b-dropdown-item @click="addField('user_agreement')"
-            >User Agreement</b-dropdown-item
-          >
-        </b-dropdown>
-      </div>
-    </div>
-    <div class="row mt-4">
-      <div class="col">
-        <b-button variant="primary" @click="save" :disabled="!valid"
-          >Save</b-button
+    <div ref="bottom" />
+    <div class="fixed-footer">
+      <b-dropdown text="Add Field">
+        <b-dropdown-item @click="addField('text')">Text</b-dropdown-item>
+        <b-dropdown-item @click="addField('single_choice')"
+          >Single Choice</b-dropdown-item
         >
-      </div>
+        <b-dropdown-item @click="addField('multi_choice')"
+          >Multi Choice</b-dropdown-item
+        >
+        <b-dropdown-item @click="addField('user_agreement')"
+          >User Agreement</b-dropdown-item
+        >
+      </b-dropdown>
+      <b-button variant="primary" @click="save" :disabled="!valid" class="ml-2"
+        >Save</b-button
+      >
     </div>
   </div>
 </template>
@@ -66,8 +65,10 @@ export default {
       "addExtendedUserProfileField",
     ]),
     addField(field_type) {
-      // TODO: post an empty field to the API
       this.addExtendedUserProfileField({ field_type });
+      this.$nextTick(() => {
+        this.$refs.bottom.scrollIntoView();
+      });
     },
     addOption(field) {
       if (!field.options) {

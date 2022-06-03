@@ -360,6 +360,8 @@ $header_height_with_border: $header_height + 1px;
   bottom: 0px;
   left: 70px;
   right: 0px;
+  // keep fixed-footer above form controls
+  z-index: 3;
   padding-left: calc(1rem + 15px);
   padding-right: calc(1rem + 15px);
   padding-top: 1rem;
