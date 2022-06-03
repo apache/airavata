@@ -16,7 +16,13 @@ const actions = {
   async saveExtendedUserProfileFields({ commit, dispatch, state }) {
     let order = 1;
     for (const field of state.extendedUserProfileFields) {
-      commit("setOrder", {field, order: order++});
+      commit("setOrder", { field, order: order++ });
+      if (field.supportsChoices) {
+        for (let index = 0; index < field.choices.length; index++) {
+          const choice = field.choices[index];
+          commit("setChoiceOrder", { choice, order: index });
+        }
+      }
       // Create or update each field
       if (field.id) {
         await services.ExtendedUserProfileFieldService.update({
@@ -70,14 +76,36 @@ const mutations = {
   setRequired(state, { value, field }) {
     setFieldProp(state, field, "required", value);
   },
-  setOrder(state, {order, field}) {
-    setFieldProp(state, field, 'order', order);
+  setOrder(state, { order, field }) {
+    setFieldProp(state, field, "order", order);
   },
   addExtendedUserProfileField(state, { field }) {
     if (!state.extendedUserProfileFields) {
       state.extendedUserProfileFields = [];
     }
     state.extendedUserProfileFields.push(field);
+  },
+  addChoice(state, { field }) {
+    field.choices.push(
+      new models.ExtendedUserProfileFieldChoice({
+        display_text: "",
+      })
+    );
+  },
+  setChoiceOrder(state, { choice, order }) {
+    choice.order = order;
+  },
+  updateChoiceDisplayText(state, { choice, display_text }) {
+    choice.display_text = display_text;
+  },
+  updateChoiceIndex(state, { field, choice, index }) {
+    const currentIndex = field.choices.indexOf(choice);
+    field.choices.splice(currentIndex, 1);
+    field.choices.splice(index, 0, choice);
+  },
+  deleteChoice(state, { field, choice }) {
+    const index = field.choices.indexOf(choice);
+    field.choices.splice(index, 1);
   },
 };
 

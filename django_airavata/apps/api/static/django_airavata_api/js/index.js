@@ -19,6 +19,7 @@ import Experiment from "./models/Experiment";
 import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentState from "./models/ExperimentState";
 import ExtendedUserProfileField from "./models/ExtendedUserProfileField";
+import ExtendedUserProfileFieldChoice from "./models/ExtendedUserProfileFieldChoice";
 import FullExperiment from "./models/FullExperiment";
 import Group from "./models/Group";
 import GroupComputeResourcePreference from "./models/GroupComputeResourcePreference";
@@ -82,6 +83,7 @@ const models = {
   ExperimentSearchFields,
   ExperimentState,
   ExtendedUserProfileField,
+  ExtendedUserProfileFieldChoice,
   FullExperiment,
   Group,
   GroupComputeResourcePreference,

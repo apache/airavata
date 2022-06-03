@@ -9,25 +9,50 @@
     <b-form-group label="Required">
       <b-form-checkbox v-model="required" />
     </b-form-group>
-    <!-- <b-card
-            title="Options"
-            v-if="
-              field.field_type === 'single_choice' ||
-              field.field_type === 'multi_choice'
-            "
-          >
-            <template v-for="choice in field.choices">
-              <b-input-group :key="choice.id">
-                <b-form-input v-model="choice.display_text" />
-                <b-input-group-append>
-                  <b-button @click="deleteOption(field, choice)"
-                    >Delete</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
-            </template>
-            <b-button @click="addOption(field)">Add Option</b-button>
-          </b-card>
+    <b-card title="Options" v-if="extendedUserProfileField.supportsChoices">
+      <transition-group name="fade">
+        <template v-for="(choice, index) in extendedUserProfileField.choices">
+          <b-input-group :key="choice.key">
+            <b-form-input
+              :value="choice.display_text"
+              @input="handleChoiceDisplayTextChanged(choice, $event)"
+            />
+            <b-input-group-append>
+              <b-button
+                @click="handleChoiceMoveUp(choice)"
+                :disabled="index === 0"
+                v-b-tooltip.hover.left
+                title="Move Up"
+              >
+                <i class="fa fa-arrow-up" aria-hidden="true"></i>
+              </b-button>
+              <b-button
+                @click="handleChoiceMoveDown(choice)"
+                :disabled="
+                  index === extendedUserProfileField.choices.length - 1
+                "
+                v-b-tooltip.hover.left
+                title="Move Down"
+              >
+                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+              </b-button>
+              <b-button
+                @click="handleChoiceDeleted(choice)"
+                variant="danger"
+                v-b-tooltip.hover.left
+                title="Delete Option"
+              >
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </template>
+      </transition-group>
+      <b-button @click="addChoice({ field: extendedUserProfileField })"
+        >Add Option</b-button
+      >
+    </b-card>
+    <!--
           <template v-if="field.links && field.links.length > 0">
             <b-card title="Links" v-for="link in field.links" :key="link.id">
               <b-form-group label="Label">
@@ -85,12 +110,46 @@ export default {
         single_choice: "Single Choice",
         multi_choice: "Multi Choice",
         user_agreement: "User Agreement",
-      }
-      return `${fieldTypes[this.extendedUserProfileField.field_type]}: ${this.name}`;
-    }
+      };
+      return `${fieldTypes[this.extendedUserProfileField.field_type]}: ${
+        this.name
+      }`;
+    },
   },
   methods: {
-    ...mapMutations("extendedUserProfile", ["setName", "setHelpText", "setRequired"]),
+    ...mapMutations("extendedUserProfile", [
+      "setName",
+      "setHelpText",
+      "setRequired",
+      "addChoice",
+      "updateChoiceDisplayText",
+      "deleteChoice",
+      "updateChoiceIndex",
+    ]),
+    handleChoiceDisplayTextChanged(choice, display_text) {
+      this.updateChoiceDisplayText({ choice, display_text });
+    },
+    handleChoiceDeleted(choice) {
+      this.deleteChoice({ field: this.extendedUserProfileField, choice });
+    },
+    handleChoiceMoveUp(choice) {
+      let index = this.extendedUserProfileField.choices.indexOf(choice);
+      index--;
+      this.updateChoiceIndex({
+        field: this.extendedUserProfileField,
+        choice,
+        index,
+      });
+    },
+    handleChoiceMoveDown(choice) {
+      let index = this.extendedUserProfileField.choices.indexOf(choice);
+      index++;
+      this.updateChoiceIndex({
+        field: this.extendedUserProfileField,
+        choice,
+        index,
+      });
+    },
   },
 };
 </script>

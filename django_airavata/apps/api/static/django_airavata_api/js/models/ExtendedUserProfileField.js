@@ -61,4 +61,9 @@ export default class ExtendedUserProfileField extends BaseModel {
     }
     return copy;
   }
+  get supportsChoices() {
+    return (
+      this.field_type === "single_choice" || this.field_type === "multi_choice"
+    );
+  }
 }
