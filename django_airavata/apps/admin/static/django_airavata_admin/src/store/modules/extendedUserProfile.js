@@ -2,6 +2,7 @@ import { models, services } from "django-airavata-api";
 
 const state = () => ({
   extendedUserProfileFields: null,
+  deletedExtendedUserProfileFields: [],
 });
 
 const getters = {
@@ -36,6 +37,14 @@ const actions = {
       } else {
         await services.ExtendedUserProfileFieldService.create({ data: field });
       }
+    }
+    if (state.deletedExtendedUserProfileFields.length > 0) {
+      for (const field of state.deletedExtendedUserProfileFields) {
+        await services.ExtendedUserProfileFieldService.delete({
+          lookup: field.id,
+        });
+      }
+      commit("resetDeletedExtendedUserProfileFields");
     }
     // Reload the fields
     dispatch("loadExtendedUserProfileFields");
@@ -142,6 +151,22 @@ const mutations = {
   deleteLink(state, { field, link }) {
     const index = field.links.indexOf(link);
     field.links.splice(index, 1);
+  },
+  updateFieldIndex(state, { field, index }) {
+    const currentIndex = state.extendedUserProfileFields.indexOf(field);
+    state.extendedUserProfileFields.splice(currentIndex, 1);
+    state.extendedUserProfileFields.splice(index, 0, field);
+  },
+  deleteField(state, { field }) {
+    const index = state.extendedUserProfileFields.indexOf(field);
+    state.extendedUserProfileFields.splice(index, 1);
+    // later when we save we'll need to sync this delete with the server
+    if (field.id) {
+      state.deletedExtendedUserProfileFields.push(field);
+    }
+  },
+  resetDeletedExtendedUserProfileFields(state) {
+    state.deletedExtendedUserProfileFields = [];
   },
 };
 

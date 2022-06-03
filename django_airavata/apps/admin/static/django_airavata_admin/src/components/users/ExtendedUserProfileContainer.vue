@@ -5,11 +5,19 @@
         <h1 class="h4 mb-4">Extended User Profile Editor</h1>
       </div>
     </div>
-    <div v-for="field in extendedUserProfileFields" class="row" :key="field.id">
-      <div class="col">
-        <extended-user-profile-field-editor :extendedUserProfileField="field" />
+    <transition-group name="fade">
+      <div
+        v-for="field in extendedUserProfileFields"
+        class="row"
+        :key="field.key"
+      >
+        <div class="col">
+          <extended-user-profile-field-editor
+            :extendedUserProfileField="field"
+          />
+        </div>
       </div>
-    </div>
+    </transition-group>
     <div class="row">
       <div class="col">
         <b-dropdown text="Add Field">

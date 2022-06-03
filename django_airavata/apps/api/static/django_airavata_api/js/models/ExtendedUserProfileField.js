@@ -1,6 +1,7 @@
 import BaseModel from "./BaseModel";
 import ExtendedUserProfileFieldChoice from "./ExtendedUserProfileFieldChoice";
 import ExtendedUserProfileFieldLink from "./ExtendedUserProfileFieldLink";
+import uuidv4 from "uuid/v4";
 
 const FIELDS = [
   "id",
@@ -36,7 +37,13 @@ const FIELDS = [
 export default class ExtendedUserProfileField extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
+    this._key = data.key ? data.key : uuidv4();
   }
+
+  get key() {
+    return this._key;
+  }
+
   toJSON() {
     const copy = Object.assign({}, this);
     // Remove unnecessary properties

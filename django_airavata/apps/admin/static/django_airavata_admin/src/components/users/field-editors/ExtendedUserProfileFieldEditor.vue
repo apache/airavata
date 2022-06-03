@@ -122,14 +122,31 @@
     <b-button @click="addLink({ field: extendedUserProfileField })"
       >Add Link</b-button
     >
+    <b-button
+      @click="handleMoveUp({ field: extendedUserProfileField })"
+      :disabled="
+        extendedUserProfileFields.indexOf(extendedUserProfileField) === 0
+      "
+      >Move Up</b-button
+    >
+    <b-button
+      @click="handleMoveDown({ field: extendedUserProfileField })"
+      :disabled="
+        extendedUserProfileFields.indexOf(extendedUserProfileField) ===
+        extendedUserProfileFields.length - 1
+      "
+      >Move Down</b-button
+    >
+    <b-button @click="handleDelete" variant="danger">Delete</b-button>
   </b-card>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 export default {
   props: ["extendedUserProfileField"],
   computed: {
+    ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
     name: {
       get() {
         return this.extendedUserProfileField.name;
@@ -190,6 +207,8 @@ export default {
       "updateLinkDisplayLink",
       "updateLinkDisplayInline",
       "deleteLink",
+      "updateFieldIndex",
+      "deleteField",
     ]),
     handleChoiceDisplayTextChanged(choice, display_text) {
       this.updateChoiceDisplayText({ choice, display_text });
@@ -229,6 +248,21 @@ export default {
     },
     handleLinkDeleted(link) {
       this.deleteLink({ field: this.extendedUserProfileField, link });
+    },
+    handleMoveUp({ field }) {
+      let index = this.extendedUserProfileFields.indexOf(field);
+      index--;
+      this.updateFieldIndex({ field, index });
+    },
+    handleMoveDown({ field }) {
+      let index = this.extendedUserProfileFields.indexOf(field);
+      index++;
+      this.updateFieldIndex({ field, index });
+    },
+    handleDelete() {
+      this.deleteField({
+        field: this.extendedUserProfileField,
+      });
     },
   },
 };
