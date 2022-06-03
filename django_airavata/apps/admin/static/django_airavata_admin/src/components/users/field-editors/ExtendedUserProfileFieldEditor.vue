@@ -47,10 +47,34 @@
             </b-input-group-append>
           </b-input-group>
         </template>
+        <b-input-group :key="'other'" v-if="extendedUserProfileField.other">
+          <b-form-input placeholder="Please specify" disabled />
+          <b-input-group-append>
+            <b-button disabled>
+              <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            </b-button>
+            <b-button disabled>
+              <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            </b-button>
+            <b-button
+              @click="other = false"
+              variant="danger"
+              v-b-tooltip.hover.left
+              title="Remove Other option"
+            >
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </b-button>
+          </b-input-group-append>
+        </b-input-group>
       </transition-group>
-      <b-button @click="addChoice({ field: extendedUserProfileField })"
-        >Add Option</b-button
-      >
+      <div>
+        <b-button @click="addChoice({ field: extendedUserProfileField })"
+          >Add Option</b-button
+        >
+      </div>
+      <b-form-checkbox v-model="other" switch>
+        Allow user to type in an "Other" option
+      </b-form-checkbox>
     </b-card>
     <!--
           <template v-if="field.links && field.links.length > 0">
@@ -104,6 +128,14 @@ export default {
         this.setRequired({ value, field: this.extendedUserProfileField });
       },
     },
+    other: {
+      get() {
+        return this.extendedUserProfileField.other;
+      },
+      set(value) {
+        this.setOther({ value, field: this.extendedUserProfileField });
+      },
+    },
     title() {
       const fieldTypes = {
         text: "Text",
@@ -121,6 +153,7 @@ export default {
       "setName",
       "setHelpText",
       "setRequired",
+      "setOther",
       "addChoice",
       "updateChoiceDisplayText",
       "deleteChoice",

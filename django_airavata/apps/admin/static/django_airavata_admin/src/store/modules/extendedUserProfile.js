@@ -79,6 +79,9 @@ const mutations = {
   setOrder(state, { order, field }) {
     setFieldProp(state, field, "order", order);
   },
+  setOther(state, { value, field }) {
+    setFieldProp(state, field, "other", value);
+  },
   addExtendedUserProfileField(state, { field }) {
     if (!state.extendedUserProfileFields) {
       state.extendedUserProfileFields = [];
