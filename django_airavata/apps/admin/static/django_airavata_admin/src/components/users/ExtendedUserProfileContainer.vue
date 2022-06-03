@@ -14,6 +14,8 @@
         <div class="col">
           <extended-user-profile-field-editor
             :extendedUserProfileField="field"
+            @valid="recordValidChildComponent(field)"
+            @invalid="recordInvalidChildComponent(field)"
           />
         </div>
       </div>
@@ -36,7 +38,9 @@
     </div>
     <div class="row mt-4">
       <div class="col">
-        <b-button variant="primary" @click="save">Save</b-button>
+        <b-button variant="primary" @click="save" :disabled="!valid"
+          >Save</b-button
+        >
       </div>
     </div>
   </div>
@@ -45,7 +49,9 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import ExtendedUserProfileFieldEditor from "./field-editors/ExtendedUserProfileFieldEditor.vue";
+import { mixins } from "django-airavata-common-ui";
 export default {
+  mixins: [mixins.ValidationParent],
   components: { ExtendedUserProfileFieldEditor },
   data() {
     return {};
@@ -105,6 +111,9 @@ export default {
   },
   computed: {
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
+    valid() {
+      return this.childComponentsAreValid;
+    },
   },
 };
 </script>
