@@ -1,5 +1,5 @@
 <template>
-  <b-card :title="'Field: ' + name">
+  <b-card :title="title">
     <b-form-group label="Name">
       <b-form-input v-model="name" />
     </b-form-group>
@@ -79,15 +79,15 @@ export default {
         this.setRequired({ value, field: this.extendedUserProfileField });
       },
     },
-    // TODO: probably don't need these
-    fieldTypeOptions() {
-      return [
-        { value: "text", text: "Text" },
-        { value: "single_choice", text: "Single Choice" },
-        { value: "multi_choice", text: "Multi Choice" },
-        { value: "user_agreement", text: "User Agreement" },
-      ];
-    },
+    title() {
+      const fieldTypes = {
+        text: "Text",
+        single_choice: "Single Choice",
+        multi_choice: "Multi Choice",
+        user_agreement: "User Agreement",
+      }
+      return `${fieldTypes[this.extendedUserProfileField.field_type]}: ${this.name}`;
+    }
   },
   methods: {
     ...mapMutations("extendedUserProfile", ["setName", "setHelpText", "setRequired"]),

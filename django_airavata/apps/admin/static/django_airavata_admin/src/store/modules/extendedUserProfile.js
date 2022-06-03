@@ -1,4 +1,4 @@
-import { services } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 
 const state = () => ({
   extendedUserProfileFields: null,
@@ -13,8 +13,10 @@ const actions = {
     const extendedUserProfileFields = await services.ExtendedUserProfileFieldService.list();
     commit("setExtendedUserProfileFields", { extendedUserProfileFields });
   },
-  async saveExtendedUserProfileFields({ dispatch, state }) {
+  async saveExtendedUserProfileFields({ commit, dispatch, state }) {
+    let order = 1;
     for (const field of state.extendedUserProfileFields) {
+      commit("setOrder", {field, order: order++});
       // Create or update each field
       if (field.id) {
         await services.ExtendedUserProfileFieldService.update({
@@ -27,6 +29,20 @@ const actions = {
     }
     // Reload the fields
     dispatch("loadExtendedUserProfileFields");
+  },
+  async addExtendedUserProfileField({ state, commit }, { field_type }) {
+    const field = new models.ExtendedUserProfileField({
+      field_type,
+      name: `New Field ${state.extendedUserProfileFields.length + 1}`,
+      description: "",
+      help_text: "",
+      required: true,
+      links: [],
+      other: false,
+      choices: [],
+      checkbox_label: "",
+    });
+    commit("addExtendedUserProfileField", { field });
   },
 };
 
@@ -53,6 +69,15 @@ const mutations = {
   },
   setRequired(state, { value, field }) {
     setFieldProp(state, field, "required", value);
+  },
+  setOrder(state, {order, field}) {
+    setFieldProp(state, field, 'order', order);
+  },
+  addExtendedUserProfileField(state, { field }) {
+    if (!state.extendedUserProfileFields) {
+      state.extendedUserProfileFields = [];
+    }
+    state.extendedUserProfileFields.push(field);
   },
 };
 

@@ -12,7 +12,12 @@
     </div>
     <div class="row">
       <div class="col">
-        <b-button variant="primary" @click="addField"> Add Field </b-button>
+        <b-dropdown text="Add Field">
+          <b-dropdown-item @click="addField('text')">Text</b-dropdown-item>
+          <b-dropdown-item @click="addField('single_choice')">Single Choice</b-dropdown-item>
+          <b-dropdown-item @click="addField('multi_choice')">Multi Choice</b-dropdown-item>
+          <b-dropdown-item @click="addField('user_agreement')">User Agreement</b-dropdown-item>
+        </b-dropdown>
       </div>
     </div>
     <div class="row mt-4">
@@ -30,7 +35,6 @@ export default {
   components: { ExtendedUserProfileFieldEditor },
   data() {
     return {
-      fields: [],
     };
   },
   created() {
@@ -40,18 +44,11 @@ export default {
     ...mapActions("extendedUserProfile", [
       "loadExtendedUserProfileFields",
       "saveExtendedUserProfileFields",
+      "addExtendedUserProfileField",
     ]),
-    addField() {
+    addField(field_type) {
       // TODO: post an empty field to the API
-      this.fields.push({
-        id: null,
-        name: "",
-        description: "",
-        type: "text",
-        required: false,
-        options: null,
-        links: null,
-      });
+      this.addExtendedUserProfileField({field_type})
     },
     addOption(field) {
       if (!field.options) {

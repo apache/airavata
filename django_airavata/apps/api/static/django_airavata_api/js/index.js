@@ -18,6 +18,7 @@ import DataType from "./models/DataType";
 import Experiment from "./models/Experiment";
 import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentState from "./models/ExperimentState";
+import ExtendedUserProfileField from "./models/ExtendedUserProfileField";
 import FullExperiment from "./models/FullExperiment";
 import Group from "./models/Group";
 import GroupComputeResourcePreference from "./models/GroupComputeResourcePreference";
@@ -80,6 +81,7 @@ const models = {
   Experiment,
   ExperimentSearchFields,
   ExperimentState,
+  ExtendedUserProfileField,
   FullExperiment,
   Group,
   GroupComputeResourcePreference,
