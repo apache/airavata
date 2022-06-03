@@ -39,8 +39,8 @@ export default {
     } else {
       services.ManageNotificationService.list().then(notices => {
         if (!!notices && Array.isArray(notices)) {
-          this.notices = notices.filter(({showInDashboard, expirationTime}) => {
-            return !!showInDashboard && new Date(expirationTime) > now
+          this.notices = notices.filter(({showInDashboard, publishedTime, expirationTime}) => {
+            return !!showInDashboard && new Date(expirationTime) > now && new Date(publishedTime) <= now
           });
         } else {
           this.notices = [];
