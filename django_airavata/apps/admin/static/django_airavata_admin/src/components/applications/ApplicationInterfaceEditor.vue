@@ -50,7 +50,7 @@
           :state="!data.applicationDescription || data.applicationDescription.length < 500"
         >
         </b-form-textarea>
-        <b-form-valid-feedback v-if="!!data.applicationDescription.length">
+        <b-form-valid-feedback v-if="!!data.applicationDescription">
           {{ data.applicationDescription.length }} / 500
         </b-form-valid-feedback>
         <b-form-invalid-feedback>
