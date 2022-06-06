@@ -3,6 +3,7 @@
     v-if="appModule"
     :experiment="experiment"
     :app-module="appModule"
+    :app-interface="appInterface"
     @saved="handleSavedExperiment"
     @savedAndLaunched="handleSavedAndLaunchedExperiment"
   >
@@ -28,6 +29,7 @@ export default {
     return {
       experiment: null,
       appModule: null,
+      appInterface: null
     };
   },
   components: {
@@ -59,6 +61,7 @@ export default {
         );
       })
       .then((appInterface) => {
+        this.appInterface = appInterface;
         const appModuleId = appInterface.applicationModules[0];
         return services.ApplicationModuleService.retrieve({
           lookup: appModuleId,

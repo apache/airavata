@@ -88,13 +88,15 @@
         </div>
       </div>
       <div class="row">
-        <workspace-notices-management-container
-          v-if="appInterface.applicationDescription"
-          :data="[{notificationMessage: appInterface.applicationDescription}]"/>
+        <div class="col">
+          <workspace-notices-management-container class="mt-2"
+            v-if="appInterface && appInterface.applicationDescription"
+            :data="[{notificationMessage: appInterface.applicationDescription}]"/>
+        </div>
       </div>
       <div class="row">
         <div class="col">
-          <h1 class="h4 mt-5 mb-4">Application Configuration</h1>
+          <h1 class="h4 mt-2 mb-4">Application Configuration</h1>
         </div>
       </div>
       <div class="row">
