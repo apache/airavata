@@ -11,6 +11,7 @@ import ExperimentStatistics from "./models/ExperimentStatistics";
 import ExperimentStoragePath from "./models/ExperimentStoragePath";
 import ExperimentSummary from "./models/ExperimentSummary";
 import ExtendedUserProfileField from "./models/ExtendedUserProfileField";
+import ExtendedUserProfileValue from "./models/ExtendedUserProfileValue";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
@@ -246,6 +247,8 @@ export default {
   ExtendedUserProfileValues: {
     url: "/auth/extended-user-profile-values",
     viewSet: true,
+    modelClass: ExtendedUserProfileValue,
+    queryParams: ["username"],
   },
   FullExperiments: {
     url: "/api/full-experiments",

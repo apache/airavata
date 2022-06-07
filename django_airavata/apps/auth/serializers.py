@@ -230,11 +230,12 @@ class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
     choices = serializers.ListField(child=serializers.IntegerField(), required=False)
     other_value = serializers.CharField(required=False, allow_blank=True)
     agreement_value = serializers.BooleanField(required=False)
+    valid = serializers.SerializerMethodField()
 
     class Meta:
         model = models.ExtendedUserProfileValue
         fields = ['id', 'value_type', 'ext_user_profile_field', 'text_value',
-                  'choices', 'other_value', 'agreement_value']
+                  'choices', 'other_value', 'agreement_value', 'valid']
         read_only_fields = ['value_type']
 
     def to_representation(self, instance):
@@ -352,3 +353,21 @@ class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
                 if not ext_user_profile_field.multi_choice.choices.filter(id=choice, deleted=False).exists():
                     raise serializers.ValidationError({'choices': 'Invalid choice.'})
         return attrs
+
+    # TODO: add label and display_value to serializer?
+    def get_valid(self, value: models.ExtendedUserProfileValue):
+        # TODO: move these to the model
+        if value.ext_user_profile_field.required:
+            if value.ext_user_profile_field.field_type == 'text':
+                return value.text.text_value and len(value.text.text_value.strip()) > 0
+            if value.ext_user_profile_field.field_type == 'single_choice':
+                return value.single_choice.choice is not None or (
+                    value.single_choice.other_value and
+                    len(value.single_choice.other_value.strip()) > 0)
+            if value.ext_user_profile_field.field_type == 'multi_choice':
+                return len(value.multi_choice.choices) > 0 or (
+                    value.multi_choice.other_value and
+                    len(value.multi_choice.other_value.strip()) > 0)
+            if value.ext_user_profile_field.field_type == 'user_agreement':
+                return value.user_agreement.agreement_value is True
+        return True

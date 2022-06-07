@@ -2,17 +2,25 @@ import { models, services } from "django-airavata-api";
 
 const state = () => ({
   extendedUserProfileFields: null,
+  extendedUserProfileValues: null,
   deletedExtendedUserProfileFields: [],
 });
 
 const getters = {
   extendedUserProfileFields: (state) => state.extendedUserProfileFields,
+  extendedUserProfileValues: (state) => state.extendedUserProfileValues,
 };
 
 const actions = {
   async loadExtendedUserProfileFields({ commit }) {
     const extendedUserProfileFields = await services.ExtendedUserProfileFieldService.list();
     commit("setExtendedUserProfileFields", { extendedUserProfileFields });
+  },
+  async loadExtendedUserProfileValues({ commit }, { username }) {
+    const extendedUserProfileValues = await services.ExtendedUserProfileValueService.list(
+      { username }
+    );
+    commit("setExtendedUserProfileValues", { extendedUserProfileValues });
   },
   async saveExtendedUserProfileFields({ commit, dispatch, state }) {
     let order = 1;
@@ -79,6 +87,9 @@ function setFieldProp(state, field, prop, value) {
 const mutations = {
   setExtendedUserProfileFields(state, { extendedUserProfileFields }) {
     state.extendedUserProfileFields = extendedUserProfileFields;
+  },
+  setExtendedUserProfileValues(state, { extendedUserProfileValues }) {
+    state.extendedUserProfileValues = extendedUserProfileValues;
   },
   setName(state, { value, field }) {
     setFieldProp(state, field, "name", value);

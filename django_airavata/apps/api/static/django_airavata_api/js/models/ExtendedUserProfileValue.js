@@ -9,6 +9,7 @@ const FIELDS = [
   "choices",
   "other_value",
   "agreement_value",
+  "valid",
 ];
 
 export default class ExtendedUserProfileValue extends BaseModel {
