@@ -4,11 +4,18 @@
       <template #cell(value)="{ value, item }">
         <i v-if="item.valid" class="fas fa-check text-success"></i>
         <i v-if="!item.valid" class="fas fa-times text-danger"></i>
-        <template v-if="item.type === 'text'">
+        <template v-if="item.type === 'text' || item.type === 'single_choice'">
           {{ value }}
         </template>
         <template v-else-if="item.type === 'user_agreement'">
           <b-checkbox class="ml-2 d-inline" :checked="value" disabled />
+        </template>
+        <template v-else-if="item.type === 'multi_choice'">
+          <ul>
+            <li v-for="result in item.value" :key="result">
+              {{ result }}
+            </li>
+          </ul>
         </template>
       </template>
     </b-table>
@@ -75,10 +82,48 @@ export default {
       if (value && value.value_type === "user_agreement") {
         return { value: value.user_agreement, valid: value.valid };
       }
+      if (value && value.value_type === "single_choice") {
+        if (value.other_value) {
+          return { value: `Other: ${value.other_value}`, valid: value.valid };
+        } else if (value.choices && value.choices.length === 1) {
+          const displayText = this.getChoiceDisplayText({
+            field,
+            choiceId: value.choices[0],
+          });
+          if (displayText) {
+            return { value: displayText, valid: value.valid };
+          }
+        }
+        return { value: null, valid: value.valid };
+      }
+      if (value && value.value_type === "multi_choice") {
+        const results = [];
+        if (value.choices) {
+          for (const choiceId of value.choices) {
+            const displayText = this.getChoiceDisplayText({ field, choiceId });
+            if (displayText) {
+              results.push(displayText);
+            }
+          }
+        }
+        if (value.other_value) {
+          results.push(`Other: ${value.other_value}`);
+        }
+        return { value: results, valid: value.valid };
+      }
       return { value: null, valid: !field.required };
+    },
+    getChoiceDisplayText({ field, choiceId }) {
+      const choice = field.choices.find((c) => c.id === choiceId);
+      return choice ? choice.display_text : null;
     },
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+ul {
+  display: inline-block;
+  padding-left: 20px;
+}
+</style>
