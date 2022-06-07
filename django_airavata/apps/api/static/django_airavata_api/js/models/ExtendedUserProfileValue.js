@@ -1,6 +1,5 @@
 import BaseModel from "./BaseModel";
 
-// TODO: do we need this?
 const FIELDS = [
   "id",
   "value_type",
@@ -10,6 +9,7 @@ const FIELDS = [
   "other_value",
   "agreement_value",
   "valid",
+  "value_display",
 ];
 
 export default class ExtendedUserProfileValue extends BaseModel {

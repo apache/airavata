@@ -2,21 +2,17 @@
   <b-card header="Extended User Profile">
     <b-table :items="items" :fields="fields" small borderless>
       <template #cell(value)="{ value, item }">
-        <i v-if="item.valid" class="fas fa-check text-success"></i>
+        <!-- only show a valid checkmark when there is a user provided value -->
+        <i v-if="value && item.valid" class="fas fa-check text-success"></i>
         <i v-if="!item.valid" class="fas fa-times text-danger"></i>
-        <template v-if="item.type === 'text' || item.type === 'single_choice'">
-          {{ value }}
-        </template>
-        <template v-else-if="item.type === 'user_agreement'">
-          <b-checkbox class="ml-2 d-inline" :checked="value" disabled />
-        </template>
-        <template v-else-if="item.type === 'multi_choice'">
+        <template v-if="Array.isArray(value)">
           <ul>
-            <li v-for="result in item.value" :key="result">
+            <li v-for="result in value" :key="result">
               {{ result }}
             </li>
           </ul>
         </template>
+        <template v-else> {{ value }} </template>
       </template>
     </b-table>
   </b-card>
@@ -50,12 +46,12 @@ export default {
       if (this.extendedUserProfileFields && this.extendedUserProfileValues) {
         const items = [];
         for (const field of this.extendedUserProfileFields) {
-          const { value, valid } = this.getValue({ field });
+          const value = this.getValue(field);
           items.push({
             name: field.name,
-            value,
-            valid,
-            type: field.field_type,
+            value: value ? value.value_display : null,
+            // if no value, consider it invalid only if it is required
+            valid: value ? value.valid : !field.required,
           });
         }
         return items;
@@ -69,53 +65,10 @@ export default {
       "loadExtendedUserProfileFields",
       "loadExtendedUserProfileValues",
     ]),
-    getValue({ field }) {
-      if (!this.extendedUserProfileValues) {
-        return null;
-      }
-      const value = this.extendedUserProfileValues.find(
+    getValue(field) {
+      return this.extendedUserProfileValues.find(
         (v) => v.ext_user_profile_field === field.id
       );
-      if (value && value.value_type === "text") {
-        return { value: value.text_value, valid: value.valid };
-      }
-      if (value && value.value_type === "user_agreement") {
-        return { value: value.user_agreement, valid: value.valid };
-      }
-      if (value && value.value_type === "single_choice") {
-        if (value.other_value) {
-          return { value: `Other: ${value.other_value}`, valid: value.valid };
-        } else if (value.choices && value.choices.length === 1) {
-          const displayText = this.getChoiceDisplayText({
-            field,
-            choiceId: value.choices[0],
-          });
-          if (displayText) {
-            return { value: displayText, valid: value.valid };
-          }
-        }
-        return { value: null, valid: value.valid };
-      }
-      if (value && value.value_type === "multi_choice") {
-        const results = [];
-        if (value.choices) {
-          for (const choiceId of value.choices) {
-            const displayText = this.getChoiceDisplayText({ field, choiceId });
-            if (displayText) {
-              results.push(displayText);
-            }
-          }
-        }
-        if (value.other_value) {
-          results.push(`Other: ${value.other_value}`);
-        }
-        return { value: results, valid: value.valid };
-      }
-      return { value: null, valid: !field.required };
-    },
-    getChoiceDisplayText({ field, choiceId }) {
-      const choice = field.choices.find((c) => c.id === choiceId);
-      return choice ? choice.display_text : null;
     },
   },
 };

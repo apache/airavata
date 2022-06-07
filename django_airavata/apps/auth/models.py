@@ -265,6 +265,63 @@ class ExtendedUserProfileValue(models.Model):
         else:
             raise Exception("Could not determine value_type")
 
+    @property
+    def value_display(self):
+        if self.value_type == 'text':
+            return self.text.text_value
+        elif self.value_type == 'single_choice':
+            if self.single_choice.choice:
+                try:
+                    choice = self.ext_user_profile_field.single_choice.choices.get(id=self.single_choice.choice)
+                    return choice.display_text
+                except ExtendedUserProfileSingleChoiceFieldChoice.DoesNotExist:
+                    return None
+            elif self.single_choice.other_value:
+                return f"Other: {self.single_choice.other_value}"
+        elif self.value_type == 'multi_choice':
+            result = []
+            if self.multi_choice.choices:
+                mc_field = self.ext_user_profile_field.multi_choice
+                for choice_value in self.multi_choice.choices.all():
+                    try:
+                        choice = mc_field.choices.get(id=choice_value.value)
+                        result.append(choice.display_text)
+                    except ExtendedUserProfileMultiChoiceFieldChoice.DoesNotExist:
+                        continue
+            if self.multi_choice.other_value:
+                result.append(f"Other: {self.multi_choice.other_value}")
+            return result
+        elif self.value_type == 'user_agreement':
+            if self.user_agreement.agreement_value:
+                return "Yes"
+            else:
+                return "No"
+        return None
+
+    @property
+    def valid(self):
+        if self.ext_user_profile_field.required:
+            if self.value_type == 'text':
+                return self.text.text_value and len(self.text.text_value.strip()) > 0
+            if self.value_type == 'single_choice':
+                choice_exists = (self.single_choice.choice and
+                                 self.ext_user_profile_field.single_choice.choices
+                                 .filter(id=self.single_choice.choice).exists())
+                has_other = (self.ext_user_profile_field.single_choice.other and
+                             self.single_choice.other_value and
+                             len(self.single_choice.other_value.strip()) > 0)
+                return choice_exists or has_other
+            if self.value_type == 'multi_choice':
+                choice_ids = list(map(lambda c: c.value, self.multi_choice.choices.all()))
+                choice_exists = self.ext_user_profile_field.multi_choice.choices.filter(id__in=choice_ids).exists()
+                has_other = (self.ext_user_profile_field.multi_choice.other and
+                             self.multi_choice.other_value and
+                             len(self.multi_choice.other_value.strip()) > 0)
+                return choice_exists or has_other
+            if self.value_type == 'user_agreement':
+                return self.user_agreement.agreement_value is True
+        return True
+
 
 class ExtendedUserProfileTextValue(ExtendedUserProfileValue):
     value_ptr = models.OneToOneField(ExtendedUserProfileValue,
