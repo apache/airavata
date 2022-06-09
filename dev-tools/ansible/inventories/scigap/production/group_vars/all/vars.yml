@@ -205,6 +205,9 @@ api_server_monitoring_enabled: true
 api_server_monitoring_host: "0.0.0.0"
 api_server_monitoring_port: 9097
 
+# Variables related to data staging operations
+max_archive_size: 21474836480
+
 # Subnet definitions
 iu_subnets:
   - "149.163.0.0/16"
