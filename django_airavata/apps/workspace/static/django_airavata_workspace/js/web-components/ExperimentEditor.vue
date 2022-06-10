@@ -74,10 +74,13 @@ export default {
       for (const input of this.experiment.experimentInputs) {
         const slot = document.createElement("slot");
         slot.setAttribute("name", input.name);
-        if (input.type.name === "STRING") {
+        if (["STRING", "INTEGER", "FLOAT"].includes(input.type.name)) {
           slot.textContent = `${input.name} `;
           const textInput = document.createElement("adpf-string-input-editor");
-          textInput.setAttribute("value", input.value);
+          textInput.setAttribute(
+            "value",
+            input.value !== null ? input.value : ""
+          );
           textInput.setAttribute("name", input.name);
           slot.appendChild(textInput);
           this.$refs[input.name][0].append(slot);
