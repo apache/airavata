@@ -1,4 +1,4 @@
-import { models, services } from "django-airavata-api";
+import { errors, models, services } from "django-airavata-api";
 import ExperimentState from "django-airavata-api/static/django_airavata_api/js/models/ExperimentState";
 import JobState from "django-airavata-api/static/django_airavata_api/js/models/JobState";
 
@@ -42,12 +42,19 @@ export const actions = {
   async setFullExperiment({ dispatch, commit }, { fullExperiment }) {
     commit("setFullExperiment", { fullExperiment });
     const appInterfaceId = fullExperiment.experiment.executionId;
-    const applicationInterface = await services.ApplicationInterfaceService.retrieve(
-      {
-        lookup: appInterfaceId,
+    try {
+      const applicationInterface = await services.ApplicationInterfaceService.retrieve(
+        { lookup: appInterfaceId },
+        { ignoreErrors: true }
+      );
+      commit("setApplicationInterface", { applicationInterface });
+    } catch (error) {
+      // Ignore when application interface is not found; it was probably deleted
+      // But in all other cases, report the error as unhandled
+      if (!errors.ErrorUtils.isNotFoundError(error)) {
+        errors.UnhandledErrorDispatcher.reportUnhandledError(error);
       }
-    );
-    commit("setApplicationInterface", { applicationInterface });
+    }
     dispatch("initPollingExperiment");
   },
   setLaunching({ dispatch, commit }, { launching }) {
