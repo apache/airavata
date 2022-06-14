@@ -109,6 +109,19 @@ class UserProfile(models.Model):
             result.append('last_name')
         return result
 
+    @property
+    def is_ext_user_profile_valid(self):
+        fields = ExtendedUserProfileField.objects.filter(deleted=False)
+        for field in fields:
+            try:
+                value = self.extended_profile_values.filter(ext_user_profile_field=field).get()
+                if not value.valid:
+                    return False
+            except ExtendedUserProfileValue.DoesNotExist:
+                if field.required:
+                    return False
+        return True
+
     def is_non_empty(self, value: str):
         return value is not None and value.strip() != ""
 
@@ -248,7 +261,7 @@ class ExtendedUserProfileFieldLink(models.Model):
 
 class ExtendedUserProfileValue(models.Model):
     ext_user_profile_field = models.ForeignKey(ExtendedUserProfileField, on_delete=models.SET_NULL, null=True)
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="extended_profile")
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="extended_profile_values")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -300,6 +313,9 @@ class ExtendedUserProfileValue(models.Model):
 
     @property
     def valid(self):
+        # if the field is deleted, whatever the value, consider it valid
+        if self.ext_user_profile_field.deleted:
+            return True
         if self.ext_user_profile_field.required:
             if self.value_type == 'text':
                 return self.text.text_value and len(self.text.text_value.strip()) > 0
