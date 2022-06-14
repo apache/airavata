@@ -249,6 +249,16 @@ export default {
     viewSet: true,
     modelClass: ExtendedUserProfileValue,
     queryParams: ["username"],
+    methods: {
+      saveAll: {
+        url: "/auth/extended-user-profile-values/save-all/",
+        requestType: "post",
+        modelClass: ExtendedUserProfileValue,
+        bodyParams: {
+          name: "data",
+        },
+      },
+    },
   },
   FullExperiments: {
     url: "/api/full-experiments",

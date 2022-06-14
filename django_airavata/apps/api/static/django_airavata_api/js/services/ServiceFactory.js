@@ -274,6 +274,9 @@ class ServiceFactory {
           }
         };
         let resultHandler = (data) => {
+          if (Array.isArray(data)) {
+            return data.map((item) => resultHandler(item));
+          }
           return config.modelClass ? new config.modelClass(data) : data;
         };
         switch (config.requestType.toLowerCase()) {

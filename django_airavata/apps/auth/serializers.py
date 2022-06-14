@@ -226,6 +226,7 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
 
 
 class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', required=False)
     text_value = serializers.CharField(required=False, allow_blank=True)
     choices = serializers.ListField(child=serializers.IntegerField(), required=False)
     other_value = serializers.CharField(required=False, allow_blank=True)
@@ -258,6 +259,13 @@ class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
         request = self.context['request']
         user = request.user
         user_profile = user.user_profile
+
+        # Support create/update in the many=True situation. When many=True and
+        # .save() is called, .create() will be called on each value. Here we
+        # need to see if there is an id and if so call .update() instead.
+        if "id" in validated_data:
+            instance = models.ExtendedUserProfileValue.objects.get(id=validated_data["id"])
+            return self.update(instance, validated_data)
 
         ext_user_profile_field = validated_data.pop('ext_user_profile_field')
         if ext_user_profile_field.field_type == 'text':

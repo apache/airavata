@@ -64,20 +64,10 @@ const actions = {
     commit("setExtendedUserProfileValues", { extendedUserProfileValues });
   },
   async saveExtendedUserProfileValues({ state, commit }) {
-    for (const value of state.extendedUserProfileValues) {
-      // Create or update each value
-      if (value.id) {
-        await services.ExtendedUserProfileValueService.update({
-          lookup: value.id,
-          data: value,
-        });
-      } else {
-        const extendedUserProfileValue = await services.ExtendedUserProfileValueService.create(
-          { data: value }
-        );
-        commit("updateExtendedUserProfileValue", { extendedUserProfileValue });
-      }
-    }
+    const extendedUserProfileValues = await services.ExtendedUserProfileValueService.saveAll(
+      { data: state.extendedUserProfileValues }
+    );
+    commit("updateExtendedUserProfileValues", { extendedUserProfileValues });
   },
 };
 
@@ -183,6 +173,9 @@ const mutations = {
         extendedUserProfileValue.ext_user_profile_field
     );
     state.extendedUserProfileValues.splice(index, 1, extendedUserProfileValue);
+  },
+  updateExtendedUserProfileValues(state, { extendedUserProfileValues }) {
+    state.extendedUserProfileValues = extendedUserProfileValues;
   },
 };
 

@@ -749,3 +749,19 @@ class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
         else:
             queryset = user.user_profile.extended_profile.all()
         return queryset
+
+    @action(methods=['POST'], detail=False, url_path="save-all")
+    def save_all(self, request, format=None):
+        user = request.user
+        user_profile: models.UserProfile = user.user_profile
+        old_valid = user_profile.is_ext_user_profile_valid
+        serializer: serializers.ExtendedUserProfileValueSerializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        values = serializer.save()
+
+        new_valid = user_profile.is_ext_user_profile_valid
+        if not old_valid and new_valid:
+            logger.info("TODO: send email to admin")
+
+        serializer = self.get_serializer(values, many=True)
+        return Response(serializer.data)
