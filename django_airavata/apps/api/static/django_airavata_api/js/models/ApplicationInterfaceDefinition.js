@@ -39,7 +39,11 @@ const FIELDS = [
     default: false,
   },
   "userHasWriteAccess",
-  "showQueueSettings",
+  {
+    name: "showQueueSettings",
+    type: "boolean",
+    default: true,
+  },
 ];
 
 export default class ApplicationInterfaceDefinition extends BaseModel {
