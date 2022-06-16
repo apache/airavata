@@ -751,6 +751,7 @@ class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
         return queryset
 
     @action(methods=['POST'], detail=False, url_path="save-all")
+    @atomic
     def save_all(self, request, format=None):
         user = request.user
         user_profile: models.UserProfile = user.user_profile
@@ -761,7 +762,7 @@ class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
 
         new_valid = user_profile.is_ext_user_profile_valid
         if not old_valid and new_valid:
-            logger.info("TODO: send email to admin")
+            utils.send_admin_user_completed_profile(request, user_profile)
 
         serializer = self.get_serializer(values, many=True)
         return Response(serializer.data)

@@ -129,14 +129,7 @@ def send_new_user_email(request, username, email, first_name, last_name):
     })
     subject = Template(new_user_email_template.subject).render(context)
     body = Template(new_user_email_template.body).render(context)
-    msg = EmailMessage(subject=subject,
-                       body=body,
-                       from_email=f'"{settings.PORTAL_TITLE}" <{settings.SERVER_EMAIL}>',
-                       to=[f'"{a[0]}" <{a[1]}>' for a in getattr(settings,
-                                                                 'PORTAL_ADMINS',
-                                                                 settings.ADMINS)])
-    msg.content_subtype = 'html'
-    msg.send()
+    send_email_to_admins(subject, body)
 
 
 def send_admin_alert_about_uninitialized_username(request, username, email, first_name, last_name):
@@ -174,6 +167,33 @@ def send_admin_alert_about_uninitialized_username(request, username, email, firs
     portal.
     </p>
     """.strip()).render(context)
+    send_email_to_admins(subject, body)
+
+
+def send_admin_user_completed_profile(request, user_profile):
+    domain, port = split_domain_port(request.get_host())
+    user = user_profile.user
+    extended_profile_values = user_profile.extended_profile_values.filter(
+        ext_user_profile_field__deleted=False).order_by("ext_user_profile_field__order").all()
+    context = Context({
+        "username": user.username,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "portal_title": settings.PORTAL_TITLE,
+        "gateway_id": settings.GATEWAY_ID,
+        "http_host": domain,
+        "extended_profile_values": extended_profile_values
+    })
+
+    user_profile_completed_template = models.EmailTemplate.objects.get(
+        pk=models.USER_PROFILE_COMPLETED_TEMPLATE)
+    subject = Template(user_profile_completed_template.subject).render(context)
+    body = Template(user_profile_completed_template.body).render(context)
+    send_email_to_admins(subject, body)
+
+
+def send_email_to_admins(subject, body):
     msg = EmailMessage(subject=subject,
                        body=body,
                        from_email=f'"{settings.PORTAL_TITLE}" <{settings.SERVER_EMAIL}>',

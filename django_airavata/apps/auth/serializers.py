@@ -228,7 +228,9 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
 class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label='ID', required=False)
     text_value = serializers.CharField(required=False, allow_blank=True)
-    choices = serializers.ListField(child=serializers.IntegerField(), required=False)
+    # choices must be write_only so that DRF ignores trying to deserialized this related field
+    # deserialization is handled explicitly in to_representation, see below
+    choices = serializers.ListField(child=serializers.IntegerField(), required=False, write_only=True)
     other_value = serializers.CharField(required=False, allow_blank=True)
     agreement_value = serializers.BooleanField(required=False)
 

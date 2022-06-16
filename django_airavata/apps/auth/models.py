@@ -11,6 +11,7 @@ NEW_USER_EMAIL_TEMPLATE = 2
 PASSWORD_RESET_EMAIL_TEMPLATE = 3
 USER_ADDED_TO_GROUP_TEMPLATE = 4
 VERIFY_EMAIL_CHANGE_TEMPLATE = 5
+USER_PROFILE_COMPLETED_TEMPLATE = 6
 
 
 class EmailVerification(models.Model):
@@ -29,6 +30,7 @@ class EmailTemplate(models.Model):
         (PASSWORD_RESET_EMAIL_TEMPLATE, 'Password Reset Email Template'),
         (USER_ADDED_TO_GROUP_TEMPLATE, 'User Added to Group Template'),
         (VERIFY_EMAIL_CHANGE_TEMPLATE, 'Verify Email Change Template'),
+        (USER_PROFILE_COMPLETED_TEMPLATE, 'User Profile Completed Template'),
     )
     template_type = models.IntegerField(
         primary_key=True, choices=TEMPLATE_TYPE_CHOICES)
@@ -310,6 +312,15 @@ class ExtendedUserProfileValue(models.Model):
             else:
                 return "No"
         return None
+
+    @property
+    def value_display_list(self):
+        """Same as value_display except coerced always to a list."""
+        value_display = self.value_display
+        if value_display is not None and not isinstance(value_display, list):
+            return [value_display]
+        else:
+            return value_display
 
     @property
     def valid(self):
