@@ -151,27 +151,12 @@ public abstract class DataStagingTask extends AiravataTask {
         return filePath;
     }
 
-    protected String escapeSpecialCharacters(String inputString){
-        final String[] metaCharacters = {"\\","^","$","{","}","[","]","(",")","?","&","%"};
-
-        for (String metaCharacter : metaCharacters) {
-            if (inputString.contains(metaCharacter)) {
-                inputString = inputString.replace(metaCharacter, "\\" + metaCharacter);
-            }
-        }
-        return inputString;
-    }
-
     public void naiveTransfer(AgentAdaptor srcAdaptor, String sourceFile, AgentAdaptor destAdaptor, String destFile,
                               String tempFile) throws TaskOnFailException {
-
-        sourceFile = escapeSpecialCharacters(sourceFile);
-        destFile = escapeSpecialCharacters(destFile);
-
         logger.info("Using naive transfer to transfer " + sourceFile + " to " + destFile);
         try {
             try {
-                logger.info("Downloading file " + sourceFile + " to local temp file " + tempFile);
+                logger.info("Downloading file " + sourceFile + " to loacl temp file " + tempFile);
                 srcAdaptor.downloadFile(sourceFile, tempFile);
             } catch (AgentException e) {
                 throw new TaskOnFailException("Failed downloading file " + sourceFile + " to the local path " +
