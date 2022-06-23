@@ -86,7 +86,7 @@ Edit INSTALLED_APPS in settings.py:
 ```python
 INSTALLED_APPS = [
   # ...
-  'django_airavata.apps.myapp.MyAppConfig'
+  'django_airavata.apps.myapp.apps.MyAppConfig'
 ]
 ```
 
@@ -119,24 +119,27 @@ Edit `django_airavata/urls.py` and add the app's urls config:
 
 ```python
 urlpatterns = [
-    url(r'^djadmin/', admin.site.urls),
-    url(r'^admin/', include('django_airavata.apps.admin.urls')),
-    url(r'^auth/', include('django_airavata.apps.auth.urls')),
-    url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
-    url(r'^api/', include('django_airavata.apps.api.urls')),
-    url(r'^groups/', include('django_airavata.apps.groups.urls')),
+    re_path(r'^djadmin/', admin.site.urls),
+    re_path(r'^admin/', include('django_airavata.apps.admin.urls')),
+    re_path(r'^auth/', include('django_airavata.apps.auth.urls')),
+    re_path(r'^workspace/', include('django_airavata.apps.workspace.urls')),
+    re_path(r'^api/', include('django_airavata.apps.api.urls')),
+    re_path(r'^groups/', include('django_airavata.apps.groups.urls')),
+    re_path(r'^dataparsers/', include('django_airavata.apps.dataparsers.urls')),
     # ... Add the app urls here
-    url(r'^myapp/', include('django_airavata.apps.myapp.urls')),
+    re_path(r'^myapp/', include('django_airavata.apps.myapp.urls')),
     # ...
-    url(r'^home$', views.home, name='home'),
-    url(r'^cms/', include(wagtailadmin_urls)),
-    url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'', include(wagtail_urls)),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('sdk/', include('airavata_django_portal_sdk.urls')),
+    re_path(r'^home$', views.home, name='home'),
+    re_path(r'^cms/', include(wagtailadmin_urls)),
+    re_path(r'^documents/', include(wagtaildocs_urls)),
+    # For testing, developing error pages
+    re_path(r'^400/', views.error400),
+    re_path(r'^403/', views.error403),
+    re_path(r'^404/', views.error404),
+    re_path(r'^500/', views.error500),
+]
 ```
-
-It's important that the app urls are added before the `wagtail_urls` since
-wagtail controls those urls.
 
 ## App urls.py and base template
 
