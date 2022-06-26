@@ -80,10 +80,10 @@ Post Workflow Manager
 * This will start the Email Based Job Monitoring agent. Before starting this, you have to create a new gmail account by going to 
 https://accounts.google.com/signup
 
-* Once the account is created, turn on Less Security App access for that gmail account 
-https://support.google.com/accounts/answer/6010255?hl=en
+* Once the account is created, turn on 2-Step Verification and create an App Password (Use the type "Other" from the App type selection and give the name as "Airavata")
+https://myaccount.google.com/security
 
-* Update the email account credentials in src/main/resources/airavata-server.properties file
+* Update the email address and App Password in src/main/resources/airavata-server.properties file
 
   email.based.monitor.address=CHANGEME
   email.based.monitor.password=CHANGEME
