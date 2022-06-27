@@ -36,7 +36,7 @@ cilogon_userinfo_url: "https://cilogon.org/oauth2/userinfo"
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
 portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
+portal_email_username: "django.portal@scigap.org"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_server_email: "{{ portal_email_username }}"
 admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
