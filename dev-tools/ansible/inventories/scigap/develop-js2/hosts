@@ -1,0 +1,22 @@
+# inventory file : scigap js2 develop deployment
+
+[zookeeper]
+helix.js2.scigap.org
+
+[rabbitmq]
+api.js2.scigap.org
+
+[database]
+db.js2.scigap.org
+
+[api-orch]
+api.js2.scigap.org
+
+[keycloak]
+iam.js2.scigap.org
+
+[helix]
+helix.js2.scigap.org
+
+[kafka]
+helix.js2.scigap.org
