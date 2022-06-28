@@ -26,6 +26,8 @@ setup(
         "djangorestframework",
         # Installed from git repo; see requirements.txt for details
         "airavata-python-sdk",
+        # requests 2.28 drops support for Python 3.6
+        "requests < 2.28.0",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
