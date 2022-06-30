@@ -21,7 +21,8 @@
 ---
 
 airavata_django_extra_dependencies:
-  - "git+https://github.com/bio-miga/miga-autocomplete.git#egg=miga_djangoapp"
+  - name: "git+https://github.com/bio-miga/miga-autocomplete.git#egg=miga_djangoapp"
+    editable: true
 
 #vhost_servername: "clades.microbial-genomes.org" #Changed on Miguel's request on 06/25/2020
 vhost_servername: "xsede.microbial-genomes.org"

@@ -23,7 +23,8 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 airavata_django_extra_dependencies:
-  - git+https://github.com/SciGaP/regsnp-django-app.git#egg=regsnp_django_app
+  - name: git+https://github.com/SciGaP/regsnp-django-app.git#egg=regsnp_django_app
+    editable: true
 
 vhost_servername: "regsnps.ccbb.iupui.edu"
 vhost_ssl: True
