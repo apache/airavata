@@ -23,6 +23,27 @@
   yum: name="httpd" state=latest update_cache=yes
   become: yes
 
+- name: Install java
+  yum: name="java-1.8.0-openjdk-devel" state=present update_cache=yes
+  become: yes
+  tags:
+    - always
+
+# NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
+- name: set {{ keycloak_java_home }} as default
+  alternatives:
+    name="{{ item.exe }}"
+    link="/usr/bin/{{ item.exe }}"
+    path="{{ item.path }}/{{ item.exe }}"
+  with_items:
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'java' }
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'keytool' }
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'javac' }
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'javadoc' }
+  become: yes
+  tags:
+       - always
+
 - name: set selinux to permissive
   selinux: state=permissive policy=targeted
   become: yes
