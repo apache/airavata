@@ -31,7 +31,8 @@ ssl_certificate_key_file: "/etc/letsencrypt/live/interactwel.org/privkey.pem"
 
 interactwel_django_app_branch: "api-integration"
 airavata_django_extra_dependencies:
-  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+  - name: git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+    editable: true
 
 django_extra_settings:
   LOGIN_REDIRECT_URL: "/interactwel/"

@@ -21,8 +21,9 @@
 ---
 
 airavata_django_extra_dependencies:
-  - "git+https://github.com/GeoGateway/geogateway-django-app.git@ui-update#egg=geogateway_django_app"
-#  - "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
+  - name: "git+https://github.com/GeoGateway/geogateway-django-app.git@ui-update#egg=geogateway_django_app"
+#  - name: "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
+    editable: true
 
 #Git hook is not set for this gateway
 
