@@ -23,7 +23,8 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 airavata_django_extra_dependencies:
-  - "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
+  - name: "git+https://github.com/GeoGateway/geogateway-django-app.git@master#egg=geogateway_django_app"
+    editable: true
 
 
 vhost_servername: "geo-gateway.org"
