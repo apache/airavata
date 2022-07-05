@@ -1,9 +1,12 @@
 <template>
-  <compute-resource-selector
-    :value="resourceHostId" :disabled="disabled"
-    :includedComputeResources="computeResources"
-    @input.stop="computeResourceChanged"
-  />
+  <div>
+    <compute-resource-selector
+      :value="resourceHostId"
+      :disabled="disabled"
+      :includedComputeResources="computeResources"
+      @input.native.stop="computeResourceChanged"
+    />
+  </div>
 </template>
 
 <script>
@@ -25,7 +28,7 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   created() {
     this.$store.dispatch("initializeComputeResources", {
@@ -47,17 +50,26 @@ export default {
   },
   methods: {
     computeResourceChanged(event) {
-      const [computeResourceId] = event.detail;
+      const [resourceHostId] = event.detail;
       this.$store.dispatch("updateComputeResourceHostId", {
-        computeResourceId,
+        resourceHostId,
       });
+      this.emitValueChanged(resourceHostId);
+    },
+    emitValueChanged(resourceHostId) {
+      const inputEvent = new CustomEvent("input", {
+        detail: [resourceHostId],
+        composed: true,
+        bubbles: true,
+      });
+      this.$el.dispatchEvent(inputEvent);
     },
   },
   watch: {
     value(value) {
       if (value && value !== this.resourceHostId) {
         this.$store.dispatch("updateComputeResourceHostId", {
-          computeResourceId: value,
+          resourceHostId: value,
         });
       }
     },

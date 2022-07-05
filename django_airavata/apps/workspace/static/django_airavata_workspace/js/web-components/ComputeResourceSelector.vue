@@ -6,6 +6,7 @@
       :options="computeResourceOptions"
       required
       @input="computeResourceChanged"
+      @input.native.stop
       :disabled="disabled || computeResourceOptions.length === 0"
     >
       <template slot="first">
@@ -34,7 +35,7 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   store: store,
   data() {
