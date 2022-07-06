@@ -46,7 +46,7 @@ gateway_id: "ehtgateway"
 experiment_data_dir: "{{ user_data_dir }}/ehtgateway"
 #gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrEsPVkjeYfFXWEtY397sFPgxb/3wSue0jOdfES3VDYd9S885FyAB2RQz1aZT8T1jRxYhWGmKD8dhs7on/hdgVXIAuiIXLhPZKtB+A17rz2nW6oYUXs8UCXaIIMh5NImWHEn+EqPGij3b8uLWKULWs7TT6v2ulQN2CngA3ROqmA8AjiLRP0LI29G+mSlyi/kJgmIh6RSQkfUpaOnK4cKbYHTKAM8leSopP3jNzAmQXLZcthL9wS8vX/kakkZKOSff0nide5kBVApHwipyJ48EfA+fVdU50fzd18lobct9XUh48EZlNVZyT+qmY9pGAXcXwN8hFNL+7lsHg5D0tAh93"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Chan Chi-kwan', 'chanc@arizona.edu'),('Rob Quick, 'rquick@iu.edu')]"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Chan Chi-kwan', 'chanc@arizona.edu'),('Rob Quick', 'rquick@iu.edu')]"
 portal_title: "EHT Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
