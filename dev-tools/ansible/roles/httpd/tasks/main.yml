@@ -34,7 +34,7 @@
 - name: create default ssl vhost certificate
   command: openssl req -x509 -sha256 -newkey rsa:2048 -keyout {{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family]}} -out {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}} -days 1024 -nodes -subj '/CN={{ ansible_host }}'
   become: yes
-  when: default_vhost_ssl_cert_check|failed
+  when: default_vhost_ssl_cert_check is failed
 
 - name: Change permissions for default ssl vhost certificate private key
   file: path="{{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family] }}" state=file owner="root" group="root" mode="600"
@@ -59,6 +59,7 @@
   file: path="{{ real_user_data_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
+# TODO: create the parent directory of the symlink if missing
 - name: Symlink user data dir {{ user_data_dir }} to {{ real_user_data_dir }}
   file: src="{{ real_user_data_dir }}" dest="{{ user_data_dir }}" state=link owner="{{user}}" group="{{group}}"
   become: yes
@@ -76,7 +77,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: run restorecon on user data directory
-  command: restorecon -F -R {{ user_data_dir }}
+  command: restorecon -F -R {{ real_user_data_dir }}
   become: yes
   when: ansible_os_family == "RedHat"
 
