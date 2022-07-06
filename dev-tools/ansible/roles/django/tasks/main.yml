@@ -27,11 +27,19 @@
   with_items:
   - "{{ groups['database'] }}"
 
+# Use 'apply' to propagate delegate_to and become* to included tasks, see
+# https://github.com/ansible/ansible/issues/35398
 - name: Run tasks to setup Django database
-  include: database.yml
-  delegate_to: "{{ item }}"
-  become: yes
-  become_user: "{{ hostvars[item]['user'] }}"
+  include_tasks: database.yml
+  args:
+    apply:
+      delegate_to: "{{ item }}"
+      become: yes
+      become_user: "{{ hostvars[item]['user'] }}"
+  vars:
+    delegated_host: "{{ item }}"
+    django_public_ip: "{{ ansible_host }}"
+    django_internal_ip: "{{ ansible_default_ipv4.address }}"
   with_items:
   - "{{ django_database_hosts }}"
 
