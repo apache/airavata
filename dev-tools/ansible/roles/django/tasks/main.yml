@@ -176,11 +176,12 @@
 
 - name: Install additional dependencies
   pip:
-    name: "{{ item }}"
+    name: "{{ item.name }}"
     virtualenv: "{{ django_venv_dir }}"
+    editable: "{{ item.editable | default(false) }}"
   become: yes
   become_user: "{{user}}"
-  with_list: "{{ airavata_django_extra_dependencies }}"
+  loop: "{{ airavata_django_extra_dependencies }}"
 
 - name: Copy the settings_local.py file
   template: src={{ django_settings_local_template }} dest="{{ airavata_django_checkout }}/django_airavata/settings_local.py" owner="{{user}}" group="{{group}}"
