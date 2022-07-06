@@ -32,11 +32,10 @@ airavata_django_extra_dependencies:
   - name: pyjnius
 # vhost_servername: "beta.simccs.org"
 # Temporary use a *.scigap.org domain name
-vhost_servername: "beta.simccs.scigap.org"
-vhost_ssl: True
 # Some of the maptool views call into Java code and can take 2-3 minutes to execute
 vhost_timeout: 300
-# sudo certbot --apache certonly -d django.simccs.scigap.org
+vhost_servername: "simccs.js2.scigap.org"
+vhost_ssl: true
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
