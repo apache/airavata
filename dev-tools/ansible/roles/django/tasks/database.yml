@@ -22,22 +22,22 @@
 
 - name: Adds Python MySQL support on Debian/Ubuntu
   apt: pkg="python-mysqldb" state=present
-  become_user: root
-  when: ansible_os_family == 'Debian'
+  become: true
+  when: hostvars[delegated_host].ansible_os_family == 'Debian'
 
-- name: Adds Python MySQL support on RedHat/CentOS
-  yum: name=MySQL-python state=present
-  become_user: root
-  when: ansible_os_family == 'RedHat'
+# Explicitly lookup hostvars for delegated host. There seem to be bugs around
+# delegation and ansible facts, see https://github.com/ansible/ansible/issues/30630
+- include_tasks: install_deps_{{ hostvars[delegated_host].ansible_distribution }}_{{ hostvars[delegated_host].ansible_distribution_major_version }}.yml
+  when: hostvars[delegated_host].ansible_os_family == "RedHat"
 
 - name: create django database ({{ django_database_name }})
   mysql_db: name="{{ django_database_name }}" state=present encoding=utf8 collation=utf8_bin
 
 - name: give access to {{ django_db_username }} from remote (internal ip)
-  mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ ansible_default_ipv4.address }}"
+  mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ django_internal_ip }}"
 
 - name: give access to {{ django_db_username }} from remote (public ip)
-  mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ ansible_host }}"
+  mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="{{ django_public_ip }}"
 
 - name: give access to {{ django_db_username }} from localhost
   mysql_user: name="{{ django_db_username }}" password="{{ django_db_password }}" host="localhost"
