@@ -23,6 +23,11 @@
   yum: name="httpd" state=latest update_cache=yes
   become: yes
 
+- name: set selinux to permissive
+  selinux: state=permissive policy=targeted
+  become: yes
+  when: ansible_os_family == "RedHat"
+
 - name: allow httpd to proxy to Keycloak process
   seboolean:
     name: httpd_can_network_connect
@@ -140,26 +145,15 @@
 
 # <---------- setup init script for keycloak, starts the server after reboot ----------->
 
-# Init script to start keycloak in Standalone mode
-- name: copy init script file (Standalone)
-  template: >
-    src=keycloak-standalone-init.j2
-    dest="/etc/init.d/keycloak"
-    owner="{{ user }}"
-    group="{{ group }}"
-    mode="u=rwx,g=rx,o=rx"
+- name: copy keycloak.service systemd unit file
+  template:
+    src: "keycloak.service.j2"
+    dest: "/etc/systemd/system/keycloak.service"
+    backup: yes
   become: yes
-  become_user: root
-  tags:
-       - standalone
-
-# System command to add the init script to enable on startup
-- name: add init script to chkconfig and startup on boot
-  command: chkconfig --level 345 keycloak on
-  become: yes
-  become_user: root
   tags:
        - always
+
 
 # </---------- setup init script for keycloak, starts the server after reboot ----------->
 
@@ -176,26 +170,13 @@
 
 
 # <--------------------------start keycloak Identity server------------------------------>
-- name: reload Keycloak init script
-  command: systemctl daemon-reload
+- name: start/restart keycloak
+  service:
+    name: keycloak
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
   become: yes
-  become_user: root
-  tags:
-       - always
-
-# FIXME: restarting Keycloak server doesn't work
-- name: stop Keycloak server
-  service: name=keycloak state=stopped
-  ignore_errors: yes
-  become: yes
-  become_user: root
-  tags:
-       - always
-
-- name: start Keycloak server
-  service: name=keycloak state=started
-  become: yes
-  become_user: root
   tags:
        - always
 ...
