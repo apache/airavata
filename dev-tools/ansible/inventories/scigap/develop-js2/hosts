@@ -7,16 +7,34 @@ helix.js2.scigap.org
 api.js2.scigap.org
 
 [database]
-db.js2.scigap.org
+db.js2.scigap.org ansible_user=exouser
 
 [api-orch]
 api.js2.scigap.org
 
 [keycloak]
-iam.js2.scigap.org
+iam.js2.scigap.org ansible_user=exouser
 
 [helix]
 helix.js2.scigap.org
 
 [kafka]
 helix.js2.scigap.org
+
+[django]
+seagrid ansible_host=web.dev.scigap.org ansible_user=exouser
+; simvascular ansible_host=149.165.156.46
+simccs ansible_host=web.dev.scigap.org ansible_user=exouser
+interactwel ansible_host=web.dev.scigap.org ansible_user=exouser
+; usd ansible_host=149.165.156.46
+; csbglsu ansible_host=149.165.156.46
+; nexttdb ansible_host=149.165.156.46
+; saver-x ansible_host=149.165.156.46
+; pfec-hydro ansible_host=149.165.156.46
+; cyberwater ansible_host=149.165.156.46
+; mines ansible_host=149.165.156.46
+; amp ansible_host=149.165.170.199
+geo ansible_host=web.dev.scigap.org ansible_user=exouser
+; delta ansible_host=149.165.169.250
+; custos-testdrive ansible_host=pgadev.scigap.org
+rnamake ansible_host=web.dev.scigap.org ansible_user=exouser
