@@ -23,13 +23,25 @@
 #   yum: name=* state=latest
 
 # Install Mysql
-- name: install epel release
+- name: install epel release  (Redhat)
   yum: name=epel-release state=present
   become_user: root
+  when: ansible_os_family == "RedHat"
 
-- name: install pip
+- name: install epel release (Rocky)
+  dnf: name=epel-release
+  become_user: root
+  when: ansible_os_family == "Rocky"
+
+- name: install pip (Redhat)
   yum: name=python-pip state=latest update_cache=yes
   become_user: root
+  when: ansible_os_family == "RedHat"
+
+- name: install pip (Rocky)
+  dnf: name=python39-pip
+  become_user: root
+  when: ansible_os_family == "Rocky"
 
 - name: install pexpect
   pip: name=pexpect
@@ -42,19 +54,25 @@
 - name: Adds Python MySQL support on RedHat/CentOS
   yum: name=MySQL-python state=present
   become_user: root
-  # when: ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS'
 
-- name: Add MariaDB yum repository on CentOS
+- name: Add MariaDB yum repository on CentOS {{ ansible_distribution }}
   copy: src="MariaDB_yum_CentOS_{{ ansible_distribution_major_version }}.repo"
         dest="/etc/yum.repos.d/"
   become_user: root
   when: ansible_distribution == 'CentOS'
 
-- name: install mariadb
+- name: install mariadb (Redhat or CentOS)
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items: "{{ mysql_packages }}"
   become_user: root
-#" for vim
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS'
+
+- name: install mariadb (Rocky)
+  dnf: name="{{ item }}"
+  with_items: "{{ mysql_packages }}"
+  become_user: root
+  when: ansible_os_family == 'Rocky'
 
 - name: check if mysql has been updated
   stat: path=/usr/share/mysql/SELinux/mariadb.pp
@@ -63,9 +81,14 @@
 - debug:
     var: mysql_selinux_update
 
-- name: double check policycoreutils installed
+- name: double check policycoreutils installed (Redhat or Centos)
   yum: name=policycoreutils-python state=installed
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and (ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS')
+  become_user: root
+
+- name: double check policycoreutils installed (Rocky)
+  dnf: name=policycoreutils-python-utils state=installed
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == 'Rocky'
   become_user: root
 
 - name: Copy SELinux type enforcement file
@@ -106,9 +129,15 @@
 ## See https://www.rootusers.com/how-to-fix-mariadb-10-0-29-selinux-update-failure/
 # and https://jira.mariadb.org/browse/MDEV-11789
 # For now I'm not adding to Ansible script since this bug should be fixed in next MariaDB release
-- name: start mariadb
+- name: start mariadb (Redhat or CentOS)
   service: name=mysql state=started enabled=yes
   become_user: root
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS'
+
+- name: start mariadb (Rocky)
+  service: name=mariadb state=started enabled=yes
+  become_user: root
+  when: ansible_os_family == 'Rocky'
 
 - include: secure_install.yml
 
