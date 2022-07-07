@@ -1,22 +1,22 @@
 # inventory file : scigap js2 develop deployment
 
 [zookeeper]
-helix.js2.scigap.org
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [rabbitmq]
-api.js2.scigap.org
+api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [database]
-db.js2.scigap.org
+db.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [api-orch]
-api.js2.scigap.org
+api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [keycloak]
-iam.js2.scigap.org
+iam.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [helix]
-helix.js2.scigap.org
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [kafka]
-helix.js2.scigap.org
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3

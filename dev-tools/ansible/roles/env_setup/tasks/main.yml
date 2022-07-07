@@ -34,6 +34,11 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
+- name: Install Firewalld (Rocky)
+  dnf: name=firewalld
+  become: yes
+  when: ansible_os_family == "Rocky"
+
 - name: Install Firewalld (Debian)
   apt: name=firewalld state=latest update_cache=yes
   become: yes
@@ -53,11 +58,11 @@
   service: name=firewalld state=started
   become: yes
 
-- name: open firewall port 22 for SSH connections
+- name: open firewall port 22 for SSH connections (Redhat or Rocky)
   firewalld: port="22/tcp"
              zone=public permanent=true state=enabled immediate=yes
   become: yes
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
 
 # Issues with firewalld module on Ubuntu https://github.com/ansible/ansible/issues/24855
 # So as workaround, just calling firewall-cmd directly for now
@@ -88,6 +93,14 @@
     backup: yes
   become: yes
   when: ansible_os_family == "RedHat"
+
+- name: Copy dnf-cron.conf config file (RedHat or Rocky)
+  copy:
+    src: dnf-cron.conf
+    dest: /etc/dnf/automatic.conf
+    backup: yes
+  become: yes
+  when: ansible_os_family == "Rocky"
 
 - name: Enable and start yum-cron
   service: name=yum-cron state=started enabled=yes daemon_reload=yes
