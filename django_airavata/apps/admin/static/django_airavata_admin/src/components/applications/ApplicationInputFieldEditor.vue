@@ -66,15 +66,29 @@
           :disabled="readonly"
         ></b-form-input>
       </b-form-group>
+      <b-form-group
+        class="flex-fill"
+        label="Required on Command Line"
+        :label-for="id + '-required-command-line'"
+        description="Add this input's value to the command line in the generated job script."
+      >
+        <b-form-radio-group
+          :id="id + '-required-command-line'"
+          v-model="data.requiredToAddedToCommandLine"
+          :options="trueFalseOptions"
+          :disabled="readonly"
+        >
+        </b-form-radio-group>
+      </b-form-group>
       <div class="d-flex">
         <b-form-group
           class="flex-fill"
-          label="Standard Input"
-          :label-for="id + '-standard-input'"
+          label="Required"
+          :label-for="id + '-required'"
         >
           <b-form-radio-group
-            :id="id + '-standard-input'"
-            v-model="data.standardInput"
+            :id="id + '-required'"
+            v-model="data.isRequired"
             :options="trueFalseOptions"
             :disabled="readonly"
           >
@@ -104,47 +118,6 @@
           :rows="3"
           :disabled="readonly"
         />
-      </b-form-group>
-      <div class="d-flex">
-        <b-form-group
-          class="flex-fill"
-          label="Data is staged"
-          :label-for="id + '-data-staged'"
-        >
-          <b-form-radio-group
-            :id="id + '-data-staged'"
-            v-model="data.dataStaged"
-            :options="trueFalseOptions"
-            :disabled="readonly"
-          >
-          </b-form-radio-group>
-        </b-form-group>
-        <b-form-group
-          class="flex-fill"
-          label="Required"
-          :label-for="id + '-required'"
-        >
-          <b-form-radio-group
-            :id="id + '-required'"
-            v-model="data.isRequired"
-            :options="trueFalseOptions"
-            :disabled="readonly"
-          >
-          </b-form-radio-group>
-        </b-form-group>
-      </div>
-      <b-form-group
-        class="flex-fill"
-        label="Required on Command Line"
-        :label-for="id + '-required-command-line'"
-      >
-        <b-form-radio-group
-          :id="id + '-required-command-line'"
-          v-model="data.requiredToAddedToCommandLine"
-          :options="trueFalseOptions"
-          :disabled="readonly"
-        >
-        </b-form-radio-group>
       </b-form-group>
       <b-form-group
         label="Advanced Input Field Modification Metadata"
