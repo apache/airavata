@@ -24,8 +24,9 @@ install
 [the most recent LTS version of Node.js](https://nodejs.org/en/download/). You
 can also use [nvm](https://github.com/nvm-sh/nvm) to manage the Node.js install.
 If you have nvm installed you can run `nvm install && nvm use` before running
-any yarn commands. See [the Yarn package manager](https://yarnpkg.com) for
-information on how to install yarn.
+any yarn commands. See
+[the Yarn package manager](https://classic.yarnpkg.com/lang/en/) for information
+on how to install Yarn 1 (Classic).
 
 1.  Checkout this project and create a virtual environment.
 
