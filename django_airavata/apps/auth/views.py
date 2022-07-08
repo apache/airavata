@@ -28,7 +28,10 @@ from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from django_airavata.apps.api.view_utils import IsInAdminsGroupPermission
+from django_airavata.apps.api.view_utils import (
+    IsInAdminsGroupPermission,
+    ReadOnly
+)
 from django_airavata.apps.auth import serializers
 
 from . import forms, iam_admin_client, models, utils
@@ -707,7 +710,7 @@ def get_client_secret(access_token, client_endpoint):
 class ExtendedUserProfileFieldViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ExtendedUserProfileFieldSerializer
     queryset = models.ExtendedUserProfileField.objects.all().order_by('order')
-    permission_classes = [IsInAdminsGroupPermission]
+    permission_classes = [permissions.IsAuthenticated, IsInAdminsGroupPermission | ReadOnly]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -747,7 +750,7 @@ class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
             if username is not None:
                 queryset = queryset.filter(user_profile__user__username=username)
         else:
-            queryset = user.user_profile.extended_profile.all()
+            queryset = user.user_profile.extended_profile_values.all()
         return queryset
 
     @action(methods=['POST'], detail=False, url_path="save-all")

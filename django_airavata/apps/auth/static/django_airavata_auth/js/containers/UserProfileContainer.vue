@@ -13,7 +13,7 @@
         In the meantime, please complete as much of your profile as possible.
       </p>
     </b-alert>
-    <b-alert v-else-if="user && !user.complete" show>
+    <b-alert v-else-if="mustComplete" show
       >Please complete your user profile before continuing.</b-alert
     >
     <b-card>
@@ -33,7 +33,7 @@
       <b-button variant="primary" @click="onSave">Save</b-button>
     </b-card>
     <b-link
-      v-if="user && user.complete"
+      v-if="!mustComplete"
       class="text-muted small"
       href="/workspace/dashboard"
       >Return to Dashboard</b-link
@@ -77,6 +77,11 @@ export default {
   computed: {
     ...mapGetters("userProfile", ["user"]),
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
+    mustComplete() {
+      return (
+        this.user && (!this.user.complete || !this.user.ext_user_profile_valid)
+      );
+    },
   },
   methods: {
     ...mapActions("userProfile", [

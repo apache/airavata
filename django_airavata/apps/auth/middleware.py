@@ -90,8 +90,14 @@ def user_profile_completeness_check(get_response):
             reverse('django_airavata_auth:user_profile'),
             reverse('django_airavata_auth:logout'),
         ]
-        if (hasattr(request.user, "user_profile") and
-            not request.user.user_profile.is_complete and
+        incomplete_user_profile = (hasattr(request.user, "user_profile") and
+                                   not request.user.user_profile.is_complete)
+        # Exclude admin's from the ext user profile check since they will be
+        # creating/editing the ext user profile fields
+        invalid_ext_user_profile = (not getattr(request, "is_gateway_admin", False) and
+                                    hasattr(request.user, "user_profile") and
+                                    not request.user.user_profile.is_ext_user_profile_valid)
+        if ((incomplete_user_profile or invalid_ext_user_profile) and
             request.path not in allowed_paths and
                 'text/html' in request.META['HTTP_ACCEPT']):
             return redirect('django_airavata_auth:user_profile')

@@ -27,11 +27,13 @@ class UserSerializer(serializers.ModelSerializer):
     pending_email_change = serializers.SerializerMethodField()
     complete = serializers.SerializerMethodField()
     username_valid = serializers.SerializerMethodField()
+    ext_user_profile_valid = serializers.SerializerMethodField()
 
     class Meta:
         model = get_user_model()
         fields = ['id', 'username', 'first_name', 'last_name', 'email',
-                  'pending_email_change', 'complete', 'username_valid']
+                  'pending_email_change', 'complete', 'username_valid',
+                  'ext_user_profile_valid']
         read_only_fields = ('username',)
 
     def get_pending_email_change(self, instance):
@@ -48,6 +50,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_username_valid(self, instance):
         return instance.user_profile.is_username_valid
+
+    def get_ext_user_profile_valid(self, instance):
+        return instance.user_profile.is_ext_user_profile_valid
 
     @atomic
     def update(self, instance, validated_data):
