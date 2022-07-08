@@ -2,7 +2,8 @@
 
 Make sure you have
 [the latest version of Node.js LTS installed](https://nodejs.org/en/download/).
-You also need to install [the Yarn package manager](https://yarnpkg.com).
+You also need to install
+[the Yarn 1 (Classic) package manager](https://classic.yarnpkg.com/en/docs/install).
 
 Start the Django portal (`python manage.py runserver`). Navigate to the Django
 app directory and run `yarn` and then `yarn` to start up the dev server. Now you
@@ -166,6 +167,6 @@ yarn format
 
 ## Recommended tools
 
--   <https://github.com/vuejs/vue-devtools> - debugging/inspection in Firefox
-    or Chrome
+-   <https://github.com/vuejs/vue-devtools> - debugging/inspection in Firefox or
+    Chrome
 -   <https://vuejs.github.io/vetur/> - Vue tooling for Visual Studio Code

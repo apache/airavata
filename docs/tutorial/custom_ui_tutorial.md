@@ -15,7 +15,8 @@ Tutorial attendees should have:
 -   [Docker Desktop](https://www.docker.com/products/docker-desktop)
 -   If you don't have Docker installed or can't install it, you'll also need:
     -   [Node LTS](https://nodejs.org/en/download/),
-    -   and [Yarn package manager](https://yarnpkg.com/getting-started/install).
+    -   and
+        [Yarn 1 (Classic) package manager](https://classic.yarnpkg.com/en/docs/install).
 
 ### Installing Python
 
@@ -768,17 +769,13 @@ Choose from 1, 2 [1]:
 import io
 import os
 
-import numpy as np
-from cclib.parser import ccopen
-from django.conf import settings
-from matplotlib.figure import Figure
+import numpy as np from cclib.parser import ccopen from django.conf import
+settings from matplotlib.figure import Figure
 
 from airavata_django_portal_sdk import user_storage
 
-
-class GaussianEigenvaluesViewProvider:
-    display_type = 'image'
-    name = "Gaussian Eigenvalues"
+class GaussianEigenvaluesViewProvider: display_type = 'image' name = "Gaussian
+Eigenvalues"
 
     def generate_data(self, request, experiment_output, experiment, output_file=None, **kwargs):
 
@@ -825,7 +822,7 @@ class GaussianEigenvaluesViewProvider:
             'mime-type': 'image/png'
         }
 
-```
+````
 </div>
 
 5. Let's take a look at the implementation. First we added some imports at the
@@ -841,7 +838,7 @@ from django.conf import settings
 from matplotlib.figure import Figure
 
 from airavata_django_portal_sdk import user_storage
-```
+````
 
 6.  Next we implemented the
     [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
@@ -1140,12 +1137,10 @@ from django.urls import path
 
 from . import views
 
-app_name = 'custom_ui_tutorial_app'
-urlpatterns = [
-    path('home/', views.home, name='home'),
-    path('hello/', views.hello_world, name='hello_world'),
-]
-```
+app_name = 'custom_ui_tutorial_app' urlpatterns = [ path('home/', views.home,
+name='home'), path('hello/', views.hello_world, name='hello_world'), ]
+
+````
 </div>
 
 This maps the `/hello/` URL to the `hello_world` view.
@@ -1168,7 +1163,8 @@ class CustomUiTutorialAppConfig(AppConfig):
     verbose_name = "Custom UI Tutorial App"
     fa_icon_class = "fa-comment"
     url_home = "custom_ui_tutorial_app:hello_world"
-```
+````
+
 </div>
 
 This the main metadata for this custom Django app. Besides the normal metadata
@@ -1245,13 +1241,11 @@ from django.urls import path
 
 from . import views
 
-app_name = 'custom_ui_tutorial_app'
-urlpatterns = [
-    path('home/', views.home, name='home'),
-    path('hello/', views.hello_world, name="hello_world"),
-    path('languages/', views.languages, name="languages"),
-]
-```
+app_name = 'custom_ui_tutorial_app' urlpatterns = [ path('home/', views.home,
+name='home'), path('hello/', views.hello_world, name="hello_world"),
+path('languages/', views.languages, name="languages"), ]
+
+````
 </div>
 
 4. In
@@ -1282,7 +1276,7 @@ urlpatterns = [
     </main>
 </div>
 ...
-```
+````
 
 <button class="btn" data-clipboard-target="#greeting-select">
     Copy to clipboard
@@ -1310,7 +1304,6 @@ urlpatterns = [
 
     Add to `hello.html` the code between the **STARTING HERE** and **ENDING
     HERE** comments.
-
 
 ```html
 {% block scripts %}
@@ -1472,7 +1465,8 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
 
     loadExperiments();
     $("#refresh-button").click(loadExperiments);
-```
+
+````
 </div>
 
 The user interface should now look something like:
@@ -1515,7 +1509,8 @@ then examine it line by line to see what it is doing.
     }
 
     $("#run-button").click(runClickHandler);
-```
+````
+
 </div>
 
 2. Going line by line we'll now take a look at this code. We added a click
@@ -1688,7 +1683,9 @@ async function loadExperiments() {
             const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
             const dataProductURI = stdoutInput.value;
             try {
-                const stdout = await utils.ExperimentUtils.readDataProduct(dataProductURI);
+                const stdout = await utils.ExperimentUtils.readDataProduct(
+                    dataProductURI
+                );
                 // if stdout is null, it means the file wasn't found
                 if (stdout !== null) {
                     $(`#output_${index}`).text(stdout);
