@@ -5,6 +5,11 @@
         <h1 class="h4 mb-4">Manage Users</h1>
       </div>
       <div class="col-auto">
+        <b-button :to="{ name: 'extended-user-profile' }"
+          >Extended User Profile</b-button
+        >
+      </div>
+      <div class="col-auto">
         <b-dropdown :text="menuText">
           <b-dropdown-item
             :to="{ name: 'identity-service-users' }"

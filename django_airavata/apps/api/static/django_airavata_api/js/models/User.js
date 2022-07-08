@@ -8,7 +8,8 @@ const FIELDS = [
   "email",
   "pending_email_change",
   "complete",
-  "username_valid"
+  "username_valid",
+  "ext_user_profile_valid",
 ];
 
 export default class User extends BaseModel {

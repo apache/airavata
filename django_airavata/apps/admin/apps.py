@@ -25,7 +25,7 @@ class AdminConfig(AiravataAppConfig):
             'label': 'Manage Users',
             'icon': 'fa fa-users',
             'url': 'django_airavata_admin:users',
-            'active_prefixes': ['users'],
+            'active_prefixes': ['users', 'extended-user-profile'],
             'enabled': lambda req: (req.is_gateway_admin or
                                     req.is_read_only_gateway_admin),
         },

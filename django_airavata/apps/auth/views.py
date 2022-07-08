@@ -24,10 +24,14 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
-from rest_framework import permissions, viewsets
+from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from django_airavata.apps.api.view_utils import (
+    IsInAdminsGroupPermission,
+    ReadOnly
+)
 from django_airavata.apps.auth import serializers
 
 from . import forms, iam_admin_client, models, utils
@@ -701,3 +705,67 @@ def get_client_secret(access_token, client_endpoint):
     r = requests.get(client_endpoint + "/client-secret", headers=headers)
     r.raise_for_status()
     return r.json()['value']
+
+
+class ExtendedUserProfileFieldViewset(viewsets.ModelViewSet):
+    serializer_class = serializers.ExtendedUserProfileFieldSerializer
+    queryset = models.ExtendedUserProfileField.objects.all().order_by('order')
+    permission_classes = [permissions.IsAuthenticated, IsInAdminsGroupPermission | ReadOnly]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            queryset = queryset.filter(deleted=False)
+        return queryset
+
+    def perform_destroy(self, instance):
+        instance.deleted = True
+        instance.save()
+
+
+class IsExtendedUserProfileOwnerOrReadOnlyForAdmins(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if (request.method in permissions.SAFE_METHODS and
+                request.is_gateway_admin):
+            return True
+        return obj.user_profile.user == request.user
+
+
+class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
+                                      mixins.RetrieveModelMixin,
+                                      mixins.UpdateModelMixin,
+                                      mixins.ListModelMixin,
+                                      viewsets.GenericViewSet):
+    serializer_class = serializers.ExtendedUserProfileValueSerializer
+    permission_classes = [IsExtendedUserProfileOwnerOrReadOnlyForAdmins]
+
+    def get_queryset(self):
+        user = self.request.user
+        if self.request.is_gateway_admin:
+            queryset = models.ExtendedUserProfileValue.objects.all()
+            username = self.request.query_params.get('username')
+            if username is not None:
+                queryset = queryset.filter(user_profile__user__username=username)
+        else:
+            queryset = user.user_profile.extended_profile_values.all()
+        return queryset
+
+    @action(methods=['POST'], detail=False, url_path="save-all")
+    @atomic
+    def save_all(self, request, format=None):
+        user = request.user
+        user_profile: models.UserProfile = user.user_profile
+        old_valid = user_profile.is_ext_user_profile_valid
+        serializer: serializers.ExtendedUserProfileValueSerializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        values = serializer.save()
+
+        new_valid = user_profile.is_ext_user_profile_valid
+        if not old_valid and new_valid:
+            utils.send_admin_user_completed_profile(request, user_profile)
+
+        serializer = self.get_serializer(values, many=True)
+        return Response(serializer.data)

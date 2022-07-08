@@ -25,6 +25,7 @@
         @save="groupsUpdated"
       />
       <user-profile-panel :iamUserProfile="iamUserProfile" />
+      <extended-user-profile-panel :iamUserProfile="iamUserProfile" />
       <external-idp-user-info-panel
         v-if="hasExternalIDPUserInfo"
         :externalIDPUserInfo="localIAMUserProfile.externalIDPUserInfo"
@@ -78,6 +79,7 @@ import ChangeUsernamePanel from "./ChangeUsernamePanel.vue";
 import EditGroupsPanel from "./EditGroupsPanel.vue";
 import ExternalIDPUserInfoPanel from "./ExternalIDPUserInfoPanel.vue";
 import UserProfilePanel from "./UserProfilePanel.vue";
+import ExtendedUserProfilePanel from "./ExtendedUserProfilePanel.vue";
 
 export default {
   name: "user-details-container",
@@ -100,6 +102,7 @@ export default {
     EditGroupsPanel,
     "external-idp-user-info-panel": ExternalIDPUserInfoPanel,
     UserProfilePanel,
+    ExtendedUserProfilePanel,
   },
   data() {
     return {

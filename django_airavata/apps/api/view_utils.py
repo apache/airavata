@@ -221,3 +221,8 @@ class IsInAdminsGroupPermission(permissions.BasePermission):
                     request.is_read_only_gateway_admin)
         else:
             return request.is_gateway_admin
+
+
+class ReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS

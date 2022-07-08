@@ -1,30 +1,34 @@
 <template>
-  <b-card>
-    <b-form-group label="Username" :disabled="true" description="Only administrators can update a username.">
+  <div v-if="user">
+    <b-form-group
+      label="Username"
+      :disabled="true"
+      description="Only administrators can update a username."
+    >
       <b-form-input v-model="user.username" />
     </b-form-group>
     <b-form-group label="First Name" :disabled="disabled">
       <b-form-input
-        v-model="$v.user.first_name.$model"
+        v-model="$v.first_name.$model"
         @keydown.native.enter="save"
-        :state="validateState($v.user.first_name)"
+        :state="validateState($v.first_name)"
       />
     </b-form-group>
     <b-form-group label="Last Name" :disabled="disabled">
       <b-form-input
-        v-model="$v.user.last_name.$model"
+        v-model="$v.last_name.$model"
         @keydown.native.enter="save"
-        :state="validateState($v.user.last_name)"
+        :state="validateState($v.last_name)"
       />
     </b-form-group>
     <b-form-group label="Email" :disabled="disabled">
       <b-form-input
-        v-model="$v.user.email.$model"
+        v-model="$v.email.$model"
         @keydown.native.enter="save"
-        :state="validateState($v.user.email)"
+        :state="validateState($v.email)"
       />
-      <b-form-invalid-feedback v-if="!$v.user.email.email">
-        {{ user.email }} is not a valid email address.
+      <b-form-invalid-feedback v-if="!$v.email.email">
+        {{ email }} is not a valid email address.
       </b-form-invalid-feedback>
       <b-alert class="mt-1" show v-if="user.pending_email_change"
         >Once you verify your email address at
@@ -36,26 +40,19 @@
         ></b-alert
       >
     </b-form-group>
-    <b-button variant="primary" @click="save" :disabled="$v.$invalid || disabled"
-      >Save</b-button
-    >
-  </b-card>
+  </div>
 </template>
 
 <script>
-import { models } from "django-airavata-api";
 import { errors } from "django-airavata-common-ui";
 import { validationMixin } from "vuelidate";
 import { email, required } from "vuelidate/lib/validators";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "user-profile-editor",
   mixins: [validationMixin],
   props: {
-    value: {
-      type: models.User,
-      required: true,
-    },
     disabled: {
       type: Boolean,
       default: false,
@@ -63,45 +60,62 @@ export default {
   },
   created() {
     if (!this.disabled) {
-      this.$v.user.$touch();
+      this.$v.$touch();
     }
   },
   data() {
-    return {
-      user: this.cloneValue(),
-    };
+    return {};
+  },
+  computed: {
+    ...mapGetters("userProfile", ["user"]),
+    first_name: {
+      get() {
+        return this.user.first_name;
+      },
+      set(first_name) {
+        this.setFirstName({ first_name });
+      },
+    },
+    last_name: {
+      get() {
+        return this.user.last_name;
+      },
+      set(last_name) {
+        this.setLastName({ last_name });
+      },
+    },
+    email: {
+      get() {
+        return this.user.email;
+      },
+      set(email) {
+        this.setEmail({ email });
+      },
+    },
+    valid() {
+      return !this.$v.$invalid;
+    },
   },
   validations() {
     return {
-      user: {
-        first_name: {
-          required,
-        },
-        last_name: {
-          required,
-        },
-        email: {
-          required,
-          email,
-        },
+      first_name: {
+        required,
+      },
+      last_name: {
+        required,
+      },
+      email: {
+        required,
+        email,
       },
     };
   },
   methods: {
-    cloneValue() {
-      return JSON.parse(JSON.stringify(this.value));
-    },
+    ...mapMutations("userProfile", ["setFirstName", "setLastName", "setEmail"]),
     save() {
-      if (!this.$v.$invalid) {
-        this.$emit("save", this.user);
-      }
+      this.$emit("save");
     },
     validateState: errors.vuelidateHelpers.validateState,
-  },
-  watch: {
-    value() {
-      this.user = this.cloneValue();
-    },
   },
 };
 </script>

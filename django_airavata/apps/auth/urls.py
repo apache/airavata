@@ -7,6 +7,8 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet, basename='user')
+router.register(r'extended-user-profile-fields', views.ExtendedUserProfileFieldViewset, basename='extended-user-profile-field')
+router.register(r'extended-user-profile-values', views.ExtendedUserProfileValueViewset, basename='extended-user-profile-value')
 app_name = 'django_airavata_auth'
 urlpatterns = [
     re_path(r'^', include(router.urls)),

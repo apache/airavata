@@ -6,6 +6,7 @@ import App from "./App.vue";
 import router from "./router";
 
 import "flatpickr/dist/flatpickr.css";
+import createStore from "./store";
 
 entry((Vue) => {
   Vue.config.productionTip = false;
@@ -14,7 +15,10 @@ entry((Vue) => {
   Vue.use(VueRouter);
   Vue.use(VueFlatPickr);
 
+  const store = createStore(Vue);
+
   new Vue({
+    store,
     render: (h) => h(components.MainLayout, [h(App)]),
     router,
   }).$mount("#app");

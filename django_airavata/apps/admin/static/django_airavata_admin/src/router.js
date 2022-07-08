@@ -9,6 +9,7 @@ import ComputeResourcePreferenceDashboard from "./components/dashboards/ComputeR
 import CredentialStoreDashboard from "./components/dashboards/CredentialStoreDashboard";
 import DevelopersContainer from "./components/developers//DevelopersContainer.vue";
 import ExperimentStatisticsContainer from "./components/statistics/ExperimentStatisticsContainer";
+import ExtendedUserProfileContainer from "./components/users/ExtendedUserProfileContainer";
 import GatewayResourceProfileEditorContainer from "./components/gatewayprofile/GatewayResourceProfileEditorContainer.vue";
 import GroupComputeResourcePreference from "./components/admin/group_resource_preferences/GroupComputeResourcePreference";
 import IdentityServiceUserManagementContainer from "./components/users/IdentityServiceUserManagementContainer.vue";
@@ -139,6 +140,11 @@ const routes = [
         name: "unverified-email-users",
       },
     ],
+  },
+  {
+    path: "/extended-user-profile",
+    component: ExtendedUserProfileContainer,
+    name: "extended-user-profile",
   },
   {
     path: "/notices",
