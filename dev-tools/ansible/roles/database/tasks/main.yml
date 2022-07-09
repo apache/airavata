@@ -56,6 +56,11 @@
   become_user: root
   when: ansible_os_family == 'RedHat' or ansible_os_family == 'CentOS'
 
+- name: Adds Python MySQL support on Rocky
+  dnf: name=python3-mysql state=present
+  become_user: root
+  when: ansible_os_family == 'Rocky'
+
 - name: Add MariaDB yum repository on CentOS {{ ansible_distribution }}
   copy: src="MariaDB_yum_CentOS_{{ ansible_distribution_major_version }}.repo"
         dest="/etc/yum.repos.d/"
