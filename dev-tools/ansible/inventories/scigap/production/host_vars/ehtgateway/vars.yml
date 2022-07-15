@@ -22,36 +22,32 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-airavata_django_extra_dependencies:
-  - "git+https://github.com/SciGaP/hicops-django-app.git@main#egg=hicops_django_app"
-
-vhost_servername: "hicops.cs.fiu.edu"
+vhost_servername: "eht.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/hicops.cs.fiu.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/hicops.cs.fiu.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/hicops.cs.fiu.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/eht.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/eht.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/eht.scigap.org/privkey.pem"
 
-#django_file_upload_max_file_size_mb: 2500
 
 ## Keycloak related variables
-tenant_domain: "hicops"
+tenant_domain: "ehtgateway"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "HICOPS Gateway"
+    name: "EHT Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "hicops"
-experiment_data_dir: "{{ user_data_dir }}/hicops"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnwOfvXERKIUcsH9W4GH+S+glClMrxzlEV6cXtCgrr92ooTEw3oxjmQGyvGs0G6AFHe7Tbkxnp6QBFD/VvNLpaXcvZc3t37IvbKqm2Wu5TkLhgHZqG/ceGSlaLqgKIhU5kENF3Y0XtK/QSd4hfECWQ/VyzafPCLs88xuaXdhUQE4dw+COrimaW57nCZ/A1lspBIKsnwxqFpmIXE1gsR/eU0UjVCNixm3PoO+0hr6MTzzped+xAdQHuTST/0bu0vcrK1qVixsD8rKVLgaaEaHml93vG85wlzBmsiGID4yKNTJSQBNn3G8r51mjzw72tRHovaYlP3NMpPuWeVZgY7WF9"
+gateway_id: "ehtgateway"
+experiment_data_dir: "{{ user_data_dir }}/ehtgateway"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCr7wFmAAPMfHAuCFPZJHZSUqLMiL9LwEC8tkfIIrgLtphuDT7Jgmq37XFK2/llg1clb0Ugehpl35OVnNLOb4IZqAgUYIvm2298sHfUT9W/TIpAqMg7hSiK5x8SWDn0zC6+APQMiEIJD9Q/pfJ1vAUbMrkkwQ4cXtqcF6f478Ou7juwIBCzywEbqdtQ+x8kBIglk4/QAtSSekRWmOTvqq5B1sXpB7scWQUb/D/ZCpMRlbOpctmE8D9alkNMdKe/5wUfIvdwg2WzRtgOho5pg/deWaOpfMUa0FQbdV8iO22xr7j6y9Rj25rYiHqJFqFsEK/aO0aMT+OXTH6JbJi8p1Fp"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Muhammad Haseeb','mhase003@fiu.edu'),('Fahad Saeed','fsaeed@fiu.edu')]"
-portal_title: "HICOPS Portal"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Chan Chi-kwan', 'chanc@arizona.edu'),('Rob Quick', 'rquick@iu.edu')]"
+portal_title: "EHT Gateway"
 
-django_google_analytics_tracking_id: "UA-193861714-1"
+#django_google_analytics_tracking_id: "UA-66348921-1"
 ...

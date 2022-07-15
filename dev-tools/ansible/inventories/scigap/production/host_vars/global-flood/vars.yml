@@ -22,11 +22,15 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-# airavata_django_extra_dependencies:
-#   - "git+https://github.com/Global-Flood-Assessment/global-floods-django-app.git#egg=global_floods_django_app"
+airavata_django_extra_dependencies:
+  - "git+https://github.com/Global-Flood-Assessment/global-floods-django-app.git#egg=global_floods_django_app"
 
 vhost_servername: "global-floods-monitoring.scigap.org"
 vhost_ssl: True
+vhost_redirects:
+  - from: "^/$"
+    to: "/global_floods_django_app"
+    regex: true
 ssl_certificate_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/global-floods-monitoring.scigap.org/privkey.pem"
@@ -53,4 +57,8 @@ admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Wang Jun','wang208@iu.edu')]"
 portal_title: "Global Floods Assessment Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
+
+django_extra_settings:
+  DATABASES['default']['ENGINE']: "django.contrib.gis.db.backends.mysql"
+
 ...
