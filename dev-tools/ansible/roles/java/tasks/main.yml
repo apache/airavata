@@ -24,6 +24,14 @@
   become: yes
   tags:
     - always
+  when: ansible_os_family == "Redhat"
+
+- name: Install OpenJDK 11 (Rocky)
+  dnf: name="{{ openjdk_version_rocky }}"
+  become: yes
+  tags:
+    - always
+  when: ansible_os_family == "Rocky"
 
 # NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
 - name: set {{ java_home }} as default

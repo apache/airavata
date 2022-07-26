@@ -22,6 +22,12 @@
 - name: Install httpd
   yum: name="httpd" state=latest update_cache=yes
   become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Install httpd (Rocky)
+  dnf: name="httpd"
+  become: yes
+  when: ansible_os_family == "Rocky"
 
 - name: allow httpd to proxy to Keycloak process
   seboolean:
