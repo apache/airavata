@@ -33,6 +33,7 @@
     - always
   when: ansible_os_family == "Rocky"
 
+
 # NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
 - name: set {{ java_home }} as default
   alternatives:
