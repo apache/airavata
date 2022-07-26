@@ -232,3 +232,5 @@ monitoring_subnets: "{{ iu_subnets }}"
 
 # Zabbix
 zabbix_server: "rt-watch.uits.indiana.edu"
+
+letsencrypt_email: "circ-iu-group@iu.edu"

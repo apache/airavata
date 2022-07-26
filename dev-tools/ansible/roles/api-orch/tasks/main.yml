@@ -43,6 +43,7 @@
 - name: Delete previous deployments
   file: path="{{ api_orch_dir }}/{{ airavata_dist }}" state=absent
 
+
 - name: Copy distribution to api-orcheatrator deployment directory
   unarchive: src="{{ airavata_source_dir }}/modules/distribution/target/{{ airavata_dist_name }}"
              dest="{{ api_orch_dir }}/"
@@ -148,6 +149,22 @@
             dest="{{ api_orch_systemd_unit_file }}"
   become: yes
   become_user: root
+
+
+- name: Allow  to modify files
+  sefcontext:
+    target: "{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh"
+    setype: initrc_exec_t
+    state: present
+  become: yes
+  become_user: root
+  when: ansible_os_family == "Rocky"
+
+- name: Apply new SELinux file context to filesystem
+  command: restorecon -v "{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh"
+  become: yes
+  become_user: root
+  when: ansible_os_family == "Rocky"
 
 - name: start api-orch
   service: name=apiorch state=started enabled=yes daemon_reload=yes

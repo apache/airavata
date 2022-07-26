@@ -31,11 +31,24 @@
   become_user: root
   when: ansible_os_family == "RedHat"
 
+- name: install certbot and dependencies (Rocky)
+  dnf: name={{ item }}
+  with_items:
+    - epel-release
+    - mod_ssl
+    - certbot
+    - python3-certbot-apache
+  become: true
+  become_user: root
+  when: ansible_os_family == "Rocky"
+
 - name: add Certbot PPA repository
   apt_repository:
     repo: "ppa:certbot/certbot"
   become: yes
   when: ansible_os_family == "Debian"
+
+
 
 - name: Install Certbot and dependencies (Debian)
   apt: name={{ item }} state=latest update_cache=yes
@@ -44,6 +57,7 @@
     - python-certbot-apache
   become: yes
   when: ansible_os_family == "Debian"
+
 
 # Note: on Ubuntu crontab is automatically created to run cert renewal. Only
 # CentOS requires enabling the certbot-renew timer.
@@ -55,7 +69,8 @@
     daemon_reload: true
   become: true
   become_user: root
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+
 
 - name: enable certbot (letsencrypt) renewal timer
   systemd:
@@ -65,4 +80,5 @@
     daemon_reload: true
   become: true
   become_user: root
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+
