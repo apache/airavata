@@ -34,11 +34,6 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
-- name: Install Firewalld (Rocky)
-  dnf: name=firewalld
-  become: yes
-  when: ansible_os_family == "Rocky"
-
 - name: Install Firewalld (Debian)
   apt: name=firewalld state=latest update_cache=yes
   become: yes
@@ -62,7 +57,7 @@
   firewalld: port="22/tcp"
              zone=public permanent=true state=enabled immediate=yes
   become: yes
-  when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+  when: ansible_os_family == "RedHat"
 
 # Issues with firewalld module on Ubuntu https://github.com/ansible/ansible/issues/24855
 # So as workaround, just calling firewall-cmd directly for now
@@ -78,33 +73,38 @@
 
 # Automatic security updates installation
 
-# TODO: switch to dnf-automatic for Rocky Linux
-# - name: Install yum-cron, yum-utils (RedHat)
-#   yum: name={{ item }} state=latest update_cache=yes
-#   become: yes
-#   when: ansible_os_family == "RedHat"
-#   with_items:
-#     - yum-cron
-#     - yum-utils
+- name: Install yum-cron, yum-utils (CentOS)
+  yum: name={{ item }} state=latest update_cache=yes
+  become: yes
+  when: ansible_os_family == "RedHat" and ansible_distribution == "CentOS"
+  with_items:
+    - yum-cron
+    - yum-utils
 
-# - name: Copy yum-cron.conf config file
-#   copy:
-#     src: yum-cron.conf
-#     dest: /etc/yum/yum-cron.conf
-#     backup: yes
-#   become: yes
-#   when: ansible_os_family == "RedHat"
+- name: Copy yum-cron.conf config file (CentOS)
+  copy:
+    src: yum-cron.conf
+    dest: /etc/yum/yum-cron.conf
+    backup: yes
+  become: yes
+  when: ansible_os_family == "RedHat" and ansible_distribution == "CentOS"
 
-- name: Copy dnf-cron.conf config file (RedHat or Rocky)
+- name: Enable and start yum-cron
+  service: name=yum-cron state=started enabled=yes daemon_reload=yes
+  become: yes
+  when: ansible_os_family == "RedHat" and ansible_distribution == "CentOS"
+
+- name: Copy dnf-cron.conf config file (Rocky)
   copy:
     src: dnf-cron.conf
     dest: /etc/dnf/automatic.conf
     backup: yes
   become: yes
-  when: ansible_os_family == "Rocky"
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Rocky"
 
-- name: Enable and start yum-cron
-  service: name=yum-cron state=started enabled=yes daemon_reload=yes
+- name: Enable and start dnf-cron (Rocky)
+  service: name=dnf-automatic.timer enabled=yes daemon_reload=yes
   become: yes
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Rocky"
+
 ...
