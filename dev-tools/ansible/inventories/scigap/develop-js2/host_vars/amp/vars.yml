@@ -30,7 +30,8 @@ vhost_ssl: true
 httpd_selinux_mode: "permissive"
 
 airavata_django_extra_dependencies:
-  - "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
+  - name: "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
+    editable: true
 
 # tus isn't setup yet
 tusd_vhost_servername:
