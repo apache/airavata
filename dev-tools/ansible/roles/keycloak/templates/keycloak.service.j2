@@ -18,12 +18,15 @@
 # under the License.
 #
 
----
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - letsencrypt
-    - keycloak
+# {{ansible_managed}}
 
-...
+[Unit]
+Description=Keycloak
+
+[Service]
+ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/standalone.sh -b 0.0.0.0
+User={{user}}
+Group={{group}}
+
+[Install]
+WantedBy=multi-user.target

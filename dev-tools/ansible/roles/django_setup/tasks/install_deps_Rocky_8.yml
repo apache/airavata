@@ -1,0 +1,108 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+- name: Install Airavata Django Portal prerequisites (Rocky 8)
+  dnf: name={{ item }} state=latest
+  with_items:
+    - python36
+    - httpd-devel
+    - python36-devel
+    - mysql-devel
+    - gcc
+    - zlib-devel
+    - openssl-devel
+  become: yes
+
+- name: Create mod_wsgi directory
+  file: path={{ mod_wsgi_dir }} state=directory
+  become: yes
+
+- name: Fetch mod_wsgi
+  get_url:
+    url: "{{ mod_wsgi_url }}"
+    dest: "{{ mod_wsgi_tarball_dest }}"
+  become: yes
+
+- name: Untar mod_wsgi
+  unarchive:
+    src: "{{ mod_wsgi_tarball_dest }}"
+    remote_src: yes
+    dest: "{{ mod_wsgi_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}"
+  become: yes
+
+- name: Configure mod_wsgi
+  command: ./configure --with-python=/usr/bin/python3
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}/Makefile"
+  become: yes
+
+- name: make mod_wsgi
+  command: make
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+    creates: "{{ mod_wsgi_unarchive_dir }}/src/server/mod_wsgi.la"
+  become: yes
+
+- name: make install mod_wsgi
+  command: make install
+  args:
+    chdir: "{{ mod_wsgi_unarchive_dir }}"
+  become: yes
+
+- name: Copy mod_wsgi config file
+  copy:
+    src: 00-wsgi.conf
+    dest: "{{ httpd_conf_modules_dir }}/00-wsgi.conf"
+  become: yes
+
+# Allow httpd to copy file attributes when handling uploaded files and moving
+# them from temporary to final destination (which may cross partitions)
+- name: double check policycoreutils installed
+  dnf: name=python3-policycoreutils state=installed
+  become: yes
+
+- name: Copy SELinux type enforcement file
+  copy: src=django-httpd.te dest=/tmp/
+
+- name: Compile SELinux module file
+  command: checkmodule -M -m -o /tmp/django-httpd.mod /tmp/django-httpd.te
+
+- name: Build SELinux policy package
+  command: semodule_package -o /tmp/django-httpd.pp -m /tmp/django-httpd.mod
+
+- name: unLoad SELinux policy package
+  command: semodule -r django-httpd
+  become: yes
+  ignore_errors: True
+
+- name: Load SELinux policy package
+  command: semodule -i /tmp/django-httpd.pp
+  become: yes
+
+- name: Remove temporary files
+  file: path={{ item }} state=absent
+  with_items:
+    - /tmp/django-httpd.mod
+    - /tmp/django-httpd.pp
+    - /tmp/django-httpd.te
