@@ -26,8 +26,6 @@ gateway_data_store_hostname: "web.dev.scigap.org"
 gateway_data_store_resource_id: "web.dev.scigap.org_ba01452f-44e5-4e03-b35f-756630539198"
 django_wsgi_processes: 1
 doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
-admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
-django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
 django_database_name: "django_{{ gateway_id }}"
 django_hidden_airavata_apps: "['django_airavata_dataparsers']"
 # TODO: setup tusd server
@@ -37,3 +35,13 @@ airavata_django_git_branch: "develop"
 # django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
 cilogon_userinfo_url: "https://cilogon.org/oauth2/userinfo"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+
+# Default email settings
+portal_email_host: "smtp.gmail.com"
+portal_email_port: 587
+portal_email_tls: true
+portal_email_username: "devdjango.portal@scigap.org"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_server_email: "{{ portal_email_username }}"
+admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"
+django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"

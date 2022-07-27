@@ -51,11 +51,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCK+P6a
 # Show the Data Parsers app option for Interactwel
 django_hidden_airavata_apps: "[]"
 
-portal_email_host: "smtp.gmail.com"
-portal_email_port: 587
-portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
-portal_email_password: "{{ vault_portal_email_password }}"
-portal_server_email: "{{ portal_email_username }}"
 portal_title: "InterACTWEL Gateway"
 ...
