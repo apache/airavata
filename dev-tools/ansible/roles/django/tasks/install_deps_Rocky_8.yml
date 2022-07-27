@@ -27,5 +27,6 @@
   loop_control:
     loop_var: package
   become: true
+  become_user: root
 
 ...
