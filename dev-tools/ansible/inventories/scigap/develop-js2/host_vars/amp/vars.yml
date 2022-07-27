@@ -60,12 +60,6 @@ gateway_data_store_hostname: "dev.ampgateway.org"
 
 django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
 
-portal_email_host: "smtp.gmail.com"
-portal_email_port: 587
-portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
-portal_email_password: "{{ vault_portal_email_password }}"
-portal_server_email: "{{ portal_email_username }}"
 portal_title: "Dev AMP Gateway"
 
 django_extra_settings:
