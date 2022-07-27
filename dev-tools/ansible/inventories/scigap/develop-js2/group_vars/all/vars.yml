@@ -146,6 +146,9 @@ keycloak_master_account_username: "admin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
 keycloak_vhost_servername: "iam.js2.scigap.org"
 
+# Letsencrypt
+letsencrypt_email: "circ-iu-group@iu.edu"
+
 # Helix
 helix_version: 0.9.9
 helix_url: https://downloads.apache.org/helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
