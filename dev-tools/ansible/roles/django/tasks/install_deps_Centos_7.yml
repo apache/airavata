@@ -19,11 +19,10 @@
 #
 
 ---
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - letsencrypt
-    - keycloak
+
+- name: Adds Python MySQL support (Centos 7)
+  yum: name=MySQL-python state=present
+  become: true
+
 
 ...

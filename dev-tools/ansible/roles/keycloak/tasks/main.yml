@@ -29,6 +29,32 @@
   become: yes
   when: ansible_os_family == "Rocky"
 
+- name: Install java
+  yum: name="java-1.8.0-openjdk-devel" state=present update_cache=yes
+  become: yes
+  tags:
+    - always
+
+# NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
+- name: set {{ keycloak_java_home }} as default
+  alternatives:
+    name="{{ item.exe }}"
+    link="/usr/bin/{{ item.exe }}"
+    path="{{ item.path }}/{{ item.exe }}"
+  with_items:
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'java' }
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'keytool' }
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'javac' }
+    - { path: "{{ keycloak_java_home }}/bin", exe: 'javadoc' }
+  become: yes
+  tags:
+       - always
+
+- name: set selinux to permissive
+  selinux: state=permissive policy=targeted
+  become: yes
+  when: ansible_os_family == "RedHat"
+
 - name: allow httpd to proxy to Keycloak process
   seboolean:
     name: httpd_can_network_connect
@@ -147,26 +173,15 @@
 
 # <---------- setup init script for keycloak, starts the server after reboot ----------->
 
-# Init script to start keycloak in Standalone mode
-- name: copy init script file (Standalone)
-  template: >
-    src=keycloak-standalone-init.j2
-    dest="/etc/init.d/keycloak"
-    owner="{{ user }}"
-    group="{{ group }}"
-    mode="u=rwx,g=rx,o=rx"
+- name: copy keycloak.service systemd unit file
+  template:
+    src: "keycloak.service.j2"
+    dest: "/etc/systemd/system/keycloak.service"
+    backup: yes
   become: yes
-  become_user: root
-  tags:
-       - standalone
-
-# System command to add the init script to enable on startup
-- name: add init script to chkconfig and startup on boot
-  command: chkconfig --level 345 keycloak on
-  become: yes
-  become_user: root
   tags:
        - always
+
 
 # </---------- setup init script for keycloak, starts the server after reboot ----------->
 
@@ -183,26 +198,13 @@
 
 
 # <--------------------------start keycloak Identity server------------------------------>
-- name: reload Keycloak init script
-  command: systemctl daemon-reload
+- name: start/restart keycloak
+  service:
+    name: keycloak
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
   become: yes
-  become_user: root
-  tags:
-       - always
-
-# FIXME: restarting Keycloak server doesn't work
-- name: stop Keycloak server
-  service: name=keycloak state=stopped
-  ignore_errors: yes
-  become: yes
-  become_user: root
-  tags:
-       - always
-
-- name: start Keycloak server
-  service: name=keycloak state=started
-  become: yes
-  become_user: root
   tags:
        - always
 ...

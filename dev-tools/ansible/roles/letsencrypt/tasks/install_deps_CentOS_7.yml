@@ -19,11 +19,13 @@
 #
 
 ---
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - letsencrypt
-    - keycloak
 
-...
+- name: install certbot and dependencies
+  yum: name={{ item }} state=installed update_cache=yes
+  with_items:
+    - certbot-1.11.0
+    - python2-acme-1.11.0
+    - python2-certbot-apache-1.11.0
+    - ca-certificates-2021.2.50
+  become: true
+  become_user: root

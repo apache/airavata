@@ -19,11 +19,13 @@
 #
 
 ---
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - letsencrypt
-    - keycloak
 
-...
+- name: install certbot and dependencies
+  dnf: name={{ item }} state=latest
+  with_items:
+    - certbot
+    - python3-acme
+    - python3-certbot-apache
+    - ca-certificates
+  become: true
+  become_user: root

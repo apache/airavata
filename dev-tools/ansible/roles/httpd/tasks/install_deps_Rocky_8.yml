@@ -19,11 +19,17 @@
 #
 
 ---
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - letsencrypt
-    - keycloak
 
-...
+- name: Install pre-requisites
+  dnf: name="{{ item }}" state=latest
+  with_items:
+    - git
+    - httpd
+    - mod_ssl
+    - python3-libselinux
+    - python3-policycoreutils
+  become: yes
+
+- name: install epel release
+  dnf: name=epel-release state=present
+  become: yes

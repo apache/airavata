@@ -19,11 +19,13 @@
 #
 
 ---
-- hosts: keycloak
-  tags: keycloak
-  roles:
-    - env_setup
-    - letsencrypt
-    - keycloak
+
+- name: Adds Python MySQL support (Rocky 8)
+  dnf: name={{ package }} state=latest
+  loop:
+    - python3-mysql
+  loop_control:
+    loop_var: package
+  become: true
 
 ...
