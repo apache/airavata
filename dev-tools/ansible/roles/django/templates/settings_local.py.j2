@@ -138,6 +138,7 @@ USER_STORAGES = {
     {% endfor %}
 }
 {% else %}
+{# deprecated approach: define django_gateway_user_storages instead #}
 USER_STORAGES = {
     'default': {
         'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
