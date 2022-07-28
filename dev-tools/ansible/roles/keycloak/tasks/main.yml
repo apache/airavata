@@ -19,15 +19,15 @@
 #
 
 ---
-- name: Install httpd
+- name: Install httpd (CentOS)
   yum: name="httpd" state=latest update_cache=yes
   become: yes
-  when: ansible_os_family == "RedHat"
+  when: ansible_distribution == "CentOS"
 
 - name: Install httpd (Rocky)
   dnf: name="httpd"
   become: yes
-  when: ansible_os_family == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 - name: Install java
   yum: name="java-1.8.0-openjdk-devel" state=present update_cache=yes

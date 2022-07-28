@@ -21,25 +21,25 @@
 ---
 ################################################################################
 # Setup and run rabbitmq
-- name: Install erlang latest version
+- name: Install erlang latest version (CentOS)
   yum: name=https://www.rabbitmq.com/releases/erlang/erlang-18.3-1.el7.centos.x86_64.rpm state=present
   become: yes
-  when: ansible_os_family == "Redhat"
+  when: ansible_distribution == "CentOS"
 
 - name: Install erlang latest version (Rocky)
   dnf: name=https://github.com/rabbitmq/erlang-rpm/releases/download/v24.1.4/erlang-24.1.4-1.el8.x86_64.rpm
   become: yes
-  when: ansible_os_family == "Rocky"
+  when: ansible_distribution == "Rocky"
 
-- name: Install Rabbitmq rpm
+- name: Install Rabbitmq rpm (CentOS)
   yum: name=https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm state=present
   become: yes
-  when: ansible_os_family == "Redhat"
+  when: ansible_distribution == "CentOS"
 
 - name: Install Rabbitmq rpm (Rocky)
   dnf: name=https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.10.6/rabbitmq-server-3.10.6-1.el8.noarch.rpm
   become: yes
-  when: ansible_os_family == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 - name: allow only selected networks to access Airavata RabbitMQ
   firewalld:

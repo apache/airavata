@@ -23,17 +23,6 @@
 - include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
   when: ansible_os_family == "RedHat"
 
-- name: install certbot and dependencies (Rocky)
-  dnf: name={{ item }}
-  with_items:
-    - epel-release
-    - mod_ssl
-    - certbot
-    - python3-certbot-apache
-  become: true
-  become_user: root
-  when: ansible_os_family == "Rocky"
-
 - name: add Certbot PPA repository
   apt_repository:
     repo: "ppa:certbot/certbot"
@@ -61,7 +50,7 @@
     daemon_reload: true
   become: true
   become_user: root
-  when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+  when: ansible_os_family == "RedHat"
 
 
 - name: enable certbot (letsencrypt) renewal timer
@@ -72,5 +61,5 @@
     daemon_reload: true
   become: true
   become_user: root
-  when: ansible_os_family == "RedHat" or ansible_os_family == "Rocky"
+  when: ansible_os_family == "RedHat"
 

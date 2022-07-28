@@ -76,7 +76,7 @@
 - name: Install yum-cron, yum-utils (CentOS)
   yum: name={{ item }} state=latest update_cache=yes
   become: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution == "CentOS"
+  when: ansible_distribution == "CentOS"
   with_items:
     - yum-cron
     - yum-utils
@@ -87,12 +87,12 @@
     dest: /etc/yum/yum-cron.conf
     backup: yes
   become: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution == "CentOS"
+  when: ansible_distribution == "CentOS"
 
 - name: Enable and start yum-cron
   service: name=yum-cron state=started enabled=yes daemon_reload=yes
   become: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution == "CentOS"
+  when: ansible_distribution == "CentOS"
 
 - name: Copy dnf-cron.conf config file (Rocky)
   copy:
@@ -100,11 +100,11 @@
     dest: /etc/dnf/automatic.conf
     backup: yes
   become: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 - name: Enable and start dnf-cron (Rocky)
   service: name=dnf-automatic.timer enabled=yes daemon_reload=yes
   become: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 ...
