@@ -92,7 +92,7 @@
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>org.apache.thrift:libthrift:jar</include>
 
-                <include>javax.mail:mail:jar</include>
+                <include>javax.mail:javax.mail-api:jar</include>
                 <include>javax.activation:activation:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
 
