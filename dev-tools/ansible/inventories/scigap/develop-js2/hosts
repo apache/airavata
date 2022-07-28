@@ -13,7 +13,7 @@ db.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [keycloak]
-iam.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+iamdev.scigap.org ansible_python_interpreter=/usr/bin/python3 public_ipv4=149.165.152.23
 
 [helix]
 helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3

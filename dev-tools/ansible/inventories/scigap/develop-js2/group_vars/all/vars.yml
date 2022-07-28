@@ -75,7 +75,7 @@ api_secured: "true"
 tls_enable: "true"
 api_server_tls_port: "9930"
 enable_sharing: "true"
-iam_server_url: "https://iam.js2.scigap.org/auth"
+iam_server_url: "https://iamdev.scigap.org/auth"
 iam_server_super_admin_username: "admin"
 iam_server_super_admin_password: "{{ vault_iam_server_super_admin_password }}"
 
@@ -144,7 +144,7 @@ keycloak_db_username: "keycloak"
 keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "admin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
-keycloak_vhost_servername: "iam.js2.scigap.org"
+keycloak_vhost_servername: "iamdev.scigap.org"
 
 # Letsencrypt
 letsencrypt_email: "circ-iu-group@iu.edu"
