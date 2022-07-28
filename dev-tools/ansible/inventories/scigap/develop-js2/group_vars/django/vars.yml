@@ -22,8 +22,15 @@
 user: "pga"
 group: "pga"
 gateway_data_store_hostname: "web.dev.scigap.org"
-# gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
-gateway_data_store_resource_id: "web.dev.scigap.org_ba01452f-44e5-4e03-b35f-756630539198"
+django_gateway_user_storages:
+  - alias: "default"
+    storage_resource_id: "web.dev.scigap.org_ba01452f-44e5-4e03-b35f-756630539198"
+    options:
+      directory: "{{ experiment_data_dir }}"
+  - alias: "pgadev"
+    storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+    options:
+      directory: "{{ experiment_data_dir }}"
 django_wsgi_processes: 1
 doc_root_dir: "/var/www/portals/django-{{gateway_id}}"
 django_database_name: "django_{{ gateway_id }}"
