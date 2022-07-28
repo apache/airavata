@@ -23,7 +23,7 @@
 # api-orch deployment
 - name: Create api-orchestrator deployment directory
   file: path="{{ api_orch_dir }}" state=directory owner="{{ user }}" group="{{ group }}"
-  when: build|success
+  when: build is success
 
 - name: Check previous deployments
   stat: path="{{ api_orch_dir }}/{{ airavata_dist }}" get_md5=no get_checksum=no
@@ -158,13 +158,13 @@
     state: present
   become: yes
   become_user: root
-  when: ansible_os_family == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 - name: Apply new SELinux file context to filesystem
   command: restorecon -v "{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh"
   become: yes
   become_user: root
-  when: ansible_os_family == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 - name: start api-orch
   service: name=apiorch state=started enabled=yes daemon_reload=yes

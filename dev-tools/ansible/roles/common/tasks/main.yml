@@ -19,19 +19,19 @@
 #
 
 ---
-- name: Install Airavata pre-requireties
+- name: Install Airavata pre-requireties (CentOS)
   yum: name={{ item }} state=latest update_cache=yes
   with_items:
     - git
   become_user: root
-  when: ansible_os_family == "Redhat"
+  when: ansible_distribution == "CentOS"
 
 - name: Install Airavata pre-requireties (Rocky)
   dnf: name={{ item }}
   with_items:
     - git
   become_user: root
-  when: ansible_os_family == "Rocky"
+  when: ansible_distribution == "Rocky"
 
 - name: download {{ apache_maven_version }}
   get_url: url="{{ apache_maven_url }}" dest="/opt/{{ apache_maven_version }}-bin.tar.gz"
