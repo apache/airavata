@@ -19,10 +19,11 @@
 #
 
 ---
-# No symlink, user_data_dir is same as real_user_data_dir
-user_data_dir: "{{ real_user_data_dir }}"
-#airavata_django_git_branch: "simccs"
-vhost_servername: "dev.ampgateway.org"
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+# Keep user_data_dir same as it was on old VM
+user_data_dir: "/data/gateway-user-data"
+# vhost_servername: "dev.ampgateway.org"
+vhost_servername: "amos.js2.scigap.org"
 vhost_ssl: true
 
 # TODO: while developing django app, turn off SELinux, but turn it back on
@@ -36,9 +37,9 @@ airavata_django_extra_dependencies:
 # tus isn't setup yet
 tusd_vhost_servername:
 # sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/dev.ampgateway.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.ampgateway.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/dev.ampgateway.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "amp"
@@ -56,7 +57,14 @@ gateway_id: "amp"
 experiment_data_dir: "{{ user_data_dir }}/django-amp"
 gateway_data_store_resource_id: "dev.ampgateway.org_b8228bc7-fad2-45db-8ed1-47de359a54a5"
 gateway_data_store_hostname: "dev.ampgateway.org"
-# gateway_data_store_ssh_public_key: "TODO"
+
+django_gateway_user_storages:
+  - alias: "default"
+    storage_resource_id: "{{ gateway_data_store_resource_id }}"
+    options:
+      directory: "{{ experiment_data_dir }}"
+
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCMuKQoD6K1DpgHyoY2/eyLMNc5UdupqWqBFEnSO24izMXeOqTityLDRrVZGMLvV/t9wZEig1dhg21Ic5wRSHpCra2BXRn+WjgVdR20EGWPkuFYoDyeMyp8YKjaf1+Fcz+2H52wnrC0RFOHExgB3DWkRSEGghyyIXSBPMxrpS+f0FAfTc36i+EQq2UC0n1xvcdrtGjCKv56mafiKgFfYHbFw7Y7eJxhDCYlRYnzeTJBxWATu9tMGKZgGOxdDXR5hjTvqnpMpk3QpvY/BzAYpCIXxZbb7C41vHaGA9kabjuSlQG4nd+YAxiPrUZdExQNHUE9SCPFQMd/FxsNGdf7YCGH"
 
 django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
 
