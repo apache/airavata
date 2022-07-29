@@ -65,7 +65,22 @@
   become: yes
   when: user_data_dir != real_user_data_dir
 
-- name: set selinux context to allow read/write on the user data directory
+- name: set selinux context to allow read/write on the user data directory ({{ user_data_dir }})
+  sefcontext:
+    target: "{{ user_data_dir }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: run restorecon on user data directory ({{ user_data_dir }})
+  command: restorecon -F -R {{ user_data_dir }}
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow read/write on the user data directory ({{ real_user_data_dir }})
   sefcontext:
     # For SELinux file contexts, the real path without symbolic links must be used
     target: "{{ real_user_data_dir }}(/.*)?"
@@ -76,7 +91,7 @@
     - restart httpd
   when: ansible_os_family == "RedHat"
 
-- name: run restorecon on user data directory
+- name: run restorecon on user data directory ({{ real_user_data_dir }})
   command: restorecon -F -R {{ real_user_data_dir }}
   become: yes
   when: ansible_os_family == "RedHat"
