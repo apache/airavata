@@ -22,8 +22,8 @@
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
 user_data_dir: "/data/gateway-user-data"
-# vhost_servername: "dev.ampgateway.org"
-vhost_servername: "amos.js2.scigap.org"
+vhost_servername: "dev.ampgateway.org"
+# vhost_servername: "amos.js2.scigap.org"
 vhost_ssl: true
 
 # TODO: while developing django app, turn off SELinux, but turn it back on
