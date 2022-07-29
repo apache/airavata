@@ -1,0 +1,47 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#airavata_django_git_branch: "simccs"
+vhost_servername: "beta.saver-x.scigap.org"
+vhost_ssl: true
+# sudo certbot --apache certonly -d django.simccs.scigap.org
+ssl_certificate_file: "/etc/letsencrypt/live/beta.saver-x.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.saver-x.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.saver-x.scigap.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "saver-x"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Saver-X"
+  external:
+    - name: "Existing Institute Login"
+      idp_alias: "cilogon"
+
+gateway_id: "saver-x"
+experiment_data_dir: "{{ user_data_dir }}/django-saver-x"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXm3BdHBlCa4xX2dgq5NNONElxAla4ijczVnEG+NtxMM6H6joasxAUAlhAKZ4752T8bYGMopKELVKWzhiNELgsOitQcXODh27eAbQ0/DXDy9EEMYYTLzEzj89lpaHjh1HK1BrVCtfhnmHDr7nczQ2ywHroaKKTXfMt8AA0XqUF68bcVxAiqD2LiEFlSOq3ebLpqcD0188gWKT1T1BG1xhiUO+8XyDAdBnFqudGAkvQeTDhODSkVuD+kWZwj6/bfI9YHMqr8hXA6HpRrIrPr3hE6BUYci8y8gmfyJ9oLTo+0gMFzer8K/BMVU+bKZwSTtUZ0Xbr7wf28OH4wuzrhQd3"
+
+portal_title: "Saver-X Gateway"
+...

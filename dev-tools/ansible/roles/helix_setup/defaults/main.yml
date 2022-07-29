@@ -55,4 +55,6 @@ local_data_location: "/tmp"
 
 thrift_client_pool_abandoned_removal_enabled: false
 thrift_client_pool_abandoned_removal_logged: false
+
+max_archive_size: 21474836480
 ...

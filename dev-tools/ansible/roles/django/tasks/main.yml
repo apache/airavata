@@ -27,11 +27,19 @@
   with_items:
   - "{{ groups['database'] }}"
 
+# Use 'apply' to propagate delegate_to and become* to included tasks, see
+# https://github.com/ansible/ansible/issues/35398
 - name: Run tasks to setup Django database
-  include: database.yml
-  delegate_to: "{{ item }}"
-  become: yes
-  become_user: "{{ hostvars[item]['user'] }}"
+  include_tasks: database.yml
+  args:
+    apply:
+      delegate_to: "{{ item }}"
+      become: yes
+      become_user: "{{ hostvars[item]['user'] }}"
+  vars:
+    delegated_host: "{{ item }}"
+    django_public_ip: "{{ ansible_host }}"
+    django_internal_ip: "{{ ansible_default_ipv4.address }}"
   with_items:
   - "{{ django_database_hosts }}"
 
@@ -88,10 +96,12 @@
 - name: build airavata-django-portal Docker image
   local_action:
     module: docker_image
-    path: "{{ airavata_django_portal_tempdir.path }}/"
+    build:
+      path: "{{ airavata_django_portal_tempdir.path }}/"
     name: airavata-django-portal
-    force: true
-    # source: build
+    force_source: true
+    force_tag: true
+    source: build
   run_once: true
 
 - name: create Docker container so we can copy built files out of it
@@ -176,11 +186,12 @@
 
 - name: Install additional dependencies
   pip:
-    name: "{{ item }}"
+    name: "{{ item.name }}"
     virtualenv: "{{ django_venv_dir }}"
+    editable: "{{ item.editable | default(false) }}"
   become: yes
   become_user: "{{user}}"
-  with_list: "{{ airavata_django_extra_dependencies }}"
+  loop: "{{ airavata_django_extra_dependencies }}"
 
 - name: Copy the settings_local.py file
   template: src={{ django_settings_local_template }} dest="{{ airavata_django_checkout }}/django_airavata/settings_local.py" owner="{{user}}" group="{{group}}"

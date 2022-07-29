@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-configFile = "settings.ini"
+configFile = "/Users/isururanawaka/Documents/Airavata_Repository/airavata/airavata-api/airavata-client-sdks/airavata-python-sdk/airavata_sdk/transport/settings.ini"
 
 authenticator = Authenticator(configFile)
 username = "username"

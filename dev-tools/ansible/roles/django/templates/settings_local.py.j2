@@ -127,6 +127,18 @@ AIRAVATA_API_PORT = {{ api_server_port }}
 AIRAVATA_API_SECURE = False
 {% endif %}
 
+{% if django_gateway_user_storages is defined %}
+USER_STORAGES = {
+    {% for user_storage in django_gateway_user_storages %}
+    '{{ user_storage.alias }}': {
+        'BACKEND': '{{ user_storage.backend | default("airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider") }}',
+        'STORAGE_RESOURCE_ID': '{{ user_storage.storage_resource_id }}',
+        'OPTIONS': {{ user_storage.options | to_nice_json }},
+    },
+    {% endfor %}
+}
+{% else %}
+{# deprecated approach: define django_gateway_user_storages instead #}
 USER_STORAGES = {
     'default': {
         'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
@@ -136,6 +148,7 @@ USER_STORAGES = {
         }
     }
 }
+{% endif %}
 
 FILE_UPLOAD_TEMP_DIR = "{{ file_upload_tmp_dir }}"
 

@@ -1,0 +1,47 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#airavata_django_git_branch: "simccs"
+vhost_servername: "pfec-hydro.scigap.org"
+vhost_ssl: true
+# sudo certbot --apache certonly -d django.simccs.scigap.org
+ssl_certificate_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/pfec-hydro.scigap.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "pfec-hydro"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "PfEC-Hydro"
+  external:
+    - name: "Existing Institute Login"
+      idp_alias: "cilogon"
+
+gateway_id: "pfec-hydro"
+experiment_data_dir: "{{ user_data_dir }}/django-pfec-hydro"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCVUiDweafreHh7nN4vabpG0wHrlyYCAObDtjmjP9hist848Y25BP+Rdq+64xHlKmJ1CDDZmjmb9T6JI5JhzYvg0RoD2WxDFcV10y7wamzT7b5TjGK/x11Qwh68qNfAi5amePvkL5oE/HCG95oKityG24EUt3yNOttOLYFnbdnlUXQiDkk1xT/8mbtAPXKnhjopYebwjsK7tYBzGe6YIU0teMA2goWl/6WjTWQBikhSOR1P074qEKzrvqt5mQqVi1HDpHKPP+JA/6upJu2THPNqUw2XuzkwFLkPAjUlnj2NugKTdUZco3lRc2lyjb2OEGuFO6I41WB/xnbBhQOXqDJX"
+
+portal_title: "Beta Future Water Gateway"
+...

@@ -1,0 +1,40 @@
+# inventory file : scigap js2 develop deployment
+
+[zookeeper]
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[rabbitmq]
+api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[database]
+db.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[api-orch]
+api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[keycloak]
+iamdev.scigap.org ansible_python_interpreter=/usr/bin/python3 public_ipv4=149.165.152.23
+
+[helix]
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[kafka]
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[django]
+seagrid ansible_host=web.dev.scigap.org
+; simvascular ansible_host=149.165.156.46
+simccs ansible_host=web.dev.scigap.org
+interactwel ansible_host=web.dev.scigap.org
+; usd ansible_host=149.165.156.46
+; csbglsu ansible_host=149.165.156.46
+; nexttdb ansible_host=149.165.156.46
+; saver-x ansible_host=149.165.156.46
+; pfec-hydro ansible_host=149.165.156.46
+; cyberwater ansible_host=149.165.156.46
+; mines ansible_host=149.165.156.46
+amp ansible_host=149.165.153.222
+geo ansible_host=web.dev.scigap.org
+; delta ansible_host=149.165.169.250
+; custos-testdrive ansible_host=pgadev.scigap.org
+rnamake ansible_host=web.dev.scigap.org

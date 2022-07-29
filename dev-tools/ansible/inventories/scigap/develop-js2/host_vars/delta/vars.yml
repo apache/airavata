@@ -1,0 +1,61 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+gateway_data_store_hostname: "delta-topology.jetstream-cloud.org"
+gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_a272f087-f733-433c-a32c-745577ed6067"
+# tus isn't setup yet
+tusd_vhost_servername:
+
+# No symlink, user_data_dir is same as real_user_data_dir
+user_data_dir: "{{ real_user_data_dir }}"
+#airavata_django_git_branch: "simccs"
+vhost_servername: "dev.delta-topology.org"
+vhost_ssl: true
+# sudo certbot --apache certonly -d django.simccs.scigap.org
+ssl_certificate_file: "/etc/letsencrypt/live/dev.delta-topology.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.delta-topology.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/dev.delta-topology.org/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "dev-delta"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Dev DELTA"
+#  external:
+#    - name: "Existing Institute Login"
+#      idp_alias: "cilogon"
+
+django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared_data:
+      path: /var/www/portals/gateway-user-data/shared_data
+
+gateway_id: "dev-delta"
+experiment_data_dir: "{{ user_data_dir }}/django-dev-delta"
+# gateway_data_store_ssh_public_key: "TODO"
+
+admin_emails: "[('SGRC', 'circ-iu-group@iu.edu')]"
+portal_title: "Dev DELTA Gateway"
+
+...
