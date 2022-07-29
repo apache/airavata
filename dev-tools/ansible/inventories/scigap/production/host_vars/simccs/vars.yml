@@ -31,9 +31,10 @@ airavata_django_extra_dependencies:
   # just cython, then a second with the other dependencies. Reason: pyjnius
   # requires that cython already be installed and they can't both be installed
   # at the same time.
-  - cython
-  - "git+https://github.com/SciGaP/simccs-maptool.git@{{ simccs_maptool_branch }}#egg=simccs-maptool"
-  - pyjnius
+  - name: cython
+  - name: "git+https://github.com/SciGaP/simccs-maptool.git@{{ simccs_maptool_branch }}#egg=simccs-maptool"
+    editable: true
+  - name: pyjnius
 
 django_extra_settings:
   JAVA_HOME: "/usr/java/default"
