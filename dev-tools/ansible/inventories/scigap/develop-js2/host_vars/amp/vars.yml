@@ -1,0 +1,76 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+# Keep user_data_dir same as it was on old VM
+user_data_dir: "/data/gateway-user-data"
+# vhost_servername: "dev.ampgateway.org"
+vhost_servername: "amos.js2.scigap.org"
+vhost_ssl: true
+
+# TODO: while developing django app, turn off SELinux, but turn it back on
+# once code execution issues are ironed out
+httpd_selinux_mode: "permissive"
+
+airavata_django_extra_dependencies:
+  - name: "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
+    editable: true
+
+# tus isn't setup yet
+tusd_vhost_servername:
+# sudo certbot --apache certonly -d django.simccs.scigap.org
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "amp"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Dev AMP"
+  external:
+    - name: "Existing Institute Login"
+      idp_alias: "cilogon"
+
+gateway_id: "amp"
+experiment_data_dir: "{{ user_data_dir }}/django-amp"
+gateway_data_store_resource_id: "dev.ampgateway.org_b8228bc7-fad2-45db-8ed1-47de359a54a5"
+gateway_data_store_hostname: "dev.ampgateway.org"
+
+django_gateway_user_storages:
+  - alias: "default"
+    storage_resource_id: "{{ gateway_data_store_resource_id }}"
+    options:
+      directory: "{{ experiment_data_dir }}"
+
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCMuKQoD6K1DpgHyoY2/eyLMNc5UdupqWqBFEnSO24izMXeOqTityLDRrVZGMLvV/t9wZEig1dhg21Ic5wRSHpCra2BXRn+WjgVdR20EGWPkuFYoDyeMyp8YKjaf1+Fcz+2H52wnrC0RFOHExgB3DWkRSEGghyyIXSBPMxrpS+f0FAfTc36i+EQq2UC0n1xvcdrtGjCKv56mafiKgFfYHbFw7Y7eJxhDCYlRYnzeTJBxWATu9tMGKZgGOxdDXR5hjTvqnpMpk3QpvY/BzAYpCIXxZbb7C41vHaGA9kabjuSlQG4nd+YAxiPrUZdExQNHUE9SCPFQMd/FxsNGdf7YCGH"
+
+django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
+
+portal_title: "Dev AMP Gateway"
+
+django_extra_settings:
+  TRECX:
+    TRECX_APPLICATION_ID: "tRecX_70fc89f8-424f-4495-99e3-f3aa6a75f967"
+...

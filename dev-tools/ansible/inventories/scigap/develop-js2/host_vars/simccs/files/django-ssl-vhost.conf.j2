@@ -1,0 +1,94 @@
+{#
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+#}
+
+{% if vhost_server_redirect is defined %}
+<VirtualHost *:{{httpd_default_http_port}}>
+    ServerName {{ vhost_server_redirect }}
+    Redirect "/" "https://{{ vhost_servername }}"
+</VirtualHost>
+{% endif %}
+
+<VirtualHost *:{{ httpd_default_http_port }}>
+    ServerName {{ vhost_servername }}
+
+    ## Redirect all http traffic to https
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+
+<VirtualHost *:{{ httpd_default_https_port }}>
+    ServerName {{ vhost_servername }}
+    TimeOut {{ vhost_timeout }}
+
+    # Reverse proxy to geoserver on gf8
+    ProxyPass /geoserver "http://gf8.ucs.indiana.edu/geoserver"
+    ProxyPassReverse /geoserver "http://gf8.ucs.indiana.edu/geoserver"
+    
+    Alias /robots.txt {{ doc_root_dir }}/static/robots.txt
+    Alias /favicon.ico {{ doc_root_dir }}/static/favicon.ico
+
+    Alias /static/ {{ doc_root_dir }}/static/
+
+    <Directory {{ doc_root_dir }}/static>
+    Require all granted
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+    </Directory>
+
+    Alias /media/ {{ airavata_django_checkout }}/django_airavata/media/
+
+    <Directory {{ airavata_django_checkout }}/django_airavata/media>
+        Require all granted
+    </Directory>
+
+    {# Additional aliases #}
+    {% for alias in vhost_aliases %}
+    Alias "{{ alias.url }}" "{{ alias.path }}"
+    <Directory "{{ alias.path }}">
+        Require all granted
+    </Directory>
+    {% endfor %}
+
+    WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
+    WSGIProcessGroup {{ vhost_servername }}
+
+    WSGIScriptAlias / {{ doc_root_dir }}/airavata-django-portal/django_airavata/wsgi.py
+    WSGIApplicationGroup %{GLOBAL}
+    # To allow bearer token based authorization, pass 'Authorization' through to Django process
+    WSGIPassAuthorization On
+
+    <Directory {{ doc_root_dir }}/airavata-django-portal/django_airavata>
+        <Files wsgi.py>
+        Require all granted
+        </Files>
+    </Directory>
+
+    ErrorLog {{ httpd_log_dir[ansible_os_family] }}/django-{{ gateway_id }}.error.log
+    CustomLog {{ httpd_log_dir[ansible_os_family] }}/django-{{ gateway_id }}.requests.log combined
+
+    SSLEngine on
+    # Disable SSLv3 which is vulnerable to the POODLE attack
+    SSLProtocol All -SSLv2 -SSLv3
+    SSLCertificateFile {{ ssl_certificate_file }}
+    SSLCertificateChainFile {{ ssl_certificate_chain_file }}
+    SSLCertificateKeyFile {{ ssl_certificate_key_file }}
+</VirtualHost>

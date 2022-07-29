@@ -26,7 +26,10 @@
   when: "'keycloak' in groups"
 
 - name: give access to {{ keycloak_db_username }} from remote
-  mysql_user: name="{{ keycloak_db_username }}" password="{{ keycloak_db_password }}" host="{{ item }}"
+  # Creating the access record with the IP address works better for MySQL so it
+  # doesn't have to do a DNS lookup (and it has DNS caching issues if the domain
+  # name changes)
+  mysql_user: name="{{ keycloak_db_username }}" password="{{ keycloak_db_password }}" host="{{ hostvars[item].public_ipv4 | default(item) }}"
   with_items:
     - "{{ groups['keycloak'] }}"
 

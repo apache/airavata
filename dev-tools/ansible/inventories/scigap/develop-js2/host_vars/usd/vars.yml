@@ -1,0 +1,48 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#airavata_django_git_branch: "simccs"
+vhost_servername: "beta.sciencegateway.usd.edu"
+vhost_ssl: true
+ssl_certificate_file: "/etc/pki/tls/certs/__sciencegateway_usd_edu_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/__sciencegateway_usd_edu_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/usd.key"
+
+## Keycloak related variables
+tenant_domain: "usd"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "USD Gateway"
+  external:
+    - name: "USD"
+      idp_alias: "usd"
+    - name: "CILogon"
+      idp_alias: "cilogon"
+
+gateway_id: "usd"
+experiment_data_dir: "{{ user_data_dir }}/django-usd"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCddtn5FW08tc1anCFYYzD/DqyCFL4prZ0dU+wWBnoxMQOV5vM6yZUKAErmWQOInWQeMDXvznsmyeTcg04FjE+t7xV0NeJ3YEpeayxObOF4oSHTmUAaM+taF+7dSXT+SUgwVOsYaOkCJRVNqkpu1KireN6L2y53j4tmXQTCWgWOQre3a2hLVFqI6JDVVj3Cquq0muSK8wdaYSrwBMwqQ0eJCGPvyhrMNJ/YmADS6GaztZOc+YJGC1jEeKNdrSPV5a8pbHgjZsqjRDDLAeCS5d0kK17P79LUX/Ui1m8wq7HgzWULZPh8zoUYPKjgVjHndB5e6nKsWgLgTyI64Gmy4ETp"
+
+portal_title: "South Dakota Science Gateway"
+...

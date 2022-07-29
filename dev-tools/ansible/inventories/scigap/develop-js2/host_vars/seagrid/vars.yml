@@ -1,0 +1,49 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "js2.seagrid.org"
+vhost_ssl: true
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "seagrid"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "SEAGrid"
+  external:
+    - name: "CILogon"
+      idp_alias: "oidc"
+      idp_token_url: "{{ oauth_service_url }}/realms/{{ tenant_domain }}/broker/oidc/token"
+      userinfo_url: "{{ cilogon_userinfo_url }}"
+
+gateway_id: "seagrid"
+experiment_data_dir: "{{ user_data_dir }}/django-seagrid"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFgLWSw6Mf0tPbkeSyzPMxgT50cNEXFDiE9UnEx0tIm+is9C3hIK78Ct8NAWgPxdXy1vd/9NBVIqkR516NZ7VyGbUHkrtPLOYL+Of9IyvxOQmrLzTLQNS9yVkxwxykJzBePZySyLcOKQdG8YoNj6+2iRolzfo5/w4Gz+MSqKmPJcVH8hjwTdoE5s0hYU4MaLF966hh6LUH7SG31BcTadtEgnE8nYfxeoa20oj0h0n1LKO06OZgVXVN3iulHimQ1paQiW71X9UPUhgpLnYAiI99BmYOQqEM4IndwZLZPwDeb23A0Dh3bLO8CAPgPRcG5b1Da6kABi5i5gcIt3WCJzeP"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eroma.abeysinghe@gmail.com')]"
+portal_title: "SEAGrid Portal"
+
+...
