@@ -19,13 +19,12 @@
 #
 
 ---
-#airavata_django_git_branch: "simccs"
-vhost_servername: "cyberwater.scigap.org"
+# vhost_servername: "cyberwater.scigap.org"
+vhost_servername: "cyberwater.js2.scigap.org"
 vhost_ssl: true
-# sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/cyberwater.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/cyberwater.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/cyberwater.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "cyberwater"
@@ -41,7 +40,7 @@ auth_options:
 
 gateway_id: "cyberwater"
 experiment_data_dir: "{{ user_data_dir }}/django-cyberwater"
-# gateway_data_store_ssh_public_key: "TODO"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCgbggEQsHObu9N03L2mTOEwd6+U5w7j5VuYCkkbT8Cz/XNTDmdX/bNHlTlaWafm37mfmJznI6owl2XwoYWmV4etTs1OpPsffqDXkO7QUsDzvwWzWkqKjhkdD2e7pJ2dPdWrMQbDHdi7RnmapX4+JI042dqbJUd15xBgS0Jud/eVXGZsyeMDbGfMJ4m4ckV2ywSwvxAT5XFald5I25tdi7dwPA8g+hcIQNxRF+oBX5L+mepqTV5KNFQzmKFh1eREf8+yVkSU6NKLsZc2CSghquU58KKWtJbXEo9L31jcn0Jxxf3VjdchbLzAh3nVwoNhLfeYr5ox0YGpW6Xk3ROb14r"
 
 portal_title: "Beta Cyberwater Gateway"
 ...
