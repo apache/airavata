@@ -22,42 +22,32 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-airavata_django_extra_dependencies:
-  - name: git+https://github.com/SciGaP/regsnp-django-app.git#egg=regsnp_django_app
-    editable: true
-
-vhost_servername: "regsnps.ccbb.iupui.edu"
+vhost_servername: "www.bayesprism.org"
 vhost_ssl: True
-vhost_aliases:
-  - url: /data/
-    path: "{{ user_data_dir }}/regsnps/regsnps-data/"
-    headers:
-      - name: "Access-Control-Allow-Origin"
-        value: '"*"'
-ssl_certificate_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/regsnps.ccbb.iupui.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/www.bayesprism.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/www.bayesprism.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/www.bayesprism.org/privkey.pem"
 
 
 ## Keycloak related variables
-tenant_domain: "regsnps"
+tenant_domain: "bayesprism"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "RegSNPs Gateway"
+    name: "BayesPrism Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "regsnps"
-experiment_data_dir: "{{ user_data_dir }}/regsnps"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAlldWcIK6yNgrj8Firns6JzHVv7iHEdj+VRe6GBIbPSsvY70dx6wfxxCaQvaEvfbXasdPsteTGxjYZ1qSiFQ5XWbX0azThxtMpz/ycQ0V9npsEhRMQ7dzRCI/r5RJOMryVK8KeHRxKJC3SUg4NkDqQ9TFkxYv0vWdsuhPFflpR2QvacD4kfh7nBvVhjxLqSlyDYJEJkKBuvx2n6p+Kx9sr9V1UXDZl22TXyTIHGdVwcTS6nhItqMeSCtBDsofv7U1xvKCb3u4D0tXlSAgLv7Anc+CQmJlj6QJQV4U2fsRy0eW+kkn5U3Dza9km0aXdAo+VHuBXdCGTG13e7yTgRRr"
+gateway_id: "bayesprism"
+experiment_data_dir: "{{ user_data_dir }}/bayesprism"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKu0jZiwCbADA1JeyU+HNQWsMmY+kgryiwt7C1Apt2CqECtFFOUW+uEvWDVFHqdzitAXUbo+0ZiEzdr4Qk045s+HdFe5R1Z9QhxNNSePJpmQldbW+h6NpdrdsXmHsocPcm6cHVbYNUCRvuTf9qy0cZBlYV09yXzWg2oSXRkcNMJuvjXCDQJk5VyxpQz8vk2Px/fEFkRikvACeotUaKvCjxVXc+h+Q4vRmKlrBOG9GGJRliqLEopu0jKVZ68QmfYANsD/i2/SOGn2XPR8wqTSUjcwlrG9avE7DwEPB2lynRvngklp/fUeBGFcujqEpdZ0A1dYqgV6Lrls/x3aFCw0i/"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
-portal_title: "RegSNPs Gateway"
+admin_emails: "[('Eroma Abeysinghe', 'eabeysin@iu.edu'),('Tinyi Chu', 'ChuT@mskcc.org'),('Zhong Wang', 'zw355@cornell.edu')]"
+portal_title: "BayesPrism Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
 ...

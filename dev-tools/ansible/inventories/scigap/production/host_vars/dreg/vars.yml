@@ -24,7 +24,12 @@
 
 gateway_data_store_hostname: "dreg.dnasequence.org"
 gateway_data_store_resource_id: "js-156-72.jetstream-cloud.org_758cf5c0-71f4-4268-bb42-5ede23cfeea9"
-tusd_vhost_servername: "tus.dreg.scigap.org"
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+# Keep user_data_dir same as it was on old VM
+user_data_dir: "/var/www/portals/gateway-user-data"
+# TODO: setup tusd
+# tusd_vhost_servername: "tus.dreg.scigap.org"
+tusd_vhost_servername:
 # Increase max upload size to 1GB
 django_file_upload_max_file_size_mb: 1024
 
@@ -34,11 +39,12 @@ httpd_selinux_mode: "permissive"
 # airavata_django_extra_dependencies:
 #   - git+https://github.com/SciGaP/dreg-djangoapp.git@gbrowser#egg=dreg-djangoapp
 
-vhost_servername: "django.dreg.scigap.org"
+# vhost_servername: "django.dreg.scigap.org"
+vhost_servername: "dreg.js2.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/django.dreg.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/django.dreg.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/django.dreg.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 django_ssl_vhost_template: "{{ inventory_dir }}/host_vars/dreg/files/django-ssl-vhost.conf.j2"
 
 ## Keycloak related variables
