@@ -32,8 +32,7 @@ user_data_dir: "/var/www/portals/gateway-user-data"
 # tusd_vhost_servername: "tus.scigap.org"
 tusd_vhost_servername:
 
-# vhost_servername: "gateway.futurewater.indiana.edu"
-vhost_servername: "futurewater.js2.scigap.org"
+vhost_servername: "gateway.futurewater.indiana.edu"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
