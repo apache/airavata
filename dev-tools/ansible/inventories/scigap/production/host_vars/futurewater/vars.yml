@@ -27,13 +27,12 @@ gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
 gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
-user_data_dir: "/data/gateway-user-data"
+user_data_dir: "/var/www/portals/gateway-user-data"
 # TODO: setup tusd server
 # tusd_vhost_servername: "tus.scigap.org"
 tusd_vhost_servername:
 
-# vhost_servername: "gateway.futurewater.indiana.edu"
-vhost_servername: "futurewater.js2.scigap.org"
+vhost_servername: "gateway.futurewater.indiana.edu"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
