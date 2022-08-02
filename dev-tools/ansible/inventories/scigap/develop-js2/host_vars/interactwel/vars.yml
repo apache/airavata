@@ -19,7 +19,7 @@
 #
 
 ---
-vhost_servername: "interactwel.js2.scigap.org"
+vhost_servername: "interactwel.org"
 vhost_ssl: true
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
