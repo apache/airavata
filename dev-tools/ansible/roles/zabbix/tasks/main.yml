@@ -20,34 +20,7 @@
 
 ---
 
-# Note: Following two tasks are needed to downgrade from 4.2.x -> 4.0.x. Once
-# all servers are updated these uninstall tasks can be removed.
-- name: Uninstall Zabbix yum repository
-  yum: name=zabbix-release state=absent
-  become: yes
-  when: ansible_os_family == "RedHat"
-
-- name: Uninstall Zabbix Agent
-  yum: name=zabbix-agent state=absent
-  become: yes
-  when: ansible_os_family == "RedHat"
-
-
-
-- name: Update CA Certificates
-  yum: name=ca-certificates state=latest
-  become: yes
-  when: ansible_os_family == "RedHat"
-
-- name: Install Zabbix yum repository
-  yum: name={{ zabbix_yum_repository }} state=present update_cache=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
-
-- name: Install Zabbix Agent
-  yum: name=zabbix-agent state=latest update_cache=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
+- include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 - name: Copy Zabbix configuration
   template: src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf backup=yes
