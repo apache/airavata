@@ -20,13 +20,19 @@
 module my-tusd 1.0;
 
 require {
-        type init_t;
         type user_home_t;
-        class file { execute execute_no_trans open read };
+        type init_t;
+        type httpd_sys_rw_content_t;
+        class file { append create execute execute_no_trans link map open read unlink write };
+        class dir { add_name remove_name };
 }
 
 #============= init_t ==============
-allow init_t user_home_t:file execute_no_trans;
+allow init_t httpd_sys_rw_content_t:dir { add_name remove_name };
+allow init_t httpd_sys_rw_content_t:file { append create link open read unlink write };
+
+#!!!! This avc can be allowed using the boolean 'domain_can_mmap_files'
+allow init_t user_home_t:file map;
 
 #!!!! This avc is allowed in the current policy
-allow init_t user_home_t:file { execute open read };
+allow init_t user_home_t:file { execute execute_no_trans open read };
