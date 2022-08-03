@@ -22,7 +22,7 @@ DOMAIN_CHECKLIST=/etc/zabbix/domain_checklist
 EXPIRES_IN_DAYS=28
 
 while IFS="" read domain; do
-    data=`echo |openssl s_client -servername $domain -connect $domain:443 2>/dev/null | openssl x509 -noout -checkend $(( $EXPIRES_IN_DAYS * 86400 )) 2>/dev/null && echo good || echo "$domain expires in less than $EXPIRES_IN_DAYS days"`
+    data=`echo |openssl s_client -servername $domain -connect $domain:443 2>/dev/null | openssl x509 -noout -checkend $(( $EXPIRES_IN_DAYS * 86400 )) >& /dev/null && echo good || echo "$domain expires in less than $EXPIRES_IN_DAYS days"`
     if [ "$data" != "good" ]; then
         echo $data
     fi
