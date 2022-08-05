@@ -85,7 +85,7 @@ dreg ansible_host=149.165.154.48 ansible_user=exouser
 futurewater ansible_host=149.165.154.245 ansible_user=exouser
 
 # Delta Jetstream server
-delta ansible_host=149.165.169.250 ansible_user=centos
+delta ansible_host=149.165.153.181 ansible_user=exouser
 
 # Container-Tutorial Jetstream server
 tutorial ansible_host=149.165.168.166 ansible_user=centos
