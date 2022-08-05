@@ -35,6 +35,6 @@ cyberwater ansible_host=web.dev.scigap.org
 ; mines ansible_host=149.165.156.46
 amp ansible_host=149.165.153.222
 geo ansible_host=web.dev.scigap.org
-; delta ansible_host=149.165.169.250
+delta ansible_host=149.165.153.181
 ; custos-testdrive ansible_host=pgadev.scigap.org
 rnamake ansible_host=web.dev.scigap.org
