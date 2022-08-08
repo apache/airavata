@@ -264,7 +264,7 @@ export const actions = {
     } else {
       commit("updateGroupResourceProfileId", { groupResourceProfileId });
     }
-    if (oldValue !== groupResourceProfileId) {
+    if (groupResourceProfileId && oldValue !== groupResourceProfileId) {
       await dispatch("loadApplicationDeployments");
       await dispatch("applyGroupResourceProfile");
     }

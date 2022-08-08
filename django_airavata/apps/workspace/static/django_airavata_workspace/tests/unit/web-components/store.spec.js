@@ -38,7 +38,14 @@ const testAction = (
     }
 
     mutationCount++;
-    if (mutationCount >= expectedMutations.length) {
+    checkIfDone();
+  };
+
+  const checkIfDone = () => {
+    if (
+      mutationCount >= expectedMutations.length &&
+      actionCount >= expectedActions.length
+    ) {
       done();
     }
   };
@@ -55,9 +62,7 @@ const testAction = (
     }
 
     actionCount++;
-    if (actionCount >= expectedActions.length) {
-      done();
-    }
+    checkIfDone();
     return action.result;
   };
 
@@ -875,6 +880,53 @@ test("updateTotalCPUCount: update nodeCount when cpuPerNode > 0, but apply maxim
     payload: {
       totalCPUCount,
       enableNodeCountToCpuCheck,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateGroupResourceProfileId: test normal case where updated to a GRP id", (done) => {
+  const mockGetters = {
+    groupResourceProfileId: "old_grp_id",
+  };
+  const groupResourceProfileId = "new_grp_id";
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: { groupResourceProfileId },
+    },
+  ];
+  const expectedActions = [
+    { type: "loadApplicationDeployments" },
+    { type: "applyGroupResourceProfile" },
+  ];
+  testAction(actions.updateGroupResourceProfileId, {
+    payload: {
+      groupResourceProfileId,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+    expectedActions,
+  });
+});
+
+test("updateGroupResourceProfileId: test case where GRP id is updated to null", (done) => {
+  const mockGetters = {
+    groupResourceProfileId: "old_grp_id",
+  };
+  const groupResourceProfileId = null;
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: { groupResourceProfileId },
+    },
+  ];
+  testAction(actions.updateGroupResourceProfileId, {
+    payload: {
+      groupResourceProfileId,
     },
     getters: mockGetters,
     expectedMutations,
