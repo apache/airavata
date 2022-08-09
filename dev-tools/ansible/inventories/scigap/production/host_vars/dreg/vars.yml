@@ -40,8 +40,8 @@ httpd_selinux_mode: "permissive"
 #   - git+https://github.com/SciGaP/dreg-djangoapp.git@gbrowser#egg=dreg-djangoapp
 
 # vhost_servername: "django.dreg.scigap.org"
-# vhost_servername: "dreg.js2.scigap.org"
-vhost_servername: "dreg.dnasequence.org"
+vhost_servername: "dreg.js2.scigap.org"
+# vhost_servername: "dreg.dnasequence.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
