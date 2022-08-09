@@ -12,6 +12,7 @@ from airavata.model.data.replica.ttypes import (
     ReplicaLocationCategory
 )
 from airavata.model.security.ttypes import AuthzToken
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase, override_settings
 
@@ -234,3 +235,99 @@ class ListDirTests(BaseTestCase):
             self.assertEqual(len(files), 1)
             self.assertEqual("foo.ext", files[0]["name"])
         pass
+
+
+class ExistsTests(BaseTestCase):
+    def test_user_storage_configured(self):
+        "Verify USER_STORAGES lookup find provider and checks existence"
+        storage_resource_id = "my_storage_resource_id"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(
+                    USER_STORAGES={
+                        'default': {
+                            'STORAGE_RESOURCE_ID': storage_resource_id,
+                            'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
+                            'OPTIONS': {
+                                'directory': tmpdirname,
+                            }
+                        }
+                    },
+        ):
+            # create test file
+            test_file_path = os.path.join(
+                tmpdirname, self.user.username, "foo.ext")
+            os.makedirs(os.path.dirname(test_file_path))
+            with open(test_file_path, 'wb') as f:
+                f.write(b"123")
+
+            data_product = DataProductModel()
+            data_product.productUri = f"airavata-dp://{uuid.uuid4()}"
+            data_product.gatewayId = GATEWAY_ID
+            data_product.ownerName = self.user.username
+            data_product.productName = "foo.ext"
+            data_product.dataProductType = DataProductType.FILE
+            data_product.productMetadata = {
+                'mime-type': 'application/some-app'
+            }
+            replica_category = ReplicaLocationCategory.GATEWAY_DATA_STORE
+            replica_path = f"file://gateway.com:{test_file_path}"
+            data_product.replicaLocations = [
+                DataReplicaLocationModel(
+                    filePath=replica_path,
+                    replicaLocationCategory=replica_category,
+                    storageResourceId=storage_resource_id)]
+
+            exists = user_storage.exists(self.request, data_product)
+            self.assertTrue(exists)
+
+    def test_user_storage_not_configured(self):
+        "Verify USER_STORAGES lookup throws exception when provider is missing"
+        old_storage_resource_id = "my_storage_resource_id"
+        new_storage_resource_id = "new_storage_resource_id"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(
+                    USER_STORAGES={
+                        'default': {
+                            # Only the old storage resource id is configured
+                            'STORAGE_RESOURCE_ID': old_storage_resource_id,
+                            'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
+                            'OPTIONS': {
+                                'directory': tmpdirname,
+                            }
+                        }
+                    },
+        ):
+            # create test file
+            test_file_path = os.path.join(
+                tmpdirname, self.user.username, "foo.ext")
+            os.makedirs(os.path.dirname(test_file_path))
+            with open(test_file_path, 'wb') as f:
+                f.write(b"123")
+
+            data_product = DataProductModel()
+            data_product.productUri = f"airavata-dp://{uuid.uuid4()}"
+            data_product.gatewayId = GATEWAY_ID
+            data_product.ownerName = self.user.username
+            data_product.productName = "foo.ext"
+            data_product.dataProductType = DataProductType.FILE
+            data_product.productMetadata = {
+                'mime-type': 'application/some-app'
+            }
+            replica_category = ReplicaLocationCategory.GATEWAY_DATA_STORE
+            replica_path = f"file://gateway.com:{test_file_path}"
+            data_product.replicaLocations = [
+                DataReplicaLocationModel(
+                    filePath=replica_path,
+                    replicaLocationCategory=replica_category,
+                    storageResourceId=new_storage_resource_id)]
+
+            # Make sure that gateway is configured for old_storage_resource_id
+            # and the data product is for new_storage_resource_id
+            self.assertEqual(old_storage_resource_id, settings.USER_STORAGES['default']['STORAGE_RESOURCE_ID'])
+            self.assertEqual(new_storage_resource_id, data_product.replicaLocations[0].storageResourceId)
+            self.assertNotEqual(old_storage_resource_id, new_storage_resource_id)
+
+            with self.assertRaisesRegex(LookupError,
+                                        new_storage_resource_id,
+                                        msg="should raise LookupError and include 'new_storage_resource_id' in message"):
+                user_storage.exists(self.request, data_product)

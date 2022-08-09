@@ -62,6 +62,8 @@ def get_user_storage_provider(request, owner_username=None, storage_resource_id=
                     module_class_name = conf['BACKEND']
                     options = conf.get('OPTIONS', {})
                     break
+            if module_class_name is None:
+                raise LookupError(f"No UserStorageProvider found for {storage_resource_id}")
     module_name, class_name = module_class_name.rsplit(".", 1)
     module = importlib.import_module(module_name)
     BackendClass = getattr(module, class_name)
