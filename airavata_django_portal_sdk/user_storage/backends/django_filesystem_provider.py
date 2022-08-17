@@ -41,6 +41,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
             for d in directories:
                 dpath = os.path.join(resource_path, d)
                 created_time = datastore.get_created_time(dpath)
+                modified_time = datastore.get_modified_time(dpath)
                 size = datastore.size(dpath)
                 directories_data.append(
                     {
@@ -48,6 +49,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
                         "path": datastore.rel_path(dpath),
                         "resource_path": datastore.path(dpath),
                         "created_time": created_time,
+                        "modified_time": modified_time,
                         "size": size,
                     }
                 )
@@ -59,6 +61,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
                                    "does not exist (broken symlink?)")
                     continue
                 created_time = datastore.get_created_time(user_rel_path)
+                modified_time = datastore.get_modified_time(user_rel_path)
                 size = datastore.size(user_rel_path)
                 full_path = datastore.path(user_rel_path)
                 files_data.append(
@@ -67,6 +70,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
                         "path": datastore.rel_path(full_path),
                         "resource_path": full_path,
                         "created_time": created_time,
+                        "modified_time": modified_time,
                         "size": size,
                     }
                 )
@@ -74,6 +78,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
         elif datastore.exists(resource_path):
 
             created_time = datastore.get_created_time(resource_path)
+            modified_time = datastore.get_modified_time(resource_path)
             size = datastore.size(resource_path)
             full_path = datastore.path(resource_path)
             return [], [
@@ -82,6 +87,7 @@ class DjangoFileSystemProvider(UserStorageProvider):
                     "path": datastore.rel_path(full_path),
                     "resource_path": full_path,
                     "created_time": created_time,
+                    "modified_time": modified_time,
                     "size": size,
                 }
             ]
@@ -292,6 +298,10 @@ class _Datastore:
     def get_created_time(self, file_path):
         user_data_storage = self.storage
         return user_data_storage.get_created_time(file_path)
+
+    def get_modified_time(self, file_path):
+        user_data_storage = self.storage
+        return user_data_storage.get_modified_time(file_path)
 
     def size(self, file_path):
         user_data_storage = self.storage

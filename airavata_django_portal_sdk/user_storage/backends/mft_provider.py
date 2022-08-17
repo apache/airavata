@@ -93,6 +93,7 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
 
                 dpath = os.path.join(resource_path, d.friendlyName)
                 created_time = datetime.fromtimestamp(d.createdTime)
+                modified_time = datetime.fromtimestamp(d.updateTime)
                 # TODO MFT API doesn't report size
                 size = 0
                 directories_data.append(
@@ -103,6 +104,7 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
                         # resource_path is the id or full path to the resource
                         "resource_path": d.resourcePath,
                         "created_time": created_time,
+                        "modified_time": modified_time,
                         "size": size,
                     }
                 )
@@ -111,6 +113,7 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
                 user_rel_path = os.path.join(resource_path, f.friendlyName)
                 # TODO do we need to check for broken symlinks?
                 created_time = datetime.fromtimestamp(f.createdTime)
+                modified_time = datetime.fromtimestamp(f.updateTime)
                 size = f.resourceSize
                 # full_path = datastore.path(request.user.username, user_rel_path)
                 # TODO how do we register these as data products, do we need to?
@@ -127,6 +130,7 @@ class MFTUserStorageProvider(UserStorageProvider, ProvidesDownloadUrl):
                         "path": user_rel_path,
                         "resource_path": f.resourcePath,
                         "created_time": created_time,
+                        "modified_time": modified_time,
                         "size": size,
                     }
                 )

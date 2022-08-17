@@ -419,6 +419,7 @@ def get_file_metadata(request, path, storage_resource_id=None, experiment_id=Non
             raise Exception("User storage path is a directory, not a file")
         file = data['files'][0]
         file['created_time'] = convert_iso8601_to_datetime(file['createdTime'])
+        file['modified_time'] = convert_iso8601_to_datetime(file['modifiedTime'])
         file['mime_type'] = file['mimeType']
         file['data-product-uri'] = file['dataProductURI']
         return file
@@ -541,10 +542,14 @@ def listdir(request, path, storage_resource_id=None, experiment_id=None):
             # Convert JSON ISO8601 timestamp to datetime instance
             directory['created_time'] = convert_iso8601_to_datetime(
                 directory['createdTime'])
+            directory['modified_time'] = convert_iso8601_to_datetime(
+                directory['modifiedTime'])
         for file in data['files']:
             # Convert JSON ISO8601 timestamp to datetime instance
             file['created_time'] = convert_iso8601_to_datetime(
                 file['createdTime'])
+            file['modified_time'] = convert_iso8601_to_datetime(
+                file['modifiedTime'])
             file['mime_type'] = file['mimeType']
             file['data-product-uri'] = file['dataProductURI']
         return data['directories'], data['files']
@@ -592,10 +597,14 @@ def list_experiment_dir(request, experiment_id, path="", storage_resource_id=Non
             # Convert JSON ISO8601 timestamp to datetime instance
             directory['created_time'] = convert_iso8601_to_datetime(
                 directory['createdTime'])
+            directory['modified_time'] = convert_iso8601_to_datetime(
+                directory['modifiedTime'])
         for file in data['files']:
             # Convert JSON ISO8601 timestamp to datetime instance
             file['created_time'] = convert_iso8601_to_datetime(
                 file['createdTime'])
+            file['modified_time'] = convert_iso8601_to_datetime(
+                file['modifiedTime'])
             file['mime_type'] = file['mimeType']
             file['data-product-uri'] = file['dataProductURI']
         return data['directories'], data['files']
