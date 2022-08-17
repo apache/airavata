@@ -23,7 +23,7 @@
   file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
-- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+- include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 - name: Git clone php gateway
   git:
@@ -119,7 +119,7 @@
   become: yes
 
 - name: Run composer install
-  composer: command=install working_dir="{{ doc_root_dir }}"
+  composer: command=install working_dir="{{ doc_root_dir }}" no_plugins=yes
   become: yes
   become_user: "{{user}}"
 
