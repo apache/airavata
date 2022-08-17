@@ -20,7 +20,7 @@
 
 ---
 ansible_connection: ssh
-ansible_user: centos
+ansible_user: exouser
 
 user: airavata
 group: airavata
@@ -145,6 +145,9 @@ keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "admin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
 keycloak_vhost_servername: "iamdev.scigap.org"
+
+# Letsencrypt
+letsencrypt_email: "circ-iu-group@iu.edu"
 
 # Helix
 helix_version: 0.9.9
