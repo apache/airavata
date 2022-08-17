@@ -27,9 +27,7 @@ gateway_data_store_resource_id: "js-156-72.jetstream-cloud.org_758cf5c0-71f4-426
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
 user_data_dir: "/var/www/portals/gateway-user-data"
-# TODO: setup tusd
-# tusd_vhost_servername: "tus.dreg.scigap.org"
-tusd_vhost_servername:
+tusd_vhost_servername: "tus.dreg.scigap.org"
 # Increase max upload size to 1GB
 django_file_upload_max_file_size_mb: 1024
 
