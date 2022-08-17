@@ -531,6 +531,7 @@ class DataReplicaLocationSerializer(
 class DataProductSerializer(
         thrift_utils.create_serializer_class(DataProductModel)):
     creationTime = UTCPosixTimestampDateTimeField()
+    modifiedTime = UTCPosixTimestampDateTimeField()
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
     downloadURL = serializers.SerializerMethodField()
@@ -932,6 +933,7 @@ class UserStorageFileSerializer(serializers.Serializer):
     downloadURL = serializers.SerializerMethodField()
     dataProductURI = serializers.CharField(source='data-product-uri')
     createdTime = serializers.DateTimeField(source='created_time')
+    modifiedTime = serializers.DateTimeField(source='modified_time')
     mimeType = serializers.CharField(source='mime_type')
     size = serializers.IntegerField()
     hidden = serializers.BooleanField()
@@ -946,6 +948,7 @@ class UserStorageDirectorySerializer(serializers.Serializer):
     name = serializers.CharField()
     path = serializers.CharField()
     createdTime = serializers.DateTimeField(source='created_time')
+    modifiedTime = serializers.DateTimeField(source='modified_time')
     size = serializers.IntegerField()
     hidden = serializers.BooleanField()
     url = FullyEncodedHyperlinkedIdentityField(
@@ -972,6 +975,7 @@ class ExperimentStorageDirectorySerializer(serializers.Serializer):
     name = serializers.CharField()
     path = serializers.CharField()
     createdTime = serializers.DateTimeField(source='created_time')
+    modifiedTime = serializers.DateTimeField(source='modified_time')
     size = serializers.IntegerField()
     url = serializers.SerializerMethodField()
 

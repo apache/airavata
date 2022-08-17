@@ -81,6 +81,7 @@ export default {
               files: [
                 {
                   createdTime: dataProduct.creationTime,
+                  modifiedTime: dataProduct.lastModifiedTime,
                   dataProductURI: this.dataProductUri,
                   downloadURL: dataProduct.downloadURL,
                   mimeType: dataProduct.productMetadata["mime-type"],

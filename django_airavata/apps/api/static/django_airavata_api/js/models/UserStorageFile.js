@@ -5,6 +5,7 @@ const FIELDS = [
   "downloadURL",
   "dataProductURI",
   { name: "createdTime", type: "date" },
+  { name: "modifiedTime", type: "date" },
   "size",
   "mimeType",
 ];

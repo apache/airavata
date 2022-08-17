@@ -4,6 +4,7 @@ const FIELDS = [
   "name",
   "path",
   { name: "createdTime", type: "date" },
+  { name: "modifiedTime", type: "date" },
   "size",
   "hidden",
 ];

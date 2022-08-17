@@ -24,8 +24,8 @@
           {{ data.item.name }}</b-link
         >
       </template>
-      <template slot="cell(createdTimestamp)" slot-scope="data">
-        <human-date :date="data.item.createdTime" />
+      <template slot="cell(modifiedTimestamp)" slot-scope="data">
+        <human-date :date="data.item.modifiedTime" />
       </template>
       <template slot="cell(actions)" slot-scope="data">
         <b-link
@@ -87,8 +87,8 @@ export default {
           formatter: (value) => this.getFormattedSize(value),
         },
         {
-          label: "Created Time",
-          key: "createdTimestamp",
+          label: "Last Modified",
+          key: "modifiedTimestamp",
           sortable: true,
         },
         {
@@ -106,8 +106,8 @@ export default {
               name: d.name,
               path: d.path,
               type: "dir",
-              createdTime: d.createdTime,
-              createdTimestamp: d.createdTime.getTime(), // for sorting
+              modifiedTime: d.modifiedTime,
+              modifiedTimestamp: d.modifiedTime.getTime(), // for sorting
               size: d.size,
             };
           });
@@ -118,8 +118,8 @@ export default {
             type: "file",
             dataProductURI: f.dataProductURI,
             downloadURL: f.downloadURL,
-            createdTime: f.createdTime,
-            createdTimestamp: f.createdTime.getTime(), // for sorting
+            modifiedTime: f.modifiedTime,
+            modifiedTimestamp: f.modifiedTime.getTime(), // for sorting
             size: f.size,
           };
         });
