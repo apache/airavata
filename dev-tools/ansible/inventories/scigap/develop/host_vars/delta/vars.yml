@@ -19,20 +19,20 @@
 #
 
 ---
+# TODO: create a new gateway data store resource and update this (OR, maybe we can just update the hostname for the storage resource?)
 gateway_data_store_hostname: "delta-topology.jetstream-cloud.org"
 gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_a272f087-f733-433c-a32c-745577ed6067"
 # tus isn't setup yet
 tusd_vhost_servername:
 
-# No symlink, user_data_dir is same as real_user_data_dir
-user_data_dir: "{{ real_user_data_dir }}"
-#airavata_django_git_branch: "simccs"
-vhost_servername: "dev.delta-topology.org"
+real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
+user_data_dir: "/data/gateway-user-data"
+# vhost_servername: "dev.delta-topology.org"
+vhost_servername: "dev.delta.js2.scigap.org"
 vhost_ssl: true
-# sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/dev.delta-topology.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/dev.delta-topology.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/dev.delta-topology.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "dev-delta"
@@ -49,19 +49,13 @@ auth_options:
 django_extra_settings:
   GATEWAY_DATA_SHARED_DIRECTORIES:
     shared_data:
-      path: /var/www/portals/gateway-user-data/shared_data
+      path: /data/gateway-user-data/shared_data
 
 gateway_id: "dev-delta"
 experiment_data_dir: "{{ user_data_dir }}/django-dev-delta"
-# gateway_data_store_ssh_public_key: "TODO"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCls5UgazweDc9d4NN65D+JVCeiBUhMSHTRWNHI6v1RPq/Or84fF41+HaemToQverQ73b/gUiXWuGfb75Y7JK5sgqRXCUiL1OVHICX3h4sh8UiMHEe5fUY/PNme2+witXYFr8EkYrdseJgnKXNULsgZEkuHzYbDFrn6z+pc4zXtoT/iUic8lUmeR1h8Quac7G0cSS0X8CFDMjkBKoX3KU7wffwuLGO2IhIdNpBgKzQUWRm6vEA48wdjEQTneX9rQefASOsbp/HNJHN/xsovFTNdatnezKz1Dt8cpSl32KEFs1YQYB6UmGJimRWiAAQBNCcaHLlgXWIQQ2U0vbsrVKZr"
 
-portal_email_host: "smtp.gmail.com"
-portal_email_port: 587
-portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
-portal_email_password: "{{ vault_portal_email_password }}"
 admin_emails: "[('SGRC', 'circ-iu-group@iu.edu')]"
-portal_server_email: "{{ portal_email_username }}"
 portal_title: "Dev DELTA Gateway"
 
 ...
