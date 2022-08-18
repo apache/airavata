@@ -1,13 +1,15 @@
 -r requirements.txt
 autopep8==1.5.4
-flake8==3.8.4
-flake8-isort==4.0.0
+flake8==4.0.1
+flake8-isort==4.1.1
+importlib-metadata==4.2.0
 isort==5.2.2
-mkdocs==1.1.2
+Jinja2==3.0.3
+mkdocs==1.2.4
 Markdown==3.2.1
 pymdown-extensions==8.2
-pycodestyle==2.6.0
-pyflakes==2.2.0
-tox==3.20.0
+pycodestyle==2.8.0
+pyflakes==2.4.0
+tox==3.25.0
 
 -e ".[dev]"
