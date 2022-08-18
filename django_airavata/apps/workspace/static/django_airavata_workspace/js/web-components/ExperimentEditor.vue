@@ -84,8 +84,31 @@ export default {
           textInput.setAttribute("name", input.name);
           slot.appendChild(textInput);
           this.$refs[input.name][0].append(slot);
+        } else if (input.type.name === "URI") {
+          slot.textContent = `${input.name} `;
+          const fileInputEditor = document.createElement(
+            "adpf-file-input-editor"
+          );
+          fileInputEditor.setAttribute(
+            "value",
+            input.value !== null ? input.value : ""
+          );
+          fileInputEditor.setAttribute("name", input.name);
+          slot.appendChild(fileInputEditor);
+          this.$refs[input.name][0].append(slot);
+        } else if (input.type.name === "URI_COLLECTION") {
+          slot.textContent = `${input.name} `;
+          const multiFileInputEditor = document.createElement(
+            "adpf-multi-file-input-editor"
+          );
+          multiFileInputEditor.setAttribute(
+            "value",
+            input.value !== null ? input.value : ""
+          );
+          multiFileInputEditor.setAttribute("name", input.name);
+          slot.appendChild(multiFileInputEditor);
+          this.$refs[input.name][0].append(slot);
         }
-        // TODO: add support for other input types
       }
       // this.injectPropsIntoSlottedInputs();
 
