@@ -23,7 +23,11 @@ from airavata.model.data.movement.ttypes import (
 from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
-from airavata_django_portal_sdk import experiment_util, user_storage
+from airavata_django_portal_sdk import (
+    experiment_util,
+    queue_settings,
+    user_storage
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -1862,3 +1866,26 @@ def _generate_output_view_data(request):
                                       experiment_id,
                                       test_mode=test_mode,
                                       **params.dict())
+
+
+class QueueSettingsCalculatorViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericAPIBackedViewSet):
+    serializer_class = serializers.QueueSettingsCalculatorSerializer
+
+    def get_list(self):
+        return queue_settings.get_all()
+
+    def get_instance(self, lookup_value):
+        calcs = queue_settings.get_all()
+        calc = [calc for calc in calcs if calc.id == lookup_value]
+        if len(calc) == 0:
+            return None
+        return calc[0]
+
+    @action(methods=['post'], detail=True, serializer_class=serializers.ExperimentSerializer)
+    def calculate(self, request, pk=None):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        experiment_model = serializer.save()
+        result = queue_settings.calculate_queue_settings(pk, request, experiment_model)
+        return Response(result)

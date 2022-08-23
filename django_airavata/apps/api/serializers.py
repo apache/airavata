@@ -1162,3 +1162,8 @@ class SettingsSerializer(serializers.Serializer):
     fileUploadMaxFileSize = serializers.IntegerField()
     tusEndpoint = serializers.CharField()
     pgaUrl = serializers.CharField()
+
+
+class QueueSettingsCalculatorSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()
