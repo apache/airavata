@@ -28,6 +28,12 @@ module.exports = {
           path: __dirname,
         },
       },
+      sass: {
+        sassOptions: {
+          // Turn off deprecation warnings for sass dependencies
+          quietDeps: true,
+        },
+      },
     },
   },
   configureWebpack: {
