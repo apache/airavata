@@ -1,6 +1,5 @@
 from typing import Callable, NamedTuple
 
-from django.utils.text import slugify
 
 QUEUE_SETTINGS_CALCULATORS = []
 
@@ -20,7 +19,9 @@ def queue_settings_calculator(_func=None, *, id=None, name=None, **kwargs):
             name_ = func.__name__
         id_ = id
         if id_ is None:
-            id_ = func.__module__ + ":" + slugify(name_)
+            id_ = func.__module__ + ":" + func.__name__
+        if exists(id_):
+            raise Exception(f"Duplicate queue settings calculator id: {id_}")
         QUEUE_SETTINGS_CALCULATORS.append(QueueSettingsCalculator(id_, name_, func))
         return func
     if _func is None:
@@ -44,6 +45,11 @@ def calculate_queue_settings(calculator_id, request, experiment_model):
 def get_all():
     """Return a list of all registered queue settings calculators."""
     return QUEUE_SETTINGS_CALCULATORS.copy()
+
+
+def exists(calculator_id):
+    calcs = [calc for calc in QUEUE_SETTINGS_CALCULATORS if calc.id == calculator_id]
+    return len(calcs) == 1
 
 
 def reset_registry():

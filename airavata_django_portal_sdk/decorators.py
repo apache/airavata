@@ -1,1 +1,1 @@
-from .queue_settings import queue_settings_calculator  # noqa
+from .queue_settings_calculators import queue_settings_calculator  # noqa

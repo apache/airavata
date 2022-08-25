@@ -2,14 +2,14 @@ import unittest
 
 from airavata.model.experiment.ttypes import ExperimentModel
 
-from airavata_django_portal_sdk import queue_settings
+from airavata_django_portal_sdk import queue_settings_calculators
 from airavata_django_portal_sdk.decorators import queue_settings_calculator
 
 
 class QueueSettingsCalculatorDecoratorTestCase(unittest.TestCase):
 
     def tearDown(self) -> None:
-        queue_settings.reset_registry()
+        queue_settings_calculators.reset_registry()
 
     def test_registration_no_arguments(self):
 
@@ -17,18 +17,18 @@ class QueueSettingsCalculatorDecoratorTestCase(unittest.TestCase):
         def foo(request, experiment_model):
             return {}
 
-        self.assertEqual(len(queue_settings.QUEUE_SETTINGS_CALCULATORS), 1)
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].name, 'foo')
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].id, 'airavata_django_portal_sdk.tests.test_queue_settings_calculator:foo')
+        self.assertEqual(len(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS), 1)
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].name, 'foo')
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].id, 'airavata_django_portal_sdk.tests.test_queue_settings_calculator:foo')
 
     def test_registration_id_only(self):
         @queue_settings_calculator(id="my-foo")
         def foo(request, experiment_model):
             return {}
 
-        self.assertEqual(len(queue_settings.QUEUE_SETTINGS_CALCULATORS), 1)
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].name, 'foo')
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].id, 'my-foo')
+        self.assertEqual(len(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS), 1)
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].name, 'foo')
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].id, 'my-foo')
 
     def test_registration_name_only(self):
 
@@ -36,9 +36,9 @@ class QueueSettingsCalculatorDecoratorTestCase(unittest.TestCase):
         def foo(request, experiment_model):
             return {}
 
-        self.assertEqual(len(queue_settings.QUEUE_SETTINGS_CALCULATORS), 1)
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].name, 'Genome-based calculator')
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].id, 'airavata_django_portal_sdk.tests.test_queue_settings_calculator:genome-based-calculator')
+        self.assertEqual(len(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS), 1)
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].name, 'Genome-based calculator')
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].id, 'airavata_django_portal_sdk.tests.test_queue_settings_calculator:foo')
 
     def test_registration_id_and_name(self):
 
@@ -46,15 +46,15 @@ class QueueSettingsCalculatorDecoratorTestCase(unittest.TestCase):
         def foo(request, experiment_model):
             return {}
 
-        self.assertEqual(len(queue_settings.QUEUE_SETTINGS_CALCULATORS), 1)
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].name, 'Genome-based calculator')
-        self.assertEqual(queue_settings.QUEUE_SETTINGS_CALCULATORS[0].id, 'genome-based')
+        self.assertEqual(len(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS), 1)
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].name, 'Genome-based calculator')
+        self.assertEqual(queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS[0].id, 'genome-based')
 
 
 class QueueSettingsTestCase(unittest.TestCase):
 
     def tearDown(self) -> None:
-        queue_settings.reset_registry()
+        queue_settings_calculators.reset_registry()
 
     def test_invocation(self):
 
@@ -64,7 +64,7 @@ class QueueSettingsTestCase(unittest.TestCase):
 
         request = None
         experiment_model = ExperimentModel()
-        result = queue_settings.calculate_queue_settings("my-calc", request, experiment_model)
+        result = queue_settings_calculators.calculate_queue_settings("my-calc", request, experiment_model)
         self.assertIn('queueName', result)
         self.assertEqual(result['queueName'], 'shared')
 
@@ -77,7 +77,7 @@ class QueueSettingsTestCase(unittest.TestCase):
         request = None
         experiment_model = ExperimentModel()
         with self.assertRaises(LookupError):
-            queue_settings.calculate_queue_settings("my-calc-missing", request, experiment_model)
+            queue_settings_calculators.calculate_queue_settings("my-calc-missing", request, experiment_model)
 
     def test_get_all(self):
 
@@ -85,7 +85,7 @@ class QueueSettingsTestCase(unittest.TestCase):
         def foo(request, experiment_model):
             return {'queueName': 'shared'}
 
-        all_calculators = queue_settings.get_all()
-        self.assertIsNot(all_calculators, queue_settings.QUEUE_SETTINGS_CALCULATORS, "verify list is a copy")
-        self.assertListEqual(all_calculators, queue_settings.QUEUE_SETTINGS_CALCULATORS)
+        all_calculators = queue_settings_calculators.get_all()
+        self.assertIsNot(all_calculators, queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS, "verify list is a copy")
+        self.assertListEqual(all_calculators, queue_settings_calculators.QUEUE_SETTINGS_CALCULATORS)
         self.assertEqual(all_calculators[0].id, 'my-calc')
