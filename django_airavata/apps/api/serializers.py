@@ -60,7 +60,11 @@ from airavata.model.workspace.ttypes import (
     NotificationPriority,
     Project
 )
-from airavata_django_portal_sdk import experiment_util, user_storage
+from airavata_django_portal_sdk import (
+    experiment_util,
+    queue_settings_calculators,
+    user_storage
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -344,7 +348,9 @@ class ApplicationInterfaceDescriptionSerializer(
         application_settings, created = models.ApplicationSettings.objects.get_or_create(
             application_module_id=application_module_id)
         representation["showQueueSettings"] = application_settings.show_queue_settings
-        representation["queueSettingsCalculatorId"] = application_settings.queue_settings_calculator_id
+        # check that queue_settings_calculator_id exists
+        if queue_settings_calculators.exists(application_settings.queue_settings_calculator_id):
+            representation["queueSettingsCalculatorId"] = application_settings.queue_settings_calculator_id
         return representation
 
     def create(self, validated_data):

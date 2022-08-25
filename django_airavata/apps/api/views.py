@@ -25,7 +25,7 @@ from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import (
     experiment_util,
-    queue_settings,
+    queue_settings_calculators,
     user_storage
 )
 from django.conf import settings
@@ -1872,10 +1872,10 @@ class QueueSettingsCalculatorViewSet(mixins.ListModelMixin, mixins.RetrieveModel
     serializer_class = serializers.QueueSettingsCalculatorSerializer
 
     def get_list(self):
-        return queue_settings.get_all()
+        return queue_settings_calculators.get_all()
 
     def get_instance(self, lookup_value):
-        calcs = queue_settings.get_all()
+        calcs = queue_settings_calculators.get_all()
         calc = [calc for calc in calcs if calc.id == lookup_value]
         if len(calc) == 0:
             return None
@@ -1887,5 +1887,5 @@ class QueueSettingsCalculatorViewSet(mixins.ListModelMixin, mixins.RetrieveModel
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         experiment_model = serializer.save()
-        result = queue_settings.calculate_queue_settings(pk, request, experiment_model)
+        result = queue_settings_calculators.calculate_queue_settings(pk, request, experiment_model)
         return Response(result)
