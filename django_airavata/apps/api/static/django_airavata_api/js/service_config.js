@@ -349,7 +349,9 @@ export default {
       calculate: {
         url: "/api/queue-settings-calculators/<lookup>/calculate/",
         requestType: "post",
-        modelClass: QueueSettingsCalculator,
+        bodyParams: {
+          name: "data",
+        },
       },
     },
     modelClass: QueueSettingsCalculator,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <unsaved-changes-guard :dirty="dirty"/>
+    <unsaved-changes-guard :dirty="dirty" />
     <div class="row">
       <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
@@ -89,9 +89,13 @@
       </div>
       <div class="row">
         <div class="col">
-          <workspace-notices-management-container class="mt-2"
+          <workspace-notices-management-container
+            class="mt-2"
             v-if="appInterface && appInterface.applicationDescription"
-            :data="[{notificationMessage: appInterface.applicationDescription}]"/>
+            :data="[
+              { notificationMessage: appInterface.applicationDescription },
+            ]"
+          />
         </div>
       </div>
       <div class="row">
@@ -148,12 +152,8 @@
       </div>
       <div class="row">
         <div class="col">
-          <b-form-group
-            label="Email Settings"
-          >
-            <b-form-checkbox
-              v-model="localExperiment.enableEmailNotification"
-            >
+          <b-form-group label="Email Settings">
+            <b-form-checkbox v-model="localExperiment.enableEmailNotification">
               Receive email notification of experiment status
             </b-form-checkbox>
           </b-form-group>
@@ -186,8 +186,8 @@ import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedu
 import ExperimentDescriptionEditor from "./ExperimentDescriptionEditor.vue";
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
-import {models, services} from "django-airavata-api";
-import {components, utils} from "django-airavata-common-ui";
+import { models, services } from "django-airavata-api";
+import { components, utils } from "django-airavata-common-ui";
 import WorkspaceNoticesManagementContainer from "../notices/WorkspaceNoticesManagementContainer";
 
 export default {
@@ -348,6 +348,23 @@ export default {
     inputValueChanged: function () {
       this.localExperiment.evaluateInputDependencies();
     },
+    async experimentChanged() {
+      if (this.appInterface.queueSettingsCalculatorId) {
+        const queueSettingsUpdate = await services.QueueSettingsCalculatorService.calculate(
+          {
+            lookup: this.appInterface.queueSettingsCalculatorId,
+            data: this.localExperiment,
+          }
+        );
+        // Override values in computationalResourceScheduling with the values
+        // returned from the queue settings calculator
+        Object.assign(
+          this.localExperiment.userConfigurationData
+            .computationalResourceScheduling,
+          queueSettingsUpdate
+        );
+      }
+    },
   },
   watch: {
     experiment: function (newValue) {
@@ -355,6 +372,7 @@ export default {
     },
     localExperiment: {
       handler() {
+        this.experimentChanged();
         this.edited = true;
       },
       deep: true,
