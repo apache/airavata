@@ -37,6 +37,22 @@
             cores, walltime limit).
           </div>
         </b-form-group>
+        <b-form-group
+          label="Queue Settings Calculator"
+          description="Select function to automatically compute queue settings."
+        >
+          <b-form-select
+            v-model="data.queueSettingsCalculatorId"
+            :options="queueSettingsCalculatorOptions"
+            :disabled="queueSettingsCalculatorOptions.length === 0"
+          >
+            <template slot="first">
+              <option :value="null">
+                If applicable, select a queue settings calculator
+              </option>
+            </template>
+          </b-form-select>
+        </b-form-group>
       </div>
     </div>
     <div class="w-100">
@@ -45,9 +61,13 @@
         label-for="application-description"
       >
         <b-form-textarea
-          id="application-description" :rows="5"
+          id="application-description"
+          :rows="5"
           v-model="data.applicationDescription"
-          :state="!data.applicationDescription || data.applicationDescription.length < 500"
+          :state="
+            !data.applicationDescription ||
+            data.applicationDescription.length < 500
+          "
         >
         </b-form-textarea>
         <b-form-valid-feedback v-if="!!data.applicationDescription">
@@ -120,8 +140,8 @@
 </template>
 
 <script>
-import {models} from "django-airavata-api";
-import {mixins} from "django-airavata-common-ui";
+import { models, services } from "django-airavata-api";
+import { mixins } from "django-airavata-common-ui";
 import ApplicationInputFieldEditor from "./ApplicationInputFieldEditor.vue";
 import ApplicationOutputFieldEditor from "./ApplicationOutputFieldEditor.vue";
 
@@ -144,12 +164,27 @@ export default {
     ApplicationOutputFieldEditor,
     draggable,
   },
+  created() {
+    this.loadQueueSettingsCalculators();
+  },
   computed: {
     trueFalseOptions() {
       return [
-        {text: "True", value: true},
-        {text: "False", value: false},
+        { text: "True", value: true },
+        { text: "False", value: false },
       ];
+    },
+    queueSettingsCalculatorOptions() {
+      if (this.queueSettingsCalculators) {
+        return this.queueSettingsCalculators.map((qsc) => {
+          return {
+            text: qsc.name,
+            value: qsc.id,
+          };
+        });
+      } else {
+        return [];
+      }
     },
   },
   data() {
@@ -160,6 +195,7 @@ export default {
         handle: ".drag-handle",
       },
       collapseApplicationInputs: false,
+      queueSettingsCalculators: null,
     };
   },
   methods: {
@@ -208,6 +244,9 @@ export default {
     },
     onDragEnd() {
       this.collapseApplicationInputs = false;
+    },
+    async loadQueueSettingsCalculators() {
+      this.queueSettingsCalculators = await services.QueueSettingsCalculatorService.list();
     },
   },
 };
