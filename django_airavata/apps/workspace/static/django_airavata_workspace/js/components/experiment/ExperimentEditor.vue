@@ -365,7 +365,12 @@ export default {
         queueSettingsUpdate
       );
     }, 500),
-    async experimentChanged() {
+    experimentInputsChanged() {
+      if (this.appInterface.queueSettingsCalculatorId) {
+        this.calculateQueueSettings();
+      }
+    },
+    resourceHostIdChanged() {
       if (this.appInterface.queueSettingsCalculatorId) {
         this.calculateQueueSettings();
       }
@@ -377,10 +382,18 @@ export default {
     },
     localExperiment: {
       handler() {
-        this.experimentChanged();
         this.edited = true;
       },
       deep: true,
+    },
+    "experiment.experimentInputs": {
+      handler() {
+        this.experimentInputsChanged();
+      },
+      deep: true,
+    },
+    "experiment.userConfigurationData.computationalResourceScheduling.resourceHostId": function () {
+      this.resourceHostIdChanged();
     },
   },
 };
