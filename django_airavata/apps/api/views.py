@@ -1885,7 +1885,9 @@ class QueueSettingsCalculatorViewSet(mixins.ListModelMixin, mixins.RetrieveModel
     def calculate(self, request, pk=None):
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        experiment_model = serializer.save()
-        result = queue_settings_calculators.calculate_queue_settings(pk, request, experiment_model)
+        result = {}
+        # Just ignore invalid experiment model since likely caused by late initialization
+        if serializer.is_valid():
+            experiment_model = serializer.save()
+            result = queue_settings_calculators.calculate_queue_settings(pk, request, experiment_model)
         return Response(result)
