@@ -24,3 +24,8 @@ class {{ cookiecutter.app_config_class_name }}(AppConfig):
     # description of *nav* in
     # https://apache-airavata-django-portal.readthedocs.io/en/latest/dev/new_django_app/#appconfig-settings
     # for more details for more details.
+
+    def ready(self) -> None:
+        # Uncomment to register your queue settings calculators. See TODO
+        # from {{ cookiecutter.project_slug }} import queue_settings_calculators  # noqa
+        pass
