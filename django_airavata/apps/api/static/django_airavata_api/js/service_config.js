@@ -21,6 +21,7 @@ import LogRecord from "./models/LogRecord";
 import Notification from "./models/Notification";
 import Parser from "./models/Parser";
 import Project from "./models/Project";
+import QueueSettingsCalculator from "./models/QueueSettingsCalculator";
 import Settings from "./models/Settings";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
@@ -363,6 +364,20 @@ export default {
     },
     queryParams: ["limit", "offset"],
     modelClass: Project,
+  },
+  QueueSettingsCalculators: {
+    url: "/api/queue-settings-calculators",
+    viewSet: ["retrieve", "list"],
+    methods: {
+      calculate: {
+        url: "/api/queue-settings-calculators/<lookup>/calculate/",
+        requestType: "post",
+        bodyParams: {
+          name: "data",
+        },
+      },
+    },
+    modelClass: QueueSettingsCalculator,
   },
   Settings: {
     url: "/api/settings/",

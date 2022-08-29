@@ -60,7 +60,11 @@ from airavata.model.workspace.ttypes import (
     NotificationPriority,
     Project
 )
-from airavata_django_portal_sdk import experiment_util, user_storage
+from airavata_django_portal_sdk import (
+    experiment_util,
+    queue_settings_calculators,
+    user_storage
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -336,6 +340,7 @@ class ApplicationInterfaceDescriptionSerializer(
     applicationOutputs = OutputDataObjectTypeSerializer(many=True)
     userHasWriteAccess = serializers.SerializerMethodField()
     showQueueSettings = serializers.BooleanField(required=False)
+    queueSettingsCalculatorId = serializers.CharField(allow_null=True, required=False)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -343,28 +348,34 @@ class ApplicationInterfaceDescriptionSerializer(
         application_settings, created = models.ApplicationSettings.objects.get_or_create(
             application_module_id=application_module_id)
         representation["showQueueSettings"] = application_settings.show_queue_settings
+        # check that queue_settings_calculator_id exists
+        if queue_settings_calculators.exists(application_settings.queue_settings_calculator_id):
+            representation["queueSettingsCalculatorId"] = application_settings.queue_settings_calculator_id
         return representation
 
     def create(self, validated_data):
-        showQueueSettings = validated_data.pop("showQueueSettings", None)
+        showQueueSettings = validated_data.pop("showQueueSettings", True)
+        queueSettingsCalculatorId = validated_data.pop("queueSettingsCalculatorId", None)
         application_interface = super().create(validated_data)
         application_module_id = application_interface.applicationModules[0]
-        if showQueueSettings is not None:
-            models.ApplicationSettings.objects.update_or_create(
-                application_module_id=application_module_id,
-                defaults={"show_queue_settings": showQueueSettings}
-            )
+        models.ApplicationSettings.objects.update_or_create(
+            application_module_id=application_module_id,
+            defaults={"show_queue_settings": showQueueSettings,
+                      "queue_settings_calculator_id": queueSettingsCalculatorId}
+        )
         return application_interface
 
     def update(self, instance, validated_data):
-        showQueueSettings = validated_data.pop("showQueueSettings", None)
+        defaults = {}
+        if "showQueueSettings" in validated_data:
+            defaults["show_queue_settings"] = validated_data.pop("showQueueSettings")
+        if "queueSettingsCalculatorId" in validated_data:
+            defaults["queue_settings_calculator_id"] = validated_data.pop("queueSettingsCalculatorId")
         application_interface = super().update(instance, validated_data)
         application_module_id = application_interface.applicationModules[0]
-        if showQueueSettings is not None:
-            models.ApplicationSettings.objects.update_or_create(
-                application_module_id=application_module_id,
-                defaults={"show_queue_settings": showQueueSettings}
-            )
+        models.ApplicationSettings.objects.update_or_create(
+            application_module_id=application_module_id, defaults=defaults
+        )
         return application_interface
 
     def get_userHasWriteAccess(self, appDeployment):
@@ -1166,3 +1177,8 @@ class SettingsSerializer(serializers.Serializer):
     fileUploadMaxFileSize = serializers.IntegerField()
     tusEndpoint = serializers.CharField()
     pgaUrl = serializers.CharField()
+
+
+class QueueSettingsCalculatorSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()

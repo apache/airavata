@@ -147,6 +147,9 @@ const services = {
 
   ParserService: ServiceFactory.service("Parsers"),
   ProjectService: ServiceFactory.service("Projects"),
+  QueueSettingsCalculatorService: ServiceFactory.service(
+    "QueueSettingsCalculators"
+  ),
   SCPDataMovementService,
   ServiceFactory,
   SettingsService: ServiceFactory.service("Settings"),

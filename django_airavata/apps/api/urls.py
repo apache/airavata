@@ -45,6 +45,8 @@ router.register(r'iam-user-profiles', views.IAMUserViewSet,
                 basename='iam-user-profile')
 router.register(r'unverified-email-users', views.UnverifiedEmailUserViewSet,
                 basename='unverified-email-user-profile')
+router.register(r'queue-settings-calculators', views.QueueSettingsCalculatorViewSet,
+                basename='queue-settings-calculator')
 
 app_name = 'django_airavata_api'
 urlpatterns = [

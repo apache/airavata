@@ -72,3 +72,4 @@ class ApplicationTemplateContextProcessor(models.Model):
 class ApplicationSettings(models.Model):
     application_module_id = models.CharField(max_length=255, unique=True)
     show_queue_settings = models.BooleanField(default=True)
+    queue_settings_calculator_id = models.CharField(max_length=255, null=True)
