@@ -189,6 +189,7 @@ import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
 import { models, services } from "django-airavata-api";
 import { components, utils } from "django-airavata-common-ui";
 import WorkspaceNoticesManagementContainer from "../notices/WorkspaceNoticesManagementContainer";
+import _ from "lodash";
 
 export default {
   name: "edit-experiment",
@@ -348,21 +349,25 @@ export default {
     inputValueChanged: function () {
       this.localExperiment.evaluateInputDependencies();
     },
+    calculateQueueSettings: _.debounce(async function () {
+      const queueSettingsUpdate = await services.QueueSettingsCalculatorService.calculate(
+        {
+          lookup: this.appInterface.queueSettingsCalculatorId,
+          data: this.localExperiment,
+        },
+        { showSpinner: false }
+      );
+      // Override values in computationalResourceScheduling with the values
+      // returned from the queue settings calculator
+      Object.assign(
+        this.localExperiment.userConfigurationData
+          .computationalResourceScheduling,
+        queueSettingsUpdate
+      );
+    }, 500),
     async experimentChanged() {
       if (this.appInterface.queueSettingsCalculatorId) {
-        const queueSettingsUpdate = await services.QueueSettingsCalculatorService.calculate(
-          {
-            lookup: this.appInterface.queueSettingsCalculatorId,
-            data: this.localExperiment,
-          }
-        );
-        // Override values in computationalResourceScheduling with the values
-        // returned from the queue settings calculator
-        Object.assign(
-          this.localExperiment.userConfigurationData
-            .computationalResourceScheduling,
-          queueSettingsUpdate
-        );
+        this.calculateQueueSettings();
       }
     },
   },
