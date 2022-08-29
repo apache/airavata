@@ -84,7 +84,7 @@ export default {
     },
     parseValue(value) {
       // Just remove any percentage signs
-      const result = value ? parseInt(value.replaceAll("%", "")) : NaN;
+      const result = value ? parseFloat(value.replaceAll("%", "")) : NaN;
       return !isNaN(result) ? result : this.sliderMin;
     },
     onChange(value) {
