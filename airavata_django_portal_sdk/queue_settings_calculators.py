@@ -1,6 +1,5 @@
 from typing import Callable, NamedTuple
 
-
 QUEUE_SETTINGS_CALCULATORS = []
 
 
