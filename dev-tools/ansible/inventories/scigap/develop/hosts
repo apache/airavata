@@ -4,13 +4,13 @@
 helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [rabbitmq]
-api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+apidev.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [database]
 db.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [api-orch]
-api.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+apidev.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [keycloak]
 iamdev.scigap.org ansible_python_interpreter=/usr/bin/python3 public_ipv4=149.165.152.23
