@@ -156,8 +156,8 @@ export default class InputDataObjectType extends BaseModel {
    *         "AND": [                     // Boolean operator ("AND", "OR")
    *           {
    *             "INPUT_1": {               // Name of other application input
-   *               "comparison": "equals",  // Name of comparison type
-   *               "value": "1"             // Value to compare with
+   *               "comparison": "equals",  // Name of comparison type ("equals", "in")
+   *               "value": "1"             // Value to compare with (for "in" the value should be an Array)
    *             }
    *           },
    *           {

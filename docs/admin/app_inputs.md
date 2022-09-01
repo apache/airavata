@@ -75,6 +75,10 @@ a field to upload a file.
 }
 ```
 
+See
+[code comment on evaluateDependencies()](https://github.com/apache/airavata-django-portal/blob/develop/django_airavata/apps/api/static/django_airavata_api/js/models/InputDataObjectType.js#L146)
+for more information on how to define expressions.
+
 ## Alternate UI Components
 
 ### Checkboxes
