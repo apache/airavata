@@ -82,6 +82,8 @@ export default class BooleanExpressionEvaluator {
     }
     if (comparison === "equals") {
       return value === this._getComparisonValue(comparisonDefinition);
+    } else if (comparison === "in") {
+      return this._getComparisonValue(comparisonDefinition).includes(value);
     }
     throw new Error("Unrecognized comparison " + JSON.stringify(comparison));
   }

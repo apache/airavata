@@ -211,3 +211,25 @@ test("Implicitly ANDed INPUT1 == 1 AND INPUT2 == 2 is TRUE", () => {
   });
   expect(result).toBe(true);
 });
+
+// 'in' comparison
+test("INPUT1 in [1, 2, 3] is TRUE", () => {
+  const result = booleanExpressionEvaluator.evaluate({
+    INPUT1: {
+      comparison: "in",
+      value: ["1", "2", "3"],
+    },
+  });
+  expect(result).toBe(true);
+});
+
+// 'in' comparison
+test("INPUT1 in [4, 5, 6] is FALSE", () => {
+  const result = booleanExpressionEvaluator.evaluate({
+    INPUT1: {
+      comparison: "in",
+      value: ["4", "5", "6"],
+    },
+  });
+  expect(result).toBe(false);
+});
