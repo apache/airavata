@@ -19,7 +19,7 @@
 #
 
 ---
-vhost_servername: "js2.seagrid.org"
+vhost_servername: "django.seagrid.org"
 vhost_ssl: true
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
