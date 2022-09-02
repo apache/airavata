@@ -28,6 +28,9 @@ real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
 user_data_dir: "/var/www/portals/gateway-user-data"
 
+# TODO: tus not setup yet
+tusd_vhost_servername:
+
 
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/baysprism.scigap.org/cert.pem"
