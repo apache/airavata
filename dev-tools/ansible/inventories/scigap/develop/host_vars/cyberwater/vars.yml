@@ -19,7 +19,7 @@
 #
 
 ---
- vhost_servername: "cyberwater.scigap.org"
+vhost_servername: "cyberwater.scigap.org"
 #vhost_servername: "cyberwater.js2.scigap.org"
 vhost_ssl: true
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
