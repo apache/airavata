@@ -20,14 +20,18 @@
 package org.apache.airavata.monitor.email.parser;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +57,7 @@ public class HTCondorEmailParser implements EmailParser {
      * Returns : JobStatusResult
      * Purpose : Responsible for parsing the email to access an HTCondor job status
      */
-    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
+    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient) throws MessagingException, AiravataException{
         // Job Status Results
         JobStatusResult jobStatusResult = new JobStatusResult();
 
@@ -63,7 +67,17 @@ public class HTCondorEmailParser implements EmailParser {
 
             // Parse the email contents to get the job state
             parseJobState((String) message.getContent(), jobStatusResult);
-        } catch (IOException e) {
+
+            String processId = fetchProcessId((String)message.getContent());
+            List<JobModel> jobs = registryClient.getJobs("processId", processId);
+            Optional<JobModel> firstJob = jobs.stream().filter(job -> job.getJobId().equals(jobStatusResult.getJobId())).findFirst();
+            if (firstJob.isPresent()) {
+                jobStatusResult.setJobName(firstJob.get().getJobName());
+            } else {
+                throw new Exception("No job found matching job id " + jobStatusResult.getJobId() + " for HTCondor");
+            }
+
+        } catch (Exception e) {
             throw new AiravataException("[EJM]: There was an error while parsing the content of the HTCondor email -> " + e);
         }
 
@@ -85,7 +99,6 @@ public class HTCondorEmailParser implements EmailParser {
         // Parse the job ID if the Job ID is available in the subject line
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
-            jobStatusResult.setJobName("HTCondor");
         } else {
             log.error("[EJM]: The Job ID was not found in the HTCondor email subject -> " + subject);
         }
@@ -101,6 +114,16 @@ public class HTCondorEmailParser implements EmailParser {
      *           [NOTE] Due to the limited information available in the HTCondor status emails, the only
      *                  statuses that may be parsed are FAILURE and COMPLETE
      */
+
+    private String fetchProcessId(String content) {
+        int start = content.indexOf("submitted from directory");
+        int end = content.indexOf("\n", start);
+        String path = content.substring(start + "submitted from directory".length() + 1, end-1);
+        int pathSeperatorIndex = path.lastIndexOf("/");
+        String processId = path.substring(pathSeperatorIndex + 1);
+        return processId;
+    }
+
     private void parseJobState(String content, JobStatusResult jobStatusResult) {
         // Split message content into an array of lines
 //        String[] messageArray = content.split("\n");

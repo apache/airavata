@@ -76,10 +76,7 @@ public class GroovyMapBuilder {
         mapData.setQueueSpecificMacros(taskContext.getQueueSpecificMacros());
         mapData.setAccountString(taskContext.getAllocationProjectNumber());
         mapData.setReservation(taskContext.getReservation());
-        if(this.taskContext.getResourceJobManager().getResourceJobManagerType() == ResourceJobManagerType.HTCONDOR)
-            mapData.setJobName("HTCondor");
-        else
-            mapData.setJobName("A" + String.valueOf(generateJobName()));
+        mapData.setJobName("A" + String.valueOf(generateJobName()));
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
