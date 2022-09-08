@@ -548,6 +548,15 @@ export default {
         this.setDefaultQueue();
       }
     },
+    value: {
+      // Rerun validation whenever the queue settings change, which can from
+      // outside the component, for example when a queue settings calculator
+      // provides values
+      handler() {
+        this.validate();
+      },
+      deep: true,
+    },
   },
   mounted: function () {
     this.loadAppDeploymentQueues().then(() => {
