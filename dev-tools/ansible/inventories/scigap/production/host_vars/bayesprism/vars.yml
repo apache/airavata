@@ -22,7 +22,7 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-vhost_servername: "baysprism.scigap.org"
+vhost_servername: "www.bayesprism.org"
 gateway_data_store_resource_id: "baysprism-gateway-host.BIO220088.projects.jetstream-cloud.org"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
@@ -33,9 +33,9 @@ tusd_vhost_servername:
 
 
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/baysprism.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/baysprism.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/baysprism.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/www.bayesprism.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/www.bayesprism.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/www.bayesprism.org/privkey.pem"
 
 # Increase max upload size to 1GB
 django_file_upload_max_file_size_mb: 1024
