@@ -25,7 +25,7 @@
   delegate_to: "{{item}}"
   delegate_facts: True
   with_items:
-  - "{{ groups['database'] }}"
+  - "{{ django_database_hosts }}"
 
 # Use 'apply' to propagate delegate_to and become* to included tasks, see
 # https://github.com/ansible/ansible/issues/35398
