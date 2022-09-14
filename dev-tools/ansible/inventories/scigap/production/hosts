@@ -90,7 +90,8 @@ futurewater ansible_host=149.165.154.245 ansible_user=exouser
 delta ansible_host=149.165.153.181 ansible_user=exouser
 
 # Container-Tutorial Jetstream server
-tutorial ansible_host=149.165.168.166 ansible_user=centos
+# This JS1 VM no longer exists
+# tutorial ansible_host=149.165.168.166 ansible_user=centos
 
 # simccs server
 simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
