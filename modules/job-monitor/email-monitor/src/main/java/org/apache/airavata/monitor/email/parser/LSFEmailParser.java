@@ -22,6 +22,7 @@ package org.apache.airavata.monitor.email.parser;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class LSFEmailParser implements EmailParser {
     public static final String FAILED = "Exited";
 
     @Override
-    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
+    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
 
         parseContent(message, jobStatusResult);

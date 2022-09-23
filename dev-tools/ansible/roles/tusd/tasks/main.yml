@@ -93,21 +93,26 @@
 
 - name: Copy SELinux type enforcement file
   copy: src=my-tusd.te dest=/tmp/
+  when: ansible_os_family == "RedHat"
 
 - name: Compile SELinux module file
   command: checkmodule -M -m -o /tmp/my-tusd.mod /tmp/my-tusd.te
+  when: ansible_os_family == "RedHat"
 
 - name: Build SELinux policy package
   command: semodule_package -o /tmp/my-tusd.pp -m /tmp/my-tusd.mod
+  when: ansible_os_family == "RedHat"
 
 - name: unLoad SELinux policy package
   command: semodule -r my-tusd
   become: yes
   ignore_errors: True
+  when: ansible_os_family == "RedHat"
 
 - name: Load SELinux policy package
   command: semodule -i /tmp/my-tusd.pp
   become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Remove temporary files
   file: path={{ item }} state=absent
@@ -115,6 +120,7 @@
     - /tmp/my-tusd.mod
     - /tmp/my-tusd.pp
     - /tmp/my-tusd.te
+  when: ansible_os_family == "RedHat"
 
 - name: copy tus.service systemd unit file
   template:

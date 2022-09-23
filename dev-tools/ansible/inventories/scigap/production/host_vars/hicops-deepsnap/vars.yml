@@ -23,7 +23,8 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 airavata_django_extra_dependencies:
-  - "git+https://github.com/SciGaP/hicops-django-app.git@main#egg=hicops_django_app"
+  - name: "git+https://github.com/SciGaP/hicops-django-app.git@main#egg=hicops_django_app"
+    editable: true
 
 vhost_servername: "hicops.cs.fiu.edu"
 vhost_ssl: True

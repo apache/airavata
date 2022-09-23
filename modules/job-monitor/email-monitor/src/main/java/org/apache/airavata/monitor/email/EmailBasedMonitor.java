@@ -28,6 +28,7 @@ import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -151,9 +152,18 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType
                     .toString() + " for email monitoring -->  " + addressStr);
         }
-        JobStatusResult jobStatusResult = emailParser.parseEmail(message);
-        jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
-        return jobStatusResult;
+        RegistryService.Client regClient = getRegistryClientPool().getResource();
+
+        try {
+            JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
+            jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+            return jobStatusResult;
+        } catch (Exception e) {
+            getRegistryClientPool().returnBrokenResource(regClient);
+            throw e;
+        } finally {
+            getRegistryClientPool().returnResource(regClient);
+        }
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
