@@ -62,12 +62,17 @@
 - name: get realpath of {{ user_data_dir }}
   command: realpath {{ user_data_dir }}
   register: user_data_dir_realpath
+  ignore_errors: yes
 
-# TODO: create the parent directory of the symlink if missing
+- name: Create directory for symlink {{ user_data_dir }}
+  file: path="{{ user_data_dir | dirname }}" state=directory owner="{{user}}" group="{{group}}"
+  become: yes
+  when: user_data_dir_realpath is failed or user_data_dir_realpath.stdout != real_user_data_dir
+
 - name: Symlink user data dir {{ user_data_dir }} to {{ real_user_data_dir }}
   file: src="{{ real_user_data_dir }}" dest="{{ user_data_dir }}" state=link owner="{{user}}" group="{{group}}"
   become: yes
-  when: user_data_dir_realpath.stdout != real_user_data_dir
+  when: user_data_dir_realpath is failed or user_data_dir_realpath.stdout != real_user_data_dir
 
 - name: set selinux context to allow read/write on the user data directory ({{ user_data_dir }})
   sefcontext:

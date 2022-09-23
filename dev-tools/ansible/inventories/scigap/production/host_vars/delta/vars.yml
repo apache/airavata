@@ -21,7 +21,8 @@
 ---
 
 # NOTE: Delta gateway is deployed to a Jetstream VM
-
+real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
+user_data_dir: "/var/www/portals/gateway-user-data"
 gateway_data_store_hostname: "delta-topology.org"
 gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07ea-41fc-9f2e-104bc3061318"
 # tus isn't setup yet
@@ -30,9 +31,9 @@ airavata_django_git_branch: "delta-topology-workshop"
 
 vhost_servername: "delta-topology.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/delta-topology.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/delta-topology.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/delta-topology.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 django_file_upload_max_file_size_mb: 10000
 
