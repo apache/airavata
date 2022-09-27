@@ -23,7 +23,7 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 vhost_servername: "www.bayesprism.org"
-gateway_data_store_resource_id: "baysprism-gateway-host.BIO220088.projects.jetstream-cloud.org"
+gateway_data_store_resource_id: "baysprism-gateway-host.BIO220088.projects.jetstream-cloud.org_fce7b852-a3b7-4a6b-ba9d-48269a9133e0"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
 user_data_dir: "/var/www/portals/gateway-user-data"
