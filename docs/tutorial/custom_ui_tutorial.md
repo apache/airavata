@@ -347,6 +347,7 @@ the application inputs' user interface. What we'll do:
 </button>
 
 <div id="target_id">
+
 ```json
 {
     "editor": {
@@ -369,6 +370,7 @@ the application inputs' user interface. What we'll do:
     }
 }
 ```
+
 </div>
 
 It should look something like this:
@@ -390,6 +392,7 @@ This JSON configuration customizes the input editor in two ways:
 </button>
 
 <div id="screening_libraries">
+
 ```json
 {
     "editor": {
@@ -433,6 +436,7 @@ This JSON configuration customizes the input editor in two ways:
     }
 }
 ```
+
 </div>
 
 This JSON configuration specifies a different UI component to use as the input
@@ -447,6 +451,7 @@ command line arguments.
     Copy to clipboard
 </button>
 <div id="visualization_scripts">
+
 ```json
 {
     "editor": {
@@ -470,6 +475,7 @@ command line arguments.
     }
 }
 ```
+
 </div>
 
 6. Click **Save** at the bottom of the page.
@@ -765,6 +771,7 @@ Choose from 1, 2 [1]:
 </button>
 
 <div id="gaussian_eigenvalues_view">
+
 ```python
 import io
 import os
@@ -822,7 +829,8 @@ Eigenvalues"
             'mime-type': 'image/png'
         }
 
-````
+```
+
 </div>
 
 5. Let's take a look at the implementation. First we added some imports at the
@@ -838,7 +846,7 @@ from django.conf import settings
 from matplotlib.figure import Figure
 
 from airavata_django_portal_sdk import user_storage
-````
+```
 
 6.  Next we implemented the
     [`generate_data` function](../dev/custom_output_view_provider.md#output-view-provider-interface).
@@ -930,6 +938,7 @@ which the `GaussianEigenvaluesViewProvider` output view provider class is found.
     Copy to clipboard
 </button>
 <div id="install_requires">
+
 ```
 install_requires =
     django >= 2.2
@@ -938,6 +947,7 @@ install_requires =
     numpy
     matplotlib
 ```
+
 </div>
 
 10. Now we need to install the _custom_ui_tutorial_app_ package into the Django
@@ -1115,12 +1125,15 @@ get it properly registered with the local Django Portal instance.
 <button class="btn" data-clipboard-target="#hello_world">
     Copy to clipboard
 </button>
+
 <div id="hello_world">
+
 ```python
 @login_required
 def hello_world(request):
     return render(request, "custom_ui_tutorial_app/hello.html")
 ```
+
 </div>
 
 This view will simply display the template created in the previous step.
@@ -1132,6 +1145,7 @@ This view will simply display the template created in the previous step.
     Copy to clipboard
 </button>
 <div id="urlspy">
+
 ```python
 from django.urls import path
 
@@ -1139,8 +1153,8 @@ from . import views
 
 app_name = 'custom_ui_tutorial_app' urlpatterns = [ path('home/', views.home,
 name='home'), path('hello/', views.hello_world, name='hello_world'), ]
+```
 
-````
 </div>
 
 This maps the `/hello/` URL to the `hello_world` view.
@@ -1153,17 +1167,15 @@ This maps the `/hello/` URL to the `hello_world` view.
     Copy to clipboard
 </button>
 <div id="appspy">
+
 ```python
 from django.apps import AppConfig
 
+class CustomUiTutorialAppConfig(AppConfig): name = 'custom_ui_tutorial_app'
+label = name verbose_name = "Custom UI Tutorial App" fa_icon_class =
+"fa-comment" url_home = "custom_ui_tutorial_app:hello_world"
 
-class CustomUiTutorialAppConfig(AppConfig):
-    name = 'custom_ui_tutorial_app'
-    label = name
-    verbose_name = "Custom UI Tutorial App"
-    fa_icon_class = "fa-comment"
-    url_home = "custom_ui_tutorial_app:hello_world"
-````
+```
 
 </div>
 
@@ -1193,9 +1205,11 @@ greetings in several languages.
     Copy to clipboard
 </button>
 <div id="jsonresponse">
+
 ```python
 from django.http import JsonResponse
 ```
+
 </div>
 
 2. Also we add the following view:
@@ -1204,6 +1218,7 @@ from django.http import JsonResponse
     Copy to clipboard
 </button>
 <div id="languages">
+
 ```python
 @login_required
 def languages(request):
@@ -1227,6 +1242,7 @@ def languages(request):
         'greeting': 'merhaba'
     }]})
 ```
+
 </div>
 
 3. In `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/urls.py` we add a url
@@ -1236,6 +1252,7 @@ def languages(request):
     Copy to clipboard
 </button>
 <div id="urls_languages">
+
 ```python
 from django.urls import path
 
@@ -1245,7 +1262,8 @@ app_name = 'custom_ui_tutorial_app' urlpatterns = [ path('home/', views.home,
 name='home'), path('hello/', views.hello_world, name="hello_world"),
 path('languages/', views.languages, name="languages"), ]
 
-````
+```
+
 </div>
 
 4. In
@@ -1276,23 +1294,23 @@ path('languages/', views.languages, name="languages"), ]
     </main>
 </div>
 ...
-````
+```
 
 <button class="btn" data-clipboard-target="#greeting-select">
     Copy to clipboard
 </button>
 <div id="greeting-select">
+
 ```html
-            <div class="card">
-                <div class="card-header">
-                    Run "echo" for different languages
-                </div>
-                <div class="card-body">
-                    <select id="greeting-select"></select>
-                    <button id="run-button" class="btn btn-primary">Run</button>
-                </div>
-            </div>
+<div class="card">
+    <div class="card-header">Run "echo" for different languages</div>
+    <div class="card-body">
+        <select id="greeting-select"></select>
+        <button id="run-button" class="btn btn-primary">Run</button>
+    </div>
+</div>
 ```
+
 </div>
 
 5. The `hello.html` template already has the `{% load static %}` directive and a
@@ -1330,17 +1348,19 @@ path('languages/', views.languages, name="languages"), ]
     Copy to clipboard
 </button>
 <div id="fetch_languages">
+
 ```javascript
-    utils.FetchUtils.get("/custom_ui_tutorial_app/languages/").then((data) => {
-        data.languages.forEach((language) => {
-            $("#greeting-select").append(
-                `<option value="${language.greeting}">
-                    ${language.lang} - "${language.greeting}"
-                 </option>`
-            );
-        });
+utils.FetchUtils.get("/custom_ui_tutorial_app/languages/").then((data) => {
+    data.languages.forEach((language) => {
+        $("#greeting-select").append(
+            `<option value="${language.greeting}">
+                ${language.lang} - "${language.greeting}"
+             </option>`
+        );
     });
+});
 ```
+
 </div>
 
 Now when you view the custom app at
@@ -1405,29 +1425,28 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
     Copy to clipboard
 </button>
 <div id="experiments-table">
+
 ```html
-            <div class="card">
-                <div class="card-header">
-                    Experiments
-                </div>
-                <div class="card-body">
-                    <button id="refresh-button" class="btn btn-secondary">Refresh</button>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Application</th>
-                                <th scope="col">Creation Time</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Output</th>
-                            </tr>
-                        </thead>
-                        <tbody id="experiment-list">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="card">
+    <div class="card-header">Experiments</div>
+    <div class="card-body">
+        <button id="refresh-button" class="btn btn-secondary">Refresh</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Application</th>
+                    <th scope="col">Creation Time</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Output</th>
+                </tr>
+            </thead>
+            <tbody id="experiment-list"></tbody>
+        </table>
+    </div>
+</div>
 ```
+
 </div>
 
 2. Now we'll use the ExperimentSearchService to load the user's most recent 5
@@ -1438,35 +1457,36 @@ Now we'll use the `AiravataAPI` library to load the user's recent experiments.
     Copy to clipboard
 </button>
 <div id="loadExperiments">
+
 ```javascript
-    const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
+const appInterfaceId = "Echo_23d67491-1bef-47bd-a0f5-faf069e09773";
 
-    async function loadExperiments() {
+async function loadExperiments() {
+    const data = await services.ExperimentSearchService.list({
+        limit: 5,
+        [models.ExperimentSearchFields.USER_NAME.name]:
+            session.Session.username,
+        [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
+    });
 
-        const data = await services.ExperimentSearchService
-            .list({limit: 5,
-                [models.ExperimentSearchFields.USER_NAME.name]: session.Session.username,
-                [models.ExperimentSearchFields.APPLICATION_ID.name]: appInterfaceId,
-            });
-
-        $('#experiment-list').empty();
-        data.results.forEach(async (expSummary, index) => {
-
-            $('#experiment-list').append(
+    $("#experiment-list").empty();
+    data.results.forEach(async (expSummary, index) => {
+        $("#experiment-list").append(
             `<tr>
                 <td>${expSummary.name}</td>
                 <td>${expSummary.executionId}</td>
                 <td>${expSummary.creationTime}</td>
                 <td>${expSummary.experimentStatus.name}</td>
                 <td id="output_${index}"></td>
-            </tr>`);
-        });
-    }
+            </tr>`
+        );
+    });
+}
 
-    loadExperiments();
-    $("#refresh-button").click(loadExperiments);
+loadExperiments();
+$("#refresh-button").click(loadExperiments);
+```
 
-````
 </div>
 
 The user interface should now look something like:
@@ -1484,32 +1504,37 @@ then examine it line by line to see what it is doing.
     Copy to clipboard
 </button>
 <div id="submitExperiment">
+
 ```javascript
-    async function submitExperiment(greeting) {
-        // Construct experiment object
-        const experimentData = await utils.ExperimentUtils.createExperiment({
-            applicationInterfaceId: appInterfaceId,
-            computeResourceName: "example-vc.jetstream-cloud.org",
-            experimentName: "Echo " + greeting,
-            experimentInputs: {
-                "Input-to-Echo": greeting
-            }
-        });
-        // Save experiment
-        const experiment = await services.ExperimentService.create({ data: experimentData });
-        // Launch experiment
-        await services.ExperimentService.launch({ lookup: experiment.experimentId });
-    }
+async function submitExperiment(greeting) {
+    // Construct experiment object
+    const experimentData = await utils.ExperimentUtils.createExperiment({
+        applicationInterfaceId: appInterfaceId,
+        computeResourceName: "example-vc.jetstream-cloud.org",
+        experimentName: "Echo " + greeting,
+        experimentInputs: {
+            "Input-to-Echo": greeting,
+        },
+    });
+    // Save experiment
+    const experiment = await services.ExperimentService.create({
+        data: experimentData,
+    });
+    // Launch experiment
+    await services.ExperimentService.launch({
+        lookup: experiment.experimentId,
+    });
+}
 
-    async function runClickHandler() {
-        const greeting = $("#greeting-select").val();
-        await submitExperiment(greeting);
-        // Reload experiments to see the new one
-        loadExperiments();
-    }
+async function runClickHandler() {
+    const greeting = $("#greeting-select").val();
+    await submitExperiment(greeting);
+    // Reload experiments to see the new one
+    loadExperiments();
+}
 
-    $("#run-button").click(runClickHandler);
-````
+$("#run-button").click(runClickHandler);
+```
 
 </div>
 
@@ -1705,27 +1730,31 @@ async function loadExperiments() {
     Copy to clipboard
 </button>
 <div id="readDataProduct">
+
 ```javascript
-        // If experiment has finished, download and display the stdout file contents
-        if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
-            const experiment = await services.ExperimentService.retrieve({
-                lookup: expSummary.experimentId,
-            });
-            const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
-            const dataProductURI = stdoutInput.value;
-            try {
-                const stdout = await utils.ExperimentUtils.readDataProduct(dataProductURI);
-                // if stdout is null, it means the file wasn't found
-                if (stdout !== null) {
-                    $(`#output_${index}`).text(stdout);
-                } else {
-                    $(`#output_${index}`).text("N/A");
-                }
-            } catch (error) {
-                $(`#output_${index}`).text("N/A");
-            }
+// If experiment has finished, download and display the stdout file contents
+if (expSummary.experimentStatus === models.ExperimentState.COMPLETED) {
+    const experiment = await services.ExperimentService.retrieve({
+        lookup: expSummary.experimentId,
+    });
+    const stdoutInput = experiment.getExperimentOutput("Echo-STDOUT");
+    const dataProductURI = stdoutInput.value;
+    try {
+        const stdout = await utils.ExperimentUtils.readDataProduct(
+            dataProductURI
+        );
+        // if stdout is null, it means the file wasn't found
+        if (stdout !== null) {
+            $(`#output_${index}`).text(stdout);
+        } else {
+            $(`#output_${index}`).text("N/A");
         }
+    } catch (error) {
+        $(`#output_${index}`).text("N/A");
+    }
+}
 ```
+
 </div>
 
 ## Resources
