@@ -1,7 +1,7 @@
 from airavata.model.experiment.ttypes import ExperimentModel
 from airavata_django_portal_sdk.decorators import queue_settings_calculator
 
-# See TODO for more information
+# See https://apache-airavata-django-portal.readthedocs.io/en/latest/dev/queue_settings_calculator/ for more information
 @queue_settings_calculator(
     id="{{ cookiecutter.project_slug}}-my-queue-settings-calculator", name="{{ cookiecutter.project_name}}: My Queue Settings Calculator"
 )

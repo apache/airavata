@@ -26,6 +26,6 @@ class {{ cookiecutter.app_config_class_name }}(AppConfig):
     # for more details for more details.
 
     def ready(self) -> None:
-        # Uncomment to register your queue settings calculators. See TODO
+        # Uncomment to register your queue settings calculators.
         # from {{ cookiecutter.project_slug }} import queue_settings_calculators  # noqa
         pass
