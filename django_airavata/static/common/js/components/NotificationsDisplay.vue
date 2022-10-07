@@ -1,16 +1,36 @@
 <template>
   <div id="notifications-display">
     <transition-group name="fade" tag="div">
-      <b-alert
-        v-for="unhandledError in unhandledErrors"
-        variant="danger"
-        :key="unhandledError.id"
-        show
-        dismissible
-        @dismissed="dismissUnhandledError(unhandledError)"
-      >
-        {{ unhandledError.message }}
-      </b-alert>
+      <template v-for="unhandledError in unhandledErrors">
+        <b-alert
+          v-if="isUnauthenticatedError(unhandledError.error)"
+          variant="danger"
+          :key="unhandledError.id"
+          show
+          dismissible
+          @dismissed="dismissUnhandledError(unhandledError)"
+        >
+          Your login session has expired. Please
+          <b-link class="alert-link" :href="loginLinkWithNext"
+            >log in again</b-link
+          >. You can also
+          <b-link class="alert-link" :href="loginLink" target="_blank"
+            >login in a separate tab
+            <i class="fa fa-external-link-alt" aria-hidden="true"></i
+          ></b-link>
+          and then return to this tab and try again.
+        </b-alert>
+        <b-alert
+          v-else
+          variant="danger"
+          :key="unhandledError.id"
+          show
+          dismissible
+          @dismissed="dismissUnhandledError(unhandledError)"
+        >
+          {{ unhandledError.message }}
+        </b-alert>
+      </template>
       <b-alert
         v-for="notification in notifications"
         :variant="variant(notification)"
@@ -86,6 +106,9 @@ export default {
       }.bind(this);
       setTimeout(pollAPIServerStatus.bind(this), this.pollingDelay);
     },
+    isUnauthenticatedError(error) {
+      return errors.ErrorUtils.isUnauthenticatedError(error);
+    },
   },
   computed: {
     apiServerDown() {
@@ -129,6 +152,12 @@ export default {
             )
         : false;
       return notificationsApiServerDown || unhandledErrorsApiServerDown;
+    },
+    loginLinkWithNext() {
+      return errors.ErrorUtils.buildLoginUrl();
+    },
+    loginLink() {
+      return errors.ErrorUtils.buildLoginUrl(false);
     },
   },
   watch: {

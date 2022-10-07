@@ -21,10 +21,22 @@ class UnhandledErrorDispatcher {
   }
 
   reportUnhandledError(unhandledError) {
+    // Ignore unauthenticated errors that have already been displayed
+    if (
+      unhandledError.isUnauthenticatedError &&
+      UnhandledErrorList.list.some((e) => e.isUnauthenticatedError)
+    ) {
+      return;
+    }
+
     if (!unhandledError.suppressDisplay) {
       UnhandledErrorList.add(unhandledError);
     }
-    if (!unhandledError.suppressLogging) {
+    if (
+      !unhandledError.suppressLogging &&
+      // Don't log unauthenticated errors
+      !unhandledError.isUnauthenticatedError
+    ) {
       ErrorReporter.reportUnhandledError(unhandledError);
     }
   }

@@ -1,3 +1,4 @@
+import ErrorUtils from "../errors/ErrorUtils";
 import UnhandledErrorDispatcher from "../errors/UnhandledErrorDispatcher";
 import Cache from "./Cache";
 
@@ -266,7 +267,8 @@ export default {
         if (showSpinner) {
           decrementCount();
         }
-        if (!ignoreErrors) {
+        // Always report unauthenticated errors so user knows they need to re-authenticate
+        if (!ignoreErrors || ErrorUtils.isUnauthenticatedError(error)) {
           this.reportError(error);
         }
         throw error;

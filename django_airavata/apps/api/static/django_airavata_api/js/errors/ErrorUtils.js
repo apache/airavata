@@ -22,4 +22,23 @@ export default {
   isNotFoundError(error) {
     return this.isAPIException(error) && error.details.status === 404;
   },
+  isUnauthenticatedError(error) {
+    return (
+      this.isAPIException(error) &&
+      [401, 403].includes(error.details.status) &&
+      "is_authenticated" in error.details.response &&
+      error.details.response.is_authenticated === false
+    );
+  },
+  buildLoginUrl(includeNextParameter = true) {
+    let loginUrl = "/auth/login";
+    if (includeNextParameter) {
+      let currentURL = window.location.pathname;
+      if (window.location.search) {
+        currentURL += window.location.search;
+      }
+      loginUrl += `?next=${encodeURIComponent(currentURL)}`;
+    }
+    return loginUrl;
+  },
 };

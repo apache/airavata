@@ -1,3 +1,5 @@
+import ErrorUtils from "./ErrorUtils";
+
 let idSequence = 0;
 class UnhandledError {
   constructor({
@@ -14,6 +16,10 @@ class UnhandledError {
     this.suppressDisplay = suppressDisplay;
     this.suppressLogging = suppressLogging;
     this.createdDate = new Date();
+  }
+
+  get isUnauthenticatedError() {
+    return ErrorUtils.isUnauthenticatedError(this.error);
   }
 }
 
