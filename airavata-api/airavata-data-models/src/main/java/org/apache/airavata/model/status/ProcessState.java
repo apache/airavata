@@ -42,7 +42,10 @@ public enum ProcessState implements org.apache.thrift.TEnum {
   COMPLETED(10),
   FAILED(11),
   CANCELLING(12),
-  CANCELED(13);
+  CANCELED(13),
+  QUEUED(14),
+  DEQUEUING(15),
+  REQUEUED(16);
 
   private final int value;
 
