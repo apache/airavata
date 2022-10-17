@@ -11,11 +11,11 @@ public interface ProcessScheduler {
 
 
     /**
-     * This method checks process can be instantly schedule to a computer resource,
-     * If it can be schedule to a process configured ProcessModel is returned otherwise Process
+     * This method checks process can be instantly scheduled to a computer resource,
+     * If it can be scheduled to a process, configured ProcessModel is returned otherwise Process
      * is moved to Queued state
      * @param processId
-     * @return if instant scheduling is possible return ProcessModel  else null
+     * @return Optional<ProcessModel>
      */
     Optional<ProcessModel>  schedule(String processId);
 
