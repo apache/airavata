@@ -27,6 +27,13 @@
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
+    <modules>
+        <module>modules/airavata-metascheduler</module>
+        <module>modules/airavata-metascheduler/metascheduler-core</module>
+        <module>modules/airavata-metascheduler/process-scheduler</module>
+        <module>modules/airavata-metascheduler/computer-resource-monitoring-service</module>
+        <module>modules/airavata-metascheduler/metadata-analyzer</module>
+    </modules>
 
     <parent>
         <groupId>org.apache</groupId>
