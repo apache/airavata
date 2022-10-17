@@ -22,6 +22,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * The persistent class for the user_configuration_data database table.
@@ -101,6 +102,11 @@ public class UserConfigurationDataEntity implements Serializable {
     @OneToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
+
+
+    @OneToMany(targetEntity = ComputationalResourceSchedulingEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "userConfigurationData", fetch = FetchType.EAGER)
+    private List<ComputationalResourceSchedulingEntity> computationalResourceSchedulingEntities;
 
     public UserConfigurationDataEntity() {
     }
@@ -287,5 +293,14 @@ public class UserConfigurationDataEntity implements Serializable {
 
     public void setExperiment(ExperimentEntity experiment) {
         this.experiment = experiment;
+    }
+
+    public List<ComputationalResourceSchedulingEntity> getComputationalResourceSchedulingEntities() {
+        return computationalResourceSchedulingEntities;
+    }
+
+    public void setComputationalResourceSchedulingEntities(List<ComputationalResourceSchedulingEntity>
+                                                                   computationalResourceSchedulingEntities) {
+        this.computationalResourceSchedulingEntities = computationalResourceSchedulingEntities;
     }
 }
