@@ -19,4 +19,14 @@ public interface ProcessScheduler {
      */
     Optional<ProcessModel>  schedule(String processId);
 
+
+    /**
+     * This method can be used to reschedule a failed process.
+     * If prcoess can be scheduled instantly, configured ProcessModel is returned otherwise Process
+     * is moved to Queued state
+     * @param processId
+     * @return Optional<ProcessModel>
+     */
+    Optional<ProcessModel>  reschedule(String processId);
+
 }
