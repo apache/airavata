@@ -1199,7 +1199,7 @@ Now we'll create a REST endpoint in our custom Django app that will return
 greetings in several languages.
 
 1. In the `$HOME/custom_ui_tutorial_app/custom_ui_tutorial_app/views.py` file,
-   we add the following import:
+   we add the following imports:
 
 <button class="btn" data-clipboard-target="#jsonresponse">
     Copy to clipboard
@@ -1208,6 +1208,7 @@ greetings in several languages.
 
 ```python
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
 ```
 
 </div>
@@ -1220,7 +1221,7 @@ from django.http import JsonResponse
 <div id="languages">
 
 ```python
-@login_required
+@api_view()
 def languages(request):
     return JsonResponse({'languages': [{
         'lang': 'French',
