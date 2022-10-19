@@ -2505,6 +2505,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw exception;
             }
             return groupComputeResourcePreference;
+
         } catch (Exception e) {
             logger.error("Error while retrieving group compute resource preference", e);
             RegistryServiceException exception = new RegistryServiceException();
