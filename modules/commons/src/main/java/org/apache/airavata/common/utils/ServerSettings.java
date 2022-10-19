@@ -143,6 +143,13 @@ public class ServerSettings extends ApplicationSettings {
     private static boolean emailBaseNotificationEnable;
     private static String outputLocation;
 
+
+
+
+    //Airavata Metascheduler
+    public static  final String COMPUTE_RESOURCE_SELECTION_POLICY_CLASS = "compute.resource.selection.policy.class";
+
+
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
     }
@@ -490,5 +497,11 @@ public class ServerSettings extends ApplicationSettings {
 
     public static Boolean isSteamingEnabled() {
         return Boolean.valueOf(getSetting(Constants.ENABLE_STREAMING_TRANSFER, "True"));
+    }
+
+
+    public static String getComputeResourceSelectionPolicyClass() throws ApplicationSettingsException {
+        return getSetting(COMPUTE_RESOURCE_SELECTION_POLICY_CLASS,
+                "org.apache.airavata.metascheduler.process.scheduling.cr.DefaultComputeResourceSelectionPolicy");
     }
 }
