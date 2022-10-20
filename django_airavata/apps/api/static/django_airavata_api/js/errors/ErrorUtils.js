@@ -22,6 +22,14 @@ export default {
   isNotFoundError(error) {
     return this.isAPIException(error) && error.details.status === 404;
   },
+  /**
+   * Return true if the error is an unauthenticated error, i.e., the user needs
+   * to log in again.
+   *
+   * @param {Error} error
+   * @returns
+   * @see {@link buildLoginUrl} for utility to build re-login url
+   */
   isUnauthenticatedError(error) {
     return (
       this.isAPIException(error) &&
@@ -30,6 +38,13 @@ export default {
       error.details.response.is_authenticated === false
     );
   },
+  /**
+   * Build a url that takes the user to the login page.
+   *
+   * @param {boolean} includeNextParameter - Add a 'next' url to the login url
+   *   that will take the user back to this page after login
+   * @returns
+   */
   buildLoginUrl(includeNextParameter = true) {
     let loginUrl = "/auth/login";
     if (includeNextParameter) {
