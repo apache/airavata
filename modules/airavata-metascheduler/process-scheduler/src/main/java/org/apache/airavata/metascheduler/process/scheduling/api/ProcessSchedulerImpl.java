@@ -14,6 +14,7 @@ import org.apache.airavata.registry.api.RegistryService.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,37 +35,47 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
 
 
     @Override
-    public Optional<ProcessModel> schedule(String processId) {
+    public boolean schedule(String experimentId) {
         final RegistryService.Client registryClient = this.registryClientPool.getResource();
         try {
-            ProcessStatus processStatus = registryClient.getProcessStatus(processId);
-            ProcessModel processModel = registryClient.getProcess(processId);
-            if (processStatus.equals(ProcessState.CREATED)) {
+            List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+            boolean allProcessesScheduled = true;
 
-                String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+            String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+            ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass).newInstance();
 
-                ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass).newInstance();
-                Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel = policy.selectComputeResource(processId);
+            for(ProcessModel processModel:processModels) {
+                ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
 
-                if (computationalResourceSchedulingModel.isPresent()) {
-                    processModel.setProcessResourceSchedule(computationalResourceSchedulingModel.get());
+                if (processStatus.equals(ProcessState.CREATED) || processStatus.equals(ProcessState.VALIDATED)) {
+
+                    Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel = policy.
+                            selectComputeResource(processModel.getProcessId());
+
+                    if (computationalResourceSchedulingModel.isPresent()) {
+                        processModel.setProcessResourceSchedule(computationalResourceSchedulingModel.get());
+                        registryClient.updateProcess(processModel, processModel.getProcessId());
+                    } else {
+                        ProcessStatus newProcessStatus = new ProcessStatus();
+                        newProcessStatus.setState(ProcessState.QUEUED);
+                        registryClient.updateProcessStatus(newProcessStatus,processModel.getProcessId());
+                        allProcessesScheduled = false;
+                    }
                 }
             }
-            return Optional.of(processModel);
-
-
+            return allProcessesScheduled;
         } catch (Exception exception) {
-            LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
+            LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);
         } finally {
             this.registryClientPool.returnResource(registryClient);
         }
 
-        return Optional.empty();
+        return false;
     }
 
     @Override
-    public Optional<ProcessModel> reschedule(String processId) {
-        return Optional.empty();
+    public boolean reschedule(String experimentId) {
+        return false;
     }
 
 }

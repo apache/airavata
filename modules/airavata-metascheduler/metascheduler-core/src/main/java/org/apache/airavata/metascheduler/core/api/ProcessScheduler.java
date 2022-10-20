@@ -11,22 +11,22 @@ public interface ProcessScheduler {
 
 
     /**
-     * This method checks process can be instantly scheduled to a computer resource,
-     * If it can be scheduled to a process, configured ProcessModel is returned otherwise Process
-     * is moved to Queued state
-     * @param processId
-     * @return Optional<ProcessModel>
+     * This method checks experiment can be instantly scheduled to a computer resource,
+     * If it can be scheduled, Processes are updated with selected Scheduling resource otherwise all are
+     *  moved to Queued state
+     * @param experimentId
+     * @return boolean
      */
-    Optional<ProcessModel>  schedule(String processId);
+      boolean  schedule(String experimentId);
 
 
     /**
-     * This method can be used to reschedule a failed process.
-     * If prcoess can be scheduled instantly, configured ProcessModel is returned otherwise Process
+     * This method can be used to reschedule a failed experiment.
+     * If experiment can be scheduled instantly, Processes are updated with scheduling resources, otherwise
      * is moved to Queued state
-     * @param processId
-     * @return Optional<ProcessModel>
+     * @param experimentId
+     * @return boolean
      */
-    Optional<ProcessModel>  reschedule(String processId);
+    boolean  reschedule(String experimentId);
 
 }
