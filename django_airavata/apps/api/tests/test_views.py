@@ -468,3 +468,26 @@ class IAMUserViewSetTests(TestCase):
         group_manager_mock.getGroup.assert_not_called()
         group_manager_mock.addUsersToGroup.assert_not_called()
         user_added_to_group_handler.assert_not_called()
+
+
+@override_settings(
+    GATEWAY_ID=GATEWAY_ID,
+    PORTAL_ADMINS=PORTAL_ADMINS
+)
+class ExceptionHandlingTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user('testuser')
+        self.factory = APIRequestFactory()
+
+    def test_unauthenticated_request(self):
+
+        url = reverse('django_airavata_api:group-list')
+        data = {}
+        request = self.factory.post(url, data)
+        # Deliberately not authenticating user for request
+        group_create = views.GroupViewSet.as_view({'post': 'create'})
+        response = group_create(request)
+        self.assertEquals(403, response.status_code)
+        self.assertIn('is_authenticated', response.data)
+        self.assertFalse(response.data['is_authenticated'])
