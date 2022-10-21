@@ -4,7 +4,7 @@
       <template v-for="unhandledError in unhandledErrors">
         <b-alert
           v-if="isUnauthenticatedError(unhandledError.error)"
-          variant="danger"
+          variant="warning"
           :key="unhandledError.id"
           show
           dismissible
