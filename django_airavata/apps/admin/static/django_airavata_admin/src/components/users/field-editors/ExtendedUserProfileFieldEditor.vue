@@ -34,7 +34,7 @@
               <b-input-group-append>
                 <b-button
                   @click="handleChoiceMoveUp(choice)"
-                  :disabled="index === 0"
+                  :disabled="index === String(0)"
                   v-b-tooltip.hover.left
                   title="Move Up"
                 >
@@ -43,7 +43,8 @@
                 <b-button
                   @click="handleChoiceMoveDown(choice)"
                   :disabled="
-                    index === extendedUserProfileField.choices.length - 1
+                    index ===
+                    String(extendedUserProfileField.choices.length - 1)
                   "
                   v-b-tooltip.hover.left
                   title="Move Down"
