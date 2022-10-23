@@ -6,4 +6,3 @@ thrift_connector==0.24
 paramiko
 scp
 pysftp
-urllib3

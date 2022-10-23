@@ -23,9 +23,11 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata_sdk.transport.settings import KeycloakConfiguration
 import os
 
-import urllib3
+# since we are using requests 2.13 (< 2.16.0)
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
