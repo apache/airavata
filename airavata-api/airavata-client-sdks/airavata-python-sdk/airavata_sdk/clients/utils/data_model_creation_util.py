@@ -37,16 +37,22 @@ logger.setLevel(logging.DEBUG)
 
 class DataModelCreationUtil(object):
 
-    def __init__(self, configuration_file_location, username, password, gateway_id):
+    def __init__(self, configuration_file_location, username, password, gateway_id, access_token):
         self.authenticator = Authenticator(configuration_file_location)
-        self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
-                                                                              password=password, gateway_id=gateway_id)
+        if access_token:
+            self.token = self.authenticator.get_airavata_authz_token(username=username,
+                                                                     token=access_token,
+                                                                     gateway_id=gateway_id)
+        else:
+            self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
+                                                                                  password=password,
+                                                                                  gateway_id=gateway_id)
         self.gateway_id = gateway_id
         self.username = username
         self.password = password
         self.api_server_client = APIServerClient(configuration_file_location)
         self.airavata_util = APIServerClientUtil(configuration_file_location, self.username, self.password,
-                                                 self.gateway_id)
+                                                 self.gateway_id, access_token)
 
     def get_experiment_data_model_for_single_application(self, project_name, application_name, experiment_name,
                                                          description):
