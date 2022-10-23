@@ -100,8 +100,9 @@ class ExperimentHandlerUtil(object):
                                                                                  experiment_dir_path=path)
 
         input_files = []
-        for x in os.listdir():
-            input_files.append(x)
+        for x in os.listdir(local_input_path):
+            if os.path.isfile(local_input_path + '/' + x):
+               input_files.append(x)
 
         if len(input_files) > 0:
             data_uris = []
