@@ -54,7 +54,9 @@ class SFTPConnector(object):
     def upload_files(self, local_path, project_name, exprement_id):
         project_name = project_name.replace(" ", "_")
         time = datetime.now().strftime('%Y-%m-%d %H:%M:%S').replace(" ", "_")
-        exprement_id = exprement_id+time
+        time = time.replace(":", "_")
+        time = time.replace("-", "_")
+        exprement_id = exprement_id+"_"+time
         remote_path = "/" + project_name + "/" + exprement_id + "/"
         pathsuffix = self.username + remote_path
         files = os.listdir(local_path)
