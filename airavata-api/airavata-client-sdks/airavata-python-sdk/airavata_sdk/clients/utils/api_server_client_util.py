@@ -29,13 +29,17 @@ logger.setLevel(logging.DEBUG)
 
 class APIServerClientUtil(object):
 
-    def __init__(self, configuration_file_location, username, password, gateway_id):
+    def __init__(self, configuration_file_location, username, password, gateway_id, access_token):
         self.authenticator = Authenticator(configuration_file_location)
-        self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
+        if access_token:
+            self.token = self.authenticator.get_airavata_authz_token(username=username,
+                                                                     token=access_token,
+                                                                     gateway_id=gateway_id)
+        else:
+            self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
                                                                               password=password, gateway_id=gateway_id)
         self.gateway_id = gateway_id
         self.username = username
-        self.password = password
         self.api_server_client = APIServerClient(configuration_file_location)
 
     def get_project_id(self, project_name):

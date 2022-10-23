@@ -105,6 +105,7 @@ class KeycloakConfiguration(object):
         self.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
         self.USER_INFO_URL = config.get('KeycloakServer', 'USER_INFO_URL')
         self.VERIFY_SSL = config.getboolean('KeycloakServer', 'VERIFY_SSL')
+        self.LOGIN_DESKTOP_URI = config.get('KeycloakServer', 'LOGIN_DESKTOP_URI')
 
 
 class GatewaySettings(object):
@@ -116,3 +117,21 @@ class GatewaySettings(object):
         self.GATEWAY_DATA_STORE_DIR = config.get('Gateway', 'GATEWAY_DATA_STORE_DIR')
         self.GATEWAY_DATA_STORE_HOSTNAME = config.get('Gateway', 'GATEWAY_DATA_STORE_HOSTNAME')
         self.FILE_UPLOAD_TEMP_DIR = config.get('Gateway', 'FILE_UPLOAD_TEMP_DIR')
+
+
+class ExperimentSettings(object):
+    def __init__(self, configFileLocation=None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
+        self.APPLICATION_NAME = config.get('ExperimentConf', 'APPLICATION_NAME')
+        self.PROJECT_NAME = config.get('ExperimentConf', 'PROJECT_NAME')
+        self.COMPUTE_HOST_DOMAIN = config.get('ExperimentConf', 'COMPUTE_HOST_DOMAIN')
+        self.GROUP_RESOURCE_PROFILE_NAME = config.get('ExperimentConf', 'GROUP_RESOURCE_PROFILE_NAME')
+        self.STORAGE_RESOURCE_HOST = config.get('ExperimentConf', 'STORAGE_RESOURCE_HOST')
+        self.SFTP_PORT = config.get('ExperimentConf', 'SFTP_PORT')
+        self.NODE_COUNT = config.get('ExperimentConf', 'NODE_COUNT')
+        self.TOTAL_CPU_COUNT = config.get('ExperimentConf', 'TOTAL_CPU_COUNT')
+        self.WALL_TIME_LIMIT = config.get('ExperimentConf', 'WALL_TIME_LIMIT')
+        self.QUEUE_NAME = config.get('ExperimentConf', 'QUEUE_NAME')
+        self.MONITOR_STATUS = config.get('ExperimentConf', 'MONITOR_STATUS')
+
