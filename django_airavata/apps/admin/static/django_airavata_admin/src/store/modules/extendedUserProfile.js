@@ -94,6 +94,9 @@ const mutations = {
   setName(state, { value, field }) {
     setFieldProp(state, field, "name", value);
   },
+  setCheckboxLabel(state, { value, field }) {
+    setFieldProp(state, field, "checkbox_label", value);
+  },
   setHelpText(state, { value, field }) {
     setFieldProp(state, field, "help_text", value);
   },
