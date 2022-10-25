@@ -8,6 +8,11 @@
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Logged in!</h4>
       </div>
+      <div class="container">
+         {% if options.show_code  %}
+           <h3> {{ options.code }}</h3>
+         {% endif %}
+      </div>
     </div>
   </main>
 </div>
