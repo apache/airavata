@@ -479,7 +479,20 @@ def login_desktop(request):
 
 
 def login_desktop_success(request):
-    return render(request, 'django_airavata_auth/login-desktop-success.html')
+    download_code= False
+    show_code =False
+    for filter_item in self.request.query_params.items():
+        if filter_item[0] == 'download_code':
+            download_code = filter_item[1]
+        elif filter_item[0] == 'show_code':
+             show_code = filter_item[1]
+
+    context = {
+        'download_code': download_code,
+        'show_code': show_code,
+        'code': request.session['ACCESS_TOKEN']
+    } if (download_code and show_code ) else {}
+    return render(request, 'django_airavata_auth/login-desktop-success.html', context)
 
 
 def refreshed_token_desktop(request):
