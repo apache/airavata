@@ -73,10 +73,10 @@ def redirect_login(request, idp_alias):
     redirect_uri = request.build_absolute_uri(
         reverse('django_airavata_auth:callback'))
     redirect_uri += '?idp_alias=' + quote(idp_alias)
-    if 'next' in request.GET:
-        redirect_uri += "&next=" + quote(request.GET['next'])
-    if 'login_desktop' in request.GET:
-        redirect_uri += "&login_desktop=" + quote(request.GET['login_desktop'])
+    passthrough_query_params = ('next', 'login_desktop', 'download-code', 'show-code')
+    for passthrough_query_param in passthrough_query_params:
+        if passthrough_query_param in request.GET:
+            redirect_uri += f"&{passthrough_query_param}={quote(request.GET[passthrough_query_param])}"
     oauth2_session = OAuth2Session(
         client_id, scope='openid', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
@@ -105,6 +105,8 @@ def handle_login(request):
     password = request.POST['password']
     login_type = request.POST.get('login_type', None)
     login_desktop = request.POST.get('login_desktop', "false") == "true"
+    download_code = request.POST.get('download-code', 'false') == "true"
+    show_code = request.POST.get('show-code', 'false') == "true"
     template = "django_airavata_auth/login.html"
     if login_type and login_type == 'password':
         template = "django_airavata_auth/login_username_password.html"
@@ -118,7 +120,9 @@ def handle_login(request):
             request.authz_token = utils.get_authz_token(request, user=user)
             login(request, user)
             if login_desktop:
-                return _create_login_desktop_success_response(request)
+                return _create_login_desktop_success_response(request,
+                                                              download_code=download_code,
+                                                              show_code=show_code)
             else:
                 next_url = request.POST.get('next',
                                             settings.LOGIN_REDIRECT_URL)
@@ -156,7 +160,9 @@ def callback(request):
         if user is not None:
             login(request, user)
             if login_desktop:
-                return _create_login_desktop_success_response(request)
+                download_code = request.GET.get('download-code', 'false') == "true"
+                show_code = request.GET.get('show-code', 'false') == "true"
+                return _create_login_desktop_success_response(request, download_code=download_code, show_code=show_code)
             next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
             return redirect(next_url)
         else:
@@ -475,24 +481,27 @@ def login_desktop(request):
     }
     if 'username' in request.GET:
         context['username'] = request.GET['username']
+    download_code = request.GET.get('download-code', "false") == "true"
+    show_code = request.GET.get('show-code', "false") == "true"
+    context['download_code'] = download_code
+    context['show_code'] = show_code
     return render(request, 'django_airavata_auth/login-desktop.html', context)
 
 
 def login_desktop_success(request):
-    download_code= False
-    show_code =False
-    for filter_item in self.request.query_params.items():
-        if filter_item[0] == 'download_code':
-            download_code = filter_item[1]
-        elif filter_item[0] == 'show_code':
-             show_code = filter_item[1]
+    download_code = request.GET.get('download-code', "false") == "true"
+    show_code = request.GET.get('show-code', "false") == "true"
 
-    context = {
-        'download_code': download_code,
-        'show_code': show_code,
-        'code': request.session['ACCESS_TOKEN']
-    } if (download_code and show_code ) else {}
-    return render(request, 'django_airavata_auth/login-desktop-success.html', context)
+    access_token = request.session['ACCESS_TOKEN']
+    if download_code:
+        access_token_bytesio = io.BytesIO(access_token.encode())
+        return FileResponse(access_token_bytesio, as_attachment=True, filename="access_token.txt")
+    else:
+        context = {
+            'show_code': show_code,
+            'code': access_token,
+        } if (show_code) else {}
+        return render(request, 'django_airavata_auth/login-desktop-success.html', context)
 
 
 def refreshed_token_desktop(request):
@@ -513,17 +522,21 @@ def refreshed_token_desktop(request):
         })
 
 
-def _create_login_desktop_success_response(request):
+def _create_login_desktop_success_response(request, download_code=False, show_code=False):
     valid_time = int(request.session['ACCESS_TOKEN_EXPIRES_AT'] - time.time())
+    query_params = {
+        'status': 'ok',
+        'code': request.session['ACCESS_TOKEN'],
+        'refresh_code': request.session['REFRESH_TOKEN'],
+        'valid_time': valid_time,
+        'username': request.user.username,
+    }
+    if download_code:
+        query_params['download-code'] = "true"
+    if show_code:
+        query_params['show-code'] = "true"
     return redirect(
-        reverse('django_airavata_auth:login_desktop_success') +
-        "?" + urlencode({
-            'status': 'ok',
-            'code': request.session['ACCESS_TOKEN'],
-            'refresh_code': request.session['REFRESH_TOKEN'],
-            'valid_time': valid_time,
-            'username': request.user.username
-        }))
+        reverse('django_airavata_auth:login_desktop_success') + "?" + urlencode(query_params))
 
 
 def _create_login_desktop_failed_response(request, idp_alias=None):

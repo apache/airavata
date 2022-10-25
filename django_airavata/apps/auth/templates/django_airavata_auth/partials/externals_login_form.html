@@ -10,7 +10,7 @@
                 {% if next %}
                     href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?next={{ next | urlencode }}"
                 {% elif login_desktop %}
-                    href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?login_desktop=true"
+                    href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}?login_desktop=true{% if show_code %}&show-code=true{% endif %}{% if download_code %}&download-code=true{% endif %}"
                 {% else %}
                     href="{% url 'django_airavata_auth:redirect_login' external.idp_alias %}"
                 {% endif %}
