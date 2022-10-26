@@ -112,18 +112,32 @@ class DataModelCreationUtil(object):
 
         return self.api_server_client.register_data_product(self.token, dataProductModel)
 
-    def configure_input_and_outputs(self, experiment_model, input_files, application_name):
+    def configure_input_and_outputs(self, experiment_model, input_files, application_name, file_mapping={}):
         execution_id = self.airavata_util.get_execution_id(application_name)
 
         inputs = self.api_server_client.get_application_inputs(self.token, execution_id)
 
-        count = 0
-        for obj in inputs:
-            if isinstance(inputs[count], InputDataObjectType):
-                inputs[count].value = input_files[count]
-            count = count + 1
+        configured_inputs = []
+        if (len(file_mapping.keys()) == 0):
+            count = 0
+            for obj in inputs:
+                if isinstance(inputs[count], InputDataObjectType):
+                    inputs[count].value = input_files[count]
+                    count = count + 1
+            configured_inputs = inputs
+        else:
+            for key in file_mapping.keys():
+                for input in inputs:
+                    if key == input.name:
+                        if input.type == 3:
+                            input.value = file_mapping[key]
+                            configured_inputs.append(input)
+                        elif input.type == 4:
+                            val = ','.join(file_mapping[key])
+                            input.value = val
+                            configured_inputs.append(input)
 
-        experiment_model.experimentInputs = inputs
+        experiment_model.experimentInputs = configured_inputs
 
         outputs = self.api_server_client.get_application_outputs(self.token, execution_id)
 

@@ -24,15 +24,8 @@ from paramiko import Transport, SFTPClient
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 
 class SFTPConnector(object):
@@ -80,8 +73,7 @@ class SFTPConnector(object):
                     transport.close()
         return pathsuffix
 
-    def download_files(self, local_path, project_name, exprement_id):
-        remote_path = "/" + project_name + "/" + exprement_id + "/"
+    def download_files(self, local_path, remote_path):
 
         self.ssh.connect(self.host, self.port, self.username, password = self.password)
         with SCPClient(self.ssh.get_transport()) as conn:
