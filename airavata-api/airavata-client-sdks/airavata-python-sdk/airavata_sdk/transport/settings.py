@@ -133,5 +133,5 @@ class ExperimentSettings(object):
         self.TOTAL_CPU_COUNT = config.get('ExperimentConf', 'TOTAL_CPU_COUNT')
         self.WALL_TIME_LIMIT = config.get('ExperimentConf', 'WALL_TIME_LIMIT')
         self.QUEUE_NAME = config.get('ExperimentConf', 'QUEUE_NAME')
-        self.MONITOR_STATUS = config.get('ExperimentConf', 'MONITOR_STATUS')
+        self.MONITOR_STATUS = config.getboolean('ExperimentConf', 'MONITOR_STATUS')
 

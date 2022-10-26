@@ -24,7 +24,7 @@ from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.api_server_client import APIServerClient
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class APIServerClientUtil(object):
@@ -37,7 +37,8 @@ class APIServerClientUtil(object):
                                                                      gateway_id=gateway_id)
         else:
             self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
-                                                                              password=password, gateway_id=gateway_id)
+                                                                                  password=password,
+                                                                                  gateway_id=gateway_id)
         self.gateway_id = gateway_id
         self.username = username
         self.api_server_client = APIServerClient(configuration_file_location)
@@ -45,7 +46,7 @@ class APIServerClientUtil(object):
     def get_project_id(self, project_name):
         response = self.api_server_client.get_user_projects(self.token, self.gateway_id, self.username, 10, 0)
         for project in response:
-            if project.name == project_name:
+            if project.name == project_name and project.owner == self.username:
                 return project.projectID
         return None
 
@@ -76,3 +77,11 @@ class APIServerClientUtil(object):
             if response[k] == storage_name:
                 return k
         return None
+
+    def get_queue_names(self, resource_host_id):
+        resource = self.api_server_client.get_compute_resource(self.token, resource_host_id)
+        batchqueues = resource.batchQueues
+        allowed_queue_names = []
+        for queue in batchqueues:
+            allowed_queue_names.append(queue.queueName)
+        return allowed_queue_names
