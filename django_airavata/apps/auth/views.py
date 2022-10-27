@@ -770,11 +770,10 @@ class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
 
     def get_queryset(self):
         user = self.request.user
-        if self.request.is_gateway_admin:
+        if self.request.is_gateway_admin and self.request.query_params.get('username'):
             queryset = models.ExtendedUserProfileValue.objects.all()
             username = self.request.query_params.get('username')
-            if username is not None:
-                queryset = queryset.filter(user_profile__user__username=username)
+            queryset = queryset.filter(user_profile__user__username=username)
         else:
             queryset = user.user_profile.extended_profile_values.all()
         return queryset

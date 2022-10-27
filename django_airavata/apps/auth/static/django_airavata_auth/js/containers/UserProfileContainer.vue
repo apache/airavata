@@ -31,13 +31,13 @@
       </template>
 
       <b-button variant="primary" @click="onSave">Save</b-button>
+      <b-button
+        variant="success"
+        v-if="!mustComplete"
+        href="/workspace/dashboard"
+        >Go to Dashboard</b-button
+      >
     </b-card>
-    <b-link
-      v-if="!mustComplete"
-      class="text-muted small"
-      href="/workspace/dashboard"
-      >Return to Dashboard</b-link
-    >
   </div>
 </template>
 
@@ -102,6 +102,8 @@ export default {
       ) {
         await this.updateUser();
         await this.saveExtendedUserProfileValues();
+        // Reload current user to get updated 'complete' and 'ext_user_profile_valid'
+        await this.loadCurrentUser();
         notifications.NotificationList.add(
           new notifications.Notification({
             type: "SUCCESS",
