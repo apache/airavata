@@ -364,6 +364,11 @@ $header_height_with_border: $header_height + 1px;
   z-index: 3;
   padding-left: calc(1rem + 15px);
   padding-right: calc(1rem + 15px);
+  // Align the right side with the right side of .main-content when wider than 1200px
+  padding-right: max(
+    calc(100% - 1200px - 70px + 1rem + 15px),
+    calc(1rem + 15px)
+  );
   padding-top: 1rem;
   padding-bottom: 1rem;
   background-color: #f7f7f7;

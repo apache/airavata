@@ -1,6 +1,12 @@
 <template>
   <b-card header="Extended User Profile">
-    <b-table :items="items" :fields="fields" small borderless>
+    <template v-if="items.length === 0">
+      <b-link href="/admin/extended-user-profile"
+        >Add additional user profile fields for gateway users to
+        complete</b-link
+      >
+    </template>
+    <b-table v-else :items="items" :fields="fields" small borderless>
       <template #cell(value)="{ value, item }">
         <!-- only show a valid checkmark when there is a user provided value -->
         <i v-if="value && item.valid" class="fas fa-check text-success"></i>
@@ -15,6 +21,12 @@
         <template v-else> {{ value }} </template>
       </template>
     </b-table>
+    <b-link
+      v-if="items.length > 0"
+      href="/admin/extended-user-profile"
+      class="text-muted small"
+      >Add or edit these field definitions</b-link
+    >
   </b-card>
 </template>
 

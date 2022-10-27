@@ -26,21 +26,30 @@
     </transition-group>
     <div ref="bottom" />
     <div class="fixed-footer">
-      <b-dropdown text="Add Field">
-        <b-dropdown-item @click="addField('text')">Text</b-dropdown-item>
-        <b-dropdown-item @click="addField('single_choice')"
-          >Single Choice</b-dropdown-item
+      <div class="d-flex">
+        <b-dropdown text="Add Field">
+          <b-dropdown-item @click="addField('text')">Text</b-dropdown-item>
+          <b-dropdown-item @click="addField('single_choice')"
+            >Single Choice</b-dropdown-item
+          >
+          <b-dropdown-item @click="addField('multi_choice')"
+            >Multi Choice</b-dropdown-item
+          >
+          <b-dropdown-item @click="addField('user_agreement')"
+            >User Agreement</b-dropdown-item
+          >
+        </b-dropdown>
+        <b-button
+          variant="primary"
+          @click="save"
+          :disabled="!valid"
+          class="ml-2"
+          >Save</b-button
         >
-        <b-dropdown-item @click="addField('multi_choice')"
-          >Multi Choice</b-dropdown-item
+        <b-button variant="secondary" class="ml-auto" href="/admin/users"
+          >Return to Manage Users</b-button
         >
-        <b-dropdown-item @click="addField('user_agreement')"
-          >User Agreement</b-dropdown-item
-        >
-      </b-dropdown>
-      <b-button variant="primary" @click="save" :disabled="!valid" class="ml-2"
-        >Save</b-button
-      >
+      </div>
     </div>
   </div>
 </template>
