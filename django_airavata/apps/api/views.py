@@ -847,7 +847,7 @@ def upload_input_file(request):
         return JsonResponse({'uploaded': True,
                              'data-product': serializer.data})
     except Exception as e:
-        log.error("Failed to upload file", exc_info=True)
+        log.error("Failed to upload file", exc_info=True, extra={'request': request})
         resp = JsonResponse({'uploaded': False, 'error': str(e)})
         resp.status_code = 500
         return resp

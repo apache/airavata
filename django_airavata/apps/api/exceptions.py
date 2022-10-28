@@ -33,7 +33,7 @@ def custom_exception_handler(exc, context):
     # Default TException handler, should come after more specific subclasses of
     # TException
     if isinstance(exc, TException):
-        log.error("TException", exc_info=exc)
+        log.error("TException", exc_info=exc, extra={'request': context['request']})
         return Response(
             {'detail': str(exc)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -51,7 +51,7 @@ def custom_exception_handler(exc, context):
 
     # Generic handler
     if response is None:
-        log.error("API exception", exc_info=exc)
+        log.error("API exception", exc_info=exc, extra={'request': context['request']})
         return Response(
             {'detail': str(exc)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

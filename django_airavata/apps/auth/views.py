@@ -130,7 +130,7 @@ def handle_login(request):
         else:
             messages.error(request, "Login failed. Please try again.")
     except Exception as err:
-        logger.exception("Login failed for user {}".format(username))
+        logger.exception("Login failed for user {}".format(username), extra={'request': request})
         messages.error(request,
                        "Login failed: {}. Please try again.".format(str(err)))
     if login_desktop:
@@ -169,7 +169,8 @@ def callback(request):
             raise Exception("Failed to authenticate user")
     except Exception as err:
         logger.exception("An error occurred while processing OAuth2 "
-                         "callback: {}".format(request.build_absolute_uri()))
+                         "callback: {}".format(request.build_absolute_uri()),
+                         extra={'request': request})
         messages.error(
             request,
             "Failed to process OAuth2 callback: {}".format(str(err)))
@@ -226,7 +227,7 @@ def create_account(request):
                         reverse('django_airavata_auth:create_account'))
             except Exception as e:
                 logger.exception(
-                    "Failed to create account for user", exc_info=e)
+                    "Failed to create account for user", exc_info=e, extra={'request', request})
                 form.add_error(None, ValidationError(e.message))
     else:
         form = forms.CreateAccountForm(initial=request.GET)
@@ -278,14 +279,14 @@ def verify_email(request, code):
         # if doesn't exist, give user a form where they can enter their
         # username to resend verification code
         logger.exception("EmailVerification object doesn't exist for "
-                         "code {}".format(code))
+                         "code {}".format(code), extra={'request': request})
         messages.error(
             request,
             "Email verification failed. Please enter your username and we "
             "will send you another email verification link.")
         return redirect(reverse('django_airavata_auth:resend_email_link'))
     except Exception:
-        logger.exception("Email verification processing failed!")
+        logger.exception("Email verification processing failed!", extra={'request': request})
         messages.error(
             request,
             "Email verification failed. Please try clicking the email "
@@ -324,7 +325,7 @@ def resend_email_link(request):
                     reverse('django_airavata_auth:resend_email_link'))
             except Exception as e:
                 logger.exception(
-                    "Failed to resend email verification link", exc_info=e)
+                    "Failed to resend email verification link", exc_info=e, extra={'request': request})
                 form.add_error(None, ValidationError(str(e)))
     else:
         form = forms.ResendEmailVerificationLinkForm()
@@ -392,7 +393,7 @@ def forgot_password(request):
             except Exception as e:
                 logger.exception(
                     "Failed to generate password reset request for user",
-                    exc_info=e)
+                    exc_info=e, extra={'request': request})
                 form.add_error(None, ValidationError(str(e)))
     else:
         form = forms.ForgotPasswordForm()
@@ -464,7 +465,7 @@ def reset_password(request, code):
                         reverse('django_airavata_auth:login_with_password'))
             except Exception as e:
                 logger.exception(
-                    "Failed to reset password for user", exc_info=e)
+                    "Failed to reset password for user", exc_info=e, extra={'request': request})
                 form.add_error(None, ValidationError(str(e)))
     else:
         form = forms.ResetPasswordForm()
