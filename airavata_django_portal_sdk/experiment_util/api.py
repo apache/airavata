@@ -24,7 +24,7 @@ def launch(request, experiment_id):
                               method="post")
         data = resp.json()
         if not data["success"]:
-            logger.error(f"Failed to launch experiment {experiment_id}: {data['errorMessage']})")
+            logger.error(f"Failed to launch experiment {experiment_id}: {data['errorMessage']})", extra={'request': request})
             raise Exception(data["errorMessage"])
         return
     else:

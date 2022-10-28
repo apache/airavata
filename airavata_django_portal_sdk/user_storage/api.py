@@ -520,7 +520,8 @@ def delete(request, data_product=None, data_product_uri=None):
             logger.exception(
                 "Unable to delete file {} for data product uri {}".format(
                     path, data_product.productUri
-                )
+                ),
+                extra={'request': request}
             )
             raise
 
