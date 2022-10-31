@@ -68,5 +68,5 @@ django_google_analytics_tracking_id: "UA-178024455-1"
 
 django_extra_settings:
   ACCESS_TOKEN_REDIRECT_ALLOWED_URIS:
-    - URI: "https://jupyterhub.delta-topology.org/hub/login?next=/hub/spawn"
+    - URI: "https://jupyterhub.delta-topology.scigap.org/hub/login?next=/hub/spawn"
 ...
