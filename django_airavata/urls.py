@@ -41,24 +41,11 @@ urlpatterns = [
     re_path(r'^403/', views.error403),
     re_path(r'^404/', views.error404),
     re_path(r'^500/', views.error500),
-]
+    path('', include('airavata_django_portal_commons.dynamic_apps.urls')),
+    path('', include(wagtail_urls)),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler400 = views.error400
 handler403 = views.error403
 handler404 = views.error404
 handler500 = views.error500
-
-# Add custom Django app urls patterns
-for custom_django_app in settings.CUSTOM_DJANGO_APPS:
-    # Custom Django apps may define a url_prefix, otherwise label will be used
-    # as url prefix
-    url_prefix = getattr(
-        custom_django_app,
-        'url_prefix',
-        custom_django_app.label)
-    urlpatterns.append(re_path(r'^' + url_prefix + '/',
-                               include(custom_django_app.name + ".urls")))
-
-urlpatterns += [
-    re_path(r'', include(wagtail_urls)),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

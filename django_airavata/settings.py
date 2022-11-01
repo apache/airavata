@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from importlib import import_module
+import sys
 
+from airavata_django_portal_commons import dynamic_apps
 from pkg_resources import iter_entry_points
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -118,11 +119,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_airavata.context_processors.airavata_app_registry',
-                'django_airavata.context_processors.custom_app_registry',
+                'airavata_django_portal_commons.dynamic_apps.context_processors.custom_app_registry',
                 'django_airavata.context_processors.get_notifications',
                 'django_airavata.context_processors.user_session_data',
                 'django_airavata.context_processors.google_analytics_tracking_id',
-                # 'django_airavata.context_processors.resolver_match',
             ],
         },
     },
@@ -610,10 +610,8 @@ except ImportError:
 # NOTE: custom code must be loaded last so that the above settings take effect
 # for any views, etc. defined or imported by custom code
 
-# AppConfig instances from custom Django apps
-CUSTOM_DJANGO_APPS = []
-
 # Add any custom apps installed in the virtual environment
+
 # Essentially this looks for the entry_points metadata in all installed Python packages. The format of the metadata in setup.py is the following:
 #
 #    setuptools.setup(
@@ -625,34 +623,11 @@ CUSTOM_DJANGO_APPS = []
 #        ...
 #    )
 #
-for entry_point in iter_entry_points(group='airavata.djangoapp'):
-    custom_app_class = entry_point.load()
-    custom_app_instance = custom_app_class(
-        entry_point.name, import_module(entry_point.module_name))
-    CUSTOM_DJANGO_APPS.append(custom_app_instance)
-    # Create path to AppConfig class (otherwise the ready() method doesn't get
-    # called)
-    INSTALLED_APPS.append("{}.{}".format(entry_point.module_name,
-                                         entry_point.attrs[0]))
+dynamic_apps.load(INSTALLED_APPS, "airavata.djangoapp")
 
-
-def merge_setting(default, custom_setting):
-    # FIXME: only handles dict settings, doesn't handle lists
-    if isinstance(custom_setting, dict):
-        for k in custom_setting.keys():
-            if k not in default:
-                default[k] = custom_setting[k]
-            else:
-                raise Exception("Custom django app setting conflicts with "
-                                "key {} in {}".format(k, default))
-
-
-# Merge settings from custom Django apps
-# FIXME: only handles WEBPACK_LOADER additions
-for custom_django_app in CUSTOM_DJANGO_APPS:
-    if hasattr(custom_django_app, 'settings'):
-        s = custom_django_app.settings
-        merge_setting(WEBPACK_LOADER, getattr(s, 'WEBPACK_LOADER', {}))
+# Merge WEBPACK_LOADER settings from custom Django apps
+settings_module = sys.modules[__name__]
+dynamic_apps.merge_settings(settings_module)
 
 OUTPUT_VIEW_PROVIDERS = {}
 for entry_point in iter_entry_points(group='airavata.output_view_providers'):

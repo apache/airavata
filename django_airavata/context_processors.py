@@ -9,10 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 
-from django_airavata.app_config import (
-    AiravataAppConfig,
-    enhance_custom_app_config
-)
+from django_airavata.app_config import AiravataAppConfig
 from django_airavata.apps.api.models import User_Notifications
 
 logger = logging.getLogger(__name__)
@@ -99,24 +96,6 @@ def airavata_app_registry(request):
     }
 
 
-def custom_app_registry(request):
-    """Put custom Django apps into the context."""
-    custom_apps = settings.CUSTOM_DJANGO_APPS.copy()
-    custom_apps = [enhance_custom_app_config(app) for app in custom_apps
-                   if (getattr(app, 'enabled', None) is None or
-                       app.enabled(request)
-                       )]
-    custom_apps.sort(key=lambda app: app.verbose_name.lower())
-    current_custom_app = _get_current_app(request, custom_apps)
-    return {
-        # 'custom_apps': list(map(_app_to_dict, custom_apps)),
-        'custom_apps': custom_apps,
-        'current_custom_app': current_custom_app,
-        'custom_app_nav': (_get_app_nav(request, current_custom_app)
-                           if current_custom_app else None)
-    }
-
-
 def _get_current_app(request, apps):
     current_app = [
         app for app in apps
@@ -153,11 +132,6 @@ def _get_app_nav(request, current_app):
             }
         ]
     return nav
-
-
-def resolver_match(request):
-    """Put resolver_match (ResolverMatch instance) into the context."""
-    return {'resolver_match': request.resolver_match}
 
 
 def google_analytics_tracking_id(request):
