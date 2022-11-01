@@ -37,16 +37,19 @@ def merge_setting_dict(default, custom_setting):
                 )
 
 
-def merge_setting(settings_module, setting_name):
-    # Merge settings from custom Django apps
-    # FIXME: only handles WEBPACK_LOADER additions
+def merge_settings(settings_module):
     for custom_django_app in CUSTOM_DJANGO_APPS:
-        if hasattr(custom_django_app, "settings"):
+        if hasattr(custom_django_app, "merge_settings"):
+            custom_django_app.merge_settings(settings_module)
+        elif hasattr(custom_django_app, "settings"):
+            # This approach is deprecated, use 'merge_settings' instead
+            # Merge settings from custom Django apps
+            # NOTE: only handles WEBPACK_LOADER additions
+            print(
+                f"{type(custom_django_app).__name__}.settings attr is deprecated, use merge_settings instead"
+            )
             s = custom_django_app.settings
             merge_setting_dict(
-                getattr(settings_module, setting_name), getattr(s, setting_name, {})
+                getattr(settings_module, "WEBPACK_LOADER"),
+                getattr(s, "WEBPACK_LOADER", {}),
             )
-
-
-def merge_webpack_loader(settings_module):
-    merge_setting(settings_module, "WEBPACK_LOADER")
