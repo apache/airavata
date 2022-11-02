@@ -11,8 +11,9 @@ public class OutputParserImpl implements OutputParser {
 
     @Override
     public boolean isComputeResourceAvailable(CommandOutput commandOutput) {
+        if (commandOutput.getExitCode() == 0) {
+            return true;
+        }
         return false;
     }
-
-
 }
