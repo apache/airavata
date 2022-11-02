@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * This class implements selecting compute resource defined in USER_CONFIGURATION_DATA and assumes only one
  * compute resource is selected for experiment.
- * This checks whether defined CR is live and schedulable
+ * This checks whether defined CR is live
  */
 public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelectionPolicyImpl {
 
@@ -79,9 +79,9 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
                     loginUsername);
 
 
-            String command = "";
+            String command = "sacctmgr show qos"; //checking cluster is working or not
             String workingDirectory = "";
-            CommandOutput commandOutput = adaptor.executeCommand(command, workingDirectory);
+            CommandOutput commandOutput = adaptor.executeCommand(command, null);
 
             OutputParser outputParser = new OutputParserImpl();
             if (outputParser.isComputeResourceAvailable(commandOutput)) {
