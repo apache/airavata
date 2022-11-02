@@ -242,7 +242,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				}
 
 				ProcessScheduler scheduler = new ProcessSchedulerImpl();
-				if (scheduler.schedule(experimentId)) {
+				if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId) ) {
 
 					log.debug(experimentId, "Launching single application experiment {}.", experimentId);
 					ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);

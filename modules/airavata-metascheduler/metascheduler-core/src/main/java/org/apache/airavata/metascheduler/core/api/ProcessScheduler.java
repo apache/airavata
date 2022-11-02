@@ -17,7 +17,7 @@ public interface ProcessScheduler {
      * @param experimentId
      * @return boolean
      */
-      boolean  schedule(String experimentId);
+      boolean canLaunch(String experimentId);
 
 
     /**

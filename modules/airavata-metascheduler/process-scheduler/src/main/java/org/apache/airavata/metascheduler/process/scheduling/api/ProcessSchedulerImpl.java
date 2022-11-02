@@ -35,7 +35,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
 
 
     @Override
-    public boolean schedule(String experimentId) {
+    public boolean canLaunch(String experimentId) {
         final RegistryService.Client registryClient = this.registryClientPool.getResource();
         try {
             List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
