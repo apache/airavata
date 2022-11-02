@@ -113,7 +113,7 @@
         </b-form-checkbox>
       </b-form-group>
 
-      <template v-if="!editNotification" name="buttons">
+      <template v-if="!editNotification">
         <div class="row">
           <div id="col-exp-buttons" class="col">
             <b-button

@@ -71,7 +71,6 @@
 </template>
 <script>
 import { models } from "django-airavata-api";
-import UserGroupMembershipEditor from "./UserGroupMembershipEditor";
 import ActivateUserPanel from "./ActivateUserPanel";
 import EnableUserPanel from "./EnableUserPanel";
 import DeleteUserPanel from "./DeleteUserPanel";
@@ -94,7 +93,6 @@ export default {
     },
   },
   components: {
-    UserGroupMembershipEditor,
     EnableUserPanel,
     DeleteUserPanel,
     ActivateUserPanel,

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/multi-word-component-names */
 import { services, utils } from "django-airavata-api";
 
 import Uppy from "@uppy/core";

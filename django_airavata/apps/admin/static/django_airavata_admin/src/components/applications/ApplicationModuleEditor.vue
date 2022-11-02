@@ -47,7 +47,7 @@
 
 <script>
 import { models } from "django-airavata-api";
-import { components, errors, mixins } from "django-airavata-common-ui";
+import { errors, mixins } from "django-airavata-common-ui";
 
 export default {
   name: "application-module-editor",
@@ -63,9 +63,6 @@ export default {
     validationErrors: {
       type: Object,
     },
-  },
-  components: {
-    "delete-button": components.DeleteButton,
   },
   computed: {
     validationFeedback() {

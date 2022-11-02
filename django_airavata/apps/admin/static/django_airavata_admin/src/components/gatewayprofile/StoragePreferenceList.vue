@@ -39,7 +39,10 @@
         :items="slotProps.items"
         sort-by="storageResourceId"
       >
-        <template slot="cell(resourceSpecificCredentialStoreToken)" slot-scope="data">
+        <template
+          slot="cell(resourceSpecificCredentialStoreToken)"
+          slot-scope="data"
+        >
           {{ data.value }}
           <b-badge
             v-if="
@@ -162,7 +165,10 @@ export default {
       const options = [];
       for (const key in this.storageResourceNames) {
         if (
-          this.storageResourceNames.hasOwnProperty(key) &&
+          Object.prototype.hasOwnProperty.call(
+            this.storageResourceNames,
+            key
+          ) &&
           this.currentStoragePreferenceIds.indexOf(key) < 0
         ) {
           const name = this.storageResourceNames[key];

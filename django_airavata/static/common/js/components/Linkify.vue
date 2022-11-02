@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable vue/multi-word-component-names */
 import * as linkify from "linkifyjs";
 
 export default {

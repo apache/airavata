@@ -15,6 +15,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/multi-word-component-names */
 import { utils } from "django-airavata-api";
 
 export default {

@@ -110,7 +110,6 @@ export default {
   name: "compute-resource-reservation-list",
   components: {
     "delete-link": components.DeleteLink,
-    "human-date": components.HumanDate,
     "list-layout": layouts.ListLayout,
     ComputeResourceReservationEditor,
     "delete-button": components.DeleteButton,

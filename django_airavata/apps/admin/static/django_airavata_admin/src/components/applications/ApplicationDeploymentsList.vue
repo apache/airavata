@@ -154,8 +154,14 @@ export default {
         // Filter compute resources based on existence in groupResourceProfileCompResources
         for (const computeResourceId in this.computeResourceNames) {
           if (
-            this.computeResourceNames.hasOwnProperty(computeResourceId) &&
-            groupResourceProfileCompResources.hasOwnProperty(computeResourceId)
+            Object.prototype.hasOwnProperty.call(
+              this.computeResourceNames,
+              computeResourceId
+            ) &&
+            Object.prototype.hasOwnProperty.call(
+              groupResourceProfileCompResources,
+              computeResourceId
+            )
           ) {
             const computeResourceName = this.computeResourceNames[
               computeResourceId

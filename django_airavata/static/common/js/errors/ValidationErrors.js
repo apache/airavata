@@ -5,7 +5,7 @@ export default {
       return validationFeedback;
     }
     for (const fieldName in data) {
-      if (data.hasOwnProperty(fieldName)) {
+      if (Object.prototype.hasOwnProperty.call(data, fieldName)) {
         const errorMessages = validationErrors
           ? validationErrors[fieldName]
           : null;

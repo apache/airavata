@@ -15,6 +15,7 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.21.2",
     "browserslist": "^4.16.7",
+    "core-js": "^3.8.3",
     "django-airavata-api": "link:../api",
     "django-airavata-common-ui": "link:../../static/common/",
     "luxon": "^1.16.0",
@@ -31,16 +32,20 @@
     "weekstart": "^1.0.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.1",
-    "@vue/cli-plugin-eslint": "^3.0.1",
-    "@vue/cli-service": "^3.0.1",
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
     "@vue/component-compiler-utils": "^2.3.0",
     "autoprefixer": "^9.3.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
     "prettier": "^2.1.2",
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.22",
     "webpack": "^4.28.4",
-    "webpack-bundle-tracker": "^0.3.0",
+    "webpack-bundle-tracker": "^0.4.2",
     "webpack-dev-middleware": "^3.5.0"
   },
   "eslintConfig": {
@@ -54,7 +59,8 @@
     ],
     "rules": {},
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "@babel/eslint-parser",
+      "requireConfigFile": false
     }
   },
   "postcss": {
