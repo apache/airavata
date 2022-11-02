@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Persistent class for computational_resource_scheduling data table.
  */
 @Entity
-@Table(name = "COMPUTE_RESOURCE_SCHEDULING_ENTITY")
+@Table(name = "COMPUTE_RESOURCE_SCHEDULING")
 @IdClass(ComputationalResourceSchedulingPK.class)
 public class ComputationalResourceSchedulingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
