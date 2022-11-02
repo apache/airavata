@@ -20,6 +20,8 @@ import airavata_sdk.samples.file_utils as fb
 import os
 import jwt
 
+import getpass
+
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata_sdk.clients.api_server_client import APIServerClient
@@ -27,13 +29,12 @@ from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUti
 
 from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
 
-from airavata_sdk.transport.settings import GatewaySettings, ExperimentSettings
+from airavata_sdk.transport.settings import GatewaySettings, ExperimentSettings, KeycloakConfiguration
 
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
 
 logger = logging.getLogger('airavata_sdk.clients')
 logger.setLevel(logging.INFO)
-
 
 
 class ExperimentHandlerUtil(object):
@@ -42,10 +43,10 @@ class ExperimentHandlerUtil(object):
         self.authenticator = Authenticator(configuration_file_location)
         self.gateway_conf = GatewaySettings(configuration_file_location)
         self.experiment_conf = ExperimentSettings(configuration_file_location)
-
+        self.keycloak_conf = KeycloakConfiguration(configuration_file_location)
         self.authenticator = Authenticator(self.configuration_file)
         self.authenticator.authenticate_with_auth_code()
-        access_token = input("Copy paste the access token")
+        access_token = getpass.getpass('Copy paste the access token')
         self.access_token = access_token
         decode = jwt.decode(access_token, options={"verify_signature": False})
         self.user_id = decode['preferred_username']
@@ -68,7 +69,7 @@ class ExperimentHandlerUtil(object):
 
     def launch_experiment(self, experiment_name="default_exp", description="this is default exp",
                           local_input_path="/tmp", input_file_mapping={}, computation_resource_name=None,
-                          queue_name=None,node_count=1,cpu_count=1,walltime=30,output_path='.'):
+                          queue_name=None, node_count=1, cpu_count=1, walltime=30, output_path='.'):
         execution_id = self.airavata_util.get_execution_id(self.experiment_conf.APPLICATION_NAME)
         project_id = self.airavata_util.get_project_id(self.experiment_conf.PROJECT_NAME)
         hosts = self.experiment_conf.COMPUTE_HOST_DOMAIN.split(",")
@@ -176,16 +177,21 @@ class ExperimentHandlerUtil(object):
 
         logger.info("experiment launched id: %s", ex_id)
 
+        experiment_url = 'https://' + self.gateway_conf.GATEWAY_ID + '.org/workspace/experiments/' + ex_id
+        logger.info("For more information visit %s", experiment_url)
+
         if self.experiment_conf.MONITOR_STATUS:
             status = self.api_server_client.get_experiment_status(self.airavata_token, ex_id)
+            status_dict = {'0': 'EXECUTING', '4': 'JOB_ACTIVE', '7': 'COMPLETED'}
 
             if status is not None:
-                logger.info("Initial state " + str(status.state))
+                logger.info("Initial state " + status_dict[str(status.state)])
             while status.state <= 6:
                 status = self.api_server_client.get_experiment_status(self.airavata_token,
                                                                       ex_id);
                 time.sleep(30)
-                logger.info("State " + str(status.state))
+                if (str(status.state) in status_dict.keys()):
+                      logger.info("State " + status_dict[str(status.state)])
 
             logger.info("Completed")
             remote_path = path_suffix.split(self.user_id)[1]

@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='airavata-python-sdk',
-    version='1.1.1',
+    version='1.1.4',
     packages=find_packages(),
     package_data={'airavata_sdk.transport': ['*.ini'], 'airavata_sdk.samples.resources': ['*.pem']},
     url='http://airavata.com',
