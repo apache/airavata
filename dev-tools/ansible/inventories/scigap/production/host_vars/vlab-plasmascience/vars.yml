@@ -1,0 +1,55 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
+#gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
+
+vhost_servername: "vlab.plasmascience.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# Increase max upload size to 500MB
+django_file_upload_max_file_size_mb: 500
+
+## Keycloak related variables
+tenant_domain: "vlab-plasmascience"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Plasma Science Virtual Laboratory"
+  external:
+#    - name: "Existing Institution Credentials"
+#      idp_alias: "cilogon"
+#      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "vlab-plasmascience"
+experiment_data_dir: "{{ user_data_dir }}/vlab-plasmascience"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCr7wFmAAPMfHAuCFPZJHZSUqLMiL9LwEC8tkfIIrgLtphuDT7Jgmq37XFK2/llg1clb0Ugehpl35OVnNLOb4IZqAgUYIvm2298sHfUT9W/TIpAqMg7hSiK5x8SWDn0zC6+APQMiEIJD9Q/pfJ1vAUbMrkkwQ4cXtqcF6f478Ou7juwIBCzywEbqdtQ+x8kBIglk4/QAtSSekRWmOTvqq5B1sXpB7scWQUb/D/ZCpMRlbOpctmE8D9alkNMdKe/5wUfIvdwg2WzRtgOho5pg/deWaOpfMUa0FQbdV8iO22xr7j6y9Rj25rYiHqJFqFsEK/aO0aMT+OXTH6JbJi8p1Fp"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Cameron Smith', 'smithc11@rpi.edu')]"
+portal_title: "Plasma Science Virtual Laboratory"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...
