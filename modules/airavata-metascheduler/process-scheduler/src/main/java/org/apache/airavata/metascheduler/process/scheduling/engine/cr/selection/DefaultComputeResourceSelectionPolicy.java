@@ -8,6 +8,7 @@ import org.apache.airavata.metascheduler.process.scheduling.engine.output.Output
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -78,8 +79,14 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
                     computeResourceToken,
                     loginUsername);
 
+            GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(computeResourceId,
+                    processModel.getGroupResourceProfileId());
 
-            String command = "sacctmgr show qos"; //checking cluster is working or not
+
+            String command = "srun --nodes 1 --time 00:01:00 --account"
+                    + computeResourcePreference.getAllocationProjectNumber() + " --partition "
+                    + computeResourcePreference.getPreferredBatchQueue() +
+                    " --ntasks-per-node 1  hostname"; //checking cluster is working or not
             String workingDirectory = "";
             CommandOutput commandOutput = adaptor.executeCommand(command, null);
 
