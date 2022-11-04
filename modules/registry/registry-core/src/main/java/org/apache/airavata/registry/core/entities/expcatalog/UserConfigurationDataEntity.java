@@ -291,12 +291,5 @@ public class UserConfigurationDataEntity implements Serializable {
         this.experiment = experiment;
     }
 
-    public List<ComputationalResourceSchedulingEntity> getComputationalResourceSchedulingEntities() {
-        return computationalResourceSchedulingEntities;
-    }
 
-    public void setComputationalResourceSchedulingEntities(List<ComputationalResourceSchedulingEntity>
-                                                                   computationalResourceSchedulingEntities) {
-        this.computationalResourceSchedulingEntities = computationalResourceSchedulingEntities;
-    }
 }
