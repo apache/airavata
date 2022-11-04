@@ -52,14 +52,10 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
     private String overrideAllocationProjectNumber;
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
-    private ExperimentEntity experiment;
 
-
-    @ManyToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
-    private UserConfigurationDataEntity userConfigurationData;
+    private ExperimentEntity experiment;
 
 
     public String getExperimentId() {
@@ -156,11 +152,6 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
 
     public void setOverrideAllocationProjectNumber(String overrideAllocationProjectNumber) {
         this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
-    }
-
-
-    public void setUserConfigurationData(UserConfigurationDataEntity userConfigurationData) {
-        this.userConfigurationData = userConfigurationData;
     }
 
     public ExperimentEntity getExperiment() {

@@ -104,10 +104,6 @@ public class UserConfigurationDataEntity implements Serializable {
     private ExperimentEntity experiment;
 
 
-    @OneToMany(targetEntity = ComputationalResourceSchedulingEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "userConfigurationData", fetch = FetchType.EAGER)
-    private List<ComputationalResourceSchedulingEntity> computationalResourceSchedulingEntities;
-
     public UserConfigurationDataEntity() {
     }
 
