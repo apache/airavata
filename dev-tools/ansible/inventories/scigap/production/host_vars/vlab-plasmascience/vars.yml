@@ -28,6 +28,8 @@ user_data_dir: "/var/www/portals/gateway-user-data"
 gateway_data_store_hostname: "js-172-104.jetstream-cloud.org"
 gateway_data_store_resource_id: "js-172-104.jetstream-cloud.org_0122ebcd-eb2c-48b0-9742-c95961d28a79"
 
+# TODO: tus not setup yet
+tusd_vhost_servername:
 
 vhost_servername: "vlab.plasmascience.scigap.org"
 vhost_ssl: True
