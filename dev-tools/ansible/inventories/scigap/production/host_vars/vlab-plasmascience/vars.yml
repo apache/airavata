@@ -22,6 +22,13 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
+# NOTE: Plasma Science VLab is deployed to a Jetstream2 VM
+real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
+user_data_dir: "/var/www/portals/gateway-user-data"
+gateway_data_store_hostname: "vlab.plasmascience.scigap.org"
+gateway_data_store_resource_id: "vlab.plasmascience.scigap.org_c20c5bc8-bd5a-4da3-8212-be896124862f"
+
+
 vhost_servername: "vlab.plasmascience.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
