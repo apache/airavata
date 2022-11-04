@@ -52,7 +52,7 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
     private String overrideAllocationProjectNumber;
 
-    @OneToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
 
