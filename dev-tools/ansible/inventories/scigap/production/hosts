@@ -78,7 +78,7 @@ deeppdb ansible_host=156.56.104.84
 ehtgateway ansible_host=156.56.104.84
 
 # vlab-plasmasciene server
-vlab-plasmasciene ansible_host=149.165.172.104 ansible_user=exouser
+vlab-plasmascience ansible_host=149.165.172.104 ansible_user=exouser
 
 # Baysprism Jetstream2 server
 bayesprism ansible_host=149.165.155.90 ansible_user=exouser
