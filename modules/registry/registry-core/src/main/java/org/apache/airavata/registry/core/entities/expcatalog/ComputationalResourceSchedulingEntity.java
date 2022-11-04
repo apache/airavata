@@ -34,8 +34,6 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     @Column(name = "NUMBER_OF_THREADS")
     private int numberOfThreads;
 
-
-
     @Column(name = "WALL_TIME_LIMIT")
     private int wallTimeLimit;
 
@@ -53,6 +51,10 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
 
     @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
     private String overrideAllocationProjectNumber;
+
+    @OneToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private ExperimentEntity experiment;
 
 
     @ManyToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -159,5 +161,13 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
 
     public void setUserConfigurationData(UserConfigurationDataEntity userConfigurationData) {
         this.userConfigurationData = userConfigurationData;
+    }
+
+    public ExperimentEntity getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(ExperimentEntity experiment) {
+        this.experiment = experiment;
     }
 }
