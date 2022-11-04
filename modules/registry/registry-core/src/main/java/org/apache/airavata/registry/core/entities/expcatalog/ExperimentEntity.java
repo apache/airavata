@@ -102,10 +102,7 @@ public class ExperimentEntity implements Serializable {
             mappedBy = "experiment", fetch = FetchType.EAGER)
     private List<ProcessEntity> processes;
 
-
-    @OneToMany(targetEntity = ComputationalResourceSchedulingEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "experiment", fetch = FetchType.EAGER)
-    private List<ComputationalResourceSchedulingEntity> computationalResourceSchedulingEntities;
+    
 
     public ExperimentEntity() {
     }
@@ -262,12 +259,5 @@ public class ExperimentEntity implements Serializable {
         this.processes = processes;
     }
 
-    public List<ComputationalResourceSchedulingEntity> getComputationalResourceSchedulingEntities() {
-        return computationalResourceSchedulingEntities;
-    }
 
-    public void setComputationalResourceSchedulingEntities(List<ComputationalResourceSchedulingEntity>
-                                                                   computationalResourceSchedulingEntities) {
-        this.computationalResourceSchedulingEntities = computationalResourceSchedulingEntities;
-    }
 }
