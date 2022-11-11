@@ -12,7 +12,7 @@
       >
         <span
           class="fa-stack fa-1x has-badge"
-          :data-count="unreadCount"
+          :data-count="localUnreadCount"
           id="unread_notification_count"
         >
           <i class="fa fa-circle fa-stack-2x fa-inverse"></i>
@@ -70,6 +70,11 @@ import { utils } from "django-airavata-api";
 export default {
   name: "gateway-notices-container",
   props: ["notices", "unreadCount"],
+  data() {
+    return {
+      localUnreadCount: this.unreadCount,
+    };
+  },
   methods: {
     fromNow(date) {
       return moment(date).fromNow();
@@ -77,7 +82,7 @@ export default {
     ackNotification(notice) {
       utils.FetchUtils.get(notice.url).then(() => {
         notice.is_read = true;
-        this.unreadCount--;
+        this.localUnreadCount--;
       });
     },
     textColor(notice) {

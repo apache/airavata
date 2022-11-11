@@ -29,7 +29,7 @@
                   </notice-editor>
                 </b-card>
               </template>
-              <template slot="item-list" slot-scope="slotProps">
+              <template slot="item-list">
                 <b-table hover :fields="fields" :items="items">
                   <template slot="cell(publishedTime)" slot-scope="data">
                     <human-date :date="data.value" /> </template
