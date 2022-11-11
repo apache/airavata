@@ -2268,6 +2268,52 @@ service RegistryService extends base_api.BaseAPI {
                */
                bool isUserResourceProfileExists(1: required string userId, 2: required string gatewayID)
                      throws (1: registry_api_errors.RegistryServiceException rse)
+               /**
+                * Check if the given Compute Resource Preference exists.
+                *
+                * @param userId
+                *   The identifier for the requested User.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource Profile.
+                * @param computeResourceId
+                *   The identifier for the requested computeResourcePreference.
+                *
+                * @return true if compute resource preference exisists.
+                *
+               */
+               bool isUserComputeResourcePreferenceExists(1: required string userId, 2: required string gatewayID,
+                3: required string computeResourceId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+               /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param computeResourceId
+                *   The identifier for the requested compute resource.
+                *
+                * @param groupResourceProfileId
+                *   The identifier for the groupResourceProfileId.
+                *
+                * @return true if groupComputeResourcePreference exists.
+                *
+               */
+               bool isGroupComputeResourcePreferenceExists(1: required string computeResourceId, 2: required string groupResourceProfileId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param groupResourceProfileId
+                *   The identifier for the requested groupResourceProfileId.
+                *
+                * @return true if groupResourceProfile exists.
+                *
+               */
+               bool isGroupResourceProfileExists(1: required string groupResourceProfileId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
 
                /**
                 * Fetch the given User Resource Resource Profile.

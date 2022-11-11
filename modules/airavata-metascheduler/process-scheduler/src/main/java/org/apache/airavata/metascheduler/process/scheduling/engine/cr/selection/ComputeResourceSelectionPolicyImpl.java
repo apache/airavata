@@ -7,17 +7,17 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeRes
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+
+import java.util.Optional;
 
 public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResourceSelectionPolicy {
 
     protected ThriftClientPool<RegistryService.Client> registryClientPool;
 
     public ComputeResourceSelectionPolicyImpl() {
-        this.registryClientPool =Utils.getRegistryServiceClientPool();
+        this.registryClientPool = Utils.getRegistryServiceClientPool();
     }
 
     private boolean isValid(String str) {
@@ -27,8 +27,11 @@ public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResou
     public UserResourceProfile getUserResourceProfile(String username, String gatewayId) throws Exception {
         RegistryService.Client client = this.registryClientPool.getResource();
         try {
-            return client.getUserResourceProfile(username, gatewayId);
-        }finally {
+            if (client.isUserResourceProfileExists(username, gatewayId)) {
+                return client.getUserResourceProfile(username, gatewayId);
+            }
+            return null;
+        } finally {
             this.registryClientPool.returnResource(client);
         }
 
@@ -39,8 +42,11 @@ public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResou
                                                                            String computeResourceId) throws Exception {
         RegistryService.Client client = this.registryClientPool.getResource();
         try {
-            return client.getUserComputeResourcePreference(username, gatewayId, computeResourceId);
-        }finally {
+            if (client.isUserComputeResourcePreferenceExists(username, gatewayId, computeResourceId)){
+                return  client.getUserComputeResourcePreference(username, gatewayId, computeResourceId);
+            }
+            return null;
+        } finally {
             this.registryClientPool.returnResource(client);
         }
     }
@@ -67,20 +73,26 @@ public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResou
     public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourcId, String groupResourceProfileId) throws Exception {
         RegistryService.Client client = this.registryClientPool.getResource();
         try {
-            return client.getGroupComputeResourcePreference(
-                    computeResourcId,
-                    groupResourceProfileId);
-        }finally {
+            if (client.isGroupComputeResourcePreferenceExists(computeResourcId,
+                    groupResourceProfileId)) {
+                return client.getGroupComputeResourcePreference(
+                        computeResourcId,
+                        groupResourceProfileId);
+            }
+            return null;
+        } finally {
             this.registryClientPool.returnResource(client);
         }
-
     }
 
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws Exception {
         RegistryService.Client client = this.registryClientPool.getResource();
         try {
-            return client.getGroupResourceProfile(groupResourceProfileId);
-        }finally {
+            if (client.isGroupResourceProfileExists(groupResourceProfileId)) {
+                return client.getGroupResourceProfile(groupResourceProfileId);
+            }
+            return null;
+        } finally {
             this.registryClientPool.returnResource(client);
         }
 
@@ -98,7 +110,7 @@ public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResou
             return overrideLoginUsername;
         } else if (isSetGroupResourceProfileId &&
                 getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId) != null &&
-                isValid(getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId).getLoginUserName())){
+                isValid(getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId).getLoginUserName())) {
             return getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId).getLoginUserName();
         }
         throw new RuntimeException("Can't find login username for compute resource");

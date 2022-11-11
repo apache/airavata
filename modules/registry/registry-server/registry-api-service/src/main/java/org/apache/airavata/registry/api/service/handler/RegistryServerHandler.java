@@ -2416,6 +2416,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
+    public boolean isGroupResourceProfileExists(String groupResourceProfileId) throws RegistryServiceException, TException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+              return  groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId);
+        } catch (Exception e) {
+            logger.error("Error while retrieving group resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving group resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     public boolean removeGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
@@ -2506,6 +2519,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             return groupComputeResourcePreference;
 
+        } catch (Exception e) {
+            logger.error("Error while retrieving group compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving group compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean isGroupComputeResourcePreferenceExists(String computeResourceId, String groupResourceProfileId) throws RegistryServiceException, TException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.isGroupComputeResourcePreferenceExists(
+                    computeResourceId, groupResourceProfileId);
         } catch (Exception e) {
             logger.error("Error while retrieving group compute resource preference", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -4430,6 +4457,34 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     /**
+     * Is a User Compute Resource Preference exists.
+     * @param userId
+     * @param gatewayID                 The identifier for the gateway profile to be added.
+     * @param computeResourceId         Preferences related to a particular compute resource
+     * @return status
+     * Returns a success/failure of the addition. If a resource already exists, this operation will fail.
+     */
+    @Override
+    public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayID, String computeResourceId) throws RegistryServiceException, TException {
+        try {
+            if (userRepository.isUserExists(gatewayID, userId) && userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)){
+              return userResourceProfileRepository.isUserComputeResourcePreferenceExists(userId,gatewayID,computeResourceId);
+            }
+            return false;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while fetching compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while fetching compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while fetching compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while fetching compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Add a Storage Resource Preference to a registered gateway profile.
      *
      * @param gatewayID         The identifier of the gateway profile to be added.
@@ -4509,6 +4564,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw exception;
         }
     }
+
+
+
+
 
     /**
      * Fetch a Storage Resource Preference of a registered gateway profile.

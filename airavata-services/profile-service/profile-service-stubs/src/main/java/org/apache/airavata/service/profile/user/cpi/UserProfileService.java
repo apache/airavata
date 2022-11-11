@@ -38,6 +38,14 @@ public class UserProfileService {
      */
     public java.lang.String initializeUserProfile(org.apache.airavata.model.security.AuthzToken authzToken) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
+    /**
+     * This method is deprecated and will be removed in future versions of Airavata. Please use
+     * the initializeUserProfile method which fetches the information about the user profile from
+     * IAM service - @Deprecated
+     * 
+     * @param authzToken
+     * @param userProfile
+     */
     public java.lang.String addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public boolean updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
