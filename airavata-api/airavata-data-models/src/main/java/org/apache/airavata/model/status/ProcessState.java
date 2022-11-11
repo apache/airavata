@@ -94,6 +94,12 @@ public enum ProcessState implements org.apache.thrift.TEnum {
         return CANCELLING;
       case 13:
         return CANCELED;
+      case 14:
+        return QUEUED;
+      case 15:
+        return DEQUEUING;
+      case 16:
+        return REQUEUED;
       default:
         return null;
     }
