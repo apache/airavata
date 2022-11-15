@@ -114,4 +114,13 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
     public String getBaseSubmitCommand() {
         return jMCommands.get(JobManagerCommand.SUBMISSION).trim();
     }
+
+    @Override
+    public String getLivenessCheckCommand(String queueName, String projectNumber) {
+        String command = jMCommands.get(JobManagerCommand.SHOW_CLUSTER_INFO).trim()+" --account"
+                + projectNumber + " --partition "
+                + queueName ;
+
+        return command;
+    }
 }

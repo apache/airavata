@@ -1,7 +1,6 @@
-package org.apache.airavata.metascheduler.process.scheduling.engine.output;
+package org.apache.airavata.compute.resource.monitoring.job.output;
 
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.metascheduler.core.adaptor.output.OutputParser;
 
 /**
  * This is parser output implementation
@@ -16,4 +15,14 @@ public class OutputParserImpl implements OutputParser {
         }
         return false;
     }
+
+    @Override
+    public int getNumberofJobs(CommandOutput commandOutput) {
+        if (commandOutput.getStdOut() != null && !commandOutput.getStdOut().isEmpty()) {
+            return Integer.parseInt(commandOutput.getStdOut());
+        }
+        return 0;
+    }
+
+
 }

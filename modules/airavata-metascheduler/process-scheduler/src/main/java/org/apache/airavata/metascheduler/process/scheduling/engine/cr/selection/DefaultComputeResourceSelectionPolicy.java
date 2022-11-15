@@ -1,13 +1,6 @@
 package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection;
 
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
-import org.apache.airavata.metascheduler.core.adaptor.output.OutputParser;
-import org.apache.airavata.metascheduler.process.scheduling.engine.output.OutputParserImpl;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -18,9 +11,6 @@ import org.apache.airavata.registry.api.RegistryService.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -51,49 +41,12 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
 
             ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
 
-            List<JobSubmissionInterface> jobSubmissionInterfaces = comResourceDes.getJobSubmissionInterfaces();
-            Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
-            JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterfaces.get(0).getJobSubmissionProtocol();
-
-            AdaptorSupportImpl adaptorSupport = AdaptorSupportImpl.getInstance();
-
-            String computeResourceToken = getComputeResourceCredentialToken(
-                    experiment.getGatewayId(),
-                    processModel.getUserName(),
-                    computeResourceId,
-                    processModel.isUseUserCRPref(),
-                    processModel.isSetGroupResourceProfileId(),
-                    processModel.getGroupResourceProfileId());
-
-            String loginUsername = getComputeResourceLoginUserName(experiment.getGatewayId(),
-                    processModel.getUserName(),
-                    computeResourceId,
-                    processModel.isUseUserCRPref(),
-                    processModel.isSetGroupResourceProfileId(),
-                    processModel.getGroupResourceProfileId(),
-                    computationalResourceSchedulingModel.getOverrideLoginUserName());
-
-            AgentAdaptor adaptor = adaptorSupport.fetchAdaptor(experiment.getGatewayId(),
-                    computeResourceId,
-                    jobSubmissionProtocol,
-                    computeResourceToken,
-                    loginUsername);
-
             GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(computeResourceId,
                     processModel.getGroupResourceProfileId());
 
+            String hostName = comResourceDes.getHostName();
+            String queueName = computeResourcePreference.getPreferredBatchQueue();
 
-            String command = "srun --nodes 1 --time 00:01:00 --account"
-                    + computeResourcePreference.getAllocationProjectNumber() + " --partition "
-                    + computeResourcePreference.getPreferredBatchQueue() +
-                    " --ntasks-per-node 1  hostname"; //checking cluster is working or not
-            String workingDirectory = "";
-            CommandOutput commandOutput = adaptor.executeCommand(command, null);
-
-            OutputParser outputParser = new OutputParserImpl();
-            if (outputParser.isComputeResourceAvailable(commandOutput)) {
-                return Optional.of(computationalResourceSchedulingModel);
-            }
 
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);

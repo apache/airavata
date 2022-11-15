@@ -1,4 +1,4 @@
-package org.apache.airavata.metascheduler.core.adaptor.output;
+package org.apache.airavata.compute.resource.monitoring.job.output;
 
 import org.apache.airavata.agents.api.CommandOutput;
 
@@ -9,6 +9,8 @@ public interface OutputParser {
 
 
     boolean isComputeResourceAvailable(CommandOutput commandOutput);
+
+    int getNumberofJobs(CommandOutput commandOutput);
 
 
 
