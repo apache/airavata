@@ -29,11 +29,16 @@ gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07e
 tusd_vhost_servername:
 airavata_django_git_branch: "delta-topology-workshop"
 
-vhost_servername: "delta-topology.org"
+vhost_servername: "delta-topology.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+vhost_server_redirect: "delta-topology.org"
+vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/cert.pem"
+vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/fullchain.pem"
+vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/privkey.pem"
 
 django_file_upload_max_file_size_mb: 10000
 
@@ -63,5 +68,5 @@ django_google_analytics_tracking_id: "UA-178024455-1"
 
 django_extra_settings:
   ACCESS_TOKEN_REDIRECT_ALLOWED_URIS:
-    - URI: "https://jupyterhub.delta-topology.org/hub/login?next=/hub/spawn"
+    - URI: "https://jupyterhub.delta-topology.scigap.org/hub/login?next=/hub/spawn"
 ...

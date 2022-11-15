@@ -46,6 +46,13 @@
   notify:
     - restart httpd
 
+- name: Enable default site in Apache (Debian)
+  command: a2ensite {{ httpd_default_conf_file_location[ansible_os_family] | basename | splitext | first }}
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "Debian"
+
 - name: copy modified ssl.conf file
   template: src={{ httpd_ssl_conf_template }} dest={{ httpd_ssl_conf_file_location[ansible_os_family] }} backup=yes
   become: yes
