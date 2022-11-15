@@ -173,6 +173,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
 
+
+
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
 
         return jobManagerConfiguration.getParser().parseJobStatus(jobId, commandOutput.getStdOut());

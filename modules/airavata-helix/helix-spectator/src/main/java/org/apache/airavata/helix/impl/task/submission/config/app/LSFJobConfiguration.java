@@ -117,4 +117,10 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
     public String getBaseSubmitCommand() {
         return "bsub";
     }
+
+
+    @Override
+    public String getLivenessCheckCommand(String queueName, String partition) {
+        return null;
+    }
 }
