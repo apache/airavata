@@ -6,6 +6,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
 import org.slf4j.Logger;
@@ -47,7 +48,10 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
             String hostName = comResourceDes.getHostName();
             String queueName = computeResourcePreference.getPreferredBatchQueue();
 
-
+            QueueStatusModel queueStatusModel = registryClient.getQueueStatus(hostName, queueName);
+            if (queueStatusModel.isQueueUp()) {
+                Optional.of(computationalResourceSchedulingModel);
+            }
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
         } finally {

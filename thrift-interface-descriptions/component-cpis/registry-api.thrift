@@ -2625,8 +2625,11 @@ service RegistryService extends base_api.BaseAPI {
                list<status_models.QueueStatusModel> getLatestQueueStatuses()
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
-               void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
+              void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
                                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+              status_models.QueueStatusModel getQueueStatus(1: required string hostName,2: required string queueName)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
 
               /**
               * API Methods related to replica catalog
