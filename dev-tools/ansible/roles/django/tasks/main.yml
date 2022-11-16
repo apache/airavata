@@ -298,6 +298,18 @@
     - restart httpd
   when: not vhost_ssl
 
+- name: check if SSL certificate exists
+  stat:
+    path: "{{ ssl_certificate_file }}"
+  register: stat_ssl_cert_result
+  become: yes
+  when: vhost_ssl
+
+- name: generate certificate if it doesn't exist
+  command: certbot --apache --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ vhost_servername }} certonly
+  become: yes
+  when: vhost_ssl and not stat_ssl_cert_result.stat.exists
+
 - name: copy SSL enabled virtual host config file
   template: src={{ django_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
