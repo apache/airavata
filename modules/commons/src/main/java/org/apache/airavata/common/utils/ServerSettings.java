@@ -147,6 +147,10 @@ public class ServerSettings extends ApplicationSettings {
     public static final String COMPUTE_RESOURCE_SELECTION_POLICY_CLASS = "compute.resource.selection.policy.class";
     public static final String METASCHEDULER_GATEWAY = "metascheduler.gateway";
     public static final String METASCHEDULER_GRP_ID = "metascheduler.group.resource.profile";
+    public static final String METASCHEDULER_USERNAME = "metascheduler.username";
+    public static final String METASCHEDULER_SCANNING_INTERVAL = "metascheduler.scanning.interval";
+    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "metascheduler.no.of.scanning.parallel.jobs";
+
 
 
     public static String getDefaultUser() throws ApplicationSettingsException {
@@ -514,4 +518,22 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(METASCHEDULER_GRP_ID,
                 "");
     }
+
+
+    public static String getMetaschedulerUsername() throws ApplicationSettingsException {
+        return getSetting(METASCHEDULER_USERNAME,
+                "");
+    }
+
+    public static double getMetaschedulerScanningInterval() throws ApplicationSettingsException {
+        return Double.parseDouble(getSetting(METASCHEDULER_GRP_ID,
+                ""));
+    }
+
+    public static int getMetaschedulerNoOfScanningParallelJobs() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(METASCHEDULER_GRP_ID,
+                ""));
+    }
+
+
 }
