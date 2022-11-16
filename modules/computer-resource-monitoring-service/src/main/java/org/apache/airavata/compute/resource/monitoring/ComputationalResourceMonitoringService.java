@@ -22,7 +22,7 @@ public class ComputationalResourceMonitoringService implements IServer {
     private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private ServerStatus status;
+    private static  ServerStatus status;
     private static Scheduler scheduler;
     private static Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
 
@@ -105,8 +105,12 @@ public class ComputationalResourceMonitoringService implements IServer {
 
     @Override
     public ServerStatus getStatus() throws Exception {
-        return null;
+        return status;
     }
 
+
+    public void setServerStatus(ServerStatus status){
+        this.status = status;
+    }
 
 }

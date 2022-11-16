@@ -180,5 +180,10 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
+    public static class QueueStatus{
+        public static final  String HOST_NAME = "hostName";
+        public static final String QUEUE_NAME = "queueName";
+    }
+
 
 }

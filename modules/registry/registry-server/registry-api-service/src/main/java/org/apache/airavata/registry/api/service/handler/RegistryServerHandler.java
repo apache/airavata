@@ -106,12 +106,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -4792,6 +4787,23 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException, TException {
         try {
             queueStatusRepository.createQueueStatuses(queueStatuses);
+        } catch (RegistryException e) {
+            logger.error("Error while storing queue status models....", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while storing queue status models.... : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryServiceException, TException {
+        try {
+           Optional<QueueStatusModel> optionalQueueStatusModel =  queueStatusRepository.getQueueStatus(hostName,queueName);
+           if (optionalQueueStatusModel.isPresent()){
+               return optionalQueueStatusModel.get();
+           }else{
+               throw new RegistryServiceException("Cannot find queue status with hostName"+hostName+" queueName"+queueName);
+           }
         } catch (RegistryException e) {
             logger.error("Error while storing queue status models....", e);
             RegistryServiceException exception = new RegistryServiceException();
