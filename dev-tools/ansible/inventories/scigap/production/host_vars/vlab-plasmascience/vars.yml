@@ -22,46 +22,43 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-vhost_servername: "django.bayesprism.org"
-httpd_selinux_mode: "permissive"
-gateway_data_store_resource_id: "baysprism-gateway-host.BIO220088.projects.jetstream-cloud.org_fce7b852-a3b7-4a6b-ba9d-48269a9133e0"
-real_user_data_dir: "/media/volume/sdb/gateway-user-data"
-# Keep user_data_dir same as it was on old VM
+# NOTE: Plasma Science VLab is deployed to a Jetstream2 VM
+real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
 user_data_dir: "/var/www/portals/gateway-user-data"
+gateway_data_store_hostname: "js-172-104.jetstream-cloud.org"
+gateway_data_store_resource_id: "js-172-104.jetstream-cloud.org_0122ebcd-eb2c-48b0-9742-c95961d28a79"
 
 # TODO: tus not setup yet
 tusd_vhost_servername:
 
-
+vhost_servername: "vlab.plasmascience.scigap.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-# Increase max upload size to 1GB
-django_file_upload_max_file_size_mb: 1024
+# Increase max upload size to 500MB
+django_file_upload_max_file_size_mb: 500
 
 ## Keycloak related variables
-tenant_domain: "bayesprism"
+tenant_domain: "vlab-plasmascience"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "BayesPrism Gateway"
+    name: "Plasma Science Virtual Laboratory"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
       logo: "images/cilogon-logo-24x24-b.png"
 
-gateway_id: "bayesprism"
-experiment_data_dir: "{{ user_data_dir }}/bayesprism"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKu0jZiwCbADA1JeyU+HNQWsMmY+kgryiwt7C1Apt2CqECtFFOUW+uEvWDVFHqdzitAXUbo+0ZiEzdr4Qk045s+HdFe5R1Z9QhxNNSePJpmQldbW+h6NpdrdsXmHsocPcm6cHVbYNUCRvuTf9qy0cZBlYV09yXzWg2oSXRkcNMJuvjXCDQJk5VyxpQz8vk2Px/fEFkRikvACeotUaKvCjxVXc+h+Q4vRmKlrBOG9GGJRliqLEopu0jKVZ68QmfYANsD/i2/SOGn2XPR8wqTSUjcwlrG9avE7DwEPB2lynRvngklp/fUeBGFcujqEpdZ0A1dYqgV6Lrls/x3aFCw0i/"
+gateway_id: "vlab-plasmascience"
+experiment_data_dir: "{{ user_data_dir }}/vlab-plasmascience"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCQ+coR/ZU4cnFFKt7jXUxbSQiEvSJtRl8gT6ZgE5kbMKjruAnwVH0H9M/FUyOxutT7p4qMmdBuRJJtUNiYfPJ/zgJqGweoXbk5sJwYRBSM2v8DNI9394ffun3N+46MMhaSinBDbhLPXOE9sPZlfmhUozwsC7+32Hd0Hv48cYpNCDB8ccsKzCcUzfD/OesIxuM1d8FE4O0FA66MrPmquzQM0otG2Tx7nOeFMjXWzYgk0fhEYJHMHhdMXRoVVT/eeuTvvmOGDbTNwtWaG/hoBAL643Tk/YgILE03WrmS0iULmC9DZ8sxCntFpqZjlOn5H9MvFwV3xfAU3RsaDw3xAGg7"
 
-admin_emails: "[('Eroma Abeysinghe', 'eabeysin@iu.edu'),('Tinyi Chu', 'ChuT@mskcc.org'),('Zhong Wang', 'zw355@cornell.edu')]"
-portal_title: "BayesPrism Gateway"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Cameron Smith', 'smithc11@rpi.edu')]"
+portal_title: "Plasma Science Virtual Laboratory"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
-django_extra_settings:
-  LOGOUT_REDIRECT_URL: "https://www.bayesprism.org/"
 ...

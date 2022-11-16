@@ -19,10 +19,9 @@
 #
 
 ---
-# TODO: Need Node upgrade to build the Django app Vue.js code
-# airavata_django_extra_dependencies:
-#   - name: "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
-#     editable: true
+airavata_django_extra_dependencies:
+  - name: "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
+    editable: true
 
 vhost_servername: "amosgateway.org"
 

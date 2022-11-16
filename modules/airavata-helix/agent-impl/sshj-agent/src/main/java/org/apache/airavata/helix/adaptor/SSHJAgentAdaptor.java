@@ -143,6 +143,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
             int selectedPort = sshJobSubmission.getSshPort() == 0 ? 22 : sshJobSubmission.getSshPort();
 
+            logger.info("Using user {}, Host {}, Port {} to create ssh client for compute resource {}",
+                    userId, selectedHostName, selectedPort, computeResource);
+
             createPoolingSSHJClient(userId, selectedHostName, selectedPort,
                     sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase());
 
