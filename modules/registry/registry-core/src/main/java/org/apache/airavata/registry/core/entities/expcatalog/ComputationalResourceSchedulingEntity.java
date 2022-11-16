@@ -24,7 +24,6 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     @Column(name = "QUEUE_NAME")
     private String queueName;
 
-
     @Column(name = "TOTAL_CPU_COUNT")
     private int totalCPUCount;
 
