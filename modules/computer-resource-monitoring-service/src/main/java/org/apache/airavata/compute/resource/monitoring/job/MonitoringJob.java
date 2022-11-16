@@ -48,11 +48,24 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
             String metaSchedulerGateway = jobDataMap.getString(Constants.METASCHEDULER_GATEWAY);
             String metaSchedulerGRP = jobDataMap.getString(Constants.METASCHEDULER_GRP_ID);
             String username = jobDataMap.getString(Constants.METASCHEDULER_USERNAME);
-            int startIndex = jobDataMap.getInt(Constants.METASCHEDULER_SCANNING_START_INDEX);
-            int endIndex = jobDataMap.getInt(Constants.METASCHEDULER_SCANNING_END_INDEX);
+            int jobId = jobDataMap.getInt(Constants.METASCHEDULER_SCANNING_JOB_ID);
+            int parallelJobs = jobDataMap.getInt(Constants.METASCHEDULER_SCANNING_JOBS);
+
 
             GroupResourceProfile groupResourceProfile = getGroupResourceProfile(metaSchedulerGRP);
             List<GroupComputeResourcePreference> computeResourcePreferenceList = groupResourceProfile.getComputePreferences();
+
+            int size = computeResourcePreferenceList.size();
+
+            int chunkSize = size/parallelJobs;
+
+            int startIndex = jobId*chunkSize;
+
+            int endIndex = (jobId+1)*chunkSize;
+
+            if (jobId == parallelJobs-1){
+                endIndex = size;
+            }
 
             List<GroupComputeResourcePreference> computeResourcePreferences = computeResourcePreferenceList
                     .subList(startIndex, endIndex);
