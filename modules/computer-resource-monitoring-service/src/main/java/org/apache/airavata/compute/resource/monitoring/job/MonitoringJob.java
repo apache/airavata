@@ -9,7 +9,6 @@ import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.status.QueueStatusModel;
@@ -57,13 +56,13 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
 
             int size = computeResourcePreferenceList.size();
 
-            int chunkSize = size/parallelJobs;
+            int chunkSize = size / parallelJobs;
 
-            int startIndex = jobId*chunkSize;
+            int startIndex = jobId * chunkSize;
 
-            int endIndex = (jobId+1)*chunkSize;
+            int endIndex = (jobId + 1) * chunkSize;
 
-            if (jobId == parallelJobs-1){
+            if (jobId == parallelJobs - 1) {
                 endIndex = size;
             }
 
@@ -71,7 +70,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                     .subList(startIndex, endIndex);
 
             for (GroupComputeResourcePreference computeResourcePreference : computeResourcePreferences) {
-                   updateComputeResource(client,adaptorSupport,metaSchedulerGateway,username,metaSchedulerGRP,computeResourcePreference);
+                updateComputeResource(client, adaptorSupport, metaSchedulerGateway, username, metaSchedulerGRP, computeResourcePreference);
             }
         } catch (Exception ex) {
             String msg = "Error occurred while executing job" + ex.getMessage();
@@ -101,66 +100,80 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
         ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(client, jobSubmissionProtocol, jobSubmissionInterface);
 
 
-        String baseCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_CLUSTER_INFO);
+        //TODO: intial phase we are only supporting SLURM
+        if (resourceJobManager.getResourceJobManagerType().equals("SLURM")) {
+            String baseCommand = "sinfo";
 
-        String finalCommand = baseCommand + "-p" + computeResourcePreference.getPreferredBatchQueue();
+            if (resourceJobManager.getJobManagerCommands().containsKey(JobManagerCommand.SHOW_CLUSTER_INFO)) {
+                baseCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_CLUSTER_INFO);
+            }
 
-        String computeResourceToken = getComputeResourceCredentialToken(
-                gatewayId,
-                username,
-                computeResourceId,
-                false,
-                true,
-                groupResourceProfileId);
+            String finalCommand = baseCommand + "-p" + computeResourcePreference.getPreferredBatchQueue();
 
-        String loginUsername = getComputeResourceLoginUserName(gatewayId,
-                username,
-                computeResourceId,
-                false,
-                true,
-                groupResourceProfileId,
-                null);
+            String computeResourceToken = getComputeResourceCredentialToken(
+                    gatewayId,
+                    username,
+                    computeResourceId,
+                    false,
+                    true,
+                    groupResourceProfileId);
 
-        AgentAdaptor adaptor = adaptorSupport.fetchAdaptor(gatewayId,
-                computeResourceId,
-                jobSubmissionProtocol,
-                computeResourceToken,
-                loginUsername);
+            String loginUsername = getComputeResourceLoginUserName(gatewayId,
+                    username,
+                    computeResourceId,
+                    false,
+                    true,
+                    groupResourceProfileId,
+                    null);
 
-        CommandOutput commandOutput = adaptor.executeCommand(finalCommand, null);
+            AgentAdaptor adaptor = adaptorSupport.fetchAdaptor(gatewayId,
+                    computeResourceId,
+                    jobSubmissionProtocol,
+                    computeResourceToken,
+                    loginUsername);
 
-        OutputParser outputParser = new OutputParserImpl();
-        boolean queueStatus = false;
-        int runningJobs = 0;
-        int pendingJobs = 0;
-        if (outputParser.isComputeResourceAvailable(commandOutput)) {
-            queueStatus = true;
+            CommandOutput commandOutput = adaptor.executeCommand(finalCommand, null);
 
-            String runningJobCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_NO_OF_RUNNING_JOBS);
-            String pendingJobCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_NO_OF_PENDING_JOBS);
+            OutputParser outputParser = new OutputParserImpl();
+            boolean queueStatus = false;
+            int runningJobs = 0;
+            int pendingJobs = 0;
+            if (outputParser.isComputeResourceAvailable(commandOutput)) {
+                queueStatus = true;
 
-            String runningJobsCommand = runningJobCommand + "-h -t running -r | wc -l";
-            String pendingJobsCommand = pendingJobCommand + "-h -t pending -r | wc -l";
+                String runningJobCommand = "squeue";
+                String pendingJobCommand = "squeue";
+                if (resourceJobManager.getJobManagerCommands().containsKey(JobManagerCommand.SHOW_NO_OF_RUNNING_JOBS)) {
+                    runningJobCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_NO_OF_RUNNING_JOBS);
+                }
 
-            CommandOutput runningJobsCommandOutput = adaptor.executeCommand(runningJobsCommand, null);
+                if (resourceJobManager.getJobManagerCommands().containsKey(JobManagerCommand.SHOW_NO_OF_PENDING_JOBS)) {
+                    pendingJobCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_NO_OF_PENDING_JOBS);
+                }
 
-            CommandOutput pendingJobsCommandOutput = adaptor.executeCommand(pendingJobsCommand, null);
+                String runningJobsCommand = runningJobCommand + "-h -t running -r | wc -l";
+                String pendingJobsCommand = pendingJobCommand + "-h -t pending -r | wc -l";
 
-            runningJobs = outputParser.getNumberofJobs(runningJobsCommandOutput);
-            pendingJobs = outputParser.getNumberofJobs(pendingJobsCommandOutput);
+                CommandOutput runningJobsCommandOutput = adaptor.executeCommand(runningJobsCommand, null);
+
+                CommandOutput pendingJobsCommandOutput = adaptor.executeCommand(pendingJobsCommand, null);
+
+                runningJobs = outputParser.getNumberofJobs(runningJobsCommandOutput);
+                pendingJobs = outputParser.getNumberofJobs(pendingJobsCommandOutput);
+
+            }
+
+            QueueStatusModel queueStatusModel = new QueueStatusModel();
+            queueStatusModel.setHostName(comResourceDes.getHostName());
+            queueStatusModel.setQueueName(computeResourcePreference.getPreferredBatchQueue());
+            queueStatusModel.setQueueUp(queueStatus);
+            queueStatusModel.setRunningJobs(runningJobs);
+            queueStatusModel.setQueuedJobs(pendingJobs);
+            List<QueueStatusModel> queueStatusModels = new ArrayList<>();
+            queueStatusModels.add(queueStatusModel);
+
+            client.registerQueueStatuses(queueStatusModels);
 
         }
-
-        QueueStatusModel queueStatusModel = new QueueStatusModel();
-        queueStatusModel.setHostName(comResourceDes.getHostName());
-        queueStatusModel.setQueueName(computeResourcePreference.getPreferredBatchQueue());
-        queueStatusModel.setQueueUp(queueStatus);
-        queueStatusModel.setRunningJobs(runningJobs);
-        queueStatusModel.setQueuedJobs(pendingJobs);
-        List<QueueStatusModel> queueStatusModels = new ArrayList<>();
-        queueStatusModels.add(queueStatusModel);
-
-        client.registerQueueStatuses(queueStatusModels);
-
     }
 }
