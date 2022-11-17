@@ -103,10 +103,10 @@ public class UserConfigurationDataEntity implements Serializable {
     @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     private ExperimentEntity experiment;
 
-
-    @OneToMany(targetEntity = ComputationalResourceSchedulingEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "userConfigurationData", fetch = FetchType.EAGER)
-    private List<ComputationalResourceSchedulingEntity> computationalResourceSchedulingEntities;
+//
+//    @OneToMany(targetEntity = ComputationalResourceSchedulingEntity.class, cascade = CascadeType.ALL,
+//            mappedBy = "userConfigurationData", fetch = FetchType.EAGER)
+//    private List<ComputationalResourceSchedulingEntity> computationalResourceSchedulingEntities;
 
     public UserConfigurationDataEntity() {
     }
