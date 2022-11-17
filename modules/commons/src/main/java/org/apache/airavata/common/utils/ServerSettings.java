@@ -148,8 +148,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_GATEWAY = "metascheduler.gateway";
     public static final String METASCHEDULER_GRP_ID = "metascheduler.group.resource.profile";
     public static final String METASCHEDULER_USERNAME = "metascheduler.username";
-    public static final String METASCHEDULER_SCANNING_INTERVAL = "metascheduler.scanning.interval";
-    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "metascheduler.no.of.scanning.parallel.jobs";
+    public static final String METASCHEDULER_SCANNING_INTERVAL = "cluster.scanning.interval";
+    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
 
 
 
@@ -526,13 +526,13 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static double getMetaschedulerScanningInterval() throws ApplicationSettingsException {
-        return Double.parseDouble(getSetting(METASCHEDULER_GRP_ID,
-                ""));
+        return Double.parseDouble(getSetting(METASCHEDULER_SCANNING_INTERVAL,
+                "1800000"));
     }
 
     public static int getMetaschedulerNoOfScanningParallelJobs() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(METASCHEDULER_GRP_ID,
-                ""));
+        return Integer.parseInt(getSetting(METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS,
+                "1"));
     }
 
 
