@@ -23,6 +23,7 @@ import org.apache.airavata.cluster.monitoring.ClusterStatusMonitorJobScheduler;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMonitoringService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
@@ -46,7 +47,9 @@ public class OrchestratorServer implements IServer {
 
 	private TServer server;
 
-	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
+	private static ComputationalResourceMonitoringService monitoringService;
+
+//	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
 	public OrchestratorServer() {
 		setStatus(ServerStatus.STOPPED);
@@ -88,6 +91,8 @@ public class OrchestratorServer implements IServer {
 					if (server.isServing()){
 						setStatus(ServerStatus.STARTED);
 			            logger.info("Started Orchestrator Server on Port " + serverPort + " ...");
+
+
 					}
 				}
 			}.start();
@@ -99,8 +104,21 @@ public class OrchestratorServer implements IServer {
     }
 
 	public void startClusterStatusMonitoring() throws SchedulerException, ApplicationSettingsException {
-        clusterStatusMonitorJobScheduler = new ClusterStatusMonitorJobScheduler();
-        clusterStatusMonitorJobScheduler.scheduleClusterStatusMonitoring();
+//        clusterStatusMonitorJobScheduler = new ClusterStatusMonitorJobScheduler();
+//        clusterStatusMonitorJobScheduler.scheduleClusterStatusMonitoring();
+
+		try {
+			if (monitoringService == null) {
+				monitoringService = new ComputationalResourceMonitoringService();
+			}
+			if (monitoringService != null && !monitoringService.getStatus().equals(ServerStatus.STARTED)) {
+				monitoringService.start();
+				monitoringService.setServerStatus(ServerStatus.STARTED);
+				logger.info("Airavata compute resource monitoring service started ....");
+			}
+		} catch (Exception ex) {
+			logger.info("Airavata compute resource monitoring service failed ....");
+		}
 	}
 
     public static void main(String[] args) {
@@ -130,6 +148,10 @@ public class OrchestratorServer implements IServer {
         if (server!=null && server.isServing()){
 			setStatus(ServerStatus.STOPING);
 			server.stop();
+		}
+        if(monitoringService != null){
+        	monitoringService.stop();
+			monitoringService.setServerStatus(ServerStatus.STOPPED);
 		}
 		
 	}

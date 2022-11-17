@@ -28,6 +28,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.messaging.core.*;
+import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
+import org.apache.airavata.metascheduler.process.scheduling.api.ProcessSchedulerImpl;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -229,6 +231,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             }
                         }
 					});
+
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);
 					registryClient.updateProcess(processModel, processModel.getProcessId());
@@ -238,13 +241,24 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					throw new Exception("Validating process fails for given experiment Id : " + experimentId);
 				}
 
-				log.debug(experimentId, "Launching single application experiment {}.", experimentId);
-                ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
-                status.setReason("submitted all processes");
-                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-                log.info("expId: {}, Launched experiment ", experimentId);
-                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
+				ProcessScheduler scheduler = new ProcessSchedulerImpl();
+				if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId) ) {
+
+					log.debug(experimentId, "Launching single application experiment {}.", experimentId);
+					ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
+					status.setReason("submitted all processes");
+					status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+					OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+					log.info("expId: {}, Launched experiment ", experimentId);
+					OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
+				}else {
+					log.debug(experimentId, "Queuing single application experiment {}.", experimentId);
+					ExperimentStatus status = new ExperimentStatus(ExperimentState.SCHEDULED);
+					status.setReason("Compute resources are not ready");
+					status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+					OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+					log.info("expId: {}, Launched experiment ", experimentId);
+				}
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
                 log.debug(experimentId, "Launching workflow experiment {}.", experimentId);

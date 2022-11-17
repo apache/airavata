@@ -77,6 +77,23 @@
             <artifactId>cluster-monitoring</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>metascheduler-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>process-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>computer-resource-monitoring-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <properties>

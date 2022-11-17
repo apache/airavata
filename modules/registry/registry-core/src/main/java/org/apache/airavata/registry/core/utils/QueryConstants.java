@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
@@ -178,4 +179,8 @@ public interface QueryConstants {
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
+
+
+    String FIND_QUEUE_STATUS = "SELECT Q FROM "+ QueueStatusModel.class.getSimpleName() +" Q "+ " WHERE Q.hostName LIKE :"
+            +DBConstants.QueueStatus.HOST_NAME+ " AND Q.queueName LIKE :"+DBConstants.QueueStatus.QUEUE_NAME;
 }
