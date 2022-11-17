@@ -42,7 +42,10 @@ public enum ProcessState implements org.apache.thrift.TEnum {
   COMPLETED(10),
   FAILED(11),
   CANCELLING(12),
-  CANCELED(13);
+  CANCELED(13),
+  QUEUED(14),
+  DEQUEUING(15),
+  REQUEUED(16);
 
   private final int value;
 
@@ -91,6 +94,12 @@ public enum ProcessState implements org.apache.thrift.TEnum {
         return CANCELLING;
       case 13:
         return CANCELED;
+      case 14:
+        return QUEUED;
+      case 15:
+        return DEQUEUING;
+      case 16:
+        return REQUEUED;
       default:
         return null;
     }

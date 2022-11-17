@@ -57,7 +57,10 @@ enum ProcessState {
     COMPLETED,
     FAILED,
     CANCELLING,
-    CANCELED
+    CANCELED,
+    QUEUED,
+    DEQUEUING,
+    REQUEUED
 }
 
 enum JobState {

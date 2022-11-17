@@ -164,6 +164,15 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         return (new GrpComputePrefRepository().get(groupComputeResourcePrefPK));
     }
 
+
+    public boolean isGroupComputeResourcePreferenceExists(String computeResourceId, String groupResourceProfileId) {
+        GroupComputeResourcePrefPK groupComputeResourcePrefPK = new GroupComputeResourcePrefPK();
+        groupComputeResourcePrefPK.setGroupResourceProfileId(groupResourceProfileId);
+        groupComputeResourcePrefPK.setComputeResourceId(computeResourceId);
+
+        return (new GrpComputePrefRepository().isExists(groupComputeResourcePrefPK));
+    }
+
     public ComputeResourcePolicy getComputeResourcePolicy(String resourcePolicyId) {
         return (new ComputeResourcePolicyRepository().get(resourcePolicyId));
     }

@@ -102,6 +102,8 @@ public class ExperimentEntity implements Serializable {
             mappedBy = "experiment", fetch = FetchType.EAGER)
     private List<ProcessEntity> processes;
 
+
+
     public ExperimentEntity() {
     }
 
@@ -256,4 +258,6 @@ public class ExperimentEntity implements Serializable {
     public void setProcesses(List<ProcessEntity> processes) {
         this.processes = processes;
     }
+
+
 }
