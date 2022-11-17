@@ -235,3 +235,13 @@ monitoring_subnets: "{{ iu_subnets }}"
 
 # Zabbix
 zabbix_server: "rt-watch.uits.indiana.edu"
+
+
+#variables for metscheduler
+cluster_monitoring_enabled: false
+metascheduler_resource_selection_policy_class: org.apache.airavata.metascheduler.process.scheduling.cr.DefaultComputeResourceSelectionPolicy
+metascheduler_gateway: seagrid
+metascheduler_group_resource_profile: a2076a5a-0fbf-44f4-9d47-060153bc578b
+metascheduler_username: metascheacc
+cluster_scanning_interval: 1800000
+cluster_scanning_parallel_jobs: 1
