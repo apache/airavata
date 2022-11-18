@@ -130,6 +130,8 @@
       </div>
       <group-resource-profile-selector
         v-model="localExperiment.userConfigurationData.groupResourceProfileId"
+        @invalid="invalidGroupResourceProfileSelector = true"
+        @valid="invalidGroupResourceProfileSelector = false"
       >
       </group-resource-profile-selector>
       <div class="row">
@@ -213,6 +215,7 @@ export default {
       localExperiment: this.experiment.clone(),
       invalidInputs: [],
       invalidComputationalResourceSchedulingEditor: false,
+      invalidGroupResourceProfileSelector: false,
       edited: false,
       saved: false,
       uploadingInputs: [],
@@ -266,7 +269,8 @@ export default {
       return (
         Object.keys(validation).length === 0 &&
         this.invalidInputs.length === 0 &&
-        !this.invalidComputationalResourceSchedulingEditor
+        !this.invalidComputationalResourceSchedulingEditor &&
+        !this.invalidGroupResourceProfileSelector
       );
     },
     isSaveDisabled: function () {

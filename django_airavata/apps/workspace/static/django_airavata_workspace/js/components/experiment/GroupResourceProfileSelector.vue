@@ -35,10 +35,10 @@ export default {
       workspacePreferences: null,
     };
   },
-  mounted: function () {
-    this.loadWorkspacePreferences().then(() => {
-      return this.loadGroupResourceProfiles();
-    });
+  async mounted() {
+    await this.loadWorkspacePreferences();
+    await this.loadGroupResourceProfiles();
+    this.validate();
   },
   computed: {
     groupResourceProfileOptions: function () {
@@ -58,6 +58,9 @@ export default {
       } else {
         return [];
       }
+    },
+    valid() {
+      return !!this.groupResourceProfileId;
     },
   },
   methods: {
@@ -91,6 +94,7 @@ export default {
       this.emitValueChanged();
     },
     emitValueChanged: function () {
+      this.validate();
       this.$emit("input", this.groupResourceProfileId);
     },
     selectedValueInGroupResourceProfileList(groupResourceProfiles) {
@@ -99,6 +103,13 @@ export default {
           .map((grp) => grp.groupResourceProfileId)
           .indexOf(this.value) >= 0
       );
+    },
+    validate() {
+      if (!this.valid) {
+        this.$emit("invalid");
+      } else {
+        this.$emit("valid");
+      }
     },
   },
   watch: {},
