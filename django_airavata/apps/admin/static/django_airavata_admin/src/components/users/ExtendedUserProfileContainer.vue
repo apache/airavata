@@ -17,6 +17,7 @@
       >
         <div class="col">
           <extended-user-profile-field-editor
+            ref="extendedUserProfileFieldEditors"
             :extendedUserProfileField="field"
             @valid="recordValidChildComponent(field)"
             @invalid="recordInvalidChildComponent(field)"
@@ -39,13 +40,7 @@
             >User Agreement</b-dropdown-item
           >
         </b-dropdown>
-        <b-button
-          variant="primary"
-          @click="save"
-          :disabled="!valid"
-          class="ml-2"
-          >Save</b-button
-        >
+        <b-button variant="primary" @click="save" class="ml-2">Save</b-button>
         <b-button variant="secondary" class="ml-auto" href="/admin/users"
           >Return to Manage Users</b-button
         >
@@ -116,7 +111,11 @@ export default {
       field.links.splice(i, 1);
     },
     save() {
-      this.saveExtendedUserProfileFields();
+      if (this.valid) {
+        this.saveExtendedUserProfileFields();
+      } else {
+        this.$refs.extendedUserProfileFieldEditors.forEach((c) => c.touch());
+      }
     },
   },
   computed: {

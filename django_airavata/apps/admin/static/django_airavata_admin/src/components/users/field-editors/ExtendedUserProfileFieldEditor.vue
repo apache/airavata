@@ -1,5 +1,8 @@
 <template>
-  <b-card :title="title">
+  <b-card
+    :title="title"
+    :border-variant="$v.$anyDirty && $v.$invalid ? 'danger' : null"
+  >
     <b-form-group label="Name" label-cols="3">
       <b-form-input v-model="name" :state="validateState($v.name)" />
       <b-form-invalid-feedback :state="validateState($v.name)"
@@ -19,7 +22,11 @@
         >This field is required.</b-form-invalid-feedback
       >
     </b-form-group>
-    <b-form-group label="Help text" label-cols="3">
+    <b-form-group label-cols="3">
+      <template #label>
+        Help text
+        <small class="text-muted text-small">(Optional)</small>
+      </template>
       <b-form-input v-model="help_text" />
     </b-form-group>
     <b-form-group>
@@ -381,6 +388,9 @@ export default {
       });
     },
     validateState: errors.vuelidateHelpers.validateState,
+    touch() {
+      this.$v.$touch();
+    },
   },
   watch: {
     valid: {
