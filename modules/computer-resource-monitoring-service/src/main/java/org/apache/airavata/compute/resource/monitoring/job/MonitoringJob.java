@@ -37,7 +37,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         RegistryService.Client client = null;
         try {
-            LOGGER.debug("Executing ComputeResource ....... ");
+            LOGGER.info("Executing ComputeResources ....... ");
 
             client = this.registryClientPool.getResource();
 
@@ -70,6 +70,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                     .subList(startIndex, endIndex);
 
             for (GroupComputeResourcePreference computeResourcePreference : computeResourcePreferences) {
+                LOGGER.info("updating GRP###########",computeResourcePreference.getComputeResourceId());
                 updateComputeResource(client, adaptorSupport, metaSchedulerGateway, username, metaSchedulerGRP, computeResourcePreference);
             }
         } catch (Exception ex) {
