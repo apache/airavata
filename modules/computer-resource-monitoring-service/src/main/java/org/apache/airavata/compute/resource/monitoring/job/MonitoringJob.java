@@ -70,7 +70,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                     .subList(startIndex, endIndex);
 
             for (GroupComputeResourcePreference computeResourcePreference : computeResourcePreferences) {
-                LOGGER.info("updating GRP########### PRID:"+computeResourcePreference.getComputeResourceId()+" name "+computeResourcePreference.);
+                LOGGER.info("updating GRP########### PRID:"+computeResourcePreference.getComputeResourceId());
                 updateComputeResource(client, adaptorSupport, metaSchedulerGateway, username, metaSchedulerGRP, computeResourcePreference);
             }
         } catch (Exception ex) {
