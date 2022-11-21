@@ -11,4 +11,5 @@ public class Constants {
     public static final String COMPUTE_RESOURCE_SCANNER_GROUP = "compute.resource.scanner.group";
     public static final String COMPUTE_RESOURCE_SCANNER_TRIGGER = "compute.resource.scanner.trigger";
     public static  final String COMPUTE_RESOURCE_SCANNER_JOB = "compute.resource.scanner.job";
+    public static  final String JOB_SUBMISSION_PROTOCOL_SLURM = "SLURM";
 }
