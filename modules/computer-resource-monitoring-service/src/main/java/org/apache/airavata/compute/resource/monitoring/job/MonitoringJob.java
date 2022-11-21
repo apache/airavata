@@ -70,7 +70,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                     .subList(startIndex, endIndex);
 
             for (GroupComputeResourcePreference computeResourcePreference : computeResourcePreferences) {
-                LOGGER.info("updating GRP###########",computeResourcePreference.getComputeResourceId());
+                LOGGER.info("updating GRP########### PRID:"+computeResourcePreference.getComputeResourceId()+" name "+computeResourcePreference.);
                 updateComputeResource(client, adaptorSupport, metaSchedulerGateway, username, metaSchedulerGRP, computeResourcePreference);
             }
         } catch (Exception ex) {
@@ -108,6 +108,8 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
             if (resourceJobManager.getJobManagerCommands().containsKey(JobManagerCommand.SHOW_CLUSTER_INFO)) {
                 baseCommand = resourceJobManager.getJobManagerCommands().get(JobManagerCommand.SHOW_CLUSTER_INFO);
             }
+
+
 
             String finalCommand = baseCommand + "-p" + computeResourcePreference.getPreferredBatchQueue();
 
@@ -167,6 +169,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
             QueueStatusModel queueStatusModel = new QueueStatusModel();
             queueStatusModel.setHostName(comResourceDes.getHostName());
             queueStatusModel.setQueueName(computeResourcePreference.getPreferredBatchQueue());
+            LOGGER.info("Storing hostname "+comResourceDes.getHostName()+" batch queue "+computeResourcePreference.getPreferredBatchQueue());
             queueStatusModel.setQueueUp(queueStatus);
             queueStatusModel.setRunningJobs(runningJobs);
             queueStatusModel.setQueuedJobs(pendingJobs);
