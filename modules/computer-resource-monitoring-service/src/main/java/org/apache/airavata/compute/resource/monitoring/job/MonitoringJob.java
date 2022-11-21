@@ -100,7 +100,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
 
         ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(client, jobSubmissionProtocol, jobSubmissionInterface);
 
-
+        LOGGER.info(" type "+ resourceJobManager.getResourceJobManagerType()+" jobSubmissionProtocol "+jobSubmissionProtocol);
         //TODO: intial phase we are only supporting SLURM
         if (resourceJobManager.getResourceJobManagerType().equals("SLURM")) {
             String baseCommand = "sinfo";
