@@ -108,6 +108,7 @@ public class OrchestratorServer implements IServer {
         try {
             if (monitoringService == null) {
                 monitoringService = new ComputationalResourceMonitoringService();
+                monitoringService.setServerStatus(ServerStatus.STARTING);
             }
             if (monitoringService != null && !monitoringService.getStatus().equals(ServerStatus.STARTED)) {
                 monitoringService.start();
