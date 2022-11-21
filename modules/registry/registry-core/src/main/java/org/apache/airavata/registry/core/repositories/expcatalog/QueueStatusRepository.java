@@ -63,7 +63,7 @@ public class QueueStatusRepository extends ExpCatAbstractRepository<QueueStatusM
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.QueueStatus.HOST_NAME, hostName);
         queryParameters.put(DBConstants.QueueStatus.QUEUE_NAME, queueName);
-        List<QueueStatusModel> queueStatusModels = select(QueryConstants.FIND_QUEUE_STATUS, -1, 0, queryParameters);
+        List<QueueStatusModel> queueStatusModels = select(QueryConstants.FIND_QUEUE_STATUS, 1, 0, queryParameters);
         if (queueStatusModels != null && !queueStatusModels.isEmpty()) {
             return Optional.of(queueStatusModels.get(0));
         }

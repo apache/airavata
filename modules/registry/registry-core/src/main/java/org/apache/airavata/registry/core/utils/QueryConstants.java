@@ -1,5 +1,4 @@
 /**
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,10 +29,10 @@ public interface QueryConstants {
 
     String FIND_USER_PROFILE_BY_USER_ID = "SELECT u FROM UserProfileEntity u " +
             "where u.userId LIKE :" + UserProfile._Fields.USER_ID.getFieldName() + " " +
-            "AND u.gatewayId LIKE :"+ UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
+            "AND u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
     String FIND_ALL_USER_PROFILES_BY_GATEWAY_ID = "SELECT u FROM UserProfileEntity u " +
-            "where u.gatewayId LIKE :"+ UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
+            "where u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
     // Application Deployment Queries
     String FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
@@ -98,11 +97,11 @@ public interface QueryConstants {
     String FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
             "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID + " AND G.groupResourceProfileId IN :"
             + DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS;
-    String FIND_ALL_GROUP_COMPUTE_PREFERENCES = "SELECT GC FROM "+ GroupComputeResourcePrefEntity.class.getSimpleName() + " GC " +
+    String FIND_ALL_GROUP_COMPUTE_PREFERENCES = "SELECT GC FROM " + GroupComputeResourcePrefEntity.class.getSimpleName() + " GC " +
             "WHERE GC.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
-    String FIND_ALL_GROUP_BATCH_QUEUE_RESOURCE_POLICY = "SELECT BQ FROM "+ BatchQueueResourcePolicyEntity.class.getSimpleName() + " BQ " +
+    String FIND_ALL_GROUP_BATCH_QUEUE_RESOURCE_POLICY = "SELECT BQ FROM " + BatchQueueResourcePolicyEntity.class.getSimpleName() + " BQ " +
             "WHERE BQ.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
-    String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM "+ ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
+    String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM " + ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
             "WHERE CR.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
 
     String GET_ALL_USER_RESOURCE_PROFILE = "SELECT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP";
@@ -123,7 +122,7 @@ public interface QueryConstants {
             "WHERE P.owner LIKE :" + DBConstants.Project.OWNER;
 
     String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
-            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME + 
+            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME +
             " AND E.gatewayId = :" + DBConstants.Experiment.GATEWAY_ID;
     String GET_EXPERIMENTS_FOR_PROJECT_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
             "WHERE E.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID +
@@ -181,6 +180,7 @@ public interface QueryConstants {
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
 
 
-    String FIND_QUEUE_STATUS = "SELECT Q FROM "+ QueueStatusModel.class.getSimpleName() +" Q "+ " WHERE Q.hostName LIKE :"
-            +DBConstants.QueueStatus.HOST_NAME+ " AND Q.queueName LIKE :"+DBConstants.QueueStatus.QUEUE_NAME;
+    String FIND_QUEUE_STATUS = "SELECT Q FROM " + QueueStatusModel.class.getSimpleName() + " Q " + " WHERE Q.hostName LIKE :"
+            + DBConstants.QueueStatus.HOST_NAME + " AND Q.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +" AND "+
+            " WHERE q.createdTime =(SELECT MAX(CREATED_TIME) FROM" + QueueStatusModel.class.getSimpleName();
 }
