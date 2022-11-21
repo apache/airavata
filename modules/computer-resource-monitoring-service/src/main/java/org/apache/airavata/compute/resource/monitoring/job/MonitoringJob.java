@@ -141,6 +141,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
             boolean queueStatus = false;
             int runningJobs = 0;
             int pendingJobs = 0;
+            LOGGER.info("command output"+commandOutput.getStdOut()+" error "+commandOutput.getStdError()+" exist code "+commandOutput.getExitCode());
             if (outputParser.isComputeResourceAvailable(commandOutput)) {
                 queueStatus = true;
 
