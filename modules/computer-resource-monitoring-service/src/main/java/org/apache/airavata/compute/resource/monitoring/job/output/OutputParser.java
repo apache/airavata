@@ -8,9 +8,9 @@ import org.apache.airavata.agents.api.CommandOutput;
 public interface OutputParser {
 
 
-    boolean isComputeResourceAvailable(CommandOutput commandOutput);
+    boolean isComputeResourceAvailable(CommandOutput commandOutput, String type);
 
-    int getNumberofJobs(CommandOutput commandOutput);
+    int getNumberofJobs(CommandOutput commandOutput, String type);
 
 
 
