@@ -1010,6 +1010,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public List<ProcessModel>  getProcessStatusList(ProcessStatus processStatus) throws RegistryServiceException, TException {
+        try {
+
+
+
+            return new ArrayList<ProcessModel>();
+        } catch (Exception e) {
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process list with given status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      *
      * queryType can be PROCESS_ID or TASK_ID
