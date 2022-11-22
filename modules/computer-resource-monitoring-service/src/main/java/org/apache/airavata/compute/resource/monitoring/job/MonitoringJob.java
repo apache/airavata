@@ -190,11 +190,6 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        MonitoringJob monitoringJob = new MonitoringJob();
-        monitoringJob.executeComputeResourceMonitoring(monitoringJob.registryClientPool.getResource(), "seagrid", "metascheacc",
-                "a2076a5a-0fbf-44f4-9d47-060153bc578b", 1, 0);
-    }
 }
 
 
