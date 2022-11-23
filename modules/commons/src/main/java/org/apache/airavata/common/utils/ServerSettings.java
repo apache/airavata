@@ -150,6 +150,7 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_USERNAME = "metascheduler.username";
     public static final String METASCHEDULER_SCANNING_INTERVAL = "cluster.scanning.interval";
     public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
+    public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
 
 
 
@@ -507,6 +508,11 @@ public class ServerSettings extends ApplicationSettings {
     public static String getComputeResourceSelectionPolicyClass() throws ApplicationSettingsException {
         return getSetting(COMPUTE_RESOURCE_SELECTION_POLICY_CLASS,
                 "org.apache.airavata.metascheduler.process.scheduling.cr.DefaultComputeResourceSelectionPolicy");
+    }
+
+    public static String getReSchedulerPolicyClass() throws ApplicationSettingsException {
+        return getSetting(COMPUTE_RESOURCE_RESCHEDULER_CLASS,
+                "org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ExponentialBackOffReScheduler");
     }
 
     public static String getMetaschedulerGateway() throws ApplicationSettingsException {
