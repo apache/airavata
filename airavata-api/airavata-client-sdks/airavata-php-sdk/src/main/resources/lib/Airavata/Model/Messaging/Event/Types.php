@@ -40,6 +40,7 @@ final class MessageType {
   const TERMINATEPROCESS = 6;
   const PROCESSOUTPUT = 7;
   const DB_EVENT = 8;
+  const INTERMEDIATE_OUTPUTS = 9;
   static public $__names = array(
     0 => 'EXPERIMENT',
     1 => 'EXPERIMENT_CANCEL',
@@ -50,6 +51,7 @@ final class MessageType {
     6 => 'TERMINATEPROCESS',
     7 => 'PROCESSOUTPUT',
     8 => 'DB_EVENT',
+    9 => 'INTERMEDIATE_OUTPUTS',
   );
 }
 
@@ -1709,6 +1711,153 @@ class JobStatusChangeRequestEvent {
       }
       $xfer += $output->writeFieldBegin('jobIdentity', TType::STRUCT, 2);
       $xfer += $this->jobIdentity->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ExperimentIntermediateOutputsEvent {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $experimentId = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+  /**
+   * @var string[]
+   */
+  public $outputNames = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'experimentId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'outputNames',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['outputNames'])) {
+        $this->outputNames = $vals['outputNames'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ExperimentIntermediateOutputsEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::LST) {
+            $this->outputNames = array();
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            {
+              $elem12 = null;
+              $xfer += $input->readString($elem12);
+              $this->outputNames []= $elem12;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ExperimentIntermediateOutputsEvent');
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->outputNames !== null) {
+      if (!is_array($this->outputNames)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('outputNames', TType::LST, 3);
+      {
+        $output->writeListBegin(TType::STRING, count($this->outputNames));
+        {
+          foreach ($this->outputNames as $iter13)
+          {
+            $xfer += $output->writeString($iter13);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

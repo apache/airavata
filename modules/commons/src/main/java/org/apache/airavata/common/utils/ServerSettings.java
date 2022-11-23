@@ -151,6 +151,7 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_SCANNING_INTERVAL = "cluster.scanning.interval";
     public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
+    public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD= "metascheduler.maximum.rescheduler.threshold";
 
 
 
@@ -539,6 +540,11 @@ public class ServerSettings extends ApplicationSettings {
     public static int getMetaschedulerNoOfScanningParallelJobs() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS,
                 "1"));
+    }
+
+    public static int getMetaschedulerReschedulingThreshold() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD,
+                "5"));
     }
 
 

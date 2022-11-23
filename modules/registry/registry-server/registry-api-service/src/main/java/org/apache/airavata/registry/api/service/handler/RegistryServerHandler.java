@@ -977,7 +977,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<ProcessModel> getProcessStatusList(ProcessState processState) throws RegistryServiceException, TException {
+    public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException, TException {
         try {
             int count = 100;
             int offset = 0;
@@ -998,6 +998,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving process list with given status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<ProcessStatus> getProcessStatusList(String  processId) throws RegistryServiceException, TException {
+        try {
+           return processStatusRepository.getProcessStatusList(processId);
+        } catch (Exception e) {
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process status list  for given process Id. More info : " + e.getMessage());
             throw exception;
         }
     }

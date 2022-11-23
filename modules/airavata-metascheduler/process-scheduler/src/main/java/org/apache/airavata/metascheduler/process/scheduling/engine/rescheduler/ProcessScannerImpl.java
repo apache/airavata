@@ -14,6 +14,7 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.util.List;
 
 public class ProcessScannerImpl implements ProcessScanner {
@@ -28,13 +29,20 @@ public class ProcessScannerImpl implements ProcessScanner {
             LOGGER.debug("Executing Process scanner ....... ");
             client = this.registryClientPool.getResource();
             ProcessState state = ProcessState.QUEUED;
-            List<ProcessModel> processModelList = client.getProcessStatusList(state);
+            List<ProcessModel> processModelList = client.getProcessListInState(state);
 
             String reSchedulerPolicyClass = ServerSettings.getReSchedulerPolicyClass();
             ReScheduler reScheduler = (ReScheduler) Class.forName(reSchedulerPolicyClass).newInstance();
 
             for (ProcessModel processModel : processModelList) {
-                reScheduler.reschedule(processModel);
+                reScheduler.reschedule(processModel,state);
+            }
+
+            ProcessState ReQueuedState = ProcessState.REQUEUED;
+            List<ProcessModel> reQueuedProcessModels = client.getProcessListInState(ReQueuedState);
+
+            for (ProcessModel processModel : reQueuedProcessModels) {
+                reScheduler.reschedule(processModel,state);
             }
 
         } catch (Exception ex) {

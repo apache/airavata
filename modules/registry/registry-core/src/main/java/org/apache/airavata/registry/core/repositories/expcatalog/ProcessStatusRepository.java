@@ -115,5 +115,12 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
         }
     }
 
+    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
+        ProcessRepository processRepository = new ProcessRepository();
+        ProcessModel processModel = processRepository.getProcess(processId);
+       return processModel.getProcessStatuses();
+
+    }
+
 
 }

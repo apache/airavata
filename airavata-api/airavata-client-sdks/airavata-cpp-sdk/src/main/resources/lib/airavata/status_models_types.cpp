@@ -84,7 +84,10 @@ int _kProcessStateValues[] = {
   ProcessState::COMPLETED,
   ProcessState::FAILED,
   ProcessState::CANCELLING,
-  ProcessState::CANCELED
+  ProcessState::CANCELED,
+  ProcessState::QUEUED,
+  ProcessState::DEQUEUING,
+  ProcessState::REQUEUED
 };
 const char* _kProcessStateNames[] = {
   "CREATED",
@@ -100,9 +103,12 @@ const char* _kProcessStateNames[] = {
   "COMPLETED",
   "FAILED",
   "CANCELLING",
-  "CANCELED"
+  "CANCELED",
+  "QUEUED",
+  "DEQUEUING",
+  "REQUEUED"
 };
-const std::map<int, const char*> _ProcessState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(14, _kProcessStateValues, _kProcessStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ProcessState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(17, _kProcessStateValues, _kProcessStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kJobStateValues[] = {
   JobState::SUBMITTED,

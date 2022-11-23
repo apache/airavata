@@ -70,6 +70,9 @@ final class ProcessState {
   const FAILED = 11;
   const CANCELLING = 12;
   const CANCELED = 13;
+  const QUEUED = 14;
+  const DEQUEUING = 15;
+  const REQUEUED = 16;
   static public $__names = array(
     0 => 'CREATED',
     1 => 'VALIDATED',
@@ -85,6 +88,9 @@ final class ProcessState {
     11 => 'FAILED',
     12 => 'CANCELLING',
     13 => 'CANCELED',
+    14 => 'QUEUED',
+    15 => 'DEQUEUING',
+    16 => 'REQUEUED',
   );
 }
 
