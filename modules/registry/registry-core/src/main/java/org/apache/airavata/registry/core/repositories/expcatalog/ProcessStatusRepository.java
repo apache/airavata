@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusPK;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -114,10 +115,5 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
         }
     }
 
-    public List<ProcessStatus> getProcessesInState(ProcessState processState) {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ProcessStatus.STATE, processState.name());
-        return select(QueryConstants.FIND_PROCESS_WITH_STATUS, -1, 0, queryParameters);
-    }
 
 }

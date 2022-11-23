@@ -758,7 +758,7 @@ service RegistryService extends base_api.BaseAPI {
            status_models.ProcessStatus getProcessStatus(1: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
-           list<process_model.ProcessModel> getProcessStatusList(1: required  status_models.ProcessStatus processStatus)
+           list<process_model.ProcessModel> getProcessStatusList(1: required  status_models.ProcessState processState)
                                    throws (1: registry_api_errors.RegistryServiceException rse)
 
            /*
