@@ -461,6 +461,10 @@ public class ApplicationSettings {
         return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
     }
 
+    public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
+        return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
+    }
+
     public static String getUserProfileServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
     }

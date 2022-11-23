@@ -1,4 +1,4 @@
-package org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler;
+package org.apache.airavata.metascheduler.core.engine;
 
 import org.quartz.Job;
 
