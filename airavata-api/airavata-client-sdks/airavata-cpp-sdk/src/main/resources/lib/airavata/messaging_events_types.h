@@ -61,7 +61,8 @@ struct MessageType {
     LAUNCHPROCESS = 5,
     TERMINATEPROCESS = 6,
     PROCESSOUTPUT = 7,
-    DB_EVENT = 8
+    DB_EVENT = 8,
+    INTERMEDIATE_OUTPUTS = 9
   };
 };
 
@@ -94,6 +95,8 @@ class ProcessTerminateEvent;
 class JobStatusChangeEvent;
 
 class JobStatusChangeRequestEvent;
+
+class ExperimentIntermediateOutputsEvent;
 
 class Message;
 
@@ -772,6 +775,56 @@ class JobStatusChangeRequestEvent : public virtual ::apache::thrift::TBase {
 void swap(JobStatusChangeRequestEvent &a, JobStatusChangeRequestEvent &b);
 
 inline std::ostream& operator<<(std::ostream& out, const JobStatusChangeRequestEvent& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class ExperimentIntermediateOutputsEvent : public virtual ::apache::thrift::TBase {
+ public:
+
+  ExperimentIntermediateOutputsEvent(const ExperimentIntermediateOutputsEvent&);
+  ExperimentIntermediateOutputsEvent& operator=(const ExperimentIntermediateOutputsEvent&);
+  ExperimentIntermediateOutputsEvent() : experimentId(), gatewayId() {
+  }
+
+  virtual ~ExperimentIntermediateOutputsEvent() throw();
+  std::string experimentId;
+  std::string gatewayId;
+  std::vector<std::string>  outputNames;
+
+  void __set_experimentId(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_outputNames(const std::vector<std::string> & val);
+
+  bool operator == (const ExperimentIntermediateOutputsEvent & rhs) const
+  {
+    if (!(experimentId == rhs.experimentId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(outputNames == rhs.outputNames))
+      return false;
+    return true;
+  }
+  bool operator != (const ExperimentIntermediateOutputsEvent &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ExperimentIntermediateOutputsEvent & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(ExperimentIntermediateOutputsEvent &a, ExperimentIntermediateOutputsEvent &b);
+
+inline std::ostream& operator<<(std::ostream& out, const ExperimentIntermediateOutputsEvent& obj)
 {
   obj.printTo(out);
   return out;

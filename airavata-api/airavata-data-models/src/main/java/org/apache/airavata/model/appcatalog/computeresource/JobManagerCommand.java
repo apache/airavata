@@ -24,6 +24,10 @@
 package org.apache.airavata.model.appcatalog.computeresource;
 
 
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.thrift.TEnum;
+
 /**
  * Enumeration of resource job manager commands
  * 
@@ -97,9 +101,9 @@ public enum JobManagerCommand implements org.apache.thrift.TEnum {
       case 7:
         return SHOW_CLUSTER_INFO;
       case 8:
-        return SHOW_NO_OF_PENDING_JOBS;
-      case 9:
         return SHOW_NO_OF_RUNNING_JOBS;
+      case 9:
+        return SHOW_NO_OF_PENDING_JOBS;
       default:
         return null;
     }
