@@ -88,6 +88,9 @@ class ProcessState(object):
     FAILED = 11
     CANCELLING = 12
     CANCELED = 13
+    QUEUED = 14
+    DEQUEUING = 15
+    REQUEUED = 16
 
     _VALUES_TO_NAMES = {
         0: "CREATED",
@@ -104,6 +107,9 @@ class ProcessState(object):
         11: "FAILED",
         12: "CANCELLING",
         13: "CANCELED",
+        14: "QUEUED",
+        15: "DEQUEUING",
+        16: "REQUEUED",
     }
 
     _NAMES_TO_VALUES = {
@@ -121,6 +127,9 @@ class ProcessState(object):
         "FAILED": 11,
         "CANCELLING": 12,
         "CANCELED": 13,
+        "QUEUED": 14,
+        "DEQUEUING": 15,
+        "REQUEUED": 16,
     }
 
 

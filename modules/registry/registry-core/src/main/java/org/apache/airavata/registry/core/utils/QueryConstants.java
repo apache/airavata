@@ -181,6 +181,13 @@ public interface QueryConstants {
 
 
     String FIND_QUEUE_STATUS = "SELECT Q FROM " + QueueStatusModel.class.getSimpleName() + " Q " + " WHERE Q.hostName LIKE :"
-            + DBConstants.QueueStatus.HOST_NAME + " AND Q.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +" AND "+
+            + DBConstants.QueueStatus.HOST_NAME + " AND Q.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME + " AND " +
             " WHERE q.createdTime =(SELECT MAX(CREATED_TIME) FROM" + QueueStatusModel.class.getSimpleName();
+
+    String FIND_PROCESS_WITH_STATUS = "SELECT P FROM " + ProcessStatusEntity.class.getSimpleName() + " P " + " JOIN ( select " +
+            " PROCESS_ID, max(TIME_OF_STATE_CHANGE) as timestamp from  PROCESS_STATUS GROUP BY PROCESS_ID) as p2 on P.PROCESS_ID=p2.PROCESS_ID AND " +
+            "P.TIME_OF_STATE_CHANGE=p2.timestamp where P.state LIKE :" + DBConstants.ProcessStatus.STATE;
+
+    String GET_ALL_PROCESSES = "SELECT ALL FROM " + ProcessEntity.class.getSimpleName();
+
 }

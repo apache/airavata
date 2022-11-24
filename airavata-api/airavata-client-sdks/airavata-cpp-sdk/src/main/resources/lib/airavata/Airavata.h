@@ -411,6 +411,12 @@ class AiravataIf : virtual public  ::apache::airavata::base::api::BaseAPIIf {
    * @param resourceHostName
    *       Hostname id substring with which to further filter statistics.
    * 
+   * @param limit
+   *       Amount of results to be fetched.
+   * 
+   * @param offset
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -420,8 +426,10 @@ class AiravataIf : virtual public  ::apache::airavata::base::api::BaseAPIIf {
    * @param userName
    * @param applicationName
    * @param resourceHostName
+   * @param limit
+   * @param offset
    */
-  virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) = 0;
+  virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * 
@@ -835,6 +843,44 @@ class AiravataIf : virtual public  ::apache::airavata::base::api::BaseAPIIf {
    * @param airavataExperimentId
    */
   virtual void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
+
+  /**
+   * Request fetching of output files for an experiment that is still executing.
+   * This method results in a new Process being created for the Experiment with
+   * tasks for fetching each output file.
+   * 
+   * @param authzToken
+   * 
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   * 
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   * @param outputNames
+   */
+  virtual void fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames) = 0;
+
+  /**
+   * Get the status of the most recent intermediate output fetching process for the given output names.
+   * 
+   * @param authzToken
+   * 
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   * 
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   * @param outputNames
+   */
+  virtual void getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames) = 0;
 
   /**
    * 
@@ -3075,7 +3121,7 @@ class AiravataNull : virtual public AiravataIf , virtual public  ::apache::airav
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */, const std::string& /* userName */, const std::string& /* applicationName */, const std::string& /* resourceHostName */) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */, const std::string& /* userName */, const std::string& /* applicationName */, const std::string& /* resourceHostName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
   void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* projectId */, const int32_t /* limit */, const int32_t /* offset */) {
@@ -3123,6 +3169,12 @@ class AiravataNull : virtual public AiravataIf , virtual public  ::apache::airav
     return;
   }
   void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
+    return;
+  }
+  void fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::vector<std::string> & /* outputNames */) {
+    return;
+  }
+  void getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::vector<std::string> & /* outputNames */) {
     return;
   }
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
@@ -7286,10 +7338,12 @@ class Airavata_searchExperiments_presult {
 };
 
 typedef struct _Airavata_getExperimentStatistics_args__isset {
-  _Airavata_getExperimentStatistics_args__isset() : userName(false), applicationName(false), resourceHostName(false) {}
+  _Airavata_getExperimentStatistics_args__isset() : userName(false), applicationName(false), resourceHostName(false), limit(true), offset(true) {}
   bool userName :1;
   bool applicationName :1;
   bool resourceHostName :1;
+  bool limit :1;
+  bool offset :1;
 } _Airavata_getExperimentStatistics_args__isset;
 
 class Airavata_getExperimentStatistics_args {
@@ -7297,7 +7351,7 @@ class Airavata_getExperimentStatistics_args {
 
   Airavata_getExperimentStatistics_args(const Airavata_getExperimentStatistics_args&);
   Airavata_getExperimentStatistics_args& operator=(const Airavata_getExperimentStatistics_args&);
-  Airavata_getExperimentStatistics_args() : gatewayId(), fromTime(0), toTime(0), userName(), applicationName(), resourceHostName() {
+  Airavata_getExperimentStatistics_args() : gatewayId(), fromTime(0), toTime(0), userName(), applicationName(), resourceHostName(), limit(50), offset(0) {
   }
 
   virtual ~Airavata_getExperimentStatistics_args() throw();
@@ -7308,6 +7362,8 @@ class Airavata_getExperimentStatistics_args {
   std::string userName;
   std::string applicationName;
   std::string resourceHostName;
+  int32_t limit;
+  int32_t offset;
 
   _Airavata_getExperimentStatistics_args__isset __isset;
 
@@ -7325,6 +7381,10 @@ class Airavata_getExperimentStatistics_args {
 
   void __set_resourceHostName(const std::string& val);
 
+  void __set_limit(const int32_t val);
+
+  void __set_offset(const int32_t val);
+
   bool operator == (const Airavata_getExperimentStatistics_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
@@ -7340,6 +7400,10 @@ class Airavata_getExperimentStatistics_args {
     if (!(applicationName == rhs.applicationName))
       return false;
     if (!(resourceHostName == rhs.resourceHostName))
+      return false;
+    if (!(limit == rhs.limit))
+      return false;
+    if (!(offset == rhs.offset))
       return false;
     return true;
   }
@@ -7367,6 +7431,8 @@ class Airavata_getExperimentStatistics_pargs {
   const std::string* userName;
   const std::string* applicationName;
   const std::string* resourceHostName;
+  const int32_t* limit;
+  const int32_t* offset;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -9554,6 +9620,298 @@ class Airavata_getIntermediateOutputs_presult {
    ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_getIntermediateOutputs_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_fetchIntermediateOutputs_args {
+ public:
+
+  Airavata_fetchIntermediateOutputs_args(const Airavata_fetchIntermediateOutputs_args&);
+  Airavata_fetchIntermediateOutputs_args& operator=(const Airavata_fetchIntermediateOutputs_args&);
+  Airavata_fetchIntermediateOutputs_args() : airavataExperimentId() {
+  }
+
+  virtual ~Airavata_fetchIntermediateOutputs_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string airavataExperimentId;
+  std::vector<std::string>  outputNames;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_airavataExperimentId(const std::string& val);
+
+  void __set_outputNames(const std::vector<std::string> & val);
+
+  bool operator == (const Airavata_fetchIntermediateOutputs_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    if (!(outputNames == rhs.outputNames))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_fetchIntermediateOutputs_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_fetchIntermediateOutputs_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_fetchIntermediateOutputs_pargs {
+ public:
+
+
+  virtual ~Airavata_fetchIntermediateOutputs_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* airavataExperimentId;
+  const std::vector<std::string> * outputNames;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_fetchIntermediateOutputs_result__isset {
+  _Airavata_fetchIntermediateOutputs_result__isset() : ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_fetchIntermediateOutputs_result__isset;
+
+class Airavata_fetchIntermediateOutputs_result {
+ public:
+
+  Airavata_fetchIntermediateOutputs_result(const Airavata_fetchIntermediateOutputs_result&);
+  Airavata_fetchIntermediateOutputs_result& operator=(const Airavata_fetchIntermediateOutputs_result&);
+  Airavata_fetchIntermediateOutputs_result() {
+  }
+
+  virtual ~Airavata_fetchIntermediateOutputs_result() throw();
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_fetchIntermediateOutputs_result__isset __isset;
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_fetchIntermediateOutputs_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_fetchIntermediateOutputs_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_fetchIntermediateOutputs_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_fetchIntermediateOutputs_presult__isset {
+  _Airavata_fetchIntermediateOutputs_presult__isset() : ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_fetchIntermediateOutputs_presult__isset;
+
+class Airavata_fetchIntermediateOutputs_presult {
+ public:
+
+
+  virtual ~Airavata_fetchIntermediateOutputs_presult() throw();
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_fetchIntermediateOutputs_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getIntermediateOutputProcessStatus_args {
+ public:
+
+  Airavata_getIntermediateOutputProcessStatus_args(const Airavata_getIntermediateOutputProcessStatus_args&);
+  Airavata_getIntermediateOutputProcessStatus_args& operator=(const Airavata_getIntermediateOutputProcessStatus_args&);
+  Airavata_getIntermediateOutputProcessStatus_args() : airavataExperimentId() {
+  }
+
+  virtual ~Airavata_getIntermediateOutputProcessStatus_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string airavataExperimentId;
+  std::vector<std::string>  outputNames;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_airavataExperimentId(const std::string& val);
+
+  void __set_outputNames(const std::vector<std::string> & val);
+
+  bool operator == (const Airavata_getIntermediateOutputProcessStatus_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    if (!(outputNames == rhs.outputNames))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getIntermediateOutputProcessStatus_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getIntermediateOutputProcessStatus_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getIntermediateOutputProcessStatus_pargs {
+ public:
+
+
+  virtual ~Airavata_getIntermediateOutputProcessStatus_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* airavataExperimentId;
+  const std::vector<std::string> * outputNames;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getIntermediateOutputProcessStatus_result__isset {
+  _Airavata_getIntermediateOutputProcessStatus_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getIntermediateOutputProcessStatus_result__isset;
+
+class Airavata_getIntermediateOutputProcessStatus_result {
+ public:
+
+  Airavata_getIntermediateOutputProcessStatus_result(const Airavata_getIntermediateOutputProcessStatus_result&);
+  Airavata_getIntermediateOutputProcessStatus_result& operator=(const Airavata_getIntermediateOutputProcessStatus_result&);
+  Airavata_getIntermediateOutputProcessStatus_result() {
+  }
+
+  virtual ~Airavata_getIntermediateOutputProcessStatus_result() throw();
+   ::apache::airavata::model::status::ProcessStatus success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getIntermediateOutputProcessStatus_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::status::ProcessStatus& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getIntermediateOutputProcessStatus_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getIntermediateOutputProcessStatus_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getIntermediateOutputProcessStatus_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getIntermediateOutputProcessStatus_presult__isset {
+  _Airavata_getIntermediateOutputProcessStatus_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getIntermediateOutputProcessStatus_presult__isset;
+
+class Airavata_getIntermediateOutputProcessStatus_presult {
+ public:
+
+
+  virtual ~Airavata_getIntermediateOutputProcessStatus_presult() throw();
+   ::apache::airavata::model::status::ProcessStatus* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getIntermediateOutputProcessStatus_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -30649,8 +31007,8 @@ class AiravataClient : virtual public AiravataIf, public  ::apache::airavata::ba
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
-  void send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset);
+  void send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset);
   void recv_getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return);
   void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
   void send_getExperimentsInProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
@@ -30697,6 +31055,12 @@ class AiravataClient : virtual public AiravataIf, public  ::apache::airavata::ba
   void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return);
+  void fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  void send_fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  void recv_fetchIntermediateOutputs();
+  void getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  void send_getIntermediateOutputProcessStatus(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  void recv_getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return);
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getJobStatuses(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return);
@@ -31196,6 +31560,8 @@ class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcesso
   void process_getExperimentStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getIntermediateOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_fetchIntermediateOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getIntermediateOutputProcessStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getJobStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getJobDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_cloneExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -31391,6 +31757,8 @@ class AiravataProcessor : public  ::apache::airavata::base::api::BaseAPIProcesso
     processMap_["getExperimentStatus"] = &AiravataProcessor::process_getExperimentStatus;
     processMap_["getExperimentOutputs"] = &AiravataProcessor::process_getExperimentOutputs;
     processMap_["getIntermediateOutputs"] = &AiravataProcessor::process_getIntermediateOutputs;
+    processMap_["fetchIntermediateOutputs"] = &AiravataProcessor::process_fetchIntermediateOutputs;
+    processMap_["getIntermediateOutputProcessStatus"] = &AiravataProcessor::process_getIntermediateOutputProcessStatus;
     processMap_["getJobStatuses"] = &AiravataProcessor::process_getJobStatuses;
     processMap_["getJobDetails"] = &AiravataProcessor::process_getJobDetails;
     processMap_["cloneExperiment"] = &AiravataProcessor::process_cloneExperiment;
@@ -31823,13 +32191,13 @@ class AiravataMultiface : virtual public AiravataIf, public  ::apache::airavata:
     return;
   }
 
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
+      ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset);
     }
-    ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
+    ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset);
     return;
   }
 
@@ -31974,6 +32342,25 @@ class AiravataMultiface : virtual public AiravataIf, public  ::apache::airavata:
       ifaces_[i]->getIntermediateOutputs(_return, authzToken, airavataExperimentId);
     }
     ifaces_[i]->getIntermediateOutputs(_return, authzToken, airavataExperimentId);
+    return;
+  }
+
+  void fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->fetchIntermediateOutputs(authzToken, airavataExperimentId, outputNames);
+    }
+    ifaces_[i]->fetchIntermediateOutputs(authzToken, airavataExperimentId, outputNames);
+  }
+
+  void getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getIntermediateOutputProcessStatus(_return, authzToken, airavataExperimentId, outputNames);
+    }
+    ifaces_[i]->getIntermediateOutputProcessStatus(_return, authzToken, airavataExperimentId, outputNames);
     return;
   }
 
@@ -33502,8 +33889,8 @@ class AiravataConcurrentClient : virtual public AiravataIf, public  ::apache::ai
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   int32_t send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
-  int32_t send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset);
+  int32_t send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset);
   void recv_getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const int32_t seqid);
   void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
   int32_t send_getExperimentsInProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
@@ -33550,6 +33937,12 @@ class AiravataConcurrentClient : virtual public AiravataIf, public  ::apache::ai
   void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   int32_t send_getIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const int32_t seqid);
+  void fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  int32_t send_fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  void recv_fetchIntermediateOutputs(const int32_t seqid);
+  void getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  int32_t send_getIntermediateOutputProcessStatus(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames);
+  void recv_getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return, const int32_t seqid);
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   int32_t send_getJobStatuses(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const int32_t seqid);

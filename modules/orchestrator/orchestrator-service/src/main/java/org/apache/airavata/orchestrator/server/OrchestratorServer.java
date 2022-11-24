@@ -22,6 +22,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMonitoringService;
+import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
@@ -46,6 +47,8 @@ public class OrchestratorServer implements IServer {
     private TServer server;
 
     private static ComputationalResourceMonitoringService monitoringService;
+
+    private static ProcessReschedulingService metaschedulerService;
 
 //	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
@@ -120,6 +123,22 @@ public class OrchestratorServer implements IServer {
         }
     }
 
+    public void startMetaschedulerJobScanning() throws SchedulerException, ApplicationSettingsException {
+        try {
+            if (metaschedulerService == null) {
+                metaschedulerService = new ProcessReschedulingService();
+                metaschedulerService.setServerStatus(ServerStatus.STARTING);
+            }
+            if (metaschedulerService != null && !metaschedulerService.getStatus().equals(ServerStatus.STARTED)) {
+                metaschedulerService.start();
+                metaschedulerService.setServerStatus(ServerStatus.STARTED);
+                logger.info("Airavata metascheduler job scanning service started ....");
+            }
+        } catch (Exception ex) {
+            logger.error("Airavata metascheduler job scanning service failed ....",ex);
+        }
+    }
+
     public static void main(String[] args) {
         try {
             new OrchestratorServer().start();
@@ -133,6 +152,11 @@ public class OrchestratorServer implements IServer {
         if (ServerSettings.enableClusterStatusMonitoring()) {
             //starting cluster status monitoring
             startClusterStatusMonitoring();
+        }
+
+        if (ServerSettings.enableMetaschedulerJobScanning()) {
+            //starting cluster status monitoring
+            startMetaschedulerJobScanning();
         }
 
 

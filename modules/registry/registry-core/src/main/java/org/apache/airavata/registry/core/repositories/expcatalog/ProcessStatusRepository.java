@@ -17,28 +17,35 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusPK;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusPK;
+import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessStatus, ProcessStatusEntity, ProcessStatusPK> {
     private final static Logger logger = LoggerFactory.getLogger(ProcessStatusRepository.class);
 
-    public ProcessStatusRepository() { super(ProcessStatus.class, ProcessStatusEntity.class); }
+    public ProcessStatusRepository() {
+        super(ProcessStatus.class, ProcessStatusEntity.class);
+    }
 
     protected String saveProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
         if (processStatus.getStatusId() == null) {
@@ -83,15 +90,13 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
         ProcessModel processModel = processRepository.getProcess(processId);
         List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
 
-        if(processStatusList.size() == 0) {
+        if (processStatusList.size() == 0) {
             logger.debug("ProcessStatus list is empty");
             return null;
-        }
-
-        else {
+        } else {
             ProcessStatus latestProcessStatus = processStatusList.get(0);
 
-            for(int i = 1; i < processStatusList.size(); i++){
+            for (int i = 1; i < processStatusList.size(); i++) {
                 Timestamp timeOfStateChange = new Timestamp(processStatusList.get(i).getTimeOfStateChange());
 
                 if (timeOfStateChange != null) {
@@ -109,5 +114,13 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
             return latestProcessStatus;
         }
     }
+
+    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
+        ProcessRepository processRepository = new ProcessRepository();
+        ProcessModel processModel = processRepository.getProcess(processId);
+       return processModel.getProcessStatuses();
+
+    }
+
 
 }

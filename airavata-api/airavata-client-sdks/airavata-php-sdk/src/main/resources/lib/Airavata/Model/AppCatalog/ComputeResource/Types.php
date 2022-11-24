@@ -44,6 +44,7 @@ final class ResourceJobManagerType {
   const UGE = 4;
   const CLOUD = 5;
   const AIRAVATA_CUSTOM = 6;
+  const HTCONDOR = 7;
   static public $__names = array(
     0 => 'FORK',
     1 => 'PBS',
@@ -52,6 +53,7 @@ final class ResourceJobManagerType {
     4 => 'UGE',
     5 => 'CLOUD',
     6 => 'AIRAVATA_CUSTOM',
+    7 => 'HTCONDOR',
   );
 }
 

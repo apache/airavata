@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -45,7 +45,9 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
     private final TaskRepository taskRepository = new TaskRepository();
 
-    public ProcessRepository() { super(ProcessModel.class, ProcessEntity.class); }
+    public ProcessRepository() {
+        super(ProcessModel.class, ProcessEntity.class);
+    }
 
     protected String saveProcessModelData(ProcessModel processModel) throws RegistryException {
         ProcessEntity processEntity = saveProcess(processModel);
@@ -162,9 +164,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Process.EXPERIMENT_ID, value);
             processModelList = processRepository.select(QueryConstants.GET_PROCESS_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
-        }
-
-        else {
+        } else {
             logger.error("Unsupported field name for Process module.");
             throw new IllegalArgumentException("Unsupported field name for Process module.");
         }
@@ -188,5 +188,13 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     public void removeProcess(String processId) throws RegistryException {
         delete(processId);
     }
+
+
+    public List<ProcessModel> getAllProcesses(int offset, int limit) {
+        ProcessRepository processRepository = new ProcessRepository();
+        List<ProcessModel> processModelList;
+        return select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
+    }
+
 
 }
