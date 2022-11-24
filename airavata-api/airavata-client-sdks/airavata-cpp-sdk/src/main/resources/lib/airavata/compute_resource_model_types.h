@@ -48,7 +48,8 @@ struct ResourceJobManagerType {
     LSF = 3,
     UGE = 4,
     CLOUD = 5,
-    AIRAVATA_CUSTOM = 6
+    AIRAVATA_CUSTOM = 6,
+    HTCONDOR = 7
   };
 };
 
