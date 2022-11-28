@@ -192,8 +192,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
         ProcessRepository processRepository = new ProcessRepository();
-        List<ProcessModel> processModelList;
-        return select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
+        return processRepository.select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
     }
 
 
