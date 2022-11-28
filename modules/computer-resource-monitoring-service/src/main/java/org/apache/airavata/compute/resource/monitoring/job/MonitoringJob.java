@@ -58,6 +58,10 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
         } catch (Exception ex) {
             String msg = "Error occurred while executing job" + ex.getMessage();
             LOGGER.error(msg, ex);
+            if (client != null) {
+                registryClientPool.returnBrokenResource(client);
+            }
+            client = null;
         } finally {
             if (client != null) {
                 registryClientPool.returnResource(client);
