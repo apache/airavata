@@ -14,13 +14,16 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.util.List;
 
 public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
 
-    protected ThriftClientPool<RegistryService.Client> registryClientPool = Utils.getRegistryServiceClientPool();
+    protected ThriftClientPool<RegistryService.Client> registryClientPool;
+
+    public ProcessScannerImpl() {
+        this.registryClientPool = Utils.getRegistryServiceClientPool();
+    }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -35,22 +38,26 @@ public class ProcessScannerImpl implements ProcessScanner {
             ReScheduler reScheduler = (ReScheduler) Class.forName(reSchedulerPolicyClass).newInstance();
 
             for (ProcessModel processModel : processModelList) {
-                reScheduler.reschedule(processModel,state);
+                reScheduler.reschedule(processModel, state);
             }
 
             ProcessState ReQueuedState = ProcessState.REQUEUED;
             List<ProcessModel> reQueuedProcessModels = client.getProcessListInState(ReQueuedState);
 
             for (ProcessModel processModel : reQueuedProcessModels) {
-                reScheduler.reschedule(processModel,state);
+                reScheduler.reschedule(processModel, state);
             }
 
         } catch (Exception ex) {
             String msg = "Error occurred while executing job" + ex.getMessage();
             LOGGER.error(msg, ex);
+            if (client != null) {
+                this.registryClientPool.returnBrokenResource(client);
+            }
+            client = null;
         } finally {
             if (client != null) {
-                registryClientPool.returnResource(client);
+                this.registryClientPool.returnResource(client);
             }
         }
 
