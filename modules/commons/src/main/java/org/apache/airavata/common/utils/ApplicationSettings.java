@@ -453,7 +453,7 @@ public class ApplicationSettings {
         return getSetting("super.tenant.gatewayId");
     }
 
-    public static String getClusterStatusMonitoringRepatTime() throws ApplicationSettingsException {
+    public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
         return getSetting("cluster.status.monitoring.repeat.time");
     }
 

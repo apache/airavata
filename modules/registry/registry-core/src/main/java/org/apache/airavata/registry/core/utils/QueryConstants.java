@@ -188,6 +188,6 @@ public interface QueryConstants {
             " PROCESS_ID, max(TIME_OF_STATE_CHANGE) as timestamp from  PROCESS_STATUS GROUP BY PROCESS_ID) as p2 on P.PROCESS_ID=p2.PROCESS_ID AND " +
             "P.TIME_OF_STATE_CHANGE=p2.timestamp where P.state LIKE :" + DBConstants.ProcessStatus.STATE;
 
-    String GET_ALL_PROCESSES = "SELECT ALL FROM " + ProcessEntity.class.getSimpleName();
+    String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
 
 }
