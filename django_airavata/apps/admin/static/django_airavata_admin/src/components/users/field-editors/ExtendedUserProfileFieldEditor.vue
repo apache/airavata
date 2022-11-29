@@ -17,6 +17,7 @@
       <b-form-input
         v-model="checkbox_label"
         :state="validateState($v.checkbox_label)"
+        placeholder="E.g. I accept the Terms of Service listed above"
       />
       <b-form-invalid-feedback :state="validateState($v.checkbox_label)"
         >This field is required.</b-form-invalid-feedback
