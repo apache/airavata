@@ -40,7 +40,7 @@ public class Utils {
         try {
 //            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
 //            final String serverHost = ServerSettings.getRegistryServerHost();
-            registryClientPool = new ThriftClientPool<>(
+            registryClientPool = new ThriftClientPool<RegistryService.Client>(
                     tProtocol -> new RegistryService.Client(tProtocol),
                     Utils.<RegistryService.Client>createGenericObjectPoolConfig(),
                     ServerSettings.getRegistryServerHost(),
