@@ -986,16 +986,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
             List<ProcessModel> finalProcessList = new ArrayList<>();
             while (receivedCount <= count) {
                 List<ProcessModel> processModels = processRepository.getAllProcesses(offset, count);
-                if (processModels.isEmpty()) {
-                  break;
-                }
-                offset = offset + processModels.size() - 1;
-                receivedCount +=processModels.size();
+                offset = offset + processModels.size();
+                receivedCount += processModels.size();
                 for (ProcessModel processModel : processModels) {
                     ProcessStatus processStatus = processStatusRepository.getProcessStatus(processModel.getProcessId());
                     if (processStatus.getState().name().equals(processState.name())) {
                         finalProcessList.add(processModel);
                     }
+                }
+                if (processModels.size() < count) {
+                    break;
                 }
             }
             return finalProcessList;
@@ -1008,9 +1008,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<ProcessStatus> getProcessStatusList(String  processId) throws RegistryServiceException, TException {
+    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException, TException {
         try {
-           return processStatusRepository.getProcessStatusList(processId);
+            return processStatusRepository.getProcessStatusList(processId);
         } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -1020,7 +1020,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     /**
-     *
      * queryType can be PROCESS_ID or TASK_ID
      */
     @Override
@@ -1038,7 +1037,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     /**
-     *
      * queryType can be PROCESS_ID or TASK_ID
      */
     @Override
@@ -1249,7 +1247,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Fetch all Application Module Descriptions.
      *
-     * @param gatewayId ID of the gateway which need to list all available application deployment documentation.
+     * @param gatewayId        ID of the gateway which need to list all available application deployment documentation.
      * @param accessibleAppIds App IDs that are accessible to the user
      * @return list
      * Returns the list of all Application Module Objects that are accessible to the user.
@@ -1363,7 +1361,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Fetch all Application Deployment Descriptions.
      *
-     * @param gatewayId ID of the gateway which need to list all available application deployment documentation.
+     * @param gatewayId                  ID of the gateway which need to list all available application deployment documentation.
      * @param accessibleAppDeploymentIds App IDs that are accessible to the user
      * @return list<applicationDeployment.
             * Returns the list of all application Deployment Objects that are accessible to the user.
@@ -1388,24 +1386,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
 
     /**
-     *
      * Fetch all accessible Application Deployment Descriptions for the given Application Module.
      *
-     * @param gatewayId
-     *    ID of the gateway which need to list all available application deployment documentation.
-     *
-     * @param appModuleId
-     *    The given Application Module ID.
-     *
-     * @param accessibleAppDeploymentIds
-     *    Application Deployment IDs which are accessible to the current user.
-     *
-     * @param accessibleComputeResourceIds
-     *    Compute Resource IDs which are accessible to the current user.
-     *
+     * @param gatewayId                    ID of the gateway which need to list all available application deployment documentation.
+     * @param appModuleId                  The given Application Module ID.
+     * @param accessibleAppDeploymentIds   Application Deployment IDs which are accessible to the current user.
+     * @param accessibleComputeResourceIds Compute Resource IDs which are accessible to the current user.
      * @return list<applicationDeployment>
-     *    Returns the list of all application Deployment Objects.
-     *
+     * Returns the list of all application Deployment Objects.
      */
     @Override
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
@@ -2154,7 +2142,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Fetch a Storage Resource Preference of a registered gateway profile.
      *
-     * @param gatewayID         The identifier of the gateway profile to request to fetch the particular storage resource preference.
+     * @param gatewayID The identifier of the gateway profile to request to fetch the particular storage resource preference.
      * @param storageId Identifier of the Stprage Preference required to be fetched.
      * @return StoragePreference
      * Returns the StoragePreference object.
@@ -2743,8 +2731,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Add a Storage Resource Preference to a registered gateway profile.
      *
-     * @param gatewayID         The identifier of the gateway profile to be added.
-     * @param storageResourceId Preferences related to a particular compute resource
+     * @param gatewayID             The identifier of the gateway profile to be added.
+     * @param storageResourceId     Preferences related to a particular compute resource
      * @param dataStoragePreference
      * @return status
      * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
@@ -2900,7 +2888,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Delete a given data movement interface
      *
-     *
      * @param dataMovementInterfaceId The identifier of the DataMovement Interface to be changed
      * @param dmType
      * @return status
@@ -2947,8 +2934,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Add a GridFTP data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
-     *
+     * <p>
      * productUri          The identifier of the compute resource to which dataMovement protocol to be added
+     *
      * @param dmType
      * @param priorityOrder       Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param gridFTPDataMovement The GridFTPDataMovement object to be added to the resource.
@@ -2989,8 +2977,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Add a UNICORE data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+     * <p>
+     * productUri          The identifier of the compute resource to which data movement protocol to be added
      *
-     *  productUri          The identifier of the compute resource to which data movement protocol to be added
      * @param dmType
      * @param priorityOrder       Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param unicoreDataMovement
@@ -3039,8 +3028,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Add a SCP data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
-     *
+     * <p>
      * productUri      The identifier of the compute resource to which JobSubmission protocol to be added
+     *
      * @param dmType
      * @param priorityOrder   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param scpDataMovement The SCPDataMovement object to be added to the resource.
@@ -3088,8 +3078,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Add a Local data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
-     *
+     * <p>
      * productUri        The identifier of the compute resource to which JobSubmission protocol to be added
+     *
      * @param dataMoveType
      * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param localDataMovement The LOCALDataMovement object to be added to the resource.
@@ -4252,8 +4243,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Register a User Resource Profile.
      *
      * @param userResourceProfile User Resource Profile Object.
-     *                               The GatewayID should be obtained from Airavata user profile data model and passed to register a corresponding
-     *                               resource profile.
+     *                            The GatewayID should be obtained from Airavata user profile data model and passed to register a corresponding
+     *                            resource profile.
      * @return status
      * Returns a success/failure of the update.
      */
@@ -4319,7 +4310,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
      *
      * @param userId The identifier for the requested user resource.
      * @return UserResourceProfile object
-     *
      */
     @Override
     public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws RegistryServiceException, TException {
@@ -4347,7 +4337,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Update a User Resource Profile.
      *
-     * @param gatewayID              The identifier for the requested gateway resource to be updated.
+     * @param gatewayID           The identifier for the requested gateway resource to be updated.
      * @param userResourceProfile Gateway Resource Profile Object.
      * @return status
      * Returns a success/failure of the update.
@@ -4378,7 +4368,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Delete the given User Resource Profile.
-     * @param userId identifier for user profile
+     *
+     * @param userId    identifier for user profile
      * @param gatewayID The identifier for the requested gateway resource to be deleted.
      * @return status
      * Returns a success/failure of the deletion.
@@ -4426,9 +4417,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Add a User Compute Resource Preference to a registered gateway profile.
+     *
      * @param userId
-     * @param gatewayID                 The identifier for the gateway profile to be added.
-     * @param computeResourceId         Preferences related to a particular compute resource
+     * @param gatewayID                     The identifier for the gateway profile to be added.
+     * @param computeResourceId             Preferences related to a particular compute resource
      * @param userComputeResourcePreference The UserComputeResourcePreference object to be added to the resource profile.
      * @return status
      * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
@@ -4465,9 +4457,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Is a User Compute Resource Preference exists.
+     *
      * @param userId
-     * @param gatewayID                 The identifier for the gateway profile to be added.
-     * @param computeResourceId         Preferences related to a particular compute resource
+     * @param gatewayID         The identifier for the gateway profile to be added.
+     * @param computeResourceId Preferences related to a particular compute resource
      * @return status
      * Returns a success/failure of the addition. If a resource already exists, this operation will fail.
      */
@@ -4494,8 +4487,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Add a Storage Resource Preference to a registered gateway profile.
      *
-     * @param gatewayID         The identifier of the gateway profile to be added.
-     * @param storageResourceId Preferences related to a particular compute resource
+     * @param gatewayID             The identifier of the gateway profile to be added.
+     * @param storageResourceId     Preferences related to a particular compute resource
      * @param dataStoragePreference
      * @return status
      * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
@@ -4533,8 +4526,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Fetch a Compute Resource Preference of a registered gateway profile.
+     *
      * @param userId
-     * @param gatewayID         The identifier for the gateway profile to be requested
+     * @param gatewayID             The identifier for the gateway profile to be requested
      * @param userComputeResourceId Preferences related to a particular compute resource
      * @return computeResourcePreference
      * Returns the ComputeResourcePreference object.
@@ -4575,8 +4569,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Fetch a Storage Resource Preference of a registered gateway profile.
-     * @param userId identifier for user data model
-     * @param gatewayID         The identifier of the gateway profile to request to fetch the particular storage resource preference.
+     *
+     * @param userId    identifier for user data model
+     * @param gatewayID The identifier of the gateway profile to request to fetch the particular storage resource preference.
      * @param storageId Identifier of the Storage Preference required to be fetched.
      * @return StoragePreference
      * Returns the StoragePreference object.
@@ -4627,9 +4622,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Update a Compute Resource Preference to a registered user resource profile.
-     * @param userId identifier for user data model
-     * @param gatewayID                 The identifier for the gateway profile to be updated.
-     * @param computeResourceId         Preferences related to a particular compute resource
+     *
+     * @param userId                        identifier for user data model
+     * @param gatewayID                     The identifier for the gateway profile to be updated.
+     * @param computeResourceId             Preferences related to a particular compute resource
      * @param userComputeResourcePreference The ComputeResourcePreference object to be updated to the resource profile.
      * @return status
      * Returns a success/failure of the updation.
@@ -4673,9 +4669,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Update a Storage Resource Preference of a registered user resource profile.
-     * @param userId identifier for user data model
-     * @param gatewayID         The identifier of the gateway profile to be updated.
-     * @param storageId         The Storage resource identifier of the one that you want to update
+     *
+     * @param userId                identifier for user data model
+     * @param gatewayID             The identifier of the gateway profile to be updated.
+     * @param storageId             The Storage resource identifier of the one that you want to update
      * @param userStoragePreference The storagePreference object to be updated to the resource profile.
      * @return status
      * Returns a success/failure of the updation.
@@ -4719,7 +4716,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Delete the Compute Resource Preference of a registered gateway profile.
-     * @param userId The identifier for user data model
+     *
+     * @param userId            The identifier for user data model
      * @param gatewayID         The identifier for the gateway profile to be deleted.
      * @param computeResourceId Preferences related to a particular compute resource
      * @return status
@@ -4748,7 +4746,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     /**
      * Delete the Storage Resource Preference of a registered gateway profile.
-     * @param userId The identifier for user data model
+     *
+     * @param userId    The identifier for user data model
      * @param gatewayID The identifier of the gateway profile to be deleted.
      * @param storageId ID of the storage preference you want to delete.
      * @return status
