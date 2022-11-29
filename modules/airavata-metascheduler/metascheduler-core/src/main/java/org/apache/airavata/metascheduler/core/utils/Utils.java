@@ -2,6 +2,7 @@ package org.apache.airavata.metascheduler.core.utils;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -42,8 +43,8 @@ public class Utils {
             registryClientPool = new ThriftClientPool<>(
                     tProtocol -> new RegistryService.Client(tProtocol),
                     Utils.<RegistryService.Client>createGenericObjectPoolConfig(),
-                    "149.165.153.112",
-                    8970);
+                    ServerSettings.getRegistryServerHost(),
+                    ServerSettings.getRegistryServerPort());
             return registryClientPool;
         } catch (Exception e) {
             throw new RuntimeException("Unable to create registry client...", e);
