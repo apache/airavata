@@ -976,6 +976,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+
     @Override
     public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException, TException {
         try {
@@ -989,6 +990,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                   break;
                 }
                 offset = offset + processModels.size() - 1;
+                receivedCount +=processModels.size();
                 for (ProcessModel processModel : processModels) {
                     ProcessStatus processStatus = processStatusRepository.getProcessStatus(processModel.getProcessId());
                     if (processStatus.getState().name().equals(processState.name())) {
