@@ -11,6 +11,7 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.impl.JobExecutionContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +20,11 @@ import java.util.List;
 public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
 
-    protected ThriftClientPool<RegistryService.Client> registryClientPool;
+    protected static ThriftClientPool<RegistryService.Client> registryClientPool = Utils.getRegistryServiceClientPool();
 
-    public ProcessScannerImpl() {
-        this.registryClientPool = Utils.getRegistryServiceClientPool();
-    }
+//    public ProcessScannerImpl() {
+//        this.registryClientPool = Utils.getRegistryServiceClientPool();
+//    }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -45,7 +46,7 @@ public class ProcessScannerImpl implements ProcessScanner {
             List<ProcessModel> reQueuedProcessModels = client.getProcessListInState(ReQueuedState);
 
             for (ProcessModel processModel : reQueuedProcessModels) {
-                reScheduler.reschedule(processModel, state);
+                reScheduler.reschedule(processModel, ReQueuedState);
             }
 
         } catch (Exception ex) {
@@ -62,5 +63,31 @@ public class ProcessScannerImpl implements ProcessScanner {
         }
 
 
+    }
+
+
+
+
+    public static void main(String[] args) {
+        try {
+            RegistryService.Client client = registryClientPool.getResource();
+            ProcessState state = ProcessState.QUEUED;
+            List<ProcessModel> processModelList = client.getProcessListInState(state);
+
+            String reSchedulerPolicyClass = ServerSettings.getReSchedulerPolicyClass();
+            ReScheduler reScheduler = (ReScheduler) Class.forName(reSchedulerPolicyClass).newInstance();
+
+            for (ProcessModel processModel : processModelList) {
+                reScheduler.reschedule(processModel, state);
+            }
+            ProcessState ReQueuedState = ProcessState.REQUEUED;
+            List<ProcessModel> reQueuedProcessModels = client.getProcessListInState(ReQueuedState);
+
+            for (ProcessModel processModel : reQueuedProcessModels) {
+                reScheduler.reschedule(processModel, state);
+            }
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
     }
 }
