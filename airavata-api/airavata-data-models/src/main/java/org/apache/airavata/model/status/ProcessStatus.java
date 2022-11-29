@@ -32,6 +32,7 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
   private static final org.apache.thrift.protocol.TField TIME_OF_STATE_CHANGE_FIELD_DESC = new org.apache.thrift.protocol.TField("timeOfStateChange", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("reason", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField STATUS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("statusId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("processId", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ProcessStatusStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ProcessStatusTupleSchemeFactory();
@@ -40,6 +41,7 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
   private long timeOfStateChange; // optional
   private java.lang.String reason; // optional
   private java.lang.String statusId; // optional
+  private java.lang.String processId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -50,7 +52,8 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     STATE((short)1, "state"),
     TIME_OF_STATE_CHANGE((short)2, "timeOfStateChange"),
     REASON((short)3, "reason"),
-    STATUS_ID((short)4, "statusId");
+    STATUS_ID((short)4, "statusId"),
+    PROCESS_ID((short)5, "processId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -73,6 +76,8 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
           return REASON;
         case 4: // STATUS_ID
           return STATUS_ID;
+        case 5: // PROCESS_ID
+          return PROCESS_ID;
         default:
           return null;
       }
@@ -115,7 +120,7 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
   // isset id assignments
   private static final int __TIMEOFSTATECHANGE_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.TIME_OF_STATE_CHANGE,_Fields.REASON,_Fields.STATUS_ID};
+  private static final _Fields optionals[] = {_Fields.TIME_OF_STATE_CHANGE,_Fields.REASON,_Fields.STATUS_ID,_Fields.PROCESS_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -126,6 +131,8 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     tmpMap.put(_Fields.REASON, new org.apache.thrift.meta_data.FieldMetaData("reason", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STATUS_ID, new org.apache.thrift.meta_data.FieldMetaData("statusId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PROCESS_ID, new org.apache.thrift.meta_data.FieldMetaData("processId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessStatus.class, metaDataMap);
@@ -156,6 +163,9 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     if (other.isSetStatusId()) {
       this.statusId = other.statusId;
     }
+    if (other.isSetProcessId()) {
+      this.processId = other.processId;
+    }
   }
 
   public ProcessStatus deepCopy() {
@@ -169,6 +179,7 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     this.timeOfStateChange = 0;
     this.reason = null;
     this.statusId = null;
+    this.processId = null;
   }
 
   /**
@@ -270,6 +281,29 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     }
   }
 
+  public java.lang.String getProcessId() {
+    return this.processId;
+  }
+
+  public void setProcessId(java.lang.String processId) {
+    this.processId = processId;
+  }
+
+  public void unsetProcessId() {
+    this.processId = null;
+  }
+
+  /** Returns true if field processId is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessId() {
+    return this.processId != null;
+  }
+
+  public void setProcessIdIsSet(boolean value) {
+    if (!value) {
+      this.processId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case STATE:
@@ -304,6 +338,14 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
       }
       break;
 
+    case PROCESS_ID:
+      if (value == null) {
+        unsetProcessId();
+      } else {
+        setProcessId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -320,6 +362,9 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
 
     case STATUS_ID:
       return getStatusId();
+
+    case PROCESS_ID:
+      return getProcessId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -340,6 +385,8 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
       return isSetReason();
     case STATUS_ID:
       return isSetStatusId();
+    case PROCESS_ID:
+      return isSetProcessId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -395,6 +442,15 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
         return false;
     }
 
+    boolean this_present_processId = true && this.isSetProcessId();
+    boolean that_present_processId = true && that.isSetProcessId();
+    if (this_present_processId || that_present_processId) {
+      if (!(this_present_processId && that_present_processId))
+        return false;
+      if (!this.processId.equals(that.processId))
+        return false;
+    }
+
     return true;
   }
 
@@ -417,6 +473,10 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     hashCode = hashCode * 8191 + ((isSetStatusId()) ? 131071 : 524287);
     if (isSetStatusId())
       hashCode = hashCode * 8191 + statusId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetProcessId()) ? 131071 : 524287);
+    if (isSetProcessId())
+      hashCode = hashCode * 8191 + processId.hashCode();
 
     return hashCode;
   }
@@ -465,6 +525,16 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
     }
     if (isSetStatusId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.statusId, other.statusId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetProcessId()).compareTo(other.isSetProcessId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetProcessId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processId, other.processId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -519,6 +589,16 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
         sb.append("null");
       } else {
         sb.append(this.statusId);
+      }
+      first = false;
+    }
+    if (isSetProcessId()) {
+      if (!first) sb.append(", ");
+      sb.append("processId:");
+      if (this.processId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.processId);
       }
       first = false;
     }
@@ -603,6 +683,14 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // PROCESS_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.processId = iprot.readString();
+              struct.setProcessIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -640,6 +728,13 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
           oprot.writeFieldEnd();
         }
       }
+      if (struct.processId != null) {
+        if (struct.isSetProcessId()) {
+          oprot.writeFieldBegin(PROCESS_ID_FIELD_DESC);
+          oprot.writeString(struct.processId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -668,7 +763,10 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
       if (struct.isSetStatusId()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetProcessId()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetTimeOfStateChange()) {
         oprot.writeI64(struct.timeOfStateChange);
       }
@@ -678,6 +776,9 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
       if (struct.isSetStatusId()) {
         oprot.writeString(struct.statusId);
       }
+      if (struct.isSetProcessId()) {
+        oprot.writeString(struct.processId);
+      }
     }
 
     @Override
@@ -685,7 +786,7 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       struct.state = org.apache.airavata.model.status.ProcessState.findByValue(iprot.readI32());
       struct.setStateIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(3);
+      java.util.BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.timeOfStateChange = iprot.readI64();
         struct.setTimeOfStateChangeIsSet(true);
@@ -697,6 +798,10 @@ public class ProcessStatus implements org.apache.thrift.TBase<ProcessStatus, Pro
       if (incoming.get(2)) {
         struct.statusId = iprot.readString();
         struct.setStatusIdIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.processId = iprot.readString();
+        struct.setProcessIdIsSet(true);
       }
     }
   }
