@@ -985,6 +985,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             List<ProcessModel> finalProcessList = new ArrayList<>();
             while (receivedCount <= count) {
                 List<ProcessModel> processModels = processRepository.getAllProcesses(offset, count);
+                if (processModels.isEmpty()) {
+                  break;
+                }
                 offset = offset + processModels.size() - 1;
                 for (ProcessModel processModel : processModels) {
                     ProcessStatus processStatus = processStatusRepository.getProcessStatus(processModel.getProcessId());
