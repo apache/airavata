@@ -980,24 +980,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException, TException {
         try {
-            int count = 100;
-            int offset = 0;
-            int receivedCount = 0;
-            List<ProcessModel> finalProcessList = new ArrayList<>();
-            while (receivedCount <= count) {
-                List<ProcessModel> processModels = processRepository.getAllProcesses(offset, count);
-                offset = offset + processModels.size();
-                receivedCount += processModels.size();
-                for (ProcessModel processModel : processModels) {
-                    ProcessStatus processStatus = processStatusRepository.getProcessStatus(processModel.getProcessId());
-                    if (processStatus.getState().name().equals(processState.name())) {
-                        finalProcessList.add(processModel);
-                    }
-                }
-                if (processModels.size() < count) {
-                    break;
-                }
-            }
+
+          List<ProcessModel> finalProcessList = new ArrayList<>();
+          int offset =0;
+          int limit = 100;
+          int count =0;
+          while(count==limit) {
+              List<ProcessStatus> processStatusList = processStatusRepository.getProcessStatusList(processState,offset,limit);
+              offset += processStatusList.size();
+              count = processStatusList.size();
+              for (ProcessStatus processStatus : processStatusList) {
+                  ProcessStatus latestStatus = processStatusRepository.getProcessStatus(processStatus.getProcessId());
+                  if (latestStatus.getState().name().equals(processState.name())) {
+                      finalProcessList.add(processRepository.getProcess(latestStatus.getProcessId()));
+                  }
+              }
+          }
             return finalProcessList;
         } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();

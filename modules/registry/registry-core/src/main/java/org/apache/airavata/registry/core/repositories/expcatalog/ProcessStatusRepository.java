@@ -122,5 +122,11 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
 
     }
 
+    public List<ProcessStatus> getProcessStatusList(ProcessState processState, int limit, int offset) throws RegistryException {
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put(DBConstants.ProcessStatus.STATE,processState.name());
+       return  select(QueryConstants.FIND_PROCESS_WITH_STATUS,limit,offset,queryMap);
+    }
+
 
 }
