@@ -73,7 +73,7 @@ class DataModelCreationUtil(object):
                                                   group_resource_profile_name,
                                                   storageId,
                                                   node_count, total_cpu_count, queue_name, wall_time_limit,
-                                                  experiment_dir_path):
+                                                  experiment_dir_path, auto_schedule=False):
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
         groupResourceProfileId = self.airavata_util.get_group_resource_profile_id(group_resource_profile_name)
         computRes = ComputationalResourceSchedulingModel()
@@ -90,7 +90,7 @@ class DataModelCreationUtil(object):
         userConfigData.storageId = storageId
 
         userConfigData.experimentDataDir = experiment_dir_path
-
+        userConfigData.airavataAutoSchedule = auto_schedule
         experiment_model.userConfigurationData = userConfigData
 
         return experiment_model
@@ -121,7 +121,7 @@ class DataModelCreationUtil(object):
         if (len(file_mapping.keys()) == 0):
             count = 0
             for obj in inputs:
-                if isinstance(inputs[count], InputDataObjectType):
+                if isinstance(inputs[count], InputDataObjectType) and len(input_files) > count:
                     inputs[count].value = input_files[count]
                     count = count + 1
             configured_inputs = inputs

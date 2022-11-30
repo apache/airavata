@@ -69,7 +69,7 @@ class ExperimentHandlerUtil(object):
 
     def launch_experiment(self, experiment_name="default_exp", description="this is default exp",
                           local_input_path="/tmp", input_file_mapping={}, computation_resource_name=None,
-                          queue_name=None, node_count=1, cpu_count=1, walltime=30, output_path='.'):
+                          queue_name=None, node_count=1, cpu_count=1, walltime=30, auto_schedule=False, output_path='.'):
         execution_id = self.airavata_util.get_execution_id(self.experiment_conf.APPLICATION_NAME)
         project_id = self.airavata_util.get_project_id(self.experiment_conf.PROJECT_NAME)
         hosts = self.experiment_conf.COMPUTE_HOST_DOMAIN.split(",")
@@ -119,7 +119,8 @@ class ExperimentHandlerUtil(object):
                                                                                       total_cpu_count=int(cpu_count),
                                                                                       wall_time_limit=int(walltime),
                                                                                       queue_name=queue_name,
-                                                                                      experiment_dir_path=path)
+                                                                                      experiment_dir_path=path,
+                                                                                      auto_schedule=auto_schedule)
         input_files = []
         if (len(input_file_mapping.keys()) > 0):
             new_file_mapping = {}
