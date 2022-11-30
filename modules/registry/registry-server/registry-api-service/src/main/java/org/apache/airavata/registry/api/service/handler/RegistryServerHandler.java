@@ -4805,6 +4805,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryServiceException, TException {
         try {
             Optional<QueueStatusModel> optionalQueueStatusModel = queueStatusRepository.getQueueStatus(hostName, queueName);
+            logger.info("Executed and present "+optionalQueueStatusModel.isPresent());
             if (optionalQueueStatusModel.isPresent()) {
                 return optionalQueueStatusModel.get();
             } else {

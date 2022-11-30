@@ -138,8 +138,10 @@ public interface QueryConstants {
 
     String GET_JOB_FOR_PROCESS_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.processId LIKE :" + DBConstants.Job.PROCESS_ID;
+
     String GET_JOB_FOR_TASK_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.taskId LIKE :" + DBConstants.Job.TASK_ID;
+
     String GET_JOB_FOR_JOB_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.jobId LIKE :" + DBConstants.Job.JOB_ID;
 
@@ -155,6 +157,7 @@ public interface QueryConstants {
 
     String FIND_ALL_CHILD_DATA_PRODUCTS = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.parentProductUri LIKE :" + DBConstants.DataProduct.PARENT_PRODUCT_URI;
+
     String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.gatewayId LIKE :" + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" +
             DBConstants.DataProduct.OWNER_NAME + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
@@ -164,7 +167,9 @@ public interface QueryConstants {
 
     String FIND_STORAGE_RESOURCE = "SELECT DISTINCT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.hostName LIKE :" + DBConstants.StorageResource.HOST_NAME;
+
     String FIND_ALL_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR";
+
     String FIND_ALL_AVAILABLE_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.enabled = TRUE";
 
@@ -173,20 +178,19 @@ public interface QueryConstants {
 
     String FIND_PARSING_TEMPLATES_FOR_APPLICATION_INTERFACE_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
             "WHERE PT.applicationInterface = :" + DBConstants.ParsingTemplate.APPLICATION_INTERFACE_ID;
+
     String FIND_ALL_PARSING_TEMPLATES_FOR_GATEWAY_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
             "WHERE PT.gatewayId = :" + DBConstants.ParsingTemplate.GATEWAY_ID;
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
 
-
-    String FIND_QUEUE_STATUS = "SELECT Q FROM " + QueueStatusModel.class.getSimpleName() + " Q " + " WHERE Q.hostName LIKE :"
-            + DBConstants.QueueStatus.HOST_NAME + " AND Q.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME + " AND " +
-            " WHERE q.createdTime =(SELECT MAX(CREATED_TIME) FROM" + QueueStatusModel.class.getSimpleName();
+    String FIND_QUEUE_STATUS = "SELECT Q FROM " + QueueStatusModel.class.getSimpleName() + " Q " +
+    " WHERE Q.createdTime=(SELECT  MAX(L.CREATED_TIME) L FROM" + QueueStatusModel.class.getSimpleName() + " L WHERE L.hostName LIKE :"
+            + DBConstants.QueueStatus.HOST_NAME + " AND L.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +")";
 
     String FIND_PROCESS_WITH_STATUS = "SELECT P FROM " + ProcessStatusEntity.class.getSimpleName() + " P " +
             " where P.state LIKE :" + DBConstants.ProcessStatus.STATE;
 
     String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
-
 }
