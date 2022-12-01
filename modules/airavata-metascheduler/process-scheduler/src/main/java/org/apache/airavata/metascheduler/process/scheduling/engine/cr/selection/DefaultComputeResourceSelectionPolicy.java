@@ -46,7 +46,7 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
                     processModel.getGroupResourceProfileId());
 
             String hostName = comResourceDes.getHostName();
-            String queueName = computeResourcePreference.getPreferredBatchQueue();
+            String queueName = computationalResourceSchedulingModel.getQueueName();
 
             QueueStatusModel queueStatusModel = registryClient.getQueueStatus(hostName, queueName);
             if (queueStatusModel.isQueueUp()) {
@@ -58,5 +58,10 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
             this.registryClientPool.returnResource(registryClient);
         }
         return Optional.empty();
+    }
+
+    public static void main(String[] args) {
+        DefaultComputeResourceSelectionPolicy defaultComputeResourceSelectionPolicy = new DefaultComputeResourceSelectionPolicy();
+        defaultComputeResourceSelectionPolicy.selectComputeResource("PROCESS_5dd4f56b-f0fd-41d0-9437-693ad25f4a1d");
     }
 }

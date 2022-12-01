@@ -43,8 +43,10 @@ public class Utils {
             registryClientPool = new ThriftClientPool<RegistryService.Client>(
                     tProtocol -> new RegistryService.Client(tProtocol),
                     Utils.<RegistryService.Client>createGenericObjectPoolConfig(),
-                    ServerSettings.getRegistryServerHost(),
-                    Integer.parseInt(ServerSettings.getRegistryServerPort()));
+//                    ServerSettings.getRegistryServerHost(),
+//                    Integer.parseInt(ServerSettings.getRegistryServerPort()));
+                      "149.165.153.112",
+                    8970);
             return registryClientPool;
         } catch (Exception e) {
             throw new RuntimeException("Unable to create registry client...", e);
