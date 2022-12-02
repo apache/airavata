@@ -189,7 +189,7 @@ public interface QueryConstants {
             + DBConstants.QueueStatus.HOST_NAME + " AND L.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +" ORDER BY L.time DESC";
 
     String FIND_PROCESS_WITH_STATUS = "SELECT P FROM " + ProcessStatusEntity.class.getSimpleName() + " P " +
-            " where P.state.value = :" + DBConstants.ProcessStatus.STATE;
+            " where P.state = :" + DBConstants.ProcessStatus.STATE;
 
     String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
 }
