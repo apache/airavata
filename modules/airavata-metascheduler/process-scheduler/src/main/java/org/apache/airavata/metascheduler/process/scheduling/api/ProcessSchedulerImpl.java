@@ -47,7 +47,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             for(ProcessModel processModel:processModels) {
                 ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
 
-                if (processStatus.equals(ProcessState.CREATED) || processStatus.equals(ProcessState.VALIDATED)) {
+                if (processStatus.getState().equals(ProcessState.CREATED) || processStatus.getState().equals(ProcessState.VALIDATED)) {
 
                     Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel = policy.
                             selectComputeResource(processModel.getProcessId());
