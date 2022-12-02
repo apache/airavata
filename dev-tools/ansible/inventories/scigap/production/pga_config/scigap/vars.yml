@@ -58,8 +58,8 @@ gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['sgrc-iu-group@iu.edu']"
-portal_email_username: "pga.airavata@gmail.com"
+admin_emails: "['circ-iu-group@iu.edu']"
+portal_email_username: "django.portal@scigap.org"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "scigap"
 portal_theme_repo: "https://github.com/SciGaP/scigap-portal-theme"
