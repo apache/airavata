@@ -50,7 +50,7 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
 
             QueueStatusModel queueStatusModel = registryClient.getQueueStatus(hostName, queueName);
             if (queueStatusModel.isQueueUp()) {
-                Optional.of(computationalResourceSchedulingModel);
+              return  Optional.of(computationalResourceSchedulingModel);
             }
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
