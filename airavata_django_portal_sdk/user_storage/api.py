@@ -36,34 +36,27 @@ def get_user_storage_provider(request, owner_username=None, storage_resource_id=
     # TODO: default the module_class_name to MFT provider
     module_class_name = None
     options = {}
-    if storage_resource_id is None:
-        if not hasattr(settings, 'USER_STORAGES'):
-            # make this backward compatible with the older settings
-            module_class_name = 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider'
-            storage_resource_id = settings.GATEWAY_DATA_STORE_RESOURCE_ID
-            options = dict(directory=settings.GATEWAY_DATA_STORE_DIR)
-            logger.warning("Please add the USER_STORAGES setting. Using legacy GATEWAY_DATA_STORE_RESOURCE_ID and GATEWAY_DATA_STORE_DIR settings.")
-        else:
-            conf = settings.USER_STORAGES["default"]
-            module_class_name = conf['BACKEND']
-            storage_resource_id = conf['STORAGE_RESOURCE_ID']
-            options = conf.get('OPTIONS', {})
+    if not hasattr(settings, 'USER_STORAGES'):
+        # make this backward compatible with the older settings
+        module_class_name = 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider'
+        storage_resource_id = settings.GATEWAY_DATA_STORE_RESOURCE_ID
+        options = dict(directory=settings.GATEWAY_DATA_STORE_DIR)
+        logger.warning("Please add the USER_STORAGES setting. Using legacy GATEWAY_DATA_STORE_RESOURCE_ID and GATEWAY_DATA_STORE_DIR settings.")
     else:
-        if not hasattr(settings, 'USER_STORAGES'):
-            # make this backward compatible with the older settings
-            module_class_name = 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider'
-            storage_resource_id = settings.GATEWAY_DATA_STORE_RESOURCE_ID
-            options = dict(directory=settings.GATEWAY_DATA_STORE_DIR)
-            logger.warning("Please add the USER_STORAGES setting. Using legacy GATEWAY_DATA_STORE_RESOURCE_ID and GATEWAY_DATA_STORE_DIR settings.")
-        else:
+        if storage_resource_id is not None:
             for key in settings.USER_STORAGES:
                 conf = settings.USER_STORAGES[key]
                 if conf['STORAGE_RESOURCE_ID'] == storage_resource_id:
                     module_class_name = conf['BACKEND']
                     options = conf.get('OPTIONS', {})
                     break
-            if module_class_name is None:
-                raise LookupError(f"No UserStorageProvider found for {storage_resource_id}")
+        # If none of the configured USER_STORAGES match, use the default one
+        if module_class_name is None:
+            conf = settings.USER_STORAGES['default']
+            module_class_name = conf['BACKEND']
+            storage_resource_id = conf['STORAGE_RESOURCE_ID']
+            options = conf.get('OPTIONS', {})
+
     module_name, class_name = module_class_name.rsplit(".", 1)
     module = importlib.import_module(module_name)
     BackendClass = getattr(module, class_name)
@@ -462,7 +455,8 @@ def get_data_product_metadata(request, data_product=None, data_product_uri=None)
             # FIXME: since this isn't the true relative path, going to leave out for now
             # "path": path,
             "resource_path": path,
-            "created_time": convert_iso8601_to_datetime(data['creationTime'], microseconds=False),
+            # TODO: won't be microseconds any longer?
+            # "created_time": convert_iso8601_to_datetime(data['creationTime'], microseconds=False),
             "size": data['filesize']
         }
         mime_type = None

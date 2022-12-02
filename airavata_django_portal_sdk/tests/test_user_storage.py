@@ -280,16 +280,16 @@ class ExistsTests(BaseTestCase):
             exists = user_storage.exists(self.request, data_product)
             self.assertTrue(exists)
 
-    def test_user_storage_not_configured(self):
-        "Verify USER_STORAGES lookup throws exception when provider is missing"
-        old_storage_resource_id = "my_storage_resource_id"
-        new_storage_resource_id = "new_storage_resource_id"
+    def test_default_storage(self):
+        "Verify USER_STORAGES lookup returns 'default' one when no exact match"
+        default_storage_resource_id = "my_storage_resource_id"
+        non_default_storage_resource_id = "new_storage_resource_id"
         with tempfile.TemporaryDirectory() as tmpdirname, \
                 self.settings(
                     USER_STORAGES={
                         'default': {
-                            # Only the old storage resource id is configured
-                            'STORAGE_RESOURCE_ID': old_storage_resource_id,
+                            # Only the default storage resource id is configured
+                            'STORAGE_RESOURCE_ID': default_storage_resource_id,
                             'BACKEND': 'airavata_django_portal_sdk.user_storage.backends.DjangoFileSystemProvider',
                             'OPTIONS': {
                                 'directory': tmpdirname,
@@ -319,15 +319,13 @@ class ExistsTests(BaseTestCase):
                 DataReplicaLocationModel(
                     filePath=replica_path,
                     replicaLocationCategory=replica_category,
-                    storageResourceId=new_storage_resource_id)]
+                    storageResourceId=non_default_storage_resource_id)]
 
             # Make sure that gateway is configured for old_storage_resource_id
             # and the data product is for new_storage_resource_id
-            self.assertEqual(old_storage_resource_id, settings.USER_STORAGES['default']['STORAGE_RESOURCE_ID'])
-            self.assertEqual(new_storage_resource_id, data_product.replicaLocations[0].storageResourceId)
-            self.assertNotEqual(old_storage_resource_id, new_storage_resource_id)
+            self.assertEqual(default_storage_resource_id, settings.USER_STORAGES['default']['STORAGE_RESOURCE_ID'])
+            self.assertEqual(non_default_storage_resource_id, data_product.replicaLocations[0].storageResourceId)
+            self.assertNotEqual(default_storage_resource_id, non_default_storage_resource_id)
 
-            with self.assertRaisesRegex(LookupError,
-                                        new_storage_resource_id,
-                                        msg="should raise LookupError and include 'new_storage_resource_id' in message"):
-                user_storage.exists(self.request, data_product)
+            exists = user_storage.exists(self.request, data_product)
+            self.assertTrue(exists)
