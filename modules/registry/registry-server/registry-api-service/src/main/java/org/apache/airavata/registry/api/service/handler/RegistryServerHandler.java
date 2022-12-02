@@ -985,7 +985,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
           int offset =0;
           int limit = 100;
           int count =0;
-          while(count==limit) {
+          do {
               List<ProcessStatus> processStatusList = processStatusRepository.getProcessStatusList(processState,offset,limit);
               offset += processStatusList.size();
               count = processStatusList.size();
@@ -995,7 +995,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                       finalProcessList.add(processRepository.getProcess(latestStatus.getProcessId()));
                   }
               }
-          }
+          } while(count==limit);
             return finalProcessList;
         } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();
