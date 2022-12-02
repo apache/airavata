@@ -185,9 +185,8 @@ public interface QueryConstants {
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
 
-    String FIND_QUEUE_STATUS = "SELECT Q FROM " + QueueStatusModel.class.getSimpleName() + " Q " +
-    " WHERE Q.createdTime=(SELECT  MAX(L.CREATED_TIME) L FROM" + QueueStatusModel.class.getSimpleName() + " L WHERE L.hostName LIKE :"
-            + DBConstants.QueueStatus.HOST_NAME + " AND L.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +")";
+    String FIND_QUEUE_STATUS = "SELECT  L  FROM " + QueueStatusEntity.class.getSimpleName() + " L WHERE L.hostName LIKE :"
+            + DBConstants.QueueStatus.HOST_NAME + " AND L.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +" ORDER BY L.time DESC";
 
     String FIND_PROCESS_WITH_STATUS = "SELECT P FROM " + ProcessStatusEntity.class.getSimpleName() + " P " +
             " where P.state LIKE :" + DBConstants.ProcessStatus.STATE;
