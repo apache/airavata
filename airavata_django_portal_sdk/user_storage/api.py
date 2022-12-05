@@ -455,8 +455,7 @@ def get_data_product_metadata(request, data_product=None, data_product_uri=None)
             # FIXME: since this isn't the true relative path, going to leave out for now
             # "path": path,
             "resource_path": path,
-            # TODO: won't be microseconds any longer?
-            # "created_time": convert_iso8601_to_datetime(data['creationTime'], microseconds=False),
+            "created_time": convert_iso8601_to_datetime(data['creationTime']),
             "size": data['filesize']
         }
         mime_type = None
