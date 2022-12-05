@@ -84,6 +84,22 @@ public class Utils {
         getStatusPublisher().publish(msgCtx);
     }
 
+    public static void updateProcessStatusAndPublishStatus(ProcessState processState, String processId,
+                                                   String experimentId, String gatewayId)
+            throws RegistryServiceException, TException, AiravataException {
+
+        ProcessStatus processStatus = new ProcessStatus(processState);
+        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+
+        registryClientPool.getResource().updateProcessStatus(processStatus, processId);
+        ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
+        ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(processState, identifier);
+        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
+                AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
+        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+        getStatusPublisher().publish(msgCtx);
+    }
+
     public static synchronized Publisher getStatusPublisher() throws AiravataException {
         if (statusPublisher == null) {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);

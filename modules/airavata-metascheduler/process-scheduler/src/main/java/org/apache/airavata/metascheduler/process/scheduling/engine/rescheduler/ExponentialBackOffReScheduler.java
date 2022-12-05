@@ -42,13 +42,13 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                 if (computationalResourceSchedulingModel.isPresent()) {
                     processModel.setProcessResourceSchedule(computationalResourceSchedulingModel.get());
                     client.updateProcess(processModel, processModel.getProcessId());
-                    Utils.saveAndPublishProcessStatus(ProcessState.DEQUEUING, processModel.getProcessId(), processModel.getExperimentId(),
+                    Utils.updateProcessStatusAndPublishStatus(ProcessState.DEQUEUING, processModel.getProcessId(), processModel.getExperimentId(),
                             experimentModel.getGatewayId());
                 }
             } else if (processState.equals(ProcessState.REQUEUED)) {
                 int currentCount = getRequeuedCount(processStatusList);
                 if (currentCount >= maxReschedulingCount) {
-                    Utils.saveAndPublishProcessStatus(ProcessState.FAILED, processModel.getProcessId(), processModel.getExperimentId(),
+                    Utils.updateProcessStatusAndPublishStatus(ProcessState.FAILED, processModel.getProcessId(), processModel.getExperimentId(),
                             experimentModel.getGatewayId());
                 } else {
 
