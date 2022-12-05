@@ -47,4 +47,9 @@ export default {
   navigateToProjectsList() {
     window.location.assign(this.projectsList());
   },
+  viewGroupResourceProfile(groupResourceProfile) {
+    return `/admin/group-resource-profiles/${encodeURIComponent(
+      groupResourceProfile.groupResourceProfileId
+    )}`;
+  },
 };

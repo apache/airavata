@@ -173,6 +173,14 @@
                     >
                   </td>
                 </tr>
+                <tr v-if="groupResourceProfile">
+                  <th scope="row">Allocation</th>
+                  <td>
+                    <b-link :href="viewGroupResourceProfileLink">
+                      {{ groupResourceProfile.groupResourceProfileName }}
+                    </b-link>
+                  </td>
+                </tr>
                 <tr v-if="showQueueSettings">
                   <th scope="row">Wall Time Limit</th>
                   <td>
@@ -313,6 +321,7 @@ export default {
       "fullExperiment",
       "launching",
       "clonedExperiment",
+      "groupResourceProfile",
     ]),
     ...mapGetters("viewExperiment", [
       "finishedOrExecuting",
@@ -402,6 +411,11 @@ export default {
       } else {
         return [];
       }
+    },
+    viewGroupResourceProfileLink() {
+      return this.groupResourceProfile
+        ? urls.viewGroupResourceProfile(this.groupResourceProfile)
+        : null;
     },
   },
   methods: {

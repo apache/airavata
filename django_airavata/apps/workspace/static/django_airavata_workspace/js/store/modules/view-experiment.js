@@ -30,6 +30,9 @@ export const mutations = {
   setApplicationInterface(state, { applicationInterface }) {
     state.applicationInterface = applicationInterface;
   },
+  setGroupResourceProfile(state, { groupResourceProfile }) {
+    state.groupResourceProfile = groupResourceProfile;
+  },
 };
 export const actions = {
   async setInitialFullExperimentData({ dispatch }, { fullExperimentData }) {
@@ -55,6 +58,7 @@ export const actions = {
         errors.UnhandledErrorDispatcher.reportUnhandledError(error);
       }
     }
+    dispatch("loadGroupResourceProfile");
     dispatch("initPollingExperiment");
   },
   setLaunching({ dispatch, commit }, { launching }) {
@@ -144,6 +148,12 @@ export const actions = {
         },
       });
     }
+  },
+  async loadGroupResourceProfile({ getters, commit }) {
+    const groupResourceProfile = await services.GroupResourceProfileService.retrieve(
+      { lookup: getters.groupResourceProfileId }
+    );
+    commit("setGroupResourceProfile", { groupResourceProfile });
   },
 };
 
@@ -241,6 +251,9 @@ export const getters = {
       ? state.applicationInterface.showQueueSettings
       : false;
   },
+  groupResourceProfileId(state, getters) {
+    return getters.experiment?.userConfigurationData?.groupResourceProfileId;
+  },
 };
 
 const state = {
@@ -250,6 +263,7 @@ const state = {
   clonedExperiment: null,
   runningIntermediateOutputFetches: {},
   applicationInterface: null,
+  groupResourceProfile: null,
 };
 export default {
   namespaced: true,
