@@ -14,7 +14,7 @@ PyNaCl==1.4.0
 pysftp==0.2.9
 pytz==2020.1
 requests-oauthlib==0.7.0
-requests==2.18.4
+requests==2.20.0
 scp==0.13.2
 six==1.15.0
 thrift-connector==0.24
