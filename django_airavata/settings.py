@@ -218,6 +218,9 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER':
         'django_airavata.apps.api.exceptions.custom_exception_handler',
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    # Force inclusion of fractional seconds (default formatting with
+    # datetime.isoformat only includes fractional seconds if non-zero)
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ",
 }
 
 AUTHENTICATION_BACKENDS = [
