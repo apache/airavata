@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name="airavata-django-portal-sdk",
-    version="1.6.0",
+    version="1.6.1",
     url="https://github.com/apache/airavata-django-portal-sdk",
     author="Apache Software Foundation",
     author_email="dev@airavata.apache.org",
@@ -24,7 +24,6 @@ setup(
     install_requires=[
         "django",
         "djangorestframework",
-        # Installed from git repo; see requirements.txt for details
         "airavata-python-sdk",
         # requests 2.28 drops support for Python 3.6
         "requests < 2.28.0",
