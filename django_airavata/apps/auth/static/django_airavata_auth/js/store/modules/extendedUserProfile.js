@@ -8,6 +8,9 @@ const state = () => ({
 const getters = {
   extendedUserProfileFields: (state) => state.extendedUserProfileFields,
   extendedUserProfileValues: (state) => state.extendedUserProfileValues,
+  hasExtendedUserProfileFields: (state) =>
+    state.extendedUserProfileFields &&
+    state.extendedUserProfileFields.length > 0,
   getTextValue: (state) => (id) => {
     const value = state.extendedUserProfileValues.find(
       (v) => v.ext_user_profile_field === id
