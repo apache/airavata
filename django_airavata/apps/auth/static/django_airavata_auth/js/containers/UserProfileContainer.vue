@@ -23,9 +23,7 @@
         @resend-email-verification="handleResendEmailVerification"
       />
       <!-- include extended-user-profile-editor if there are extendedUserProfileFields -->
-      <template
-        v-if="extendedUserProfileFields && extendedUserProfileFields.length > 0"
-      >
+      <template v-if="hasExtendedUserProfileFields">
         <hr />
         <extended-user-profile-editor ref="extendedUserProfileEditor" />
       </template>
@@ -53,7 +51,9 @@ export default {
   async created() {
     await this.loadCurrentUser();
     await this.loadExtendedUserProfileFields();
-    await this.loadExtendedUserProfileValues();
+    if (this.hasExtendedUserProfileFields) {
+      await this.loadExtendedUserProfileValues();
+    }
 
     const queryParams = new URLSearchParams(window.location.search);
     if (queryParams.has("code")) {
@@ -76,7 +76,10 @@ export default {
   },
   computed: {
     ...mapGetters("userProfile", ["user"]),
-    ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
+    ...mapGetters("extendedUserProfile", [
+      "extendedUserProfileFields",
+      "hasExtendedUserProfileFields",
+    ]),
     mustComplete() {
       return (
         this.user && (!this.user.complete || !this.user.ext_user_profile_valid)
@@ -98,10 +101,13 @@ export default {
     async onSave() {
       if (
         this.$refs.userProfileEditor.valid &&
-        this.$refs.extendedUserProfileEditor.valid
+        (!this.hasExtendedUserProfileFields ||
+          this.$refs.extendedUserProfileEditor.valid)
       ) {
         await this.updateUser();
-        await this.saveExtendedUserProfileValues();
+        if (this.hasExtendedUserProfileFields) {
+          await this.saveExtendedUserProfileValues();
+        }
         // Reload current user to get updated 'complete' and 'ext_user_profile_valid'
         await this.loadCurrentUser();
         notifications.NotificationList.add(
@@ -111,7 +117,7 @@ export default {
             duration: 5,
           })
         );
-      } else {
+      } else if (this.hasExtendedUserProfileFields) {
         this.$refs.extendedUserProfileEditor.touch();
       }
     },
