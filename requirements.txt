@@ -7,6 +7,7 @@ thrift_connector==0.24
 djangorestframework==3.12.4
 django-webpack-loader==0.6.0
 logging-formatter-anticrlf==1.2
+zipstream==1.1.4
 
 wagtail==2.13.4
 wagtailfontawesome==1.2.1
@@ -21,7 +22,7 @@ google-api-python-client==1.12.8
 grpcio-tools==1.34.1
 grpcio==1.34.1
 
-airavata-django-portal-sdk==1.6.1
+airavata-django-portal-sdk==1.7.0
 airavata-python-sdk==1.0.2
 airavata-django-portal-commons==1.0.0
 
