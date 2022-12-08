@@ -22,7 +22,7 @@ class DownloadDirTestCase(TestCase):
         response = views.download_dir(request)
 
         user_storage.listdir.assert_called_once()
-        self.assertEqual("", user_storage.listdir.call_args.args[1], "called with empty path")
+        self.assertEqual("", user_storage.listdir.call_args[0][1], "called with empty path")
 
         self.assertEqual("attachment; filename=home.zip", response['Content-Disposition'])
         self.assertEqual("application/zip", response['Content-Type'])
@@ -49,7 +49,7 @@ class DownloadDirTestCase(TestCase):
         response = views.download_dir(request)
 
         user_storage.listdir.assert_called_once()
-        self.assertEqual("", user_storage.listdir.call_args.args[1], "called with empty path")
+        self.assertEqual("", user_storage.listdir.call_args[0][1], "called with empty path")
 
         self.assertEqual("attachment; filename=home.zip", response['Content-Disposition'])
         self.assertEqual("application/zip", response['Content-Type'])

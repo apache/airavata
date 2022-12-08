@@ -70,6 +70,12 @@ or
 django-admin test --settings airavata_django_portal_sdk.tests.test_settings
 ```
 
+or use tox to run the tests in all supported Python environments
+
+```
+tox
+```
+
 ### Running flake8
 
 ```

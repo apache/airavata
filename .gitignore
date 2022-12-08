@@ -5,3 +5,4 @@ __pycache__
 .vscode
 db.sqlite3
 dist
+.tox
