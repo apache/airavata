@@ -19,6 +19,7 @@ setup(
         "it easier to develop Airavata Django Portal customizations."
     ),
     long_description=read("README.md"),
+    long_description_content_type='text/markdown',
     license="Apache License 2.0",
     packages=find_packages(),
     install_requires=[
