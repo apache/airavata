@@ -61,7 +61,7 @@ pip install -r requirements-dev.txt
 ### Running tests
 
 ```
-./runtests.py
+pytest
 ```
 
 or
