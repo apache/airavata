@@ -38,24 +38,24 @@ pip install airavata-django-portal-sdk
 django-admin makemigrations --settings=airavata_django_portal_sdk.tests.test_settings airavata_django_portal_sdk
 ```
 
-## Documentation
+## Developing
+
+### Setting up dev environment
 
 To generate the documentation,
 [create a virtual environment](https://docs.python.org/3/tutorial/venv.html) and
 then:
 
 ```
-pip install -r requirements-dev.txt
-mkdocs serve
-```
-
-## Developing
-
-### Setting up dev environment
-
-```
 source venv/bin/activate
+pip install --upgrade pip setuptools wheel
 pip install -r requirements-dev.txt
+```
+
+### Documentation
+
+```
+mkdocs serve
 ```
 
 ### Running tests
