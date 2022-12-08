@@ -1,13 +1,13 @@
 import fnmatch
+import io
 import logging
 import os
-import tempfile
 import uuid
-import zipfile
 from string import Template
 
+import zipstream
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, StreamingHttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.text import get_valid_filename
@@ -19,8 +19,6 @@ from rest_framework.response import Response
 from airavata_django_portal_sdk import serializers, user_storage
 
 logger = logging.getLogger(__name__)
-
-MAX_DOWNLOAD_ZIPFILE_SIZE = 1 * 1024**3  # 1 GB
 
 
 @api_view()
@@ -74,32 +72,24 @@ def download_file(request):
 @api_view()
 def download_dir(request):
     path = request.GET.get('path', "")
-    fp = tempfile.TemporaryFile()
-    with zipfile.ZipFile(fp, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-        _add_directory_to_zipfile(request, zf, path)
     if os.path.basename(path) == "" or get_valid_filename(os.path.basename(path)) == "":
         filename = 'home.zip'
     else:
         filename = get_valid_filename(os.path.basename(path)) + ".zip"
-    fp.seek(0)
-    # FileResponse will automatically close the temporary file
-    return FileResponse(fp, as_attachment=True, filename=filename)
+    zipfile_entries = _get_directory_zipfile_entries(request, path)
+    return _create_zip_response(request, filename, zipfile_entries)
 
 
 @api_view()
 def download_experiment_dir(request, experiment_id=None):
     path = request.GET.get('path', "")
     experiment = request.airavata_client.getExperiment(request.authz_token, experiment_id)
-    fp = tempfile.TemporaryFile()
-    with zipfile.ZipFile(fp, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path)
     if os.path.basename(path) == "" or get_valid_filename(os.path.basename(path)) == "":
         filename = f'{get_valid_filename(experiment.experimentName)}.zip'
     else:
         filename = f'{get_valid_filename(experiment.experimentName)}_{get_valid_filename(os.path.basename(path))}.zip'
-    fp.seek(0)
-    # FileResponse will automatically close the temporary file
-    return FileResponse(fp, as_attachment=True, filename=filename)
+    zipfile_entries = _get_experiment_directory_zipfile_entries(request, experiment_id, path)
+    return _create_zip_response(request, filename, zipfile_entries)
 
 
 @api_view(['GET', 'POST'])
@@ -119,55 +109,69 @@ def download_experiments(request, download_id=None):
         if download_key in request.session:
             download_spec = request.session[download_key]
             experiments = download_spec['experiments']
-            fp = tempfile.TemporaryFile()
-            with zipfile.ZipFile(fp, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-                for experiment in experiments:
-                    experiment_id = experiment['experiment_id']
-                    # Load experiment to make sure user has access to experiment
-                    experiment_model = request.airavata_client.getExperiment(request.authz_token, experiment_id)
-                    path = experiment['path']
-                    _add_experiment_directory_to_zipfile(
-                        request, zf, experiment_id, path,
-                        zipfile_prefix=os.path.join(get_valid_filename(experiment_model.experimentName), path),
-                        includes=experiment['includes'], excludes=experiment['excludes'])
-
             filename = download_spec.get("filename")
             if filename is None:
                 filename = "experiments.zip"
             filename = get_valid_filename(filename)
-            fp.seek(0)
-            # FileResponse will automatically close the temporary file
-            return FileResponse(fp, as_attachment=True, filename=filename)
+            zipfile_entries = _get_experiment_directories_zipfile_entries(request, experiments)
+            return _create_zip_response(request, filename, zipfile_entries)
         else:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
     else:
         return Response({"detail": "Bad request"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def _add_directory_to_zipfile(request, zf, path, directory=""):
+def _get_directory_zipfile_entries(request, path, directory=""):
     directories, files = user_storage.listdir(request, os.path.join(path, directory))
     for file in files:
-        o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
-        zf.writestr(os.path.join(directory, file['name']), o.read())
-        if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
-            raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
+        yield os.path.join(directory, file['name']), file["data-product-uri"]
     for d in directories:
-        _add_directory_to_zipfile(request, zf, path, os.path.join(directory, d['name']))
+        yield from _get_directory_zipfile_entries(request, path, os.path.join(directory, d['name']))
 
 
-def _add_experiment_directory_to_zipfile(request, zf, experiment_id, path, directory="", zipfile_prefix="", includes=None, excludes=None):
+def _create_zip_response(request, filename, zipfile_entries):
+    zf = zipstream.ZipFile(compression=zipstream.ZIP_DEFLATED, allowZip64=True)
+    for archive_name, data_product_uri in zipfile_entries:
+        zf.write_iter(archive_name, _read_file(request, data_product_uri))
+    response = StreamingHttpResponse(zf, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+
+
+def _read_file(request, data_product_uri: str):
+    """Return generator that reads in data product."""
+    with user_storage.open_file(request, data_product_uri=data_product_uri) as f:
+        chunk = f.read(io.DEFAULT_BUFFER_SIZE)
+        logger.debug(f"read first chunk of {len(chunk)} bytes of {f.name}")
+        while chunk != b'':
+            yield chunk
+            chunk = f.read(io.DEFAULT_BUFFER_SIZE)
+            logger.debug(f"read next chunk of {len(chunk)} bytes of {f.name}")
+
+
+def _get_experiment_directory_zipfile_entries(request, experiment_id, path, directory="", zipfile_prefix="", includes=None, excludes=None):
     directories, files = user_storage.list_experiment_dir(request, experiment_id, os.path.join(path, directory))
     for file in files:
         matches, rename = _matches_filters(file['name'], includes=includes, excludes=excludes)
         if matches:
-            o = user_storage.open_file(request, data_product_uri=file['data-product-uri'])
-            zf.writestr(os.path.join(zipfile_prefix, directory, rename if rename is not None else file['name']), o.read())
-            if os.path.getsize(zf.filename) > MAX_DOWNLOAD_ZIPFILE_SIZE:
-                raise Exception(f"Zip file size exceeds max of {MAX_DOWNLOAD_ZIPFILE_SIZE} bytes")
+            archive_name = os.path.join(zipfile_prefix, directory, rename if rename is not None else file['name'])
+            yield archive_name, file["data-product-uri"]
     for d in directories:
-        _add_experiment_directory_to_zipfile(request, zf, experiment_id, path,
-                                             directory=os.path.join(directory, d['name']),
-                                             zipfile_prefix=zipfile_prefix)
+        yield from _get_experiment_directory_zipfile_entries(
+            request, experiment_id, path, directory=os.path.join(directory, d['name']),
+            zipfile_prefix=zipfile_prefix)
+
+
+def _get_experiment_directories_zipfile_entries(request, experiments):
+    for experiment in experiments:
+        experiment_id = experiment['experiment_id']
+        # Load experiment to make sure user has access to experiment
+        experiment_model = request.airavata_client.getExperiment(request.authz_token, experiment_id)
+        path = experiment['path']
+        yield from _get_experiment_directory_zipfile_entries(
+            request, experiment_id, path,
+            zipfile_prefix=os.path.join(get_valid_filename(experiment_model.experimentName), path),
+            includes=experiment['includes'], excludes=experiment['excludes'])
 
 
 def _matches_filters(filename, includes=None, excludes=None):

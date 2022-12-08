@@ -35,7 +35,7 @@ pip install airavata-django-portal-sdk
 ## Migrations
 
 ```
-django-admin makemigrations --settings=tests.test_settings airavata_django_portal_sdk
+django-admin makemigrations --settings=airavata_django_portal_sdk.tests.test_settings airavata_django_portal_sdk
 ```
 
 ## Documentation
@@ -62,6 +62,12 @@ pip install -r requirements-dev.txt
 
 ```
 ./runtests.py
+```
+
+or
+
+```
+django-admin test --settings airavata_django_portal_sdk.tests.test_settings
 ```
 
 ### Running flake8
