@@ -10,7 +10,7 @@ Tutorial attendees should have:
 -   a text editor or IDE for writing Python and web code. Any text editor or IDE
     will do but if you're looking for recommendations, I recommend
     [Visual Studio Code](https://code.visualstudio.com/).
--   Python (3.6 - 3.10, but latest version is recommended)
+-   latest Python (current version as of this writing is 3.9.5)
 -   Git client
 -   [Docker Desktop](https://www.docker.com/products/docker-desktop)
 -   If you don't have Docker installed or can't install it, you'll also need:
@@ -20,27 +20,27 @@ Tutorial attendees should have:
 
 ### Installing Python
 
-Python 3.6-3.10 are supported. If you don't have Python installed, I recommend
-you download and use the latest (Python 3.10 as of this writing).
+Python 3.6-3.9 are supported, but I highly recommend you download and use
+**Python 3.9**
 
-Download and install Python.
+Download and install Python 3.9.
 
 -   (macOS/Windows): Download from <https://www.python.org/downloads/>
--   (Linux): use your distribution's package manager to install Python
+-   (Linux): use your distribution's package manager to install Python 3.9
 
-Verify you have installed Python:
+Verify you have installed Python 3.9:
 
 === "macOS/Linux"
 
-        $ python3 --version
-        Python 3.10.0
+        $ python3.9 --version
+        Python 3.9.5
 
 === "Windows"
 
     Open PowerShell then run:
 
         PS C:\Users\username> py --version
-        Python 3.10.0
+        Python 3.9.5
 
 ### Installing Git
 
@@ -534,7 +534,7 @@ can install in which we can write the custom output view code.
 === "macOS/Linux"
 
         $ cd $HOME
-        $ python3 -m venv tutorial-env
+        $ python3.9 -m venv tutorial-env
         $ source tutorial-env/bin/activate
         (tutorial-env) $
 
@@ -615,7 +615,7 @@ the settings_local.py file for local development. Move or copy it to the
 
     Verify that you have the following installed
 
-    -   Python 3
+    -   Python 3.9
     -   Node LTS
     -   Yarn
     -   Git
@@ -661,7 +661,7 @@ the settings_local.py file for local development. Move or copy it to the
 
     Verify that you have the following installed
 
-    -   Python 3
+    -   Python 3.9
     -   Node LTS
     -   Yarn
     -   Git
