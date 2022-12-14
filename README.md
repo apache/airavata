@@ -76,6 +76,8 @@ on how to install Yarn 1 (Classic).
     ./build_js.sh
     ```
 
+    - **Window note**: on Windows, run `.\build_js.bat` instead
+
 5.  Load the default Wagtail CMS pages.
 
     ```

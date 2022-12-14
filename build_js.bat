@@ -11,6 +11,10 @@ cd %cwd%\django_airavata\static\common
 call yarn
 call yarn run build
 
+cd %cwd%\django_airavata\static\auth
+call yarn
+call yarn run build
+
 cd %cwd%\django_airavata\apps\admin
 call yarn
 call yarn run build
