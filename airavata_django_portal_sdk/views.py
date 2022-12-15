@@ -124,15 +124,15 @@ def download_experiments(request, download_id=None):
 def _get_directory_zipfile_entries(request, path, directory=""):
     directories, files = user_storage.listdir(request, os.path.join(path, directory))
     for file in files:
-        yield os.path.join(directory, file['name']), file["data-product-uri"]
+        yield os.path.join(directory, file['name']), file["data-product-uri"], file["size"]
     for d in directories:
         yield from _get_directory_zipfile_entries(request, path, os.path.join(directory, d['name']))
 
 
 def _create_zip_response(request, filename, zipfile_entries):
     zf = zipstream.ZipFile(compression=zipstream.ZIP_DEFLATED, allowZip64=True)
-    for archive_name, data_product_uri in zipfile_entries:
-        zf.write_iter(archive_name, _read_file(request, data_product_uri))
+    for archive_name, data_product_uri, size in zipfile_entries:
+        zf.write_iter(archive_name, _read_file(request, data_product_uri), buffer_size=size)
     response = StreamingHttpResponse(zf, content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
@@ -155,7 +155,7 @@ def _get_experiment_directory_zipfile_entries(request, experiment_id, path, dire
         matches, rename = _matches_filters(file['name'], includes=includes, excludes=excludes)
         if matches:
             archive_name = os.path.join(zipfile_prefix, directory, rename if rename is not None else file['name'])
-            yield archive_name, file["data-product-uri"]
+            yield archive_name, file["data-product-uri"], file["size"]
     for d in directories:
         yield from _get_experiment_directory_zipfile_entries(
             request, experiment_id, path, directory=os.path.join(directory, d['name']),

@@ -21,4 +21,4 @@ scp==0.13.2
 six==1.15.0
 thrift-connector==0.24
 thrift==0.10.0
-zipstream==1.1.4
+zipstream-new==1.1.8
