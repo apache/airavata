@@ -78,6 +78,9 @@ deeppdb ansible_host=156.56.104.84
 ehtgateway ansible_host=156.56.104.84
 neuroscience-cybershuttle ansible_host=156.56.104.84
 
+# smiles server
+smiles ansible_host=scigap13.sciencegateways.iu.edu ansible_user=root
+
 # vlab-plasmasciene server
 vlab-plasmascience ansible_host=149.165.172.104 ansible_user=exouser
 
