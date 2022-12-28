@@ -32,9 +32,11 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
             int maxReschedulingCount = ServerSettings.getMetaschedulerReschedulingThreshold();
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = client.getExperiment(processModel.getExperimentId());
-            LOGGER.debug("Rescheduling process with Id " + processModel.getProcessId() + " experimentId " + processModel.getExperimentId());
+            LOGGER.debug("Rescheduling process with Id " + processModel.getProcessId() + " experimentId " +
+                    processModel.getExperimentId());
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
-            ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass).newInstance();
+            ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass)
+                    .newInstance();
             if (processState.equals(ProcessState.QUEUED)) {
                 Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel = policy.
                         selectComputeResource(processModel.getProcessId());
@@ -42,16 +44,21 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                 if (computationalResourceSchedulingModel.isPresent()) {
                     processModel.setProcessResourceSchedule(computationalResourceSchedulingModel.get());
                     client.updateProcess(processModel, processModel.getProcessId());
-                    Utils.updateProcessStatusAndPublishStatus(ProcessState.DEQUEUING, processModel.getProcessId(), processModel.getExperimentId(),
+                    Utils.updateProcessStatusAndPublishStatus(ProcessState.DEQUEUING, processModel.getProcessId(),
+                            processModel.getExperimentId(),
                             experimentModel.getGatewayId());
                 }
             } else if (processState.equals(ProcessState.REQUEUED)) {
                 int currentCount = getRequeuedCount(processStatusList);
                 if (currentCount >= maxReschedulingCount) {
-                    Utils.updateProcessStatusAndPublishStatus(ProcessState.FAILED, processModel.getProcessId(), processModel.getExperimentId(),
+                    Utils.updateProcessStatusAndPublishStatus(ProcessState.FAILED, processModel.getProcessId(),
+                            processModel.getExperimentId(),
                             experimentModel.getGatewayId());
                 } else {
 
+                    client.deleteJobs(processModel.getProcessId());
+                    LOGGER.debug("Cleaned up current  job stack for process " + processModel.getProcessId() +
+                            " experimentId " + processModel.getExperimentId());
                     ProcessStatus processStatus = client.getProcessStatus(processModel.getProcessId());
                     long pastValue = processStatus.getTimeOfStateChange();
 
