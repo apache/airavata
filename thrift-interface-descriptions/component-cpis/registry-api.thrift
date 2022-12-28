@@ -737,6 +737,9 @@ service RegistryService extends base_api.BaseAPI {
            void addJob (1: required job_model.JobModel jobModel, 2: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
+           void deleteJobs (1: required string processId)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
            string addProcess (1: required process_model.ProcessModel processModel, 2: required string experimentId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
