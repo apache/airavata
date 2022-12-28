@@ -884,6 +884,25 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
+    public void deleteJobs(String processId) throws RegistryServiceException, TException {
+        try {
+            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
+            jobs.forEach(job->{
+                JobPK jobPK = new JobPK();
+                jobPK.setJobId(job.getJobId());
+                jobPK.setTaskId(job.getTaskId());
+                jobRepository.delete(jobPK);
+            });
+        } catch (Exception e) {
+            logger.error(processId, "Error while deleting job ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting job. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException, TException {
         try {
             return processRepository.addProcess(processModel, experimentId);

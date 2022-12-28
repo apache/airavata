@@ -74,7 +74,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         try {
             List<JobModel> jobsOfTask = getTaskContext().getRegistryClient().getJobs("taskId", getTaskId());
 
-            if (jobsOfTask.size() > 0 && !isAutoSchedule()) {
+            if (jobsOfTask.size() > 0) {
                 logger.warn("A job is already available for task " + getTaskId());
                 return onSuccess("A job is already available for task " + getTaskId());
             }
