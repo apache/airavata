@@ -155,7 +155,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
 
-    public void execute(String query, Map<String, Object> queryParams) {
+    public void execute(String query, String... params) {
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -164,9 +164,9 @@ public abstract class AbstractRepository<T, E, Id> {
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {
-           Query nativeQuery =  entityManager.createNamedQuery(query);
-           for(Map.Entry<String, Object> keyVal :queryParams.entrySet()) {
-               nativeQuery.setParameter(keyVal.getKey(),keyVal.getValue());
+           Query nativeQuery =  entityManager.createNativeQuery(query);
+           for(int i=1;i<params.length;i++){
+               nativeQuery.setParameter(i,params[i]);
            }
            nativeQuery.executeUpdate();
         } catch(Exception e) {
