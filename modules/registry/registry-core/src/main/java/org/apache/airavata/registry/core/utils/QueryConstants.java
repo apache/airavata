@@ -192,4 +192,8 @@ public interface QueryConstants {
             " where P.state = :" + DBConstants.ProcessStatus.STATE;
 
     String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
+
+
+    String DELETE_JOB = " DELETE FROM "+JobEntity.class.getSimpleName()+ " " +
+            "WHERE JOB_ID = :"+DBConstants.Job.JOB_ID+" AND TASK_ID = :"+DBConstants.Job.TASK_ID;
 }
