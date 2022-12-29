@@ -49,6 +49,7 @@ public class JobEntity implements Serializable {
     @Column(name = "JOB_DESCRIPTION")
     private String jobDescription;
 
+    @Version
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
