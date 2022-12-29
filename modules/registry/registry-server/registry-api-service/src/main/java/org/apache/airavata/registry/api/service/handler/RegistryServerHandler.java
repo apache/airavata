@@ -891,6 +891,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 JobPK jobPK = new JobPK();
                 jobPK.setJobId(jobModel.getJobId());
                 jobPK.setTaskId(jobModel.getTaskId());
+
                 jobRepository.removeJob(jobPK);
             }
         } catch (Exception e) {
