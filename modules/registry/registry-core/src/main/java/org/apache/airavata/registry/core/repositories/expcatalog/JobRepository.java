@@ -153,6 +153,7 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
     }
 
     public void removeJob(JobPK jobPK) throws RegistryException {
+        getEntityManager().refresh(jobPK);
         delete(jobPK);
     }
 
