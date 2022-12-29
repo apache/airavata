@@ -165,7 +165,7 @@ public abstract class AbstractRepository<T, E, Id> {
         }
         try {
            Query nativeQuery =  entityManager.createNativeQuery(query);
-           for(int i=1;i<params.length;i++){
+           for(int i=1;i<=params.length;i++){
                nativeQuery.setParameter(i,params[i]);
            }
            nativeQuery.executeUpdate();
