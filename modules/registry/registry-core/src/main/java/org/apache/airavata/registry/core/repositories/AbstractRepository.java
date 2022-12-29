@@ -154,6 +154,35 @@ public abstract class AbstractRepository<T, E, Id> {
         }
     }
 
+
+    public void execute(String query, Map<String, Object> queryParams) {
+        EntityManager entityManager = null;
+        try {
+            entityManager = getEntityManager();
+        } catch (Exception e) {
+            logger.error("Failed to get EntityManager", e);
+            throw new RuntimeException("Failed to get EntityManager", e);
+        }
+        try {
+           Query nativeQuery =  entityManager.createNativeQuery(query);
+           for(Map.Entry<String, Object> keyVal :queryParams.entrySet()) {
+               nativeQuery.setParameter(keyVal.getKey(),keyVal.getValue());
+           }
+           nativeQuery.executeUpdate();
+        } catch(Exception e) {
+            logger.error("Failed to execute transaction", e);
+            throw e;
+        }finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                }
+                entityManager.close();
+            }
+        }
+
+    }
+
     abstract protected EntityManager getEntityManager();
 
 }
