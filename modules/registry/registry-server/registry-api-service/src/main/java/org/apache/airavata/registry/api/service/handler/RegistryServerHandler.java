@@ -888,11 +888,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
             for (JobModel jobModel: jobs) {
-                JobPK jobPK = new JobPK();
-                jobPK.setJobId(jobModel.getJobId());
-                jobPK.setTaskId(jobModel.getTaskId());
-
-                jobRepository.removeJob(jobPK);
+                jobRepository.removeJob(jobModel);
             }
         } catch (Exception e) {
             logger.error(processId, "Error while deleting job ", e);
