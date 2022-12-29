@@ -164,7 +164,7 @@ public abstract class AbstractRepository<T, E, Id> {
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {
-           Query nativeQuery =  entityManager.createNativeQuery(query);
+           Query nativeQuery =  entityManager.createNamedQuery(query);
            for(Map.Entry<String, Object> keyVal :queryParams.entrySet()) {
                nativeQuery.setParameter(keyVal.getKey(),keyVal.getValue());
            }
