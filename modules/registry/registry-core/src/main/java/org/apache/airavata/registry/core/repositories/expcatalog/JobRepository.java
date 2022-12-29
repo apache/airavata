@@ -157,10 +157,7 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
     }
 
     public void removeJob(JobModel jobModel) throws RegistryException {
-        Map map = new HashMap();
-        map.put(DBConstants.Job.JOB_ID,jobModel.getJobId());
-        map.put(DBConstants.Job.TASK_ID,jobModel.getTaskId());
-        execute(QueryConstants.DELETE_JOB,map);
+        execute(QueryConstants.DELETE_JOB_NATIVE_QUERY,jobModel.getJobId(),jobModel.getTaskId());
     }
 
 }

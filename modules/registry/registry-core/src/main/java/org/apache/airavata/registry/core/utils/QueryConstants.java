@@ -194,5 +194,5 @@ public interface QueryConstants {
     String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
 
 
-    String DELETE_JOB = " DELETE FROM "+JobEntity.class.getSimpleName()+ " WHERE JOB_ID = :"+DBConstants.Job.JOB_ID+" AND TASK_ID = :"+DBConstants.Job.TASK_ID;
+    String DELETE_JOB_NATIVE_QUERY = "DELETE FROM "+JobEntity.class.getSimpleName()+ " WHERE JOB_ID = ?1 AND TASK_ID = ?2";
 }
