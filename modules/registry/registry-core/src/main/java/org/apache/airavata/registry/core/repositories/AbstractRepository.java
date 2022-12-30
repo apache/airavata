@@ -168,7 +168,9 @@ public abstract class AbstractRepository<T, E, Id> {
            for(int i=0;i<params.length;i++){
                nativeQuery.setParameter((i+1),params[i]);
            }
+           entityManager.getTransaction().begin();
            nativeQuery.executeUpdate();
+           entityManager.getTransaction().commit();
         } catch(Exception e) {
             logger.error("Failed to execute transaction", e);
             throw e;
