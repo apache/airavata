@@ -45,13 +45,13 @@ auth_options:
   password:
     name: "SMILES Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "smiles"
 experiment_data_dir: "{{ user_data_dir }}/smiles"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnsRKJRqFvjmNUwChRLMzHZBCzVxh4kK/GBFagzjI5WL5l4RFsnXXpmIFpi1VKGcll/LDnI1PvDdZPP+KaGkuuEmaTgCJD8BSgxz7PmTsOuka6Fl7YwTRcXhv/vYfDQLYUNKfWWmBPyIhfnn+St0jsOSogTvM6Cvajb5/42btCRAcQ9PV6ZqUNdrHWf8fQI+rb9kmb/3H4tI40MG0p68WuhKuf0Fbdrn/Roc7//yRo854WtUi1XpXyLp4W9ggkVEOAlJPTACVA63mSaO3qyY5Hqplwk7iDM+/c0QKB1jKCwqzZdh5djP6GxloO9K5dDyUyn+jtHk+dwAdTKpjlWR1d"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBya+UFROosd6bakQ9u44egbNI0n0aDgjNviif7c7HnUVT1NzmvTy4tqzWJOj5XFsZ0cvM8Csn/BazI93g9YvVxovPnH/gyu3gUZgV/XbV4ZRRmEFXV43K0CzSqRaAHMf7pLPsH4fyuWjKTuJDV3bUXdd75b0TetjzfKwT43moEmLG/G2Je3eMWZ37aHYaDcyCSPgOihZTiQebiqp4draZHvA/+DC4T7KUqRyty8XSW9Vdp8pW09NhY+J7fXg0jbN6W/mCD9OqG/jcPcPc7GpxnNNeUeCQ2yelzJ3UEgIIkO8vnTjotXGThPezRxGh537qCZRuOLpcwZBve+VrtVsT"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "SMILES Gateway"
