@@ -1,0 +1,44 @@
+name: Build and Test
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use latest LTS Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -r requirements-dev.txt
+      - name: Run Django Migrate and Check
+        run: |
+          cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
+          python manage.py migrate
+          python manage.py check
+      - name: Run flake8
+        run: |
+          flake8 .
+      - name: Run ESLint on JavaScript code
+        run: |
+          ./lint_js.sh
+      - name: Build JavaScript code
+        run: |
+          ./build_js.sh
+      - name: Run JavaScript unit tests
+        run: |
+          ./test_js.sh
+      # Need to build the frontend client before running some of the Django tests
+      # that use the Django test Client
+      - name: Run Django unit tests
+        run: |
+          ./runtests.py
