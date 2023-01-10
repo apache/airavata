@@ -1,18 +1,45 @@
 name: Build and Test
 on: [push]
 jobs:
+  build-js:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js as specified in .nvmrc
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+      - name: Run ESLint on JavaScript code
+        run: |
+          ./lint_js.sh
+      - name: Build JavaScript code
+        run: |
+          ./build_js.sh
+      - name: Run JavaScript unit tests
+        run: |
+          ./test_js.sh
+      - uses: actions/upload-artifact@v3
+        with:
+          name: built-javascript
+          path: |
+            django_airavata/apps/api/static/django_airavata_api/dist
+            django_airavata/static/common/dist
+            django_airavata/apps/admin/static/django_airavata_admin/dist
+            django_airavata/apps/groups/static/django_airavata_groups/dist
+            django_airavata/apps/auth/static/django_airavata_auth/dist
+            django_airavata/apps/workspace/static/django_airavata_workspace/dist
+            django_airavata/apps/workspace/static/django_airavata_workspace/wc
+            django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist
+
   build:
     # ubuntu-22 doesn't support Python 3.6
     runs-on: ubuntu-20.04
+    needs: build-js
     strategy:
       matrix:
         python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
     steps:
       - uses: actions/checkout@v3
-      - name: Use latest LTS Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -29,17 +56,11 @@ jobs:
       - name: Run flake8
         run: |
           flake8 .
-      - name: Run ESLint on JavaScript code
-        run: |
-          ./lint_js.sh
-      - name: Build JavaScript code
-        run: |
-          ./build_js.sh
-      - name: Run JavaScript unit tests
-        run: |
-          ./test_js.sh
-      # Need to build the frontend client before running some of the Django tests
+      # Need the built frontend client code before running some of the Django tests
       # that use the Django test Client
+      - uses: actions/download-artifact@v3
+        with:
+          name: built-javascript
       - name: Run Django unit tests
         run: |
           ./runtests.py
