@@ -61,6 +61,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: built-javascript
+          path: django_airavata
       - name: Run Django unit tests
         run: |
           ./runtests.py
