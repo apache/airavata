@@ -1,6 +1,6 @@
 # Apache Airavata Django Portal
 
-[![Build Status](https://travis-ci.org/apache/airavata-django-portal.svg?branch=master)](https://travis-ci.org/apache/airavata-django-portal)
+![Build Status](https://github.com/apache/airavata-django-portal/actions/workflows/build-and-test.yaml/badge.svg)
 [![Build Status](https://readthedocs.org/projects/apache-airavata-django-portal/badge/?version=latest)](https://apache-airavata-django-portal.readthedocs.io/en/latest/?badge=latest)
 
 The Airavata Django Portal is a web interface to the
@@ -134,7 +134,7 @@ docker buildx create --name mybuilder --use
 then run
 
 ```
-docker buildx build --platform linux/amd64,linux/arm64 -t TAG --push .
+docker buildx build --pull --platform linux/amd64,linux/arm64 -t TAG --push .
 ```
 
 ## Documentation
