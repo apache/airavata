@@ -91,7 +91,7 @@ bayesprism ansible_host=149.165.155.90 ansible_user=exouser
 dreg ansible_host=149.165.154.48 ansible_user=exouser
 
 # futurewater jetstream server
-futurewater ansible_host=149.165.154.245 ansible_user=exouser
+futurewater ansible_host=149.165.154.212 ansible_user=exouser
 
 # Delta Jetstream server
 delta ansible_host=149.165.153.181 ansible_user=exouser
