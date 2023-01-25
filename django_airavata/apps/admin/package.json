@@ -1,15 +1,17 @@
 {
   "name": "admin-airavata",
   "version": "1.0.0",
+  "private": true,
   "description": "A Vue.js project",
   "author": "Eldho Mathulla <emathull@iu.edu>",
-  "private": true,
   "scripts": {
     "serve": "vue-cli-service serve ./static/django_airavata_admin/src/main.js",
     "build": "vue-cli-service build ./static/django_airavata_admin/src/main.js",
+    "test": "npm run test:unit",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint ./static/django_airavata_admin/src/",
-    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_admin/src/",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_admin/src/"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
@@ -34,13 +36,20 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/vue": "5",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-plugin-unit-jest": "~5.0.0",
     "@vue/cli-service": "~5.0.8",
     "@vue/component-compiler-utils": "^2.3.0",
+    "@vue/test-utils": "^1.1.3",
+    "@vue/vue2-jest": "^27.0.0-alpha.2",
     "autoprefixer": "^9.3.1",
+    "babel-jest": "^27.0.6",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "jest": "^27.0.5",
     "prettier": "^2.1.2",
     "vue-loader": "^15.5.1",
     "vue-template-compiler": "^2.5.22",
@@ -61,7 +70,18 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser",
       "requireConfigFile": false
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "postcss": {
     "plugins": {
