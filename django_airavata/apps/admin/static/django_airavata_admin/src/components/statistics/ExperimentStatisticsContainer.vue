@@ -5,26 +5,55 @@
         <h1 class="h4 mb-4">Experiment Statistics</h1>
       </div>
     </div>
-    <b-card header="Load experiment details by experiment id">
-      <b-form-group>
-        <b-input-group>
-          <b-form-input
-            v-model="experimentId"
-            placeholder="Experiment ID"
-            @keydown.native.enter="
-              experimentId && showExperimentDetails(experimentId)
-            "
-          />
-          <b-input-group-append>
-            <b-button
-              :disabled="!experimentId"
-              @click="showExperimentDetails(experimentId)"
-              variant="primary"
-              >Load</b-button
-            >
-          </b-input-group-append>
-        </b-input-group>
-      </b-form-group>
+    <b-card header="Load experiment details" no-body>
+      <b-tabs card>
+        <b-tab title="By Experiment ID" active>
+          <b-card-text>
+            <b-form-group>
+              <b-input-group>
+                <b-form-input
+                  v-model.trim="experimentId"
+                  placeholder="Experiment ID"
+                  @keydown.native.enter="
+                    experimentId && showExperimentDetails(experimentId)
+                  "
+                />
+                <b-input-group-append>
+                  <b-button
+                    :disabled="!experimentId"
+                    @click="showExperimentDetails(experimentId)"
+                    variant="primary"
+                    >Load</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+          </b-card-text>
+        </b-tab>
+        <b-tab title="By Job ID">
+          <b-card-text>
+            <b-form-group>
+              <b-input-group>
+                <b-form-input
+                  v-model.trim="jobId"
+                  placeholder="Job ID"
+                  @keydown.native.enter="
+                    jobId && showExperimentDetailsForJobId(jobId)
+                  "
+                />
+                <b-input-group-append>
+                  <b-button
+                    :disabled="!jobId"
+                    @click="showExperimentDetailsForJobId(jobId)"
+                    variant="primary"
+                    >Load</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+          </b-card-text>
+        </b-tab>
+      </b-tabs>
     </b-card>
     <b-card no-body>
       <b-tabs card v-model="activeTabIndex" ref="tabs">
@@ -250,20 +279,22 @@
           </div>
         </b-tab>
         <b-tab
-          v-for="experimentDetail in experimentDetails"
-          :key="experimentDetail.experimentId"
+          v-for="experimentTab in experimentDetailTabs"
+          :key="experimentTab.experiment.experimentId"
         >
           <template slot="title">
-            {{ experimentDetail.experimentName }}
+            {{ experimentTab.tabTitle }}
             <b-link
-              @click="removeExperimentDetails(experimentDetail.experimentId)"
+              @click="
+                removeExperimentDetailTab(experimentTab.experiment.experimentId)
+              "
               class="text-secondary"
             >
               <i class="fas fa-times"></i>
               <span class="sr-only">Close experiment tab</span>
             </b-link>
           </template>
-          <experiment-details-view :experiment="experimentDetail" />
+          <experiment-details-view :experiment="experimentTab.experiment" />
         </b-tab>
       </b-tabs>
     </b-card>
@@ -271,7 +302,7 @@
 </template>
 <script>
 import { models, services, utils } from "django-airavata-api";
-import { components } from "django-airavata-common-ui";
+import { components, notifications } from "django-airavata-common-ui";
 import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
 import ExperimentDetailsView from "./ExperimentDetailsView";
 
@@ -304,8 +335,9 @@ export default {
       hostnameFilter: null,
       appInterfaces: null,
       computeResourceNames: null,
-      experimentDetails: [],
+      experimentDetailTabs: [],
       experimentId: null,
+      jobId: null,
       activeTabIndex: 0,
     };
   },
@@ -528,23 +560,58 @@ export default {
       this.hostnameFilterEnabled = false;
       this.loadStatistics();
     },
-    showExperimentDetails(experimentId) {
-      const expDetailsIndex = this.getExperimentDetailsIndex(experimentId);
+    showExperimentDetails(experimentId, tabTitle = null) {
+      const expDetailsIndex = this.getExperimentDetailTabsIndex(experimentId);
       if (expDetailsIndex >= 0) {
+        // Update tab title in case it is now loaded from a job id and we want
+        // to get the job id in the title
+        if (tabTitle) {
+          this.experimentDetailTabs[expDetailsIndex].tabTitle = tabTitle;
+        }
         this.selectExperimentDetailsTab(experimentId);
       } else {
-        // TODO: maybe don't need to load the experiment first since ExperimentDetailsView will load FullExperiment?
         services.ExperimentService.retrieve({
           lookup: experimentId,
         }).then((exp) => {
-          this.experimentDetails.push(exp);
+          this.experimentDetailTabs.push({
+            tabTitle: tabTitle || exp.experimentName,
+            experiment: exp,
+          });
           this.selectExperimentDetailsTab(experimentId);
           this.scrollTabsIntoView();
         });
       }
     },
+    async showExperimentDetailsForJobId(jobId) {
+      const searchResults = await services.ExperimentSearchService.list({
+        [models.ExperimentSearchFields.JOB_ID.name]: jobId,
+      });
+      if (searchResults.results.length === 0) {
+        notifications.NotificationList.add(
+          new notifications.Notification({
+            type: "WARNING",
+            message: `No experiment exists with job id ${jobId}`,
+            duration: 5,
+          })
+        );
+      } else {
+        if (searchResults.results.length > 1) {
+          notifications.NotificationList.add(
+            new notifications.Notification({
+              type: "WARNING",
+              message: `More than one experiment matches job id ${jobId}, showing the latest one`,
+              duration: 5,
+            })
+          );
+        }
+        this.showExperimentDetails(
+          searchResults.results[0].experimentId,
+          `Job ${jobId}`
+        );
+      }
+    },
     selectExperimentDetailsTab(experimentId) {
-      const expDetailsIndex = this.getExperimentDetailsIndex(experimentId);
+      const expDetailsIndex = this.getExperimentDetailTabsIndex(experimentId);
       // Note: running this in $nextTick doesn't work, but setTimeout does
       // (see also https://github.com/bootstrap-vue/bootstrap-vue/issues/1378#issuecomment-345689470)
       setTimeout(() => {
@@ -552,14 +619,14 @@ export default {
         this.activeTabIndex = expDetailsIndex + 1;
       }, 1);
     },
-    getExperimentDetailsIndex(experimentId) {
-      return this.experimentDetails.findIndex(
-        (e) => e.experimentId === experimentId
+    getExperimentDetailTabsIndex(experimentId) {
+      return this.experimentDetailTabs.findIndex(
+        (tab) => tab.experiment.experimentId === experimentId
       );
     },
-    removeExperimentDetails(experimentId) {
-      const index = this.getExperimentDetailsIndex(experimentId);
-      this.experimentDetails.splice(index, 1);
+    removeExperimentDetailTab(experimentId) {
+      const index = this.getExperimentDetailTabsIndex(experimentId);
+      this.experimentDetailTabs.splice(index, 1);
     },
     scrollTabsIntoView() {
       this.$refs.tabs.$el.scrollIntoView({ behavior: "smooth" });
