@@ -19,6 +19,7 @@
           <extended-user-profile-field-editor
             ref="extendedUserProfileFieldEditors"
             :extendedUserProfileField="field"
+            :disabled="!field.userHasWriteAccess"
             @valid="recordValidChildComponent(field)"
             @invalid="recordInvalidChildComponent(field)"
           />
@@ -28,7 +29,7 @@
     <div ref="bottom" />
     <div class="fixed-footer">
       <div class="d-flex">
-        <b-dropdown text="Add Field">
+        <b-dropdown text="Add Field" :disabled="!isGatewayAdmin">
           <b-dropdown-item @click="addField('text')">Text</b-dropdown-item>
           <b-dropdown-item @click="addField('single_choice')"
             >Single Choice</b-dropdown-item
@@ -40,7 +41,13 @@
             >User Agreement</b-dropdown-item
           >
         </b-dropdown>
-        <b-button variant="primary" @click="save" class="ml-2">Save</b-button>
+        <b-button
+          variant="primary"
+          @click="save"
+          class="ml-2"
+          :disabled="!isGatewayAdmin"
+          >Save</b-button
+        >
         <b-button variant="secondary" class="ml-auto" href="/admin/users"
           >Return to Manage Users</b-button
         >
@@ -53,6 +60,7 @@
 import { mapActions, mapGetters } from "vuex";
 import ExtendedUserProfileFieldEditor from "./field-editors/ExtendedUserProfileFieldEditor.vue";
 import { mixins } from "django-airavata-common-ui";
+import { session } from "django-airavata-api";
 export default {
   mixins: [mixins.ValidationParent],
   components: { ExtendedUserProfileFieldEditor },
@@ -122,6 +130,9 @@ export default {
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
     valid() {
       return this.childComponentsAreValid;
+    },
+    isGatewayAdmin() {
+      return session.Session.isGatewayAdmin;
     },
   },
 };

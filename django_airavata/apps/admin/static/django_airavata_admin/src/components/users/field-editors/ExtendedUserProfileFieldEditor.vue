@@ -3,7 +3,7 @@
     :title="title"
     :border-variant="$v.$anyDirty && $v.$invalid ? 'danger' : null"
   >
-    <b-form-group label="Name" label-cols="3">
+    <b-form-group label="Name" label-cols="3" :disabled="disabled">
       <b-form-input v-model="name" :state="validateState($v.name)" />
       <b-form-invalid-feedback :state="validateState($v.name)"
         >This field is required.</b-form-invalid-feedback
@@ -12,6 +12,7 @@
     <b-form-group
       label="Checkbox Label"
       label-cols="3"
+      :disabled="disabled"
       v-if="extendedUserProfileField.field_type === 'user_agreement'"
     >
       <b-form-input
@@ -23,14 +24,14 @@
         >This field is required.</b-form-invalid-feedback
       >
     </b-form-group>
-    <b-form-group label-cols="3">
+    <b-form-group label-cols="3" :disabled="disabled">
       <template #label>
         Help text
         <small class="text-muted text-small">(Optional)</small>
       </template>
       <b-form-input v-model="help_text" />
     </b-form-group>
-    <b-form-group>
+    <b-form-group :disabled="disabled">
       <b-form-checkbox v-model="required" switch> Required </b-form-checkbox>
     </b-form-group>
     <b-card title="Options" v-if="extendedUserProfileField.supportsChoices">
@@ -39,7 +40,7 @@
           v-for="({ $model: choice, display_text: $v_display_text },
           index) in $v.choices.$each.$iter"
         >
-          <b-form-group :key="choice.key">
+          <b-form-group :key="choice.key" :disabled="disabled">
             <b-input-group>
               <b-form-input
                 :value="choice.display_text"
@@ -87,7 +88,11 @@
             >
           </b-form-group>
         </template>
-        <b-form-group :key="'other'" v-if="extendedUserProfileField.other">
+        <b-form-group
+          :key="'other'"
+          v-if="extendedUserProfileField.other"
+          :disabled="disabled"
+        >
           <b-input-group>
             <b-form-input
               placeholder="User will see: Other (please specify)"
@@ -112,14 +117,14 @@
           </b-input-group>
         </b-form-group>
       </transition-group>
-      <b-form-group>
+      <b-form-group :disabled="disabled">
         <b-button
           @click="addChoice({ field: extendedUserProfileField })"
           size="sm"
           >Add Option</b-button
         >
       </b-form-group>
-      <b-form-group>
+      <b-form-group :disabled="disabled">
         <b-form-checkbox v-model="other" switch>
           Allow user to type in an "Other" option
         </b-form-checkbox>
@@ -134,7 +139,7 @@
             .$each.$iter"
           :key="link.key"
         >
-          <b-form-group label="Label" label-cols="3">
+          <b-form-group label="Label" label-cols="3" :disabled="disabled">
             <b-form-input
               :value="link.label"
               @input="handleLinkLabelChanged(link, $event, $v_label)"
@@ -144,7 +149,7 @@
               >This field is required.</b-form-invalid-feedback
             >
           </b-form-group>
-          <b-form-group label="URL" label-cols="3">
+          <b-form-group label="URL" label-cols="3" :disabled="disabled">
             <b-form-input
               :value="link.url"
               @input="handleLinkURLChanged(link, $event, $v_url)"
@@ -156,7 +161,7 @@
           </b-form-group>
           <b-row>
             <b-col>
-              <b-form-group>
+              <b-form-group :disabled="disabled">
                 <b-form-checkbox
                   :checked="link.display_link"
                   @input="handleLinkDisplayLinkChanged(link, $event)"
@@ -167,7 +172,7 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group>
+              <b-form-group :disabled="disabled">
                 <b-form-checkbox
                   :checked="link.display_inline"
                   @input="handleLinkDisplayInlineChanged(link, $event)"
@@ -178,18 +183,27 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-button @click="handleLinkDeleted(link)" variant="danger" size="sm">
+          <b-button
+            @click="handleLinkDeleted(link)"
+            variant="danger"
+            size="sm"
+            :disabled="disabled"
+          >
             Delete Link
           </b-button>
         </b-card>
       </transition-group>
     </template>
-    <b-button @click="addLink({ field: extendedUserProfileField })" size="sm"
+    <b-button
+      @click="addLink({ field: extendedUserProfileField })"
+      size="sm"
+      :disabled="disabled"
       >Add Link</b-button
     >
     <b-button
       @click="handleMoveUp({ field: extendedUserProfileField })"
       :disabled="
+        disabled ||
         extendedUserProfileFields.indexOf(extendedUserProfileField) === 0
       "
       size="sm"
@@ -198,13 +212,20 @@
     <b-button
       @click="handleMoveDown({ field: extendedUserProfileField })"
       :disabled="
+        disabled ||
         extendedUserProfileFields.indexOf(extendedUserProfileField) ===
-        extendedUserProfileFields.length - 1
+          extendedUserProfileFields.length - 1
       "
       size="sm"
       >Move Down</b-button
     >
-    <b-button @click="handleDelete" variant="danger" size="sm">Delete</b-button>
+    <b-button
+      @click="handleDelete"
+      variant="danger"
+      size="sm"
+      :disabled="disabled"
+      >Delete</b-button
+    >
   </b-card>
 </template>
 
@@ -215,7 +236,7 @@ import { required, requiredIf } from "vuelidate/lib/validators";
 import { errors } from "django-airavata-common-ui";
 export default {
   mixins: [validationMixin],
-  props: ["extendedUserProfileField"],
+  props: ["extendedUserProfileField", "disabled"],
   computed: {
     ...mapGetters("extendedUserProfile", ["extendedUserProfileFields"]),
     name: {

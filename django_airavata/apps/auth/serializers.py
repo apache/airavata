@@ -126,11 +126,12 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
     choices = ExtendedUserProfileFieldChoiceSerializer(required=False, many=True)
     checkbox_label = serializers.CharField(allow_blank=True, required=False)
     links = ExtendedUserProfileFieldLinkSerializer(required=False, many=True)
+    userHasWriteAccess = serializers.SerializerMethodField()
 
     class Meta:
         model = models.ExtendedUserProfileField
         fields = ['id', 'name', 'help_text', 'order', 'created_date',
-                  'updated_date', 'field_type', 'other', 'choices', 'checkbox_label', 'links', 'required']
+                  'updated_date', 'field_type', 'other', 'choices', 'checkbox_label', 'links', 'required', 'userHasWriteAccess']
         read_only_fields = ('created_date', 'updated_date')
 
     def to_representation(self, instance):
@@ -228,6 +229,10 @@ class ExtendedUserProfileFieldSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+    def get_userHasWriteAccess(self, extendedUserProfileField):
+        request = self.context['request']
+        return request.is_gateway_admin
 
 
 class ExtendedUserProfileValueSerializer(serializers.ModelSerializer):
