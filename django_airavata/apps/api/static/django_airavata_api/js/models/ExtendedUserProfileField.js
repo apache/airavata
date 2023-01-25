@@ -32,6 +32,7 @@ const FIELDS = [
   },
   "other",
   "required",
+  "userHasWriteAccess",
 ];
 
 export default class ExtendedUserProfileField extends BaseModel {
