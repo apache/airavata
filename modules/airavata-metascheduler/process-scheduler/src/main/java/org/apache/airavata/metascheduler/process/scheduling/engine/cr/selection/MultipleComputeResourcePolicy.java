@@ -35,41 +35,41 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
             if (optionalComputationalResourceSchedulingModel.isPresent()) {
                 return optionalComputationalResourceSchedulingModel;
             } else {
-
-            }
-            ProcessModel processModel = registryClient.getProcess(processId);
-
-            ExperimentModel experiment = registryClient.getExperiment(processModel.getExperimentId());
+                ProcessModel processModel = registryClient.getProcess(processId);
 
 
-            UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
+                ExperimentModel experiment = registryClient.getExperiment(processModel.getExperimentId());
 
-            // Assume scheduling data is populated in USER_CONFIGURATION_DATA_MODEL
-            ComputationalResourceSchedulingModel computationalResourceSchedulingModel = userConfigurationDataModel
-                    .getComputationalResourceScheduling();
 
-            int crPoolFraction = ServerSettings.getMetaschedulerMultipleCREnablingFactor();
+                UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
 
-            List<ComputeResourcePolicy> policyList = registryClient.
-                    getGroupComputeResourcePolicyList(processModel.getGroupResourceProfileId());
+                // Assume scheduling data is populated in USER_CONFIGURATION_DATA_MODEL
+                ComputationalResourceSchedulingModel computationalResourceSchedulingModel = userConfigurationDataModel
+                        .getComputationalResourceScheduling();
 
-            int count = 0;
-            int maxCount = (int) (policyList.size() * crPoolFraction);
+                int crPoolFraction = ServerSettings.getMetaschedulerMultipleCREnablingFactor();
 
-            while (count < maxCount) {
-                ComputeResourcePolicy resourcePolicy = policyList.get(count);
-                List<String> queues = resourcePolicy.getAllowedBatchQueues();
+                List<ComputeResourcePolicy> policyList = registryClient.
+                        getGroupComputeResourcePolicyList(processModel.getGroupResourceProfileId());
 
-                String computeResourceId = resourcePolicy.getComputeResourceId();
-                ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
+                int count = 0;
+                int maxCount = (int) (policyList.size() * crPoolFraction);
 
-                if (!queues.isEmpty()) {
-                    QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(), queues.get(0));
-                    if (queueStatusModel.isQueueUp()) {
-                        return Optional.of(computationalResourceSchedulingModel);
+                while (count < maxCount) {
+                    ComputeResourcePolicy resourcePolicy = policyList.get(count);
+                    List<String> queues = resourcePolicy.getAllowedBatchQueues();
+
+                    String computeResourceId = resourcePolicy.getComputeResourceId();
+                    ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
+
+                    if (!queues.isEmpty()) {
+                        QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(), queues.get(0));
+                        if (queueStatusModel.isQueueUp()) {
+                            return Optional.of(computationalResourceSchedulingModel);
+                        }
                     }
+                    count++;
                 }
-                count++;
             }
 
         } catch (Exception exception) {
