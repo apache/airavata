@@ -16,7 +16,7 @@ public interface ComputeResourceSelectionPolicy {
      * @param experimentId
      * @return Optional<ComputationalResourceSchedulingModel>
      */
-    Optional<ComputationalResourceSchedulingModel> selectComputeResource(String experimentId);
+    Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId);
 
 
 

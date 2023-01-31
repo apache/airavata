@@ -152,6 +152,11 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
     public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD= "metascheduler.maximum.rescheduler.threshold";
+    public static final String METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR= "metascheduler.multiple.cr.enabling.factor";
+    public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
+    public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
+    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
+    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
 
 
 
@@ -532,6 +537,16 @@ public class ServerSettings extends ApplicationSettings {
                 "");
     }
 
+    public static String getDataAnalyzingEnabledGateways() throws ApplicationSettingsException {
+        return getSetting(DATA_ANALYZER_ENABLED_GATEWAYS,
+                "");
+    }
+
+    public static int getDataAnalyzerTimeStep() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(DATA_ANALYZER_TIME_STEP_IN_SECONDS,
+                "1"));
+    }
+
     public static double getMetaschedulerScanningInterval() throws ApplicationSettingsException {
         return Double.parseDouble(getSetting(METASCHEDULER_SCANNING_INTERVAL,
                 "1800000"));
@@ -542,9 +557,24 @@ public class ServerSettings extends ApplicationSettings {
                 "1"));
     }
 
+    public static double getDataAnalyzerScanningInterval() throws ApplicationSettingsException {
+        return Double.parseDouble(getSetting(DATA_ANALYZER_SCANNING_INTERVAL,
+                "1800000"));
+    }
+
+    public static int getDataAnalyzerNoOfScanningParallelJobs() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS,
+                "1"));
+    }
+
     public static int getMetaschedulerReschedulingThreshold() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD,
                 "5"));
+    }
+
+    public static int getMetaschedulerMultipleCREnablingFactor() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR,
+                "0.5"));
     }
 
 
