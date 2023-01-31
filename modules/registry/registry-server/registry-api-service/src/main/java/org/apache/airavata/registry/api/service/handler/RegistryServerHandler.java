@@ -1082,6 +1082,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+
+    @Override
+    public int getJobCount(org.apache.airavata.model.status.JobStatus jobStatus,
+                           String gatewayId, double searchBackTimeInMinutes) throws RegistryServiceException, TException {
+
+     List<JobStatus> jobStatusList = jobStatusRepository.
+             getDistinctListofJobStatus(jobStatus.getJobState().name(),gatewayId,searchBackTimeInMinutes);
+     return  jobStatusList.size();
+    }
+
     private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
         if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
             List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
