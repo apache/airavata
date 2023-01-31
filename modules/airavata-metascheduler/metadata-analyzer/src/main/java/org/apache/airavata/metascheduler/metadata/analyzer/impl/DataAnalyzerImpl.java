@@ -10,6 +10,10 @@ public class DataAnalyzerImpl implements DataAnalyzer {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
+
+
+
+
     }
 
 

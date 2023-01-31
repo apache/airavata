@@ -155,6 +155,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR= "metascheduler.multiple.cr.enabling.factor";
     public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
     public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
+    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
+    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
 
 
 
@@ -533,6 +535,16 @@ public class ServerSettings extends ApplicationSettings {
     public static String getMetaschedulerUsername() throws ApplicationSettingsException {
         return getSetting(METASCHEDULER_USERNAME,
                 "");
+    }
+
+    public static String getDataAnalyzingEnabledGateways() throws ApplicationSettingsException {
+        return getSetting(DATA_ANALYZER_ENABLED_GATEWAYS,
+                "");
+    }
+
+    public static int getDataAnalyzerTimeStep() throws ApplicationSettingsException {
+        return Integer.parseInt(getSetting(DATA_ANALYZER_TIME_STEP_IN_SECONDS,
+                "1"));
     }
 
     public static double getMetaschedulerScanningInterval() throws ApplicationSettingsException {
