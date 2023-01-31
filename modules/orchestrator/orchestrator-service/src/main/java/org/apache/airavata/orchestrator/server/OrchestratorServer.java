@@ -22,6 +22,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMonitoringService;
+import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.util.Constants;
@@ -49,6 +50,8 @@ public class OrchestratorServer implements IServer {
     private static ComputationalResourceMonitoringService monitoringService;
 
     private static ProcessReschedulingService metaschedulerService;
+
+    private static DataInterpreterService dataInterpreterService;
 
 //	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
@@ -139,6 +142,22 @@ public class OrchestratorServer implements IServer {
         }
     }
 
+    public void startMetadataDataAnalyzer() throws SchedulerException, ApplicationSettingsException {
+        try {
+            if (dataInterpreterService == null) {
+                dataInterpreterService = new DataInterpreterService();
+                dataInterpreterService.setServerStatus(ServerStatus.STARTING);
+            }
+            if (dataInterpreterService != null && !dataInterpreterService.getStatus().equals(ServerStatus.STARTED)) {
+                dataInterpreterService.start();
+                dataInterpreterService.setServerStatus(ServerStatus.STARTED);
+                logger.info("Airavata data interpreter job scanning service started ....");
+            }
+        } catch (Exception ex) {
+            logger.error("Airavata data interpreter job scanning service failed ....",ex);
+        }
+    }
+
     public static void main(String[] args) {
         try {
             new OrchestratorServer().start();
@@ -157,6 +176,11 @@ public class OrchestratorServer implements IServer {
         if (ServerSettings.enableMetaschedulerJobScanning()) {
             //starting cluster status monitoring
             startMetaschedulerJobScanning();
+        }
+
+        if (ServerSettings.enableDataAnalyzerJobScanning()) {
+            //starting metadata analyzer
+            startMetadataDataAnalyzer();
         }
 
 
