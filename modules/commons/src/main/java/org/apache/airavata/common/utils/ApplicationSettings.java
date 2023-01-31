@@ -464,6 +464,9 @@ public class ApplicationSettings {
     public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
         return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
     }
+    public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
+        return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
+    }
 
     public static String getUserProfileServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);

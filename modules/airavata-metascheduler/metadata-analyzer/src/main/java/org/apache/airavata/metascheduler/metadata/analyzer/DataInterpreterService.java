@@ -1,8 +1,9 @@
-package org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler;
+package org.apache.airavata.metascheduler.metadata.analyzer;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.metascheduler.process.scheduling.utils.Constants;
+import org.apache.airavata.metascheduler.metadata.analyzer.impl.DataAnalyzerImpl;
+import org.apache.airavata.metascheduler.metadata.analyzer.utils.Constants;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
@@ -12,18 +13,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Process rescheduling service to scann the Queue or Requeued services and relaunch them.
- */
-public class ProcessReschedulingService implements IServer {
+public class DataInterpreterService implements IServer {
 
-    private final static Logger logger = LoggerFactory.getLogger(ProcessReschedulingService.class);
-    private static final String SERVER_NAME = "Airavata Process Rescheduling Service";
+    private final static Logger logger = LoggerFactory.getLogger(DataInterpreterService.class);
+    private static final String SERVER_NAME = "Data Interpreter Service";
     private static final String SERVER_VERSION = "1.0";
 
     private static ServerStatus status;
     private static Scheduler scheduler;
     private static Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
+
 
 
     @Override
@@ -38,30 +37,29 @@ public class ProcessReschedulingService implements IServer {
 
     @Override
     public void start() throws Exception {
-
         jobTriggerMap.clear();
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         scheduler = schedulerFactory.getScheduler();
 
-        final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerScanningInterval();
+        final int parallelJobs = ServerSettings.getDataAnalyzerNoOfScanningParallelJobs();
+        final double scanningInterval = ServerSettings.getDataAnalyzerScanningInterval();
 
 
         for (int i = 0; i < parallelJobs; i++) {
-            String name = Constants.PROCESS_SCANNER_TRIGGER + "_" + i;
+            String name = Constants.METADATA_SCANNER_TRIGGER + "_" + i;
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(name, Constants.PROCESS_SCANNER_GROUP)
+                    .withIdentity(name, Constants.METADATA_SCANNER_GROUP)
                     .startNow()
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                             .withIntervalInSeconds((int) scanningInterval)
                             .repeatForever())
                     .build();
 
-            String jobName = Constants.PROCESS_SCANNER_JOB + "_" + i;
+            String jobName = Constants.METADATA_SCANNER_JOB + "_" + i;
 
             JobDetail jobC = JobBuilder
-                    .newJob(ProcessScannerImpl.class)
-                    .withIdentity(jobName, Constants.PROCESS_SCANNER_JOB)
+                    .newJob(DataAnalyzerImpl.class)
+                    .withIdentity(jobName, Constants.METADATA_SCANNER_JOB)
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }
@@ -102,5 +100,4 @@ public class ProcessReschedulingService implements IServer {
     public void setServerStatus(ServerStatus status) {
         this.status = status;
     }
-
 }
