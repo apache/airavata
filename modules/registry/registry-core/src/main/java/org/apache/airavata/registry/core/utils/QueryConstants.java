@@ -199,10 +199,10 @@ public interface QueryConstants {
     String DELETE_JOB_NATIVE_QUERY = "DELETE FROM JOB WHERE JOB_ID = ?1 AND TASK_ID = ?2";
 
 
-    String FIND_JOB_COUNT_NATIVE_QUERY = "SELECT DISTINCT JS FROM "+ JobStatusEntity.class.getSimpleName()+" JS WHERE JS.JOB_ID IN " +
-            "(SELECT J.JOB_ID FROM "+ JobEntity.class.getSimpleName()+" J where J.PROCESS_ID IN " +
-            "(SELECT P.PROCESS_ID FROM "+ ProcessEntity.class.getSimpleName()+ " P  where P.EXPERIMENT_ID IN " +
-            "(SELECT E.EXPERIMENT_ID FROM "+ExperimentEntity.class.getSimpleName()+" E where E.GATEWAY_ID= ?1))) " +
+    String FIND_JOB_COUNT_NATIVE_QUERY = "SELECT DISTINCT JS FROM JOB_STATUS JS WHERE JS.JOB_ID IN " +
+            "(SELECT J.JOB_ID FROM JOB J where J.PROCESS_ID IN " +
+            "(SELECT P.PROCESS_ID FROM PROCESS P  where P.EXPERIMENT_ID IN " +
+            "(SELECT E.EXPERIMENT_ID FROM EXPERIMENT E where E.GATEWAY_ID= ?1))) " +
             "AND JS.STATE = ?2 and JS.TIME_OF_STATE_CHANGE > now() - interval ?3 minute";
 
 
