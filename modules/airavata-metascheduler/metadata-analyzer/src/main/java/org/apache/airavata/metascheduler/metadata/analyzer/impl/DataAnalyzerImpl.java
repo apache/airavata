@@ -49,7 +49,7 @@ public class DataAnalyzerImpl implements DataAnalyzer {
 
             double fifteenMinuteAverage = fifteenMinuteCount * time / (10 * 60);
 
-            LOGGER.info("service rate: 5 min avg" + fiveMinuteAverage + " 10 min avg "
+            LOGGER.info("service rate: 5 min avg " + fiveMinuteAverage + " 10 min avg "
                     + tenMinuteAverage + " 15 min avg " + fifteenMinuteAverage);
 
         } catch (Exception ex) {
