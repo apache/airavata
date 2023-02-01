@@ -18,12 +18,15 @@
  */
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
+
+import javax.print.attribute.standard.JobState;
 
 public interface QueryConstants {
 
@@ -194,4 +197,13 @@ public interface QueryConstants {
     String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
 
     String DELETE_JOB_NATIVE_QUERY = "DELETE FROM JOB WHERE JOB_ID = ?1 AND TASK_ID = ?2";
+
+
+    String FIND_JOB_COUNT = "SELECT DISTINCT JS FROM "+ JobStatusEntity.class.getSimpleName()+"  WHERE JS.JOB_ID IN " +
+            "( SELECT J.JOB_ID FROM"+ JobEntity.class.getSimpleName()+" J where J.PROCESS_ID IN " +
+            "(SELECT P.PROCESS_ID FROM"+ ProcessEntity.class.getSimpleName()+ "P  where P.EXPERIMENT_ID IN " +
+            "(SELECT E.EXPERIMENT_ID FROM"+ExperimentEntity.class.getSimpleName()+"E where E.GATEWAY_ID= :"+DBConstants.Job.GATEWAY_ID+"))) " +
+            "AND JS.STATE= :"+ DBConstants.Job.JOB_STATUS + "and JS.TIME_OF_STATE_CHANGE > now()-interval :"+DBConstants.Job.TIME_INTERVAL +"minute";
+
+
 }
