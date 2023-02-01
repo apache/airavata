@@ -1088,7 +1088,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                            String gatewayId, double searchBackTimeInMinutes) throws RegistryServiceException, TException {
 
      List<JobStatus> jobStatusList = jobStatusRepository.
-             getDistinctListofJobStatus(jobStatus.getJobState().name(),gatewayId,searchBackTimeInMinutes);
+             getDistinctListofJobStatus(gatewayId,jobStatus.getJobState().name(),searchBackTimeInMinutes);
      return  jobStatusList.size();
     }
 

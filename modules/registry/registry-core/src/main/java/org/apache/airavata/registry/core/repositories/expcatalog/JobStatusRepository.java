@@ -108,9 +108,9 @@ public class JobStatusRepository extends ExpCatAbstractRepository<JobStatus, Job
     }
 
 
-    public List<JobStatus> getDistinctListofJobStatus(String status, String gatewayId, double time){
+    public List<JobStatus> getDistinctListofJobStatus(String gatewayId,String status, double time){
         JobStatusRepository jobStatusRepository = new JobStatusRepository();
         return  jobStatusRepository.selectWithNativeQuery(QueryConstants.FIND_JOB_COUNT_NATIVE_QUERY,
-                status,gatewayId,String.valueOf(time));
+                gatewayId,status,String.valueOf(time));
     }
 }
