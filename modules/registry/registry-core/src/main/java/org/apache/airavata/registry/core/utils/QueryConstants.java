@@ -199,11 +199,11 @@ public interface QueryConstants {
     String DELETE_JOB_NATIVE_QUERY = "DELETE FROM JOB WHERE JOB_ID = ?1 AND TASK_ID = ?2";
 
 
-    String FIND_JOB_COUNT = "SELECT DISTINCT JS FROM "+ JobStatusEntity.class.getSimpleName()+"  WHERE JS.JOB_ID IN " +
-            "( SELECT J.JOB_ID FROM"+ JobEntity.class.getSimpleName()+" J where J.PROCESS_ID IN " +
-            "(SELECT P.PROCESS_ID FROM"+ ProcessEntity.class.getSimpleName()+ "P  where P.EXPERIMENT_ID IN " +
-            "(SELECT E.EXPERIMENT_ID FROM"+ExperimentEntity.class.getSimpleName()+"E where E.GATEWAY_ID= :"+DBConstants.Job.GATEWAY_ID+"))) " +
-            "AND JS.STATE= :"+ DBConstants.Job.JOB_STATUS + "and JS.TIME_OF_STATE_CHANGE > now()-interval :"+DBConstants.Job.TIME_INTERVAL +"minute";
+    String FIND_JOB_COUNT = "SELECT DISTINCT JS FROM "+ JobStatusEntity.class.getSimpleName()+" JS WHERE JS.JOB_ID IN " +
+            "(SELECT J.JOB_ID FROM "+ JobEntity.class.getSimpleName()+" J where J.PROCESS_ID IN " +
+            "(SELECT P.PROCESS_ID FROM "+ ProcessEntity.class.getSimpleName()+ " P  where P.EXPERIMENT_ID IN " +
+            "(SELECT E.EXPERIMENT_ID FROM "+ExperimentEntity.class.getSimpleName()+" E where E.GATEWAY_ID= :"+DBConstants.Job.GATEWAY_ID+" ))) " +
+            "AND JS.STATE= :"+ DBConstants.Job.JOB_STATUS + " and JS.TIME_OF_STATE_CHANGE > now() - interval :"+DBConstants.Job.TIME_INTERVAL +" minute";
 
 
 }
