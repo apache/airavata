@@ -135,6 +135,10 @@ public class DBConstants {
         public static final String PROCESS_ID = "processId";
         public static final String TASK_ID = "taskId";
         public static final String JOB_ID = "jobId";
+        public static final String GATEWAY_ID="gatewayId";
+        public static final String TIME_INTERVAL="timeInterval";
+        public static final String JOB_STATUS="jobStatus";
+
     }
 
     public static class ExperimentSummary {

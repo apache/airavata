@@ -160,4 +160,6 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         execute(QueryConstants.DELETE_JOB_NATIVE_QUERY,jobModel.getJobId(),jobModel.getTaskId());
     }
 
+
+
 }
