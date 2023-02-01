@@ -110,10 +110,7 @@ public class JobStatusRepository extends ExpCatAbstractRepository<JobStatus, Job
 
     public List<JobStatus> getDistinctListofJobStatus(String status, String gatewayId, double time){
         JobStatusRepository jobStatusRepository = new JobStatusRepository();
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.Job.JOB_STATUS, status);
-        queryParameters.put(DBConstants.Job.GATEWAY_ID,gatewayId);
-        queryParameters.put(DBConstants.Job.TIME_INTERVAL, String.valueOf(time));
-        return  jobStatusRepository.select(QueryConstants.FIND_JOB_COUNT, -1, 0, queryParameters);
+        return  jobStatusRepository.selectWithNativeQuery(QueryConstants.FIND_JOB_COUNT_NATIVE_QUERY,
+                status,gatewayId,String.valueOf(time));
     }
 }
