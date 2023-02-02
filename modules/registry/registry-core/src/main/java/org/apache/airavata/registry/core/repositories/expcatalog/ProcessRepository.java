@@ -35,6 +35,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -205,13 +206,13 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         List<Object>  helixTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY,
                 gatewayId,String.valueOf(searchTime));
         if(orchTimeList.size()>0 && orchTimeList.get(0) != null){
-            timeDistributions.put(DBConstants.MetaData.ORCH_TIME,Double.parseDouble((String) orchTimeList.get(0)));
+            timeDistributions.put(DBConstants.MetaData.ORCH_TIME, ((BigDecimal)orchTimeList.get(0)).doubleValue());
         }
         if(queueingTimeList.size()>0 && queueingTimeList.get(0) != null){
-            timeDistributions.put(DBConstants.MetaData.QUEUED_TIME,Double.parseDouble((String) queueingTimeList.get(0)));
+            timeDistributions.put(DBConstants.MetaData.QUEUED_TIME,((BigDecimal)queueingTimeList.get(0)).doubleValue());
         }
         if(helixTimeList.size()>0 && helixTimeList.get(0) != null){
-            timeDistributions.put(DBConstants.MetaData.HELIX,Double.parseDouble((String) helixTimeList.get(0)));
+            timeDistributions.put(DBConstants.MetaData.HELIX,((BigDecimal)helixTimeList.get(0)).doubleValue());
         }
         return timeDistributions;
     }
