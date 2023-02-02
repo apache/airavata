@@ -1092,6 +1092,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
      return  jobStatusList.size();
     }
 
+
+
+    @Override
+    public Map<String,Double> getAVGTimeDistribution(String gatewayId, double searchBackTimeInMinutes)
+            throws RegistryServiceException, TException {
+       return processRepository.getAVGTimeDistribution(gatewayId,searchBackTimeInMinutes);
+    }
+
     private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
         if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
             List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);

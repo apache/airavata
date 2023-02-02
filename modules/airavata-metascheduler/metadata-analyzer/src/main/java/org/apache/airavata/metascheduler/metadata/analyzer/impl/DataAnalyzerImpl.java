@@ -13,6 +13,8 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class DataAnalyzerImpl implements DataAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAnalyzerImpl.class);
@@ -51,6 +53,13 @@ public class DataAnalyzerImpl implements DataAnalyzer {
 
             LOGGER.info("service rate: 5 min avg " + fiveMinuteAverage + " 10 min avg "
                     + tenMinuteAverage + " 15 min avg " + fifteenMinuteAverage);
+
+            Map<String, Double> timeDistribution = client.getAVGTimeDistribution(gateway,15);
+
+            if(!timeDistribution.isEmpty() && timeDistribution.size()==3) {
+                LOGGER.info("orch Time:  " + timeDistribution.get("orchTime") + " queued Time "
+                        + timeDistribution.get("queuedTime") + " helix Time " + timeDistribution.get("helix"));
+            }
 
         } catch (Exception ex) {
             String msg = "Error occurred while executing data analyzer" + ex.getMessage();

@@ -195,5 +195,26 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         return processRepository.select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
     }
 
+    public Map<String,Double> getAVGTimeDistribution(String gatewayId,double searchTime){
+        ProcessRepository processRepository = new ProcessRepository();
+        Map<String, Double> timeDistributions = new HashMap<>();
+       List<Object>  orchTimeList =  processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY,
+                gatewayId,String.valueOf(searchTime));
+        List<Object>  queueingTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_QUEUED_NATIVE_QUERY,
+                gatewayId,String.valueOf(searchTime));
+        List<Object>  helixTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY,
+                gatewayId,String.valueOf(searchTime));
+        if(orchTimeList.size()>0){
+            timeDistributions.put(DBConstants.MetaData.ORCH_TIME,Double.parseDouble((String) orchTimeList.get(0)));
+        }
+        if(queueingTimeList.size()>0){
+            timeDistributions.put(DBConstants.MetaData.QUEUED_TIME,Double.parseDouble((String) queueingTimeList.get(0)));
+        }
+        if(helixTimeList.size()>0){
+            timeDistributions.put(DBConstants.MetaData.HELIX,Double.parseDouble((String) helixTimeList.get(0)));
+        }
+        return timeDistributions;
+    }
+
 
 }
