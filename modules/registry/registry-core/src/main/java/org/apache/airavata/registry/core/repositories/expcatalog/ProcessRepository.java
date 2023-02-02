@@ -204,17 +204,16 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
                 gatewayId,String.valueOf(searchTime));
         List<Object>  helixTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY,
                 gatewayId,String.valueOf(searchTime));
-        if(orchTimeList.size()>0){
+        if(orchTimeList.size()>0 && orchTimeList.get(0) != null){
             timeDistributions.put(DBConstants.MetaData.ORCH_TIME,Double.parseDouble((String) orchTimeList.get(0)));
         }
-        if(queueingTimeList.size()>0){
+        if(queueingTimeList.size()>0 && queueingTimeList.get(0) != null){
             timeDistributions.put(DBConstants.MetaData.QUEUED_TIME,Double.parseDouble((String) queueingTimeList.get(0)));
         }
-        if(helixTimeList.size()>0){
+        if(helixTimeList.size()>0 && helixTimeList.get(0) != null){
             timeDistributions.put(DBConstants.MetaData.HELIX,Double.parseDouble((String) helixTimeList.get(0)));
         }
         return timeDistributions;
     }
-
 
 }
