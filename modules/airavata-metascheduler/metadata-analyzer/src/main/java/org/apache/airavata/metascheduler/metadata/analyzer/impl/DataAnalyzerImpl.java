@@ -56,10 +56,11 @@ public class DataAnalyzerImpl implements DataAnalyzer {
 
             Map<String, Double> timeDistribution = client.getAVGTimeDistribution(gateway,15);
 
-            if(!timeDistribution.isEmpty() && timeDistribution.size()==3) {
-                LOGGER.info("orch Time:  " + timeDistribution.get("orchTime") + " queued Time "
-                        + timeDistribution.get("queuedTime") + " helix Time " + timeDistribution.get("helix"));
+            String msg ="";
+            for(Map.Entry<String, Double> entry: timeDistribution.entrySet()){
+                msg = " avg time "+entry.getKey()+"  : "+entry.getValue();
             }
+            LOGGER.info(msg);
 
         } catch (Exception ex) {
             String msg = "Error occurred while executing data analyzer" + ex.getMessage();
