@@ -743,6 +743,10 @@ service RegistryService extends base_api.BaseAPI {
            i32 getJobCount(1: required status_models.JobStatus jobStatus, 2: required string gatewayId,
             3:  required double  searchBackTimeInMinutes) throws (1: registry_api_errors.RegistryServiceException rse)
 
+
+           map<string,double> getAVGTimeDistribution(1: required string gatewayId,
+            3:  required double  searchBackTimeInMinutes) throws (1: registry_api_errors.RegistryServiceException rse)
+
            string addProcess (1: required process_model.ProcessModel processModel, 2: required string experimentId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
