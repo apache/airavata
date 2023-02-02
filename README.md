@@ -26,6 +26,13 @@ settings_module = sys.modules[__name__]
 dynamic_apps.merge_settings(settings_module)
 ```
 
+- Note: if the dynamic Django app uses WEBPACK_LOADER, keep in mind that it is
+  important that the version of
+  [django-webpack-loader](https://github.com/django-webpack/django-webpack-loader)
+  and the version of webpack-bundle-tracker be compatible. If you're using
+  django-webpack-loader prior to version 1.0 then a known good pair of versions
+  is django-webpack-loader==0.6.0 and webpack-bundle-tracker==0.4.3.
+
 2. Also add
    `'airavata_django_portal_commons.dynamic_apps.context_processors.custom_app_registry'`
    to the context_processors list:
