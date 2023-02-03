@@ -94,6 +94,12 @@
   become: yes
   when: ansible_distribution == "CentOS"
 
+- name: Install dnf-automatic (Rocky)
+  dnf:
+    name: dnf-automatic
+  become: yes
+  when: ansible_distribution == "Rocky"
+
 - name: Copy dnf-cron.conf config file (Rocky)
   copy:
     src: dnf-cron.conf
