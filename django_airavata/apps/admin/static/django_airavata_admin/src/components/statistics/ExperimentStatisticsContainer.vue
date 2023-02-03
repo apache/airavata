@@ -301,7 +301,7 @@
   </div>
 </template>
 <script>
-import { models, services, utils } from "django-airavata-api";
+import { errors, models, services, utils } from "django-airavata-api";
 import { components, notifications } from "django-airavata-common-ui";
 import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
 import ExperimentDetailsView from "./ExperimentDetailsView";
@@ -560,7 +560,7 @@ export default {
       this.hostnameFilterEnabled = false;
       this.loadStatistics();
     },
-    showExperimentDetails(experimentId, tabTitle = null) {
+    async showExperimentDetails(experimentId, tabTitle = null) {
       const expDetailsIndex = this.getExperimentDetailTabsIndex(experimentId);
       if (expDetailsIndex >= 0) {
         // Update tab title in case it is now loaded from a job id and we want
@@ -570,16 +570,32 @@ export default {
         }
         this.selectExperimentDetailsTab(experimentId);
       } else {
-        services.ExperimentService.retrieve({
-          lookup: experimentId,
-        }).then((exp) => {
+        try {
+          const exp = await services.ExperimentService.retrieve(
+            {
+              lookup: experimentId,
+            },
+            { ignoreErrors: true }
+          );
           this.experimentDetailTabs.push({
             tabTitle: tabTitle || exp.experimentName,
             experiment: exp,
           });
           this.selectExperimentDetailsTab(experimentId);
           this.scrollTabsIntoView();
-        });
+        } catch (error) {
+          if (errors.ErrorUtils.isNotFoundError(error)) {
+            notifications.NotificationList.add(
+              new notifications.Notification({
+                type: "WARNING",
+                message: `No experiment exists with experiment id ${experimentId}`,
+                duration: 5,
+              })
+            );
+          } else {
+            utils.FetchUtils.reportError(error);
+          }
+        }
       }
     },
     async showExperimentDetailsForJobId(jobId) {
