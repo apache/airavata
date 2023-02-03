@@ -30,6 +30,8 @@
     - gcc
     - zlib-devel
     - openssl-devel
+    - make
+    - redhat-rpm-config
   become: yes
 
 - name: Create mod_wsgi directory

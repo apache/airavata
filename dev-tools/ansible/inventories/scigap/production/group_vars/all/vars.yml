@@ -234,4 +234,4 @@ zabbix_subnets: "{{ iu_subnets }}"
 monitoring_subnets: "{{ iu_subnets }}"
 
 # Zabbix
-zabbix_server: "rt-watch.uits.indiana.edu"
+zabbix_server: "rt-monitor.uits.iu.edu"

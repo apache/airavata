@@ -1,0 +1,60 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# TODO: tus not setup yet
+tusd_vhost_servername:
+
+# NOTE: simccs is deployed on scigap13
+gateway_data_store_hostname: "scigap13.sciencegateways.iu.edu"
+gateway_data_store_resource_id: "scigap13.sciencegateways.iu.edu_6af5c97c-a593-443a-9ac4-fdaca1170304"
+
+vhost_servername: "gateway.smiles.iu.edu"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# Increase max upload size to 200MB
+django_file_upload_max_file_size_mb: 200
+
+## Keycloak related variables
+tenant_domain: "smiles"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "SMILES Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "smiles"
+experiment_data_dir: "{{ user_data_dir }}/smiles"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBya+UFROosd6bakQ9u44egbNI0n0aDgjNviif7c7HnUVT1NzmvTy4tqzWJOj5XFsZ0cvM8Csn/BazI93g9YvVxovPnH/gyu3gUZgV/XbV4ZRRmEFXV43K0CzSqRaAHMf7pLPsH4fyuWjKTuJDV3bUXdd75b0TetjzfKwT43moEmLG/G2Je3eMWZ37aHYaDcyCSPgOihZTiQebiqp4draZHvA/+DC4T7KUqRyty8XSW9Vdp8pW09NhY+J7fXg0jbN6W/mCD9OqG/jcPcPc7GpxnNNeUeCQ2yelzJ3UEgIIkO8vnTjotXGThPezRxGh537qCZRuOLpcwZBve+VrtVsT"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+portal_title: "SMILES Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...
