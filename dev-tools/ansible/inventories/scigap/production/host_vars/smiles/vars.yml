@@ -27,7 +27,7 @@ tusd_vhost_servername:
 gateway_data_store_hostname: "scigap13.sciencegateways.iu.edu"
 gateway_data_store_resource_id: "scigap13.sciencegateways.iu.edu_6af5c97c-a593-443a-9ac4-fdaca1170304"
 
-vhost_servername: "gateway.smiles.seagrid.org"
+vhost_servername: "gateway.smiles.iu.edu"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
