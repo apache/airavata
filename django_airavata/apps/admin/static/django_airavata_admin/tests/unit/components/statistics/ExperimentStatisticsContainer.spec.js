@@ -136,9 +136,14 @@ test("load experiment by job id when job id matches unique experiment", async ()
   expect(jobTab).toBeVisible();
 
   // Double check that the experiment services were called to load the experiment
-  expect(services.ExperimentService.retrieve).toHaveBeenCalledWith({
-    lookup: experiment.experimentId,
-  });
+  expect(services.ExperimentService.retrieve).toHaveBeenCalledWith(
+    {
+      lookup: experiment.experimentId,
+    },
+    {
+      ignoreErrors: true,
+    }
+  );
   expect(services.FullExperimentService.retrieve).toHaveBeenCalledWith({
     lookup: experiment.experimentId,
   });
