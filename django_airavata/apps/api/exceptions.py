@@ -1,6 +1,9 @@
 import logging
 
-from airavata.api.error.ttypes import AuthorizationException
+from airavata.api.error.ttypes import (
+    AuthorizationException,
+    ExperimentNotFoundException
+)
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from rest_framework import status
@@ -23,6 +26,12 @@ def custom_exception_handler(exc, context):
         return Response(
             {'detail': str(exc)},
             status=status.HTTP_403_FORBIDDEN)
+
+    if isinstance(exc, ExperimentNotFoundException):
+        log.warning("ExperimentNotFoundException", exc_info=exc)
+        return Response(
+            {'detail': str(exc)},
+            status=status.HTTP_404_NOT_FOUND)
 
     if isinstance(exc, TTransport.TTransportException):
         log.warning("TTransportException", exc_info=exc)

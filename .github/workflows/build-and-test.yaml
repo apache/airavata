@@ -1,0 +1,93 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+name: Build and Test
+on: [push]
+jobs:
+  build-js:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js as specified in .nvmrc
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
+      - name: Run ESLint on JavaScript code
+        run: |
+          ./lint_js.sh
+      - name: Build JavaScript code
+        run: |
+          ./build_js.sh
+      - name: Run JavaScript unit tests
+        run: |
+          ./test_js.sh
+      - uses: actions/upload-artifact@v3
+        with:
+          name: built-javascript
+          path: |
+            django_airavata/apps/api/static/django_airavata_api/dist
+            django_airavata/static/common/dist
+            django_airavata/apps/admin/static/django_airavata_admin/dist
+            django_airavata/apps/groups/static/django_airavata_groups/dist
+            django_airavata/apps/auth/static/django_airavata_auth/dist
+            django_airavata/apps/workspace/static/django_airavata_workspace/dist
+            django_airavata/apps/workspace/static/django_airavata_workspace/wc
+            django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist
+
+  build:
+    # ubuntu-22 doesn't support Python 3.6
+    runs-on: ubuntu-20.04
+    needs: build-js
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -r requirements-dev.txt
+      - name: Run Django Migrate and Check
+        run: |
+          cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
+          python manage.py migrate
+          python manage.py check
+      - name: Run flake8
+        run: |
+          flake8 .
+      # Need the built frontend client code before running some of the Django tests
+      # that use the Django test Client
+      - uses: actions/download-artifact@v3
+        with:
+          name: built-javascript
+          path: django_airavata
+      - name: Run Django unit tests
+        run: |
+          ./runtests.py

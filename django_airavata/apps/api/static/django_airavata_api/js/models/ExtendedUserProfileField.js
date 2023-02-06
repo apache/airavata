@@ -32,6 +32,7 @@ const FIELDS = [
   },
   "other",
   "required",
+  { name: "userHasWriteAccess", type: "boolean", default: true },
 ];
 
 export default class ExtendedUserProfileField extends BaseModel {
