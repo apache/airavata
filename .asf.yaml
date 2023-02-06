@@ -21,7 +21,7 @@ notifications:
   # Send all issue emails (new, closed, comments) to issues@
   issues:               issues@airavata.apache.org
   # Send new/closed PR notifications to dev@
-  pullrequests_status:  custos@airavata.apache.org
+  pullrequests_status:  issues@airavata.apache.org
   # Send individual PR comments/reviews to issues@
   pullrequests_comment: issues@airavata.apache.org
   
