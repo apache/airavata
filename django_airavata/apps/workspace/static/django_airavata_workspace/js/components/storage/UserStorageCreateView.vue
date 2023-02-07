@@ -10,7 +10,7 @@
         </p>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="userHasWriteAccess">
       <div class="col">
         <uppy
           class="mb-1"
@@ -55,6 +55,9 @@ export default {
     },
     username() {
       return session.Session.username;
+    },
+    userHasWriteAccess() {
+      return this.userStoragePath.userHasWriteAccess;
     },
   },
   data() {

@@ -9,6 +9,7 @@
       :include-delete-action="false"
       :include-select-file-action="true"
       :include-create-file-action="false"
+      :include-download-action="false"
       :download-in-new-window="true"
       :selected-data-product-uris="selectedDataProductUris"
     >

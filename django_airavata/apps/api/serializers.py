@@ -70,7 +70,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import serializers
 
-from . import models, thrift_utils
+from . import models, thrift_utils, view_utils
 
 log = logging.getLogger(__name__)
 
@@ -939,7 +939,22 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
         lookup_url_kwarg='parser_id')
 
 
-class UserStorageFileSerializer(serializers.Serializer):
+class UserHasWriteAccessToPathSerializer(serializers.Serializer):
+    userHasWriteAccess = serializers.SerializerMethodField()
+
+    def get_userHasWriteAccess(self, instance):
+        request = self.context['request']
+        is_shared_dir = view_utils.is_shared_dir(instance["path"])
+        is_shared_path = view_utils.is_shared_path(instance["path"])
+        if is_shared_dir:
+            return False
+        elif is_shared_path:
+            return request.is_gateway_admin
+        else:
+            return True
+
+
+class UserStorageFileSerializer(UserHasWriteAccessToPathSerializer):
     name = serializers.CharField()
     downloadURL = serializers.SerializerMethodField()
     dataProductURI = serializers.CharField(source='data-product-uri')
@@ -955,7 +970,7 @@ class UserStorageFileSerializer(serializers.Serializer):
         return user_storage.get_lazy_download_url(request, data_product_uri=file['data-product-uri'])
 
 
-class UserStorageDirectorySerializer(serializers.Serializer):
+class UserStorageDirectorySerializer(UserHasWriteAccessToPathSerializer):
     name = serializers.CharField()
     path = serializers.CharField()
     createdTime = serializers.DateTimeField(source='created_time')
@@ -966,9 +981,13 @@ class UserStorageDirectorySerializer(serializers.Serializer):
         view_name='django_airavata_api:user-storage-items',
         lookup_field='path',
         lookup_url_kwarg='path')
+    isSharedDir = serializers.SerializerMethodField()
+
+    def get_isSharedDir(self, directory):
+        return view_utils.is_shared_dir(directory["path"])
 
 
-class UserStoragePathSerializer(serializers.Serializer):
+class UserStoragePathSerializer(UserHasWriteAccessToPathSerializer):
     isDir = serializers.BooleanField()
     directories = UserStorageDirectorySerializer(many=True)
     files = UserStorageFileSerializer(many=True)

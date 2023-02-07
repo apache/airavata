@@ -35,6 +35,9 @@
           @click="directorySelected(data.item)"
         >
           <i class="fa fa-folder-open"></i> {{ data.item.name }}
+          <template v-if="data.item.isSharedDir">
+            <b-badge class="ml-1">shared</b-badge>
+          </template>
         </b-link>
         <user-storage-link
           v-else
@@ -58,7 +61,7 @@
         </b-button>
 
         <b-link
-          v-if="data.item.type === 'file'"
+          v-if="includeDownloadAction && data.item.type === 'file'"
           class="action-link"
           :href="`${data.item.downloadURL}&download`"
         >
@@ -66,14 +69,17 @@
           <i class="fa fa-download" aria-hidden="true"></i>
         </b-link>
         <b-link
-          v-if="data.item.type === 'dir'"
+          v-if="includeDownloadAction && data.item.type === 'dir'"
           class="action-link"
           :href="`/sdk/download-dir/?path=${data.item.path}`"
         >
           Download Zip
           <i class="fa fa-file-archive" aria-hidden="true"></i>
         </b-link>
-        <delete-link v-if="includeDeleteAction" @delete="deleteItem(data.item)">
+        <delete-link
+          v-if="includeDeleteAction && data.item.userHasWriteAccess"
+          @delete="deleteItem(data.item)"
+        >
           Are you sure you want to delete <strong>{{ data.item.name }}</strong
           >?
         </delete-link>
@@ -110,6 +116,10 @@ export default {
       default: false,
     },
     includeCreateFileAction: {
+      type: Boolean,
+      default: true,
+    },
+    includeDownloadAction: {
       type: Boolean,
       default: true,
     },
@@ -179,6 +189,8 @@ export default {
               modifiedTime: d.modifiedTime,
               modifiedTimestamp: d.modifiedTime.getTime(), // for sorting
               size: d.size,
+              userHasWriteAccess: d.userHasWriteAccess,
+              isSharedDir: d.isSharedDir,
             };
           });
         const files = this.userStoragePath.files.map((f) => {
@@ -191,6 +203,7 @@ export default {
             modifiedTime: f.modifiedTime,
             modifiedTimestamp: f.modifiedTime.getTime(), // for sorting
             size: f.size,
+            userHasWriteAccess: f.userHasWriteAccess,
           };
         });
         return dirs.concat(files);
@@ -200,6 +213,9 @@ export default {
     },
     downloadTarget() {
       return this.downloadInNewWindow ? "_blank" : "_self";
+    },
+    userHasWriteAccess() {
+      return this.userStoragePath.userHasWriteAccess;
     },
   },
   methods: {

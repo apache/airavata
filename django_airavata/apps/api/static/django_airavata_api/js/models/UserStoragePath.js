@@ -23,6 +23,11 @@ const FIELDS = [
     type: "boolean",
     list: false,
   },
+  {
+    name: "userHasWriteAccess",
+    type: "boolean",
+    default: true,
+  },
 ];
 
 export default class UserStoragePath extends BaseModel {

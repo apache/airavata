@@ -8,6 +8,7 @@ const FIELDS = [
   { name: "modifiedTime", type: "date" },
   "size",
   "mimeType",
+  "userHasWriteAccess",
 ];
 
 export default class UserStorageFile extends BaseModel {
