@@ -20,7 +20,7 @@ ansible-core==2.13.1
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.12
-cryptography==36.0.2
+cryptography==39.0.1
 docker==5.0.3
 idna==3.3
 Jinja2==3.1.1
