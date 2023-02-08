@@ -103,6 +103,6 @@ delta ansible_host=149.165.153.181 ansible_user=exouser
 simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
 
 # simvascular server
-simvascular ansible_host=simvascular.stanford.edu ansible_user=gateway
+# simvascular ansible_host=simvascular.stanford.edu ansible_user=gateway
 # we can remove this once the migration is complete
 simvascular_old ansible_host=156.56.104.84
