@@ -23,6 +23,8 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 airavata_django_extra_dependencies:
+  # Production server has gdal library 3.4 installed
+  - name: "GDAL<3.5"
   - name: "git+https://github.com/Global-Flood-Assessment/global-floods-django-app.git#egg=global_floods_django_app"
     editable: true
 
