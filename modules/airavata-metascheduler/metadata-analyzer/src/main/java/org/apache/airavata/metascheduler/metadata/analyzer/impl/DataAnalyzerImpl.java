@@ -58,7 +58,7 @@ public class DataAnalyzerImpl implements DataAnalyzer {
 
             String msg ="";
             for(Map.Entry<String, Double> entry: timeDistribution.entrySet()){
-                msg = " avg time "+entry.getKey()+"  : "+entry.getValue();
+                msg = msg+ " avg time "+entry.getKey()+"  : "+entry.getValue();
             }
             LOGGER.info(msg);
 
