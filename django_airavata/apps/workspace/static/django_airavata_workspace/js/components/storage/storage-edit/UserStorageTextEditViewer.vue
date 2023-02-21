@@ -2,8 +2,12 @@
   <div>
     <div class="user-storage-file-edit-viewer-status">
       <div class="user-storage-file-edit-viewer-status-message">
-        <span v-if="editAvailable && saved">All the changes are saved.</span>
-        <span v-if="editAvailable && !saved">Changes are not saved.</span>
+        <span v-if="editAvailable && !readOnly && saved"
+          >All the changes are saved.</span
+        >
+        <span v-if="editAvailable && !readOnly && !saved"
+          >Changes are not saved.</span
+        >
       </div>
       <div class="user-storage-file-edit-viewer-status-actions">
         <user-storage-download-button
@@ -11,7 +15,7 @@
           :file-name="fileName"
         />
         <b-button
-          v-if="editAvailable"
+          v-if="editAvailable && !readOnly"
           :disabled="saved"
           @click="fileContentChanged"
           >Save</b-button
@@ -76,6 +80,12 @@ export default {
     editAvailable() {
       return !this.dataProduct || this.dataProduct.filesize < MAX_EDIT_FILESIZE;
     },
+    userHasWriteAccess() {
+      return this.dataProduct && this.dataProduct.userHasWriteAccess;
+    },
+    readOnly() {
+      return !this.userHasWriteAccess;
+    },
   },
   methods: {
     fileContentChanged() {
@@ -124,6 +134,7 @@ export default {
         scrollbarStyle: "native",
         extraKeys: { "Ctrl-Space": "autocomplete" },
         value: value,
+        readOnly: this.readOnly,
       });
       this.editor.on("change", () => {
         this.saved = false;

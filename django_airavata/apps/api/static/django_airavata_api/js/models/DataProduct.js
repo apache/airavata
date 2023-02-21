@@ -29,6 +29,7 @@ const FIELDS = [
   "downloadURL",
   "isInputFileUpload",
   "filesize",
+  "userHasWriteAccess",
 ];
 
 const FILENAME_REGEX = /[^/]+$/;

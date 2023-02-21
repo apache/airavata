@@ -2,6 +2,7 @@ import copy
 import datetime
 import json
 import logging
+from pathlib import Path
 from urllib.parse import quote
 
 from airavata.model.appcatalog.appdeployment.ttypes import (
@@ -548,6 +549,7 @@ class DataProductSerializer(
     downloadURL = serializers.SerializerMethodField()
     isInputFileUpload = serializers.SerializerMethodField()
     filesize = serializers.SerializerMethodField()
+    userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field. Returns None if file is not available."""
@@ -570,6 +572,19 @@ class DataProductSerializer(
             return metadata['size']
         else:
             return 0
+
+    def get_userHasWriteAccess(self, data_product: DataProductModel):
+        request = self.context['request']
+        file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product.productUri)
+        if "userHasWriteAccess" in file_metadata:
+            return file_metadata["userHasWriteAccess"]
+        else:
+            path = file_metadata["path"]
+            shared_path = view_utils.is_shared_path(path)
+            if shared_path:
+                # Only admins can edit files/directories in a shared directory
+                return request.is_gateway_admin
+            return True
 
 
 # TODO move this into airavata_sdk?
@@ -944,6 +959,26 @@ class UserHasWriteAccessToPathSerializer(serializers.Serializer):
 
     def get_userHasWriteAccess(self, instance):
         request = self.context['request']
+        # Special handling when using remote API to access user data storage
+        if hasattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API'):
+            if "userHasWriteAccess" in instance:
+                return instance["userHasWriteAccess"]
+            elif instance.get("isDir", False):
+                path = Path(instance.get("path", ""))
+                if path != Path(""):
+                    # get parent directory listing and use that to figure out if
+                    # there is write access to this directory
+                    directories, _ = user_storage.listdir(request, path.parent)
+                    for d in directories:
+                        if Path(d["path"]) == path:
+                            return d.get("userHasWriteAccess", False)
+                    return False
+                else:
+                    # User always has write access on home directory
+                    return True
+            else:
+                return False
+
         is_shared_dir = view_utils.is_shared_dir(instance["path"])
         is_shared_path = view_utils.is_shared_path(instance["path"])
         if is_shared_dir:
@@ -984,6 +1019,8 @@ class UserStorageDirectorySerializer(UserHasWriteAccessToPathSerializer):
     isSharedDir = serializers.SerializerMethodField()
 
     def get_isSharedDir(self, directory):
+        if "isSharedDir" in directory:
+            return directory["isSharedDir"]
         return view_utils.is_shared_dir(directory["path"])
 
 
