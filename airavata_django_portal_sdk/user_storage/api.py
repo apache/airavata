@@ -465,6 +465,8 @@ def get_data_product_metadata(request, data_product=None, data_product_uri=None)
         file['mime_type'] = mime_type
         # TODO: remove this, there's no need for hidden files
         file['hidden'] = False
+        if "userHasWriteAccess" in data:
+            file["userHasWriteAccess"] = data["userHasWriteAccess"]
         return file
     backend = get_user_storage_provider(request,
                                         owner_username=data_product.ownerName,
