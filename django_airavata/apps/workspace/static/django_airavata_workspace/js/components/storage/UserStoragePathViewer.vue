@@ -77,7 +77,11 @@
           <i class="fa fa-file-archive" aria-hidden="true"></i>
         </b-link>
         <delete-link
-          v-if="includeDeleteAction && data.item.userHasWriteAccess"
+          v-if="
+            includeDeleteAction &&
+            data.item.userHasWriteAccess &&
+            !data.item.isSharedDir
+          "
           @delete="deleteItem(data.item)"
         >
           Are you sure you want to delete <strong>{{ data.item.name }}</strong

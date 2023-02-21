@@ -575,7 +575,7 @@ class DataProductSerializer(
 
     def get_userHasWriteAccess(self, data_product: DataProductModel):
         request = self.context['request']
-        file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product.productUri)
+        file_metadata = user_storage.get_data_product_metadata(request, data_product=data_product)
         if "userHasWriteAccess" in file_metadata:
             return file_metadata["userHasWriteAccess"]
         else:
@@ -979,11 +979,8 @@ class UserHasWriteAccessToPathSerializer(serializers.Serializer):
             else:
                 return False
 
-        is_shared_dir = view_utils.is_shared_dir(instance["path"])
         is_shared_path = view_utils.is_shared_path(instance["path"])
-        if is_shared_dir:
-            return False
-        elif is_shared_path:
+        if is_shared_path:
             return request.is_gateway_admin
         else:
             return True
