@@ -2,6 +2,7 @@ import logging
 import os
 from collections.__init__ import OrderedDict
 from datetime import datetime
+from pathlib import Path
 
 import pytz
 from airavata_django_portal_sdk import user_storage
@@ -232,7 +233,7 @@ class ReadOnly(permissions.BasePermission):
 
 def is_shared_dir(path):
     shared_dirs: dict = getattr(settings, 'GATEWAY_DATA_SHARED_DIRECTORIES', {})
-    return any(map(lambda n: n == path, shared_dirs.keys()))
+    return any(map(lambda n: Path(n) == Path(path), shared_dirs.keys()))
 
 
 def is_shared_path(path):
