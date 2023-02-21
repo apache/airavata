@@ -24,7 +24,7 @@ grpcio-tools==1.51.1 ; python_version >= "3.7"
 grpcio==1.48.2 ; python_version < "3.7"
 grpcio==1.51.1 ; python_version >= "3.7"
 
-airavata-django-portal-sdk==1.8.1
+airavata-django-portal-sdk==1.8.2
 airavata-python-sdk==1.0.2
 airavata-django-portal-commons==1.0.0
 
