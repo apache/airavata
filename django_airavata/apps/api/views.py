@@ -815,6 +815,7 @@ class LocalDataMovementView(APIView):
 class DataProductView(APIView):
 
     serializer_class = serializers.DataProductSerializer
+    permission_classes = [IsAuthenticated, DataProductSharedDirPermission]
 
     def get(self, request, format=None):
         data_product_uri = request.query_params['product-uri']

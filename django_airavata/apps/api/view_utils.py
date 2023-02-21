@@ -271,7 +271,7 @@ class BaseSharedDirPermission(permissions.BasePermission):
 
 class DataProductSharedDirPermission(BaseSharedDirPermission):
     def get_path(self, request, view) -> str:
-        data_product_uri = request.GET.get('data-product-uri', '')
+        data_product_uri = request.query_params.get('data-product-uri', request.query_params.get('product-uri', ''))
         file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product_uri)
         return file_metadata["path"]
 
