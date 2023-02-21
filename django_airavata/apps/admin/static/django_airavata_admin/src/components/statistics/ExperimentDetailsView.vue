@@ -254,6 +254,10 @@
           </td>
         </tr>
         <tr>
+          <th scope="row">Experiment Data Dir</th>
+          <td>{{ experimentDataDir }}</td>
+        </tr>
+        <tr>
           <th scope="row">Errors</th>
           <td>
             <b-card
@@ -436,6 +440,13 @@ export default {
         );
       } else {
         return [];
+      }
+    },
+    experimentDataDir() {
+      if (this.experiment && this.experiment.userConfigurationData) {
+        return this.experiment.userConfigurationData.experimentDataDir;
+      } else {
+        return null;
       }
     },
   },
