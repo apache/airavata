@@ -87,6 +87,7 @@ export default {
                   mimeType: dataProduct.productMetadata["mime-type"],
                   name: dataProduct.productName,
                   size: dataProduct.productSize,
+                  userHasWriteAccess: dataProduct.userHasWriteAccess,
                 },
               ],
               parts: [],

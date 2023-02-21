@@ -549,6 +549,7 @@ class DataProductSerializer(
     downloadURL = serializers.SerializerMethodField()
     isInputFileUpload = serializers.SerializerMethodField()
     filesize = serializers.SerializerMethodField()
+    userHasWriteAccess = serializers.SerializerMethodField()
 
     def get_downloadURL(self, data_product):
         """Getter for downloadURL field. Returns None if file is not available."""
@@ -571,6 +572,19 @@ class DataProductSerializer(
             return metadata['size']
         else:
             return 0
+
+    def get_userHasWriteAccess(self, data_product: DataProductModel):
+        request = self.context['request']
+        file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product.productUri)
+        if "userHasWriteAccess" in file_metadata:
+            return file_metadata["userHasWriteAccess"]
+        else:
+            path = file_metadata["path"]
+            shared_path = view_utils.is_shared_path(path)
+            if shared_path:
+                # Only admins can edit files/directories in a shared directory
+                return request.is_gateway_admin
+            return True
 
 
 # TODO move this into airavata_sdk?
