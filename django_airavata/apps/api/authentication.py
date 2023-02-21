@@ -3,6 +3,8 @@ import logging
 from django.contrib.auth import authenticate
 from rest_framework import authentication, exceptions
 
+from django_airavata.apps.auth.middleware import set_admin_group_attributes
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,6 +20,8 @@ class OAuthAuthentication(authentication.BaseAuthentication):
                 _, token = request.META.get('HTTP_AUTHORIZATION').split()
 
                 logger.debug(f"OAuthAuthentication authenticated user {user}")
+                # Set request attributes that are normally set by middleware
+                set_admin_group_attributes(request)
                 return (user, token)
             except Exception as e:
                 raise exceptions.AuthenticationFailed(
