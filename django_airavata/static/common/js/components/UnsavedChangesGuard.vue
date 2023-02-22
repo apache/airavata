@@ -21,7 +21,15 @@ export default {
     onBeforeUnload(event) {
       if (this.dirty) {
         event.preventDefault();
-        return "You have unsaved changes. Are you sure that you want to leave this page?";
+        // Have to return a message for some browsers in order to trigger popup
+        // asking user if they want to leave the page. I don't think any browser
+        // displays the message that we return here, but a returned message is
+        // still required.
+        const msg =
+          "You have unsaved changes. Are you sure that you want to leave this page?";
+        // For Chrome, set event.returnValue
+        event.returnValue = msg;
+        return msg;
       }
     },
   },
