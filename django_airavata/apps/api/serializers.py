@@ -575,17 +575,20 @@ class DataProductSerializer(
 
     def get_userHasWriteAccess(self, data_product: DataProductModel):
         request = self.context['request']
-        file_metadata = user_storage.get_data_product_metadata(request, data_product=data_product)
-        # In remote API mode, "userHasWriteAccess" is returned so we just pass it through here
-        if "userHasWriteAccess" in file_metadata:
-            return file_metadata["userHasWriteAccess"]
+        if user_storage.exists(request, data_product):
+            file_metadata = user_storage.get_data_product_metadata(request, data_product=data_product)
+            # In remote API mode, "userHasWriteAccess" is returned so we just pass it through here
+            if "userHasWriteAccess" in file_metadata:
+                return file_metadata["userHasWriteAccess"]
+            else:
+                path = file_metadata["path"]
+                shared_path = view_utils.is_shared_path(path)
+                if shared_path:
+                    # Only admins can edit files/directories in a shared directory
+                    return request.is_gateway_admin
+                return True
         else:
-            path = file_metadata["path"]
-            shared_path = view_utils.is_shared_path(path)
-            if shared_path:
-                # Only admins can edit files/directories in a shared directory
-                return request.is_gateway_admin
-            return True
+            return False
 
 
 # TODO move this into airavata_sdk?
