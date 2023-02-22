@@ -576,6 +576,7 @@ class DataProductSerializer(
     def get_userHasWriteAccess(self, data_product: DataProductModel):
         request = self.context['request']
         file_metadata = user_storage.get_data_product_metadata(request, data_product=data_product)
+        # In remote API mode, "userHasWriteAccess" is returned so we just pass it through here
         if "userHasWriteAccess" in file_metadata:
             return file_metadata["userHasWriteAccess"]
         else:

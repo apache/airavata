@@ -276,6 +276,17 @@ class DataProductSharedDirPermission(BaseSharedDirPermission):
         file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product_uri)
         return file_metadata["path"]
 
+    def has_permission(self, request, view):
+        # Special handling for remote API, just get the userHasWriteAccess attribute and use that
+        if hasattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API'):
+            if request.method in permissions.SAFE_METHODS:
+                return True
+            data_product_uri = request.query_params.get('data-product-uri', request.query_params.get('product-uri', ''))
+            file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product_uri)
+            return file_metadata["userHasWriteAccess"]
+        else:
+            return super().has_permission(request, view)
+
 
 class UserStorageSharedDirPermission(BaseSharedDirPermission):
 
