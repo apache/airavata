@@ -28,6 +28,7 @@
       :fields="fields"
       :items="items"
       sort-by="name"
+      :sort-compare="sortCompare"
     >
       <template slot="cell(name)" slot-scope="data">
         <b-link
@@ -250,6 +251,23 @@ export default {
           (uri) => item.type === "file" && uri === item.dataProductURI
         ) !== undefined
       );
+    },
+    sortCompare(aRow, bRow, key) {
+      if (key === "name") {
+        // Sort the shared directory first
+        if (aRow.isSharedDir) {
+          return -1;
+        }
+        if (bRow.isSharedDir) {
+          return 1;
+        }
+        const a = aRow[key];
+        const b = bRow[key];
+        return a.localeCompare(b);
+      } else {
+        // Use default logic for all other fields
+        return null;
+      }
     },
   },
 };
