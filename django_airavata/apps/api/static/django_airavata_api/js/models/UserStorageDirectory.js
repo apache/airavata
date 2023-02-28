@@ -7,6 +7,8 @@ const FIELDS = [
   { name: "modifiedTime", type: "date" },
   "size",
   "hidden",
+  "userHasWriteAccess",
+  "isSharedDir",
 ];
 
 export default class UserStorageDirectory extends BaseModel {

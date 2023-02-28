@@ -36,9 +36,9 @@
 </template>
 
 <script>
-import {models, services, utils} from "django-airavata-api";
-import {InputEditorMixin} from "django-airavata-workspace-plugin-api";
-import {components} from "django-airavata-common-ui";
+import { models, services, utils } from "django-airavata-api";
+import { InputEditorMixin } from "django-airavata-workspace-plugin-api";
+import { components } from "django-airavata-common-ui";
 import InputFileSelector from "./InputFileSelector";
 import UserStorageLink from "../../storage/storage-edit/UserStorageLink";
 
@@ -48,7 +48,7 @@ export default {
   components: {
     UserStorageLink,
     "delete-link": components.DeleteLink,
-    InputFileSelector
+    InputFileSelector,
   },
   computed: {
     isDataProductURI() {
@@ -90,8 +90,17 @@ export default {
   },
   methods: {
     loadDataProduct(dataProductURI) {
-      services.DataProductService.retrieve({lookup: dataProductURI})
-        .then((dataProduct) => (this.dataProduct = dataProduct))
+      services.DataProductService.retrieve({ lookup: dataProductURI })
+        .then((dataProduct) => {
+          if (dataProduct.downloadURL === null) {
+            // Null out this field when the file is no longer available. Force
+            // user to select or upload another file.
+            this.data = null;
+            this.valueChanged();
+          } else {
+            this.dataProduct = dataProduct;
+          }
+        })
         .catch(() => {
           // If we're unable to load data product, reset data to null
           this.data = null;
@@ -101,7 +110,7 @@ export default {
     deleteDataProduct() {
       utils.FetchUtils.delete(
         "/api/delete-file?data-product-uri=" + encodeURIComponent(this.value),
-        {ignoreErrors: true}
+        { ignoreErrors: true }
       )
         .then(() => {
           this.data = null;
@@ -146,8 +155,8 @@ export default {
       if (this.isDataProductURI && value !== oldValue) {
         this.loadDataProduct(value);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

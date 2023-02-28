@@ -1,8 +1,11 @@
 import logging
+import os
 from collections.__init__ import OrderedDict
 from datetime import datetime
+from pathlib import Path
 
 import pytz
+from airavata_django_portal_sdk import user_storage
 from django.conf import settings
 from django.http import Http404
 from django.http.request import QueryDict
@@ -226,3 +229,67 @@ class IsInAdminsGroupPermission(permissions.BasePermission):
 class ReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.method in permissions.SAFE_METHODS
+
+
+def is_shared_dir(path):
+    shared_dirs: dict = getattr(settings, 'GATEWAY_DATA_SHARED_DIRECTORIES', {})
+    return any(map(lambda n: Path(n) == Path(path), shared_dirs.keys()))
+
+
+def is_shared_path(path):
+    shared_dirs: dict = getattr(settings, 'GATEWAY_DATA_SHARED_DIRECTORIES', {})
+    # FIXME: path returned when creating a new directory in user storage is an
+    # absolute path. Assume that when an absolute path is given that it was for
+    # a newly created directory and so it is not a shared path
+    if os.path.isabs(path):
+        return False
+    # check if path starts with a shared directory
+    return any(map(lambda n: os.path.commonpath((n, path)) == n, shared_dirs.keys()))
+
+
+class BaseSharedDirPermission(permissions.BasePermission):
+    def get_path(self, request, view) -> str:
+        raise NotImplementedError()
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        path = self.get_path(request, view)
+
+        # check if path starts with a shared directory
+        shared_path = is_shared_path(path)
+        shared_dir = is_shared_dir(path)
+        if shared_path:
+            # No user can delete a shared directory
+            if shared_dir and request.method == 'DELETE':
+                return False
+            # Only admins can create/update/delete files/directories in a shared directory
+            return request.is_gateway_admin
+
+        return True
+
+
+class DataProductSharedDirPermission(BaseSharedDirPermission):
+    def get_path(self, request, view) -> str:
+        data_product_uri = request.query_params.get('data-product-uri', request.query_params.get('product-uri', ''))
+        file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product_uri)
+        return file_metadata["path"]
+
+    def has_permission(self, request, view):
+        # Special handling for remote API, just get the userHasWriteAccess attribute and use that
+        if hasattr(settings, 'GATEWAY_DATA_STORE_REMOTE_API'):
+            if request.method in permissions.SAFE_METHODS:
+                return True
+            data_product_uri = request.query_params.get('data-product-uri', request.query_params.get('product-uri', ''))
+            file_metadata = user_storage.get_data_product_metadata(request, data_product_uri=data_product_uri)
+            return file_metadata["userHasWriteAccess"]
+        else:
+            return super().has_permission(request, view)
+
+
+class UserStorageSharedDirPermission(BaseSharedDirPermission):
+
+    def get_path(self, request, view):
+        # 'path' can be a url path parameter, query parameter or in the request body (data)
+        return request.query_params.get('path', request.data.get('path', view.kwargs.get('path')))

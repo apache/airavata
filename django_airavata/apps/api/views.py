@@ -36,7 +36,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.gzip import gzip_page
 from rest_framework import mixins, pagination, status
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
@@ -47,8 +47,10 @@ from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
     APIResultPagination,
+    DataProductSharedDirPermission,
     GenericAPIBackedViewSet,
-    IsInAdminsGroupPermission
+    IsInAdminsGroupPermission,
+    UserStorageSharedDirPermission
 )
 from django_airavata.apps.auth import iam_admin_client
 from django_airavata.apps.auth.models import EmailVerification
@@ -813,6 +815,7 @@ class LocalDataMovementView(APIView):
 class DataProductView(APIView):
 
     serializer_class = serializers.DataProductSerializer
+    permission_classes = [IsAuthenticated, DataProductSharedDirPermission]
 
     def get(self, request, format=None):
         data_product_uri = request.query_params['product-uri']
@@ -882,6 +885,7 @@ def download_file(request):
 
 
 @api_view(http_method_names=['DELETE'])
+@permission_classes([IsAuthenticated, DataProductSharedDirPermission])
 def delete_file(request):
     # TODO check that user has write access to this file using sharing API
     data_product_uri = request.GET.get('data-product-uri', '')
@@ -1355,6 +1359,7 @@ class ParserViewSet(mixins.CreateModelMixin,
 
 class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer
+    permission_classes = (IsAuthenticated, UserStorageSharedDirPermission)
 
     def get(self, request, path="/", format=None):
         # AIRAVATA-3460 Allow passing path as a query parameter instead
