@@ -286,6 +286,7 @@ class ProcessStatus(object):
      - timeOfStateChange
      - reason
      - statusId
+     - processId
     """
 
     thrift_spec = (
@@ -294,13 +295,15 @@ class ProcessStatus(object):
         (2, TType.I64, 'timeOfStateChange', None, None, ),  # 2
         (3, TType.STRING, 'reason', 'UTF8', None, ),  # 3
         (4, TType.STRING, 'statusId', 'UTF8', None, ),  # 4
+        (5, TType.STRING, 'processId', 'UTF8', None, ),  # 5
     )
 
-    def __init__(self, state=None, timeOfStateChange=None, reason=None, statusId=None,):
+    def __init__(self, state=None, timeOfStateChange=None, reason=None, statusId=None, processId=None,):
         self.state = state
         self.timeOfStateChange = timeOfStateChange
         self.reason = reason
         self.statusId = statusId
+        self.processId = processId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -331,6 +334,11 @@ class ProcessStatus(object):
                     self.statusId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.processId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -356,6 +364,10 @@ class ProcessStatus(object):
         if self.statusId is not None:
             oprot.writeFieldBegin('statusId', TType.STRING, 4)
             oprot.writeString(self.statusId.encode('utf-8') if sys.version_info[0] == 2 else self.statusId)
+            oprot.writeFieldEnd()
+        if self.processId is not None:
+            oprot.writeFieldBegin('processId', TType.STRING, 5)
+            oprot.writeString(self.processId.encode('utf-8') if sys.version_info[0] == 2 else self.processId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

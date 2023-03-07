@@ -315,6 +315,11 @@ void ProcessStatus::__set_statusId(const std::string& val) {
 __isset.statusId = true;
 }
 
+void ProcessStatus::__set_processId(const std::string& val) {
+  this->processId = val;
+__isset.processId = true;
+}
+
 uint32_t ProcessStatus::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -371,6 +376,14 @@ uint32_t ProcessStatus::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->processId);
+          this->__isset.processId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -409,6 +422,11 @@ uint32_t ProcessStatus::write(::apache::thrift::protocol::TProtocol* oprot) cons
     xfer += oprot->writeString(this->statusId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.processId) {
+    xfer += oprot->writeFieldBegin("processId", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->processId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -420,6 +438,7 @@ void swap(ProcessStatus &a, ProcessStatus &b) {
   swap(a.timeOfStateChange, b.timeOfStateChange);
   swap(a.reason, b.reason);
   swap(a.statusId, b.statusId);
+  swap(a.processId, b.processId);
   swap(a.__isset, b.__isset);
 }
 
@@ -428,6 +447,7 @@ ProcessStatus::ProcessStatus(const ProcessStatus& other4) {
   timeOfStateChange = other4.timeOfStateChange;
   reason = other4.reason;
   statusId = other4.statusId;
+  processId = other4.processId;
   __isset = other4.__isset;
 }
 ProcessStatus& ProcessStatus::operator=(const ProcessStatus& other5) {
@@ -435,6 +455,7 @@ ProcessStatus& ProcessStatus::operator=(const ProcessStatus& other5) {
   timeOfStateChange = other5.timeOfStateChange;
   reason = other5.reason;
   statusId = other5.statusId;
+  processId = other5.processId;
   __isset = other5.__isset;
   return *this;
 }
@@ -445,6 +466,7 @@ void ProcessStatus::printTo(std::ostream& out) const {
   out << ", " << "timeOfStateChange="; (__isset.timeOfStateChange ? (out << to_string(timeOfStateChange)) : (out << "<null>"));
   out << ", " << "reason="; (__isset.reason ? (out << to_string(reason)) : (out << "<null>"));
   out << ", " << "statusId="; (__isset.statusId ? (out << to_string(statusId)) : (out << "<null>"));
+  out << ", " << "processId="; (__isset.processId ? (out << to_string(processId)) : (out << "<null>"));
   out << ")";
 }
 
