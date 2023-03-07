@@ -26,6 +26,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -82,6 +83,14 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         if (experimentEntity.getUserConfigurationData() != null) {
             logger.debug("Populating the Primary Key of UserConfigurationData object for the Experiment");
             experimentEntity.getUserConfigurationData().setExperimentId(experimentId);
+        }
+
+        if (experimentEntity.getUserConfigurationData().getComputationalResourceSchedulingEntities() != null) {
+            logger.debug("Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
+            for(ComputationalResourceSchedulingEntity entity : experimentEntity.getUserConfigurationData().getComputationalResourceSchedulingEntities()){
+                entity.setExperimentId(experimentId);
+            }
+
         }
 
         if (experimentEntity.getExperimentInputs() != null) {
