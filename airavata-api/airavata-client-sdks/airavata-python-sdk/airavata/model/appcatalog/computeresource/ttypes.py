@@ -101,6 +101,9 @@ class JobManagerCommand(object):
     SHOW_QUEUE = 4
     SHOW_RESERVATION = 5
     SHOW_START = 6
+    SHOW_CLUSTER_INFO = 7
+    SHOW_NO_OF_RUNNING_JOBS = 8
+    SHOW_NO_OF_PENDING_JOBS = 9
 
     _VALUES_TO_NAMES = {
         0: "SUBMISSION",
@@ -110,6 +113,9 @@ class JobManagerCommand(object):
         4: "SHOW_QUEUE",
         5: "SHOW_RESERVATION",
         6: "SHOW_START",
+        7: "SHOW_CLUSTER_INFO",
+        8: "SHOW_NO_OF_RUNNING_JOBS",
+        9: "SHOW_NO_OF_PENDING_JOBS",
     }
 
     _NAMES_TO_VALUES = {
@@ -120,6 +126,9 @@ class JobManagerCommand(object):
         "SHOW_QUEUE": 4,
         "SHOW_RESERVATION": 5,
         "SHOW_START": 6,
+        "SHOW_CLUSTER_INFO": 7,
+        "SHOW_NO_OF_RUNNING_JOBS": 8,
+        "SHOW_NO_OF_PENDING_JOBS": 9,
     }
 
 
