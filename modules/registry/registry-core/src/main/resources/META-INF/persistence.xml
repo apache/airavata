@@ -133,6 +133,7 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.TaskErrorEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.TaskStatusEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>

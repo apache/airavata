@@ -63,6 +63,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
+import org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.repositories.appcatalog.*;
 import org.apache.airavata.registry.core.repositories.expcatalog.*;
@@ -3825,6 +3826,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
                     exception.setMessage("Compute Resource is not enabled by the Admin!");
                     throw exception;
+                }
+            } else if (!experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList().isEmpty()) {
+                for(ComputationalResourceSchedulingModel computationalResourceScheduling :
+                    experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()) {
+                    ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
+                            .getComputeResource(computationalResourceScheduling.getResourceHostId());
+                    if (!computeResourceDescription.isEnabled()) {
+                        logger.error("Compute Resource  with id"+ computationalResourceScheduling.getResourceHostId() +"" +
+                                " is not enabled by the Admin!");
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Compute Resource  with id"+ computationalResourceScheduling.getResourceHostId() +"" +
+                                " is not enabled by the Admin!");
+                        throw exception;
+                    }
                 }
             }
 
