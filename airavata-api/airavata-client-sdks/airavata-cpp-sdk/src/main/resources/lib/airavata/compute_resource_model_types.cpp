@@ -59,7 +59,10 @@ int _kJobManagerCommandValues[] = {
   JobManagerCommand::CHECK_JOB,
   JobManagerCommand::SHOW_QUEUE,
   JobManagerCommand::SHOW_RESERVATION,
-  JobManagerCommand::SHOW_START
+  JobManagerCommand::SHOW_START,
+  JobManagerCommand::SHOW_CLUSTER_INFO,
+  JobManagerCommand::SHOW_NO_OF_RUNNING_JOBS,
+  JobManagerCommand::SHOW_NO_OF_PENDING_JOBS
 };
 const char* _kJobManagerCommandNames[] = {
   "SUBMISSION",
@@ -68,9 +71,12 @@ const char* _kJobManagerCommandNames[] = {
   "CHECK_JOB",
   "SHOW_QUEUE",
   "SHOW_RESERVATION",
-  "SHOW_START"
+  "SHOW_START",
+  "SHOW_CLUSTER_INFO",
+  "SHOW_NO_OF_RUNNING_JOBS",
+  "SHOW_NO_OF_PENDING_JOBS"
 };
-const std::map<int, const char*> _JobManagerCommand_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kJobManagerCommandValues, _kJobManagerCommandNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _JobManagerCommand_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(10, _kJobManagerCommandValues, _kJobManagerCommandNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kFileSystemsValues[] = {
   FileSystems::HOME,

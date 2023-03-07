@@ -44,6 +44,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final org.apache.thrift.protocol.TField EXPERIMENT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentDataDir", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField USE_USER_CRPREF_FIELD_DESC = new org.apache.thrift.protocol.TField("useUserCRPref", org.apache.thrift.protocol.TType.BOOL, (short)10);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("autoScheduledCompResourceSchedulingList", org.apache.thrift.protocol.TType.LIST, (short)12);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new UserConfigurationDataModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new UserConfigurationDataModelTupleSchemeFactory();
@@ -59,6 +60,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private java.lang.String experimentDataDir; // optional
   private boolean useUserCRPref; // optional
   private java.lang.String groupResourceProfileId; // optional
+  private java.util.List<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -72,7 +74,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     STORAGE_ID((short)8, "storageId"),
     EXPERIMENT_DATA_DIR((short)9, "experimentDataDir"),
     USE_USER_CRPREF((short)10, "useUserCRPref"),
-    GROUP_RESOURCE_PROFILE_ID((short)11, "groupResourceProfileId");
+    GROUP_RESOURCE_PROFILE_ID((short)11, "groupResourceProfileId"),
+    AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST((short)12, "autoScheduledCompResourceSchedulingList");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -109,6 +112,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
           return USE_USER_CRPREF;
         case 11: // GROUP_RESOURCE_PROFILE_ID
           return GROUP_RESOURCE_PROFILE_ID;
+        case 12: // AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST
+          return AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST;
         default:
           return null;
       }
@@ -156,7 +161,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final int __GENERATECERT_ISSET_ID = 4;
   private static final int __USEUSERCRPREF_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID,_Fields.EXPERIMENT_DATA_DIR,_Fields.USE_USER_CRPREF,_Fields.GROUP_RESOURCE_PROFILE_ID};
+  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID,_Fields.EXPERIMENT_DATA_DIR,_Fields.USE_USER_CRPREF,_Fields.GROUP_RESOURCE_PROFILE_ID,_Fields.AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -182,6 +187,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST, new org.apache.thrift.meta_data.FieldMetaData("autoScheduledCompResourceSchedulingList", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel.class))));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserConfigurationDataModel.class, metaDataMap);
   }
@@ -236,6 +244,13 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     if (other.isSetGroupResourceProfileId()) {
       this.groupResourceProfileId = other.groupResourceProfileId;
     }
+    if (other.isSetAutoScheduledCompResourceSchedulingList()) {
+      java.util.List<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel> __this__autoScheduledCompResourceSchedulingList = new java.util.ArrayList<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel>(other.autoScheduledCompResourceSchedulingList.size());
+      for (org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel other_element : other.autoScheduledCompResourceSchedulingList) {
+        __this__autoScheduledCompResourceSchedulingList.add(new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel(other_element));
+      }
+      this.autoScheduledCompResourceSchedulingList = __this__autoScheduledCompResourceSchedulingList;
+    }
   }
 
   public UserConfigurationDataModel deepCopy() {
@@ -261,6 +276,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     setUseUserCRPrefIsSet(false);
     this.useUserCRPref = false;
     this.groupResourceProfileId = null;
+    this.autoScheduledCompResourceSchedulingList = null;
   }
 
   public boolean isAiravataAutoSchedule() {
@@ -510,6 +526,44 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     }
   }
 
+  public int getAutoScheduledCompResourceSchedulingListSize() {
+    return (this.autoScheduledCompResourceSchedulingList == null) ? 0 : this.autoScheduledCompResourceSchedulingList.size();
+  }
+
+  public java.util.Iterator<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel> getAutoScheduledCompResourceSchedulingListIterator() {
+    return (this.autoScheduledCompResourceSchedulingList == null) ? null : this.autoScheduledCompResourceSchedulingList.iterator();
+  }
+
+  public void addToAutoScheduledCompResourceSchedulingList(org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel elem) {
+    if (this.autoScheduledCompResourceSchedulingList == null) {
+      this.autoScheduledCompResourceSchedulingList = new java.util.ArrayList<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel>();
+    }
+    this.autoScheduledCompResourceSchedulingList.add(elem);
+  }
+
+  public java.util.List<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel> getAutoScheduledCompResourceSchedulingList() {
+    return this.autoScheduledCompResourceSchedulingList;
+  }
+
+  public void setAutoScheduledCompResourceSchedulingList(java.util.List<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList) {
+    this.autoScheduledCompResourceSchedulingList = autoScheduledCompResourceSchedulingList;
+  }
+
+  public void unsetAutoScheduledCompResourceSchedulingList() {
+    this.autoScheduledCompResourceSchedulingList = null;
+  }
+
+  /** Returns true if field autoScheduledCompResourceSchedulingList is set (has been assigned a value) and false otherwise */
+  public boolean isSetAutoScheduledCompResourceSchedulingList() {
+    return this.autoScheduledCompResourceSchedulingList != null;
+  }
+
+  public void setAutoScheduledCompResourceSchedulingListIsSet(boolean value) {
+    if (!value) {
+      this.autoScheduledCompResourceSchedulingList = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case AIRAVATA_AUTO_SCHEDULE:
@@ -600,6 +654,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       }
       break;
 
+    case AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST:
+      if (value == null) {
+        unsetAutoScheduledCompResourceSchedulingList();
+      } else {
+        setAutoScheduledCompResourceSchedulingList((java.util.List<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel>)value);
+      }
+      break;
+
     }
   }
 
@@ -638,6 +700,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     case GROUP_RESOURCE_PROFILE_ID:
       return getGroupResourceProfileId();
 
+    case AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST:
+      return getAutoScheduledCompResourceSchedulingList();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -671,6 +736,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       return isSetUseUserCRPref();
     case GROUP_RESOURCE_PROFILE_ID:
       return isSetGroupResourceProfileId();
+    case AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST:
+      return isSetAutoScheduledCompResourceSchedulingList();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -789,6 +856,15 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return false;
     }
 
+    boolean this_present_autoScheduledCompResourceSchedulingList = true && this.isSetAutoScheduledCompResourceSchedulingList();
+    boolean that_present_autoScheduledCompResourceSchedulingList = true && that.isSetAutoScheduledCompResourceSchedulingList();
+    if (this_present_autoScheduledCompResourceSchedulingList || that_present_autoScheduledCompResourceSchedulingList) {
+      if (!(this_present_autoScheduledCompResourceSchedulingList && that_present_autoScheduledCompResourceSchedulingList))
+        return false;
+      if (!this.autoScheduledCompResourceSchedulingList.equals(that.autoScheduledCompResourceSchedulingList))
+        return false;
+    }
+
     return true;
   }
 
@@ -835,6 +911,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     hashCode = hashCode * 8191 + ((isSetGroupResourceProfileId()) ? 131071 : 524287);
     if (isSetGroupResourceProfileId())
       hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetAutoScheduledCompResourceSchedulingList()) ? 131071 : 524287);
+    if (isSetAutoScheduledCompResourceSchedulingList())
+      hashCode = hashCode * 8191 + autoScheduledCompResourceSchedulingList.hashCode();
 
     return hashCode;
   }
@@ -957,6 +1037,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetAutoScheduledCompResourceSchedulingList()).compareTo(other.isSetAutoScheduledCompResourceSchedulingList());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAutoScheduledCompResourceSchedulingList()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.autoScheduledCompResourceSchedulingList, other.autoScheduledCompResourceSchedulingList);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1055,6 +1145,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         sb.append("null");
       } else {
         sb.append(this.groupResourceProfileId);
+      }
+      first = false;
+    }
+    if (isSetAutoScheduledCompResourceSchedulingList()) {
+      if (!first) sb.append(", ");
+      sb.append("autoScheduledCompResourceSchedulingList:");
+      if (this.autoScheduledCompResourceSchedulingList == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.autoScheduledCompResourceSchedulingList);
       }
       first = false;
     }
@@ -1203,6 +1303,25 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 12: // AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.autoScheduledCompResourceSchedulingList = new java.util.ArrayList<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel>(_list0.size);
+                org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel _elem1;
+                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                {
+                  _elem1 = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel();
+                  _elem1.read(iprot);
+                  struct.autoScheduledCompResourceSchedulingList.add(_elem1);
+                }
+                iprot.readListEnd();
+              }
+              struct.setAutoScheduledCompResourceSchedulingListIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1277,6 +1396,20 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
           oprot.writeFieldEnd();
         }
       }
+      if (struct.autoScheduledCompResourceSchedulingList != null) {
+        if (struct.isSetAutoScheduledCompResourceSchedulingList()) {
+          oprot.writeFieldBegin(AUTO_SCHEDULED_COMP_RESOURCE_SCHEDULING_LIST_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.autoScheduledCompResourceSchedulingList.size()));
+            for (org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel _iter3 : struct.autoScheduledCompResourceSchedulingList)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1324,7 +1457,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetGroupResourceProfileId()) {
         optionals.set(8);
       }
-      oprot.writeBitSet(optionals, 9);
+      if (struct.isSetAutoScheduledCompResourceSchedulingList()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetShareExperimentPublicly()) {
         oprot.writeBool(struct.shareExperimentPublicly);
       }
@@ -1352,6 +1488,15 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetGroupResourceProfileId()) {
         oprot.writeString(struct.groupResourceProfileId);
       }
+      if (struct.isSetAutoScheduledCompResourceSchedulingList()) {
+        {
+          oprot.writeI32(struct.autoScheduledCompResourceSchedulingList.size());
+          for (org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel _iter4 : struct.autoScheduledCompResourceSchedulingList)
+          {
+            _iter4.write(oprot);
+          }
+        }
+      }
     }
 
     @Override
@@ -1361,7 +1506,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       struct.setAiravataAutoScheduleIsSet(true);
       struct.overrideManualScheduledParams = iprot.readBool();
       struct.setOverrideManualScheduledParamsIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(9);
+      java.util.BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.shareExperimentPublicly = iprot.readBool();
         struct.setShareExperimentPubliclyIsSet(true);
@@ -1398,6 +1543,20 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (incoming.get(8)) {
         struct.groupResourceProfileId = iprot.readString();
         struct.setGroupResourceProfileIdIsSet(true);
+      }
+      if (incoming.get(9)) {
+        {
+          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.autoScheduledCompResourceSchedulingList = new java.util.ArrayList<org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel>(_list5.size);
+          org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel _elem6;
+          for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+          {
+            _elem6 = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel();
+            _elem6.read(iprot);
+            struct.autoScheduledCompResourceSchedulingList.add(_elem6);
+          }
+        }
+        struct.setAutoScheduledCompResourceSchedulingListIsSet(true);
       }
     }
   }

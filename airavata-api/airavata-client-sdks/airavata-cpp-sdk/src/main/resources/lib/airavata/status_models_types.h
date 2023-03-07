@@ -185,10 +185,11 @@ inline std::ostream& operator<<(std::ostream& out, const ExperimentStatus& obj)
 }
 
 typedef struct _ProcessStatus__isset {
-  _ProcessStatus__isset() : timeOfStateChange(false), reason(false), statusId(false) {}
+  _ProcessStatus__isset() : timeOfStateChange(false), reason(false), statusId(false), processId(false) {}
   bool timeOfStateChange :1;
   bool reason :1;
   bool statusId :1;
+  bool processId :1;
 } _ProcessStatus__isset;
 
 class ProcessStatus : public virtual ::apache::thrift::TBase {
@@ -196,7 +197,7 @@ class ProcessStatus : public virtual ::apache::thrift::TBase {
 
   ProcessStatus(const ProcessStatus&);
   ProcessStatus& operator=(const ProcessStatus&);
-  ProcessStatus() : state((ProcessState::type)0), timeOfStateChange(0), reason(), statusId() {
+  ProcessStatus() : state((ProcessState::type)0), timeOfStateChange(0), reason(), statusId(), processId() {
   }
 
   virtual ~ProcessStatus() throw();
@@ -204,6 +205,7 @@ class ProcessStatus : public virtual ::apache::thrift::TBase {
   int64_t timeOfStateChange;
   std::string reason;
   std::string statusId;
+  std::string processId;
 
   _ProcessStatus__isset __isset;
 
@@ -214,6 +216,8 @@ class ProcessStatus : public virtual ::apache::thrift::TBase {
   void __set_reason(const std::string& val);
 
   void __set_statusId(const std::string& val);
+
+  void __set_processId(const std::string& val);
 
   bool operator == (const ProcessStatus & rhs) const
   {
@@ -230,6 +234,10 @@ class ProcessStatus : public virtual ::apache::thrift::TBase {
     if (__isset.statusId != rhs.__isset.statusId)
       return false;
     else if (__isset.statusId && !(statusId == rhs.statusId))
+      return false;
+    if (__isset.processId != rhs.__isset.processId)
+      return false;
+    else if (__isset.processId && !(processId == rhs.processId))
       return false;
     return true;
   }
