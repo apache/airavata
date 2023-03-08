@@ -2185,12 +2185,18 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             // Verify user has READ access to Application Deployment
             final String appInterfaceId = experiment.getExecutionId();
-            final String resourceHostId = experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId();
             ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
+
             List<String> appModuleIds = applicationInterfaceDescription.getApplicationModules();
             // Assume that there is only one app module for this interface (otherwise, how could we figure out the deployment)
             String appModuleId = appModuleIds.get(0);
             List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = regClient.getApplicationDeployments(appModuleId);
+
+
+            if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
+            final String resourceHostId = experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId();
+
+
             Optional<ApplicationDeploymentDescription> applicationDeploymentDescription = applicationDeploymentDescriptions
                     .stream()
                     .filter(dep -> dep.getComputeHostId().equals(resourceHostId))
@@ -2200,8 +2206,25 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if (!sharingClient.userHasAccess(gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
                     throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to app deployment " + appDeploymentId);
                 }
-            } else {
+            }
+            else {
                 throw new InvalidRequestException("Application deployment doesn't exist for application interface " + appInterfaceId + " and host " + resourceHostId + " in gateway " + gatewayId);
+            }} else if (experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null &&
+                    !experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList().isEmpty()) {
+               List<ComputationalResourceSchedulingModel> compResourceSchedulingList  =  experiment.
+                       getUserConfigurationData().getAutoScheduledCompResourceSchedulingList();
+               for(ComputationalResourceSchedulingModel crScheduling: compResourceSchedulingList){
+                   Optional<ApplicationDeploymentDescription> applicationDeploymentDescription = applicationDeploymentDescriptions
+                           .stream()
+                           .filter(dep -> dep.getComputeHostId().equals(crScheduling.getResourceHostId()))
+                           .findFirst();
+                   if (applicationDeploymentDescription.isPresent()) {
+                       final String appDeploymentId = applicationDeploymentDescription.get().getAppDeploymentId();
+                       if (!sharingClient.userHasAccess(gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
+                           throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to app deployment " + appDeploymentId);
+                       }
+                   }
+               }
             }
             submitExperiment(gatewayId, airavataExperimentId);
             logger.info("Experiment with ExpId: " + airavataExperimentId + " was submitted in gateway with gatewayID: " + gatewayId);
