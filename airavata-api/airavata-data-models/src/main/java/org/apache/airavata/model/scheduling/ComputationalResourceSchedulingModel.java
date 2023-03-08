@@ -45,6 +45,7 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
   private static final org.apache.thrift.protocol.TField OVERRIDE_LOGIN_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("overrideLoginUserName", org.apache.thrift.protocol.TType.STRING, (short)10);
   private static final org.apache.thrift.protocol.TField OVERRIDE_SCRATCH_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("overrideScratchLocation", org.apache.thrift.protocol.TType.STRING, (short)11);
   private static final org.apache.thrift.protocol.TField OVERRIDE_ALLOCATION_PROJECT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("overrideAllocationProjectNumber", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField M_GROUP_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("mGroupCount", org.apache.thrift.protocol.TType.I32, (short)13);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ComputationalResourceSchedulingModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ComputationalResourceSchedulingModelTupleSchemeFactory();
@@ -61,6 +62,7 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
   private java.lang.String overrideLoginUserName; // optional
   private java.lang.String overrideScratchLocation; // optional
   private java.lang.String overrideAllocationProjectNumber; // optional
+  private int mGroupCount; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -75,7 +77,8 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
     STATIC_WORKING_DIR((short)9, "staticWorkingDir"),
     OVERRIDE_LOGIN_USER_NAME((short)10, "overrideLoginUserName"),
     OVERRIDE_SCRATCH_LOCATION((short)11, "overrideScratchLocation"),
-    OVERRIDE_ALLOCATION_PROJECT_NUMBER((short)12, "overrideAllocationProjectNumber");
+    OVERRIDE_ALLOCATION_PROJECT_NUMBER((short)12, "overrideAllocationProjectNumber"),
+    M_GROUP_COUNT((short)13, "mGroupCount");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -114,6 +117,8 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
           return OVERRIDE_SCRATCH_LOCATION;
         case 12: // OVERRIDE_ALLOCATION_PROJECT_NUMBER
           return OVERRIDE_ALLOCATION_PROJECT_NUMBER;
+        case 13: // M_GROUP_COUNT
+          return M_GROUP_COUNT;
         default:
           return null;
       }
@@ -159,8 +164,9 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
   private static final int __NUMBEROFTHREADS_ISSET_ID = 2;
   private static final int __WALLTIMELIMIT_ISSET_ID = 3;
   private static final int __TOTALPHYSICALMEMORY_ISSET_ID = 4;
+  private static final int __MGROUPCOUNT_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPUCOUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.CHESSIS_NUMBER,_Fields.STATIC_WORKING_DIR,_Fields.OVERRIDE_LOGIN_USER_NAME,_Fields.OVERRIDE_SCRATCH_LOCATION,_Fields.OVERRIDE_ALLOCATION_PROJECT_NUMBER};
+  private static final _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPUCOUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.CHESSIS_NUMBER,_Fields.STATIC_WORKING_DIR,_Fields.OVERRIDE_LOGIN_USER_NAME,_Fields.OVERRIDE_SCRATCH_LOCATION,_Fields.OVERRIDE_ALLOCATION_PROJECT_NUMBER,_Fields.M_GROUP_COUNT};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -188,6 +194,8 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OVERRIDE_ALLOCATION_PROJECT_NUMBER, new org.apache.thrift.meta_data.FieldMetaData("overrideAllocationProjectNumber", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.M_GROUP_COUNT, new org.apache.thrift.meta_data.FieldMetaData("mGroupCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputationalResourceSchedulingModel.class, metaDataMap);
   }
@@ -226,6 +234,7 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
     if (other.isSetOverrideAllocationProjectNumber()) {
       this.overrideAllocationProjectNumber = other.overrideAllocationProjectNumber;
     }
+    this.mGroupCount = other.mGroupCount;
   }
 
   public ComputationalResourceSchedulingModel deepCopy() {
@@ -251,6 +260,8 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
     this.overrideLoginUserName = null;
     this.overrideScratchLocation = null;
     this.overrideAllocationProjectNumber = null;
+    setMGroupCountIsSet(false);
+    this.mGroupCount = 0;
   }
 
   public java.lang.String getResourceHostId() {
@@ -524,6 +535,28 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
     }
   }
 
+  public int getMGroupCount() {
+    return this.mGroupCount;
+  }
+
+  public void setMGroupCount(int mGroupCount) {
+    this.mGroupCount = mGroupCount;
+    setMGroupCountIsSet(true);
+  }
+
+  public void unsetMGroupCount() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __MGROUPCOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field mGroupCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetMGroupCount() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __MGROUPCOUNT_ISSET_ID);
+  }
+
+  public void setMGroupCountIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __MGROUPCOUNT_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case RESOURCE_HOST_ID:
@@ -622,6 +655,14 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
       }
       break;
 
+    case M_GROUP_COUNT:
+      if (value == null) {
+        unsetMGroupCount();
+      } else {
+        setMGroupCount((java.lang.Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -663,6 +704,9 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
     case OVERRIDE_ALLOCATION_PROJECT_NUMBER:
       return getOverrideAllocationProjectNumber();
 
+    case M_GROUP_COUNT:
+      return getMGroupCount();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -698,6 +742,8 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
       return isSetOverrideScratchLocation();
     case OVERRIDE_ALLOCATION_PROJECT_NUMBER:
       return isSetOverrideAllocationProjectNumber();
+    case M_GROUP_COUNT:
+      return isSetMGroupCount();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -825,6 +871,15 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
         return false;
     }
 
+    boolean this_present_mGroupCount = true && this.isSetMGroupCount();
+    boolean that_present_mGroupCount = true && that.isSetMGroupCount();
+    if (this_present_mGroupCount || that_present_mGroupCount) {
+      if (!(this_present_mGroupCount && that_present_mGroupCount))
+        return false;
+      if (this.mGroupCount != that.mGroupCount)
+        return false;
+    }
+
     return true;
   }
 
@@ -879,6 +934,10 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
     hashCode = hashCode * 8191 + ((isSetOverrideAllocationProjectNumber()) ? 131071 : 524287);
     if (isSetOverrideAllocationProjectNumber())
       hashCode = hashCode * 8191 + overrideAllocationProjectNumber.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetMGroupCount()) ? 131071 : 524287);
+    if (isSetMGroupCount())
+      hashCode = hashCode * 8191 + mGroupCount;
 
     return hashCode;
   }
@@ -1011,6 +1070,16 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetMGroupCount()).compareTo(other.isSetMGroupCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMGroupCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.mGroupCount, other.mGroupCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1128,6 +1197,12 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
       } else {
         sb.append(this.overrideAllocationProjectNumber);
       }
+      first = false;
+    }
+    if (isSetMGroupCount()) {
+      if (!first) sb.append(", ");
+      sb.append("mGroupCount:");
+      sb.append(this.mGroupCount);
       first = false;
     }
     sb.append(")");
@@ -1271,6 +1346,14 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 13: // M_GROUP_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.mGroupCount = iprot.readI32();
+              struct.setMGroupCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1358,6 +1441,11 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetMGroupCount()) {
+        oprot.writeFieldBegin(M_GROUP_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.mGroupCount);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1412,7 +1500,10 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
       if (struct.isSetOverrideAllocationProjectNumber()) {
         optionals.set(11);
       }
-      oprot.writeBitSet(optionals, 12);
+      if (struct.isSetMGroupCount()) {
+        optionals.set(12);
+      }
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetResourceHostId()) {
         oprot.writeString(struct.resourceHostId);
       }
@@ -1449,12 +1540,15 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
       if (struct.isSetOverrideAllocationProjectNumber()) {
         oprot.writeString(struct.overrideAllocationProjectNumber);
       }
+      if (struct.isSetMGroupCount()) {
+        oprot.writeI32(struct.mGroupCount);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ComputationalResourceSchedulingModel struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(12);
+      java.util.BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.resourceHostId = iprot.readString();
         struct.setResourceHostIdIsSet(true);
@@ -1502,6 +1596,10 @@ public class ComputationalResourceSchedulingModel implements org.apache.thrift.T
       if (incoming.get(11)) {
         struct.overrideAllocationProjectNumber = iprot.readString();
         struct.setOverrideAllocationProjectNumberIsSet(true);
+      }
+      if (incoming.get(12)) {
+        struct.mGroupCount = iprot.readI32();
+        struct.setMGroupCountIsSet(true);
       }
     }
   }
