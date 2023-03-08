@@ -106,7 +106,7 @@ public class UserConfigurationDataEntity implements Serializable {
 
     @OneToMany(targetEntity = ComputationalResourceSchedulingEntity.class, cascade = CascadeType.ALL,
             mappedBy = "userConfigurationData", fetch = FetchType.EAGER)
-    private List<ComputationalResourceSchedulingEntity> computationalResourceSchedulingEntities;
+    private List<ComputationalResourceSchedulingEntity> autoScheduledCompResourceSchedulingList;
 
     public UserConfigurationDataEntity() {
     }
@@ -295,12 +295,12 @@ public class UserConfigurationDataEntity implements Serializable {
         this.experiment = experiment;
     }
 
-    public List<ComputationalResourceSchedulingEntity> getComputationalResourceSchedulingEntities() {
-        return computationalResourceSchedulingEntities;
+    public List<ComputationalResourceSchedulingEntity> getAutoScheduledCompResourceSchedulingList() {
+        return autoScheduledCompResourceSchedulingList;
     }
 
-    public void setComputationalResourceSchedulingEntities(List<ComputationalResourceSchedulingEntity>
-                                                                   computationalResourceSchedulingEntities) {
-        this.computationalResourceSchedulingEntities = computationalResourceSchedulingEntities;
+    public void setAutoScheduledCompResourceSchedulingList(List<ComputationalResourceSchedulingEntity>
+                                                                   autoScheduledCompResourceSchedulingList) {
+        this.autoScheduledCompResourceSchedulingList = autoScheduledCompResourceSchedulingList;
     }
 }

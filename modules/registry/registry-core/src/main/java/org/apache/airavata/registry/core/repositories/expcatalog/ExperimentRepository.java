@@ -21,7 +21,6 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.status.ExperimentState;
@@ -37,7 +36,6 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,9 +83,9 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             experimentEntity.getUserConfigurationData().setExperimentId(experimentId);
         }
 
-        if (experimentEntity.getUserConfigurationData().getComputationalResourceSchedulingEntities() != null) {
+        if (experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null) {
             logger.debug("Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
-            for(ComputationalResourceSchedulingEntity entity : experimentEntity.getUserConfigurationData().getComputationalResourceSchedulingEntities()){
+            for(ComputationalResourceSchedulingEntity entity : experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()){
                 entity.setExperimentId(experimentId);
             }
 
