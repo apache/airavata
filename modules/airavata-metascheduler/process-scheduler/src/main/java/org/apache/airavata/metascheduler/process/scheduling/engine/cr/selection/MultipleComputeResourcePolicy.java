@@ -13,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * This class implements selecting one compute resource out of enabled multiple compute resource polices.
@@ -47,29 +49,55 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
                 ComputationalResourceSchedulingModel computationalResourceSchedulingModel = userConfigurationDataModel
                         .getComputationalResourceScheduling();
 
-                int crPoolFraction = ServerSettings.getMetaschedulerMultipleCREnablingFactor();
 
-                List<ComputeResourcePolicy> policyList = registryClient.
-                        getGroupComputeResourcePolicyList(processModel.getGroupResourceProfileId());
+                List<ComputationalResourceSchedulingModel> resourceSchedulingModels =
+                        userConfigurationDataModel.getAutoScheduledCompResourceSchedulingList();
 
-                int count = 0;
-                int maxCount = (int) (policyList.size() * crPoolFraction);
+                List<String> retries = new ArrayList<>();
 
-                while (count < maxCount) {
-                    ComputeResourcePolicy resourcePolicy = policyList.get(count);
-                    List<String> queues = resourcePolicy.getAllowedBatchQueues();
 
-                    String computeResourceId = resourcePolicy.getComputeResourceId();
-                    ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
 
-                    if (!queues.isEmpty()) {
-                        QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(), queues.get(0));
+                while (retries.size()<resourceSchedulingModels.size()) {
+                    Random rand = new Random();
+                    int upperbound = resourceSchedulingModels.size();
+                    int int_random = rand.nextInt(upperbound);
+                    ComputationalResourceSchedulingModel resourceSchedulingModel = resourceSchedulingModels.get(int_random);
+                    String key = resourceSchedulingModel.getResourceHostId()+"_"+resourceSchedulingModel.getQueueName();
+                    if(!retries.contains(key)){
+                        ComputeResourceDescription comResourceDes = registryClient.getComputeResource(resourceSchedulingModel.getResourceHostId());
+                        QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(),
+                                resourceSchedulingModel.getQueueName());
                         if (queueStatusModel.isQueueUp()) {
-                            return Optional.of(computationalResourceSchedulingModel);
+                            return Optional.of(resourceSchedulingModel);
+                        }else{
+                            retries.add(key);
                         }
                     }
-                    count++;
                 }
+
+//                int crPoolFraction = ServerSettings.getMetaschedulerMultipleCREnablingFactor();
+//
+//                List<ComputeResourcePolicy> policyList = registryClient.
+//                        getGroupComputeResourcePolicyList(processModel.getGroupResourceProfileId());
+//
+//                int count = 0;
+//                int maxCount = (int) (policyList.size() * crPoolFraction);
+//
+//                while (count < maxCount) {
+//                    ComputeResourcePolicy resourcePolicy = policyList.get(count);
+//                    List<String> queues = resourcePolicy.getAllowedBatchQueues();
+//
+//                    String computeResourceId = resourcePolicy.getComputeResourceId();
+//                    ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
+//
+//                    if (!queues.isEmpty()) {
+//                        QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(), queues.get(0));
+//                        if (queueStatusModel.isQueueUp()) {
+//                            return Optional.of(computationalResourceSchedulingModel);
+//                        }
+//                    }
+//                    count++;
+//                }
             }
 
         } catch (Exception exception) {
