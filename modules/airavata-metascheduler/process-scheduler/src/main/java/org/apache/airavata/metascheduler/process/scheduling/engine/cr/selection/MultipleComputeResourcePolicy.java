@@ -3,6 +3,7 @@ package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -43,6 +44,8 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
                 ExperimentModel experiment = registryClient.getExperiment(processModel.getExperimentId());
 
 
+
+
                 UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
 
                 // Assume scheduling data is populated in USER_CONFIGURATION_DATA_MODEL
@@ -68,6 +71,19 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
                         QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(),
                                 resourceSchedulingModel.getQueueName());
                         if (queueStatusModel.isQueueUp()) {
+
+                           List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
+                           inputDataObjectTypeList.forEach(obj->{
+                               if (obj.getName().equals("Wall_Time")){
+                                   obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
+                               }
+                               if (obj.getName().equals("Parallel_Group_Count")){
+                                   obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
+                               }
+                           });
+
+
+
                             return Optional.of(resourceSchedulingModel);
                         }else{
                             retries.add(key);

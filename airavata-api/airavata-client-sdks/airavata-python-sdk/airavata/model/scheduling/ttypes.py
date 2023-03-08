@@ -32,6 +32,7 @@ class ComputationalResourceSchedulingModel(object):
      - overrideLoginUserName
      - overrideScratchLocation
      - overrideAllocationProjectNumber
+     - mGroupCount
     """
 
     thrift_spec = (
@@ -48,9 +49,10 @@ class ComputationalResourceSchedulingModel(object):
         (10, TType.STRING, 'overrideLoginUserName', 'UTF8', None, ),  # 10
         (11, TType.STRING, 'overrideScratchLocation', 'UTF8', None, ),  # 11
         (12, TType.STRING, 'overrideAllocationProjectNumber', 'UTF8', None, ),  # 12
+        (13, TType.I32, 'mGroupCount', None, None, ),  # 13
     )
 
-    def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, totalPhysicalMemory=None, chessisNumber=None, staticWorkingDir=None, overrideLoginUserName=None, overrideScratchLocation=None, overrideAllocationProjectNumber=None,):
+    def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, totalPhysicalMemory=None, chessisNumber=None, staticWorkingDir=None, overrideLoginUserName=None, overrideScratchLocation=None, overrideAllocationProjectNumber=None, mGroupCount=None,):
         self.resourceHostId = resourceHostId
         self.totalCPUCount = totalCPUCount
         self.nodeCount = nodeCount
@@ -63,6 +65,7 @@ class ComputationalResourceSchedulingModel(object):
         self.overrideLoginUserName = overrideLoginUserName
         self.overrideScratchLocation = overrideScratchLocation
         self.overrideAllocationProjectNumber = overrideAllocationProjectNumber
+        self.mGroupCount = mGroupCount
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -133,6 +136,11 @@ class ComputationalResourceSchedulingModel(object):
                     self.overrideAllocationProjectNumber = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 13:
+                if ftype == TType.I32:
+                    self.mGroupCount = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -190,6 +198,10 @@ class ComputationalResourceSchedulingModel(object):
         if self.overrideAllocationProjectNumber is not None:
             oprot.writeFieldBegin('overrideAllocationProjectNumber', TType.STRING, 12)
             oprot.writeString(self.overrideAllocationProjectNumber.encode('utf-8') if sys.version_info[0] == 2 else self.overrideAllocationProjectNumber)
+            oprot.writeFieldEnd()
+        if self.mGroupCount is not None:
+            oprot.writeFieldBegin('mGroupCount', TType.I32, 13)
+            oprot.writeI32(self.mGroupCount)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
