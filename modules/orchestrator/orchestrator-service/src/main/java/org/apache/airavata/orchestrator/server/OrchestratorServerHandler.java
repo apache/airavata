@@ -46,6 +46,7 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.ProcessState;
@@ -160,11 +161,17 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (groupResourceProfileId == null) {
                 throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
             }
-            GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-                    userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-                    groupResourceProfileId);
-            if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
-                token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+
+
+            if ( userConfigurationData.getComputationalResourceScheduling() != null &&
+                    userConfigurationData.getComputationalResourceScheduling().isSet(ComputationalResourceSchedulingModel._Fields.RESOURCE_HOST_ID)) {
+                GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+                        userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
+                        groupResourceProfileId);
+
+                if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
+                    token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+                }
             }
             if (token == null || token.isEmpty()) {
                 // try with group resource profile level token
