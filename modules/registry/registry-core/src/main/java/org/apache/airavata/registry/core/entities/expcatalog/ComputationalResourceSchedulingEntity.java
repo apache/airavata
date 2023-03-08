@@ -36,6 +36,9 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     @Column(name = "WALL_TIME_LIMIT")
     private int wallTimeLimit;
 
+    @Column(name = "PARALLEL_GROUP_COUNT")
+    private int mGroupCount;
+
     @Column(name = "TOTAL_PHYSICAL_MEMORY")
     private int totalPhysicalMemory;
 
@@ -156,6 +159,11 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
         this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
     }
 
+    public int getmGroupCount() {
+        return mGroupCount;
+    }
 
-
+    public void setmGroupCount(int mGroupCount) {
+        this.mGroupCount = mGroupCount;
+    }
 }
