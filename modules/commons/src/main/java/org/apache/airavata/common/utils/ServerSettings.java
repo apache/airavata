@@ -513,7 +513,7 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getComputeResourceSelectionPolicyClass() throws ApplicationSettingsException {
         return getSetting(COMPUTE_RESOURCE_SELECTION_POLICY_CLASS,
-                "org.apache.airavata.metascheduler.process.scheduling.cr.DefaultComputeResourceSelectionPolicy");
+                "org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection.MultipleComputeResourcePolicy");
     }
 
     public static String getReSchedulerPolicyClass() throws ApplicationSettingsException {
