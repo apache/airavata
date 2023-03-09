@@ -300,7 +300,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
+    public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
