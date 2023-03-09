@@ -263,14 +263,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             throw new Exception("Validating process fails for given experiment Id : " + experimentId);
                         }
                     }
-                    runExperimentLauncher(experimentId, token, gatewayId);
+                    runExperimentLauncher(experimentId, gatewayId, token);
                 } else {
                     log.debug(experimentId, "Queuing single application experiment {}.", experimentId);
                     ExperimentStatus status = new ExperimentStatus(ExperimentState.SCHEDULED);
                     status.setReason("Compute resources are not ready");
                     status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-                    log.info("expId: {}, Launched experiment ", experimentId);
+                    log.info("expId: {}, Scheduled experiment ", experimentId);
                 }
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
