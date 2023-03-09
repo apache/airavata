@@ -46,6 +46,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             boolean allProcessesScheduled = true;
 
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+
             ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass).newInstance();
 
             for(ProcessModel processModel:processModels) {
