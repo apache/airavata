@@ -238,17 +238,31 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         }
                     });
 
-                    String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
-                    processModel.setTaskDag(taskDag);
-                    registryClient.updateProcess(processModel, processModel.getProcessId());
+
+
+                    if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
+                        String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel);
+                        processModel.setTaskDag(taskDag);
+                        registryClient.updateProcess(processModel, processModel.getProcessId());
+                    }
                 }
 
-                if (!validateProcess(experimentId, processes)) {
+                if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() && !validateProcess(experimentId, processes)) {
                     throw new Exception("Validating process fails for given experiment Id : " + experimentId);
                 }
 
                 ProcessScheduler scheduler = new ProcessSchedulerImpl();
                 if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId)) {
+                    if (experiment.getUserConfigurationData().isAiravataAutoSchedule()){
+                        for (ProcessModel processModel : processes) {
+                            String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel);
+                            processModel.setTaskDag(taskDag);
+                            registryClient.updateProcess(processModel, processModel.getProcessId());
+                        }
+                        if (!validateProcess(experimentId, processes)) {
+                            throw new Exception("Validating process fails for given experiment Id : " + experimentId);
+                        }
+                    }
                     runExperimentLauncher(experimentId, token, gatewayId);
                 } else {
                     log.debug(experimentId, "Queuing single application experiment {}.", experimentId);

@@ -44,21 +44,13 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
                 ExperimentModel experiment = registryClient.getExperiment(processModel.getExperimentId());
 
 
-
-
                 UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
-
-                // Assume scheduling data is populated in USER_CONFIGURATION_DATA_MODEL
-                ComputationalResourceSchedulingModel computationalResourceSchedulingModel = userConfigurationDataModel
-                        .getComputationalResourceScheduling();
 
 
                 List<ComputationalResourceSchedulingModel> resourceSchedulingModels =
                         userConfigurationDataModel.getAutoScheduledCompResourceSchedulingList();
 
                 List<String> retries = new ArrayList<>();
-
-
 
                 while (retries.size()<resourceSchedulingModels.size()) {
                     Random rand = new Random();
@@ -71,19 +63,6 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
                         QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(),
                                 resourceSchedulingModel.getQueueName());
                         if (queueStatusModel.isQueueUp()) {
-
-                           List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
-                           inputDataObjectTypeList.forEach(obj->{
-                               if (obj.getName().equals("Wall_Time")){
-                                   obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
-                               }
-                               if (obj.getName().equals("Parallel_Group_Count")){
-                                   obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
-                               }
-                           });
-
-
-
                             return Optional.of(resourceSchedulingModel);
                         }else{
                             retries.add(key);

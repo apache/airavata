@@ -5,6 +5,8 @@ import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.utils.Utils;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -39,6 +41,8 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
         final RegistryService.Client registryClient = this.registryClientPool.getResource();
         try {
             List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+
+            ExperimentModel experiment = registryClient.getExperiment(experimentId);
             boolean allProcessesScheduled = true;
 
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
@@ -53,8 +57,23 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                             selectComputeResource(processModel.getProcessId());
 
                     if (computationalResourceSchedulingModel.isPresent()) {
-                        processModel.setProcessResourceSchedule(computationalResourceSchedulingModel.get());
+                        ComputationalResourceSchedulingModel resourceSchedulingModel = computationalResourceSchedulingModel.get();
+                        List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
+                        inputDataObjectTypeList.forEach(obj->{
+                            if (obj.getName().equals("Wall_Time")){
+                                obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
+                            }
+                            if (obj.getName().equals("Parallel_Group_Count")){
+                                obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
+                            }
+                        });
+
+                        experiment.setExperimentInputs(inputDataObjectTypeList);
+                        processModel.setProcessResourceSchedule(resourceSchedulingModel);
+                        processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
+
                         registryClient.updateProcess(processModel, processModel.getProcessId());
+                        registryClient.updateExperiment(processModel.getExperimentId(),experiment);
                     } else {
                         ProcessStatus newProcessStatus = new ProcessStatus();
                         newProcessStatus.setState(ProcessState.QUEUED);
