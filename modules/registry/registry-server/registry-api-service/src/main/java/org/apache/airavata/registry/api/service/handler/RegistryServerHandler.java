@@ -4859,7 +4859,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             if (optionalQueueStatusModel.isPresent()) {
                 return optionalQueueStatusModel.get();
             } else {
-                throw new RegistryServiceException("Cannot find queue status with hostName" + hostName + " queueName" + queueName);
+                QueueStatusModel queueStatusModel = new QueueStatusModel();
+                queueStatusModel.setQueueUp(false);
+                return  queueStatusModel;
             }
         } catch (RegistryException e) {
             logger.error("Error while storing queue status models....", e);

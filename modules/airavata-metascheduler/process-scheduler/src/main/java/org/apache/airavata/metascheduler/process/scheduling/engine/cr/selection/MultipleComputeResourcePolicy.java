@@ -23,7 +23,7 @@ import java.util.Random;
  * This class implements selecting one compute resource out of enabled multiple compute resource polices.
  * //TODO: implemented for load testing, for proper usecases airavata should enable multiple compute resources in Experiment creation
  */
-public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelectionPolicy {
+public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolicyImpl  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleComputeResourcePolicy.class);
 
@@ -32,12 +32,6 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
         RegistryService.Client registryClient = super.registryClientPool.getResource();
         try {
 
-            Optional<ComputationalResourceSchedulingModel> optionalComputationalResourceSchedulingModel =
-                    super.selectComputeResource(processId);
-
-            if (optionalComputationalResourceSchedulingModel.isPresent()) {
-                return optionalComputationalResourceSchedulingModel;
-            } else {
                 ProcessModel processModel = registryClient.getProcess(processId);
 
 
@@ -93,8 +87,6 @@ public class MultipleComputeResourcePolicy extends DefaultComputeResourceSelecti
 //                    }
 //                    count++;
 //                }
-            }
-
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
             this.registryClientPool.returnBrokenResource(registryClient);
