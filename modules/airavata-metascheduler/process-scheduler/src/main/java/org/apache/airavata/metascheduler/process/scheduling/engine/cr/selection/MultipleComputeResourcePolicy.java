@@ -64,29 +64,7 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
                     }
                 }
 
-//                int crPoolFraction = ServerSettings.getMetaschedulerMultipleCREnablingFactor();
-//
-//                List<ComputeResourcePolicy> policyList = registryClient.
-//                        getGroupComputeResourcePolicyList(processModel.getGroupResourceProfileId());
-//
-//                int count = 0;
-//                int maxCount = (int) (policyList.size() * crPoolFraction);
-//
-//                while (count < maxCount) {
-//                    ComputeResourcePolicy resourcePolicy = policyList.get(count);
-//                    List<String> queues = resourcePolicy.getAllowedBatchQueues();
-//
-//                    String computeResourceId = resourcePolicy.getComputeResourceId();
-//                    ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
-//
-//                    if (!queues.isEmpty()) {
-//                        QueueStatusModel queueStatusModel = registryClient.getQueueStatus(comResourceDes.getHostName(), queues.get(0));
-//                        if (queueStatusModel.isQueueUp()) {
-//                            return Optional.of(computationalResourceSchedulingModel);
-//                        }
-//                    }
-//                    count++;
-//                }
+
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
             this.registryClientPool.returnBrokenResource(registryClient);
