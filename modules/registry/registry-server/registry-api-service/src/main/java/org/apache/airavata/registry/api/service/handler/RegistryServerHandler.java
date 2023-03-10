@@ -4860,6 +4860,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 return optionalQueueStatusModel.get();
             } else {
                 QueueStatusModel queueStatusModel = new QueueStatusModel();
+                queueStatusModel.setHostName(hostName);
+                queueStatusModel.setQueueName(queueName);
                 queueStatusModel.setQueueUp(false);
                 return  queueStatusModel;
             }

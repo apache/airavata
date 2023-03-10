@@ -1,10 +1,13 @@
 package org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.metascheduler.core.utils.Utils;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -12,6 +15,8 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +47,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                         selectComputeResource(processModel.getProcessId());
 
                 if (computationalResourceSchedulingModel.isPresent()) {
-                    processModel.setProcessResourceSchedule(computationalResourceSchedulingModel.get());
-                    client.updateProcess(processModel, processModel.getProcessId());
+                    updateResourceSchedulingModel(processModel,experimentModel,client);
                     Utils.updateProcessStatusAndPublishStatus(ProcessState.DEQUEUING, processModel.getProcessId(),
                             processModel.getExperimentId(),
                             experimentModel.getGatewayId());
@@ -69,6 +73,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                     double scanningInterval = ServerSettings.getMetaschedulerScanningInterval();
 
                     if (currentTime >= (pastValue + value * scanningInterval * 1000)) {
+                        updateResourceSchedulingModel(processModel,experimentModel,client);
                         Utils.saveAndPublishProcessStatus(ProcessState.DEQUEUING, processModel.getProcessId(),
                                 processModel.getExperimentId(),
                                 experimentModel.getGatewayId());
@@ -104,4 +109,35 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
         return fib(n - 1) + fib(n - 2);
     }
 
+
+    private void updateResourceSchedulingModel(ProcessModel processModel, ExperimentModel experimentModel,
+                                               RegistryService.Client registryClient) throws
+            TException, ExperimentNotFoundException,ApplicationSettingsException, ClassNotFoundException, IllegalAccessException, InstantiationException, RegistryServiceException {
+        String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+        ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass)
+                .newInstance();
+
+        Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel = policy.
+                selectComputeResource(processModel.getProcessId());
+
+        if (computationalResourceSchedulingModel.isPresent()) {
+            ComputationalResourceSchedulingModel resourceSchedulingModel = computationalResourceSchedulingModel.get();
+            List<InputDataObjectType> inputDataObjectTypeList = experimentModel.getExperimentInputs();
+            inputDataObjectTypeList.forEach(obj -> {
+                if (obj.getName().equals("Wall_Time")) {
+                    obj.setValue("-walltime=" + resourceSchedulingModel.getWallTimeLimit());
+                }
+                if (obj.getName().equals("Parallel_Group_Count")) {
+                    obj.setValue("-mgroupcount=" + resourceSchedulingModel.getMGroupCount());
+                }
+            });
+
+            experimentModel.setExperimentInputs(inputDataObjectTypeList);
+            processModel.setProcessResourceSchedule(resourceSchedulingModel);
+            processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
+
+            registryClient.updateProcess(processModel, processModel.getProcessId());
+            registryClient.updateExperiment(processModel.getExperimentId(), experimentModel);
+        }
+    }
 }
