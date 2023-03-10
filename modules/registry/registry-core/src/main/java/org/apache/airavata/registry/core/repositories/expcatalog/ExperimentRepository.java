@@ -27,6 +27,7 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -109,6 +110,15 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         if (experimentEntity.getErrors() != null) {
             logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
             experimentEntity.getErrors().forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
+        }
+
+        if (experimentEntity.getProcesses() != null) {
+            experimentEntity.getProcesses().forEach(processEntity -> {
+               List<ProcessInputEntity> processInputEntities =  processEntity.getProcessInputs();
+               processInputEntities.forEach(pr->{
+                   pr.setProcessId(processEntity.getProcessId());
+               });
+            });
         }
 
         return execute(entityManager -> entityManager.merge(experimentEntity));
