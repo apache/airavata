@@ -3708,6 +3708,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState) {
                     case CREATED:
+                    case SCHEDULED:
                     case VALIDATED:
                         if (experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
                                 .getComputationalResourceScheduling() != null
