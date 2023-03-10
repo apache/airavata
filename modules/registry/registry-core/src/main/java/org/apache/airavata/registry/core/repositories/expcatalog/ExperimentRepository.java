@@ -28,6 +28,7 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -118,6 +119,11 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
                processInputEntities.forEach(pr->{
                    pr.setProcessId(processEntity.getProcessId());
                });
+                List<ProcessOutputEntity> processOutputs =  processEntity.getProcessOutputs();
+                processOutputs.forEach(pr->{
+                    pr.setProcessId(processEntity.getProcessId());
+                });
+
             });
         }
 
