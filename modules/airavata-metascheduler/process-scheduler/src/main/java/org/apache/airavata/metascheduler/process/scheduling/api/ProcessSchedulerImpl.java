@@ -7,6 +7,7 @@ import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPol
 import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -16,6 +17,7 @@ import org.apache.airavata.registry.api.RegistryService.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,17 +61,24 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
 
                     if (computationalResourceSchedulingModel.isPresent()) {
                         ComputationalResourceSchedulingModel resourceSchedulingModel = computationalResourceSchedulingModel.get();
-//                        List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
-//                        inputDataObjectTypeList.forEach(obj->{
-//                            if (obj.getName().equals("Wall_Time")){
-//                                obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
-//                            }
-//                            if (obj.getName().equals("Parallel_Group_Count")){
-//                                obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
-//                            }
-//                        });
+                        List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
+                        inputDataObjectTypeList.forEach(obj->{
+                            if (obj.getName().equals("Wall_Time")){
+                                obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
+                            }
+                            if (obj.getName().equals("Parallel_Group_Count")){
+                                obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
+                            }
+                        });
 
-//                        experiment.setExperimentInputs(inputDataObjectTypeList);
+                        experiment.setExperimentInputs(inputDataObjectTypeList);
+
+                        //update experiment model with selected compute resource
+                        experiment.setProcesses(new ArrayList<>()); // avoid duplication issues
+                        UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
+                        userConfigurationDataModel.setComputationalResourceScheduling(resourceSchedulingModel);
+                        experiment.setUserConfigurationData(userConfigurationDataModel);
+                        registryClient.updateExperiment(experimentId,experiment);
 
                         List<InputDataObjectType> processInputDataObjectTypeList =  processModel.getProcessInputs();
                         processInputDataObjectTypeList.forEach(obj->{
@@ -95,8 +104,6 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                     }
                 }
             }
-//            experiment.setProcesses(processModels);
-//            registryClient.updateExperiment(experimentId,experiment);
             return allProcessesScheduled;
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);

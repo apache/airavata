@@ -112,21 +112,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
             experimentEntity.getErrors().forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
         }
-
-        if (experimentEntity.getProcesses() != null) {
-            experimentEntity.getProcesses().forEach(processEntity -> {
-               List<ProcessInputEntity> processInputEntities =  processEntity.getProcessInputs();
-               processInputEntities.forEach(pr->{
-                   pr.setProcessId(processEntity.getProcessId());
-               });
-                List<ProcessOutputEntity> processOutputs =  processEntity.getProcessOutputs();
-                processOutputs.forEach(pr->{
-                    pr.setProcessId(processEntity.getProcessId());
-                });
-
-            });
-        }
-
         return execute(entityManager -> entityManager.merge(experimentEntity));
     }
 
