@@ -240,11 +240,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 
 
+
                     if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
                         String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel);
                         processModel.setTaskDag(taskDag);
-                        registryClient.updateProcess(processModel, processModel.getProcessId());
                     }
+                    registryClient.updateProcess(processModel, processModel.getProcessId());
                 }
 
                 if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() && !validateProcess(experimentId, processes)) {
@@ -260,7 +261,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             processModel.setTaskDag(taskDag);
                             registryClient.updateProcess(processModel, processModel.getProcessId());
                         }
-                        if (!validateProcess(experimentId, processes)) {
+                        if (!validateProcess(experimentId, processModels)) {
                             throw new Exception("Validating process fails for given experiment Id : " + experimentId);
                         }
                     }
