@@ -254,7 +254,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 ProcessScheduler scheduler = new ProcessSchedulerImpl();
                 if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId)) {
                     if (experiment.getUserConfigurationData().isAiravataAutoSchedule()){
-                        for (ProcessModel processModel : processes) {
+                        List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+                        for (ProcessModel processModel : processModels) {
                             String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel);
                             processModel.setTaskDag(taskDag);
                             registryClient.updateProcess(processModel, processModel.getProcessId());
