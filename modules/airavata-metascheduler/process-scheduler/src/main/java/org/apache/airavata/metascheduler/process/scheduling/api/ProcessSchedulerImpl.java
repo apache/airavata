@@ -69,6 +69,8 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                             }
                         });
 
+                        experiment.setExperimentInputs(inputDataObjectTypeList);
+
                         List<InputDataObjectType> processInputDataObjectTypeList =  processModel.getProcessInputs();
                         processInputDataObjectTypeList.forEach(obj->{
                             if (obj.getName().equals("Wall_Time")){
@@ -80,12 +82,11 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                         });
 
                         processModel.setProcessInputs(processInputDataObjectTypeList);
-                        experiment.setExperimentInputs(inputDataObjectTypeList);
                         processModel.setProcessResourceSchedule(resourceSchedulingModel);
                         processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
 
                         registryClient.updateProcess(processModel, processModel.getProcessId());
-                        registryClient.updateExperiment(processModel.getExperimentId(),experiment);
+
                     } else {
                         ProcessStatus newProcessStatus = new ProcessStatus();
                         newProcessStatus.setState(ProcessState.QUEUED);
@@ -94,6 +95,8 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                     }
                 }
             }
+            experiment.setProcesses(processModels);
+            registryClient.updateExperiment(experimentId,experiment);
             return allProcessesScheduled;
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);

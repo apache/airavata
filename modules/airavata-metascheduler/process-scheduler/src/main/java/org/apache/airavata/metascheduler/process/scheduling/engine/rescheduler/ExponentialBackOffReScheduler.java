@@ -143,11 +143,15 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
             });
 
             processModel.setProcessInputs(processInputDataObjectTypeList);
-
             experimentModel.setExperimentInputs(inputDataObjectTypeList);
+            experimentModel.getProcesses().forEach(pr->{
+                if (pr.getProcessId().equals(processModel.getProcessId())){
+                    pr.setProcessInputs(processModel.getProcessInputs());
+                }
+            });
+
             processModel.setProcessResourceSchedule(resourceSchedulingModel);
             processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
-
             registryClient.updateProcess(processModel, processModel.getProcessId());
             registryClient.updateExperiment(processModel.getExperimentId(), experimentModel);
         }
