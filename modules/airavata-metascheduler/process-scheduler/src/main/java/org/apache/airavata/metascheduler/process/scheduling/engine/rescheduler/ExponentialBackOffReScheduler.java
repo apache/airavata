@@ -9,6 +9,7 @@ import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
@@ -20,6 +21,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,15 +124,15 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
         if (computationalResourceSchedulingModel.isPresent()) {
             ComputationalResourceSchedulingModel resourceSchedulingModel = computationalResourceSchedulingModel.get();
-//            List<InputDataObjectType> inputDataObjectTypeList = experimentModel.getExperimentInputs();
-//            inputDataObjectTypeList.forEach(obj -> {
-//                if (obj.getName().equals("Wall_Time")) {
-//                    obj.setValue("-walltime=" + resourceSchedulingModel.getWallTimeLimit());
-//                }
-//                if (obj.getName().equals("Parallel_Group_Count")) {
-//                    obj.setValue("-mgroupcount=" + resourceSchedulingModel.getMGroupCount());
-//                }
-//            });
+            List<InputDataObjectType> inputDataObjectTypeList = experimentModel.getExperimentInputs();
+            inputDataObjectTypeList.forEach(obj -> {
+                if (obj.getName().equals("Wall_Time")) {
+                    obj.setValue("-walltime=" + resourceSchedulingModel.getWallTimeLimit());
+                }
+                if (obj.getName().equals("Parallel_Group_Count")) {
+                    obj.setValue("-mgroupcount=" + resourceSchedulingModel.getMGroupCount());
+                }
+            });
 
             List<InputDataObjectType> processInputDataObjectTypeList =  processModel.getProcessInputs();
             processInputDataObjectTypeList.forEach(obj->{
@@ -143,17 +145,19 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
             });
 
             processModel.setProcessInputs(processInputDataObjectTypeList);
-//            experimentModel.setExperimentInputs(inputDataObjectTypeList);
-//            experimentModel.getProcesses().forEach(pr->{
-//                if (pr.getProcessId().equals(processModel.getProcessId())){
-//                    pr.setProcessInputs(processModel.getProcessInputs());
-//                }
-//            });
+            experimentModel.setExperimentInputs(inputDataObjectTypeList);
+
+            //update experiment model with selected compute resource
+            experimentModel.setProcesses(new ArrayList<>()); // avoid duplication issues
+            UserConfigurationDataModel userConfigurationDataModel = experimentModel.getUserConfigurationData();
+            userConfigurationDataModel.setComputationalResourceScheduling(resourceSchedulingModel);
+            experimentModel.setUserConfigurationData(userConfigurationDataModel);
+            registryClient.updateExperiment(processModel.getExperimentId(),experimentModel);
 
             processModel.setProcessResourceSchedule(resourceSchedulingModel);
             processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
             registryClient.updateProcess(processModel, processModel.getProcessId());
-//            registryClient.updateExperiment(processModel.getExperimentId(), experimentModel);
+
         }
     }
 }
