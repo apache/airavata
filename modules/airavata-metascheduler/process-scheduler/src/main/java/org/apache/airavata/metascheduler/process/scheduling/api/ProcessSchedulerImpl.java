@@ -69,6 +69,17 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                             }
                         });
 
+                        List<InputDataObjectType> processInputDataObjectTypeList =  processModel.getProcessInputs();
+                        processInputDataObjectTypeList.forEach(obj->{
+                            if (obj.getName().equals("Wall_Time")){
+                                obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
+                            }
+                            if (obj.getName().equals("Parallel_Group_Count")){
+                                obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
+                            }
+                        });
+
+                        processModel.setProcessInputs(processInputDataObjectTypeList);
                         experiment.setExperimentInputs(inputDataObjectTypeList);
                         processModel.setProcessResourceSchedule(resourceSchedulingModel);
                         processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
