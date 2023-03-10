@@ -59,17 +59,17 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
 
                     if (computationalResourceSchedulingModel.isPresent()) {
                         ComputationalResourceSchedulingModel resourceSchedulingModel = computationalResourceSchedulingModel.get();
-                        List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
-                        inputDataObjectTypeList.forEach(obj->{
-                            if (obj.getName().equals("Wall_Time")){
-                                obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
-                            }
-                            if (obj.getName().equals("Parallel_Group_Count")){
-                                obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
-                            }
-                        });
+//                        List<InputDataObjectType> inputDataObjectTypeList =  experiment.getExperimentInputs();
+//                        inputDataObjectTypeList.forEach(obj->{
+//                            if (obj.getName().equals("Wall_Time")){
+//                                obj.setValue("-walltime="+resourceSchedulingModel.getWallTimeLimit());
+//                            }
+//                            if (obj.getName().equals("Parallel_Group_Count")){
+//                                obj.setValue("-mgroupcount="+resourceSchedulingModel.getMGroupCount());
+//                            }
+//                        });
 
-                        experiment.setExperimentInputs(inputDataObjectTypeList);
+//                        experiment.setExperimentInputs(inputDataObjectTypeList);
 
                         List<InputDataObjectType> processInputDataObjectTypeList =  processModel.getProcessInputs();
                         processInputDataObjectTypeList.forEach(obj->{
@@ -95,8 +95,8 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                     }
                 }
             }
-            experiment.setProcesses(processModels);
-            registryClient.updateExperiment(experimentId,experiment);
+//            experiment.setProcesses(processModels);
+//            registryClient.updateExperiment(experimentId,experiment);
             return allProcessesScheduled;
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);
