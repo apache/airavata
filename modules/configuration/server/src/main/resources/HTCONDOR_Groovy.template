@@ -23,7 +23,7 @@
    if (inputFiles != null && inputFiles.size() > 0) out.print 'transfer_input_files = '
    if (inputFiles != null && inputFiles.size() > 0) for(file in inputFiles) out.print file + ', '
    def preJobInputs = checkCommand(preJobCommands, 'transfer_input_files =')
-   if (preJobInputs) out.print ',' + preJobInputs.substring(22)
+   if (preJobInputs) out.print preJobInputs.substring(22)
 
    if (inputFiles != null && inputFiles.size() > 0) out.print '\n'
    if (moduleCommands != null) for(mc in moduleCommands)  out.print mc +'\n'
