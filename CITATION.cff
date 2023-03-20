@@ -1,0 +1,56 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Apache Airavata
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Airavata
+    family-names: Apache
+    email: dev@airavata.apache.org
+repository-code: 'https://github.com/apache/airavata'
+url: 'https://airavata.apache.org/'
+license: Apache-2.0
+preferred-citation:
+  type: proceedings
+  authors:
+  - family-names: "Marru"
+    given-names: "Suresh"
+  - family-names: "Gunathilake"
+    given-names: "Lahiru"
+  - family-names: "Herath"
+    given-names: "Chathura"
+  - family-names: "Tangchaisin"
+    given-names: "Patanachai"
+  - family-names: "Pierce"
+    given-names: "Marlon"
+  - family-names: "Mattmann"
+    given-names: "Chris"
+  - family-names: "Singh"
+    given-names: "Raminder"
+  - family-names: "Gunarathne"
+    given-names: "Thilina"
+  - family-names: "Chinthaka"
+    given-names: "Eran"
+  - family-names: "Gardler"
+    given-names: "Ross"
+  - family-names: "Slominski"
+    given-names: "Aleksander"
+  - family-names: "Douma"
+    given-names: "Ate"
+  - family-names: "Perera"
+    given-names: "Srinath"
+  - family-names: "Weerawarana"
+    given-names: "Sanjiva"
+  doi: "10.1145/2110486.2110490"
+  journal: "Proceedings of the 2011 ACM workshop on Gateway computing environments"
+  month: 11
+  start: 1 # 21
+  end: 10 # 28
+  title: "Apache airavata: a framework for distributed applications and computational workflows"
+  issue: 1
+  volume: 1
+  year: 2011
