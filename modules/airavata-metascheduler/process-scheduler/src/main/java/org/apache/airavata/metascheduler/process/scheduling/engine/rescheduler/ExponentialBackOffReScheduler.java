@@ -39,7 +39,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
             int maxReschedulingCount = ServerSettings.getMetaschedulerReschedulingThreshold();
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = client.getExperiment(processModel.getExperimentId());
-            LOGGER.debug("Rescheduling process with Id " + processModel.getProcessId() + " experimentId " +
+            LOGGER.info("Rescheduling process with Id " + processModel.getProcessId() + " experimentId " +
                     processModel.getExperimentId());
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
             ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy) Class.forName(selectionPolicyClass)
