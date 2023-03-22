@@ -247,4 +247,4 @@ cluster_scanning_interval: 7800
 cluster_scanning_parallel_jobs: 1
 metaschedluer_job_scanning_enable: true
 metascheduler_maximum_rescheduler_threshold: 5
-compute_resource_rescheduler_policy_class: org.apache.airavata.metascheduler.process.scheduling.rescheduler.ExponentialBackOffReScheduler
+compute_resource_rescheduler_policy_class: org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ExponentialBackOffReScheduler
