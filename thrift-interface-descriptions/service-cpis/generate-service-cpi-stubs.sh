@@ -22,13 +22,12 @@
 # This script will generate/regenerate the thrift stubs for Airavata Services: Profile Service.
 
 show_usage() {
-	echo -e "Usage: $0 [--native-thrift] [Component to generate stubs]"
+	echo -e "Usage: $0 [Component to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tps Generate/Update Profile Service Stubs"
 	echo -e "\tall Generate/Update all stubs (Profile Service)."
 	echo -e "\t-h[elp] Print the usage options of this script"
-	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
 
 if [ $# -lt 1 ]
@@ -43,24 +42,17 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.10.0'
-THRIFT_DOCKER_IMAGE='thrift'
-THRIFT_NATIVE="false"
+REQUIRED_THRIFT_VERSION='0.18.1'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PARENT_DIR=`dirname "$SCRIPT_DIR"`
 
 setup() {
-    if [[ $THRIFT_NATIVE == "true" ]]; then
-        if hash thrift &> /dev/null; then
-          THRIFT_EXEC=$(which thrift)
-        else
-          THRIFT_EXEC=/usr/local/bin/thrift
-        fi
-        BASEDIR="$PARENT_DIR"
+    if hash thrift &> /dev/null; then
+        THRIFT_EXEC=$(which thrift)
     else
-        THRIFT_EXEC="docker run --rm -v $PARENT_DIR:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
-        BASEDIR="/data"
+        THRIFT_EXEC=/usr/local/bin/thrift
     fi
+    BASEDIR="$PARENT_DIR"
 
     VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
     if [ "$VERSION" -ne 1 ] ; then
@@ -197,9 +189,6 @@ do
     ps)   echo "Generating Profile Service Stubs"
             setup
             generate_thrift_stubs ${PROFILE_SERVICE_THRIFT_FILE} ${PROFILE_SERVICE_SRC_DIR}
-            ;;
-    --native-thrift)
-            THRIFT_NATIVE="true"
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage
