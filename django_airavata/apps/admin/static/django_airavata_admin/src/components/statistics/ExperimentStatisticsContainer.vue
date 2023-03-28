@@ -335,6 +335,7 @@ export default {
       hostnameFilter: null,
       appInterfaces: null,
       computeResourceNames: null,
+      groupResourceProfiles: null,
       experimentDetailTabs: [],
       experimentId: null,
       jobId: null,
@@ -345,6 +346,7 @@ export default {
     this.loadStatistics();
     this.loadApplicationInterfaces();
     this.loadComputeResources();
+    this.loadGroupResourceProfiles();
   },
   components: {
     ExperimentDetailsView,
@@ -454,13 +456,22 @@ export default {
       }
     },
     hostnameOptions() {
-      if (this.computeResourceNames) {
-        const options = this.computeResourceNames.map((name) => {
-          return {
-            value: name.host_id,
-            text: name.host,
-          };
-        });
+      if (this.computeResourceNames && this.groupResourceProfiles) {
+        // Only show compute resources that are configured in the Group Resource Profiles
+        // First create a Set of all compute resource ids in the GRPs
+        const groupResourceProfileCompResources = new Set(
+          this.groupResourceProfiles.flatMap((grp) =>
+            grp.computePreferences.map((cp) => cp.computeResourceId)
+          )
+        );
+        const options = this.computeResourceNames
+          .filter((name) => groupResourceProfileCompResources.has(name.host_id))
+          .map((name) => {
+            return {
+              value: name.host_id,
+              text: name.host,
+            };
+          });
         return utils.StringUtils.sortIgnoreCase(options, (o) => o.text);
       } else {
         return [];
@@ -504,6 +515,9 @@ export default {
       return services.ComputeResourceService.namesList().then(
         (names) => (this.computeResourceNames = names)
       );
+    },
+    async loadGroupResourceProfiles() {
+      this.groupResourceProfiles = await services.GroupResourceProfileService.list();
     },
     loadStatistics() {
       const requestData = {
