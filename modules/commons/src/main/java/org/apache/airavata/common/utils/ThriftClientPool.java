@@ -154,8 +154,9 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         }
 
         public TProtocol make() {
-            TTransport transport = new TSocket(host, port);
+            TTransport transport;
             try {
+                transport = new TSocket(host, port);
                 transport.open();
             } catch (TTransportException e) {
                 logger.warn(e.getMessage(), e);

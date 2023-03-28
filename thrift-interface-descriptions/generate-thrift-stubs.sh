@@ -23,7 +23,7 @@
 #    and Data Model java beans in java, C++, PHP and Python.
 
 show_usage() {
-	echo -e "Usage: $0 [docker-machine start--native-thrift] [Language to generate stubs]"
+	echo -e "Usage: $0 [Language to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tjava Generate/Update Java Stubs"
@@ -32,7 +32,6 @@ show_usage() {
 	echo -e "\tpython Generate/Update Python Stubs."
 	echo -e "\tall Generate/Update all stubs (Java, PHP, C++, Python)."
 	echo -e "\t-h[elp] Print the usage options of this script"
-	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
 
 if [ $# -lt 1 ]
@@ -47,24 +46,17 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.10.0'
-THRIFT_DOCKER_IMAGE='thrift'
-THRIFT_NATIVE="false"
+REQUIRED_THRIFT_VERSION='0.18.1'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 AIRAVATA_DIR=`dirname "$SCRIPT_DIR"`
 
 setup() {
-    if [[ $THRIFT_NATIVE == "true" ]]; then
-        if hash thrift &> /dev/null; then
-          THRIFT_EXEC=$(which thrift)
-        else
-          THRIFT_EXEC=/usr/local/bin/thrift
-        fi
-        BASEDIR="$AIRAVATA_DIR"
+    if hash thrift &> /dev/null; then
+        THRIFT_EXEC=$(which thrift)
     else
-        BASEDIR="/data"
-        THRIFT_EXEC="docker run --rm -v $AIRAVATA_DIR:$BASEDIR $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
+        THRIFT_EXEC=/usr/local/bin/thrift
     fi
+    BASEDIR="$AIRAVATA_DIR"
 
     VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
     if [ "$VERSION" -ne 1 ] ; then
@@ -349,9 +341,6 @@ do
     python)    echo "Generate Python Stubs"
             setup
             generate_python_stubs
-            ;;
-    --native-thrift)
-            THRIFT_NATIVE="true"
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage
