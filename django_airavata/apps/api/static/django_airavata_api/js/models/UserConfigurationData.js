@@ -41,6 +41,7 @@ const FIELDS = [
     default: false,
   },
   "groupResourceProfileId",
+  "autoScheduledCompResourceSchedulingList",
 ];
 
 export default class UserConfigurationData extends BaseModel {
