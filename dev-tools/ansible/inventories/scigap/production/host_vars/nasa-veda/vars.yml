@@ -41,13 +41,13 @@ auth_options:
   password:
     name: "NASA VEDA Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "nasa-veda"
 experiment_data_dir: "{{ user_data_dir }}/nasa-veda"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCE1feXCJlzfxtkwqrwfHRXqmfR0tKyiGg/NXhYht9mO/WMvuSeKysByCBDnFO1PVF+qGJILOE7E9n6e9xOfTqpuLJsYi4UwLRKu7nGOsERj7ei+1+UpJDn/m8FoDoEInokrkzHeqFJ2NeTSTTU4SKrdvoRF9BWRQW3s3YDILwfh646dvm0wvuxBvif6O/t58svYwVH08MhDK8q06qWeYb21vqI4rk5jM9gObUUcdKuONpSCj9Q8VcnhelHCEu6oyQWcfxaD0k9/qGjEetv2Y/h2dGLSbXxadePkLOojHEAkStzHOYAqlgr0Ig/wav/PgyQBXAWJ4+FjnfVvJ++CCif"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp8LKgKow4ksZJLSm/6qwKA9D1w4+CQcjgl0VJHZSTGFxPxG4Z75hgIlLDDe5tpa8pfwgKywIn8/QNvay2B7lgrEtxH/MkJYoeRiz8w9gq9svWYddFGq+rSAWtyaB3KroPL4N77xiZ6BnGsjhQY80Umsusj4SP3ue1L/2mKkN/POOPP75b2lONxJqYwMT2Bdusa6lbReEM9iv089Ef0nRAfxhOh2mX9/XghDBcx6GYEqcs2rvaQkwEcqroJiozTgcROJLp5kwCdJ/O5vdr3wIoAqOWlyUbU32oGiHvDcz2GYNxyZUeEC6M5sxtz3NzqSHVtl8sJKS2UOuNOH+sbuvZ"
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "NASA VEDA Gateway"
