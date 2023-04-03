@@ -41,9 +41,9 @@ auth_options:
   password:
     name: "Molecular Dynamics Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "molecular-dynamics"
 experiment_data_dir: "{{ user_data_dir }}/molecular-dynamics"
