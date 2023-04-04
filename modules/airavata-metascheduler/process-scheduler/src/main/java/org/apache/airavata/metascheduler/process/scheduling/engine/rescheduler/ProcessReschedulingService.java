@@ -44,7 +44,7 @@ public class ProcessReschedulingService implements IServer {
         scheduler = schedulerFactory.getScheduler();
 
         final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerScanningInterval();
+        final double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
 
 
         for (int i = 0; i < parallelJobs; i++) {

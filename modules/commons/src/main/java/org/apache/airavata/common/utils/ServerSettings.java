@@ -148,7 +148,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_GATEWAY = "metascheduler.gateway";
     public static final String METASCHEDULER_GRP_ID = "metascheduler.group.resource.profile";
     public static final String METASCHEDULER_USERNAME = "metascheduler.username";
-    public static final String METASCHEDULER_SCANNING_INTERVAL = "cluster.scanning.interval";
+    public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "cluster.scanning.interval";
+    public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "job.scanning.interval";
     public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
     public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD= "metascheduler.maximum.rescheduler.threshold";
@@ -547,8 +548,13 @@ public class ServerSettings extends ApplicationSettings {
                 "1"));
     }
 
-    public static double getMetaschedulerScanningInterval() throws ApplicationSettingsException {
-        return Double.parseDouble(getSetting(METASCHEDULER_SCANNING_INTERVAL,
+    public static double getMetaschedulerClusterScanningInterval() throws ApplicationSettingsException {
+        return Double.parseDouble(getSetting(METASCHEDULER_CLUSTER_SCANNING_INTERVAL,
+                "1800000"));
+    }
+
+    public static double getMetaschedulerJobScanningInterval() throws ApplicationSettingsException {
+        return Double.parseDouble(getSetting(METASCHEDULER_JOB_SCANNING_INTERVAL,
                 "1800000"));
     }
 

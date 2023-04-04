@@ -47,10 +47,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -789,6 +786,29 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         case REQUEUED:
                             status.setState(ExperimentState.SCHEDULED);
                             status.setReason("Job submission failed,  requeued to resubmit");
+                            List<QueueStatusModel> queueStatusModels = new ArrayList<>();
+                            final RegistryService.Client registryClient = getRegistryServiceClient();
+                            ExperimentModel experimentModel = registryClient.getExperiment(processIdentity.getExperimentId());
+                            UserConfigurationDataModel userConfigurationDataModel = experimentModel.getUserConfigurationData();
+                            if(userConfigurationDataModel != null) {
+                               ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
+                                       userConfigurationDataModel.getComputationalResourceScheduling();
+                               if(computationalResourceSchedulingModel != null) {
+                                   String queueName = computationalResourceSchedulingModel.getQueueName();
+                                   String resourceId =  computationalResourceSchedulingModel.getResourceHostId();
+                                   ComputeResourceDescription comResourceDes = registryClient.getComputeResource(resourceId);
+                                   QueueStatusModel queueStatusModel = new QueueStatusModel();
+                                   queueStatusModel.setHostName(comResourceDes.getHostName());
+                                   queueStatusModel.setQueueName(queueName);
+                                   queueStatusModel.setQueueUp(false);
+                                   queueStatusModel.setRunningJobs(0);
+                                   queueStatusModel.setQueuedJobs(0);
+                                   queueStatusModel.setTime(System.currentTimeMillis());
+                                   queueStatusModels.add(queueStatusModel);
+                                   registryClient.registerQueueStatuses(queueStatusModels);
+                               }
+                            }
+
                             break;
                         case DEQUEUING:
                             try {
