@@ -48,7 +48,7 @@ public class ComputationalResourceMonitoringService implements IServer {
         final String metaGatewayId = ServerSettings.getMetaschedulerGateway();
         final String metaGroupResourceProfileId = ServerSettings.getMetaschedulerGrpId();
         final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerScanningInterval();
+        final double scanningInterval = ServerSettings.getMetaschedulerClusterScanningInterval();
 
 
         for (int i = 0; i < parallelJobs; i++) {

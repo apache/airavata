@@ -244,6 +244,7 @@ metascheduler_gateway: dev-ultrascan
 metascheduler_group_resource_profile: bd83e541-fb7b-4878-a11b-dc56696700d5
 metascheduler_username: metascheacc
 cluster_scanning_interval: 7800
+job_scanning_interval: 180
 cluster_scanning_parallel_jobs: 1
 metaschedluer_job_scanning_enable: true
 metascheduler_maximum_rescheduler_threshold: 5
