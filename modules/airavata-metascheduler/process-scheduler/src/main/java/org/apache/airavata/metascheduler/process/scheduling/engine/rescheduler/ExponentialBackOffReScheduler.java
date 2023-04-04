@@ -72,7 +72,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
                     long currentTime = System.currentTimeMillis();
 
-                    double scanningInterval = ServerSettings.getMetaschedulerScanningInterval();
+                    double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
 
                     if (currentTime >= (pastValue + value * scanningInterval * 1000)) {
                         updateResourceSchedulingModel(processModel,experimentModel,client);
