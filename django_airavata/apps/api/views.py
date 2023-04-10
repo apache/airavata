@@ -240,7 +240,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
             experiment_util.launch(request, experiment_id)
             return Response({'success': True})
         except Exception as e:
-            log.exception(f"Failed to launch experiment {experiment_id}")
+            log.exception(f"Failed to launch experiment {experiment_id}", extra={'request': request})
             return Response({'success': False, 'errorMessage': str(e)})
 
     @action(methods=['get'], detail=True)
@@ -267,7 +267,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})
         except Exception as e:
-            log.exception("Cancel action has thrown the following error")
+            log.exception("Cancel action has thrown the following error", extra={'request': request})
             raise e
 
     @action(methods=['post'], detail=True)
@@ -279,7 +279,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request, experiment_id, *request.data["outputNames"])
             return Response({'success': True})
         except Exception as e:
-            log.exception("fetchIntermediateOutputs failed with the following error")
+            log.exception("fetchIntermediateOutputs failed with the following error", extra={'request': request})
             raise e
 
     def _update_workspace_preferences(self, project_id,
@@ -382,7 +382,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 log.warning(
                     "Cannot load application model since app interface failed to load")
         except Exception:
-            log.exception("Failed to load app interface/module")
+            log.exception("Failed to load app interface/module", extra={'request': self.request})
 
         compute_resource_id = None
         user_conf = experimentModel.userConfigurationData
@@ -395,7 +395,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 if compute_resource_id else None
         except Exception:
             log.exception("Failed to load compute resource for {}".format(
-                compute_resource_id))
+                compute_resource_id), extra={'request': self.request})
             compute_resource = None
         if self.request.airavata_client.userHasAccess(
                 self.authz_token,
@@ -464,7 +464,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
         elif len(app_interfaces) > 1:
             log.error(
                 "More than one application interface found for module {}: {}"
-                .format(app_module_id, app_interfaces))
+                .format(app_module_id, app_interfaces), extra={'request': request})
             raise Exception(
                 'More than one application interface found for module {}'
                 .format(app_module_id)

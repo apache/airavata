@@ -335,4 +335,4 @@ class KeycloakBackend(object):
                 utils.send_admin_alert_about_uninitialized_username(
                     request, user.username, user.email, user.first_name, user.last_name)
             except Exception:
-                logger.exception(f"Failed to send alert about username being uninitialized: {user.username}")
+                logger.exception(f"Failed to send alert about username being uninitialized: {user.username}", extra={'request': request})

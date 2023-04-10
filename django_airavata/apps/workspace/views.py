@@ -100,9 +100,9 @@ def create_experiment(request, app_module_id):
                             user_input_values[app_input['name']] = dp_uri
                     except Exception:
                         logger.exception(
-                            f"Failed checking data product uri: {dp_uri}")
+                            f"Failed checking data product uri: {dp_uri}", extra={'request': request})
             except ValueError:
-                logger.exception(f"Invalid user file value: {user_file_value}")
+                logger.exception(f"Invalid user file value: {user_file_value}", extra={'request': request})
         elif (app_input['type'] == DataType.STRING and
               app_input['name'] in request.GET):
             name = app_input['name']
