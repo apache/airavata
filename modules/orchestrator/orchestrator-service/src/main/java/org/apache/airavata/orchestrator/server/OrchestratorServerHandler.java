@@ -1001,7 +1001,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     " Please provide the correct token at group resource profile or compute resource preference.");
         }
 
-        runExperimentLauncher(experimentId, experiment.getGatewayId(), token);
 
+        if (experiment.getUserConfigurationData().isAiravataAutoSchedule()){
+                List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+                for (ProcessModel processModel : processModels) {
+                    if (processModel.getTaskDag() == null) {
+                        String taskDag = orchestrator.createAndSaveTasks(experiment.getGatewayId(), processModel);
+                        processModel.setTaskDag(taskDag);
+                        registryClient.updateProcess(processModel, processModel.getProcessId());
+                    }
+                }
+                if (!validateProcess(experimentId, processModels)) {
+                    throw new Exception("Validating process fails for given experiment Id : " + experimentId);
+                }
+            }
+        runExperimentLauncher(experimentId, experiment.getGatewayId(), token);
     }
 }
