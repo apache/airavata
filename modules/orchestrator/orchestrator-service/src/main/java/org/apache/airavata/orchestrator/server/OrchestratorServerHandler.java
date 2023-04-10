@@ -251,17 +251,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
                 ProcessScheduler scheduler = new ProcessSchedulerImpl();
                 if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId)) {
-                    if (experiment.getUserConfigurationData().isAiravataAutoSchedule()){
-                        List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
-                        for (ProcessModel processModel : processModels) {
-                            String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel);
-                            processModel.setTaskDag(taskDag);
-                            registryClient.updateProcess(processModel, processModel.getProcessId());
-                        }
-                        if (!validateProcess(experimentId, processModels)) {
-                            throw new Exception("Validating process fails for given experiment Id : " + experimentId);
-                        }
-                    }
+                    createAndValidateTasks(experiment,registryClient);
                     runExperimentLauncher(experimentId, gatewayId, token);
                 } else {
                     log.debug(experimentId, "Queuing single application experiment {}.", experimentId);
@@ -1000,8 +990,23 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
                     " Please provide the correct token at group resource profile or compute resource preference.");
         }
-
+        createAndValidateTasks(experiment,registryClient);
         runExperimentLauncher(experimentId, experiment.getGatewayId(), token);
+    }
 
+    private void createAndValidateTasks(ExperimentModel experiment, RegistryService.Client  registryClient) throws Exception {
+        if (experiment.getUserConfigurationData().isAiravataAutoSchedule()){
+            List<ProcessModel> processModels = registryClient.getProcessList(experiment.getExperimentId());
+            for (ProcessModel processModel : processModels) {
+                if (processModel.getTaskDag() == null) {
+                    String taskDag = orchestrator.createAndSaveTasks(experiment.getGatewayId(), processModel);
+                    processModel.setTaskDag(taskDag);
+                    registryClient.updateProcess(processModel, processModel.getProcessId());
+                }
+            }
+            if (!validateProcess(experiment.getExperimentId(), processModels)) {
+                throw new Exception("Validating process fails for given experiment Id : " + experiment.getExperimentId());
+            }
+        }
     }
 }
