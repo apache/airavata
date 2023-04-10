@@ -71,33 +71,56 @@ public class Utils {
     public static void saveAndPublishProcessStatus(ProcessState processState, String processId,
                                                    String experimentId, String gatewayId)
             throws RegistryServiceException, TException, AiravataException {
+         RegistryService.Client registryClient = null;
+        try {
+            registryClient = registryClientPool.getResource();
+            ProcessStatus processStatus = new ProcessStatus(processState);
+            processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
-        ProcessStatus processStatus = new ProcessStatus(processState);
-        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-
-        registryClientPool.getResource().addProcessStatus(processStatus, processId);
-        ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
-        ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(processState, identifier);
-        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
-                AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
-        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
+            registryClientPool.getResource().addProcessStatus(processStatus, processId);
+            ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
+            ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(processState, identifier);
+            MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
+            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            getStatusPublisher().publish(msgCtx);
+        } catch (Exception ex){
+            if (registryClient != null) {
+                registryClientPool.returnBrokenResource(registryClient);
+                registryClient = null;
+            }
+        } finally {
+            if (registryClient != null) {
+                registryClientPool.returnResource(registryClient);
+            }
+        }
     }
 
     public static void updateProcessStatusAndPublishStatus(ProcessState processState, String processId,
                                                    String experimentId, String gatewayId)
             throws RegistryServiceException, TException, AiravataException {
+        RegistryService.Client registryClient = null;
+        try {
+            ProcessStatus processStatus = new ProcessStatus(processState);
+            processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
-        ProcessStatus processStatus = new ProcessStatus(processState);
-        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-
-        registryClientPool.getResource().updateProcessStatus(processStatus, processId);
-        ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
-        ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(processState, identifier);
-        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
-                AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
-        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
+            registryClientPool.getResource().updateProcessStatus(processStatus, processId);
+            ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
+            ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(processState, identifier);
+            MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
+            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            getStatusPublisher().publish(msgCtx);
+        } catch (Exception ex) {
+            if (registryClient != null) {
+                registryClientPool.returnBrokenResource(registryClient);
+                registryClient = null;
+            }
+        } finally {
+            if (registryClient != null) {
+                registryClientPool.returnResource(registryClient);
+            }
+        }
     }
 
     public static synchronized Publisher getStatusPublisher() throws AiravataException {

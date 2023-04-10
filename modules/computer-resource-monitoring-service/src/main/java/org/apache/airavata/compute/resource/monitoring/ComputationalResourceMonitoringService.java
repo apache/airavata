@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Computational Resource Monitoring Service
@@ -89,7 +90,9 @@ public class ComputationalResourceMonitoringService implements IServer {
 
     @Override
     public void stop() throws Exception {
-        scheduler.unscheduleJobs(new ArrayList(jobTriggerMap.values()));
+        scheduler.unscheduleJobs(jobTriggerMap.values().stream().map(trigger -> {
+           return trigger.getKey();
+        }).collect(Collectors.toList()));
     }
 
     @Override
