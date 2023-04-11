@@ -66,6 +66,7 @@ jobs:
       - name: Build JavaScript code
         run: |
           build_js.bat
+        shell: cmd
 
   build:
     # ubuntu-22 doesn't support Python 3.6
