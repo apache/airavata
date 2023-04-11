@@ -940,6 +940,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
+    public void deleteTasks(String processId) throws RegistryServiceException, TException {
+        try {
+             taskRepository.deleteTasks(processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while adding task ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding task. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryServiceException, TException {
         try {
             return experimentRepository.getUserConfigurationData(experimentId);
