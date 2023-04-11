@@ -8,7 +8,7 @@
   "module": "./js/index.js",
   "scripts": {
     "watch": "vue-cli-service build --watch --mode production",
-    "build": "npm run build-app && npm run build-lib",
+    "build": "run-s build-app build-lib",
     "build-app": "vue-cli-service build",
     "build-lib": "cross-env LIBRARY_MODE=true vue-cli-service build --target lib --name CommonUI --no-clean ./js/components.js",
     "lint": "vue-cli-service lint ./js/",
