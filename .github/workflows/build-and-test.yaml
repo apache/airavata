@@ -53,6 +53,20 @@ jobs:
             django_airavata/apps/workspace/static/django_airavata_workspace/wc
             django_airavata/apps/dataparsers/static/django_airavata_dataparsers/dist
 
+  build-js-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js as specified in .nvmrc
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
+      - name: Build JavaScript code
+        run: |
+          build_js.bat
+
   build:
     # ubuntu-22 doesn't support Python 3.6
     runs-on: ubuntu-20.04
