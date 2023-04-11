@@ -37,6 +37,8 @@
     "vue-async-computed": "^3.9.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
@@ -44,6 +46,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "file-loader": "^3.0.1",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5",
     "sass": "^1.54.5",
     "sass-loader": "^10",
@@ -52,9 +55,7 @@
     "webpack": "^5",
     "webpack-bundle-tracker": "^0.4.2-beta",
     "webpack-dev-middleware": "^3.5.1",
-    "webpack-dev-server": "^3.1.14",
-    "@babel/eslint-parser": "^7.12.16",
-    "@babel/core": "^7.12.16"
+    "webpack-dev-server": "^3.1.14"
   },
   "eslintConfig": {
     "root": true,
