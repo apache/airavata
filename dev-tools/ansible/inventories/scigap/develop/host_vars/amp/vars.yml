@@ -58,12 +58,6 @@ experiment_data_dir: "{{ user_data_dir }}/django-amp"
 gateway_data_store_resource_id: "dev.ampgateway.org_b8228bc7-fad2-45db-8ed1-47de359a54a5"
 gateway_data_store_hostname: "dev.ampgateway.org"
 
-django_gateway_user_storages:
-  - alias: "default"
-    storage_resource_id: "{{ gateway_data_store_resource_id }}"
-    options:
-      directory: "{{ experiment_data_dir }}"
-
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCMuKQoD6K1DpgHyoY2/eyLMNc5UdupqWqBFEnSO24izMXeOqTityLDRrVZGMLvV/t9wZEig1dhg21Ic5wRSHpCra2BXRn+WjgVdR20EGWPkuFYoDyeMyp8YKjaf1+Fcz+2H52wnrC0RFOHExgB3DWkRSEGghyyIXSBPMxrpS+f0FAfTc36i+EQq2UC0n1xvcdrtGjCKv56mafiKgFfYHbFw7Y7eJxhDCYlRYnzeTJBxWATu9tMGKZgGOxdDXR5hjTvqnpMpk3QpvY/BzAYpCIXxZbb7C41vHaGA9kabjuSlQG4nd+YAxiPrUZdExQNHUE9SCPFQMd/FxsNGdf7YCGH"
 
 django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
