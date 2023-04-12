@@ -756,6 +756,10 @@ service RegistryService extends base_api.BaseAPI {
            string addTask (1: required task_model.TaskModel taskModel, 2: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
+
+            void deleteTasks (1: required string processId)
+                                    throws (1: registry_api_errors.RegistryServiceException rse)
+
            experiment_model.UserConfigurationDataModel getUserConfigurationData(1: required string experimentId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
