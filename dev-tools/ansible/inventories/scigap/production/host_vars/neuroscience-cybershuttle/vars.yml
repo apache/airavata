@@ -1,0 +1,56 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# TODO: tus not setup yet
+tusd_vhost_servername:
+
+vhost_servername: "neuroscience.cybershuttle.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# Increase max upload size to 200MB
+django_file_upload_max_file_size_mb: 200
+
+## Keycloak related variables
+tenant_domain: "neuroscience-cybershuttle"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "NeuroScience Cybershuttle Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "neuroscience-cybershuttle"
+experiment_data_dir: "{{ user_data_dir }}/neuroscience-cybershuttle"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnsRKJRqFvjmNUwChRLMzHZBCzVxh4kK/GBFagzjI5WL5l4RFsnXXpmIFpi1VKGcll/LDnI1PvDdZPP+KaGkuuEmaTgCJD8BSgxz7PmTsOuka6Fl7YwTRcXhv/vYfDQLYUNKfWWmBPyIhfnn+St0jsOSogTvM6Cvajb5/42btCRAcQ9PV6ZqUNdrHWf8fQI+rb9kmb/3H4tI40MG0p68WuhKuf0Fbdrn/Roc7//yRo854WtUi1XpXyLp4W9ggkVEOAlJPTACVA63mSaO3qyY5Hqplwk7iDM+/c0QKB1jKCwqzZdh5djP6GxloO9K5dDyUyn+jtHk+dwAdTKpjlWR1d"
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+portal_title: "NeuroScience Cybershuttle Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...

@@ -38,6 +38,7 @@ geo ansible_host=web.dev.scigap.org
 delta ansible_host=149.165.153.181
 ; custos-testdrive ansible_host=pgadev.scigap.org
 rnamake ansible_host=web.dev.scigap.org
+dev-ultrascan ansible_host=web.dev.scigap.org
 
 [pga]
 scigap ansible_host=149.165.155.229

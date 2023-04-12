@@ -1639,6 +1639,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClientPool.returnResource(sharingClient);
                 return null;
             }
+        } catch (ExperimentNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw e;
         } catch (Exception e) {
             logger.error("Error while getting the experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
