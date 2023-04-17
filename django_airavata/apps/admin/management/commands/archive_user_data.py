@@ -59,6 +59,13 @@ class Command(BaseCommand):
                 with open(os.path.join(tmpdir, archive_list_filename)) as archive_list_file:
                     for line in archive_list_file:
                         tarball.add(line.strip())
+
+            minimum_bytes_size = settings.GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB * 1024 ** 3
+            if os.stat(archive_tarball_filepath).st_size < minimum_bytes_size:
+                self.stdout.write(self.style.WARNING("Aborting, archive size is not large enough to proceed (size less than GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB)"))
+                # Exit early
+                return
+
             self.stdout.write(self.style.SUCCESS(f"Created tarball: {archive_tarball_filename}"))
 
             # Move the archive files into the final destination

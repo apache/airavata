@@ -119,6 +119,7 @@ PROFILE_SERVICE_SECURE = False
 # archived and deleted to free up storage space.
 # GATEWAY_USER_DATA_ARCHIVE_MAX_AGE = {'days': 90}
 # GATEWAY_USER_DATA_ARCHIVE_DIRECTORY = "/path/dir/where/to/copy/archives"
+# GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB = 1
 
 # Portal settings
 PORTAL_TITLE = 'Django Airavata Gateway'

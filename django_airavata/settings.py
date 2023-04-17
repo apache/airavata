@@ -206,6 +206,7 @@ TUS_DATA_DIR = None
 # TODO: document, timedelta arguments
 GATEWAY_USER_DATA_ARCHIVE_MAX_AGE = None
 GATEWAY_USER_DATA_ARCHIVE_DIRECTORY = "/tmp"
+GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB = 1
 
 # Legacy (PGA) Portal link - provide a link to the legacy portal
 PGA_URL = None
