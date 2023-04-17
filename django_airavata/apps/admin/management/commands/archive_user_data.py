@@ -68,7 +68,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             user_data_archive = models.UserDataArchive(
                 archive_name=archive_tarball_filename,
-                archive_path=os.fspath(archive_directory / archive_list_filename),
+                archive_path=os.fspath(archive_directory / archive_tarball_filename),
                 max_modification_time=max_age)
             user_data_archive.save()
             # delete archived entries
