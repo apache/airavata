@@ -120,6 +120,7 @@ const services = {
   ComputeResourceService: ServiceFactory.service("ComputeResources"),
   CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
   DataProductService: ServiceFactory.service("DataProducts"),
+  ExperimentArchiveService: ServiceFactory.service("ExperimentArchive"),
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
   ExperimentService: ServiceFactory.service("Experiments"),
   ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),

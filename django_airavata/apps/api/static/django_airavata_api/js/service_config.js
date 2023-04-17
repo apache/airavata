@@ -202,6 +202,15 @@ export default {
     },
     modelClass: Experiment,
   },
+  ExperimentArchive: {
+    url: "/api/experiment-archives",
+    methods: {
+      get: {
+        url: "/api/experiment-archives/<experimentId>/",
+        requestType: "get",
+      },
+    },
+  },
   ExperimentSearch: {
     url: "/api/experiment-search",
     viewSet: [

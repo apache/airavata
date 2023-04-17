@@ -107,6 +107,9 @@ urlpatterns = [
             views.image_output_view, name="image-output"),
     re_path(r'^link-output',
             views.link_output_view, name="link-output"),
+    re_path(r'^experiment-archives/(?P<experiment_id>[^/]+)/',
+            views.ExperimentArchiveView.as_view(),
+            name="experiment-archives"),
 ]
 
 urlpatterns = router.urls + format_suffix_patterns(urlpatterns)
