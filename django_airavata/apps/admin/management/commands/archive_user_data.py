@@ -28,11 +28,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            max_age_setting = getattr(settings, "GATEWAY_USER_DATA_ARCHIVE_MAX_AGE", None)
+            max_age_setting = getattr(settings, "GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS", None)
             if max_age_setting is None:
-                raise CommandError("Setting GATEWAY_USER_DATA_ARCHIVE_MAX_AGE is not configured")
+                raise CommandError("Setting GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS is not configured")
 
-            max_age = timezone.now() - datetime.timedelta(**max_age_setting)
+            max_age = timezone.now() - datetime.timedelta(days=max_age_setting)
             entries_to_archive = self.get_archive_entries(older_than=max_age)
             gateway_id = settings.GATEWAY_ID
 

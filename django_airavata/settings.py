@@ -203,9 +203,11 @@ TUS_ENDPOINT = None
 # Override and set to the directory where tus uploads will be stored
 TUS_DATA_DIR = None
 
-# TODO: document, timedelta arguments
-GATEWAY_USER_DATA_ARCHIVE_MAX_AGE = None
+# Max age in days after which archive_user_data will archive user data
+GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS = None
+# Directory in which to copy archive text listing file and tarball
 GATEWAY_USER_DATA_ARCHIVE_DIRECTORY = "/tmp"
+# Minimum size of archive file. If archive is smaller than this, the archive is aborted.
 GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB = 1
 
 # Legacy (PGA) Portal link - provide a link to the legacy portal
