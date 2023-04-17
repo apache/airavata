@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import shutil
 import tarfile
@@ -13,6 +14,8 @@ from django.utils import timezone
 
 from django_airavata.apps.admin import models
 
+logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     help = "Create an archive of user data directories and optionally clean them up"
@@ -24,72 +27,77 @@ class Command(BaseCommand):
                             default=False)
 
     def handle(self, *args, **options):
-        max_age_setting = getattr(settings, "GATEWAY_USER_DATA_ARCHIVE_MAX_AGE", None)
-        if max_age_setting is None:
-            raise CommandError("Setting GATEWAY_USER_DATA_ARCHIVE_MAX_AGE is not configured")
+        try:
+            max_age_setting = getattr(settings, "GATEWAY_USER_DATA_ARCHIVE_MAX_AGE", None)
+            if max_age_setting is None:
+                raise CommandError("Setting GATEWAY_USER_DATA_ARCHIVE_MAX_AGE is not configured")
 
-        max_age = timezone.now() - datetime.timedelta(**max_age_setting)
-        entries_to_archive = self.get_archive_entries(older_than=max_age)
-        gateway_id = settings.GATEWAY_ID
+            max_age = timezone.now() - datetime.timedelta(**max_age_setting)
+            entries_to_archive = self.get_archive_entries(older_than=max_age)
+            gateway_id = settings.GATEWAY_ID
 
-        archive_directory = Path(settings.GATEWAY_USER_DATA_ARCHIVE_DIRECTORY)
-        archive_directory.mkdir(exist_ok=True)
+            archive_directory = Path(settings.GATEWAY_USER_DATA_ARCHIVE_DIRECTORY)
+            archive_directory.mkdir(exist_ok=True)
 
-        with tempfile.TemporaryDirectory(dir=archive_directory) as tmpdir:
-            archive_basename = f"archive_{gateway_id}_older_than_{max_age.strftime('%Y-%m-%d-%H-%M-%S')}"
-            archive_list_filename = f"{archive_basename}.txt"
-            archive_list_filepath = os.path.join(tmpdir, archive_list_filename)
-            with open(archive_list_filepath, "wt") as archive_list_file:
-                for entry in entries_to_archive:
-                    archive_list_file.write(f"{entry.path}\n")
+            with tempfile.TemporaryDirectory(dir=archive_directory) as tmpdir:
+                archive_basename = f"archive_{gateway_id}_older_than_{max_age.strftime('%Y-%m-%d-%H-%M-%S')}"
+                archive_list_filename = f"{archive_basename}.txt"
+                archive_list_filepath = os.path.join(tmpdir, archive_list_filename)
+                with open(archive_list_filepath, "wt") as archive_list_file:
+                    for entry in entries_to_archive:
+                        archive_list_file.write(f"{entry.path}\n")
 
-            # if dry run, just print file and exit
-            if options['dry_run']:
-                self.stdout.write(f"DRY RUN: printing {archive_list_filename}, then exiting")
-                with open(os.path.join(tmpdir, archive_list_filename)) as archive_list_file:
-                    for line in archive_list_file:
-                        self.stdout.write(line)
-                self.stdout.write(self.style.SUCCESS("DRY RUN: exiting now"))
-                return
+                # if dry run, just print file and exit
+                if options['dry_run']:
+                    self.stdout.write(f"DRY RUN: printing {archive_list_filename}, then exiting")
+                    with open(os.path.join(tmpdir, archive_list_filename)) as archive_list_file:
+                        for line in archive_list_file:
+                            self.stdout.write(line)
+                    self.stdout.write(self.style.SUCCESS("DRY RUN: exiting now"))
+                    return
 
-            # otherwise, generate a tarball in tmpdir
-            archive_tarball_filename = f"{archive_basename}.tgz"
-            archive_tarball_filepath = os.path.join(tmpdir, archive_tarball_filename)
-            with tarfile.open(archive_tarball_filepath, "w:gz") as tarball:
-                with open(os.path.join(tmpdir, archive_list_filename)) as archive_list_file:
-                    for line in archive_list_file:
-                        tarball.add(line.strip())
+                # otherwise, generate a tarball in tmpdir
+                archive_tarball_filename = f"{archive_basename}.tgz"
+                archive_tarball_filepath = os.path.join(tmpdir, archive_tarball_filename)
+                with tarfile.open(archive_tarball_filepath, "w:gz") as tarball:
+                    with open(os.path.join(tmpdir, archive_list_filename)) as archive_list_file:
+                        for line in archive_list_file:
+                            tarball.add(line.strip())
 
-            minimum_bytes_size = settings.GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB * 1024 ** 3
-            if os.stat(archive_tarball_filepath).st_size < minimum_bytes_size:
-                self.stdout.write(self.style.WARNING("Aborting, archive size is not large enough to proceed (size less than GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB)"))
-                # Exit early
-                return
+                minimum_bytes_size = settings.GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB * 1024 ** 3
+                if os.stat(archive_tarball_filepath).st_size < minimum_bytes_size:
+                    self.stdout.write(self.style.WARNING("Aborting, archive size is not large enough to proceed (size less than GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB)"))
+                    # Exit early
+                    return
 
-            self.stdout.write(self.style.SUCCESS(f"Created tarball: {archive_tarball_filename}"))
+                self.stdout.write(self.style.SUCCESS(f"Created tarball: {archive_tarball_filename}"))
 
-            # Move the archive files into the final destination
-            shutil.move(archive_list_filepath, archive_directory / archive_list_filename)
-            shutil.move(archive_tarball_filepath, archive_directory / archive_tarball_filename)
+                # Move the archive files into the final destination
+                shutil.move(archive_list_filepath, archive_directory / archive_list_filename)
+                shutil.move(archive_tarball_filepath, archive_directory / archive_tarball_filename)
 
-        with transaction.atomic():
-            user_data_archive = models.UserDataArchive(
-                archive_name=archive_tarball_filename,
-                archive_path=os.fspath(archive_directory / archive_tarball_filename),
-                max_modification_time=max_age)
-            user_data_archive.save()
-            # delete archived entries
-            with open(archive_directory / archive_list_filename) as archive_list_file:
-                for archive_path in archive_list_file:
-                    archive_path = archive_path.strip()
-                    if os.path.isfile(archive_path):
-                        os.remove(archive_path)
-                    else:
-                        shutil.rmtree(archive_path)
-                    archive_entry = models.UserDataArchiveEntry(user_data_archive=user_data_archive, entry_path=archive_path)
-                    archive_entry.save()
+            with transaction.atomic():
+                user_data_archive = models.UserDataArchive(
+                    archive_name=archive_tarball_filename,
+                    archive_path=os.fspath(archive_directory / archive_tarball_filename),
+                    max_modification_time=max_age)
+                user_data_archive.save()
+                # delete archived entries
+                with open(archive_directory / archive_list_filename) as archive_list_file:
+                    for archive_path in archive_list_file:
+                        archive_path = archive_path.strip()
+                        if os.path.isfile(archive_path):
+                            os.remove(archive_path)
+                        else:
+                            shutil.rmtree(archive_path)
+                        archive_entry = models.UserDataArchiveEntry(user_data_archive=user_data_archive, entry_path=archive_path)
+                        archive_entry.save()
 
-        self.stdout.write(self.style.SUCCESS("Successfully removed archived user data"))
+            self.stdout.write(self.style.SUCCESS("Successfully removed archived user data"))
+        except CommandError:
+            raise
+        except Exception:
+            logger.exception("[archive_user_data] Failed to create user data archive")
 
     def get_archive_entries(self, older_than: datetime.datetime) -> Iterator[os.DirEntry]:
 
