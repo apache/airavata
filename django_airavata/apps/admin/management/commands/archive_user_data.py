@@ -43,9 +43,16 @@ class Command(BaseCommand):
                 archive_basename = f"archive_{gateway_id}_older_than_{max_age.strftime('%Y-%m-%d-%H-%M-%S')}"
                 archive_list_filename = f"{archive_basename}.txt"
                 archive_list_filepath = os.path.join(tmpdir, archive_list_filename)
+                entry_count = 0
                 with open(archive_list_filepath, "wt") as archive_list_file:
                     for entry in entries_to_archive:
+                        entry_count = entry_count + 1
                         archive_list_file.write(f"{entry.path}\n")
+
+                # If nothing matching to archive, just exit
+                if entry_count == 0:
+                    self.stdout.write(self.style.WARNING("Nothing to archive, exiting now"))
+                    return
 
                 # if dry run, just print file and exit
                 if options['dry_run']:
