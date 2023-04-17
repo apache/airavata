@@ -203,6 +203,10 @@ TUS_ENDPOINT = None
 # Override and set to the directory where tus uploads will be stored
 TUS_DATA_DIR = None
 
+# TODO: document, timedelta arguments
+GATEWAY_USER_DATA_ARCHIVE_MAX_AGE = None
+GATEWAY_USER_DATA_ARCHIVE_DIRECTORY = "/tmp"
+
 # Legacy (PGA) Portal link - provide a link to the legacy portal
 PGA_URL = None
 
