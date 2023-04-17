@@ -89,8 +89,8 @@ vlab-plasmascience ansible_host=149.165.172.104 ansible_user=exouser
 # Baysprism Jetstream2 server
 bayesprism ansible_host=149.165.155.90 ansible_user=exouser
 
-# dreg jetstream server
-dreg ansible_host=149.165.154.48 ansible_user=exouser
+# dreg jetstream server The old is 149.165.154.48
+dreg ansible_host=149.165.171.97 ansible_user=exouser
 
 # futurewater jetstream server
 futurewater ansible_host=149.165.154.212 ansible_user=exouser
