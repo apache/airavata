@@ -42,7 +42,7 @@ class Command(BaseCommand):
             gateway_id = settings.GATEWAY_ID
 
             archive_directory = Path(settings.GATEWAY_USER_DATA_ARCHIVE_DIRECTORY)
-            archive_directory.mkdir(exist_ok=True)
+            archive_directory.mkdir(parents=True, exist_ok=True)
 
             with tempfile.TemporaryDirectory(dir=archive_directory) as tmpdir:
                 archive_basename = f"archive_{gateway_id}_older_than_{max_age.strftime('%Y-%m-%d-%H-%M-%S')}"
