@@ -255,7 +255,19 @@
         </tr>
         <tr>
           <th scope="row">Experiment Data Dir</th>
-          <td>{{ experimentDataDir }}</td>
+          <td>
+            <div>{{ experimentDataDir }}</div>
+            <b-alert
+              show
+              variant="warning"
+              v-if="experimentArchive.archived"
+              class="mt-2"
+            >
+              This directory was archived in
+              <b>{{ experimentArchive.archive_name }}</b> on
+              {{ experimentArchive.created_date }}.
+            </b-alert>
+          </td>
         </tr>
         <tr>
           <th scope="row">Errors</th>
@@ -389,6 +401,7 @@ export default {
   data() {
     return {
       fullExperiment: null,
+      experimentArchive: null,
     };
   },
   computed: {
@@ -454,6 +467,11 @@ export default {
     services.FullExperimentService.retrieve({
       lookup: this.experiment.experimentId,
     }).then((fullExperiment) => (this.fullExperiment = fullExperiment));
+    services.ExperimentArchiveService.get({
+      experimentId: this.experiment.experimentId,
+    }).then((result) => {
+      this.experimentArchive = result;
+    });
   },
   methods: {
     getDataProducts(io, collection) {

@@ -20,7 +20,10 @@ from airavata.model.data.movement.ttypes import (
     SCPDataMovement,
     UnicoreDataMovement
 )
-from airavata.model.experiment.ttypes import ExperimentSearchFields
+from airavata.model.experiment.ttypes import (
+    ExperimentModel,
+    ExperimentSearchFields
+)
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import (
@@ -43,6 +46,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django_airavata.apps.admin.models import UserDataArchiveEntry
 from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
@@ -1280,6 +1284,25 @@ class CurrentGatewayResourceProfile(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExperimentArchiveView(APIView):
+
+    def get(self, request, experiment_id=None, format=None):
+        experiment: ExperimentModel = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+        result = dict(archived=False, archive_name=None, created_date=None,
+                      max_age=settings.GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS)
+        try:
+            archive_entry = UserDataArchiveEntry.objects.get(
+                entry_path=experiment.userConfigurationData.experimentDataDir,
+                user_data_archive__rolled_back=False)
+            result["archived"] = True
+            result["archive_name"] = archive_entry.user_data_archive.archive_name
+            result["created_date"] = archive_entry.user_data_archive.created_date
+        except UserDataArchiveEntry.DoesNotExist:
+            pass
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class StorageResourceViewSet(mixins.RetrieveModelMixin,

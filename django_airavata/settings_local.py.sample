@@ -115,6 +115,14 @@ PROFILE_SERVICE_HOST = AIRAVATA_API_HOST
 PROFILE_SERVICE_PORT = 8962
 PROFILE_SERVICE_SECURE = False
 
+# Gateway user data archive configuration. User data can be periodically
+# archived and deleted to free up storage space.
+# Max age in days after which archive_user_data will archive user data
+# GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS = 90
+# Directory in which to copy archive text listing file and tarball
+# GATEWAY_USER_DATA_ARCHIVE_DIRECTORY = "/path/dir/where/to/copy/archives"
+# Minimum size of archive file. If archive is smaller than this, the archive is aborted.
+# GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB = 1
 
 # Portal settings
 PORTAL_TITLE = 'Django Airavata Gateway'
