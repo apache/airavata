@@ -21,9 +21,18 @@
       @directory-selected="directorySelected"
       :download-in-new-window="true"
     ></experiment-storage-path-viewer>
+
+    <b-alert v-else-if="archived" show variant="warning">
+      This experiment was archived on {{ experimentArchive.created_date }}.
+    </b-alert>
     <b-alert v-else-if="experimentDataDirNotFound" show variant="warning">
       Experiment Data Directory does not exist in storage.
     </b-alert>
+
+    <small class="text-muted" v-if="archiveMaxAge > 0">
+      Data is retained for {{ archiveMaxAge }} days before it is removed and
+      archived.
+    </small>
   </b-card>
 </template>
 
@@ -43,17 +52,25 @@ export default {
     return {
       experimentStoragePath: null,
       experimentDataDirNotFound: false,
+      experimentArchive: null,
     };
   },
   components: {
     ExperimentStoragePathViewer,
   },
   created() {
+    this.loadExperimentArchive();
     return this.loadExperimentStoragePath("");
   },
   computed: {
     canDownloadDataDirectory() {
       return this.experimentStoragePath && !this.experimentDataDirNotFound;
+    },
+    archived() {
+      return this.experimentArchive?.archived;
+    },
+    archiveMaxAge() {
+      return this.experimentArchive?.max_age;
     },
   },
   methods: {
@@ -82,6 +99,12 @@ export default {
     },
     directorySelected(path) {
       return this.loadExperimentStoragePath(path);
+    },
+    async loadExperimentArchive() {
+      const experimentArchive = await services.ExperimentArchiveService.get({
+        experimentId: this.experimentId,
+      });
+      this.experimentArchive = experimentArchive;
     },
   },
 };

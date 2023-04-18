@@ -1289,10 +1289,14 @@ class CurrentGatewayResourceProfile(APIView):
 class ExperimentArchiveView(APIView):
 
     def get(self, request, experiment_id=None, format=None):
-        experiment: ExperimentModel = request.airavata_client.getExperiment(request.authz_token, experiment_id)
-        result = dict(archived=False, archive_name=None, created_date=None)
+        experiment: ExperimentModel = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+        result = dict(archived=False, archive_name=None, created_date=None,
+                      max_age=settings.GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS)
         try:
-            archive_entry = UserDataArchiveEntry.objects.get(entry_path=experiment.userConfigurationData.experimentDataDir, user_data_archive__rolled_back=False)
+            archive_entry = UserDataArchiveEntry.objects.get(
+                entry_path=experiment.userConfigurationData.experimentDataDir,
+                user_data_archive__rolled_back=False)
             result["archived"] = True
             result["archive_name"] = archive_entry.user_data_archive.archive_name
             result["created_date"] = archive_entry.user_data_archive.created_date
