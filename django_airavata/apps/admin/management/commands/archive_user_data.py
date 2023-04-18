@@ -83,22 +83,31 @@ class Command(BaseCommand):
                 shutil.move(archive_list_filepath, archive_directory / archive_list_filename)
                 shutil.move(archive_tarball_filepath, archive_directory / archive_tarball_filename)
 
-            with transaction.atomic():
-                user_data_archive = models.UserDataArchive(
-                    archive_name=archive_tarball_filename,
-                    archive_path=os.fspath(archive_directory / archive_tarball_filename),
-                    max_modification_time=max_age)
-                user_data_archive.save()
-                # delete archived entries
-                with open(archive_directory / archive_list_filename) as archive_list_file:
-                    for archive_path in archive_list_file:
-                        archive_path = archive_path.strip()
-                        if os.path.isfile(archive_path):
-                            os.remove(archive_path)
-                        else:
-                            shutil.rmtree(archive_path)
-                        archive_entry = models.UserDataArchiveEntry(user_data_archive=user_data_archive, entry_path=archive_path)
-                        archive_entry.save()
+            # Now we'll remove any files/directories that were in the archive
+            # and create database records for the archive
+            try:
+                # If any error occurs in this block, the transaction will be rolled back
+                with transaction.atomic():
+                    user_data_archive = models.UserDataArchive(
+                        archive_name=archive_tarball_filename,
+                        archive_path=os.fspath(archive_directory / archive_tarball_filename),
+                        max_modification_time=max_age)
+                    user_data_archive.save()
+                    # delete archived entries
+                    with open(archive_directory / archive_list_filename) as archive_list_file:
+                        for archive_path in archive_list_file:
+                            archive_path = archive_path.strip()
+                            if os.path.isfile(archive_path):
+                                os.remove(archive_path)
+                            else:
+                                shutil.rmtree(archive_path)
+                            archive_entry = models.UserDataArchiveEntry(user_data_archive=user_data_archive, entry_path=archive_path)
+                            archive_entry.save()
+            except Exception as e:
+                self.stdout.write(self.style.ERROR("Failed while deleting archived data, attempting to roll back"))
+                with tarfile.open(archive_directory / archive_tarball_filename) as tf:
+                    tf.extractall(path="/")
+                raise CommandError(f"Failed to delete archived files, but unarchived from tarball {archive_directory / archive_tarball_filename}") from e
 
             self.stdout.write(self.style.SUCCESS("Successfully removed archived user data"))
         except CommandError:
