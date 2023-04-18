@@ -25,12 +25,17 @@ class Command(BaseCommand):
                             action='store_true',
                             help="Print the list of files/directories that would be archived then exit",
                             default=False)
+        parser.add_argument('--max-age',
+                            help="Max age of files/directories in days. Any that are older will be archived.",
+                            type=int,
+                            default=getattr(settings, "GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS", None))
 
     def handle(self, *args, **options):
         try:
-            max_age_setting = getattr(settings, "GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS", None)
+            # Take --max-age from the command line first, then from the setting
+            max_age_setting = options['max_age']
             if max_age_setting is None:
-                raise CommandError("Setting GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS is not configured")
+                raise CommandError("Setting GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS is not configured and --max-age option missing.")
 
             max_age = timezone.now() - datetime.timedelta(days=max_age_setting)
             entries_to_archive = self.get_archive_entries(older_than=max_age)
@@ -77,11 +82,11 @@ class Command(BaseCommand):
                     # Exit early
                     return
 
-                self.stdout.write(self.style.SUCCESS(f"Created tarball: {archive_tarball_filename}"))
-
                 # Move the archive files into the final destination
                 shutil.move(archive_list_filepath, archive_directory / archive_list_filename)
                 shutil.move(archive_tarball_filepath, archive_directory / archive_tarball_filename)
+
+                self.stdout.write(self.style.SUCCESS(f"Created tarball: {archive_directory / archive_tarball_filename}"))
 
             # Now we'll remove any files/directories that were in the archive
             # and create database records for the archive
