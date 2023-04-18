@@ -363,3 +363,11 @@
     create: yes
   become: yes
   when: vhost_ssl and vhost_server_redirect_ssl_certificate_file is defined
+
+- name: Install archive_user_data.cron script
+  template:
+    src: archive_user_data.cron.j2
+    dest: /etc/cron.daily/{{ gateway_id }}-archive_user_data.cron
+    mode: 0755
+  become: yes
+  become_user: root
