@@ -38,6 +38,9 @@ jest.mock("django-airavata-api", () => {
       GroupResourceProfileService: {
         list: jest.fn(),
       },
+      ExperimentArchiveService: {
+        get: jest.fn(),
+      },
     },
   };
 });
@@ -113,6 +116,12 @@ test("load experiment by job id when job id matches unique experiment", async ()
       experiment,
     })
   );
+  services.ExperimentArchiveService.get.mockResolvedValue({
+    archived: false,
+    archive_name: null,
+    created_date: null,
+    max_age: 90,
+  });
 
   // The render method returns a collection of utilities to query your component.
   const { findByText, findByPlaceholderText } = render(
