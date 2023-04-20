@@ -257,12 +257,7 @@
           <th scope="row">Experiment Data Dir</th>
           <td>
             <div>{{ experimentDataDir }}</div>
-            <b-alert
-              show
-              variant="warning"
-              v-if="experimentArchive.archived"
-              class="mt-2"
-            >
+            <b-alert show variant="warning" v-if="archived" class="mt-2">
               This directory was archived in
               <b>{{ experimentArchive.archive_name }}</b> on
               {{ experimentArchive.created_date }}.
@@ -461,6 +456,9 @@ export default {
       } else {
         return null;
       }
+    },
+    archived() {
+      return this.experimentArchive?.archived;
     },
   },
   created() {
