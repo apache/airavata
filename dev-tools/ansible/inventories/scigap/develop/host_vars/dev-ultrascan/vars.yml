@@ -41,6 +41,7 @@ gateway_id: "dev-ultrascan"
 experiment_data_dir: "{{ user_data_dir }}/django-dev-ultrascan"
 # gateway_data_store_ssh_public_key: "TODO"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdefavkuUfn4yNXpAiqHufQ/sk13f5yf4WFt4G4sAN6fwgdL1+90ShtU+BL0TJCaLpLtuFIFvoMh0wwwA1WYCVSpZ/brdnTvcd9y/Vcfiu7fbKNhh03PlX5wwbxNqGDURB+HtWZg2JDYuBHBhNon6/39HZzLCr5wyX4OUSIxWZ9D9g8y1rwgbAQ7PwNA1/kUulBf/gEBMAypX1I/q0/6ZkaRp7M8dVfX7wPX5bXcj7hYLyNFXQ+TDQYm+Z0sPjPAJCzyLxXfBtzacWUX5PVm3mxFRHO0VYxpZ6BCGool02Zo/xOdMGR8BX9Zu0JYiOmNBhXrKvscqTROLwEcLWdaXZ"
+django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "Dev UltraScan Gateway"
