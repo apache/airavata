@@ -38,6 +38,8 @@ airavata_django_git_branch: "develop"
 cilogon_userinfo_url: "https://cilogon.org/oauth2/userinfo"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 
+django_user_data_archive_directory: "{{ user_data_dir }}/user-data-archives/{{ gateway_id }}"
+
 # Default email settings
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
