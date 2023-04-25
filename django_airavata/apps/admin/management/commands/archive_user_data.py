@@ -112,6 +112,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR("Failed while deleting archived data, attempting to roll back"))
                 with tarfile.open(archive_directory / archive_tarball_filename) as tf:
                     tf.extractall(path="/")
+                logger.exception(f"[archive_user_data] Failed to delete archived files, but unarchived from tarball {archive_directory / archive_tarball_filename}", exc_info=e)
                 raise CommandError(f"Failed to delete archived files, but unarchived from tarball {archive_directory / archive_tarball_filename}") from e
 
             self.stdout.write(self.style.SUCCESS("Successfully removed archived user data"))
