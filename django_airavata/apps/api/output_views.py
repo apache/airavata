@@ -16,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# This is populated by apps.ApiConfig.ready()
+OUTPUT_VIEW_PROVIDERS = {}
+
 
 class DefaultViewProvider:
     display_type = 'default'
@@ -83,8 +86,8 @@ def get_output_views(request, experiment, application_interface=None):
             if output_view_provider_id in DEFAULT_VIEW_PROVIDERS:
                 output_view_provider = DEFAULT_VIEW_PROVIDERS[
                     output_view_provider_id]
-            elif output_view_provider_id in settings.OUTPUT_VIEW_PROVIDERS:
-                output_view_provider = settings.OUTPUT_VIEW_PROVIDERS[
+            elif output_view_provider_id in OUTPUT_VIEW_PROVIDERS:
+                output_view_provider = OUTPUT_VIEW_PROVIDERS[
                     output_view_provider_id]
             else:
                 logger.warning("Unable to find output view provider with "
@@ -111,8 +114,8 @@ def _get_output_view_provider(output_view_provider_id):
 
     if output_view_provider_id in DEFAULT_VIEW_PROVIDERS:
         return DEFAULT_VIEW_PROVIDERS[output_view_provider_id]
-    elif output_view_provider_id in settings.OUTPUT_VIEW_PROVIDERS:
-        return settings.OUTPUT_VIEW_PROVIDERS[output_view_provider_id]
+    elif output_view_provider_id in OUTPUT_VIEW_PROVIDERS:
+        return OUTPUT_VIEW_PROVIDERS[output_view_provider_id]
 
 
 def _get_output_view_providers(experiment_output, application_interface):

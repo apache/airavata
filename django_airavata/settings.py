@@ -638,7 +638,3 @@ dynamic_apps.load(INSTALLED_APPS, "airavata.djangoapp")
 # Merge WEBPACK_LOADER settings from custom Django apps
 settings_module = sys.modules[__name__]
 dynamic_apps.merge_settings(settings_module)
-
-OUTPUT_VIEW_PROVIDERS = {}
-for entry_point in iter_entry_points(group='airavata.output_view_providers'):
-    OUTPUT_VIEW_PROVIDERS[entry_point.name] = entry_point.load()()
