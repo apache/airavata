@@ -14,7 +14,6 @@ import os
 import sys
 
 from airavata_django_portal_commons import dynamic_apps
-from pkg_resources import iter_entry_points
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
