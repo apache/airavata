@@ -4877,6 +4877,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 queueStatusModel.setHostName(hostName);
                 queueStatusModel.setQueueName(queueName);
                 queueStatusModel.setQueueUp(false);
+                queueStatusModel.setRunningJobs(0);
+                queueStatusModel.setQueuedJobs(0);
+                queueStatusModel.setTime(0);
                 return  queueStatusModel;
             }
         } catch (RegistryException e) {
