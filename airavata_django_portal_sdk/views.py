@@ -54,17 +54,12 @@ def download_file(request):
         raise Http404("data product does not exist") from e
     try:
         data_file = user_storage.open_file(request, data_product)
-        response = FileResponse(data_file, content_type=mime_type)
+        as_attachment = (mime_type == 'application/octet-stream' or force_download)
         if user_storage.is_input_file(request, data_product):
             file_name = data_product.productName
         else:
             file_name = os.path.basename(data_file.name)
-        if mime_type == 'application/octet-stream' or force_download:
-            response['Content-Disposition'] = ('attachment; filename="{}"'
-                                               .format(file_name))
-        else:
-            response['Content-Disposition'] = f'inline; filename="{file_name}"'
-        return response
+        return FileResponse(data_file, content_type=mime_type, as_attachment=as_attachment, filename=file_name)
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
 
