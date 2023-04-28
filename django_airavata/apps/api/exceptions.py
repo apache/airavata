@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from airavata.api.error.ttypes import (
     AuthorizationException,
@@ -57,6 +58,11 @@ def custom_exception_handler(exc, context):
         log.debug("NotAuthenticated", exc_info=exc)
         if response is not None:
             response.data['is_authenticated'] = False
+
+    if isinstance(exc, UnicodeEncodeError):
+        fse = sys.getfilesystemencoding()
+        if fse != 'utf-8':
+            log.error(f"filesystem encoding is {fse}, not 'utf-8'. File paths with Unicode characters will produce errors.")
 
     # Generic handler
     if response is None:
