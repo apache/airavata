@@ -31,7 +31,6 @@ public class AiravataAPIClient {
                         SSHInterface.newBuilder().setHostName("localhost").build())
                 .setDataInterface(SCPInterface.newBuilder().build()).setHostName("localhost").setPort(22).build();
 
-        RunConfiguration runConfig = RunConfiguration.newBuilder().setAppRunInfo(appRunInfo).setServer(serverBackend).build();
 
         DataMovementConfiguration dataMovement = DataMovementConfiguration.newBuilder()
                 .addInMovements(
@@ -43,12 +42,15 @@ public class AiravataAPIClient {
                                         .setStorageCredentialId("Crede").build())
                                 .build()).build();
 
+        RunConfiguration runConfig = RunConfiguration.newBuilder()
+                .setAppRunInfo(appRunInfo)
+                .setServer(serverBackend)
+                .addDataMovementConfigs(dataMovement).build();
+
         Experiment experiment = Experiment.newBuilder()
                 .setCreationTime(System.currentTimeMillis())
                 .setDescription("Sample Exp")
-                .addRunConfig(runConfig)
-                .addDataMovementConfig(dataMovement).build();
-
+                .addRunConfigs(runConfig).build();
 
         ExperimentRegisterRequest experimentRegisterRequest = ExperimentRegisterRequest.newBuilder()
                 .setExperiment(experiment).build();
