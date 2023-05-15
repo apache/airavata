@@ -15,6 +15,7 @@ public class SecurityManager {
 
     public void loadCertificate(String host, int port) throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException, KeyManagementException, URISyntaxException {
 
+        // It is not secure!
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
