@@ -1,0 +1,85 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+package org.apache.airavata.api.gateway.stubs;
+
+message Group {
+  string groupName = 1;
+  string description = 2;
+}
+
+message Project {
+  string projectID = 1;
+  string owner = 2;
+  string gatewayId = 3;
+  string name = 4;
+  string description = 5;
+  int64 creationTime = 6;
+  repeated string sharedUsers = 7;
+  repeated string sharedGroups = 8;
+}
+
+message User {
+  string airavataInternalUserId = 1;
+  string userName = 2;
+  string gatewayId = 3;
+  string firstName = 4;
+  string lastName = 5;
+  string email = 6;
+}
+
+enum GatewayApprovalStatus {
+  REQUESTED = 0;
+  APPROVED = 1;
+  ACTIVE = 2;
+  DEACTIVATED = 3;
+  CANCELLED = 4;
+  DENIED = 5;
+  CREATED = 6;
+}
+
+message Gateway {
+  string airavataInternalGatewayId = 1;
+  string gatewayId = 2;
+  GatewayApprovalStatus gatewayApprovalStatus = 3;
+  string gatewayName = 4;
+  string domain = 5;
+  string emailAddress = 6;
+  string gatewayAcronym = 7;
+  string gatewayURL = 8;
+  string gatewayPublicAbstract = 9;
+  string reviewProposalDescription = 10;
+  string gatewayAdminFirstName = 11;
+  string gatewayAdminLastName = 12;
+  string gatewayAdminEmail = 13;
+  string identityServerUserName = 14;
+  string identityServerPasswordToken = 15;
+  string declinedReason = 16;
+  string oauthClientId = 17;
+  string oauthClientSecret = 18;
+  int64 requestCreationTime = 19;
+  string requesterUsername = 20;
+}
+
+message GatewayUsageReportingCommand {
+  string gatewayId = 1;
+  string computeResourceId = 2;
+  string command = 3;
+}

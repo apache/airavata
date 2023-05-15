@@ -1,0 +1,109 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+package org.apache.airavata.api.gateway;
+
+import "auth/auth_stubs.proto";
+import "gateway/gateway_stubs.proto";
+
+message GatewayAddRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  org.apache.airavata.api.gateway.stubs.Gateway gateway = 2;
+}
+
+message GatewayAddResponse {
+  string response = 1;
+}
+
+message GatewayUpdateRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  string gatewayId = 2;
+  org.apache.airavata.api.gateway.stubs.Gateway updatedGateway = 3;
+}
+
+message GatewayUpdateResponse {
+  bool response = 1;
+}
+
+message GatewayGetRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  string gatewayId = 2;
+}
+
+message GatewayGetResponse {
+  org.apache.airavata.api.gateway.stubs.Gateway gateway = 1;
+}
+
+message GatewayDeleteRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  string gatewayId = 2;
+}
+
+message GatewayDeleteResponse {
+  bool response = 1;
+}
+
+message GatewayGetAllRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+}
+
+message GatewayGetAllResponse {
+  repeated org.apache.airavata.api.gateway.stubs.Gateway gateways = 1;
+}
+
+
+message GatewayIsExistsRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  string gatewayId = 2;
+}
+
+message GatewayIsExistsResponse {
+  bool exists = 1;
+}
+
+message UserExistsRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  string userId = 2;
+  string gatewayId = 3;
+}
+
+message UserExistsResponse {
+  bool exists = 1;
+}
+
+message GetAllUsersRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  string gatewayId = 2;
+}
+
+message GetAllUsersResponse {
+  repeated string users = 1;
+}
+
+service WorkspaceService {
+  rpc addGateway(GatewayAddRequest) returns (GatewayAddResponse);
+  rpc updateGateway(GatewayUpdateRequest) returns (GatewayUpdateResponse);
+  rpc getGateway(GatewayGetRequest) returns (GatewayGetResponse);
+  rpc deleteGateway(GatewayDeleteRequest) returns (GatewayDeleteResponse);
+  rpc getAllGateways(GatewayGetAllRequest) returns (GatewayGetAllResponse);
+  rpc isGatewayExist(GatewayIsExistsRequest) returns (GatewayIsExistsResponse);
+  rpc doesUserExist (UserExistsRequest) returns (UserExistsResponse);
+  rpc getAllUsersInGateway(GetAllUsersRequest) returns (GetAllUsersResponse);
+}

@@ -34,6 +34,7 @@
         <module>modules/airavata-metascheduler/process-scheduler</module>
         <module>modules/computer-resource-monitoring-service</module>
         <module>modules/airavata-metascheduler/metadata-analyzer</module>
+        <module>modules/airavata-apis</module>
     </modules>
 
     <parent>
@@ -83,6 +84,15 @@
     </issueManagement>
 
     <properties>
+        <protobuf.maven.plugin>0.5.1</protobuf.maven.plugin>
+        <os.maven.plugin>1.5.0.Final</os.maven.plugin>
+        <protobuf.java>3.10.0</protobuf.java>
+        <grpc.version>1.54.0</grpc.version>
+        <h2>1.4.191</h2>
+        <spring.boot.data.jpa>2.2.1.RELEASE</spring.boot.data.jpa>
+        <grpc.spring.boot>4.7.1</grpc.spring.boot>
+
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <derby.version>10.13.1.1</derby.version>
@@ -108,7 +118,7 @@
         <thrift.version>0.18.1</thrift.version>
         <mysql.connector.version>5.1.34</mysql.connector.version>
         <skipTests>false</skipTests>
-        <google.gson.version>2.3</google.gson.version>
+        <google.gson.version>2.8.9</google.gson.version>
         <zk.version>3.4.0</zk.version>
         <amqp.client.version>3.5.1</amqp.client.version>
         <snakeyaml.version>1.15</snakeyaml.version>
@@ -121,6 +131,7 @@
         <google.guava.version>20.0</google.guava.version>
         <jacoco.version>0.8.1</jacoco.version>
         <openjpa.version>3.1.0</openjpa.version>
+        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
         <dozer.version>5.4.0</dozer.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <jaxb.version>2.4.0-b180830.0359</jaxb.version>
@@ -622,12 +633,6 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugins</artifactId>
-                        <version>${openjpa.version}</version>
-                    </plugin>
-
-                    <plugin>
                         <groupId>com.lukegb.mojo</groupId>
                         <artifactId>gitdescribe-maven-plugin</artifactId>
                         <version>3.0</version>
@@ -817,8 +822,9 @@
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/job-monitor</module>
                 <module>modules/platform-monitoring</module>
+                <module>modules/airavata-apis</module>
                 <module>modules/distribution</module>
-                <module>tools</module>
+                <module>modules/tools</module>
                 <module>modules/ide-integration</module>
             </modules>
         </profile>

@@ -1,0 +1,275 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package org.apache.airavata.api.execution.stubs;
+
+message CommandLineInput {
+  int32 position = 1;
+  string prefix = 2;
+  string value = 3;
+}
+
+message FileLocation {
+  string storageId = 1;
+  string path = 2;
+  string storageCredentialId = 3;
+}
+
+message FileInput {
+  string friendlyName = 1;
+  string destinationPath = 2;
+}
+
+message EnvironmentInput {
+  string key = 1;
+  string value = 2;
+}
+
+message ApplicationInput {
+  int32 index = 1;
+  oneof input {
+    CommandLineInput commandLineInput = 2;
+    FileInput fileInput = 3;
+    EnvironmentInput environmentInput = 4;
+  }
+  bool required = 5;
+}
+
+message FileOutput {
+  string friendlyName = 1;
+  string destinationPath = 2;
+}
+
+message StandardOut {
+  string destinationPath = 1;
+}
+
+message StandardError {
+  string destinationPath = 1;
+}
+
+message ApplicationOutput {
+  int32 index = 1;
+  oneof output {
+      FileOutput fileOutput = 2;
+      StandardOut stdOut = 3;
+      StandardError stdErr = 4;
+  }
+  bool required = 5;
+}
+
+message Application {
+  string applicationId = 1;
+  string name = 2;
+  repeated ApplicationInput inputs = 3;
+  repeated ApplicationOutput outputs = 4;
+}
+
+message SlurmRunner {
+  int32 nodes = 1;
+  int32 cpus = 2;
+  int32 memory = 3;
+  int64 wallTime = 4;
+  repeated string preJobCommands = 5;
+  repeated string moduleLoadCommands = 6;
+  string executable = 7;
+  repeated string postJobCommands = 8;
+  string queue = 9;
+  repeated string notificationEmails = 10;
+}
+
+message DockerRunner {
+  string imageName = 1;
+  string imageTag = 2;
+  string repository = 3;
+  string dockerCredentialId = 4;
+  string runCommand = 5;
+}
+
+message ApplicationRunInfo {
+  Application application = 1;
+  oneof runner {
+    DockerRunner dockerRunner = 2;
+    SlurmRunner slurmRunner = 3;
+  }
+}
+
+message SSHInterface {
+  string interfaceId = 1;
+  string hostName = 2;
+  string port = 3;
+  string sshCredentialId = 4;
+}
+
+message SCPInterface {
+  string interfaceId = 1;
+  string hostName = 2;
+  string port = 3;
+  string sshCredentialId = 4;
+}
+
+message ServerBackend {
+  string hostName = 1;
+  int32 port = 2;
+  SSHInterface commandInterface = 3;
+  SCPInterface dataInterface = 4;
+  string workingDirectory = 5;
+}
+
+message EC2Backend {
+  string flavor = 1;
+  string region = 3;
+  string awsCredentialId = 4;
+}
+
+message LocalBackend {
+  string agentId = 1;
+  string agentTokenId = 2;
+}
+
+message RunConfiguration {
+  oneof computeBackend {
+    ServerBackend server = 1;
+    EC2Backend ec2 = 2;
+    LocalBackend local = 3;
+  }
+  ApplicationRunInfo appRunInfo = 4;
+  repeated DataMovementConfiguration dataMovementConfigs = 5;
+}
+
+message InDataMovement {
+  int32 inputIndex = 1;
+  FileLocation sourceLocation = 2;
+}
+
+message OutDataMovement {
+  int32 outputIndex = 1;
+  FileLocation destinationLocation = 2;
+}
+
+message DataMovementConfiguration {
+  repeated InDataMovement inMovements = 1;
+  repeated OutDataMovement ourMovements = 2;
+}
+
+message Experiment {
+  string experimentId = 1;
+  string projectId = 2;
+  string gatewayId = 3;
+  string experimentName = 6;
+  int64 creationTime = 7;
+  string description = 8;
+  repeated RunConfiguration runConfigs = 9;
+}
+
+message ExperimentSummaryModel {
+  string experimentId = 1;
+  string projectId = 2;
+  string gatewayId = 3;
+  int64 creationTime = 4;
+  string userName = 5;
+  string name = 6;
+  string description = 7;
+  string executionId = 8;
+  string resourceHostId = 9;
+  string experimentStatus = 10;
+  int64 statusUpdateTime = 12;
+}
+
+message ExperimentStatistics {
+  int32 allExperimentCount = 1;
+  int32 completedExperimentCount = 2;
+  int32 cancelledExperimentCount = 3;
+  int32 failedExperimentCount = 4;
+  int32 createdExperimentCount = 5;
+  int32 runningExperimentCount = 6;
+  repeated ExperimentSummaryModel allExperiments = 7;
+  repeated ExperimentSummaryModel completedExperiments = 8;
+  repeated ExperimentSummaryModel failedExperiments = 9;
+  repeated ExperimentSummaryModel cancelledExperiments = 10;
+  repeated ExperimentSummaryModel createdExperiments = 11;
+  repeated ExperimentSummaryModel runningExperiments = 12;
+}
+
+
+
+
+
+
+
+
+enum ExperimentState {
+  CREATED = 0;
+  VALIDATED = 1;
+  SCHEDULED = 2;
+  LAUNCHED = 3;
+  EXECUTING = 4;
+  CANCELING = 5;
+  CANCELED = 6;
+  COMPLETED = 7;
+}
+
+enum TaskState {
+  TASK_CREATED = 0;
+  TASK_EXECUTING = 1;
+  TASK_COMPLETED = 2;
+  TASK_FAILED = 3;
+}
+
+enum ProcessState {
+  PROCESS_CREATED = 0;
+  PROCESS_VALIDATED = 1;
+  PROCESS_STARTED = 2;
+  PROCESS_PREPROCESSING = 3;
+  PROCESS_CONFIGURINGWORKSPACE = 4;
+  PROCESS_INPUTDATASTAGING = 5;
+  PROCESS_EXECUTING = 6;
+  PROCESS_MONITORING = 7;
+  PROCESS_OUTPUTDATASTAGING = 8;
+  PROCESS_POSTPROCESSING = 9;
+  PROCESS_COMPLETED = 10;
+  PROCESS_FAILED = 11;
+  PROCESS_CANCELLING = 12;
+  PROCESS_CANCELED = 13;
+  PROCESS_QUEUED = 14;
+}
+
+enum JobState {
+  JOB_SUBMITTED = 0;
+  JOB_QUEUED = 1;
+  JOB_ACTIVE = 2;
+  JOB_COMPLETE = 3;
+  JOB_CANCELED = 4;
+  JOB_FAILED = 5;
+  JOB_SUSPENDED = 6;
+}
+
+message ExperimentStatus {
+  ExperimentState state = 1;
+  int64 timeOfStateChange = 2;
+  string reason = 3;
+  string statusId = 4;
+}
+
+message ProcessStatus {
+  ProcessState state = 1;
+  int64 timeOfStateChange = 2;
+  string reason = 3;
+  string statusId = 4;
+  string processId = 5;
+}
+
+message TaskStatus {
+  TaskState state = 1;
+  int64 timeOfStateChange = 2;
+  string reason = 3;
+  string statusId = 4;
+}
+
+message JobStatus {
+  JobState jobState = 1;
+  int64 timeOfStateChange = 2;
+  string reason = 3;
+  string statusId = 4;
+}
+
