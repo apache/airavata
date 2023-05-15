@@ -80,4 +80,12 @@ public class ExperimentEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public List<RunConfigurationEntity> getRunConfigs() {
+        return runConfigs;
+    }
+
+    public void setRunConfigs(List<RunConfigurationEntity> runConfigs) {
+        this.runConfigs = runConfigs;
+    }
 }
