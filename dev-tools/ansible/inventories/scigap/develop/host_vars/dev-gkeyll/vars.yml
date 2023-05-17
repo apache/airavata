@@ -1,0 +1,48 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+vhost_servername: "dev.vlab.plasmascience.scigap.org"
+vhost_ssl: true
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "devgkeyll"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Dev Gkeyll"
+#  external:
+#    - name: "Existing Institute Login"
+#      idp_alias: "cilogon"
+
+gateway_id: "devgkeyll"
+experiment_data_dir: "{{ user_data_dir }}/django-dev-gkeyll"
+# gateway_data_store_ssh_public_key: "TODO"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdefavkuUfn4yNXpAiqHufQ/sk13f5yf4WFt4G4sAN6fwgdL1+90ShtU+BL0TJCaLpLtuFIFvoMh0wwwA1WYCVSpZ/brdnTvcd9y/Vcfiu7fbKNhh03PlX5wwbxNqGDURB+HtWZg2JDYuBHBhNon6/39HZzLCr5wyX4OUSIxWZ9D9g8y1rwgbAQ7PwNA1/kUulBf/gEBMAypX1I/q0/6ZkaRp7M8dVfX7wPX5bXcj7hYLyNFXQ+TDQYm+Z0sPjPAJCzyLxXfBtzacWUX5PVm3mxFRHO0VYxpZ6BCGool02Zo/xOdMGR8BX9Zu0JYiOmNBhXrKvscqTROLwEcLWdaXZ"
+#django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
+
+admin_emails: "[('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+portal_title: "Dev Gkeyll Gateway"
+...

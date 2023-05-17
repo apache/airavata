@@ -39,6 +39,7 @@ delta ansible_host=149.165.153.181
 ; custos-testdrive ansible_host=pgadev.scigap.org
 rnamake ansible_host=web.dev.scigap.org
 dev-ultrascan ansible_host=web.dev.scigap.org
+dev-gkeyll ansible_host=dev-plasma-space-weather-gateway.phy220105.projects.jetstream-cloud.org
 
 [pga]
 scigap ansible_host=149.165.155.229
