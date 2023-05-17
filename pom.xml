@@ -86,7 +86,7 @@
     <properties>
         <protobuf.maven.plugin>0.5.1</protobuf.maven.plugin>
         <os.maven.plugin>1.5.0.Final</os.maven.plugin>
-        <protobuf.java>3.10.0</protobuf.java>
+        <protobuf.java>3.21.11</protobuf.java>
         <grpc.version>1.54.0</grpc.version>
         <h2>1.4.191</h2>
         <spring.boot.data.jpa>2.2.1.RELEASE</spring.boot.data.jpa>
