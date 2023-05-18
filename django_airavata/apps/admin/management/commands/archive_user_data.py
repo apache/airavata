@@ -104,8 +104,10 @@ class Command(BaseCommand):
                             archive_path = archive_path.strip()
                             if os.path.isfile(archive_path):
                                 os.remove(archive_path)
-                            else:
+                            elif os.path.isdir(archive_path):
                                 shutil.rmtree(archive_path)
+                            else:
+                                self.stdout.write(self.style.WARNING(f"Cannot delete {archive_path} as it is neither a file nor directory, perhaps was already removed"))
                             archive_entry = models.UserDataArchiveEntry(user_data_archive=user_data_archive, entry_path=archive_path)
                             archive_entry.save()
             except Exception as e:

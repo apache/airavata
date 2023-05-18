@@ -29,10 +29,10 @@
       Experiment Data Directory does not exist in storage.
     </b-alert>
 
-    <small class="text-muted" v-if="archiveMaxAge > 0">
+    <!-- <small class="text-muted" v-if="archiveMaxAge > 0">
       Data is retained for {{ archiveMaxAge }} days before it is removed and
       archived.
-    </small>
+    </small> -->
   </b-card>
 </template>
 
