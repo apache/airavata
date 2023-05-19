@@ -21,15 +21,15 @@ public class ApplicationInputEntity {
     private boolean required;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "command_line_input_id", referencedColumnName = "inputId")
+    @JoinColumn(name = "command_line_input_id", referencedColumnName = "input_id")
     private CommandLineInputEntity commandLineInput;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "environment_input_id", referencedColumnName = "inputId")
+    @JoinColumn(name = "environment_input_id", referencedColumnName = "input_id")
     private EnvironmentInputEntity environmentInput;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_input_id", referencedColumnName = "inputId")
+    @JoinColumn(name = "file_input_id", referencedColumnName = "input_id")
     private FileInputEntity fileInput;
 
     @ManyToOne

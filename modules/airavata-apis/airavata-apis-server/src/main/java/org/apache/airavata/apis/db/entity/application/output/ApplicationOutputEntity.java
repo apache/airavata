@@ -21,15 +21,15 @@ public class ApplicationOutputEntity {
     private boolean required;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_output_id", referencedColumnName = "outputId")
+    @JoinColumn(name = "file_output_id", referencedColumnName = "output_id")
     private FileOutputEntity fileOutput;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "std_error_output_id", referencedColumnName = "outputId")
+    @JoinColumn(name = "std_error_output_id", referencedColumnName = "output_id")
     private StandardErrorEntity standardError;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "std_out_output_id", referencedColumnName = "outputId")
+    @JoinColumn(name = "std_out_output_id", referencedColumnName = "output_id")
     private StandardOutEntity standardOut;
 
     @ManyToOne
