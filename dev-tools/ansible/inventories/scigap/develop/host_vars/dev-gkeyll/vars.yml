@@ -35,6 +35,10 @@ ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.
 # tus isn't setup yet
 tusd_vhost_servername:
 
+airavata_django_extra_dependencies:
+  - name: git+https://github.com/matthew-mccall/zenodo_integration_app.git#egg=zenodo_integration_app
+    editable: true
+
 ## Keycloak related variables
 tenant_domain: "devgkeyll"
 oauth_client_key: "{{ vault_oauth_client_key }}"
