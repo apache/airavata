@@ -19,6 +19,14 @@
 #
 
 ---
+
+
+# NOTE: Plasma Science VLab is deployed to a Jetstream2 VM
+real_user_data_dir: "/media/volume/gateway-data/data"
+user_data_dir: "/var/www/portals/gateway-user-data"
+gateway_data_store_hostname: "149.165.152.93"
+gateway_data_store_resource_id: "149.165.152.93_730d2033-c4f0-4fa6-8c45-429a595a52f8"
+
 vhost_servername: "dev.vlab.plasmascience.scigap.org"
 vhost_ssl: true
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
