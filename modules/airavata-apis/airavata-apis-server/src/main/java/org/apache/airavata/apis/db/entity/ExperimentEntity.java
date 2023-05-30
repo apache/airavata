@@ -2,10 +2,8 @@ package org.apache.airavata.apis.db.entity;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -31,6 +29,7 @@ public class ExperimentEntity {
     @Column(name = "DESCRIPTION")
     String description;
 
+    @OneToMany(mappedBy = "experiment")
     List<RunConfigurationEntity> runConfigs;
 
     public String getExperimentId() {

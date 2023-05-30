@@ -1,24 +1,33 @@
 package org.apache.airavata.apis.db.entity.backend;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 @Entity
-public class LocalBackendEntity {
+@DiscriminatorValue("LOCAL")
+public class LocalBackendEntity extends ComputeBackendEntity {
 
-    @Id
-    @Column(name = "BACKEND_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String backendId;
 
     @Column
     String agentId;
     @Column
     String agentTokenId;
+
+    public String getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
+    }
+
+    public String getAgentTokenId() {
+        return agentTokenId;
+    }
+
+    public void setAgentTokenId(String agentTokenId) {
+        this.agentTokenId = agentTokenId;
+    }
 
 }

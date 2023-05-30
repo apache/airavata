@@ -1,20 +1,13 @@
 package org.apache.airavata.apis.db.entity.backend;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 @Entity
-public class EC2BackendEntity {
+@DiscriminatorValue("EC2")
+public class EC2BackendEntity extends ComputeBackendEntity {
 
-    @Id
-    @Column(name = "BACKEND_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String backendId;
     @Column
     String flavor;
     @Column
@@ -22,5 +15,29 @@ public class EC2BackendEntity {
 
     @Column
     String awsCredentialId;
+
+    public String getFlavor() {
+        return flavor;
+    }
+
+    public void setFlavor(String flavor) {
+        this.flavor = flavor;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getAwsCredentialId() {
+        return awsCredentialId;
+    }
+
+    public void setAwsCredentialId(String awsCredentialId) {
+        this.awsCredentialId = awsCredentialId;
+    }
 
 }

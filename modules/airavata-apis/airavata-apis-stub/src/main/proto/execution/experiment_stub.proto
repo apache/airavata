@@ -97,14 +97,14 @@ message ApplicationRunInfo {
 message SSHInterface {
   string interfaceId = 1;
   string hostName = 2;
-  string port = 3;
+  int32 port = 3;
   string sshCredentialId = 4;
 }
 
 message SCPInterface {
   string interfaceId = 1;
   string hostName = 2;
-  string port = 3;
+  int32 port = 3;
   string sshCredentialId = 4;
 }
 
@@ -149,7 +149,7 @@ message OutDataMovement {
 
 message DataMovementConfiguration {
   repeated InDataMovement inMovements = 1;
-  repeated OutDataMovement ourMovements = 2;
+  repeated OutDataMovement outMovements = 2;
 }
 
 message Experiment {
