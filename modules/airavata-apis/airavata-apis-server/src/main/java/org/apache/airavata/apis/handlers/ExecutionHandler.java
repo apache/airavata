@@ -1,6 +1,7 @@
 package org.apache.airavata.apis.handlers;
 
 import io.grpc.stub.StreamObserver;
+import org.apache.airavata.api.execution.stubs.Experiment;
 import org.apache.airavata.api.execution.stubs.RunConfiguration;
 import org.apache.airavata.api.gateway.*;
 import org.apache.airavata.apis.db.entity.ExperimentEntity;
@@ -25,18 +26,23 @@ public class ExecutionHandler extends ExecutionServiceGrpc.ExecutionServiceImplB
     @Override
     public void registerExperiment(ExperimentRegisterRequest request, StreamObserver<ExperimentRegisterResponse> responseObserver) {
 
+        Experiment experiment = request.getExperiment();
         ExperimentEntity experimentEntity = new ExperimentEntity();
-        experimentEntity.setExperimentName(request.getExperiment().getExperimentName());
-        experimentEntity.setDescription(request.getExperiment().getDescription());
+        experimentEntity.setExperimentName(experiment.getExperimentName());
+        experimentEntity.setDescription(experiment.getDescription());
+        experimentEntity.setCreationTime(experiment.getCreationTime());
 
         List<RunConfigurationEntity> runConfigs = new ArrayList<>();
-        for(RunConfiguration rc: request.getExperiment().getRunConfigsList()) {
+        for (RunConfiguration rc : experiment.getRunConfigsList()) {
             RunConfigurationEntity runConfigurationEntity = new RunConfigurationEntity();
             // Fill
 
         }
         experimentEntity.setRunConfigs(runConfigs);
-        experimentRepository.save(experimentEntity);
+        ExperimentEntity savedExperimentEntity = experimentRepository.save(experimentEntity);
+        responseObserver.onNext(ExperimentRegisterResponse.newBuilder()
+                .setExperimentId(savedExperimentEntity.getExperimentId()).build());
+        responseObserver.onCompleted();
     }
 
     @Override
