@@ -153,13 +153,13 @@ message DataMovementConfiguration {
 }
 
 message Experiment {
-  string experimentId = 1;
-  string projectId = 2;
-  string gatewayId = 3;
-  string experimentName = 6;
-  int64 creationTime = 7;
+  string experiment_id = 1;
+  string project_id = 2;
+  string gateway_id = 3;
+  string experiment_name = 6;
+  int64 creation_time = 7;
   string description = 8;
-  repeated RunConfiguration runConfigs = 9;
+  repeated RunConfiguration run_configs = 9;
 }
 
 message ExperimentSummaryModel {

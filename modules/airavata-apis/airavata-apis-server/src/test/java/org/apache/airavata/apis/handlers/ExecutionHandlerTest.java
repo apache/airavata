@@ -7,12 +7,12 @@ import org.apache.airavata.apis.db.entity.ExperimentEntity;
 import org.apache.airavata.apis.db.repository.ExperimentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@DataJpaTest
+@SpringBootTest
 public class ExecutionHandlerTest {
 
     @Autowired
@@ -28,6 +28,7 @@ public class ExecutionHandlerTest {
                 .setCreationTime(System.currentTimeMillis())
                 .setDescription("Sample Exp")
                 .setExperimentName("Exp Name")
+                .setGatewayId("gateway-id")
                 .build();
 
         ExperimentRegisterRequest experimentRegisterRequest = ExperimentRegisterRequest.newBuilder()
@@ -43,6 +44,7 @@ public class ExecutionHandlerTest {
         assertEquals(experiment.getCreationTime(), experimentEntity.getCreationTime());
         assertEquals(experiment.getDescription(), experimentEntity.getDescription());
         assertEquals(experiment.getExperimentName(), experimentEntity.getExperimentName());
+        assertEquals(experiment.getGatewayId(), experimentEntity.getGatewayId());
     }
 
 }
