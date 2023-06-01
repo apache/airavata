@@ -18,23 +18,23 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-package org.apache.airavata.api.gateway;
+package org.apache.airavata.api.execution;
 
 import "execution/experiment_stub.proto";
 import "auth/auth_stubs.proto";
 
 message ExperimentRegisterRequest {
-  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
+  org.apache.airavata.api.auth.stubs.AuthzToken authz_token = 1;
   org.apache.airavata.api.execution.stubs.Experiment experiment = 2;
 }
 
 message ExperimentRegisterResponse {
-  string experimentId = 1;
+  string experiment_id = 1;
 }
 
 message ExperimentLaunchRequest {
-  org.apache.airavata.api.auth.stubs.AuthzToken authzToken = 1;
-  string experimentId = 2;
+  org.apache.airavata.api.auth.stubs.AuthzToken authz_token = 1;
+  string experiment_id = 2;
 }
 
 message ExperimentLaunchResponse {

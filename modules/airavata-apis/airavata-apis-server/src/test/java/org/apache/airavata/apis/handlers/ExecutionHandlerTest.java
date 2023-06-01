@@ -1,8 +1,8 @@
 package org.apache.airavata.apis.handlers;
 
+import org.apache.airavata.api.execution.ExperimentRegisterRequest;
+import org.apache.airavata.api.execution.ExperimentRegisterResponse;
 import org.apache.airavata.api.execution.stubs.Experiment;
-import org.apache.airavata.api.gateway.ExperimentRegisterRequest;
-import org.apache.airavata.api.gateway.ExperimentRegisterResponse;
 import org.apache.airavata.apis.db.entity.ExperimentEntity;
 import org.apache.airavata.apis.db.repository.ExperimentRepository;
 import org.junit.jupiter.api.Test;

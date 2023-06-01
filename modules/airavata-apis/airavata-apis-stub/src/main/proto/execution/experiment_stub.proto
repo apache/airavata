@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 syntax = "proto3";
 
 option java_multiple_files = true;
@@ -10,14 +27,14 @@ message CommandLineInput {
 }
 
 message FileLocation {
-  string storageId = 1;
+  string storage_id = 1;
   string path = 2;
-  string storageCredentialId = 3;
+  string storage_credential_id = 3;
 }
 
 message FileInput {
-  string friendlyName = 1;
-  string destinationPath = 2;
+  string friendly_name = 1;
+  string destination_path = 2;
 }
 
 message EnvironmentInput {
@@ -28,38 +45,38 @@ message EnvironmentInput {
 message ApplicationInput {
   int32 index = 1;
   oneof input {
-    CommandLineInput commandLineInput = 2;
-    FileInput fileInput = 3;
-    EnvironmentInput environmentInput = 4;
+    CommandLineInput command_line_input = 2;
+    FileInput file_input = 3;
+    EnvironmentInput environment_input = 4;
   }
   bool required = 5;
 }
 
 message FileOutput {
-  string friendlyName = 1;
-  string destinationPath = 2;
+  string friendly_name = 1;
+  string destination_path = 2;
 }
 
 message StandardOut {
-  string destinationPath = 1;
+  string destination_path = 1;
 }
 
 message StandardError {
-  string destinationPath = 1;
+  string destination_path = 1;
 }
 
 message ApplicationOutput {
   int32 index = 1;
   oneof output {
-      FileOutput fileOutput = 2;
-      StandardOut stdOut = 3;
-      StandardError stdErr = 4;
+      FileOutput file_output = 2;
+      StandardOut std_out = 3;
+      StandardError std_err = 4;
   }
   bool required = 5;
 }
 
 message Application {
-  string applicationId = 1;
+  string application_id = 1;
   string name = 2;
   repeated ApplicationInput inputs = 3;
   repeated ApplicationOutput outputs = 4;
@@ -69,87 +86,87 @@ message SlurmRunner {
   int32 nodes = 1;
   int32 cpus = 2;
   int32 memory = 3;
-  int64 wallTime = 4;
-  repeated string preJobCommands = 5;
-  repeated string moduleLoadCommands = 6;
+  int64 wall_time = 4;
+  repeated string pre_job_commands = 5;
+  repeated string module_load_commands = 6;
   string executable = 7;
-  repeated string postJobCommands = 8;
+  repeated string post_job_commands = 8;
   string queue = 9;
-  repeated string notificationEmails = 10;
+  repeated string notification_emails = 10;
 }
 
 message DockerRunner {
-  string imageName = 1;
-  string imageTag = 2;
+  string image_name = 1;
+  string image_tag = 2;
   string repository = 3;
-  string dockerCredentialId = 4;
-  string runCommand = 5;
+  string docker_credential_id = 4;
+  string run_command = 5;
 }
 
 message ApplicationRunInfo {
   Application application = 1;
   oneof runner {
-    DockerRunner dockerRunner = 2;
-    SlurmRunner slurmRunner = 3;
+    DockerRunner docker_runner = 2;
+    SlurmRunner slurm_runner = 3;
   }
 }
 
 message SSHInterface {
-  string interfaceId = 1;
-  string hostName = 2;
+  string interface_id = 1;
+  string host_name = 2;
   int32 port = 3;
-  string sshCredentialId = 4;
+  string ssh_credential_id = 4;
 }
 
 message SCPInterface {
-  string interfaceId = 1;
-  string hostName = 2;
+  string interface_id = 1;
+  string host_name = 2;
   int32 port = 3;
-  string sshCredentialId = 4;
+  string ssh_credential_id = 4;
 }
 
 message ServerBackend {
-  string hostName = 1;
+  string host_name = 1;
   int32 port = 2;
-  SSHInterface commandInterface = 3;
-  SCPInterface dataInterface = 4;
-  string workingDirectory = 5;
+  SSHInterface command_interface = 3;
+  SCPInterface data_interface = 4;
+  string working_directory = 5;
 }
 
 message EC2Backend {
   string flavor = 1;
   string region = 3;
-  string awsCredentialId = 4;
+  string aws_credential_id = 4;
 }
 
 message LocalBackend {
-  string agentId = 1;
-  string agentTokenId = 2;
+  string agent_id = 1;
+  string agent_token_id = 2;
 }
 
 message RunConfiguration {
-  oneof computeBackend {
+  oneof compute_backend {
     ServerBackend server = 1;
     EC2Backend ec2 = 2;
     LocalBackend local = 3;
   }
-  ApplicationRunInfo appRunInfo = 4;
-  repeated DataMovementConfiguration dataMovementConfigs = 5;
+  ApplicationRunInfo app_run_info = 4;
+  repeated DataMovementConfiguration data_movement_configs = 5;
 }
 
 message InDataMovement {
-  int32 inputIndex = 1;
-  FileLocation sourceLocation = 2;
+  int32 input_index = 1;
+  FileLocation source_location = 2;
 }
 
 message OutDataMovement {
-  int32 outputIndex = 1;
-  FileLocation destinationLocation = 2;
+  int32 output_index = 1;
+  FileLocation destination_location = 2;
 }
 
 message DataMovementConfiguration {
-  repeated InDataMovement inMovements = 1;
-  repeated OutDataMovement outMovements = 2;
+  repeated InDataMovement in_movements = 1;
+  repeated OutDataMovement out_movements = 2;
 }
 
 message Experiment {
@@ -163,32 +180,32 @@ message Experiment {
 }
 
 message ExperimentSummaryModel {
-  string experimentId = 1;
-  string projectId = 2;
-  string gatewayId = 3;
-  int64 creationTime = 4;
-  string userName = 5;
+  string experiment_id = 1;
+  string project_id = 2;
+  string gateway_id = 3;
+  int64 creation_time = 4;
+  string user_name = 5;
   string name = 6;
   string description = 7;
-  string executionId = 8;
-  string resourceHostId = 9;
-  string experimentStatus = 10;
-  int64 statusUpdateTime = 12;
+  string execution_id = 8;
+  string resource_host_id = 9;
+  string experiment_status = 10;
+  int64 status_update_time = 12;
 }
 
 message ExperimentStatistics {
-  int32 allExperimentCount = 1;
-  int32 completedExperimentCount = 2;
-  int32 cancelledExperimentCount = 3;
-  int32 failedExperimentCount = 4;
-  int32 createdExperimentCount = 5;
-  int32 runningExperimentCount = 6;
-  repeated ExperimentSummaryModel allExperiments = 7;
-  repeated ExperimentSummaryModel completedExperiments = 8;
-  repeated ExperimentSummaryModel failedExperiments = 9;
-  repeated ExperimentSummaryModel cancelledExperiments = 10;
-  repeated ExperimentSummaryModel createdExperiments = 11;
-  repeated ExperimentSummaryModel runningExperiments = 12;
+  int32 all_experiment_count = 1;
+  int32 completed_experiment_count = 2;
+  int32 cancelled_experiment_count = 3;
+  int32 failed_experiment_count = 4;
+  int32 created_experiment_count = 5;
+  int32 running_experiment_count = 6;
+  repeated ExperimentSummaryModel all_experiments = 7;
+  repeated ExperimentSummaryModel completed_experiments = 8;
+  repeated ExperimentSummaryModel failed_experiments = 9;
+  repeated ExperimentSummaryModel cancelled_experiments = 10;
+  repeated ExperimentSummaryModel created_experiments = 11;
+  repeated ExperimentSummaryModel running_experiments = 12;
 }
 
 
@@ -246,30 +263,30 @@ enum JobState {
 
 message ExperimentStatus {
   ExperimentState state = 1;
-  int64 timeOfStateChange = 2;
+  int64 time_of_state_change = 2;
   string reason = 3;
-  string statusId = 4;
+  string status_id = 4;
 }
 
 message ProcessStatus {
   ProcessState state = 1;
-  int64 timeOfStateChange = 2;
+  int64 time_of_state_change = 2;
   string reason = 3;
-  string statusId = 4;
-  string processId = 5;
+  string status_id = 4;
+  string process_id = 5;
 }
 
 message TaskStatus {
   TaskState state = 1;
-  int64 timeOfStateChange = 2;
+  int64 time_of_state_change = 2;
   string reason = 3;
-  string statusId = 4;
+  string status_id = 4;
 }
 
 message JobStatus {
-  JobState jobState = 1;
-  int64 timeOfStateChange = 2;
+  JobState job_state = 1;
+  int64 time_of_state_change = 2;
   string reason = 3;
-  string statusId = 4;
+  string status_id = 4;
 }
 

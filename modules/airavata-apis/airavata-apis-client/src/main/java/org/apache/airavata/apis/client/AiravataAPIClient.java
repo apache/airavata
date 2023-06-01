@@ -3,9 +3,9 @@ package org.apache.airavata.apis.client;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.apache.airavata.api.execution.stubs.*;
-import org.apache.airavata.api.gateway.ExecutionServiceGrpc;
-import org.apache.airavata.api.gateway.ExperimentRegisterRequest;
-import org.apache.airavata.api.gateway.ExperimentRegisterResponse;
+import org.apache.airavata.api.execution.ExecutionServiceGrpc;
+import org.apache.airavata.api.execution.ExperimentRegisterRequest;
+import org.apache.airavata.api.execution.ExperimentRegisterResponse;
 
 public class AiravataAPIClient {
     public static void main(String args[]) {

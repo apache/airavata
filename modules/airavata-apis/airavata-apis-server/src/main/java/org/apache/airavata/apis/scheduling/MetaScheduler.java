@@ -1,6 +1,6 @@
 package org.apache.airavata.apis.scheduling;
 
-import org.apache.airavata.api.gateway.ExperimentLaunchRequest;
+import org.apache.airavata.api.execution.ExperimentLaunchRequest;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

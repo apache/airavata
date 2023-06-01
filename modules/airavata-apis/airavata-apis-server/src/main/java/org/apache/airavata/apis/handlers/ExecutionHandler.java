@@ -1,8 +1,8 @@
 package org.apache.airavata.apis.handlers;
 
 import io.grpc.stub.StreamObserver;
+import org.apache.airavata.api.execution.*;
 import org.apache.airavata.api.execution.stubs.Experiment;
-import org.apache.airavata.api.gateway.*;
 import org.apache.airavata.apis.db.entity.ExperimentEntity;
 import org.apache.airavata.apis.db.repository.ExperimentRepository;
 import org.apache.airavata.apis.mapper.ExperimentMapper;
