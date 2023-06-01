@@ -1,11 +1,9 @@
 package org.apache.airavata.apis.db.entity.backend;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("LOCAL")
 public class LocalBackendEntity extends ComputeBackendEntity {
 
 

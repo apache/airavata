@@ -1,11 +1,9 @@
 package org.apache.airavata.apis.db.entity.backend;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("EC2")
 public class EC2BackendEntity extends ComputeBackendEntity {
 
     @Column

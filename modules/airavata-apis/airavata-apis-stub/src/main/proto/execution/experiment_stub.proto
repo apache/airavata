@@ -18,6 +18,8 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
+// dozer-proto3 requires the package name to be specified with option java_package
+option java_package="org.apache.airavata.api.execution.stubs";
 package org.apache.airavata.api.execution.stubs;
 
 message CommandLineInput {

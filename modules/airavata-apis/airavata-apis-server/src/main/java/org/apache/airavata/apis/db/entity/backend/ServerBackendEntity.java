@@ -3,10 +3,12 @@ package org.apache.airavata.apis.db.entity.backend;
 import org.apache.airavata.apis.db.entity.backend.iface.SCPInterfaceEntity;
 import org.apache.airavata.apis.db.entity.backend.iface.SSHInterfaceEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Entity
-@DiscriminatorValue("SERVER")
 public class ServerBackendEntity extends ComputeBackendEntity {
 
 
