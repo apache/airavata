@@ -43,6 +43,7 @@ auth_options:
 gateway_id: "physicell"
 experiment_data_dir: "{{ user_data_dir }}/physicell"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCagNzgz6E90G5LPsVNGvV45AOR5mtO9JN3ZAqEGp3a8k36IjFTOL5vF44cw0xLdWWDIZNLEd2ufJyTpdyrMPZrblh+z45U3YTiMcDvbtyxVypF84df00AnzvC5Vv2Hzc4v8cTXJyP9hsMQ/phnkbDGFSLEA5WveFkIH5CXMePQ4MjmmTi6eq8xPyjI3R1l4xG9MJQmFOdHT/IRvtUhT35qZDTnZA5LvYwynuyjdRUxNojZuhJAJVgMFEPdMSwB83T+sO/V7IZL8CF9L0179KTGk87gtis+NAhM4tn2CvSh1jvftoG7c67vOnRny5x3SI+pxDvulVEiUVw/xAMyMmyn"
+django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Suresh Marru','smarru@iu.edu')]"
 portal_title: "Physicell Gateway"

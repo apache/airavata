@@ -57,6 +57,7 @@ auth_options:
 gateway_id: "microbial-genomes"
 experiment_data_dir: "{{ user_data_dir }}/microbial-genomes"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCG/syNtrxrgfdHpxln172epFN36uztXhblac4uqNYW9Qlp8K5YI1MICxCW+HJu1mOkIvOLseYaZm1m8Vt7KwTvp/RP6iyZ8M/fWMPO+v9ZLjGupi/iDLA8JNfD0trpwXzW4PCFaqPG2+LtpzsfsI8Bx6UwFXbHKdEo5eC548Cc5EVkZ9xFEChCQHdUcxWI7zs7+S9wsAOY3Qbsrg/UtLAe4P8ZFxABSgBdirKusxdbw/0LgVhkj1aTKIE7n+7b7b11m4A1bzvsvhNLBlN+hRXG9ZiOOYExO1T5p3rX+HHIeUNAi1AMlc6KTa833ni0FWK3EYbGEwC1og6hSfl2ZGRp"
+django_user_data_archive_max_age_days: 90
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Luis Rodriguez Rojas', 'miguel.rodriguez@uibk.ac.at'),('Konstantinos Konstantinidis','kostas@ce.gatech.edu'),('Luis Rodriguez Rojas','lmrodriguezr@gmail.com')]"
 portal_title: "Microbial Genomes Gateway"
