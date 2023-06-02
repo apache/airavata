@@ -48,6 +48,7 @@ auth_options:
 gateway_id: "nasa-veda"
 experiment_data_dir: "{{ user_data_dir }}/nasa-veda"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp8LKgKow4ksZJLSm/6qwKA9D1w4+CQcjgl0VJHZSTGFxPxG4Z75hgIlLDDe5tpa8pfwgKywIn8/QNvay2B7lgrEtxH/MkJYoeRiz8w9gq9svWYddFGq+rSAWtyaB3KroPL4N77xiZ6BnGsjhQY80Umsusj4SP3ue1L/2mKkN/POOPP75b2lONxJqYwMT2Bdusa6lbReEM9iv089Ef0nRAfxhOh2mX9/XghDBcx6GYEqcs2rvaQkwEcqroJiozTgcROJLp5kwCdJ/O5vdr3wIoAqOWlyUbU32oGiHvDcz2GYNxyZUeEC6M5sxtz3NzqSHVtl8sJKS2UOuNOH+sbuvZ"
+django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "NASA VEDA Gateway"

@@ -48,6 +48,7 @@ auth_options:
 gateway_id: "molecular-dynamics"
 experiment_data_dir: "{{ user_data_dir }}/molecular-dynamics"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCE1feXCJlzfxtkwqrwfHRXqmfR0tKyiGg/NXhYht9mO/WMvuSeKysByCBDnFO1PVF+qGJILOE7E9n6e9xOfTqpuLJsYi4UwLRKu7nGOsERj7ei+1+UpJDn/m8FoDoEInokrkzHeqFJ2NeTSTTU4SKrdvoRF9BWRQW3s3YDILwfh646dvm0wvuxBvif6O/t58svYwVH08MhDK8q06qWeYb21vqI4rk5jM9gObUUcdKuONpSCj9Q8VcnhelHCEu6oyQWcfxaD0k9/qGjEetv2Y/h2dGLSbXxadePkLOojHEAkStzHOYAqlgr0Ig/wav/PgyQBXAWJ4+FjnfVvJ++CCif"
+django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "Molecular Dynamics Gateway"
