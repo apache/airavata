@@ -71,6 +71,7 @@ zookeeper_connection_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port
 api_server_name: "apiserver-node0"
 api_server_host: "{{ groups['api-orch'][0] }}"
 api_server_port: "8930"
+api_server_public_hostname: "apidev.scigap.org"
 api_secured: "true"
 tls_enable: "true"
 api_server_tls_port: "9930"
@@ -145,6 +146,9 @@ keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "admin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
 keycloak_vhost_servername: "iamdev.scigap.org"
+
+# Letsencrypt
+letsencrypt_email: "circ-iu-group@iu.edu"
 
 # Helix
 helix_version: 0.9.9
