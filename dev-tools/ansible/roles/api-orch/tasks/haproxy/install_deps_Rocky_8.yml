@@ -19,21 +19,14 @@
 #
 
 ---
-# Just gather facts on database to get internal IP address
-- hosts: database
-  gather_facts: True
 
-- hosts: api-orch
-  tags: api-orch, airavata
-  roles:
-    - env_setup
-    - java
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - letsencrypt
-    - role: api-orch
-      become: yes
-      become_user: "{{user}}"
+- name: dnf install haproxy (Rocky 8)
+  dnf: name={{ package }} state=latest
+  loop:
+    - haproxy
+  loop_control:
+    loop_var: package
+  become: true
+  become_user: root
 
 ...

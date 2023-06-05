@@ -19,21 +19,6 @@
 #
 
 ---
-# Just gather facts on database to get internal IP address
-- hosts: database
-  gather_facts: True
-
-- hosts: api-orch
-  tags: api-orch, airavata
-  roles:
-    - env_setup
-    - java
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - letsencrypt
-    - role: api-orch
-      become: yes
-      become_user: "{{user}}"
-
-...
+- name: restart haproxy
+  service: name=haproxy state=reloaded enabled=yes
+  become: yes
