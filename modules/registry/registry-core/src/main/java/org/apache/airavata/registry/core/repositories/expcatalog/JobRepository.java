@@ -156,4 +156,10 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         delete(jobPK);
     }
 
+    public void removeJob(JobModel jobModel) throws RegistryException {
+        executeWithNativeQuery(QueryConstants.DELETE_JOB_NATIVE_QUERY,jobModel.getJobId(),jobModel.getTaskId());
+    }
+
+
+
 }

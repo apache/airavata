@@ -19,19 +19,16 @@
 #
 
 ---
-#airavata_django_git_branch: "simccs"
-#vhost_servername: "django.interactwel.scigap.org"
 vhost_servername: "interactwel.org"
-vhost_server_redirect: "www.interactwel.org"
 vhost_ssl: true
-# sudo certbot --apache certonly -d django.simccs.scigap.org
-ssl_certificate_file: "/etc/letsencrypt/live/interactwel.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/interactwel.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/interactwel.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-interactwel_django_app_branch: "api-integration"
+interactwel_django_app_branch: "master"
 airavata_django_extra_dependencies:
-  - git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+  - name: git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+    editable: true
 
 django_extra_settings:
   LOGIN_REDIRECT_URL: "/interactwel/"
@@ -54,11 +51,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCK+P6a
 # Show the Data Parsers app option for Interactwel
 django_hidden_airavata_apps: "[]"
 
-portal_email_host: "smtp.gmail.com"
-portal_email_port: 587
-portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
-portal_email_password: "{{ vault_portal_email_password }}"
-portal_server_email: "{{ portal_email_username }}"
 portal_title: "InterACTWEL Gateway"
 ...

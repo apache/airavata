@@ -54,7 +54,7 @@ public class ClusterStatusMonitorJobScheduler {
                 .withIdentity("cluster-status-monitoring-trigger", "airavata")
                 .startNow()
                 .withSchedule(simpleSchedule()
-                        .withIntervalInSeconds(Integer.parseInt(ServerSettings.getClusterStatusMonitoringRepatTime()))
+                        .withIntervalInSeconds(Integer.parseInt(ServerSettings.getClusterStatusMonitoringRepeatTime()))
                         .repeatForever())
                 .build();
 

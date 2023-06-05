@@ -32,7 +32,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "EXPERIMENT")
-public class ExperimentEntity implements Serializable {
+public class   ExperimentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -101,6 +101,8 @@ public class ExperimentEntity implements Serializable {
     @OneToMany(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL,
             mappedBy = "experiment", fetch = FetchType.EAGER)
     private List<ProcessEntity> processes;
+
+
 
     public ExperimentEntity() {
     }
@@ -256,4 +258,6 @@ public class ExperimentEntity implements Serializable {
     public void setProcesses(List<ProcessEntity> processes) {
         this.processes = processes;
     }
+
+
 }

@@ -114,4 +114,10 @@ public class UGEJobConfiguration implements JobManagerConfiguration {
     public String getBaseSubmitCommand() {
         return "qsub ";
     }
+
+
+    @Override
+    public String getLivenessCheckCommand(String queueName, String partition) {
+        return null;
+    }
 }

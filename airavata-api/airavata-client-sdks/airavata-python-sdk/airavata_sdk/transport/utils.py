@@ -39,7 +39,7 @@ from airavata.service.profile.user.cpi import UserProfileService
 from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
 from airavata.api.credential.store import CredentialStoreService
 
-from transport.settings import APIServerClientSettings, UserProfileClientSettings, TenantProfileServerClientSettings, \
+from airavata_sdk.transport.settings import APIServerClientSettings, UserProfileClientSettings, TenantProfileServerClientSettings, \
     IAMAdminClientSettings, GroupManagerClientSettings, SharingAPIClientSettings, CredentialStoreAPIClientSettings, \
     ThriftSettings
 

@@ -37,16 +37,22 @@ logger.setLevel(logging.DEBUG)
 
 class DataModelCreationUtil(object):
 
-    def __init__(self, configuration_file_location, username, password, gateway_id):
+    def __init__(self, configuration_file_location, username, password, gateway_id, access_token):
         self.authenticator = Authenticator(configuration_file_location)
-        self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
-                                                                              password=password, gateway_id=gateway_id)
+        if access_token:
+            self.token = self.authenticator.get_airavata_authz_token(username=username,
+                                                                     token=access_token,
+                                                                     gateway_id=gateway_id)
+        else:
+            self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
+                                                                                  password=password,
+                                                                                  gateway_id=gateway_id)
         self.gateway_id = gateway_id
         self.username = username
         self.password = password
         self.api_server_client = APIServerClient(configuration_file_location)
         self.airavata_util = APIServerClientUtil(configuration_file_location, self.username, self.password,
-                                                 self.gateway_id)
+                                                 self.gateway_id, access_token)
 
     def get_experiment_data_model_for_single_application(self, project_name, application_name, experiment_name,
                                                          description):
@@ -67,7 +73,7 @@ class DataModelCreationUtil(object):
                                                   group_resource_profile_name,
                                                   storageId,
                                                   node_count, total_cpu_count, queue_name, wall_time_limit,
-                                                  experiment_dir_path):
+                                                  experiment_dir_path, auto_schedule=False):
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
         groupResourceProfileId = self.airavata_util.get_group_resource_profile_id(group_resource_profile_name)
         computRes = ComputationalResourceSchedulingModel()
@@ -84,7 +90,7 @@ class DataModelCreationUtil(object):
         userConfigData.storageId = storageId
 
         userConfigData.experimentDataDir = experiment_dir_path
-
+        userConfigData.airavataAutoSchedule = auto_schedule
         experiment_model.userConfigurationData = userConfigData
 
         return experiment_model
@@ -106,18 +112,32 @@ class DataModelCreationUtil(object):
 
         return self.api_server_client.register_data_product(self.token, dataProductModel)
 
-    def configure_input_and_outputs(self, experiment_model, input_files, application_name):
+    def configure_input_and_outputs(self, experiment_model, input_files, application_name, file_mapping={}):
         execution_id = self.airavata_util.get_execution_id(application_name)
 
         inputs = self.api_server_client.get_application_inputs(self.token, execution_id)
 
-        count = 0
-        for obj in inputs:
-            if isinstance(inputs[count], InputDataObjectType):
-                inputs[count].value = input_files[count]
-            count = count + 1
+        configured_inputs = []
+        if (len(file_mapping.keys()) == 0):
+            count = 0
+            for obj in inputs:
+                if isinstance(inputs[count], InputDataObjectType) and len(input_files) > count:
+                    inputs[count].value = input_files[count]
+                    count = count + 1
+            configured_inputs = inputs
+        else:
+            for key in file_mapping.keys():
+                for input in inputs:
+                    if key == input.name:
+                        if input.type == 3:
+                            input.value = file_mapping[key]
+                            configured_inputs.append(input)
+                        elif input.type == 4:
+                            val = ','.join(file_mapping[key])
+                            input.value = val
+                            configured_inputs.append(input)
 
-        experiment_model.experimentInputs = inputs
+        experiment_model.experimentInputs = configured_inputs
 
         outputs = self.api_server_client.get_application_outputs(self.token, execution_id)
 

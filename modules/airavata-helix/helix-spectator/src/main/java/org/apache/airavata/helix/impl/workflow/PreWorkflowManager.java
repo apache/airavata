@@ -148,6 +148,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
                     airavataTask.setRetryCount(taskModel.getMaxRetry());
+                    airavataTask.setAutoSchedule(experimentModel.getUserConfigurationData().isAiravataAutoSchedule());
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() -1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }

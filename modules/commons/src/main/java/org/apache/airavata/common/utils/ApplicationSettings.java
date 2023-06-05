@@ -453,12 +453,19 @@ public class ApplicationSettings {
         return getSetting("super.tenant.gatewayId");
     }
 
-    public static String getClusterStatusMonitoringRepatTime() throws ApplicationSettingsException {
+    public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
         return getSetting("cluster.status.monitoring.repeat.time");
     }
 
     public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
         return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
+    }
+
+    public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
+        return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
+    }
+    public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
+        return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
     }
 
     public static String getUserProfileServerHost() throws ApplicationSettingsException {
