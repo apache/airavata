@@ -100,13 +100,6 @@
     mode: 755
   become_user: root
 
-# - name: copy cron job to renew certificates
-#   copy:
-#     src: renewLetsEncryptCertificates.sh
-#     dest: /etc/cron.monthly/
-#     mode: 0755
-#   become_user: root
-
 - name: check if SSL certificate exists
   stat:
     path: "{{ api_server_letsencrypt_ssl_cert }}"
