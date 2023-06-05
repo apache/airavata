@@ -239,8 +239,8 @@ zabbix_server: "rt-monitor.uits.iu.edu"
 #variables for metscheduler
 cluster_monitoring_enabled: true
 metascheduler_resource_selection_policy_class: org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection.MultipleComputeResourcePolicy
-metascheduler_gateway: dev-ultrascan
-metascheduler_group_resource_profile: bd83e541-fb7b-4878-a11b-dc56696700d5
+metascheduler_gateway: ultrascan
+metascheduler_group_resource_profile: 6de84d0c-2bc5-4971-811e-5a56bde63ba2
 metascheduler_username: metascheacc
 cluster_scanning_interval: 7800
 job_scanning_interval: 180
