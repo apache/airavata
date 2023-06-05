@@ -111,21 +111,23 @@
   stat:
     path: "{{ api_server_letsencrypt_ssl_cert }}"
   register: stat_api_server_ssl_cert_result
-  become: yes
+  become_user: root
 
 - name: generate certificate if it doesn't exist
   command: certbot --standalone --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ api_server_public_hostname }} certonly
-  become: yes
+  become_user: root
   when: not stat_api_server_ssl_cert_result.stat.exists
 
 - name: set certificate renewal post-hook
-  command: certbot renew --installer null --standalone --post-hook "/etc/haproxy/prepareLetsEncryptCertificates.sh && systemctl reload haproxy.service" --quiet
-  become: yes
+  command: certbot renew --force-renewal --installer null --standalone --post-hook "/etc/haproxy/prepareLetsEncryptCertificates.sh && systemctl reload haproxy.service" --quiet
+  become_user: root
+  # Renewal might fail due to rate limiting, which is fine since we only need to set the post-hook
+  ignore_errors: true
 
 # Use HAProxy to proxy SSL port to non-SSL port
 
 - name: Install HAProxy
-  include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+  include_tasks: haproxy/install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 - name: Copy HAProxy config file
   template: src=haproxy.cfg.j2
