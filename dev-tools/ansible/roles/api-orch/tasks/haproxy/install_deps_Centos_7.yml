@@ -19,21 +19,10 @@
 #
 
 ---
-# Just gather facts on database to get internal IP address
-- hosts: database
-  gather_facts: True
 
-- hosts: api-orch
-  tags: api-orch, airavata
-  roles:
-    - env_setup
-    - java
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - letsencrypt
-    - role: api-orch
-      become: yes
-      become_user: "{{user}}"
+- name: yum install haproxy18 (Centos 7)
+  yum: name=haproxy18 state=present
+  become: true
+
 
 ...

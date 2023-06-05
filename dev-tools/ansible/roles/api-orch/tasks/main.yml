@@ -82,6 +82,64 @@
           owner={{ user }}
           group={{ group }}
 
+# Create a SSL certificate for the api server
+
+- name: allow http for Let's Encrypt certificate renewal
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    service: http
+  become_user: root
+
+- name: copy prepareLetsEncryptCertificates.sh script
+  copy:
+    src: prepareLetsEncryptCertificates.sh
+    dest: "/etc/haproxy/"
+    mode: 755
+  become_user: root
+
+# - name: copy cron job to renew certificates
+#   copy:
+#     src: renewLetsEncryptCertificates.sh
+#     dest: /etc/cron.monthly/
+#     mode: 0755
+#   become_user: root
+
+- name: check if SSL certificate exists
+  stat:
+    path: "{{ api_server_letsencrypt_ssl_cert }}"
+  register: stat_api_server_ssl_cert_result
+  become: yes
+
+- name: generate certificate if it doesn't exist
+  command: certbot --standalone --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ api_server_public_hostname }} certonly
+  become: yes
+  when: not stat_api_server_ssl_cert_result.stat.exists
+
+- name: set certificate renewal post-hook
+  command: certbot renew --installer null --standalone --post-hook "/etc/haproxy/prepareLetsEncryptCertificates.sh && systemctl reload haproxy.service" --quiet
+  become: yes
+
+# Use HAProxy to proxy SSL port to non-SSL port
+
+- name: Install HAProxy
+  include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+
+- name: Copy HAProxy config file
+  template: src=haproxy.cfg.j2
+            dest={{ haproxy_conf_destination }}
+            backup=true
+  become_user: root
+  notify:
+    - restart haproxy
+
+- name: start haproxy
+  service: name=haproxy state=started enabled=yes daemon_reload=yes
+  become: true
+  become_user: root
+
 - name: allow only selected networks to access Airavata Sharing Registry
   firewalld:
     zone: public
