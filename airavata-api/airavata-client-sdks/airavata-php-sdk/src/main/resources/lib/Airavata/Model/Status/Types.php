@@ -70,6 +70,9 @@ final class ProcessState {
   const FAILED = 11;
   const CANCELLING = 12;
   const CANCELED = 13;
+  const QUEUED = 14;
+  const DEQUEUING = 15;
+  const REQUEUED = 16;
   static public $__names = array(
     0 => 'CREATED',
     1 => 'VALIDATED',
@@ -85,6 +88,9 @@ final class ProcessState {
     11 => 'FAILED',
     12 => 'CANCELLING',
     13 => 'CANCELED',
+    14 => 'QUEUED',
+    15 => 'DEQUEUING',
+    16 => 'REQUEUED',
   );
 }
 
@@ -287,6 +293,10 @@ class ProcessStatus {
    * @var string
    */
   public $statusId = null;
+  /**
+   * @var string
+   */
+  public $processId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -307,6 +317,10 @@ class ProcessStatus {
           'var' => 'statusId',
           'type' => TType::STRING,
           ),
+        5 => array(
+          'var' => 'processId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -321,6 +335,9 @@ class ProcessStatus {
       }
       if (isset($vals['statusId'])) {
         $this->statusId = $vals['statusId'];
+      }
+      if (isset($vals['processId'])) {
+        $this->processId = $vals['processId'];
       }
     }
   }
@@ -372,6 +389,13 @@ class ProcessStatus {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->processId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -403,6 +427,11 @@ class ProcessStatus {
     if ($this->statusId !== null) {
       $xfer += $output->writeFieldBegin('statusId', TType::STRING, 4);
       $xfer += $output->writeString($this->statusId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->processId !== null) {
+      $xfer += $output->writeFieldBegin('processId', TType::STRING, 5);
+      $xfer += $output->writeString($this->processId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

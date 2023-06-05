@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -35,6 +35,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,9 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
     private final TaskRepository taskRepository = new TaskRepository();
 
-    public ProcessRepository() { super(ProcessModel.class, ProcessEntity.class); }
+    public ProcessRepository() {
+        super(ProcessModel.class, ProcessEntity.class);
+    }
 
     protected String saveProcessModelData(ProcessModel processModel) throws RegistryException {
         ProcessEntity processEntity = saveProcess(processModel);
@@ -162,9 +165,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Process.EXPERIMENT_ID, value);
             processModelList = processRepository.select(QueryConstants.GET_PROCESS_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
-        }
-
-        else {
+        } else {
             logger.error("Unsupported field name for Process module.");
             throw new IllegalArgumentException("Unsupported field name for Process module.");
         }
@@ -187,6 +188,33 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
     public void removeProcess(String processId) throws RegistryException {
         delete(processId);
+    }
+
+
+    public List<ProcessModel> getAllProcesses(int offset, int limit) {
+        ProcessRepository processRepository = new ProcessRepository();
+        return processRepository.select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
+    }
+
+    public Map<String,Double> getAVGTimeDistribution(String gatewayId,double searchTime){
+        ProcessRepository processRepository = new ProcessRepository();
+        Map<String, Double> timeDistributions = new HashMap<>();
+       List<Object>  orchTimeList =  processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY,
+                gatewayId,String.valueOf(searchTime));
+        List<Object>  queueingTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_QUEUED_NATIVE_QUERY,
+                gatewayId,String.valueOf(searchTime));
+        List<Object>  helixTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY,
+                gatewayId,String.valueOf(searchTime));
+        if(orchTimeList.size()>0 && orchTimeList.get(0) != null){
+            timeDistributions.put(DBConstants.MetaData.ORCH_TIME, ((BigDecimal)orchTimeList.get(0)).doubleValue());
+        }
+        if(queueingTimeList.size()>0 && queueingTimeList.get(0) != null){
+            timeDistributions.put(DBConstants.MetaData.QUEUED_TIME,((BigDecimal)queueingTimeList.get(0)).doubleValue());
+        }
+        if(helixTimeList.size()>0 && helixTimeList.get(0) != null){
+            timeDistributions.put(DBConstants.MetaData.HELIX,((BigDecimal)helixTimeList.get(0)).doubleValue());
+        }
+        return timeDistributions;
     }
 
 }

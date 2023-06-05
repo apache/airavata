@@ -23,9 +23,11 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata_sdk.transport.settings import KeycloakConfiguration
 import os
 
-import urllib3
+# since we are using requests 2.13 (< 2.16.0)
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -56,6 +58,38 @@ class Authenticator(object):
             "gatewayID": gateway_id
         }
         return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
+
+    def get_airavata_authz_token(self, username, token, gateway_id):
+        claimsMap = {
+            "userName": username,
+            "gatewayID": gateway_id
+        }
+        return AuthzToken(accessToken=token, claimsMap=claimsMap)
+
+    def get_authorize_url(self, username, password, gateway_id):
+        client_id = self.keycloak_settings.CLIENT_ID
+        client_secret = self.keycloak_settings.CLIENT_SECRET
+        token_url = self.keycloak_settings.TOKEN_URL
+        userinfo_url = self.keycloak_settings.USER_INFO_URL
+        verify_ssl = self.keycloak_settings.VERIFY_SSL
+        oauth2_session = OAuth2Session(client=LegacyApplicationClient(
+            client_id=client_id))
+        token = oauth2_session.fetch_token(token_url=token_url,
+                                           username=username,
+                                           password=password,
+                                           client_id=client_id,
+                                           client_secret=client_secret,
+                                           verify=self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE if verify_ssl else False)
+
+        claimsMap = {
+            "userName": username,
+            "gatewayID": gateway_id
+        }
+        return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
+
+    def authenticate_with_auth_code(self):
+        print("Click on Login URI ", self.keycloak_settings.LOGIN_DESKTOP_URI)
+        return self.keycloak_settings.LOGIN_DESKTOP_URI
 
     def _load_settings(self, configuration_file_location):
         if configuration_file_location is not None:

@@ -45,4 +45,7 @@ public interface JobManagerConfiguration {
 
     public String getBaseSubmitCommand();
 
+    public String getLivenessCheckCommand(String queueName, String partition);
+
+
 }

@@ -21,12 +21,14 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -36,7 +38,6 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,14 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             experimentEntity.getUserConfigurationData().setExperimentId(experimentId);
         }
 
+        if (experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null) {
+            logger.debug("Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
+            for(ComputationalResourceSchedulingEntity entity : experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()){
+                entity.setExperimentId(experimentId);
+            }
+
+        }
+
         if (experimentEntity.getExperimentInputs() != null) {
             logger.debug("Populating the Primary Key of ExperimentInput objects for the Experiment");
             experimentEntity.getExperimentInputs().forEach(experimentInputEntity -> experimentInputEntity.setExperimentId(experimentId));
@@ -103,7 +112,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
             experimentEntity.getErrors().forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
         }
-
         return execute(entityManager -> entityManager.merge(experimentEntity));
     }
 

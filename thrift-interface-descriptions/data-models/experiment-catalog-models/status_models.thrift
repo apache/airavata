@@ -57,7 +57,10 @@ enum ProcessState {
     COMPLETED,
     FAILED,
     CANCELLING,
-    CANCELED
+    CANCELED,
+    QUEUED,
+    DEQUEUING,
+    REQUEUED
 }
 
 enum JobState {
@@ -96,7 +99,8 @@ struct ProcessStatus {
     1: required ProcessState state,
     2: optional i64 timeOfStateChange,
     3: optional string reason,
-    4: optional string statusId
+    4: optional string statusId,
+    5: optional string processId
 }
 
 struct TaskStatus {

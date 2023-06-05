@@ -48,13 +48,3 @@
   become: yes
   tags:
        - always
-
-- name: Copy java.security file to {{ java_home }}
-  copy:
-    src: java.security
-    dest: "{{ java_home }}/conf/security/java.security"
-    mode: 644
-    backup: yes
-  become: yes
-  tags:
-       - always
