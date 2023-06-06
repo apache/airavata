@@ -67,6 +67,7 @@ zookeeper_connection_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port
 api_server_name: "apiserver-node0"
 api_server_host: "{{ groups['api-orch'][0] }}"
 api_server_port: "8930"
+api_server_public_hostname: "apiprod.scigap.org"
 api_secured: "true"
 tls_enable: "false"
 api_server_tls_port: "9930"
