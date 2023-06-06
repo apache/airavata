@@ -20,5 +20,6 @@
 
 ---
 - name: restart haproxy
-  service: name=haproxy state=reloaded enabled=yes
+  service: name={{ haproxy_service_name[ansible_distribution + "_" + ansible_distribution_major_version]}} state=reloaded enabled=yes
   become: yes
+  become_user: root

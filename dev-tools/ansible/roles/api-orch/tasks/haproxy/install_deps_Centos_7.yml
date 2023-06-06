@@ -23,6 +23,7 @@
 - name: yum install haproxy18 (Centos 7)
   yum: name=haproxy18 state=present
   become: true
+  become_user: root
 
 
 ...
