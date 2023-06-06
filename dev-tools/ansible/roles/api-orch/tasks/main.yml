@@ -96,7 +96,7 @@
 - name: copy prepareLetsEncryptCertificates.sh script
   copy:
     src: prepareLetsEncryptCertificates.sh
-    dest: "/etc/haproxy/"
+    dest: "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}"
     mode: 755
   become_user: root
 
@@ -112,26 +112,33 @@
   when: not stat_api_server_ssl_cert_result.stat.exists
 
 - name: set certificate renewal post-hook
-  command: certbot renew --force-renewal --installer null --standalone --post-hook "/etc/haproxy/prepareLetsEncryptCertificates.sh && systemctl reload haproxy.service" --quiet
+  command: certbot renew --force-renewal --installer null --standalone --post-hook "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh && systemctl reload {{ haproxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version]}}.service" --quiet
   become_user: root
   # Renewal might fail due to rate limiting, which is fine since we only need to set the post-hook
   ignore_errors: true
 
 # Use HAProxy to proxy SSL port to non-SSL port
+- name: allow haproxy to bind to TCP ports
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+  become_user: root
+  when: ansible_os_family == "RedHat"
 
 - name: Install HAProxy
   include_tasks: haproxy/install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 - name: Copy HAProxy config file
   template: src=haproxy.cfg.j2
-            dest={{ haproxy_conf_destination }}
+            dest={{ haproxy_config_dir[ansible_distribution + "_" + ansible_distribution_major_version]}}/haproxy.cfg
             backup=true
   become_user: root
   notify:
     - restart haproxy
 
 - name: start haproxy
-  service: name=haproxy state=started enabled=yes daemon_reload=yes
+  service: name={{ haproxy_service_name[ansible_distribution + "_" + ansible_distribution_major_version]}} state=started enabled=yes daemon_reload=yes
   become: true
   become_user: root
 
