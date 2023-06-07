@@ -1,0 +1,7 @@
+################################################################################
+# These requirements have no bounds and should be used during
+# development and testing
+################################################################################
+
+docopt
+cloudbridge
