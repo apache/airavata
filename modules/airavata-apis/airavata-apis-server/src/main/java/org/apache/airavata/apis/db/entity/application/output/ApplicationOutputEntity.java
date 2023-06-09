@@ -21,16 +21,8 @@ public class ApplicationOutputEntity {
     private boolean required;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_output_id", referencedColumnName = "output_id")
-    private FileOutputEntity fileOutput;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "std_error_output_id", referencedColumnName = "output_id")
-    private StandardErrorEntity standardError;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "std_out_output_id", referencedColumnName = "output_id")
-    private StandardOutEntity standardOut;
+    @JoinColumn(name = "output_id")
+    private ApplicationOutputValueEntity applicationOutputValue;
 
     @ManyToOne
     @JoinColumn(name="application_id", nullable=false)
@@ -68,27 +60,62 @@ public class ApplicationOutputEntity {
         this.required = required;
     }
 
+    public ApplicationOutputValueEntity getApplicationOutputValue() {
+        return applicationOutputValue;
+    }
+
+    public void setApplicationOutputValue(ApplicationOutputValueEntity applicationOutputValue) {
+        this.applicationOutputValue = applicationOutputValue;
+    }
+
     public FileOutputEntity getFileOutput() {
-        return fileOutput;
+        return applicationOutputValue instanceof FileOutputEntity ? (FileOutputEntity) applicationOutputValue : null;
     }
 
     public void setFileOutput(FileOutputEntity fileOutput) {
-        this.fileOutput = fileOutput;
+        this.applicationOutputValue = fileOutput;
     }
 
     public StandardErrorEntity getStandardError() {
-        return standardError;
+        return applicationOutputValue instanceof StandardErrorEntity ? (StandardErrorEntity) applicationOutputValue
+                : null;
     }
 
     public void setStandardError(StandardErrorEntity standardError) {
-        this.standardError = standardError;
+        this.applicationOutputValue = standardError;
     }
 
     public StandardOutEntity getStandardOut() {
-        return standardOut;
+        return applicationOutputValue instanceof StandardOutEntity ? (StandardOutEntity) applicationOutputValue : null;
     }
 
     public void setStandardOut(StandardOutEntity standardOut) {
-        this.standardOut = standardOut;
+        this.applicationOutputValue = standardOut;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((applicationOutputId == null) ? 0 : applicationOutputId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ApplicationOutputEntity other = (ApplicationOutputEntity) obj;
+        if (applicationOutputId == null) {
+            if (other.applicationOutputId != null)
+                return false;
+        } else if (!applicationOutputId.equals(other.applicationOutputId))
+            return false;
+        return true;
+    }
+
 }

@@ -1,17 +1,10 @@
 package org.apache.airavata.apis.db.entity.application.input;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 @Entity
-public class CommandLineInputEntity {
-
-    @Id
-    @Column(name = "INPUT_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String inputId;
+public class CommandLineInputEntity extends ApplicationInputValueEntity {
 
     @Column
     private int position = 1;
@@ -21,16 +14,6 @@ public class CommandLineInputEntity {
 
     @Column
     private String value;
-
-    @OneToOne(mappedBy = "commandLineInput")
-    private ApplicationInputEntity applicationInput;
-    public String getInputId() {
-        return inputId;
-    }
-
-    public void setInputId(String inputId) {
-        this.inputId = inputId;
-    }
 
     public int getPosition() {
         return position;
@@ -54,13 +37,5 @@ public class CommandLineInputEntity {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public ApplicationInputEntity getApplicationInput() {
-        return applicationInput;
-    }
-
-    public void setApplicationInput(ApplicationInputEntity applicationInput) {
-        this.applicationInput = applicationInput;
     }
 }

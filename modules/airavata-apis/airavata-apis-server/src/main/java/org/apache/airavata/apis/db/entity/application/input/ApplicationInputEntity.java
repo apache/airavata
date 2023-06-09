@@ -21,16 +21,8 @@ public class ApplicationInputEntity {
     private boolean required;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "command_line_input_id", referencedColumnName = "input_id")
-    private CommandLineInputEntity commandLineInput;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "environment_input_id", referencedColumnName = "input_id")
-    private EnvironmentInputEntity environmentInput;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_input_id", referencedColumnName = "input_id")
-    private FileInputEntity fileInput;
+    @JoinColumn(name = "input_id")
+    private ApplicationInputValueEntity applicationInputValue;
 
     @ManyToOne
     @JoinColumn(name="application_id", nullable=false)
@@ -68,27 +60,33 @@ public class ApplicationInputEntity {
         this.required = required;
     }
 
+    /*
+     * Helper getters/setters for mapping from/to protobuf messages
+     */
+
     public CommandLineInputEntity getCommandLineInput() {
-        return commandLineInput;
+        return applicationInputValue instanceof CommandLineInputEntity ? (CommandLineInputEntity) applicationInputValue
+                : null;
     }
 
     public void setCommandLineInput(CommandLineInputEntity commandLineInput) {
-        this.commandLineInput = commandLineInput;
+        this.applicationInputValue = commandLineInput;
     }
 
     public EnvironmentInputEntity getEnvironmentInput() {
-        return environmentInput;
+        return applicationInputValue instanceof EnvironmentInputEntity ? (EnvironmentInputEntity) applicationInputValue
+                : null;
     }
 
     public void setEnvironmentInput(EnvironmentInputEntity environmentInput) {
-        this.environmentInput = environmentInput;
+        this.applicationInputValue = environmentInput;
     }
 
     public FileInputEntity getFileInput() {
-        return fileInput;
+        return applicationInputValue instanceof FileInputEntity ? (FileInputEntity) applicationInputValue : null;
     }
 
     public void setFileInput(FileInputEntity fileInput) {
-        this.fileInput = fileInput;
+        this.applicationInputValue = fileInput;
     }
 }

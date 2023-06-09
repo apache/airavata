@@ -1,35 +1,13 @@
 package org.apache.airavata.apis.db.entity.application.output;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 @Entity
-public class StandardOutEntity {
-
-    @Id
-    @Column(name = "OUTPUT_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String outputId;
+public class StandardOutEntity extends ApplicationOutputValueEntity {
 
     @Column
     private String destinationPath;
-
-    @OneToOne(mappedBy = "standardOut")
-    private ApplicationOutputEntity applicationOutput;
-
-    public ApplicationOutputEntity getApplicationOutput() {
-        return applicationOutput;
-    }
-
-    public String getOutputId() {
-        return outputId;
-    }
-
-    public void setOutputId(String outputId) {
-        this.outputId = outputId;
-    }
 
     public String getDestinationPath() {
         return destinationPath;

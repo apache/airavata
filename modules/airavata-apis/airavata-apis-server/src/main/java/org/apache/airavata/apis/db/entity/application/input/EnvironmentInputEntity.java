@@ -1,42 +1,16 @@
 package org.apache.airavata.apis.db.entity.application.input;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 @Entity
-public class EnvironmentInputEntity {
-
-    @Id
-    @Column(name = "INPUT_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String inputId;
+public class EnvironmentInputEntity extends ApplicationInputValueEntity {
 
     @Column
     private String key;
 
     @Column
     private String value;
-
-    @OneToOne(mappedBy = "environmentInput")
-    private ApplicationInputEntity applicationInput;
-
-    public ApplicationInputEntity getApplicationInput() {
-        return applicationInput;
-    }
-
-    public void setApplicationInput(ApplicationInputEntity applicationInput) {
-        this.applicationInput = applicationInput;
-    }
-
-    public String getInputId() {
-        return inputId;
-    }
-
-    public void setInputId(String inputId) {
-        this.inputId = inputId;
-    }
 
     public String getKey() {
         return key;
