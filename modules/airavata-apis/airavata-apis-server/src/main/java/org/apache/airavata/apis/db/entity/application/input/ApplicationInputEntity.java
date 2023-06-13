@@ -1,18 +1,12 @@
 package org.apache.airavata.apis.db.entity.application.input;
 
+import org.apache.airavata.apis.db.entity.BaseEntity;
 import org.apache.airavata.apis.db.entity.application.ApplicationEntity;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Entity
-public class ApplicationInputEntity {
-
-    @Id
-    @Column(name = "APPLICATION_INPUT_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String applicationInputId;
+public class ApplicationInputEntity extends BaseEntity {
 
     @Column
     private int index;
@@ -34,14 +28,6 @@ public class ApplicationInputEntity {
 
     public void setApplication(ApplicationEntity application) {
         this.application = application;
-    }
-
-    public String getApplicationInputId() {
-        return applicationInputId;
-    }
-
-    public void setApplicationInputId(String applicationInputId) {
-        this.applicationInputId = applicationInputId;
     }
 
     public int getIndex() {

@@ -1,18 +1,14 @@
 package org.apache.airavata.apis.db.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 import java.util.List;
 
 @Entity
-public class ExperimentEntity {
-    @Id
-    @Column(name = "EXPERIMENT_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String experimentId;
+public class ExperimentEntity extends BaseEntity {
 
     @Column(name = "PROJECT_ID")
     String projectId;
@@ -29,15 +25,11 @@ public class ExperimentEntity {
     @Column(name = "DESCRIPTION")
     String description;
 
-    @OneToMany(mappedBy = "experiment")
+    @OneToMany(mappedBy = "experiment", cascade = CascadeType.ALL)
     List<RunConfigurationEntity> runConfigs;
 
     public String getExperimentId() {
-        return experimentId;
-    }
-
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+        return getId().toString();
     }
 
     public String getProjectId() {
@@ -86,5 +78,8 @@ public class ExperimentEntity {
 
     public void setRunConfigs(List<RunConfigurationEntity> runConfigs) {
         this.runConfigs = runConfigs;
+        for (RunConfigurationEntity runConfig : runConfigs) {
+            runConfig.setExperiment(this);
+        }
     }
 }

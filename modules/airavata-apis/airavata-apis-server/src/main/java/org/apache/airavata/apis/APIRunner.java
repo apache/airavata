@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"org.apache.airavata",
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
         "org.apache.airavata.mft.resource.server.handler"
 })
 @EntityScan(basePackages = {"org.apache.airavata"})
+@EnableJpaAuditing
 @PropertySource(value = "classpath:api.properties")
 public class APIRunner {
 

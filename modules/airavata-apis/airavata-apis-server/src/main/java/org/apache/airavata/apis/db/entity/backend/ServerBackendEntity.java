@@ -3,10 +3,7 @@ package org.apache.airavata.apis.db.entity.backend;
 import org.apache.airavata.apis.db.entity.backend.iface.SCPInterfaceEntity;
 import org.apache.airavata.apis.db.entity.backend.iface.SSHInterfaceEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 public class ServerBackendEntity extends ComputeBackendEntity {
@@ -18,12 +15,12 @@ public class ServerBackendEntity extends ComputeBackendEntity {
     @Column
     int port;
 
-    @OneToOne
-    @JoinColumn(name = "command_interface_id", referencedColumnName = "ssh_iface_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "command_interface_id")
     SSHInterfaceEntity commandInterface;
 
-    @OneToOne
-    @JoinColumn(name = "data_interface_id", referencedColumnName = "scp_iface_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "data_interface_id")
     SCPInterfaceEntity dataInterface;
 
     @Column

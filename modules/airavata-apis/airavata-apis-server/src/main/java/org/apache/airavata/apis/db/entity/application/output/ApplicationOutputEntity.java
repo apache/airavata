@@ -1,18 +1,12 @@
 package org.apache.airavata.apis.db.entity.application.output;
 
+import org.apache.airavata.apis.db.entity.BaseEntity;
 import org.apache.airavata.apis.db.entity.application.ApplicationEntity;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Entity
-public class ApplicationOutputEntity {
-
-    @Id
-    @Column(name = "APPLICATION_OUTPUT_ID")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String applicationOutputId;
+public class ApplicationOutputEntity extends BaseEntity {
 
     @Column
     private int index;
@@ -34,14 +28,6 @@ public class ApplicationOutputEntity {
 
     public void setApplication(ApplicationEntity application) {
         this.application = application;
-    }
-
-    public String getApplicationOutputId() {
-        return applicationOutputId;
-    }
-
-    public void setApplicationOutputId(String applicationOutputId) {
-        this.applicationOutputId = applicationOutputId;
     }
 
     public int getIndex() {
@@ -76,46 +62,20 @@ public class ApplicationOutputEntity {
         this.applicationOutputValue = fileOutput;
     }
 
-    public StandardErrorEntity getStandardError() {
+    public StandardErrorEntity getStdErr() {
         return applicationOutputValue instanceof StandardErrorEntity ? (StandardErrorEntity) applicationOutputValue
                 : null;
     }
 
-    public void setStandardError(StandardErrorEntity standardError) {
+    public void setStdErr(StandardErrorEntity standardError) {
         this.applicationOutputValue = standardError;
     }
 
-    public StandardOutEntity getStandardOut() {
+    public StandardOutEntity getStdOut() {
         return applicationOutputValue instanceof StandardOutEntity ? (StandardOutEntity) applicationOutputValue : null;
     }
 
-    public void setStandardOut(StandardOutEntity standardOut) {
+    public void setStdOut(StandardOutEntity standardOut) {
         this.applicationOutputValue = standardOut;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((applicationOutputId == null) ? 0 : applicationOutputId.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ApplicationOutputEntity other = (ApplicationOutputEntity) obj;
-        if (applicationOutputId == null) {
-            if (other.applicationOutputId != null)
-                return false;
-        } else if (!applicationOutputId.equals(other.applicationOutputId))
-            return false;
-        return true;
-    }
-
 }

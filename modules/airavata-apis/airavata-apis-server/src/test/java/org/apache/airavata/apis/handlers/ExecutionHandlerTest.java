@@ -14,6 +14,8 @@ import org.apache.airavata.apis.db.entity.application.input.EnvironmentInputEnti
 import org.apache.airavata.apis.db.entity.application.input.FileInputEntity;
 import org.apache.airavata.apis.db.entity.application.output.ApplicationOutputEntity;
 import org.apache.airavata.apis.db.entity.application.output.FileOutputEntity;
+import org.apache.airavata.apis.db.entity.application.output.StandardErrorEntity;
+import org.apache.airavata.apis.db.entity.application.output.StandardOutEntity;
 import org.apache.airavata.apis.db.entity.backend.ComputeBackendEntity;
 import org.apache.airavata.apis.db.entity.backend.ServerBackendEntity;
 import org.apache.airavata.apis.db.entity.backend.iface.SCPInterfaceEntity;
@@ -24,6 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
 
 import java.util.Optional;
 
@@ -40,6 +44,9 @@ public class ExecutionHandlerTest {
 
     @Autowired
     ExperimentRepository experimentRepository;
+
+    @Autowired
+    EntityManager entityManager;
 
     @Test
     void testExperimentMapping() {
@@ -65,13 +72,19 @@ public class ExecutionHandlerTest {
         ApplicationInput applicationInput3 = ApplicationInput.newBuilder().setIndex(3)
                 .setEnvironmentInput(environmentInput).setRequired(false).build();
         // ApplicationOutputs
-        // TODO: add StandardOut and StandardError outputs as well
         FileOutput fileOutput = FileOutput.newBuilder().setFriendlyName("output-file")
                 .setDestinationPath("/scratch/workdir/output.file").build();
         ApplicationOutput applicationOutput = ApplicationOutput.newBuilder().setIndex(1).setFileOutput(fileOutput)
                 .setRequired(true).build();
+        StandardOut standardOut = StandardOut.newBuilder().setDestinationPath("/scratch/workdir/stdout").build();
+        ApplicationOutput applicationOutput2 = ApplicationOutput.newBuilder().setIndex(2).setStdOut(standardOut)
+                .setRequired(false).build();
+        StandardError standardError = StandardError.newBuilder().setDestinationPath("/scratch/workdir/stderr").build();
+        ApplicationOutput applicationOutput3 = ApplicationOutput.newBuilder().setIndex(3).setStdErr(standardError)
+                .setRequired(false).build();
         Application application = Application.newBuilder().setName("test-application").addInputs(applicationInput)
                 .addInputs(applicationInput2).addInputs(applicationInput3).addOutputs(applicationOutput)
+                .addOutputs(applicationOutput2).addOutputs(applicationOutput3)
                 .build();
         ApplicationRunInfo applicationRunInfo = ApplicationRunInfo.newBuilder().setApplication(application).build();
         FileLocation sourceLocation = FileLocation.newBuilder().setStorageId("source-location-storage-id").build();
@@ -95,6 +108,9 @@ public class ExecutionHandlerTest {
 
         assertTrue(responseObserver.isCompleted());
         String experimentId = responseObserver.getNext().getExperimentId();
+        // Force flushing experiment to database, then reload from database
+        entityManager.flush();
+        entityManager.clear();
         ExperimentEntity experimentEntity = experimentRepository.findById(experimentId).get();
 
         assertEquals(experiment.getCreationTime(), experimentEntity.getCreationTime());
@@ -166,6 +182,22 @@ public class ExecutionHandlerTest {
         assertNotNull(fileOutputEntity);
         assertEquals(fileOutput.getFriendlyName(), fileOutputEntity.getFriendlyName());
         assertEquals(fileOutput.getDestinationPath(), fileOutputEntity.getDestinationPath());
+        maybeApplicationOutputEntity = applicationEntity.getOutputs().stream()
+                .filter(o -> o.getIndex() == applicationOutput2.getIndex()).findFirst();
+        assertTrue(maybeApplicationOutputEntity.isPresent());
+        assertEquals(applicationOutput2.getRequired(), maybeApplicationOutputEntity.get().isRequired());
+        // StandardOut, index=2
+        StandardOutEntity standardOutEntity = maybeApplicationOutputEntity.get().getStdOut();
+        assertNotNull(standardOutEntity);
+        assertEquals(standardOut.getDestinationPath(), standardOutEntity.getDestinationPath());
+        maybeApplicationOutputEntity = applicationEntity.getOutputs().stream()
+                .filter(o -> o.getIndex() == applicationOutput3.getIndex()).findFirst();
+        assertTrue(maybeApplicationOutputEntity.isPresent());
+        assertEquals(applicationOutput3.getRequired(), maybeApplicationOutputEntity.get().isRequired());
+        // StandardError, index=3
+        StandardErrorEntity standardErrorEntity = maybeApplicationOutputEntity.get().getStdErr();
+        assertNotNull(standardErrorEntity);
+        assertEquals(standardError.getDestinationPath(), standardErrorEntity.getDestinationPath());
 
         // DataMovementConfiguration
         assertEquals(runConfiguration.getDataMovementConfigsCount(), runConfigEntity.getDataMovementConfigs().size());
