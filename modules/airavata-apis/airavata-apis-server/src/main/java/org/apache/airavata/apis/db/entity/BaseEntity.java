@@ -25,10 +25,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -48,6 +45,13 @@ public abstract class BaseEntity {
     @Column
     @LastModifiedDate
     Instant lastModifiedAt;
+
+    // Version column is needed to determine if entity has been saved or not.
+    // Normally if the 'id' is null, JPA will assume that it hasn't been saved, but
+    // 'id' is never null even for a non-persisted entity. With the Version column,
+    // a null Version value indicates that the entity hasn't been persisted.
+    @Version
+    Integer entityVersion;
 
     public String getId() {
         return id;

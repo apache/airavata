@@ -2,6 +2,7 @@ package org.apache.airavata.apis.db.entity;
 
 import org.apache.airavata.apis.db.entity.application.ApplicationEntity;
 import org.apache.airavata.apis.db.entity.application.runners.DockerRunnerEntity;
+import org.apache.airavata.apis.db.entity.application.runners.RunnerEntity;
 import org.apache.airavata.apis.db.entity.application.runners.SlurmRunnerEntity;
 
 import javax.persistence.CascadeType;
@@ -18,13 +19,8 @@ public class ApplicationRunInfoEntity extends BaseEntity {
     private ApplicationEntity application;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "docker_runner_id")
-    DockerRunnerEntity dockerRunner;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "slurm_runner_id")
-    SlurmRunnerEntity slurmRunner;
-
+    @JoinColumn(name = "runner_id")
+    RunnerEntity runner;
 
     public ApplicationEntity getApplication() {
         return application;
@@ -34,20 +30,31 @@ public class ApplicationRunInfoEntity extends BaseEntity {
         this.application = application;
     }
 
+    public RunnerEntity getRunner() {
+        return runner;
+    }
+
+    public void setRunner(RunnerEntity runner) {
+        this.runner = runner;
+    }
+
+    /*
+     * Helper getters/setters for mapping from/to protobuf messages
+     */
     public DockerRunnerEntity getDockerRunner() {
-        return dockerRunner;
+        return runner instanceof DockerRunnerEntity ? (DockerRunnerEntity) runner : null;
     }
 
     public void setDockerRunner(DockerRunnerEntity dockerRunner) {
-        this.dockerRunner = dockerRunner;
+        this.runner = dockerRunner;
     }
 
     public SlurmRunnerEntity getSlurmRunner() {
-        return slurmRunner;
+        return runner instanceof SlurmRunnerEntity ? (SlurmRunnerEntity) runner : null;
     }
 
     public void setSlurmRunner(SlurmRunnerEntity slurmRunner) {
-        this.slurmRunner = slurmRunner;
+        this.runner = slurmRunner;
     }
 
 }
