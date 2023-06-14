@@ -5,4 +5,6 @@ public interface ObjectMapper<E, M> {
     M mapEntityToModel(E entity);
 
     E mapModelToEntity(M model);
+
+    E mapModelToEntity(M model, E entity);
 }

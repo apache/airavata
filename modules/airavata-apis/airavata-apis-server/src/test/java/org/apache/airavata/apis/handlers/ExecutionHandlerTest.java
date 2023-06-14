@@ -2,7 +2,10 @@ package org.apache.airavata.apis.handlers;
 
 import org.apache.airavata.api.execution.ExperimentRegisterRequest;
 import org.apache.airavata.api.execution.ExperimentRegisterResponse;
+import org.apache.airavata.api.execution.ExperimentUpdateRequest;
+import org.apache.airavata.api.execution.ExperimentUpdateResponse;
 import org.apache.airavata.api.execution.stubs.*;
+import org.apache.airavata.api.execution.stubs.Experiment.Builder;
 import org.apache.airavata.apis.db.entity.ApplicationRunInfoEntity;
 import org.apache.airavata.apis.db.entity.DataMovementConfigurationEntity;
 import org.apache.airavata.apis.db.entity.ExperimentEntity;
@@ -22,6 +25,7 @@ import org.apache.airavata.apis.db.entity.backend.iface.SCPInterfaceEntity;
 import org.apache.airavata.apis.db.entity.backend.iface.SSHInterfaceEntity;
 import org.apache.airavata.apis.db.entity.data.InDataMovementEntity;
 import org.apache.airavata.apis.db.repository.ExperimentRepository;
+import org.apache.airavata.apis.db.repository.RunConfigurationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,59 +50,60 @@ public class ExecutionHandlerTest {
     ExperimentRepository experimentRepository;
 
     @Autowired
+    RunConfigurationRepository runConfigurationRepository;
+
+    @Autowired
     EntityManager entityManager;
 
-    @Test
-    void testExperimentMapping() {
+    SSHInterface sshInterface = SSHInterface.newBuilder().setHostName("ssh-hostname").setPort(2222)
+            .setSshCredentialId("ssh-credential-id").build();
+    SCPInterface scpInterface = SCPInterface.newBuilder().setHostName("scp-hostname").setPort(4422)
+            .setSshCredentialId("ssh-credential-id").build();
+    ServerBackend serverBackend = ServerBackend.newBuilder().setHostName("server-hostname").setPort(1888)
+            .setCommandInterface(sshInterface).setDataInterface(scpInterface)
+            .setWorkingDirectory("/tmp/working-directory/some_wd/").build();
+    // ApplicationInputs
+    CommandLineInput commandLineInput = CommandLineInput.newBuilder().setPosition(1).setPrefix("--prefix")
+            .setValue("input-value").build();
+    ApplicationInput applicationInput = ApplicationInput.newBuilder().setIndex(1).setCommandLineInput(commandLineInput)
+            .setRequired(true).build();
+    FileInput fileInput = FileInput.newBuilder().setFriendlyName("config file")
+            .setDestinationPath("/scratch/workdirs/W123/config.conf").build();
+    ApplicationInput applicationInput2 = ApplicationInput.newBuilder().setIndex(2).setFileInput(fileInput)
+            .setRequired(true).build();
+    EnvironmentInput environmentInput = EnvironmentInput.newBuilder().setKey("env-key").setValue("env-value").build();
+    ApplicationInput applicationInput3 = ApplicationInput.newBuilder().setIndex(3).setEnvironmentInput(environmentInput)
+            .setRequired(false).build();
+    // ApplicationOutputs
+    FileOutput fileOutput = FileOutput.newBuilder().setFriendlyName("output-file")
+            .setDestinationPath("/scratch/workdir/output.file").build();
+    ApplicationOutput applicationOutput = ApplicationOutput.newBuilder().setIndex(1).setFileOutput(fileOutput)
+            .setRequired(true).build();
+    StandardOut standardOut = StandardOut.newBuilder().setDestinationPath("/scratch/workdir/stdout").build();
+    ApplicationOutput applicationOutput2 = ApplicationOutput.newBuilder().setIndex(2).setStdOut(standardOut)
+            .setRequired(false).build();
+    StandardError standardError = StandardError.newBuilder().setDestinationPath("/scratch/workdir/stderr").build();
+    ApplicationOutput applicationOutput3 = ApplicationOutput.newBuilder().setIndex(3).setStdErr(standardError)
+            .setRequired(false).build();
+    Application application = Application.newBuilder().setName("test-application").addInputs(applicationInput)
+            .addInputs(applicationInput2).addInputs(applicationInput3).addOutputs(applicationOutput)
+            .addOutputs(applicationOutput2).addOutputs(applicationOutput3).build();
+    ApplicationRunInfo applicationRunInfo = ApplicationRunInfo.newBuilder().setApplication(application).build();
+    FileLocation sourceLocation = FileLocation.newBuilder().setStorageId("source-location-storage-id").build();
+    InDataMovement inDataMovement = InDataMovement.newBuilder().setInputIndex(1).setSourceLocation(sourceLocation)
+            .build();
+    DataMovementConfiguration dataMovementConfiguration = DataMovementConfiguration.newBuilder()
+            .addInMovements(inDataMovement).build();
+    // TODO: add RunConfiguration for ec2
+    // TODO: add RunConfiguration for local
+    RunConfiguration runConfiguration = RunConfiguration.newBuilder().setServer(serverBackend)
+            .setAppRunInfo(applicationRunInfo).addDataMovementConfigs(dataMovementConfiguration).build();
+    Experiment experiment = Experiment.newBuilder().setCreationTime(System.currentTimeMillis())
+            .setDescription("Sample Exp").setExperimentName("Exp Name").setGatewayId("gateway-id")
+            .setProjectId("project-id").addRunConfigs(runConfiguration).build();
 
-        SSHInterface sshInterface = SSHInterface.newBuilder().setHostName("ssh-hostname").setPort(2222)
-                .setSshCredentialId("ssh-credential-id").build();
-        SCPInterface scpInterface = SCPInterface.newBuilder().setHostName("scp-hostname").setPort(4422)
-                .setSshCredentialId("ssh-credential-id").build();
-        ServerBackend serverBackend = ServerBackend.newBuilder().setHostName("server-hostname").setPort(1888)
-                .setCommandInterface(sshInterface).setDataInterface(scpInterface)
-                .setWorkingDirectory("/tmp/working-directory/some_wd/").build();
-        // ApplicationInputs
-        CommandLineInput commandLineInput = CommandLineInput.newBuilder().setPosition(1).setPrefix("--prefix")
-                .setValue("input-value").build();
-        ApplicationInput applicationInput = ApplicationInput.newBuilder().setIndex(1)
-                .setCommandLineInput(commandLineInput).setRequired(true).build();
-        FileInput fileInput = FileInput.newBuilder().setFriendlyName("config file")
-                .setDestinationPath("/scratch/workdirs/W123/config.conf").build();
-        ApplicationInput applicationInput2 = ApplicationInput.newBuilder().setIndex(2).setFileInput(fileInput)
-                .setRequired(true).build();
-        EnvironmentInput environmentInput = EnvironmentInput.newBuilder().setKey("env-key").setValue("env-value")
-                .build();
-        ApplicationInput applicationInput3 = ApplicationInput.newBuilder().setIndex(3)
-                .setEnvironmentInput(environmentInput).setRequired(false).build();
-        // ApplicationOutputs
-        FileOutput fileOutput = FileOutput.newBuilder().setFriendlyName("output-file")
-                .setDestinationPath("/scratch/workdir/output.file").build();
-        ApplicationOutput applicationOutput = ApplicationOutput.newBuilder().setIndex(1).setFileOutput(fileOutput)
-                .setRequired(true).build();
-        StandardOut standardOut = StandardOut.newBuilder().setDestinationPath("/scratch/workdir/stdout").build();
-        ApplicationOutput applicationOutput2 = ApplicationOutput.newBuilder().setIndex(2).setStdOut(standardOut)
-                .setRequired(false).build();
-        StandardError standardError = StandardError.newBuilder().setDestinationPath("/scratch/workdir/stderr").build();
-        ApplicationOutput applicationOutput3 = ApplicationOutput.newBuilder().setIndex(3).setStdErr(standardError)
-                .setRequired(false).build();
-        Application application = Application.newBuilder().setName("test-application").addInputs(applicationInput)
-                .addInputs(applicationInput2).addInputs(applicationInput3).addOutputs(applicationOutput)
-                .addOutputs(applicationOutput2).addOutputs(applicationOutput3)
-                .build();
-        ApplicationRunInfo applicationRunInfo = ApplicationRunInfo.newBuilder().setApplication(application).build();
-        FileLocation sourceLocation = FileLocation.newBuilder().setStorageId("source-location-storage-id").build();
-        InDataMovement inDataMovement = InDataMovement.newBuilder().setInputIndex(1).setSourceLocation(sourceLocation)
-                .build();
-        DataMovementConfiguration dataMovementConfiguration = DataMovementConfiguration.newBuilder()
-                .addInMovements(inDataMovement).build();
-        // TODO: add RunConfiguration for ec2
-        // TODO: add RunConfiguration for local
-        RunConfiguration runConfiguration = RunConfiguration.newBuilder().setServer(serverBackend)
-                .setAppRunInfo(applicationRunInfo).addDataMovementConfigs(dataMovementConfiguration).build();
-        Experiment experiment = Experiment.newBuilder().setCreationTime(System.currentTimeMillis())
-                .setDescription("Sample Exp").setExperimentName("Exp Name").setGatewayId("gateway-id")
-                .setProjectId("project-id").addRunConfigs(runConfiguration).build();
+    @Test
+    void testRegisterExperiment() {
 
         ExperimentRegisterRequest experimentRegisterRequest = ExperimentRegisterRequest.newBuilder()
                 .setExperiment(experiment).build();
@@ -108,9 +113,7 @@ public class ExecutionHandlerTest {
 
         assertTrue(responseObserver.isCompleted());
         String experimentId = responseObserver.getNext().getExperimentId();
-        // Force flushing experiment to database, then reload from database
-        entityManager.flush();
-        entityManager.clear();
+        flushAndClear();
         ExperimentEntity experimentEntity = experimentRepository.findById(experimentId).get();
 
         assertEquals(experiment.getCreationTime(), experimentEntity.getCreationTime());
@@ -211,5 +214,42 @@ public class ExecutionHandlerTest {
         assertEquals(inDataMovement.getInputIndex(), inDataMovementEntity.getInputIndex());
         assertEquals(inDataMovement.getSourceLocation().getStorageId(),
                 inDataMovementEntity.getSourceLocation().getStorageId());
+    }
+
+    @Test
+    public void testUpdateExperiment() {
+
+        ExperimentRegisterRequest experimentRegisterRequest = ExperimentRegisterRequest.newBuilder()
+                .setExperiment(experiment).build();
+
+        TestStreamObserver<ExperimentRegisterResponse> responseObserver = new TestStreamObserver<>();
+        executionHandler.registerExperiment(experimentRegisterRequest, responseObserver);
+
+        assertTrue(responseObserver.isCompleted());
+        String experimentId = responseObserver.getNext().getExperimentId();
+        flushAndClear();
+
+        // Set the experiment id
+        Builder builder = experiment.toBuilder().setExperimentId(experimentId);
+        Experiment updatedExperiment = builder.build();
+
+        ExperimentUpdateRequest experimentUpdateRequest = ExperimentUpdateRequest.newBuilder()
+                .setExperiment(updatedExperiment).build();
+
+        TestStreamObserver<ExperimentUpdateResponse> updateResponseObserver = new TestStreamObserver<>();
+        executionHandler.updateExperiment(experimentUpdateRequest, updateResponseObserver);
+
+        assertTrue(responseObserver.isCompleted());
+        flushAndClear();
+
+        // Just making sure that we only have one run configuration now
+        assertEquals(1, runConfigurationRepository.count());
+    }
+
+    void flushAndClear() {
+        // Force flushing experiment to database and removing from session so we can
+        // then reload from database
+        entityManager.flush();
+        entityManager.clear();
     }
 }

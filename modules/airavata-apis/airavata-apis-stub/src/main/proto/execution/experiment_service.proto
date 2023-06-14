@@ -41,7 +41,15 @@ message ExperimentLaunchResponse {
   bool status = 1;
 }
 
+message ExperimentUpdateRequest {
+  org.apache.airavata.api.auth.stubs.AuthzToken authz_token = 1;
+  org.apache.airavata.api.execution.stubs.Experiment experiment = 2;
+}
+message ExperimentUpdateResponse {
+}
+
 service ExecutionService {
   rpc registerExperiment(ExperimentRegisterRequest) returns (ExperimentRegisterResponse);
   rpc launchExperiment(ExperimentLaunchRequest) returns (ExperimentLaunchResponse);
+  rpc updateExperiment(ExperimentUpdateRequest) returns (ExperimentUpdateResponse);
 }

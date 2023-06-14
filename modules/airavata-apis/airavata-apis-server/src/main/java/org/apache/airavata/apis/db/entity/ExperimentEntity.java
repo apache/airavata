@@ -78,8 +78,11 @@ public class ExperimentEntity extends BaseEntity {
 
     public void setRunConfigs(List<RunConfigurationEntity> runConfigs) {
         this.runConfigs = runConfigs;
-        for (RunConfigurationEntity runConfig : runConfigs) {
-            runConfig.setExperiment(this);
+        if (runConfigs != null) {
+            for (RunConfigurationEntity runConfig : runConfigs) {
+                runConfig.setExperiment(this);
+            }
         }
+
     }
 }

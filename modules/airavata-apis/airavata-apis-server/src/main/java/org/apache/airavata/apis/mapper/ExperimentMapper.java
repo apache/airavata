@@ -14,15 +14,17 @@ public class ExperimentMapper implements ObjectMapper<ExperimentEntity, Experime
 
     @Override
     public Experiment mapEntityToModel(ExperimentEntity entity) {
-
         return dozerMapper.map(entity, Experiment.class);
     }
 
     @Override
     public ExperimentEntity mapModelToEntity(Experiment model) {
-        ExperimentEntity entity = new ExperimentEntity();
+        return mapModelToEntity(model, new ExperimentEntity());
+    }
+
+    @Override
+    public ExperimentEntity mapModelToEntity(Experiment model, ExperimentEntity entity) {
         dozerMapper.map(model, entity);
         return entity;
     }
-
 }
