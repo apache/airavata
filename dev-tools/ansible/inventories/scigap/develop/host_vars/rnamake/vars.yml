@@ -40,7 +40,6 @@ auth_options:
 gateway_id: "rnamake"
 experiment_data_dir: "{{ user_data_dir }}/django-rnamake"
 # gateway_data_store_ssh_public_key: "TODO"
-django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
 portal_title: "Dev RNAMake Gateway"

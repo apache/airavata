@@ -54,7 +54,6 @@ django_extra_settings:
 gateway_id: "dev-delta"
 experiment_data_dir: "{{ user_data_dir }}/django-dev-delta"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCls5UgazweDc9d4NN65D+JVCeiBUhMSHTRWNHI6v1RPq/Or84fF41+HaemToQverQ73b/gUiXWuGfb75Y7JK5sgqRXCUiL1OVHICX3h4sh8UiMHEe5fUY/PNme2+witXYFr8EkYrdseJgnKXNULsgZEkuHzYbDFrn6z+pc4zXtoT/iUic8lUmeR1h8Quac7G0cSS0X8CFDMjkBKoX3KU7wffwuLGO2IhIdNpBgKzQUWRm6vEA48wdjEQTneX9rQefASOsbp/HNJHN/xsovFTNdatnezKz1Dt8cpSl32KEFs1YQYB6UmGJimRWiAAQBNCcaHLlgXWIQQ2U0vbsrVKZr"
-django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
 
 admin_emails: "[('SGRC', 'circ-iu-group@iu.edu')]"
 portal_title: "Dev DELTA Gateway"

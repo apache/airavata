@@ -56,7 +56,6 @@ auth_options:
 gateway_id: "immune"
 experiment_data_dir: "{{ user_data_dir }}/immune"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCntbE2GLI5S2QNRlruR8vjmLHUbpePz9NBcSJuvffOT+R75nsWlyjVEI7Tn43qvJMPR7SpOy5W5u7mmjLYx0lphMv5RJ64Hy5tIK39RlXya3s/+0gyA//I9tS4BAt7NKmGItvIZI/JLGxyUY8ZTnkRofAbEHJy3KtW1lBWUHKNsJfXyR7KJwmEkOVMU8x4fC/C/OyfsofsipG82fYJlfAgpJc+kODAgJBZI90h9pisOmfk2Wkiqt6aC3JHUZmIF2x3w5eXyhTc6RCBgNNQUy88KPOp5neMnCEbrCMx0aZGqLZFb9Q+4DVdnsmS+QvCEEpI8eFiceSN0D1Yo5IC9bvh"
-django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Chuanpeng Dong','cpdong@iu.edu')]"
 portal_title: "Immune Portal"

@@ -47,13 +47,3 @@ api_orch_systemd_unit_file: "/etc/systemd/system/apiorch.service"
 
 thrift_client_pool_abandoned_removal_enabled: false
 thrift_client_pool_abandoned_removal_logged: false
-
-api_server_public_hostname: "localhost"
-haproxy_api_server_ssl_cert: "/etc/ssl/{{ api_server_public_hostname }}/{{ api_server_public_hostname }}.pem"
-api_server_letsencrypt_ssl_cert: "/etc/letsencrypt/live/{{ api_server_public_hostname }}/cert.pem"
-haproxy_service_name:
- CentOS_7: haproxy18
- Rocky_8: haproxy
-haproxy_config_dir:
- CentOS_7: /etc/haproxy18/
- Rocky_8: /etc/haproxy/

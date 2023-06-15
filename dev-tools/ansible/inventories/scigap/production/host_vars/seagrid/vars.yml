@@ -48,7 +48,6 @@ auth_options:
 gateway_id: "seagrid"
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCApfdud3cJ7rx44M41gEKVgRfefk/Vd/7dIp9Xr9juX4jqmGuLoZR+hk287Hmbps6hZv23Av97XkCLldH0pueDekthcBDo4cRiQMDBp9NLz/9muqYVBl985psEbazYygagy/q/3ebi4CVEYVd4cHBee1V3GYyuJS2RklF0s/Otyf8x8auJSMniHGbTbVqtFlEOYuPdXlRBfH37k55N7+2iXKsIVvgn1MDweHEbQWJMx2LDCkLfJitreTiwcuST55w6N/n8WYZM2t+ie3BJEr6tcGAVIuyxj7CbMYMziM/hM5J+oQGPY/IBtiNZoxiZ0DeAC9SiEvE9fbTEW2iRWnQL"
-django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
 
 django_extra_settings:
   GATEWAY_DATA_SHARED_DIRECTORIES:

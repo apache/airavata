@@ -48,7 +48,6 @@ auth_options:
 gateway_id: "lrose"
 experiment_data_dir: "{{ user_data_dir }}/lrose"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBRVHtPN6m/9VUXuYK6+92BSWR65D7+8Y+HAwevv1teLTuaZutyvysbQDPeKYMpqj+z3GMPo0E86zIoXXFHKXS6assBsvpQNNXBfIl91J0b3gUD3SukBbShPyhTawIi7za6VPMvUSa3koC/52Ihbz8VQLNc0xCxnSWHhgc1bIBMoA1JsXOnKPAQZvjkBwXAZUeDXLyS3koE9WNnbRoqOUkqs0MO8tKCvfaVTqILHToOSvgaXrXbEEpND9dCvIuer6tREgakoig+1ck9t9VzPLb/1FsaWGA/V/0WKHcsGvfDmIZcjtdL+eUhVJIJif3BCXDeQJJVap7smll3DXmkgKb"
-django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Brenda Javornik', 'brenda@ucar.edu'),('Mike Dixon', 'dixon@ucar.edu'),('Ting-Yu Cha', 'tingyu@rams.colostate.edu'),('Jen DeHart', 'jcdehart@colostate.edu')]"
 portal_title: "LROSE Gateway"

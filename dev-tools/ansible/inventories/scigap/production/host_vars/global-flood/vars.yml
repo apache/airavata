@@ -23,8 +23,6 @@
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
 airavata_django_extra_dependencies:
-  # Production server has gdal library 3.4 installed
-  - name: "GDAL<3.5"
   - name: "git+https://github.com/Global-Flood-Assessment/global-floods-django-app.git#egg=global_floods_django_app"
     editable: true
 
@@ -55,7 +53,6 @@ auth_options:
 gateway_id: "global-flood"
 experiment_data_dir: "{{ user_data_dir }}/global-flood"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPuGmLPwwXu15TCdLwsE9dFoWJu1kzQzdLukslMKjVCf05Fe+MyCP7EG5n1psGigSORGm0bo/9t9fPQGyPRUR2jIBI5lR2bE5JJ8XNotf+Gdv45FXhXHTIPSeb1bAymEQVghALxqeYOWnnP+6aL61Zy6nAokMJdkdRXFRxr0paYLbH3oaCAVdp2ggMXP+KMvkKHjMSa9aZFK/V/YrIRONKDrdK+DV7D0xk4XGplRAsw8UpS8GJipfq8uTM23Tr/UMCYUCbW8qqf0HYFohY+51lT/1JjYb+cBWjy1iuNGVQVnQsuNSOoDnW1C07V6VFzwKZJOv+rYhw6iL5rcq3fzDD"
-django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Wang Jun','wang208@iu.edu')]"
 portal_title: "Global Floods Assessment Gateway"

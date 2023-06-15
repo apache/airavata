@@ -43,7 +43,6 @@ auth_options:
 gateway_id: "smaltr"
 experiment_data_dir: "{{ user_data_dir }}/smaltr"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtM2RTAS0ZnwJNjYEWjvt2JArjyoCZQzBJlXYvqeRyYTQPeSTH5nJP1VCkpJ4a7B44gHkcKGORkvNd+PrW7An8otTIGlXfbwn5L20CeKPsk6fWwF99fU4JFvakNANgAfefsQ3OrTgBBvZWkKeK7JztMHbEZw+SJoPZnjlxoKRib/Ymt6Bo/gh833eHth+Rvp2v3k4DPu6cTsOaTCv45JT8E3dBeERASZNdepKanxiQpz/QZg344JxYYQpJP5zKQ7jmfUphDkwFkp7RlAYgkSVC7yiQSgRqcKR38BXEAMqR/0eax/T1IujDKscSJpS/ibXToOl8qoRDwMStAi6Ym2wx"
-django_user_data_archive_max_age_days: 90
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aaron Frank', 'afrankz@umich.edu')]"
 portal_title: "SMALTR Gateway"

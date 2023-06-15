@@ -184,11 +184,11 @@ PGA_URL = "{{ django_pga_url }}"
 GOOGLE_ANALYTICS_TRACKING_ID = "{{ django_google_analytics_tracking_id }}"
 {% endif %}
 
-{% if django_user_data_archive_max_age_days and django_user_data_archive_max_age_days|int > 0 %}
+{% if django_user_data_archive_max_age_days %}
 GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS = {{ django_user_data_archive_max_age_days }}
-{% endif %}
 GATEWAY_USER_DATA_ARCHIVE_DIRECTORY = "{{ django_user_data_archive_directory }}"
 GATEWAY_USER_DATA_ARCHIVE_MINIMUM_ARCHIVE_SIZE_GB = {{ django_user_data_archive_minimum_archive_size_gb }}
+{% endif %}
 
 # Extra settings
 {% for extra_setting in django_extra_settings.items() | list %}

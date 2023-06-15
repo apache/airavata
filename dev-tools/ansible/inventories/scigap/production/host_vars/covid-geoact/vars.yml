@@ -46,7 +46,6 @@ auth_options:
 gateway_id: "covid-geoact"
 experiment_data_dir: "{{ user_data_dir }}/covid-geoact"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZpB6Q2bMcB9eTpMXBf6adFysDWE++Q7cNFfo3bTZgfH9YqZlvBLCDgQ7dWB5fiag2y/AGm0DPnEerIbG8df9HpJ/pOvqGjHKzkoz+Xi1J0n8FFCiPtuOE2sWwnFNniAwQeAKzCiBn1oL84IiYsJ2nTmRXcl6qIREsBOfG6oDMGYbI3fOaGKwVscJSKFjfRVhaHRgwcOuvsuf1Z/E4X9C1uhIE4BSFA7BoTbtTictTVp7lo4XvCorBziO3fZacFI9gCMVSNnI4OUZu5rXqXPjXfmIV2tDz9kGMTzW5OIk3xdU6MHGprwUkXPttdERVGTbFha+HJk3S2jaeV1pnDxlt"
-django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'), ('Ilya Zaslavsky', 'zaslavsk@sdsc.edu'), ('Kaushik Ganapathy', 'krganapa@ucsd.edu'), ('Johnny Lei', 'jil1119@ucsd.edu')]"
 portal_title: "Covid GeoAct Gateway"

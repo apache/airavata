@@ -44,7 +44,6 @@ auth_options:
 gateway_id: "tsunami"
 experiment_data_dir: "{{ user_data_dir }}/tsunami"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4/mMdvcRHp7ThTToIRpmO+O46pme1Oo649yFLNoFlnIYHxT3cUnxYbxrxgcw83PwwFTK4FV04ITUEyOmD9Qoa1liwdrCvEqR31eTD+GkUVVGUgCp+GvqCWnZkEJ8+z/VBLuJjK0HxpT+9kSh0DChoZ6k64/dsNrA4l1YE0EBrOfLKSGJ0Ik2tlKxbIrwTe8ZDWu2iVKFMnFaLbsWoraQ+sYWTbW+1BCYAxsT9ykH4KOYE/YPBUECr8zVzBSXSxyNPtuySvy0PzNjLrm8nN4uIr5wgrFqi2iL2i2vQyFMTJJToyvcBVLK3eCw+AmYrlHZq49E8+uAhfDhDahy4WraJ"
-django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "TSUNAMI Gateway"
