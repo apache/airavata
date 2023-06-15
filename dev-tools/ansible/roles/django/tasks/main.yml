@@ -371,4 +371,4 @@
     mode: 0755
   become: yes
   become_user: root
-  when: django_user_data_archive_max_age_days
+  when: django_user_data_archive_max_age_days and django_user_data_archive_max_age_days|int > 0

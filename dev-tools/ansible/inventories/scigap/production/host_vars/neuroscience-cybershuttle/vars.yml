@@ -48,6 +48,7 @@ auth_options:
 gateway_id: "neuroscience-cybershuttle"
 experiment_data_dir: "{{ user_data_dir }}/neuroscience-cybershuttle"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnsRKJRqFvjmNUwChRLMzHZBCzVxh4kK/GBFagzjI5WL5l4RFsnXXpmIFpi1VKGcll/LDnI1PvDdZPP+KaGkuuEmaTgCJD8BSgxz7PmTsOuka6Fl7YwTRcXhv/vYfDQLYUNKfWWmBPyIhfnn+St0jsOSogTvM6Cvajb5/42btCRAcQ9PV6ZqUNdrHWf8fQI+rb9kmb/3H4tI40MG0p68WuhKuf0Fbdrn/Roc7//yRo854WtUi1XpXyLp4W9ggkVEOAlJPTACVA63mSaO3qyY5Hqplwk7iDM+/c0QKB1jKCwqzZdh5djP6GxloO9K5dDyUyn+jtHk+dwAdTKpjlWR1d"
+django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "NeuroScience Cybershuttle Gateway"

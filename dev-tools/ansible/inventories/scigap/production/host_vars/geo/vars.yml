@@ -57,6 +57,7 @@ auth_options:
 gateway_id: "geo"
 experiment_data_dir: "{{ user_data_dir }}/geo"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZyps8huDQdr9ZJARtF0RcbyOD3FqMZZKldhW7soaWvOn7ev5rMgpto+TI/YQ8w5lWwWsqtxOByxJaGFgAkwI9+/vr0MPsMz/gmHi2NaEOYm+AA25ozPW9aMWRkaeAlK9sLWI85Cg6owozZngXV745R1LjtxhGO4/sOJLBIZxndLuaIlV1th2yontOsjv5CLr525mc8+0keViSWf7agdqTI7hN51fyyDM1KucwLfXXZZd4vQRJ68o9A6INH66KAbx54u6dd7PBKrJQC63RsPZG6i9jn6qBaLv7xkGH2iM7HfVy8ywMlyvQRb3DJdxG0AUXlZuxOHRH95hdBlgiSsTl"
+django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
 portal_title: "Geo Gateway"
