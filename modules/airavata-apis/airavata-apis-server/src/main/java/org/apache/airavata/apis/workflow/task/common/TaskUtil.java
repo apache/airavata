@@ -1,5 +1,7 @@
 package org.apache.airavata.apis.workflow.task.common;
 
+import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.GeneratedMessageV3;
 import org.apache.airavata.apis.workflow.task.common.annotation.TaskParam;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -42,7 +44,11 @@ public class TaskUtil {
                     Class<?>[] methodParamType = writeMethod.getParameterTypes();
                     Class<?> writeParameterType = methodParamType[0];
 
-                    if (writeParameterType.isAssignableFrom(String.class)) {
+                    if (GeneratedMessageV3.class.isAssignableFrom(writeParameterType)) { // Parsing protobuf messages
+                        Method parseMethod = writeParameterType.getDeclaredMethod("parseFrom", byte[].class);
+                        Object obj = parseMethod.invoke(null, params.get(param.name()).getBytes()); // Calling static method
+                        writeMethod.invoke(instance, obj);
+                    } else if (writeParameterType.isAssignableFrom(String.class)) {
                         writeMethod.invoke(instance, params.get(param.name()));
                     } else if (writeParameterType.isAssignableFrom(Integer.class) ||
                             writeParameterType.isAssignableFrom(Integer.TYPE)) {
@@ -74,7 +80,9 @@ public class TaskUtil {
                 try {
                     if (parm != null) {
                         Object propertyValue = PropertyUtils.getProperty(data, classField.getName());
-                        if (propertyValue instanceof TaskParamType) {
+                        if (propertyValue instanceof GeneratedMessageV3) {
+                            result.put(parm.name(), new String(GeneratedMessageV3.class.cast(propertyValue).toByteArray()));
+                        } else if (propertyValue instanceof TaskParamType) {
                             result.put(parm.name(), TaskParamType.class.cast(propertyValue).serialize());
                         } else {
                             result.put(parm.name(), propertyValue.toString());

@@ -86,7 +86,7 @@
     <properties>
         <protobuf.maven.plugin>0.5.1</protobuf.maven.plugin>
         <os.maven.plugin>1.5.0.Final</os.maven.plugin>
-        <protobuf.java>3.21.11</protobuf.java>
+        <protobuf.java>3.22.5</protobuf.java>
         <!-- This needs to match the grpc version used by grpc.spring.boot -->
         <!-- see https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.md -->
         <grpc.version>1.47.0</grpc.version>

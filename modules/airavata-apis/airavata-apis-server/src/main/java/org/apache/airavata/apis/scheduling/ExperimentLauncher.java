@@ -1,6 +1,7 @@
 package org.apache.airavata.apis.scheduling;
 
 import org.apache.airavata.api.execution.ExperimentLaunchRequest;
+import org.apache.airavata.api.execution.stubs.EC2Backend;
 import org.apache.airavata.api.execution.stubs.Experiment;
 import org.apache.airavata.apis.service.ExecutionService;
 import org.apache.airavata.apis.workflow.task.common.BaseTask;
@@ -54,8 +55,14 @@ public class ExperimentLauncher {
 
         taskMap.put(dataMovementTask.getTaskId(), dataMovementTask);
 
+        EC2Backend ec2Backend = EC2Backend.newBuilder()
+                .setAwsCredentialId("SomeCred")
+                .setFlavor("m2")
+                .setRegion("us-west").build();
+
         CreateEC2InstanceTask ec2InstanceTask = new CreateEC2InstanceTask();
         ec2InstanceTask.setTaskId(UUID.randomUUID().toString());
+        ec2InstanceTask.setEc2Backend(ec2Backend);
         taskMap.put(ec2InstanceTask.getTaskId(), ec2InstanceTask);
 
         dataMovementTask.addOutPort(new OutPort().setNextTaskId(ec2InstanceTask.getTaskId()));
