@@ -9,7 +9,8 @@
         <h4 class="alert-heading">Logged in!</h4>
       </div>
       {% if show_code  %}
-      <textarea style="width: 100%" rows="5" onfocus="this.select()">{{ code }}</textarea>
+      <textarea id="code-textarea" style="width: 100%" rows="5" onfocus="this.select()">{{ code }}</textarea>
+      <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('code-textarea').value)">Copy</button>
       {% endif %}
     </div>
   </main>
