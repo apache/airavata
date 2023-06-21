@@ -54,4 +54,16 @@ public class ExecutionServiceImpl implements ExecutionService {
 
     }
 
+    @Override
+    public Optional<Experiment> getExperiment(String experimentId) {
+        Optional<ExperimentEntity> maybeExperimentEntity = experimentRepository.findById(experimentId);
+
+        if (maybeExperimentEntity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Experiment experiment = Experiment.getDefaultInstance();
+        ExperimentEntity experimentEntity = maybeExperimentEntity.get();
+        return Optional.of(experimentMapper.mapEntityToModel(experimentEntity));
+    }
 }

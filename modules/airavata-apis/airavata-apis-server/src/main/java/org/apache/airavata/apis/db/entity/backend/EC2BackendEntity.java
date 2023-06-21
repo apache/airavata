@@ -12,6 +12,9 @@ public class EC2BackendEntity extends ComputeBackendEntity {
     String region;
 
     @Column
+    String imageId;
+
+    @Column
     String awsCredentialId;
 
     public String getFlavor() {
@@ -38,4 +41,11 @@ public class EC2BackendEntity extends ComputeBackendEntity {
         this.awsCredentialId = awsCredentialId;
     }
 
+    public String getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(String imageId) {
+        this.imageId = imageId;
+    }
 }
