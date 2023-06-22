@@ -1,7 +1,7 @@
 import logging
 from importlib import import_module
+from importlib_metadata import entry_points
 
-from pkg_resources import iter_entry_points
 
 # AppConfig instances from custom Django apps
 CUSTOM_DJANGO_APPS = []
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def load(installed_apps, entry_point_group="airavata.djangoapp"):
-    for entry_point in iter_entry_points(group=entry_point_group):
+    for entry_point in entry_points(group=entry_point_group):
         custom_app_class = entry_point.load()
         custom_app_instance = custom_app_class(
             entry_point.name, import_module(entry_point.module_name)
