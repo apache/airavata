@@ -13,15 +13,13 @@ def load(installed_apps, entry_point_group="airavata.djangoapp"):
     for entry_point in entry_points(group=entry_point_group):
         custom_app_class = entry_point.load()
         custom_app_instance = custom_app_class(
-            entry_point.name, import_module(entry_point.module_name)
+            entry_point.name, import_module(entry_point.module)
         )
         CUSTOM_DJANGO_APPS.append(custom_app_instance)
         # Create path to AppConfig class (otherwise the ready() method doesn't get
         # called)
         logger.info(f"adding dynamic Django app {entry_point.name}")
-        installed_apps.append(
-            "{}.{}".format(entry_point.module_name, entry_point.attrs[0])
-        )
+        installed_apps.append("{}.{}".format(entry_point.module, entry_point.attr))
 
 
 def merge_setting_dict(default, custom_setting):
