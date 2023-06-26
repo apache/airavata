@@ -74,5 +74,5 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEuA1i
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Kevin Ellett', 'kmellett@indiana.edu'),('Ashley Douds', 'adouds@iu.edu')]"
 portal_title: "SimCCS Portal"
 
-django_google_analytics_tracking_id: "UA-130065143-1"
+django_google_analytics_tracking_id: "G-WM162V9Q9X"
 ...
