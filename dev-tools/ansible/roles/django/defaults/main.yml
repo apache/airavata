@@ -21,7 +21,7 @@
 ---
 doc_root_dir: "/var/www/django-{{ gateway_id }}"
 user_data_dir: "/var/www/user_data"
-python_virtualenv_command: "pyvenv-3.9"
+python_virtualenv_python: "python3.9"
 # Upgrading Python version from 3.6 to 3.9, so creating a separate virtual env directory for 3.9
 django_venv_dir: "{{ doc_root_dir }}/venv3.9"
 # real_user_data_dir is the same as user_data_dir but without symbolic links in it

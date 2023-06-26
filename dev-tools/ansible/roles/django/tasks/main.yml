@@ -162,7 +162,7 @@
   pip:
     name: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
-    virtualenv_command: "{{ python_virtualenv_command }}"
+    virtualenv_python: "{{ python_virtualenv_python }}"
     chdir: "{{ airavata_django_checkout }}"
     state: latest
   become: yes
@@ -176,7 +176,7 @@
   pip:
     requirements: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
-    virtualenv_command: "{{ python_virtualenv_command }}"
+    virtualenv_python: "{{ python_virtualenv_python }}"
     chdir: "{{ airavata_django_checkout }}"
   become: yes
   become_user: "{{user}}"

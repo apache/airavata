@@ -21,9 +21,9 @@
 ---
 # Upgrade to Python 3.9, separate install directory
 mod_wsgi_dir: /opt/mod_wsgi-py3.9
-mod_wsgi_url: https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.17.tar.gz
+mod_wsgi_url: https://github.com/GrahamDumpleton/mod_wsgi/archive/4.9.4.tar.gz
 mod_wsgi_tarball_dest: "{{ mod_wsgi_dir }}/{{ mod_wsgi_url | basename }}"
-mod_wsgi_unarchive_dir: "{{ mod_wsgi_dir }}/mod_wsgi-4.5.17"
+mod_wsgi_unarchive_dir: "{{ mod_wsgi_dir }}/mod_wsgi-4.9.4"
 httpd_conf_modules_dir: "/etc/httpd/conf.modules.d"
 
 ...
