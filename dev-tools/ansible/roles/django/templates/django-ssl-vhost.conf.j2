@@ -101,7 +101,7 @@
 
     WSGIDaemonProcess {{ vhost_servername }} \
             display-name=%{GROUP} \
-            python-home={{ doc_root_dir }}/venv \
+            python-home={{ django_venv_dir }} \
             python-path={{ doc_root_dir }}/airavata-django-portal \
             processes={{ django_wsgi_processes }} \
             user={{ user }} \
