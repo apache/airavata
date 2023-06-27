@@ -24,6 +24,28 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-secret-service-client</artifactId>
+            <version>0.01-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-resource-service-client</artifactId>
+            <version>0.01-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>mft-resource-service-server</artifactId>
             <version>0.01-SNAPSHOT</version>
             <exclusions>
@@ -129,8 +151,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.sdk.version}</version>
+        </dependency>
     </dependencies>
     <properties>
+        <aws.sdk.version>1.12.372</aws.sdk.version>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -9,8 +9,11 @@ import org.apache.helix.task.UserContentStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -30,6 +33,8 @@ public abstract class BaseTask extends UserContentStore implements Task {
     @TaskParam(name = "retryCount")
     private ThreadLocal<Integer> retryCount = ThreadLocal.withInitial(()-> 3);
 
+    private ThreadLocal<Map<String,String>> paramOverrideMap = ThreadLocal.withInitial(() -> new HashMap<>());
+
     @Override
     public TaskResult run() {
         try {
@@ -43,7 +48,20 @@ public abstract class BaseTask extends UserContentStore implements Task {
             this.callbackContext.set(cbc);
             String helixTaskId = getCallbackContext().getTaskConfig().getId();
             logger.info("Running task {}", helixTaskId);
-            TaskUtil.deserializeTaskData(this, getCallbackContext().getTaskConfig().getConfigMap());
+
+            Map<String, String> configMap = getCallbackContext().getTaskConfig().getConfigMap();
+            TaskUtil.deserializeTaskData(this, configMap);
+
+            for (String key: configMap.keySet()) {
+                if (key.startsWith("$")) {
+                    String contextVariable = configMap.get(key);
+                    String paramName = key.substring(1);
+                    String paramValue = getUserContent(contextVariable, Scope.WORKFLOW);
+                    Field cf = TaskUtil.getClassFieldForParamName(this, paramName);
+                    TaskUtil.deserializeField(this, cf, paramValue);
+                }
+            }
+
         } catch (Exception e) {
             logger.error("Failed at deserializing task data", e);
             return new TaskResult(TaskResult.Status.FAILED, "Failed in deserializing task data");
@@ -64,6 +82,10 @@ public abstract class BaseTask extends UserContentStore implements Task {
         } catch (Exception e) {
             logger.error("Unknown error while cancelling task {}", getTaskId(), e);
         }
+    }
+
+    public void overrideParameterFromWorkflowContext(String paramName, String contextVariable) {
+        getParamOverrideMap().put(paramName, contextVariable);
     }
 
     public abstract TaskResult onRun() throws Exception;
@@ -96,6 +118,14 @@ public abstract class BaseTask extends UserContentStore implements Task {
 
     public void setTaskId(String taskId) {
         this.taskId.set(taskId);
+    }
+
+    public Map<String, String> getParamOverrideMap() {
+        return paramOverrideMap.get();
+    }
+
+    public void setParamOverrideMap(Map<String, String> paramOverrideMap) {
+        this.paramOverrideMap.set(paramOverrideMap);
     }
 
     public void setCallbackContext(TaskCallbackContext callbackContext) {

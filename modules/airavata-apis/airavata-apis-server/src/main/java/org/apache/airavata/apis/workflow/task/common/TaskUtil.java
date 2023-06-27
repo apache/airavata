@@ -1,6 +1,5 @@
 package org.apache.airavata.apis.workflow.task.common;
 
-import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.GeneratedMessageV3;
 import org.apache.airavata.apis.workflow.task.common.annotation.TaskParam;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -21,7 +20,36 @@ public class TaskUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(TaskUtil.class);
 
-    public static <T extends BaseTask> void deserializeTaskData(T instance, Map<String, String> params) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+    public static <T extends BaseTask> void deserializeField(T instance, Field classField, String value) throws Exception {
+        classField.setAccessible(true);
+        PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(instance, classField.getName());
+        Method writeMethod = PropertyUtils.getWriteMethod(propertyDescriptor);
+        Class<?>[] methodParamType = writeMethod.getParameterTypes();
+        Class<?> writeParameterType = methodParamType[0];
+
+        if (GeneratedMessageV3.class.isAssignableFrom(writeParameterType)) { // Parsing protobuf messages
+            Method parseMethod = writeParameterType.getDeclaredMethod("parseFrom", byte[].class);
+            Object obj = parseMethod.invoke(null, value.getBytes()); // Calling static method
+            writeMethod.invoke(instance, obj);
+        } else if (writeParameterType.isAssignableFrom(String.class)) {
+            writeMethod.invoke(instance, value);
+        } else if (writeParameterType.isAssignableFrom(Integer.class) ||
+                writeParameterType.isAssignableFrom(Integer.TYPE)) {
+            writeMethod.invoke(instance, Integer.parseInt(value));
+        } else if (writeParameterType.isAssignableFrom(Long.class) ||
+                writeParameterType.isAssignableFrom(Long.TYPE)) {
+            writeMethod.invoke(instance, Long.parseLong(value));
+        } else if (writeParameterType.isAssignableFrom(Boolean.class) ||
+                writeParameterType.isAssignableFrom(Boolean.TYPE)) {
+            writeMethod.invoke(instance, Boolean.parseBoolean(value));
+        } else if (TaskParamType.class.isAssignableFrom(writeParameterType)) {
+            Constructor<?> ctor = writeParameterType.getConstructor();
+            Object obj = ctor.newInstance();
+            ((TaskParamType)obj).deserialize(value);
+            writeMethod.invoke(instance, obj);
+        }
+    }
+    public static <T extends BaseTask> void deserializeTaskData(T instance, Map<String, String> params) throws Exception {
 
         List<Field> allFields = new ArrayList<>();
         Class genericClass = instance.getClass();
@@ -38,36 +66,28 @@ public class TaskUtil {
             TaskParam param = classField.getAnnotation(TaskParam.class);
             if (param != null) {
                 if (params.containsKey(param.name())) {
-                    classField.setAccessible(true);
-                    PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(instance, classField.getName());
-                    Method writeMethod = PropertyUtils.getWriteMethod(propertyDescriptor);
-                    Class<?>[] methodParamType = writeMethod.getParameterTypes();
-                    Class<?> writeParameterType = methodParamType[0];
-
-                    if (GeneratedMessageV3.class.isAssignableFrom(writeParameterType)) { // Parsing protobuf messages
-                        Method parseMethod = writeParameterType.getDeclaredMethod("parseFrom", byte[].class);
-                        Object obj = parseMethod.invoke(null, params.get(param.name()).getBytes()); // Calling static method
-                        writeMethod.invoke(instance, obj);
-                    } else if (writeParameterType.isAssignableFrom(String.class)) {
-                        writeMethod.invoke(instance, params.get(param.name()));
-                    } else if (writeParameterType.isAssignableFrom(Integer.class) ||
-                            writeParameterType.isAssignableFrom(Integer.TYPE)) {
-                        writeMethod.invoke(instance, Integer.parseInt(params.get(param.name())));
-                    } else if (writeParameterType.isAssignableFrom(Long.class) ||
-                            writeParameterType.isAssignableFrom(Long.TYPE)) {
-                        writeMethod.invoke(instance, Long.parseLong(params.get(param.name())));
-                    } else if (writeParameterType.isAssignableFrom(Boolean.class) ||
-                            writeParameterType.isAssignableFrom(Boolean.TYPE)) {
-                        writeMethod.invoke(instance, Boolean.parseBoolean(params.get(param.name())));
-                    } else if (TaskParamType.class.isAssignableFrom(writeParameterType)) {
-                        Constructor<?> ctor = writeParameterType.getConstructor();
-                        Object obj = ctor.newInstance();
-                        ((TaskParamType)obj).deserialize(params.get(param.name()));
-                        writeMethod.invoke(instance, obj);
-                    }
+                    deserializeField(instance, classField, params.get(param.name()));
                 }
             }
         }
+    }
+
+    public static <T extends BaseTask> Field getClassFieldForParamName(T instance, String paramName) {
+        Class genericClass = instance.getClass();
+
+        while (BaseTask.class.isAssignableFrom(genericClass)) {
+            Field[] declaredFields = genericClass.getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                TaskParam param = declaredField.getAnnotation(TaskParam.class);
+                if (param != null) {
+                    if (param.name().equals(paramName)) {
+                        return declaredField;
+                    }
+                }
+            }
+            genericClass = genericClass.getSuperclass();
+        }
+        return null;
     }
 
     public static <T extends BaseTask> Map<String, String> serializeTaskData(T data) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -94,6 +114,11 @@ public class TaskUtil {
                 }
             }
         }
+
+        Map<String, String> paramOverrideMap = data.getParamOverrideMap();
+        paramOverrideMap.forEach((param, variable) -> {
+            result.put("$"+ param, variable);
+        });
         return result;
     }
 }

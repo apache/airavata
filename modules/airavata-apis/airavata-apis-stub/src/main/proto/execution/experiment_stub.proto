@@ -138,8 +138,9 @@ message ServerBackend {
 message EC2Backend {
   string flavor = 1;
   string imageId = 2;
-  string region = 3;
-  string aws_credential_id = 4;
+  string loginUserName = 3;
+  string region = 4;
+  string aws_credential_id = 5;
 }
 
 message LocalBackend {

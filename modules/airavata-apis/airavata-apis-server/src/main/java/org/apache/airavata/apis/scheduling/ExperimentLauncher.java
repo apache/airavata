@@ -3,6 +3,7 @@ package org.apache.airavata.apis.scheduling;
 import org.apache.airavata.api.execution.ExperimentLaunchRequest;
 import org.apache.airavata.api.execution.stubs.EC2Backend;
 import org.apache.airavata.api.execution.stubs.Experiment;
+import org.apache.airavata.api.execution.stubs.RunConfiguration;
 import org.apache.airavata.apis.service.ExecutionService;
 import org.apache.airavata.apis.workflow.task.common.BaseTask;
 import org.apache.airavata.apis.workflow.task.common.OutPort;
@@ -11,6 +12,11 @@ import org.apache.airavata.apis.workflow.task.common.annotation.TaskDef;
 import org.apache.airavata.apis.workflow.task.common.annotation.TaskOutPort;
 import org.apache.airavata.apis.workflow.task.data.DataMovementTask;
 import org.apache.airavata.apis.workflow.task.ec2.CreateEC2InstanceTask;
+import org.apache.airavata.apis.workflow.task.ec2.DestroyEC2InstanceTask;
+import org.apache.airavata.mft.credential.stubs.s3.S3Secret;
+import org.apache.airavata.mft.credential.stubs.s3.S3SecretCreateRequest;
+import org.apache.airavata.mft.secret.client.SecretServiceClient;
+import org.apache.airavata.mft.secret.client.SecretServiceClientBuilder;
 import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
 import org.apache.helix.InstanceType;
@@ -35,6 +41,7 @@ public class ExperimentLauncher {
     @Autowired
     private ExecutionService executionService;
 
+
     public void launchExperiment(ExperimentLaunchRequest experimentLaunchRequest) throws Exception {
         Optional<Experiment> experimentOp = executionService.getExperiment(experimentLaunchRequest.getExperimentId());
         if (experimentOp.isEmpty()) {
@@ -44,9 +51,26 @@ public class ExperimentLauncher {
         Experiment experiment = experimentOp.get();
     }
 
+    private void submitEC2Workflow(RunConfiguration runConfiguration) {
+        CreateEC2InstanceTask ec2InstanceTask = new CreateEC2InstanceTask();
+        ec2InstanceTask.setEc2Backend(runConfiguration.getEc2());
+        ec2InstanceTask.setSecretServiceHost("localhost");
+        ec2InstanceTask.setSecretServicePort(7003);
+        ec2InstanceTask.setUserToken("token");
+
+
+    }
+
+
     public static void main(String args[]) throws Exception {
         ExperimentLauncher launcher = new ExperimentLauncher();
         launcher.init("airavata", "wm", "localhost:2181");
+
+        SecretServiceClient secretServiceClient = SecretServiceClientBuilder.buildClient("localhost", 7002);
+        S3Secret s3Secret = secretServiceClient.s3().createS3Secret(S3SecretCreateRequest.newBuilder()
+                .setAccessKey("key").setSecretKey("sec").build());
+
+        logger.info("S3 Secret id : " + s3Secret.getSecretId());
 
         Map<String, BaseTask> taskMap = new HashMap<>();
 
@@ -56,16 +80,34 @@ public class ExperimentLauncher {
         taskMap.put(dataMovementTask.getTaskId(), dataMovementTask);
 
         EC2Backend ec2Backend = EC2Backend.newBuilder()
-                .setAwsCredentialId("SomeCred")
-                .setFlavor("m2")
-                .setRegion("us-west").build();
+                .setAwsCredentialId(s3Secret.getSecretId())
+                .setLoginUserName("ubuntu")
+                .setRegion("us-east-1")
+                .setFlavor("t2.micro")
+                .setImageId("ami-053b0d53c279acc90").build();
 
         CreateEC2InstanceTask ec2InstanceTask = new CreateEC2InstanceTask();
         ec2InstanceTask.setTaskId(UUID.randomUUID().toString());
         ec2InstanceTask.setEc2Backend(ec2Backend);
+        ec2InstanceTask.setSecretServiceHost("localhost");
+        ec2InstanceTask.setSecretServicePort(7002);
+        ec2InstanceTask.setUserToken("token");
+
         taskMap.put(ec2InstanceTask.getTaskId(), ec2InstanceTask);
 
+        DestroyEC2InstanceTask destroyEC2InstanceTask = new DestroyEC2InstanceTask();
+        destroyEC2InstanceTask.setTaskId(UUID.randomUUID().toString());
+        destroyEC2InstanceTask.setEc2Backend(ec2Backend);
+        destroyEC2InstanceTask.setSecretServiceHost("localhost");
+        destroyEC2InstanceTask.setSecretServicePort(7002);
+        destroyEC2InstanceTask.setUserToken("token");
+        destroyEC2InstanceTask.setInstanceId(""); // Override by workflow
+        destroyEC2InstanceTask.overrideParameterFromWorkflowContext("instanceId", CreateEC2InstanceTask.EC2_INSTANCE_ID);
+
+        taskMap.put(destroyEC2InstanceTask.getTaskId(), destroyEC2InstanceTask);
+
         dataMovementTask.addOutPort(new OutPort().setNextTaskId(ec2InstanceTask.getTaskId()));
+        ec2InstanceTask.addOutPort(new OutPort().setNextTaskId(destroyEC2InstanceTask.getTaskId()));
 
         String[] startTaskIds = {dataMovementTask.getTaskId()};
         logger.info("Submitting workflow");

@@ -17,6 +17,9 @@ public class EC2BackendEntity extends ComputeBackendEntity {
     @Column
     String awsCredentialId;
 
+    @Column
+    String loginUserName;
+
     public String getFlavor() {
         return flavor;
     }
@@ -47,5 +50,13 @@ public class EC2BackendEntity extends ComputeBackendEntity {
 
     public void setImageId(String imageId) {
         this.imageId = imageId;
+    }
+
+    public String getLoginUserName() {
+        return loginUserName;
+    }
+
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
     }
 }

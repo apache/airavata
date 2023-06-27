@@ -162,7 +162,8 @@ public class WorkflowExecutor implements CommandLineRunner {
 
         String[] taskClasses = {
                 "org.apache.airavata.apis.workflow.task.data.DataMovementTask",
-                "org.apache.airavata.apis.workflow.task.ec2.CreateEC2InstanceTask"};
+                "org.apache.airavata.apis.workflow.task.ec2.CreateEC2InstanceTask",
+                "org.apache.airavata.apis.workflow.task.ec2.DestroyEC2InstanceTask"};
 
         Map<String, TaskFactory> taskMap = new HashMap<>();
 
