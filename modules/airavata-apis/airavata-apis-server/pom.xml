@@ -24,6 +24,39 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-controller</artifactId>
+            <version>0.01-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-agent-service</artifactId>
+            <version>0.01-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-api-service</artifactId>
+            <version>0.01-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>mft-secret-service-client</artifactId>
             <version>0.01-SNAPSHOT</version>
             <exclusions>
@@ -48,6 +81,18 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>mft-resource-service-server</artifactId>
             <version>0.01-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>mft-api-client</artifactId>
+            <version>0.01-SNAPSHOT</version>
+
             <exclusions>
                 <exclusion>
                     <groupId>com.google.protobuf</groupId>
@@ -155,6 +200,11 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
             <version>${aws.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
         </dependency>
     </dependencies>
     <properties>
