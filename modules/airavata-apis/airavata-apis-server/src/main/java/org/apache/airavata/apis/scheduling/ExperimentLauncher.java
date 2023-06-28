@@ -74,11 +74,6 @@ public class ExperimentLauncher {
 
         Map<String, BaseTask> taskMap = new HashMap<>();
 
-        DataMovementTask dataMovementTask = new DataMovementTask();
-        dataMovementTask.setTaskId(UUID.randomUUID().toString());
-
-        taskMap.put(dataMovementTask.getTaskId(), dataMovementTask);
-
         EC2Backend ec2Backend = EC2Backend.newBuilder()
                 .setAwsCredentialId(s3Secret.getSecretId())
                 .setLoginUserName("ubuntu")
@@ -92,8 +87,30 @@ public class ExperimentLauncher {
         ec2InstanceTask.setSecretServiceHost("localhost");
         ec2InstanceTask.setSecretServicePort(7002);
         ec2InstanceTask.setUserToken("token");
-
         taskMap.put(ec2InstanceTask.getTaskId(), ec2InstanceTask);
+
+        DataMovementTask dataMovementTask = new DataMovementTask();
+        dataMovementTask.setTaskId(UUID.randomUUID().toString());
+        dataMovementTask.setSecretServiceHost("localhost");
+        dataMovementTask.setSecretServicePort(7002);
+        dataMovementTask.setTransferServiceHost("localhost");
+        dataMovementTask.setTransferServicePort(7002);
+        dataMovementTask.setResourceServiceHost("localhost");
+        dataMovementTask.setResourceServicePort(7002);
+        dataMovementTask.setUserToken("token");
+        dataMovementTask.setSourceStorageId("504643b6-f813-4aa1-8e66-2533cb4f837c");
+        dataMovementTask.setSourceCredentialId("");
+        dataMovementTask.setSourcePath("/Users/dwannipu/Downloads/IMG-9309.jpg");
+        dataMovementTask.setDestinationPath("/tmp/IMG-9309.jpg");
+        dataMovementTask.setDestinationStorageId("");
+        dataMovementTask.setDestinationCredentialId("");
+        dataMovementTask.overrideParameterFromWorkflowContext("destinationStorageId", // Loading context parameter from previous Task
+                CreateEC2InstanceTask.EC2_INSTANCE_STORAGE_ID);
+        dataMovementTask.overrideParameterFromWorkflowContext("destinationCredentialId",
+                CreateEC2InstanceTask.EC2_INSTANCE_SECRET_ID);
+
+
+        taskMap.put(dataMovementTask.getTaskId(), dataMovementTask);
 
         DestroyEC2InstanceTask destroyEC2InstanceTask = new DestroyEC2InstanceTask();
         destroyEC2InstanceTask.setTaskId(UUID.randomUUID().toString());
@@ -104,12 +121,11 @@ public class ExperimentLauncher {
         destroyEC2InstanceTask.setInstanceId(""); // Override by workflow
         destroyEC2InstanceTask.overrideParameterFromWorkflowContext("instanceId", CreateEC2InstanceTask.EC2_INSTANCE_ID);
 
-        taskMap.put(destroyEC2InstanceTask.getTaskId(), destroyEC2InstanceTask);
+        //taskMap.put(destroyEC2InstanceTask.getTaskId(), destroyEC2InstanceTask);
 
-        dataMovementTask.addOutPort(new OutPort().setNextTaskId(ec2InstanceTask.getTaskId()));
-        ec2InstanceTask.addOutPort(new OutPort().setNextTaskId(destroyEC2InstanceTask.getTaskId()));
+        ec2InstanceTask.addOutPort(new OutPort().setNextTaskId(dataMovementTask.getTaskId()));
 
-        String[] startTaskIds = {dataMovementTask.getTaskId()};
+        String[] startTaskIds = {ec2InstanceTask.getTaskId()};
         logger.info("Submitting workflow");
         launcher.buildAndRunWorkflow(taskMap, startTaskIds);
     }

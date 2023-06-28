@@ -17,6 +17,11 @@ import org.apache.airavata.mft.credential.stubs.s3.S3SecretGetRequest;
 import org.apache.airavata.mft.credential.stubs.scp.SCPSecret;
 import org.apache.airavata.mft.credential.stubs.scp.SCPSecretCreateRequest;
 import org.apache.airavata.mft.credential.stubs.scp.SCPSecretGetRequest;
+import org.apache.airavata.mft.resource.client.StorageServiceClient;
+import org.apache.airavata.mft.resource.client.StorageServiceClientBuilder;
+import org.apache.airavata.mft.resource.service.scp.SCPStorageServiceGrpc;
+import org.apache.airavata.mft.resource.stubs.scp.storage.SCPStorage;
+import org.apache.airavata.mft.resource.stubs.scp.storage.SCPStorageCreateRequest;
 import org.apache.airavata.mft.secret.client.SecretServiceClient;
 import org.apache.airavata.mft.secret.client.SecretServiceClientBuilder;
 import org.apache.helix.task.TaskResult;
@@ -34,6 +39,7 @@ import java.util.stream.Collectors;
 public class CreateEC2InstanceTask extends BaseTask {
 
     public static final String EC2_INSTANCE_SECRET_ID = "EC2_INSTANCE_SECRET_ID";
+    public static final String EC2_INSTANCE_STORAGE_ID = "EC2_INSTANCE_STORAGE_ID";
     public static final String EC2_INSTANCE_ID = "EC2_INSTANCE_ID";
     public static final String EC2_INSTANCE_IP = "EC2_INSTANCE_IP";
 
@@ -218,6 +224,14 @@ public class CreateEC2InstanceTask extends BaseTask {
 
                 logger.info("Waiting 30 seconds until the ssh interface comes up in instance {}", instanceId);
                 Thread.sleep(30000);
+                try (StorageServiceClient storageClient = StorageServiceClientBuilder
+                        .buildClient("localhost", 7002)) {
+                    SCPStorage scpStorage = storageClient.scp().createSCPStorage(SCPStorageCreateRequest.newBuilder()
+                            .setHost(publicIpAddress)
+                            .setPort(22)
+                            .setName("EC2 Instance for task " + getTaskId()).build());
+                    putUserContent(EC2_INSTANCE_STORAGE_ID, scpStorage.getStorageId(), Scope.WORKFLOW);
+                }
                 logger.info("EC2 Instance is running...");
 
             } catch (Exception e) {
