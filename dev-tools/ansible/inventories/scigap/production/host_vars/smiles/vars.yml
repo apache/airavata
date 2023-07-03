@@ -33,8 +33,16 @@ ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-# Increase max upload size to 200MB
-django_file_upload_max_file_size_mb: 200
+airavata_django_extra_dependencies:
+  - name: "git+https://github.com/SciGaP/smiles-django-portal.git#egg=smiles-django-portal"
+    editable: true
+
+# Increase max upload size to 2GB
+django_file_upload_max_file_size_mb: 2000
+
+django_extra_settings:
+  CELERY_BROKER_URL: "redis://localhost:6379"
+  CELERY_RESULT_BACKEND: "redis://localhost:6379"
 
 ## Keycloak related variables
 tenant_domain: "smiles"
