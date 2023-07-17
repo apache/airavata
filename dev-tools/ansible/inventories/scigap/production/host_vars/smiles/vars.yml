@@ -33,9 +33,10 @@ ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-airavata_django_extra_dependencies:
-  - name: "git+https://github.com/SciGaP/smiles-django-portal.git#egg=smiles-django-portal"
-    editable: true
+# TODO: fix frontend build on install, for now install/update manually
+# airavata_django_extra_dependencies:
+#   - name: "git+https://github.com/SciGaP/smiles-django-portal.git#egg=smiles-django-portal"
+#     editable: true
 
 # Increase max upload size to 2GB
 django_file_upload_max_file_size_mb: 2000
