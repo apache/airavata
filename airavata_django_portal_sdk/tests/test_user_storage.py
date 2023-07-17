@@ -329,3 +329,36 @@ class ExistsTests(BaseTestCase):
 
             exists = user_storage.exists(self.request, data_product)
             self.assertTrue(exists)
+
+
+class SaveInputFileTests(BaseTestCase):
+    def test_save_input_file_duplicated_name(self):
+        "Test saving two input files with the same name"
+        with tempfile.TemporaryDirectory() as tmpdirname, \
+                self.settings(GATEWAY_DATA_STORE_DIR=tmpdirname,
+                              GATEWAY_DATA_STORE_HOSTNAME="gateway.com"):
+            file = io.StringIO("Foo file")
+            file.name = "foo.txt"
+            user_storage.save_input_file(self.request, file)
+            file.seek(0)
+            # Save it again
+            user_storage.save_input_file(self.request, file)
+
+            self.assertEqual(2, self.request.airavata_client.registerDataProduct.call_count)
+
+            args1, _ = self.request.airavata_client.registerDataProduct.call_args_list[0]
+            dp1 = args1[1]
+            args2, _ = self.request.airavata_client.registerDataProduct.call_args_list[1]
+            dp2 = args2[1]
+
+            # Both files should have the same productName, even though the second
+            # was renamed on the filesystem to avoid collision
+            self.assertEqual("foo.txt", dp1.productName)
+            self.assertEqual("foo.txt", dp2.productName)
+            self.assertEqual(1, len(dp1.replicaLocations))
+            self.assertEqual(1, len(dp2.replicaLocations))
+            # First file should be saved to the fs with the original name
+            self.assertEqual("foo.txt", os.path.basename(dp1.replicaLocations[0].filePath))
+            self.assertNotEqual(dp1.replicaLocations[0].filePath, dp2.replicaLocations[0].filePath)
+            # Check that the saved location was renamed to not conflict with the first upload
+            self.assertTrue(os.path.basename(dp2.replicaLocations[0].filePath).startswith("foo_"))

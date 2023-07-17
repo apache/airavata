@@ -127,7 +127,7 @@ def save_input_file(request, file, name=None, content_type=None, storage_resourc
         storage_resource_id, resource_path = backend.save(
             TMP_INPUT_FILE_UPLOAD_DIR, file, name=file_name)
         data_product = _save_data_product(
-            request, resource_path, storage_resource_id, name=name, content_type=content_type, backend=backend
+            request, resource_path, storage_resource_id, name=file_name, content_type=content_type, backend=backend
         )
         return data_product
 
