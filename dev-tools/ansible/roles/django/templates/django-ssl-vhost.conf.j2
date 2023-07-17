@@ -61,14 +61,14 @@
 
     <Directory {{ doc_root_dir }}/static>
     Require all granted
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript image/svg+xml
 
     # Force browser to revalidate cached static resources
     Header set Cache-Control "no-cache"
     # Workaround for ETag bug: https://bz.apache.org/bugzilla/show_bug.cgi?id=45023#c22
     RequestHeader edit "If-None-Match" '^"((.*)-gzip)"$' '"$1", "$2"'
     # If file has a content hash, cache for a year
-    <FilesMatch "\.[0-9a-f]{8}\.(css|js)$">
+    <FilesMatch "\.[0-9a-f]{8}\.(css|js|svg)$">
         Header set Cache-Control "max-age=31536000, public"
     </FilesMatch>
     </Directory>
