@@ -20,17 +20,14 @@
 
 ---
 
-# TODO: tus not setup yet
-tusd_vhost_servername:
-
 vhost_servername: "md.cybershuttle.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-# Increase max upload size to 200MB
-#django_file_upload_max_file_size_mb: 200
+# Increase max upload size to 640MB
+django_file_upload_max_file_size_mb: 640
 
 ## Keycloak related variables
 tenant_domain: "molecular-dynamics"
