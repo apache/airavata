@@ -31,7 +31,8 @@ vhost_ssl: true
 httpd_selinux_mode: "permissive"
 
 airavata_django_extra_dependencies:
-  - name: "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
+# Multiple GitHub SSH Deploy Keys on dev.amp, the trecx one is aliased to host github.com-trecx in .ssh/config
+  - name: "git+ssh://git@github.com-trecx/SciGaP/trecx-django-app.git#egg=trecx-django-app"
     editable: true
 
 # tus isn't setup yet
