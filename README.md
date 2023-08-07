@@ -35,9 +35,13 @@ on how to install Yarn 1 (Classic).
     cd airavata-django-portal
     python3 -m venv venv
     source venv/bin/activate
+    <!-- For Windows, omit source -->
     pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
     ```
+
+    - **Windows note**: Use ```venv\Scripts\activate``` instead
+      <!-- https://docs.python.org/3/library/venv.html -->
 
     - **macOS note**: to install the MySQL dependencies you need to have the
       MySQL development headers and libraries installed. Also, on macOS you need
