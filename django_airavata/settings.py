@@ -79,10 +79,6 @@ INSTALLED_APPS = [
 
     # Airavata Django Portal SDK
     'airavata_django_portal_sdk',
-
-
-    'django_extensions',
-
 ]
 
 # List of app labels for Airavata apps that should be hidden from menus

@@ -17,4 +17,3 @@ package-lock.json
 site/
 .tox/
 yarn-error.log
-*.pem
