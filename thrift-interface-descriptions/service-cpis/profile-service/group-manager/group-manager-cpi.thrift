@@ -57,6 +57,10 @@ service GroupManagerService  extends base_api.BaseAPI {
     list<group_manager_model.GroupModel> getGroups(1: required security_model.AuthzToken authzToken)
                       throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                               2: airavata_errors.AuthorizationException ae);
+    
+    list<group_manager_model.GroupModel> getGroupsFilteredByCreationDate(1: required security_model.AuthzToken authzToken, 2: required i64 fromTime, 3: required i64 toTime)
+                      throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
+                              2: airavata_errors.AuthorizationException ae);
 
     list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName)
                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,

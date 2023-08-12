@@ -174,6 +174,28 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     @Override
     @SecurityCheck
+    public List<GroupModel> getGroupsFilteredByCreationDate(AuthzToken authzToken, long fromTime, long toTime) throws GroupManagerServiceException, AuthorizationException, TException {
+        final String domainId = getDomainId(authzToken);
+        SharingRegistryService.Client sharingClient = null;
+        try {
+            sharingClient = getSharingRegistryServiceClient();
+            List<UserGroup> userGroups = sharingClient.getGroupsFilteredByCreationDate(domainId, fromTime, toTime, 0, -1);
+
+            return convertToGroupModels(userGroups, sharingClient);
+        }
+        catch (Exception e) {
+            String msg = "Error Retrieving Groups. Domain ID: " + domainId;
+            logger.error(msg, e);
+            GroupManagerServiceException exception = new GroupManagerServiceException();
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        } finally {
+            closeSharingClient(sharingClient);
+        }
+    }
+
+    @Override
+    @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();

@@ -106,6 +106,10 @@ service SharingRegistryService extends base_api.BaseAPI {
      <p>API method to get groups in a domainId.</p>
     */
     list<sharing_models.UserGroup> getGroups(1: required string domainId, 2: required i32 offset, 3: required i32 limit)
+    /**
+     <p>API method to get groups in a domainId filtered by creation date.</p>
+    */
+    list<sharing_models.UserGroup> getGroupsFilteredByCreationDate(1: required string domainId, 2: required i64 fromTime, 3: required i64 toTime, 4: required i32 offset, 5: required i32 limit)
 
     /**
      <p>API method to add list of users to a group</p>

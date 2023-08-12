@@ -65,6 +65,16 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         """
         pass
 
+    def getGroupsFilteredByCreationDate(self, authzToken, fromTime, toTime):
+        """
+        Parameters:
+         - authzToken
+         - fromTime
+         - toTime
+
+        """
+        pass
+
     def getAllGroupsUserBelongs(self, authzToken, userName):
         """
         Parameters:
@@ -338,6 +348,46 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
         if result.ae is not None:
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getGroups failed: unknown result")
+
+    def getGroupsFilteredByCreationDate(self, authzToken, fromTime, toTime):
+        """
+        Parameters:
+         - authzToken
+         - fromTime
+         - toTime
+
+        """
+        self.send_getGroupsFilteredByCreationDate(authzToken, fromTime, toTime)
+        return self.recv_getGroupsFilteredByCreationDate()
+
+    def send_getGroupsFilteredByCreationDate(self, authzToken, fromTime, toTime):
+        self._oprot.writeMessageBegin('getGroupsFilteredByCreationDate', TMessageType.CALL, self._seqid)
+        args = getGroupsFilteredByCreationDate_args()
+        args.authzToken = authzToken
+        args.fromTime = fromTime
+        args.toTime = toTime
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getGroupsFilteredByCreationDate(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getGroupsFilteredByCreationDate_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.gse is not None:
+            raise result.gse
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getGroupsFilteredByCreationDate failed: unknown result")
 
     def getAllGroupsUserBelongs(self, authzToken, userName):
         """
@@ -666,6 +716,7 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
         self._processMap["deleteGroup"] = Processor.process_deleteGroup
         self._processMap["getGroup"] = Processor.process_getGroup
         self._processMap["getGroups"] = Processor.process_getGroups
+        self._processMap["getGroupsFilteredByCreationDate"] = Processor.process_getGroupsFilteredByCreationDate
         self._processMap["getAllGroupsUserBelongs"] = Processor.process_getAllGroupsUserBelongs
         self._processMap["addUsersToGroup"] = Processor.process_addUsersToGroup
         self._processMap["removeUsersFromGroup"] = Processor.process_removeUsersFromGroup
@@ -837,6 +888,35 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("getGroups", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getGroupsFilteredByCreationDate(self, seqid, iprot, oprot):
+        args = getGroupsFilteredByCreationDate_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getGroupsFilteredByCreationDate_result()
+        try:
+            result.success = self._handler.getGroupsFilteredByCreationDate(args.authzToken, args.fromTime, args.toTime)
+            msg_type = TMessageType.REPLY
+        except TTransport.TTransportException:
+            raise
+        except airavata.service.profile.groupmanager.cpi.error.ttypes.GroupManagerServiceException as gse:
+            msg_type = TMessageType.REPLY
+            result.gse = gse
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except TApplicationException as ex:
+            logging.exception('TApplication exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = ex
+        except Exception:
+            logging.exception('Unexpected exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getGroupsFilteredByCreationDate", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -1908,6 +1988,193 @@ getGroups_result.thrift_spec = (
 )
 
 
+class getGroupsFilteredByCreationDate_args(object):
+    """
+    Attributes:
+     - authzToken
+     - fromTime
+     - toTime
+
+    """
+
+
+    def __init__(self, authzToken=None, fromTime=None, toTime=None,):
+        self.authzToken = authzToken
+        self.fromTime = fromTime
+        self.toTime = toTime
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I64:
+                    self.fromTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.I64:
+                    self.toTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getGroupsFilteredByCreationDate_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.fromTime is not None:
+            oprot.writeFieldBegin('fromTime', TType.I64, 2)
+            oprot.writeI64(self.fromTime)
+            oprot.writeFieldEnd()
+        if self.toTime is not None:
+            oprot.writeFieldBegin('toTime', TType.I64, 3)
+            oprot.writeI64(self.toTime)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.fromTime is None:
+            raise TProtocolException(message='Required field fromTime is unset!')
+        if self.toTime is None:
+            raise TProtocolException(message='Required field toTime is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getGroupsFilteredByCreationDate_args)
+getGroupsFilteredByCreationDate_args.thrift_spec = (
+    None,  # 0
+    (1, TType.STRUCT, 'authzToken', [airavata.model.security.ttypes.AuthzToken, None], None, ),  # 1
+    (2, TType.I64, 'fromTime', None, None, ),  # 2
+    (3, TType.I64, 'toTime', None, None, ),  # 3
+)
+
+
+class getGroupsFilteredByCreationDate_result(object):
+    """
+    Attributes:
+     - success
+     - gse
+     - ae
+
+    """
+
+
+    def __init__(self, success=None, gse=None, ae=None,):
+        self.success = success
+        self.gse = gse
+        self.ae = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = airavata.model.group.ttypes.GroupModel()
+                        _elem12.read(iprot)
+                        self.success.append(_elem12)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.gse = airavata.service.profile.groupmanager.cpi.error.ttypes.GroupManagerServiceException.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getGroupsFilteredByCreationDate_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRUCT, len(self.success))
+            for iter13 in self.success:
+                iter13.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.gse is not None:
+            oprot.writeFieldBegin('gse', TType.STRUCT, 1)
+            self.gse.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 2)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getGroupsFilteredByCreationDate_result)
+getGroupsFilteredByCreationDate_result.thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT, [airavata.model.group.ttypes.GroupModel, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'gse', [airavata.service.profile.groupmanager.cpi.error.ttypes.GroupManagerServiceException, None], None, ),  # 1
+    (2, TType.STRUCT, 'ae', [airavata.api.error.ttypes.AuthorizationException, None], None, ),  # 2
+)
+
+
 class getAllGroupsUserBelongs_args(object):
     """
     Attributes:
@@ -2014,11 +2281,11 @@ class getAllGroupsUserBelongs_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype10, _size7) = iprot.readListBegin()
-                    for _i11 in range(_size7):
-                        _elem12 = airavata.model.group.ttypes.GroupModel()
-                        _elem12.read(iprot)
-                        self.success.append(_elem12)
+                    (_etype17, _size14) = iprot.readListBegin()
+                    for _i18 in range(_size14):
+                        _elem19 = airavata.model.group.ttypes.GroupModel()
+                        _elem19.read(iprot)
+                        self.success.append(_elem19)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -2045,8 +2312,8 @@ class getAllGroupsUserBelongs_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter13 in self.success:
-                iter13.write(oprot)
+            for iter20 in self.success:
+                iter20.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.gse is not None:
@@ -2114,10 +2381,10 @@ class addUsersToGroup_args(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.userIds = []
-                    (_etype17, _size14) = iprot.readListBegin()
-                    for _i18 in range(_size14):
-                        _elem19 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userIds.append(_elem19)
+                    (_etype24, _size21) = iprot.readListBegin()
+                    for _i25 in range(_size21):
+                        _elem26 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userIds.append(_elem26)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -2143,8 +2410,8 @@ class addUsersToGroup_args(object):
         if self.userIds is not None:
             oprot.writeFieldBegin('userIds', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.userIds))
-            for iter20 in self.userIds:
-                oprot.writeString(iter20.encode('utf-8') if sys.version_info[0] == 2 else iter20)
+            for iter27 in self.userIds:
+                oprot.writeString(iter27.encode('utf-8') if sys.version_info[0] == 2 else iter27)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.groupId is not None:
@@ -2300,10 +2567,10 @@ class removeUsersFromGroup_args(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.userIds = []
-                    (_etype24, _size21) = iprot.readListBegin()
-                    for _i25 in range(_size21):
-                        _elem26 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userIds.append(_elem26)
+                    (_etype31, _size28) = iprot.readListBegin()
+                    for _i32 in range(_size28):
+                        _elem33 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userIds.append(_elem33)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -2329,8 +2596,8 @@ class removeUsersFromGroup_args(object):
         if self.userIds is not None:
             oprot.writeFieldBegin('userIds', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.userIds))
-            for iter27 in self.userIds:
-                oprot.writeString(iter27.encode('utf-8') if sys.version_info[0] == 2 else iter27)
+            for iter34 in self.userIds:
+                oprot.writeString(iter34.encode('utf-8') if sys.version_info[0] == 2 else iter34)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.groupId is not None:
@@ -2669,10 +2936,10 @@ class addGroupAdmins_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.adminIds = []
-                    (_etype31, _size28) = iprot.readListBegin()
-                    for _i32 in range(_size28):
-                        _elem33 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.adminIds.append(_elem33)
+                    (_etype38, _size35) = iprot.readListBegin()
+                    for _i39 in range(_size35):
+                        _elem40 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.adminIds.append(_elem40)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -2697,8 +2964,8 @@ class addGroupAdmins_args(object):
         if self.adminIds is not None:
             oprot.writeFieldBegin('adminIds', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.adminIds))
-            for iter34 in self.adminIds:
-                oprot.writeString(iter34.encode('utf-8') if sys.version_info[0] == 2 else iter34)
+            for iter41 in self.adminIds:
+                oprot.writeString(iter41.encode('utf-8') if sys.version_info[0] == 2 else iter41)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -2855,10 +3122,10 @@ class removeGroupAdmins_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.adminIds = []
-                    (_etype38, _size35) = iprot.readListBegin()
-                    for _i39 in range(_size35):
-                        _elem40 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.adminIds.append(_elem40)
+                    (_etype45, _size42) = iprot.readListBegin()
+                    for _i46 in range(_size42):
+                        _elem47 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.adminIds.append(_elem47)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -2883,8 +3150,8 @@ class removeGroupAdmins_args(object):
         if self.adminIds is not None:
             oprot.writeFieldBegin('adminIds', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.adminIds))
-            for iter41 in self.adminIds:
-                oprot.writeString(iter41.encode('utf-8') if sys.version_info[0] == 2 else iter41)
+            for iter48 in self.adminIds:
+                oprot.writeString(iter48.encode('utf-8') if sys.version_info[0] == 2 else iter48)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()

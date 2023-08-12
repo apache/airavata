@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class SharingRegistryServerHandler implements SharingRegistryService.Iface{
@@ -382,6 +383,37 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             // Only return groups with MULTI_USER cardinality which is the only type of cardinality allowed for client created groups
             filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
             return (new UserGroupRepository()).select(filters, offset, limit);
+        }catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public List<UserGroup> getGroupsFilteredByCreationDate(String domain, long fromTime, long toTime, int offset, int limit) throws TException {
+        try{
+            String query = "SELECT DISTINCT p from " + UserGroupEntity.class.getSimpleName() + " as p WHERE ";
+            Map<String, Object> queryParameters = new HashMap<>();
+            
+            Timestamp fromDate = new Timestamp(fromTime);
+            Timestamp toDate = new Timestamp(toTime);
+            if (fromDate != null && toDate != null) {
+                if (toDate.after(fromDate)) {
+                    logger.debug("Filter Groups by CreationTime");
+                    queryParameters.put(DBConstants.UserGroupTable.FROM_TIME, fromTime);
+                    queryParameters.put(DBConstants.UserGroupTable.TO_TIME, toTime);
+                    query += "p.createdTime BETWEEN :" + DBConstants.UserGroupTable.FROM_TIME + " AND :" + DBConstants.UserGroupTable.TO_TIME + " AND ";
+                }
+            }
+
+            queryParameters.put(DBConstants.UserGroupTable.DOMAIN_ID, domain);
+            query += "p." + DBConstants.UserGroupTable.DOMAIN_ID + " = :" + DBConstants.UserGroupTable.DOMAIN_ID + " AND ";
+            
+            queryParameters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
+            query += "p." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = :" + DBConstants.UserGroupTable.GROUP_CARDINALITY;
+
+            query += " ORDER BY p.createdTime DESC";
+            return (new UserGroupRepository()).select(query, queryParameters, offset, limit);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
             throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));

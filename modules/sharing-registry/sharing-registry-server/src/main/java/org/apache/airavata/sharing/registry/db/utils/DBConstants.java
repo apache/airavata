@@ -53,6 +53,8 @@ public class DBConstants {
         public static final String GROUP_CARDINALITY = "groupCardinality";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
+        public static final String FROM_TIME = "fromTime";
+        public static final String TO_TIME = "toTime";
     }
 
     public static class GroupMembershipTable {
