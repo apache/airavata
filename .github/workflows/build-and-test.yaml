@@ -19,7 +19,7 @@
 #
 
 name: Build and Test
-on: [push]
+on: [push, pull_request]
 jobs:
   build-js:
     runs-on: ubuntu-20.04
