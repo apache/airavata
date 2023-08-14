@@ -39,6 +39,9 @@ on how to install Yarn 1 (Classic).
     pip install -r requirements.txt
     ```
 
+    - **Windows note**: Use ```venv\Scripts\activate``` instead of ```source venv/bin/activate```
+      <!-- https://docs.python.org/3/library/venv.html -->
+
     - **macOS note**: to install the MySQL dependencies you need to have the
       MySQL development headers and libraries installed. Also, on macOS you need
       to have openssl installed. See the
