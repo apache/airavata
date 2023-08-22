@@ -44,18 +44,14 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new SharingStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new SharingTupleSchemeFactory();
 
-  public @org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String entityId; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String groupId; // optional
-  /**
-   * 
-   * @see SharingType
-   */
-  public @org.apache.thrift.annotation.Nullable SharingType sharingType; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String domainId; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String inheritedParentId; // optional
-  public long createdTime; // optional
-  public long updatedTime; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String entityId; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String groupId; // optional
+  private @org.apache.thrift.annotation.Nullable SharingType sharingType; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String domainId; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String inheritedParentId; // optional
+  private long createdTime; // optional
+  private long updatedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -226,9 +222,8 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.permissionTypeId;
   }
 
-  public Sharing setPermissionTypeId(@org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId) {
+  public void setPermissionTypeId(@org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId) {
     this.permissionTypeId = permissionTypeId;
-    return this;
   }
 
   public void unsetPermissionTypeId() {
@@ -251,9 +246,8 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.entityId;
   }
 
-  public Sharing setEntityId(@org.apache.thrift.annotation.Nullable java.lang.String entityId) {
+  public void setEntityId(@org.apache.thrift.annotation.Nullable java.lang.String entityId) {
     this.entityId = entityId;
-    return this;
   }
 
   public void unsetEntityId() {
@@ -276,9 +270,8 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.groupId;
   }
 
-  public Sharing setGroupId(@org.apache.thrift.annotation.Nullable java.lang.String groupId) {
+  public void setGroupId(@org.apache.thrift.annotation.Nullable java.lang.String groupId) {
     this.groupId = groupId;
-    return this;
   }
 
   public void unsetGroupId() {
@@ -309,9 +302,8 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
    * 
    * @see SharingType
    */
-  public Sharing setSharingType(@org.apache.thrift.annotation.Nullable SharingType sharingType) {
+  public void setSharingType(@org.apache.thrift.annotation.Nullable SharingType sharingType) {
     this.sharingType = sharingType;
-    return this;
   }
 
   public void unsetSharingType() {
@@ -334,9 +326,8 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.domainId;
   }
 
-  public Sharing setDomainId(@org.apache.thrift.annotation.Nullable java.lang.String domainId) {
+  public void setDomainId(@org.apache.thrift.annotation.Nullable java.lang.String domainId) {
     this.domainId = domainId;
-    return this;
   }
 
   public void unsetDomainId() {
@@ -359,9 +350,8 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.inheritedParentId;
   }
 
-  public Sharing setInheritedParentId(@org.apache.thrift.annotation.Nullable java.lang.String inheritedParentId) {
+  public void setInheritedParentId(@org.apache.thrift.annotation.Nullable java.lang.String inheritedParentId) {
     this.inheritedParentId = inheritedParentId;
-    return this;
   }
 
   public void unsetInheritedParentId() {
@@ -383,10 +373,9 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.createdTime;
   }
 
-  public Sharing setCreatedTime(long createdTime) {
+  public void setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
-    return this;
   }
 
   public void unsetCreatedTime() {
@@ -406,10 +395,9 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
     return this.updatedTime;
   }
 
-  public Sharing setUpdatedTime(long updatedTime) {
+  public void setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
-    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -982,8 +970,6 @@ public class Sharing implements org.apache.thrift.TBase<Sharing, Sharing._Fields
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

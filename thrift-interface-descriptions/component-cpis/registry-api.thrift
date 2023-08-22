@@ -836,6 +836,28 @@ service RegistryService extends base_api.BaseAPI {
                          throws (1: registry_api_errors.RegistryServiceException rse,
                                  2: airavata_errors.ExperimentNotFoundException enf)
 
+          
+          /**
+           *
+           * Get Cpu Usages
+           * Get Cpu Hours used by experiments within a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+           * 
+           * @param gatewayId
+           *       Unique identifier of the gateway making the request to fetch statistics.
+           *
+           * @param fromTime
+           *       Starting date time.
+           *
+           * @param toTime
+           *       Ending date time.
+           *
+           */
+
+           list<experiment_model.CpuUsage> getCpuUsages(1: required string gatewayId,
+                                2: required i64 fromTime,
+                                3: required i64 toTime)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
 
           /*
            *

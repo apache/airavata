@@ -2487,6 +2487,37 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * Get Cpu Hours used by experiments within a specific time period by sending the gateway id and the time period interested in.
+     * This method will return List of CpuUsage object which contains the cpu hours, experimentId etc.
+     * @param gatewayId
+     * @param fromTime
+     * @param toTime
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws TException 
+     */
+    @Override
+    @SecurityCheck
+    public List<CpuUsage> getCpuUsages(AuthzToken authToken, String gatewayId, long fromTime,  long toTime) 
+           throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+            RegistryService.Client regClient = registryClientPool.getResource();
+            try {
+                List<CpuUsage> result = regClient.getCpuUsages(gatewayId, fromTime, toTime);
+                registryClientPool.returnResource(regClient);
+                return result;
+            }catch (Exception e) {
+                logger.error("Error while retrieving cpu usages", e);
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Error while retrieving cpu usages. More info : " + e.getMessage());
+                registryClientPool.returnBrokenResource(regClient);
+                throw exception;
+            }
+    }
+
+    /**
      * Register a Application Module.
      *
      * @param applicationModule Application Module Object created from the datamodel.

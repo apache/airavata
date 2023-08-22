@@ -1245,6 +1245,37 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     /**
+     *
+     * Get Cpu Usages
+     * Get Cpu Hours used by experiments within a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+     * 
+     * @param gatewayId Unique identifier of the gateway making the request to fetch statistics.
+     *
+     * @param fromTime Starting date time.
+     *
+     * @param toTime Ending date time.
+     *
+     */
+    @Override
+    public List<CpuUsage> getCpuUsages(String gatewayId, long fromTime, long toTime) throws RegistryServiceException, TException {
+        if(!isGatewayExistInternal(gatewayId)) {
+            logger.error("Gateway does not exist. Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            // TODO: implementation to be done, temporarily returning empty list
+            List<CpuUsage> cpuUsages = new ArrayList<>();
+            return cpuUsages;
+            
+        } catch (Exception e) {
+            logger.error("Error while retrieving cpu usages " + e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving cpu usages. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Fetch a Application Module.
      *
      * @param appModuleId The unique identifier of the application module required

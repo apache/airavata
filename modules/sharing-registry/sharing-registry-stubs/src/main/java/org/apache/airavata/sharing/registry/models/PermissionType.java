@@ -48,12 +48,12 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new PermissionTypeStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new PermissionTypeTupleSchemeFactory();
 
-  public @org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String domainId; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String name; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String description; // optional
-  public long createdTime; // optional
-  public long updatedTime; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String domainId; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String name; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String description; // optional
+  private long createdTime; // optional
+  private long updatedTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -202,9 +202,8 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
     return this.permissionTypeId;
   }
 
-  public PermissionType setPermissionTypeId(@org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId) {
+  public void setPermissionTypeId(@org.apache.thrift.annotation.Nullable java.lang.String permissionTypeId) {
     this.permissionTypeId = permissionTypeId;
-    return this;
   }
 
   public void unsetPermissionTypeId() {
@@ -227,9 +226,8 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
     return this.domainId;
   }
 
-  public PermissionType setDomainId(@org.apache.thrift.annotation.Nullable java.lang.String domainId) {
+  public void setDomainId(@org.apache.thrift.annotation.Nullable java.lang.String domainId) {
     this.domainId = domainId;
-    return this;
   }
 
   public void unsetDomainId() {
@@ -252,9 +250,8 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
     return this.name;
   }
 
-  public PermissionType setName(@org.apache.thrift.annotation.Nullable java.lang.String name) {
+  public void setName(@org.apache.thrift.annotation.Nullable java.lang.String name) {
     this.name = name;
-    return this;
   }
 
   public void unsetName() {
@@ -277,9 +274,8 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
     return this.description;
   }
 
-  public PermissionType setDescription(@org.apache.thrift.annotation.Nullable java.lang.String description) {
+  public void setDescription(@org.apache.thrift.annotation.Nullable java.lang.String description) {
     this.description = description;
-    return this;
   }
 
   public void unsetDescription() {
@@ -301,10 +297,9 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
     return this.createdTime;
   }
 
-  public PermissionType setCreatedTime(long createdTime) {
+  public void setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
     setCreatedTimeIsSet(true);
-    return this;
   }
 
   public void unsetCreatedTime() {
@@ -324,10 +319,9 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
     return this.updatedTime;
   }
 
-  public PermissionType setUpdatedTime(long updatedTime) {
+  public void setUpdatedTime(long updatedTime) {
     this.updatedTime = updatedTime;
     setUpdatedTimeIsSet(true);
-    return this;
   }
 
   public void unsetUpdatedTime() {
@@ -792,8 +786,6 @@ public class PermissionType implements org.apache.thrift.TBase<PermissionType, P
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 
