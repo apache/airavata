@@ -42,6 +42,7 @@ django_extra_settings:
     CPLEX_APPLICATION_ID: "cplex-solver_99721933-c9e4-4285-9ef1-d035ca82b541"
     DATASETS_DIR: "/data/gateway-user-data/simccs-datasets"
     JAVA_OPTIONS: "-Xmx16g"
+    CPLEX_HOSTNAME: "carbonate.uits.iu.edu"
   LOGIN_REDIRECT_URL: "simccs_maptool:home"
 
 vhost_servername: "simccs.org"
@@ -71,7 +72,7 @@ gateway_id: "iu-geology-survey"
 experiment_data_dir: "{{ user_data_dir }}/iu-geology-survey"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEuA1indjdczBXg2qrmD0bB0QfKq0u2q3o25DegTaty5LoogW+APEvXmwc2g6PzkM75MgfMsTErMQaQ3/PoElADQKg2/NePz05YWobn9zrPZFeRWfOqWMjFDx72cffHKBzgnahFDBlR/YJhf4IZJ+EOA1zMiMF2oZQmEYQtbQFhbKPF+jrScEQeuXVuXWSS2sKNAVKj3pY4kmi9kEOYELee/O6ghBUfrVhB95vDKJPgmQSuo3pgkLRdflTBSAQ54UchwjXi2RA9Xv0RXJF/JyyRGn6bSbRxYhsm5RJeiBVj4ua7p2b36rSYVqtVsTKEonx5kYdKzwyjJXWpjB2KtQp"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Kevin Ellett', 'kmellett@indiana.edu'),('Ashley Douds', 'adouds@iu.edu')]"
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'), ('Kevin Ellett', 'kmellett@indiana.edu'),('Ashley Douds', 'adouds@iu.edu'), ('Jun Wang','wang208@iu.edu')]"
 portal_title: "SimCCS Portal"
 
 django_google_analytics_tracking_id: "G-WM162V9Q9X"
