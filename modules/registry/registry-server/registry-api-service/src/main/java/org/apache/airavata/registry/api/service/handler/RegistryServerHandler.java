@@ -71,12 +71,14 @@ import org.apache.airavata.registry.core.repositories.replicacatalog.DataProduct
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 public class RegistryServerHandler implements RegistryService.Iface {
@@ -1263,8 +1265,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            // TODO: implementation to be done, temporarily returning empty list
             List<CpuUsage> cpuUsages = new ArrayList<>();
+            Timestamp fromTimeStamp = new Timestamp(fromTime);
+            Timestamp toTimestamp = new Timestamp(toTime);
+            if(fromTimeStamp.after(toTimestamp)) {
+                logger.error("fromTime must not be after toTime");
+                return cpuUsages;
+            }
+            cpuUsages = jobStatusRepository.getCpuUsages(gatewayId, fromTime, toTime);
             return cpuUsages;
             
         } catch (Exception e) {
