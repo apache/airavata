@@ -29,7 +29,7 @@
 
 <VirtualHost *:{{ httpd_default_http_port }}>
     ServerName {{ vhost_servername }}
-    
+
     ## Redirect all http traffic to https
     RewriteEngine On
     RewriteCond %{HTTPS} off
@@ -66,7 +66,15 @@
     </Directory>
     {% endfor %}
 
-    WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
+    WSGIDaemonProcess {{ vhost_servername }} \
+            display-name=%{GROUP} \
+            python-home={{ doc_root_dir }}/venv \
+            python-path={{ doc_root_dir }}/airavata-django-portal \
+            processes={{ django_wsgi_processes }} \
+            user={{ user }} \
+            group={{ group }} \
+            lang=en_US.UTF-8 \
+            locale=en_US.UTF-8
     WSGIProcessGroup {{ vhost_servername }}
 
     WSGIScriptAlias / {{ doc_root_dir }}/airavata-django-portal/django_airavata/wsgi.py
