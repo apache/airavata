@@ -35,5 +35,8 @@ class Command(BaseCommand):
 
         call_command('loaddata', fixture_file, verbosity=0)
         call_command('set_wagtail_site')
+        call_command('fix_page_revision_content_type')
 
-        print(f"{options['filename']} is loaded successfully....!")
+        self.stdout.write(
+            self.style.SUCCESS(f"{options['filename']} is loaded successfully....!")
+        )
