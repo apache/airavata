@@ -25,16 +25,16 @@ class Command(BaseCommand):
                 if site_root is None:
                     raise Exception("Could not find site root page!")
                 else:
-                    print(f"Setting root page to {site_root.title}")
+                    self.stdout.write(f"Setting root page to {site_root.title}")
                 Site.objects.create(
                     hostname=hostname,
                     is_default_site=True,
                     site_name=settings.PORTAL_TITLE,
                     root_page=site_root
                 )
-                print(f"Created Site object for domain {hostname}")
+                self.stdout.write(f"Created Site object for domain {hostname}")
         else:
-            print(f"Site object for domain {hostname} already exists")
+            self.stdout.write(f"Site object for domain {hostname} already exists")
 
     def find_root_airavata_page(self, pages):
         for page in pages:
