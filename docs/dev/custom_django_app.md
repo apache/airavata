@@ -33,7 +33,7 @@ pip install -U cookiecutter
     Django app template.
 
 ```
-cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
+cookiecutter https://github.com/apache/airavata-cookiecutter-django-app.git
 ```
 
 You'll need to answer some questions. The project name is the most important

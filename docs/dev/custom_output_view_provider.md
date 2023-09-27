@@ -42,7 +42,7 @@ pip install -U cookiecutter
     custom django app. Use cookiecutter to run the Airavata Django app template.
 
 ```
-cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
+cookiecutter https://github.com/apache/airavata-cookiecutter-django-app.git
 ```
 
 You'll need to answer some questions. The project name is the most important
@@ -65,7 +65,7 @@ See [Adding a Custom Django App](./custom_django_app.md) for more details.
 
 ```
 cd custom_django_app  # Or whatever you named your custom Django app
-cookiecutter https://github.com/machristie/cookiecutter-airavata-django-output-view.git -f
+cookiecutter https://github.com/apache/airavata-cookiecutter-django-output-view.git -f
 ```
 
 You'll need to answer some questions. For `project_name` give the name for your

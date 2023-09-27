@@ -557,7 +557,7 @@ pip install -U cookiecutter
 2. Use cookiecutter to run the Airavata Django app template.
 
 ```sh
-cookiecutter https://github.com/machristie/cookiecutter-airavata-django-app.git
+cookiecutter https://github.com/apache/airavata-cookiecutter-django-app.git
 ```
 
 You'll need to answer some questions. You can name it whatever you want, but to
@@ -722,7 +722,7 @@ Now we'll also generate and implement a **Gaussian Eigenvalues View** provider.
 2. Run the following cookiecutter template:
 
 ```sh
-cookiecutter https://github.com/machristie/cookiecutter-airavata-django-output-view.git -f
+cookiecutter https://github.com/apache/airavata-cookiecutter-django-output-view.git -f
 ```
 
 You'll need to answer some questions again. For `project_name` give **Gaussian
