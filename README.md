@@ -137,7 +137,7 @@ docker buildx create --name mybuilder --use
 then run
 
 ```
-docker buildx build --pull --platform linux/amd64,linux/arm64 -t TAG --push .
+docker buildx build --pull --platform linux/amd64,linux/arm64 -t apache/airavata-django-portal:latest --push .
 ```
 
 ## Documentation
