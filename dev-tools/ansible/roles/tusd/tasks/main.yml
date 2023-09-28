@@ -129,6 +129,14 @@
     backup: yes
   become: yes
 
+- name: copy clean up cron job to /etc/cron.daily
+  template:
+    src: "tus-temp-dir-cleanup.cron.j2"
+    dest: /etc/cron.daily/tus-temp-dir-cleanup.cron
+    mode: 0755
+  become: yes
+  become_user: root
+
 - name: start tusd
   service:
     name: tus
