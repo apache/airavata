@@ -1,0 +1,9 @@
+Setting Up Load Balancer for PGA server |
+----------------------------------------+
+
+The project involves setting up of a load balancer with PGA. Currenlty the portal is in PHP Larvel. However, this is going to be converted to
+Python Django. There is also a requirement to set up service discovery. One of the few options that we could go forward with it,
+
+        * HA Proxy as load balancer and Consol for service discovery
+        * Ribbon as load balancer and Eureka for service discovery
+
