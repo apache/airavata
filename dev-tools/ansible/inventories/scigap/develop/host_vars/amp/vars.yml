@@ -67,6 +67,9 @@ django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysingh
 portal_title: "Dev AMP Gateway"
 
 django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared:
+      path: /var/www/portals/gateway-user-data/shared
   TRECX:
     TRECX_APPLICATION_ID: "tRecX_70fc89f8-424f-4495-99e3-f3aa6a75f967"
 ...
