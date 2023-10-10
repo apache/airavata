@@ -104,7 +104,7 @@ public class AiravataAPIClient extends Connector {
             userConfigurationDataModel.setGroupResourceProfileId(groupResourceProfileId);
             userConfigurationDataModel.setStorageId(storageId);
             userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
-            userConfigurationDataModel.setAiravataAutoSchedule(true);
+            userConfigurationDataModel.setAiravataAutoSchedule(false);
             userConfigurationDataModel.setOverrideManualScheduledParams(true);
 
             return userConfigurationDataModel;
