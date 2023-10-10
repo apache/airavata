@@ -38,15 +38,16 @@ logger.setLevel(logging.INFO)
 
 
 class ExperimentHandlerUtil(object):
-    def __init__(self, configuration_file_location=None):
+    def __init__(self, configuration_file_location=None, access_token=None):
         self.configuration_file = configuration_file_location
         self.authenticator = Authenticator(configuration_file_location)
         self.gateway_conf = GatewaySettings(configuration_file_location)
         self.experiment_conf = ExperimentSettings(configuration_file_location)
         self.keycloak_conf = KeycloakConfiguration(configuration_file_location)
-        self.authenticator = Authenticator(self.configuration_file)
-        self.authenticator.authenticate_with_auth_code()
-        access_token = getpass.getpass('Copy paste the access token')
+        if not access_token:
+            self.authenticator = Authenticator(self.configuration_file)
+            self.authenticator.authenticate_with_auth_code()
+            access_token = getpass.getpass('Copy paste the access token')
         self.access_token = access_token
         decode = jwt.decode(access_token, options={"verify_signature": False})
         self.user_id = decode['preferred_username']
