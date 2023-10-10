@@ -300,7 +300,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
+    public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
@@ -322,33 +322,33 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             } else {
                 taskIdList.addAll(createAndSaveEnvSetupTask(registryClient, gatewayId, processModel));
                 taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
-                if (autoSchedule) {
-                    List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
-                    for (BatchQueue batchQueue : definedBatchQueues) {
-                        if (batchQueue.getQueueName().equals(userGivenQueueName)) {
-                            int maxRunTime = batchQueue.getMaxRunTime();
-                            if (maxRunTime < userGivenWallTime) {
-                                resourceSchedule.setWallTimeLimit(maxRunTime);
-                                // need to create more job submissions
-                                int numOfMaxWallTimeJobs = ((int) Math.floor(userGivenWallTime / maxRunTime));
-                                for (int i = 1; i <= numOfMaxWallTimeJobs; i++) {
-                                    taskIdList.addAll(
-                                            createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, maxRunTime));
-                                }
-                                int leftWallTime = userGivenWallTime % maxRunTime;
-                                if (leftWallTime != 0) {
-                                    taskIdList.addAll(
-                                            createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, leftWallTime));
-                                }
-                            } else {
-                                taskIdList.addAll(
-                                        createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
-                            }
-                        }
-                    }
-                } else {
+//                if (autoSchedule) {
+//                    List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
+//                    for (BatchQueue batchQueue : definedBatchQueues) {
+//                        if (batchQueue.getQueueName().equals(userGivenQueueName)) {
+//                            int maxRunTime = batchQueue.getMaxRunTime();
+//                            if (maxRunTime < userGivenWallTime) {
+//                                resourceSchedule.setWallTimeLimit(maxRunTime);
+//                                // need to create more job submissions
+//                                int numOfMaxWallTimeJobs = ((int) Math.floor(userGivenWallTime / maxRunTime));
+//                                for (int i = 1; i <= numOfMaxWallTimeJobs; i++) {
+//                                    taskIdList.addAll(
+//                                            createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, maxRunTime));
+//                                }
+//                                int leftWallTime = userGivenWallTime % maxRunTime;
+//                                if (leftWallTime != 0) {
+//                                    taskIdList.addAll(
+//                                            createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, leftWallTime));
+//                                }
+//                            } else {
+//                                taskIdList.addAll(
+//                                        createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
+//                            }
+//                        }
+//                    }
+//                } else {
                     taskIdList.addAll(createAndSaveSubmissionTasks(registryClient, gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
-                }
+//                }
                 taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             }
             // update process scheduling

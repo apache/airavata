@@ -1,0 +1,54 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+vhost_servername: "md.cybershuttle.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# Increase max upload size to 640MB
+django_file_upload_max_file_size_mb: 640
+
+## Keycloak related variables
+tenant_domain: "molecular-dynamics"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Molecular Dynamics Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "molecular-dynamics"
+experiment_data_dir: "{{ user_data_dir }}/molecular-dynamics"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCE1feXCJlzfxtkwqrwfHRXqmfR0tKyiGg/NXhYht9mO/WMvuSeKysByCBDnFO1PVF+qGJILOE7E9n6e9xOfTqpuLJsYi4UwLRKu7nGOsERj7ei+1+UpJDn/m8FoDoEInokrkzHeqFJ2NeTSTTU4SKrdvoRF9BWRQW3s3YDILwfh646dvm0wvuxBvif6O/t58svYwVH08MhDK8q06qWeYb21vqI4rk5jM9gObUUcdKuONpSCj9Q8VcnhelHCEu6oyQWcfxaD0k9/qGjEetv2Y/h2dGLSbXxadePkLOojHEAkStzHOYAqlgr0Ig/wav/PgyQBXAWJ4+FjnfVvJ++CCif"
+django_user_data_archive_max_age_days: 180
+
+admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+portal_title: "Molecular Dynamics Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...

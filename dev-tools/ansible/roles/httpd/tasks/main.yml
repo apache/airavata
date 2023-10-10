@@ -32,7 +32,7 @@
   ignore_errors: yes
 
 - name: create default ssl vhost certificate
-  command: openssl req -x509 -sha256 -newkey rsa:2048 -keyout {{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family]}} -out {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}} -days 1024 -nodes -subj '/CN={{ ansible_host }}'
+  command: openssl req -x509 -sha256 -newkey rsa:2048 -keyout {{ httpd_default_ssl_vhost_certificate_key_location[ansible_os_family]}} -out {{ httpd_default_ssl_vhost_certificate_location[ansible_os_family]}} -days 1024 -nodes -subj '/CN={{ inventory_hostname }}'
   become: yes
   when: default_vhost_ssl_cert_check is failed
 
@@ -45,6 +45,13 @@
   become: yes
   notify:
     - restart httpd
+
+- name: Enable default site in Apache (Debian)
+  command: a2ensite {{ httpd_default_conf_file_location[ansible_os_family] | basename | splitext | first }}
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "Debian"
 
 - name: copy modified ssl.conf file
   template: src={{ httpd_ssl_conf_template }} dest={{ httpd_ssl_conf_file_location[ansible_os_family] }} backup=yes

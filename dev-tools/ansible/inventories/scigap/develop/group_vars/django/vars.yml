@@ -22,13 +22,10 @@
 user: "pga"
 group: "pga"
 gateway_data_store_hostname: "web.dev.scigap.org"
+gateway_data_store_resource_id: "web.dev.scigap.org_ba01452f-44e5-4e03-b35f-756630539198"
 django_gateway_user_storages:
   - alias: "default"
-    storage_resource_id: "web.dev.scigap.org_ba01452f-44e5-4e03-b35f-756630539198"
-    options:
-      directory: "{{ experiment_data_dir }}"
-  - alias: "pgadev"
-    storage_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+    storage_resource_id: "{{ gateway_data_store_resource_id }}"
     options:
       directory: "{{ experiment_data_dir }}"
 django_wsgi_processes: 1
@@ -37,9 +34,11 @@ django_database_name: "django_{{ gateway_id }}"
 django_hidden_airavata_apps: "['django_airavata_dataparsers']"
 tusd_vhost_servername: "tus.dev.scigap.org"
 tusd_upload_dir: "{{real_user_data_dir}}/tus-temp-dir"
-airavata_django_git_branch: "develop"
+airavata_django_git_branch: "AIRAVATA-3698--Add-support-for-Python-3.11"
 cilogon_userinfo_url: "https://cilogon.org/oauth2/userinfo"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+
+django_user_data_archive_directory: "{{ user_data_dir }}/user-data-archives/{{ gateway_id }}"
 
 # Default email settings
 portal_email_host: "smtp.gmail.com"

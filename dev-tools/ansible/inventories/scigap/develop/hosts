@@ -13,7 +13,7 @@ db.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 apidev.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [keycloak]
-iamdev.scigap.org ansible_python_interpreter=/usr/bin/python3 public_ipv4=149.165.152.23
+iamdev.scigap.org ansible_python_interpreter=/usr/bin/python3 public_ipv4=149.165.153.195
 
 [helix]
 helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
@@ -35,9 +35,11 @@ cyberwater ansible_host=web.dev.scigap.org
 ; mines ansible_host=149.165.156.46
 amp ansible_host=149.165.153.222
 geo ansible_host=web.dev.scigap.org
-delta ansible_host=149.165.153.181
+; delta ansible_host=149.165.153.181
 ; custos-testdrive ansible_host=pgadev.scigap.org
 rnamake ansible_host=web.dev.scigap.org
+dev-ultrascan ansible_host=web.dev.scigap.org
+dev-gkeyll ansible_host=149.165.152.93
 
 [pga]
 scigap ansible_host=149.165.155.229

@@ -32,6 +32,7 @@ import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.commons.io.FileUtils;
@@ -59,7 +60,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
-        addMonitoringCommands(groovyMapData);
+        if (getTaskContext().getResourceJobManager().getResourceJobManagerType() != ResourceJobManagerType.HTCONDOR) {
+            addMonitoringCommands(groovyMapData);
+        }
 
         String scriptAsString = groovyMapData.loadFromFile(jobManagerConfiguration.getJobDescriptionTemplateName());
         logger.info("Generated job submission script : " + scriptAsString);
@@ -172,6 +175,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
         }
 
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+
+
 
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
 

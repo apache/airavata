@@ -1,5 +1,4 @@
 /**
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,20 +18,24 @@
  */
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 
+import javax.print.attribute.standard.JobState;
+
 public interface QueryConstants {
 
     String FIND_USER_PROFILE_BY_USER_ID = "SELECT u FROM UserProfileEntity u " +
             "where u.userId LIKE :" + UserProfile._Fields.USER_ID.getFieldName() + " " +
-            "AND u.gatewayId LIKE :"+ UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
+            "AND u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
     String FIND_ALL_USER_PROFILES_BY_GATEWAY_ID = "SELECT u FROM UserProfileEntity u " +
-            "where u.gatewayId LIKE :"+ UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
+            "where u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
     // Application Deployment Queries
     String FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
@@ -97,11 +100,11 @@ public interface QueryConstants {
     String FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
             "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID + " AND G.groupResourceProfileId IN :"
             + DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS;
-    String FIND_ALL_GROUP_COMPUTE_PREFERENCES = "SELECT GC FROM "+ GroupComputeResourcePrefEntity.class.getSimpleName() + " GC " +
+    String FIND_ALL_GROUP_COMPUTE_PREFERENCES = "SELECT GC FROM " + GroupComputeResourcePrefEntity.class.getSimpleName() + " GC " +
             "WHERE GC.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
-    String FIND_ALL_GROUP_BATCH_QUEUE_RESOURCE_POLICY = "SELECT BQ FROM "+ BatchQueueResourcePolicyEntity.class.getSimpleName() + " BQ " +
+    String FIND_ALL_GROUP_BATCH_QUEUE_RESOURCE_POLICY = "SELECT BQ FROM " + BatchQueueResourcePolicyEntity.class.getSimpleName() + " BQ " +
             "WHERE BQ.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
-    String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM "+ ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
+    String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM " + ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
             "WHERE CR.groupResourceProfileId LIKE :" + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
 
     String GET_ALL_USER_RESOURCE_PROFILE = "SELECT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP";
@@ -122,7 +125,7 @@ public interface QueryConstants {
             "WHERE P.owner LIKE :" + DBConstants.Project.OWNER;
 
     String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
-            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME + 
+            "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME +
             " AND E.gatewayId = :" + DBConstants.Experiment.GATEWAY_ID;
     String GET_EXPERIMENTS_FOR_PROJECT_ID = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
             "WHERE E.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID +
@@ -138,8 +141,10 @@ public interface QueryConstants {
 
     String GET_JOB_FOR_PROCESS_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.processId LIKE :" + DBConstants.Job.PROCESS_ID;
+
     String GET_JOB_FOR_TASK_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.taskId LIKE :" + DBConstants.Job.TASK_ID;
+
     String GET_JOB_FOR_JOB_ID = "SELECT J FROM " + JobEntity.class.getSimpleName() + " J " +
             "WHERE J.jobId LIKE :" + DBConstants.Job.JOB_ID;
 
@@ -155,6 +160,7 @@ public interface QueryConstants {
 
     String FIND_ALL_CHILD_DATA_PRODUCTS = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.parentProductUri LIKE :" + DBConstants.DataProduct.PARENT_PRODUCT_URI;
+
     String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.gatewayId LIKE :" + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" +
             DBConstants.DataProduct.OWNER_NAME + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
@@ -164,7 +170,9 @@ public interface QueryConstants {
 
     String FIND_STORAGE_RESOURCE = "SELECT DISTINCT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.hostName LIKE :" + DBConstants.StorageResource.HOST_NAME;
+
     String FIND_ALL_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR";
+
     String FIND_ALL_AVAILABLE_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
             "WHERE SR.enabled = TRUE";
 
@@ -173,9 +181,57 @@ public interface QueryConstants {
 
     String FIND_PARSING_TEMPLATES_FOR_APPLICATION_INTERFACE_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
             "WHERE PT.applicationInterface = :" + DBConstants.ParsingTemplate.APPLICATION_INTERFACE_ID;
+
     String FIND_ALL_PARSING_TEMPLATES_FOR_GATEWAY_ID = "SELECT PT FROM " + ParsingTemplateEntity.class.getSimpleName() + " PT " +
             "WHERE PT.gatewayId = :" + DBConstants.ParsingTemplate.GATEWAY_ID;
 
     String FIND_ALL_PARSERS_FOR_GATEWAY_ID = "SELECT P FROM " + ParserEntity.class.getSimpleName() + " P " +
             "WHERE P.gatewayId = :" + DBConstants.Parser.GATEWAY_ID;
+
+    String FIND_QUEUE_STATUS = "SELECT  L  FROM " + QueueStatusEntity.class.getSimpleName() + " L WHERE L.hostName LIKE :"
+            + DBConstants.QueueStatus.HOST_NAME + " AND L.queueName LIKE :" + DBConstants.QueueStatus.QUEUE_NAME +" ORDER BY L.time DESC";
+
+    String FIND_PROCESS_WITH_STATUS = "SELECT P FROM " + ProcessStatusEntity.class.getSimpleName() + " P " +
+            " where P.state = :" + DBConstants.ProcessStatus.STATE;
+
+    String GET_ALL_PROCESSES = "SELECT P FROM " + ProcessEntity.class.getSimpleName() +" P ";
+
+    String DELETE_JOB_NATIVE_QUERY = "DELETE FROM JOB WHERE JOB_ID = ?1 AND TASK_ID = ?2";
+
+
+    String FIND_JOB_COUNT_NATIVE_QUERY = "SELECT DISTINCT JS.JOB_ID FROM JOB_STATUS JS WHERE JS.JOB_ID IN " +
+            "(SELECT J.JOB_ID FROM JOB J where J.PROCESS_ID IN " +
+            "(SELECT P.PROCESS_ID FROM PROCESS P  where P.EXPERIMENT_ID IN " +
+            "(SELECT E.EXPERIMENT_ID FROM EXPERIMENT E where E.GATEWAY_ID= ?1))) " +
+            "AND JS.STATE = ?2 and JS.TIME_OF_STATE_CHANGE > now() - interval ?3 minute";
+
+    String FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY = "SELECT AVG(difference) FROM(select es.TIME_OF_STATE_CHANGE AS esTime1, ps.TIME_OF_STATE_CHANGE as psTime1, " +
+            " TIMESTAMPDIFF(MICROSECOND, es.TIME_OF_STATE_CHANGE, ps.TIME_OF_STATE_CHANGE) AS difference FROM EXPERIMENT_STATUS es, " +
+            " EXPERIMENT_STATUS ps WHERE es.EXPERIMENT_ID IN (select EXPERIMENT_ID FROM EXPERIMENT WHERE GATEWAY_ID= ?1) " +
+            " AND ps.EXPERIMENT_ID=es.EXPERIMENT_ID AND es.STATE='CREATED' AND (ps.STATE='SCHEDULED' OR (ps.STATE='LAUNCHED ' " +
+            " AND ps.EXPERIMENT_ID NOT IN(select ps1.EXPERIMENT_ID FROM EXPERIMENT_STATUS ps1 WHERE ps1.STATE='SCHEDULED'))" +
+            " AND ps.TIME_OF_STATE_CHANGE <= ALL(select ps1.TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS ps1 WHERE " +
+            " ps1.EXPERIMENT_ID=ps.EXPERIMENT_ID AND ps1.STATE='SCHEDULED'))  " +
+            " AND es.TIME_OF_STATE_CHANGE > now()-interval ?2 minute) abstract_t";
+
+    String FIND_AVG_TIME_QUEUED_NATIVE_QUERY = "SELECT AVG(difference) FROM (SELECT es.TIME_OF_STATE_CHANGE AS esTime1, ps.TIME_OF_STATE_CHANGE as psTime1, " +
+            " TIMESTAMPDIFF(MICROSECOND, es.TIME_OF_STATE_CHANGE, ps.TIME_OF_STATE_CHANGE) AS difference FROM EXPERIMENT_STATUS es," +
+            "  EXPERIMENT_STATUS ps WHERE es.EXPERIMENT_ID IN (select EXPERIMENT_ID FROM EXPERIMENT WHERE GATEWAY_ID=?1) " +
+            "  AND ps.EXPERIMENT_ID=es.EXPERIMENT_ID AND es.STATE='SCHEDULED' AND ps.STATE='LAUNCHED' " +
+            "  AND ps.TIME_OF_STATE_CHANGE >= ALL(SELECT ps1.TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS ps1 " +
+            "  WHERE ps1.EXPERIMENT_ID=ps.EXPERIMENT_ID AND ps1.STATE='LAUNCHED') AND " +
+            "  es.TIME_OF_STATE_CHANGE <= ALL(SELECT ps1.TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS ps1 " +
+            "  WHERE ps1.EXPERIMENT_ID=es.EXPERIMENT_ID AND ps1.STATE='SCHEDULED') AND es.TIME_OF_STATE_CHANGE > now()-interval ?2 minute)abstract_t";
+
+    String FIND_AVG_TIME_HELIX_NATIVE_QUERY = "SELECT AVG(difference) FROM(SELECT es.TIME_OF_STATE_CHANGE AS esTime1, ps.TIME_OF_STATE_CHANGE as psTime1, " +
+            " TIMESTAMPDIFF(MICROSECOND, es.TIME_OF_STATE_CHANGE, ps.TIME_OF_STATE_CHANGE) AS difference from EXPERIMENT_STATUS es, " +
+            " JOB_STATUS ps where es.EXPERIMENT_ID IN (SELECT EXPERIMENT_ID FROM EXPERIMENT WHERE GATEWAY_ID=?1) " +
+            " AND ps.JOB_ID IN(SELECT j.JOB_ID FROM JOB j where j.PROCESS_ID IN(SELECT DISTINCT p.PROCESS_ID  FROM PROCESS p " +
+            " WHERE p.EXPERIMENT_ID=es.EXPERIMENT_ID)) AND  ps.TASK_ID IN(SELECT j.TASK_ID FROM JOB j where j.PROCESS_ID IN(SELECT DISTINCT p.PROCESS_ID  FROM PROCESS p " +
+            "  WHERE p.EXPERIMENT_ID=es.EXPERIMENT_ID)) AND es.STATE='LAUNCHED' AND ps.STATE='SUBMITTED' " +
+            " AND ps.TIME_OF_STATE_CHANGE >= ALL(SELECT ps1.TIME_OF_STATE_CHANGE FROM JOB_STATUS ps1 WHERE ps1.JOB_ID=ps.JOB_ID " +
+            " AND ps1.STATE='SUBMITTED') AND es.TIME_OF_STATE_CHANGE >= ALL(SELECT es1.TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS es1 " +
+            " WHERE es1.EXPERIMENT_ID=es.EXPERIMENT_ID AND es1.STATE='LAUNCHED') AND  es.TIME_OF_STATE_CHANGE > now()-interval ?2 minute) abstract_t";
+
+
 }

@@ -41,6 +41,7 @@ auth_options:
 gateway_id: "cyberwater"
 experiment_data_dir: "{{ user_data_dir }}/django-cyberwater"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCgbggEQsHObu9N03L2mTOEwd6+U5w7j5VuYCkkbT8Cz/XNTDmdX/bNHlTlaWafm37mfmJznI6owl2XwoYWmV4etTs1OpPsffqDXkO7QUsDzvwWzWkqKjhkdD2e7pJ2dPdWrMQbDHdi7RnmapX4+JI042dqbJUd15xBgS0Jud/eVXGZsyeMDbGfMJ4m4ckV2ywSwvxAT5XFald5I25tdi7dwPA8g+hcIQNxRF+oBX5L+mepqTV5KNFQzmKFh1eREf8+yVkSU6NKLsZc2CSghquU58KKWtJbXEo9L31jcn0Jxxf3VjdchbLzAh3nVwoNhLfeYr5ox0YGpW6Xk3ROb14r"
+django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
 
 portal_title: "Beta Cyberwater Gateway"
 ...

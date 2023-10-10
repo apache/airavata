@@ -110,4 +110,9 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
     public String getBaseSubmitCommand() {
         return null;
     }
+
+    @Override
+    public String getLivenessCheckCommand(String queueName, String partition) {
+        return null;
+    }
 }

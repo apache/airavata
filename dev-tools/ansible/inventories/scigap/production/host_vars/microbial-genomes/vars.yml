@@ -25,11 +25,16 @@ airavata_django_extra_dependencies:
     editable: true
 
 #vhost_servername: "clades.microbial-genomes.org" #Changed on Miguel's request on 06/25/2020
-vhost_servername: "xsede.microbial-genomes.org"
+vhost_servername: "gateway.microbial-genomes.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.microbial-genomes.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.microbial-genomes.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.microbial-genomes.org/privkey.pem"
+
+vhost_server_redirect: "xsede.microbial-genomes.org"
+vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/cert.pem"
+vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/fullchain.pem"
+vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/xsede.microbial-genomes.org/privkey.pem"
 
 django_file_upload_max_file_size_mb: 10000
 
@@ -52,6 +57,7 @@ auth_options:
 gateway_id: "microbial-genomes"
 experiment_data_dir: "{{ user_data_dir }}/microbial-genomes"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCG/syNtrxrgfdHpxln172epFN36uztXhblac4uqNYW9Qlp8K5YI1MICxCW+HJu1mOkIvOLseYaZm1m8Vt7KwTvp/RP6iyZ8M/fWMPO+v9ZLjGupi/iDLA8JNfD0trpwXzW4PCFaqPG2+LtpzsfsI8Bx6UwFXbHKdEo5eC548Cc5EVkZ9xFEChCQHdUcxWI7zs7+S9wsAOY3Qbsrg/UtLAe4P8ZFxABSgBdirKusxdbw/0LgVhkj1aTKIE7n+7b7b11m4A1bzvsvhNLBlN+hRXG9ZiOOYExO1T5p3rX+HHIeUNAi1AMlc6KTa833ni0FWK3EYbGEwC1og6hSfl2ZGRp"
+django_user_data_archive_max_age_days: 90
 
 admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Luis Rodriguez Rojas', 'miguel.rodriguez@uibk.ac.at'),('Konstantinos Konstantinidis','kostas@ce.gatech.edu'),('Luis Rodriguez Rojas','lmrodriguezr@gmail.com')]"
 portal_title: "Microbial Genomes Gateway"

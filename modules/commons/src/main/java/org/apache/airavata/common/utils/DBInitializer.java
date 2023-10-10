@@ -60,7 +60,9 @@ public class DBInitializer {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize database for " + initScriptPrefix, e);
+            String message = "Failed to initialize database for " + initScriptPrefix;
+            logger.error(message, e);
+            throw new RuntimeException(message, e);
         } finally {
             if (conn != null) {
                 DBUtil.cleanup(conn);

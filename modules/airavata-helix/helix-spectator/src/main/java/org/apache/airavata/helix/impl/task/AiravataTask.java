@@ -97,6 +97,9 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name ="Force Run Task")
     private boolean forceRunTask = false;
 
+    @TaskParam(name ="Auto Schedule")
+    private boolean autoSchedule = false;
+
     protected TaskResult onSuccess(String message) {
         logger.info(message);
         if (!skipAllStatusPublish) {
@@ -183,6 +186,11 @@ public abstract class AiravataTask extends AbstractTask {
             }
 
             cleanup();
+
+            if (autoSchedule){
+                ProcessStatus requeueStatus = new ProcessStatus(ProcessState.REQUEUED);
+                saveAndPublishProcessStatus(requeueStatus);
+            }
 
             return onFail(errorMessage, fatal);
         } else {
@@ -596,6 +604,14 @@ public abstract class AiravataTask extends AbstractTask {
 
     public void setForceRunTask(boolean forceRunTask) {
         this.forceRunTask = forceRunTask;
+    }
+
+    public boolean isAutoSchedule() {
+        return autoSchedule;
+    }
+
+    public void setAutoSchedule(boolean autoSchedule) {
+        this.autoSchedule = autoSchedule;
     }
 
     // TODO this is inefficient. Try to use a connection pool

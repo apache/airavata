@@ -23,13 +23,15 @@
 - name: Install Airavata Django Portal prerequisites (Rocky 8)
   dnf: name={{ item }} state=latest
   with_items:
-    - python36
+    - python39
     - httpd-devel
-    - python36-devel
+    - python39-devel
     - mysql-devel
     - gcc
     - zlib-devel
     - openssl-devel
+    - make
+    - redhat-rpm-config
   become: yes
 
 - name: Create mod_wsgi directory
@@ -51,7 +53,7 @@
   become: yes
 
 - name: Configure mod_wsgi
-  command: ./configure --with-python=/usr/bin/python3
+  command: ./configure --with-python=/usr/bin/python3.9
   args:
     chdir: "{{ mod_wsgi_unarchive_dir }}"
     creates: "{{ mod_wsgi_unarchive_dir }}/Makefile"

@@ -22,8 +22,9 @@
 #gateway_data_store_resource_id: "js-168-166.jetstream-cloud.org_e86fd426-201a-461a-a0b4-4368af59ca28"
 #gateway_data_store_hostname: "js-168-166.jetstream-cloud.org"
 
-vhost_servername: "www.bayesprism.org"
-gateway_data_store_resource_id: "baysprism-gateway-host.BIO220088.projects.jetstream-cloud.org"
+vhost_servername: "django.bayesprism.org"
+httpd_selinux_mode: "permissive"
+gateway_data_store_resource_id: "baysprism-gateway-host.BIO220088.projects.jetstream-cloud.org_fce7b852-a3b7-4a6b-ba9d-48269a9133e0"
 real_user_data_dir: "/media/volume/sdb/gateway-user-data"
 # Keep user_data_dir same as it was on old VM
 user_data_dir: "/var/www/portals/gateway-user-data"
@@ -33,9 +34,9 @@ tusd_vhost_servername:
 
 
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/www.bayesprism.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/www.bayesprism.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/www.bayesprism.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 # Increase max upload size to 1GB
 django_file_upload_max_file_size_mb: 1024
@@ -55,10 +56,12 @@ auth_options:
 
 gateway_id: "bayesprism"
 experiment_data_dir: "{{ user_data_dir }}/bayesprism"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKu0jZiwCbADA1JeyU+HNQWsMmY+kgryiwt7C1Apt2CqECtFFOUW+uEvWDVFHqdzitAXUbo+0ZiEzdr4Qk045s+HdFe5R1Z9QhxNNSePJpmQldbW+h6NpdrdsXmHsocPcm6cHVbYNUCRvuTf9qy0cZBlYV09yXzWg2oSXRkcNMJuvjXCDQJk5VyxpQz8vk2Px/fEFkRikvACeotUaKvCjxVXc+h+Q4vRmKlrBOG9GGJRliqLEopu0jKVZ68QmfYANsD/i2/SOGn2XPR8wqTSUjcwlrG9avE7DwEPB2lynRvngklp/fUeBGFcujqEpdZ0A1dYqgV6Lrls/x3aFCw0i/"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKu0jZiwCbADA1JeyU+HNQWsMmY+kgryiwt7C1Apt2CqECtFFOUW+uEvWDVFHqdzitAXUbo+0ZiEzdr4Qk045s+HdFe5R1Z9QhxNNSePJpmQldbW+h6NpdrdsXmHsocPcm6cHVbYNUCRvuTf9qy0cZBlYV09yXzWg2oSXRkcNMJuvjXCDQJk5VyxpQz8vk2Px/fEFkRikvACeotUaKvCjxVXc+h+Q4vRmKlrBOG9GGJRliqLEopu0jKVZ68QmfYANsD/i2/SOGn2XPR8wqTSUjcwlrG9avE7DwEPB2lynRvngklp/fUeBGFcujqEpdZ0A1dYqgV6Lrls/x3aFCw0i/"
 
 admin_emails: "[('Eroma Abeysinghe', 'eabeysin@iu.edu'),('Tinyi Chu', 'ChuT@mskcc.org'),('Zhong Wang', 'zw355@cornell.edu')]"
 portal_title: "BayesPrism Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
+django_extra_settings:
+  LOGOUT_REDIRECT_URL: "https://www.bayesprism.org/"
 ...

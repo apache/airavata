@@ -43,7 +43,7 @@
 
 <VirtualHost *:{{ httpd_default_http_port }}>
     ServerName {{ vhost_servername }}
-    
+
     ## Redirect all http traffic to https
     RewriteEngine On
     RewriteCond %{HTTPS} off
@@ -61,14 +61,14 @@
 
     <Directory {{ doc_root_dir }}/static>
     Require all granted
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript image/svg+xml
 
     # Force browser to revalidate cached static resources
     Header set Cache-Control "no-cache"
     # Workaround for ETag bug: https://bz.apache.org/bugzilla/show_bug.cgi?id=45023#c22
     RequestHeader edit "If-None-Match" '^"((.*)-gzip)"$' '"$1", "$2"'
     # If file has a content hash, cache for a year
-    <FilesMatch "\.[0-9a-f]{8}\.(css|js)$">
+    <FilesMatch "\.[0-9a-f]{8}\.(css|js|svg)$">
         Header set Cache-Control "max-age=31536000, public"
     </FilesMatch>
     </Directory>
@@ -99,7 +99,15 @@
     {% endif %}
     {% endfor %}
 
-    WSGIDaemonProcess {{ vhost_servername }} display-name=%{GROUP} python-home={{ doc_root_dir }}/venv python-path={{ doc_root_dir }}/airavata-django-portal processes={{ django_wsgi_processes }} user={{ user }} group={{ group }}
+    WSGIDaemonProcess {{ vhost_servername }} \
+            display-name=%{GROUP} \
+            python-home={{ django_venv_dir }} \
+            python-path={{ doc_root_dir }}/airavata-django-portal \
+            processes={{ django_wsgi_processes }} \
+            user={{ user }} \
+            group={{ group }} \
+            lang=en_US.UTF-8 \
+            locale=en_US.UTF-8
     WSGIProcessGroup {{ vhost_servername }}
 
     WSGIScriptAlias / {{ doc_root_dir }}/airavata-django-portal/django_airavata/wsgi.py

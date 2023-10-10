@@ -26,41 +26,40 @@ gf7.ucs.indiana.edu ansible_user=root
 
 [django]
 ampgateway ansible_host=156.56.104.84
-csbglsu ansible_host=156.56.104.84
+# csbglsu ansible_host=156.56.104.84
 # disable distantreader deploy
 # distantreader ansible_host=156.56.104.84
-epwgateway ansible_host=156.56.104.84
+# epwgateway ansible_host=156.56.104.84
 georgiastate ansible_host=156.56.104.84
-hubzero ansible_host=156.56.104.84
+# hubzero ansible_host=156.56.104.84
 interactwel ansible_host=156.56.104.84
-iugateway ansible_host=156.56.104.84
-kentucky ansible_host=156.56.104.84
-mines ansible_host=156.56.104.84
-nanoconfinement ansible_host=156.56.104.84
-nanoshape ansible_host=156.56.104.84
-ncsaindustry ansible_host=156.56.104.84
-newmexicostate ansible_host=156.56.104.84
+# iugateway ansible_host=156.56.104.84
+# kentucky ansible_host=156.56.104.84
+# mines ansible_host=156.56.104.84
+# nanoconfinement ansible_host=156.56.104.84
+# nanoshape ansible_host=156.56.104.84
+# ncsaindustry ansible_host=156.56.104.84
+# newmexicostate ansible_host=156.56.104.84
 nexttdb ansible_host=156.56.104.84
 # oscer ansible_host=156.56.104.84
-phasta ansible_host=156.56.104.84
-r-hpc ansible_host=156.56.104.84
-saverx ansible_host=156.56.104.84
+# phasta ansible_host=156.56.104.84
+# r-hpc ansible_host=156.56.104.84
+# saverx ansible_host=156.56.104.84
 sdstate ansible_host=156.56.104.84
 seagrid ansible_host=156.56.104.84
 searchsra ansible_host=156.56.104.84
 snowvision ansible_host=156.56.104.84
-# disable usd/southdakota until we can get valid SSL certificate
-# southdakota ansible_host=156.56.104.84
+southdakota ansible_host=156.56.104.84
 testdrive ansible_host=156.56.104.84
-uab ansible_host=156.56.104.84
-wvsu ansible_host=156.56.104.84
+#uab ansible_host=156.56.104.84
+#wvsu ansible_host=156.56.104.84
 pace-gatech ansible_host=156.56.104.84
-smaltr ansible_host=156.56.104.84
-toppic ansible_host=156.56.104.84
+#smaltr ansible_host=156.56.104.84
+#toppic ansible_host=156.56.104.84
 microbial-genomes ansible_host=156.56.104.84
-v4i ansible_host=156.56.104.84
+#v4i ansible_host=156.56.104.84
 physicell ansible_host=156.56.104.84
-pathogenomics ansible_host=156.56.104.84
+# pathogenomics ansible_host=156.56.104.84
 bcbportal ansible_host=156.56.104.84
 lrose ansible_host=156.56.104.84
 tsunami ansible_host=156.56.104.84
@@ -69,25 +68,35 @@ covid-geoact ansible_host=156.56.104.84
 immune ansible_host=156.56.104.84
 regsnps ansible_host=156.56.104.84
 global-flood ansible_host=156.56.104.84
-louisiana-state ansible_host=156.56.104.84
-hicops-deepsnap ansible_host=156.56.104.84
+# louisiana-state ansible_host=156.56.104.84
+# hicops-deepsnap ansible_host=156.56.104.84
 ultrascan ansible_host=156.56.104.84
-unggateway ansible_host=156.56.104.84
-ucmerced ansible_host=156.56.104.84
-deeppdb ansible_host=156.56.104.84
+#unggateway ansible_host=156.56.104.84
+# ucmerced ansible_host=156.56.104.84
+# deeppdb ansible_host=156.56.104.84
 ehtgateway ansible_host=156.56.104.84
+neuroscience-cybershuttle ansible_host=156.56.104.84
+ai-confluence ansible_host=156.56.104.84
+molecular-dynamics ansible_host=156.56.104.84
+nasa-veda ansible_host=156.56.104.84
+
+# smiles server
+smiles ansible_host=scigap13.sciencegateways.iu.edu ansible_user=root
+
+# vlab-plasmasciene server
+vlab-plasmascience ansible_host=149.165.172.104 ansible_user=exouser
 
 # Baysprism Jetstream2 server
 bayesprism ansible_host=149.165.155.90 ansible_user=exouser
 
-# dreg jetstream server
-dreg ansible_host=149.165.154.48 ansible_user=exouser
+# dreg jetstream server The old is 149.165.154.48
+dreg ansible_host=149.165.171.97 ansible_user=exouser
 
 # futurewater jetstream server
-futurewater ansible_host=149.165.154.245 ansible_user=exouser
+futurewater ansible_host=149.165.154.212 ansible_user=exouser
 
 # Delta Jetstream server
-delta ansible_host=149.165.153.181 ansible_user=exouser
+# delta ansible_host=149.165.153.181 ansible_user=exouser
 
 # Container-Tutorial Jetstream server
 # This JS1 VM no longer exists
@@ -97,6 +106,6 @@ delta ansible_host=149.165.153.181 ansible_user=exouser
 simccs ansible_host=scigap11.sciencegateways.iu.edu ansible_user=root
 
 # simvascular server
-simvascular ansible_host=simvascular.stanford.edu ansible_user=gateway
+# simvascular ansible_host=simvascular.stanford.edu ansible_user=gateway
 # we can remove this once the migration is complete
 simvascular_old ansible_host=156.56.104.84

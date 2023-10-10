@@ -162,7 +162,7 @@
   pip:
     name: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
-    virtualenv_command: "{{ python_virtualenv_command }}"
+    virtualenv_python: "{{ python_virtualenv_python }}"
     chdir: "{{ airavata_django_checkout }}"
     state: latest
   become: yes
@@ -176,7 +176,7 @@
   pip:
     requirements: "{{ item }}"
     virtualenv: "{{ django_venv_dir }}"
-    virtualenv_command: "{{ python_virtualenv_command }}"
+    virtualenv_python: "{{ python_virtualenv_python }}"
     chdir: "{{ airavata_django_checkout }}"
   become: yes
   become_user: "{{user}}"
@@ -298,6 +298,18 @@
     - restart httpd
   when: not vhost_ssl
 
+- name: check if SSL certificate exists
+  stat:
+    path: "{{ ssl_certificate_file }}"
+  register: stat_ssl_cert_result
+  become: yes
+  when: vhost_ssl
+
+- name: generate certificate if it doesn't exist
+  command: certbot --apache --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ vhost_servername }} certonly
+  become: yes
+  when: vhost_ssl and not stat_ssl_cert_result.stat.exists
+
 - name: copy SSL enabled virtual host config file
   template: src={{ django_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
@@ -351,3 +363,12 @@
     create: yes
   become: yes
   when: vhost_ssl and vhost_server_redirect_ssl_certificate_file is defined
+
+- name: Install archive_user_data.cron script
+  template:
+    src: archive_user_data.cron.j2
+    dest: /etc/cron.daily/{{ gateway_id }}-archive_user_data.cron
+    mode: 0755
+  become: yes
+  become_user: root
+  when: django_user_data_archive_max_age_days and django_user_data_archive_max_age_days|int > 0

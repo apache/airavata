@@ -26,15 +26,19 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobStatusPK;
+import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JobStatusRepository extends ExpCatAbstractRepository<JobStatus, JobStatusEntity, JobStatusPK> {
     private final static Logger logger = LoggerFactory.getLogger(JobStatusRepository.class);
@@ -104,4 +108,9 @@ public class JobStatusRepository extends ExpCatAbstractRepository<JobStatus, Job
     }
 
 
+    public List<JobStatus> getDistinctListofJobStatus(String gatewayId,String status, double time){
+        JobStatusRepository jobStatusRepository = new JobStatusRepository();
+        return  jobStatusRepository.selectWithNativeQuery(QueryConstants.FIND_JOB_COUNT_NATIVE_QUERY,
+                gatewayId,status,String.valueOf(time));
+    }
 }

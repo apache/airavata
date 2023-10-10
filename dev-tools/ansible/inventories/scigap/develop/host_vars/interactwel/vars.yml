@@ -25,11 +25,10 @@ ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-interactwel_django_app_branch: "api-integration"
-# Disable installing the interactwel app until we can fix the install
-# airavata_django_extra_dependencies:
-#   - name: git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
-#     editable: true
+interactwel_django_app_branch: "master"
+airavata_django_extra_dependencies:
+  - name: git+https://github.com/InterACTWEL/interactactwel-django-app.git@{{ interactwel_django_app_branch }}#egg=interactwel-django-app
+    editable: true
 
 django_extra_settings:
   LOGIN_REDIRECT_URL: "/interactwel/"

@@ -40,7 +40,7 @@ namespace apache { namespace airavata { namespace model { namespace scheduling {
 class ComputationalResourceSchedulingModel;
 
 typedef struct _ComputationalResourceSchedulingModel__isset {
-  _ComputationalResourceSchedulingModel__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), totalPhysicalMemory(false), chessisNumber(false), staticWorkingDir(false), overrideLoginUserName(false), overrideScratchLocation(false), overrideAllocationProjectNumber(false) {}
+  _ComputationalResourceSchedulingModel__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), totalPhysicalMemory(false), chessisNumber(false), staticWorkingDir(false), overrideLoginUserName(false), overrideScratchLocation(false), overrideAllocationProjectNumber(false), mGroupCount(false) {}
   bool resourceHostId :1;
   bool totalCPUCount :1;
   bool nodeCount :1;
@@ -53,6 +53,7 @@ typedef struct _ComputationalResourceSchedulingModel__isset {
   bool overrideLoginUserName :1;
   bool overrideScratchLocation :1;
   bool overrideAllocationProjectNumber :1;
+  bool mGroupCount :1;
 } _ComputationalResourceSchedulingModel__isset;
 
 class ComputationalResourceSchedulingModel : public virtual ::apache::thrift::TBase {
@@ -60,7 +61,7 @@ class ComputationalResourceSchedulingModel : public virtual ::apache::thrift::TB
 
   ComputationalResourceSchedulingModel(const ComputationalResourceSchedulingModel&);
   ComputationalResourceSchedulingModel& operator=(const ComputationalResourceSchedulingModel&);
-  ComputationalResourceSchedulingModel() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), totalPhysicalMemory(0), chessisNumber(), staticWorkingDir(), overrideLoginUserName(), overrideScratchLocation(), overrideAllocationProjectNumber() {
+  ComputationalResourceSchedulingModel() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), totalPhysicalMemory(0), chessisNumber(), staticWorkingDir(), overrideLoginUserName(), overrideScratchLocation(), overrideAllocationProjectNumber(), mGroupCount(0) {
   }
 
   virtual ~ComputationalResourceSchedulingModel() throw();
@@ -76,6 +77,7 @@ class ComputationalResourceSchedulingModel : public virtual ::apache::thrift::TB
   std::string overrideLoginUserName;
   std::string overrideScratchLocation;
   std::string overrideAllocationProjectNumber;
+  int32_t mGroupCount;
 
   _ComputationalResourceSchedulingModel__isset __isset;
 
@@ -102,6 +104,8 @@ class ComputationalResourceSchedulingModel : public virtual ::apache::thrift::TB
   void __set_overrideScratchLocation(const std::string& val);
 
   void __set_overrideAllocationProjectNumber(const std::string& val);
+
+  void __set_mGroupCount(const int32_t val);
 
   bool operator == (const ComputationalResourceSchedulingModel & rhs) const
   {
@@ -152,6 +156,10 @@ class ComputationalResourceSchedulingModel : public virtual ::apache::thrift::TB
     if (__isset.overrideAllocationProjectNumber != rhs.__isset.overrideAllocationProjectNumber)
       return false;
     else if (__isset.overrideAllocationProjectNumber && !(overrideAllocationProjectNumber == rhs.overrideAllocationProjectNumber))
+      return false;
+    if (__isset.mGroupCount != rhs.__isset.mGroupCount)
+      return false;
+    else if (__isset.mGroupCount && !(mGroupCount == rhs.mGroupCount))
       return false;
     return true;
   }

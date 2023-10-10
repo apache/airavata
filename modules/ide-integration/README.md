@@ -56,12 +56,14 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
   ```
   docker-compose up
   ```
+> **_NOTE:_**  you may need to run ```docker compose up```  i.e., without hyphen if you are running docker compose version 2. Read docker compose migration documentation for more details.
 
 * Apply any database migrations. Go to src/main/containers directory and run
 
   ```
-  cat ./database_scripts/init/*-migrations.sql | docker exec -i resources_db_1 mysql -p123456
+  cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 mysql -p123456
   ```
+> **_NOTE:_**  words in container name is separated by underscore in docker compose version 1 (for example containers_db_1).
 
 * Wait until all the services come up. This will initialize all utilities required to start Airavata server
 
