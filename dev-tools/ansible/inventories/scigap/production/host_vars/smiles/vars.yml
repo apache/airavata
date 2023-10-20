@@ -44,6 +44,10 @@ django_file_upload_max_file_size_mb: 2000
 django_extra_settings:
   CELERY_BROKER_URL: "redis://localhost:6379"
   CELERY_RESULT_BACKEND: "redis://localhost:6379"
+  LOGIN_REDIRECT_URL: "/smiles/home/lit-dp-list"
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared:
+      path: /var/www/portals/gateway-user-data/smiles/Shared
 
 ## Keycloak related variables
 tenant_domain: "smiles"
