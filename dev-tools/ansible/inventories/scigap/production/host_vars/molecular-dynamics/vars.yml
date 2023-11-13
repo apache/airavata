@@ -27,7 +27,7 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullch
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 # Increase max upload size to 640MB
-django_file_upload_max_file_size_mb: 640
+django_file_upload_max_file_size_mb: 5000
 
 ## Keycloak related variables
 tenant_domain: "molecular-dynamics"
