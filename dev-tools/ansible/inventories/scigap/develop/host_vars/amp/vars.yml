@@ -62,11 +62,14 @@ django_user_data_archive_max_age_days: "{{ 2 * 365 }}"
 
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCMuKQoD6K1DpgHyoY2/eyLMNc5UdupqWqBFEnSO24izMXeOqTityLDRrVZGMLvV/t9wZEig1dhg21Ic5wRSHpCra2BXRn+WjgVdR20EGWPkuFYoDyeMyp8YKjaf1+Fcz+2H52wnrC0RFOHExgB3DWkRSEGghyyIXSBPMxrpS+f0FAfTc36i+EQq2UC0n1xvcdrtGjCKv56mafiKgFfYHbFw7Y7eJxhDCYlRYnzeTJBxWATu9tMGKZgGOxdDXR5hjTvqnpMpk3QpvY/BzAYpCIXxZbb7C41vHaGA9kabjuSlQG4nd+YAxiPrUZdExQNHUE9SCPFQMd/FxsNGdf7YCGH"
 
-django_error_emails: "[('Marcus Christie', 'machrist@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Dinuka De Silva', 'dinsdesi@iu.edu')]"
+django_error_emails: "[('Eroma Abeysinghe', 'eabeysin@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Tom Wolcott', 'wolcott.tomj@gmail.com')]"
 
 portal_title: "Dev AMP Gateway"
 
 django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    shared:
+      path: /var/www/portals/gateway-user-data/shared
   TRECX:
     TRECX_APPLICATION_ID: "tRecX_70fc89f8-424f-4495-99e3-f3aa6a75f967"
 ...
