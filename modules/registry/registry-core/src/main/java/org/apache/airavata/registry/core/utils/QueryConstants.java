@@ -205,22 +205,15 @@ public interface QueryConstants {
             "(SELECT E.EXPERIMENT_ID FROM EXPERIMENT E where E.GATEWAY_ID= ?1))) " +
             "AND JS.STATE = ?2 and JS.TIME_OF_STATE_CHANGE > now() - interval ?3 minute";
 
-    String FIND_JOB_STATUS_STARTED_BEFORE_TIME = "SELECT * FROM JOB_STATUS JS WHERE JS.JOB_ID IN  " +
-                    "(SELECT J.JOB_ID FROM JOB J where J.PROCESS_ID IN " +
-                    "(SELECT P.PROCESS_ID FROM PROCESS P  where P.EXPERIMENT_ID IN " +
-                    "(SELECT E.EXPERIMENT_ID FROM EXPERIMENT E where E.GATEWAY_ID= ?1))) " +
-                    "AND JS.STATE = ?2 and JS.TIME_OF_STATE_CHANGE <= ?3";
-
-    String FIND_JOB_STATUS_FINISHED_AFTER_TIME = "SELECT * FROM JOB_STATUS JS WHERE JS.JOB_ID IN  " +
-                    "(SELECT J.JOB_ID FROM JOB J where J.PROCESS_ID IN " +
-                    "(SELECT P.PROCESS_ID FROM PROCESS P  where P.EXPERIMENT_ID IN " +
-                    "(SELECT E.EXPERIMENT_ID FROM EXPERIMENT E where E.GATEWAY_ID= ?1))) " +
-                    "AND (JS.STATE = ?2 OR JS.STATE = ?3 OR JS.STATE = ?4) and JS.TIME_OF_STATE_CHANGE >= ?5";
+    String FIND_JOBS_IN_A_GATEWAY_EXECUTED_WITHIN_TIME_RANGE = "select j.* from JOB j" + 
+                    "inner join PROCESS p on p.PROCESS_ID = j.PROCESS_ID" + 
+                    "inner join EXPERIMENT e on e.EXPERIMENT_ID = p.EXPERIMENT_ID" + 
+                    "where e.GATEWAY_ID = ?1" + 
+                    "and exists (select 1 from JOB_STATUS js where js.JOB_ID = j.JOB_ID and js.STATE = ?4 and js.TIME_OF_STATE_CHANGE <= ?3)" + 
+                    "and exists (select 1 from JOB_STATUS js where js.JOB_ID = j.JOB_ID and (js.STATE = ?5 or js.STATE = ?6 or js.STATE = ?7) and js.TIME_OF_STATE_CHANGE >= ?2)";
 
     String FIND_EXPERIMENT_WITH_JOB_ID = "SELECT * FROM EXPERIMENT E WHERE E.EXPERIMENT_ID IN " +
-                    "(SELECT P.EXPERIMENT_ID FROM JOB J JOIN J.task T JOIN T.process P WHERE J.JOB_ID = ?1)";
-
-    String FIND_TOTAL_CPU_COUNT_WITH_EXPERIMENT_ID = "SELECT U.TOTAL_CPU_COUNT FROM EXPERIMENT E JOIN E.userConfigurationData U WHERE E.EXPERIMENT_ID = ?1";
+            "(SELECT P.EXPERIMENT_ID FROM JOB J JOIN J.task T JOIN T.process P WHERE J.JOB_ID = ?1)";
 
     String FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY = "SELECT AVG(difference) FROM(select es.TIME_OF_STATE_CHANGE AS esTime1, ps.TIME_OF_STATE_CHANGE as psTime1, " +
             " TIMESTAMPDIFF(MICROSECOND, es.TIME_OF_STATE_CHANGE, ps.TIME_OF_STATE_CHANGE) AS difference FROM EXPERIMENT_STATUS es, " +

@@ -20,12 +20,9 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.model.experiment.CpuUsage;
-import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobStatusPK;
@@ -39,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,52 +112,5 @@ public class JobStatusRepository extends ExpCatAbstractRepository<JobStatus, Job
         JobStatusRepository jobStatusRepository = new JobStatusRepository();
         return  jobStatusRepository.selectWithNativeQuery(QueryConstants.FIND_JOB_COUNT_NATIVE_QUERY,
                 gatewayId,status,String.valueOf(time));
-    }
-
-    public List<CpuUsage> getCpuUsages(String gatewayId, long fromTime, long toTime) {
-        JobStatusRepository jobStatusRepository = new JobStatusRepository();
-        List<CpuUsage> cpuUsages = new ArrayList<>();
-        List<JobStatus> startedJobStatusList = jobStatusRepository.selectWithNativeQuery(
-                QueryConstants.FIND_JOB_STATUS_STARTED_BEFORE_TIME, gatewayId, JobState.ACTIVE.name(),
-                String.valueOf(toTime));
-        ;
-        List<JobStatus> finishedJobStatusList = jobStatusRepository.selectWithNativeQuery(
-                QueryConstants.FIND_JOB_STATUS_FINISHED_AFTER_TIME, gatewayId, JobState.COMPLETE.name(),
-                JobState.FAILED.name(), JobState.CANCELED.name(), String.valueOf(fromTime));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        for (JobStatus startedJobStatus : startedJobStatusList) {
-            for (JobStatus finishedJobStatus : finishedJobStatusList) {
-                JobStatusEntity startedJobStatusEntity = mapper.map(startedJobStatus, JobStatusEntity.class);
-                JobStatusEntity finishedJobStatusEntity = mapper.map(finishedJobStatus, JobStatusEntity.class);
-                if (startedJobStatusEntity.getJobId() == finishedJobStatusEntity.getJobId()) {
-                    String jobId = startedJobStatusEntity.getJobId();
-                    List<ExperimentModel> experiments = (new ExperimentRepository())
-                            .selectWithNativeQuery(QueryConstants.FIND_EXPERIMENT_WITH_JOB_ID, jobId);
-                    if (!experiments.isEmpty()) {
-                        ExperimentModel experiment = experiments.get(0);
-                        List<Integer> res = (new ExperimentRepository().selectWithNativeQuery(
-                                QueryConstants.FIND_TOTAL_CPU_COUNT_WITH_EXPERIMENT_ID, experiment.getExperimentId()));
-                        if (!res.isEmpty()) {
-                            CpuUsage cpuUsage = new CpuUsage();
-                            cpuUsage.setExperimentId(experiment.getExperimentId());
-                            cpuUsage.setExecutionId(experiment.getExecutionId());
-                            cpuUsage.setUserName(experiment.getUserName());
-                            Timestamp fromTimestamp = new Timestamp(fromTime);
-                            Timestamp toTimestamp = new Timestamp(toTime);
-                            Timestamp startTime = startedJobStatusEntity.getTimeOfStateChange().after(fromTimestamp)
-                                    ? startedJobStatusEntity.getTimeOfStateChange()
-                                    : fromTimestamp;
-                            Timestamp finishTime = finishedJobStatusEntity.getTimeOfStateChange().before(toTimestamp)
-                                    ? finishedJobStatusEntity.getTimeOfStateChange()
-                                    : toTimestamp;
-                            long duration = finishTime.getTime() - startTime.getTime(); // milliseconds
-                            int totalCPUCount = res.get(0);
-                            cpuUsage.setCpuHours(duration * totalCPUCount / (1000 * 60 * 60));
-                        }
-                    }
-                }
-            }
-        }
-        return cpuUsages;
     }
 }

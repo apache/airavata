@@ -71,7 +71,6 @@ import org.apache.airavata.registry.core.repositories.replicacatalog.DataProduct
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -1272,7 +1271,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("fromTime must not be after toTime");
                 return cpuUsages;
             }
-            cpuUsages = jobStatusRepository.getCpuUsages(gatewayId, fromTime, toTime);
+            cpuUsages = jobRepository.getCpuUsages(gatewayId, fromTime, toTime);
             return cpuUsages;
             
         } catch (Exception e) {

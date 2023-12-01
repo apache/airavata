@@ -21,9 +21,13 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.experiment.CpuUsage;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
+import org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -33,6 +37,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -160,6 +165,50 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
         executeWithNativeQuery(QueryConstants.DELETE_JOB_NATIVE_QUERY,jobModel.getJobId(),jobModel.getTaskId());
     }
 
-
-
+    public List<CpuUsage> getCpuUsages(String gatewayId, long fromTime, long toTime) {
+        JobRepository jobRepository = new JobRepository();
+        List<CpuUsage> cpuUsages = new ArrayList<>();
+        List<JobEntity> jobsExecutedWithinTimeRange = jobRepository.selectWithNativeQuery(
+                QueryConstants.FIND_JOBS_IN_A_GATEWAY_EXECUTED_WITHIN_TIME_RANGE, gatewayId, String.valueOf(fromTime),
+                String.valueOf(toTime), JobState.ACTIVE.name(), JobState.COMPLETE.name(), JobState.FAILED.name(),
+                JobState.CANCELED.name());
+        jobsExecutedWithinTimeRange.forEach(job -> {
+            List<ExperimentModel> experiments = (new ExperimentRepository())
+                    .selectWithNativeQuery(QueryConstants.FIND_EXPERIMENT_WITH_JOB_ID, job.getJobId());
+            if (!experiments.isEmpty()) {
+                ExperimentModel experiment = experiments.get(0);
+                CpuUsage cpuUsage = new CpuUsage();
+                cpuUsage.setExperimentId(experiment.getExperimentId());
+                cpuUsage.setExecutionId(experiment.getExecutionId());
+                cpuUsage.setUserName(experiment.getUserName());
+                Timestamp inputFromTimestamp = new Timestamp(fromTime);
+                Timestamp inputToTimestamp = new Timestamp(toTime);
+                List<JobStatusEntity> jobStatuses = job.getJobStatuses();
+                Timestamp jobStarTimestamp = null, jobFinishTimestamp = null;
+                for (int index = 0; index < jobStatuses.size(); index++) {
+                    JobStatusEntity jobStatus = jobStatuses.get(index);
+                    if (jobStatus.getJobState().equals(JobState.ACTIVE.name()))
+                        jobStarTimestamp = jobStatus.getTimeOfStateChange();
+                    if (jobStatus.getJobState().equals(JobState.COMPLETE.name())
+                            || jobStatus.getJobState().equals(JobState.FAILED.name())
+                            || jobStatus.getJobState().equals(JobState.CANCELED.name()))
+                        jobFinishTimestamp = jobStatus.getTimeOfStateChange();
+                }
+                if (jobStarTimestamp != null && jobFinishTimestamp != null) {
+                    Timestamp startTime = jobStarTimestamp.after(inputFromTimestamp)
+                            ? jobStarTimestamp
+                            : inputFromTimestamp;
+                    Timestamp finishTime = jobFinishTimestamp.before(inputToTimestamp)
+                            ? jobFinishTimestamp
+                            : inputToTimestamp;
+                    long duration = finishTime.getTime() - startTime.getTime(); // milliseconds
+                    int totalCPUCount = experiment.getUserConfigurationData().getComputationalResourceScheduling()
+                            .getMGroupCount();
+                    cpuUsage.setCpuHours(duration * totalCPUCount / (1000 * 60 * 60));
+                    cpuUsages.add(cpuUsage);
+                }
+            }
+        });
+        return cpuUsages;
+    }
 }
