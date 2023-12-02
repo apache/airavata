@@ -214,6 +214,20 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         """
         pass
 
+    def getGroupsFilteredByCreationDate(self, domainId, fromTime, toTime, offset, limit):
+        """
+        <p>API method to get groups in a domainId filtered by creation date.</p>
+
+        Parameters:
+         - domainId
+         - fromTime
+         - toTime
+         - offset
+         - limit
+
+        """
+        pass
+
     def addUsersToGroup(self, domainId, userIds, groupId):
         """
         <p>API method to add list of users to a group</p>
@@ -1348,6 +1362,48 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
         if result.success is not None:
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "getGroups failed: unknown result")
+
+    def getGroupsFilteredByCreationDate(self, domainId, fromTime, toTime, offset, limit):
+        """
+        <p>API method to get groups in a domainId filtered by creation date.</p>
+
+        Parameters:
+         - domainId
+         - fromTime
+         - toTime
+         - offset
+         - limit
+
+        """
+        self.send_getGroupsFilteredByCreationDate(domainId, fromTime, toTime, offset, limit)
+        return self.recv_getGroupsFilteredByCreationDate()
+
+    def send_getGroupsFilteredByCreationDate(self, domainId, fromTime, toTime, offset, limit):
+        self._oprot.writeMessageBegin('getGroupsFilteredByCreationDate', TMessageType.CALL, self._seqid)
+        args = getGroupsFilteredByCreationDate_args()
+        args.domainId = domainId
+        args.fromTime = fromTime
+        args.toTime = toTime
+        args.offset = offset
+        args.limit = limit
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getGroupsFilteredByCreationDate(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getGroupsFilteredByCreationDate_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getGroupsFilteredByCreationDate failed: unknown result")
 
     def addUsersToGroup(self, domainId, userIds, groupId):
         """
@@ -2911,6 +2967,7 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
         self._processMap["deleteGroup"] = Processor.process_deleteGroup
         self._processMap["getGroup"] = Processor.process_getGroup
         self._processMap["getGroups"] = Processor.process_getGroups
+        self._processMap["getGroupsFilteredByCreationDate"] = Processor.process_getGroupsFilteredByCreationDate
         self._processMap["addUsersToGroup"] = Processor.process_addUsersToGroup
         self._processMap["removeUsersFromGroup"] = Processor.process_removeUsersFromGroup
         self._processMap["transferGroupOwnership"] = Processor.process_transferGroupOwnership
@@ -3439,6 +3496,29 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("getGroups", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getGroupsFilteredByCreationDate(self, seqid, iprot, oprot):
+        args = getGroupsFilteredByCreationDate_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getGroupsFilteredByCreationDate_result()
+        try:
+            result.success = self._handler.getGroupsFilteredByCreationDate(args.domainId, args.fromTime, args.toTime, args.offset, args.limit)
+            msg_type = TMessageType.REPLY
+        except TTransport.TTransportException:
+            raise
+        except TApplicationException as ex:
+            logging.exception('TApplication exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = ex
+        except Exception:
+            logging.exception('Unexpected exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getGroupsFilteredByCreationDate", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -7134,6 +7214,196 @@ getGroups_result.thrift_spec = (
 )
 
 
+class getGroupsFilteredByCreationDate_args(object):
+    """
+    Attributes:
+     - domainId
+     - fromTime
+     - toTime
+     - offset
+     - limit
+
+    """
+
+
+    def __init__(self, domainId=None, fromTime=None, toTime=None, offset=None, limit=None,):
+        self.domainId = domainId
+        self.fromTime = fromTime
+        self.toTime = toTime
+        self.offset = offset
+        self.limit = limit
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.domainId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I64:
+                    self.fromTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.I64:
+                    self.toTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I32:
+                    self.offset = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I32:
+                    self.limit = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getGroupsFilteredByCreationDate_args')
+        if self.domainId is not None:
+            oprot.writeFieldBegin('domainId', TType.STRING, 1)
+            oprot.writeString(self.domainId.encode('utf-8') if sys.version_info[0] == 2 else self.domainId)
+            oprot.writeFieldEnd()
+        if self.fromTime is not None:
+            oprot.writeFieldBegin('fromTime', TType.I64, 2)
+            oprot.writeI64(self.fromTime)
+            oprot.writeFieldEnd()
+        if self.toTime is not None:
+            oprot.writeFieldBegin('toTime', TType.I64, 3)
+            oprot.writeI64(self.toTime)
+            oprot.writeFieldEnd()
+        if self.offset is not None:
+            oprot.writeFieldBegin('offset', TType.I32, 4)
+            oprot.writeI32(self.offset)
+            oprot.writeFieldEnd()
+        if self.limit is not None:
+            oprot.writeFieldBegin('limit', TType.I32, 5)
+            oprot.writeI32(self.limit)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.domainId is None:
+            raise TProtocolException(message='Required field domainId is unset!')
+        if self.fromTime is None:
+            raise TProtocolException(message='Required field fromTime is unset!')
+        if self.toTime is None:
+            raise TProtocolException(message='Required field toTime is unset!')
+        if self.offset is None:
+            raise TProtocolException(message='Required field offset is unset!')
+        if self.limit is None:
+            raise TProtocolException(message='Required field limit is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getGroupsFilteredByCreationDate_args)
+getGroupsFilteredByCreationDate_args.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'domainId', 'UTF8', None, ),  # 1
+    (2, TType.I64, 'fromTime', None, None, ),  # 2
+    (3, TType.I64, 'toTime', None, None, ),  # 3
+    (4, TType.I32, 'offset', None, None, ),  # 4
+    (5, TType.I32, 'limit', None, None, ),  # 5
+)
+
+
+class getGroupsFilteredByCreationDate_result(object):
+    """
+    Attributes:
+     - success
+
+    """
+
+
+    def __init__(self, success=None,):
+        self.success = success
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype24, _size21) = iprot.readListBegin()
+                    for _i25 in range(_size21):
+                        _elem26 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem26.read(iprot)
+                        self.success.append(_elem26)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getGroupsFilteredByCreationDate_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.STRUCT, len(self.success))
+            for iter27 in self.success:
+                iter27.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getGroupsFilteredByCreationDate_result)
+getGroupsFilteredByCreationDate_result.thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT, [airavata.model.sharing.ttypes.UserGroup, None], False), None, ),  # 0
+)
+
+
 class addUsersToGroup_args(object):
     """
     Attributes:
@@ -7166,10 +7436,10 @@ class addUsersToGroup_args(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.userIds = []
-                    (_etype24, _size21) = iprot.readListBegin()
-                    for _i25 in range(_size21):
-                        _elem26 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userIds.append(_elem26)
+                    (_etype31, _size28) = iprot.readListBegin()
+                    for _i32 in range(_size28):
+                        _elem33 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userIds.append(_elem33)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -7195,8 +7465,8 @@ class addUsersToGroup_args(object):
         if self.userIds is not None:
             oprot.writeFieldBegin('userIds', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.userIds))
-            for iter27 in self.userIds:
-                oprot.writeString(iter27.encode('utf-8') if sys.version_info[0] == 2 else iter27)
+            for iter34 in self.userIds:
+                oprot.writeString(iter34.encode('utf-8') if sys.version_info[0] == 2 else iter34)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.groupId is not None:
@@ -7339,10 +7609,10 @@ class removeUsersFromGroup_args(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.userIds = []
-                    (_etype31, _size28) = iprot.readListBegin()
-                    for _i32 in range(_size28):
-                        _elem33 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userIds.append(_elem33)
+                    (_etype38, _size35) = iprot.readListBegin()
+                    for _i39 in range(_size35):
+                        _elem40 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userIds.append(_elem40)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -7368,8 +7638,8 @@ class removeUsersFromGroup_args(object):
         if self.userIds is not None:
             oprot.writeFieldBegin('userIds', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.userIds))
-            for iter34 in self.userIds:
-                oprot.writeString(iter34.encode('utf-8') if sys.version_info[0] == 2 else iter34)
+            for iter41 in self.userIds:
+                oprot.writeString(iter41.encode('utf-8') if sys.version_info[0] == 2 else iter41)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.groupId is not None:
@@ -7682,10 +7952,10 @@ class addGroupAdmins_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.adminIds = []
-                    (_etype38, _size35) = iprot.readListBegin()
-                    for _i39 in range(_size35):
-                        _elem40 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.adminIds.append(_elem40)
+                    (_etype45, _size42) = iprot.readListBegin()
+                    for _i46 in range(_size42):
+                        _elem47 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.adminIds.append(_elem47)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -7710,8 +7980,8 @@ class addGroupAdmins_args(object):
         if self.adminIds is not None:
             oprot.writeFieldBegin('adminIds', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.adminIds))
-            for iter41 in self.adminIds:
-                oprot.writeString(iter41.encode('utf-8') if sys.version_info[0] == 2 else iter41)
+            for iter48 in self.adminIds:
+                oprot.writeString(iter48.encode('utf-8') if sys.version_info[0] == 2 else iter48)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -7855,10 +8125,10 @@ class removeGroupAdmins_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.adminIds = []
-                    (_etype45, _size42) = iprot.readListBegin()
-                    for _i46 in range(_size42):
-                        _elem47 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.adminIds.append(_elem47)
+                    (_etype52, _size49) = iprot.readListBegin()
+                    for _i53 in range(_size49):
+                        _elem54 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.adminIds.append(_elem54)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -7883,8 +8153,8 @@ class removeGroupAdmins_args(object):
         if self.adminIds is not None:
             oprot.writeFieldBegin('adminIds', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.adminIds))
-            for iter48 in self.adminIds:
-                oprot.writeString(iter48.encode('utf-8') if sys.version_info[0] == 2 else iter48)
+            for iter55 in self.adminIds:
+                oprot.writeString(iter55.encode('utf-8') if sys.version_info[0] == 2 else iter55)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -8450,11 +8720,11 @@ class getGroupMembersOfTypeUser_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype52, _size49) = iprot.readListBegin()
-                    for _i53 in range(_size49):
-                        _elem54 = airavata.model.sharing.ttypes.User()
-                        _elem54.read(iprot)
-                        self.success.append(_elem54)
+                    (_etype59, _size56) = iprot.readListBegin()
+                    for _i60 in range(_size56):
+                        _elem61 = airavata.model.sharing.ttypes.User()
+                        _elem61.read(iprot)
+                        self.success.append(_elem61)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -8476,8 +8746,8 @@ class getGroupMembersOfTypeUser_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter55 in self.success:
-                iter55.write(oprot)
+            for iter62 in self.success:
+                iter62.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -8638,11 +8908,11 @@ class getGroupMembersOfTypeGroup_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype59, _size56) = iprot.readListBegin()
-                    for _i60 in range(_size56):
-                        _elem61 = airavata.model.sharing.ttypes.UserGroup()
-                        _elem61.read(iprot)
-                        self.success.append(_elem61)
+                    (_etype66, _size63) = iprot.readListBegin()
+                    for _i67 in range(_size63):
+                        _elem68 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem68.read(iprot)
+                        self.success.append(_elem68)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -8664,8 +8934,8 @@ class getGroupMembersOfTypeGroup_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter62 in self.success:
-                iter62.write(oprot)
+            for iter69 in self.success:
+                iter69.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -8727,10 +8997,10 @@ class addChildGroupsToParentGroup_args(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.childIds = []
-                    (_etype66, _size63) = iprot.readListBegin()
-                    for _i67 in range(_size63):
-                        _elem68 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.childIds.append(_elem68)
+                    (_etype73, _size70) = iprot.readListBegin()
+                    for _i74 in range(_size70):
+                        _elem75 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.childIds.append(_elem75)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -8756,8 +9026,8 @@ class addChildGroupsToParentGroup_args(object):
         if self.childIds is not None:
             oprot.writeFieldBegin('childIds', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.childIds))
-            for iter69 in self.childIds:
-                oprot.writeString(iter69.encode('utf-8') if sys.version_info[0] == 2 else iter69)
+            for iter76 in self.childIds:
+                oprot.writeString(iter76.encode('utf-8') if sys.version_info[0] == 2 else iter76)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.groupId is not None:
@@ -9136,11 +9406,11 @@ class getAllMemberGroupsForUser_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype73, _size70) = iprot.readListBegin()
-                    for _i74 in range(_size70):
-                        _elem75 = airavata.model.sharing.ttypes.UserGroup()
-                        _elem75.read(iprot)
-                        self.success.append(_elem75)
+                    (_etype80, _size77) = iprot.readListBegin()
+                    for _i81 in range(_size77):
+                        _elem82 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem82.read(iprot)
+                        self.success.append(_elem82)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -9162,8 +9432,8 @@ class getAllMemberGroupsForUser_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter76 in self.success:
-                iter76.write(oprot)
+            for iter83 in self.success:
+                iter83.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -10052,11 +10322,11 @@ class getEntityTypes_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype80, _size77) = iprot.readListBegin()
-                    for _i81 in range(_size77):
-                        _elem82 = airavata.model.sharing.ttypes.EntityType()
-                        _elem82.read(iprot)
-                        self.success.append(_elem82)
+                    (_etype87, _size84) = iprot.readListBegin()
+                    for _i88 in range(_size84):
+                        _elem89 = airavata.model.sharing.ttypes.EntityType()
+                        _elem89.read(iprot)
+                        self.success.append(_elem89)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -10078,8 +10348,8 @@ class getEntityTypes_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter83 in self.success:
-                iter83.write(oprot)
+            for iter90 in self.success:
+                iter90.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -10880,11 +11150,11 @@ class searchEntities_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.filters = []
-                    (_etype87, _size84) = iprot.readListBegin()
-                    for _i88 in range(_size84):
-                        _elem89 = airavata.model.sharing.ttypes.SearchCriteria()
-                        _elem89.read(iprot)
-                        self.filters.append(_elem89)
+                    (_etype94, _size91) = iprot.readListBegin()
+                    for _i95 in range(_size91):
+                        _elem96 = airavata.model.sharing.ttypes.SearchCriteria()
+                        _elem96.read(iprot)
+                        self.filters.append(_elem96)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -10919,8 +11189,8 @@ class searchEntities_args(object):
         if self.filters is not None:
             oprot.writeFieldBegin('filters', TType.LIST, 3)
             oprot.writeListBegin(TType.STRUCT, len(self.filters))
-            for iter90 in self.filters:
-                iter90.write(oprot)
+            for iter97 in self.filters:
+                iter97.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.offset is not None:
@@ -10993,11 +11263,11 @@ class searchEntities_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype94, _size91) = iprot.readListBegin()
-                    for _i95 in range(_size91):
-                        _elem96 = airavata.model.sharing.ttypes.Entity()
-                        _elem96.read(iprot)
-                        self.success.append(_elem96)
+                    (_etype101, _size98) = iprot.readListBegin()
+                    for _i102 in range(_size98):
+                        _elem103 = airavata.model.sharing.ttypes.Entity()
+                        _elem103.read(iprot)
+                        self.success.append(_elem103)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11019,8 +11289,8 @@ class searchEntities_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter97 in self.success:
-                iter97.write(oprot)
+            for iter104 in self.success:
+                iter104.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -11167,11 +11437,11 @@ class getListOfSharedUsers_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype101, _size98) = iprot.readListBegin()
-                    for _i102 in range(_size98):
-                        _elem103 = airavata.model.sharing.ttypes.User()
-                        _elem103.read(iprot)
-                        self.success.append(_elem103)
+                    (_etype108, _size105) = iprot.readListBegin()
+                    for _i109 in range(_size105):
+                        _elem110 = airavata.model.sharing.ttypes.User()
+                        _elem110.read(iprot)
+                        self.success.append(_elem110)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11193,8 +11463,8 @@ class getListOfSharedUsers_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter104 in self.success:
-                iter104.write(oprot)
+            for iter111 in self.success:
+                iter111.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -11341,11 +11611,11 @@ class getListOfDirectlySharedUsers_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype108, _size105) = iprot.readListBegin()
-                    for _i109 in range(_size105):
-                        _elem110 = airavata.model.sharing.ttypes.User()
-                        _elem110.read(iprot)
-                        self.success.append(_elem110)
+                    (_etype115, _size112) = iprot.readListBegin()
+                    for _i116 in range(_size112):
+                        _elem117 = airavata.model.sharing.ttypes.User()
+                        _elem117.read(iprot)
+                        self.success.append(_elem117)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11367,8 +11637,8 @@ class getListOfDirectlySharedUsers_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter111 in self.success:
-                iter111.write(oprot)
+            for iter118 in self.success:
+                iter118.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -11515,11 +11785,11 @@ class getListOfSharedGroups_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype115, _size112) = iprot.readListBegin()
-                    for _i116 in range(_size112):
-                        _elem117 = airavata.model.sharing.ttypes.UserGroup()
-                        _elem117.read(iprot)
-                        self.success.append(_elem117)
+                    (_etype122, _size119) = iprot.readListBegin()
+                    for _i123 in range(_size119):
+                        _elem124 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem124.read(iprot)
+                        self.success.append(_elem124)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11541,8 +11811,8 @@ class getListOfSharedGroups_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter118 in self.success:
-                iter118.write(oprot)
+            for iter125 in self.success:
+                iter125.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -11689,11 +11959,11 @@ class getListOfDirectlySharedGroups_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype122, _size119) = iprot.readListBegin()
-                    for _i123 in range(_size119):
-                        _elem124 = airavata.model.sharing.ttypes.UserGroup()
-                        _elem124.read(iprot)
-                        self.success.append(_elem124)
+                    (_etype129, _size126) = iprot.readListBegin()
+                    for _i130 in range(_size126):
+                        _elem131 = airavata.model.sharing.ttypes.UserGroup()
+                        _elem131.read(iprot)
+                        self.success.append(_elem131)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -11715,8 +11985,8 @@ class getListOfDirectlySharedGroups_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter125 in self.success:
-                iter125.write(oprot)
+            for iter132 in self.success:
+                iter132.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -12605,11 +12875,11 @@ class getPermissionTypes_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype129, _size126) = iprot.readListBegin()
-                    for _i130 in range(_size126):
-                        _elem131 = airavata.model.sharing.ttypes.PermissionType()
-                        _elem131.read(iprot)
-                        self.success.append(_elem131)
+                    (_etype136, _size133) = iprot.readListBegin()
+                    for _i137 in range(_size133):
+                        _elem138 = airavata.model.sharing.ttypes.PermissionType()
+                        _elem138.read(iprot)
+                        self.success.append(_elem138)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -12631,8 +12901,8 @@ class getPermissionTypes_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter132 in self.success:
-                iter132.write(oprot)
+            for iter139 in self.success:
+                iter139.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.sre is not None:
@@ -12703,10 +12973,10 @@ class shareEntityWithUsers_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.userList = []
-                    (_etype136, _size133) = iprot.readListBegin()
-                    for _i137 in range(_size133):
-                        _elem138 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userList.append(_elem138)
+                    (_etype143, _size140) = iprot.readListBegin()
+                    for _i144 in range(_size140):
+                        _elem145 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userList.append(_elem145)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -12741,8 +13011,8 @@ class shareEntityWithUsers_args(object):
         if self.userList is not None:
             oprot.writeFieldBegin('userList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.userList))
-            for iter139 in self.userList:
-                oprot.writeString(iter139.encode('utf-8') if sys.version_info[0] == 2 else iter139)
+            for iter146 in self.userList:
+                oprot.writeString(iter146.encode('utf-8') if sys.version_info[0] == 2 else iter146)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:
@@ -12902,10 +13172,10 @@ class revokeEntitySharingFromUsers_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.userList = []
-                    (_etype143, _size140) = iprot.readListBegin()
-                    for _i144 in range(_size140):
-                        _elem145 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.userList.append(_elem145)
+                    (_etype150, _size147) = iprot.readListBegin()
+                    for _i151 in range(_size147):
+                        _elem152 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.userList.append(_elem152)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -12935,8 +13205,8 @@ class revokeEntitySharingFromUsers_args(object):
         if self.userList is not None:
             oprot.writeFieldBegin('userList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.userList))
-            for iter146 in self.userList:
-                oprot.writeString(iter146.encode('utf-8') if sys.version_info[0] == 2 else iter146)
+            for iter153 in self.userList:
+                oprot.writeString(iter153.encode('utf-8') if sys.version_info[0] == 2 else iter153)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:
@@ -13091,10 +13361,10 @@ class shareEntityWithGroups_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.groupList = []
-                    (_etype150, _size147) = iprot.readListBegin()
-                    for _i151 in range(_size147):
-                        _elem152 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.groupList.append(_elem152)
+                    (_etype157, _size154) = iprot.readListBegin()
+                    for _i158 in range(_size154):
+                        _elem159 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupList.append(_elem159)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -13129,8 +13399,8 @@ class shareEntityWithGroups_args(object):
         if self.groupList is not None:
             oprot.writeFieldBegin('groupList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.groupList))
-            for iter153 in self.groupList:
-                oprot.writeString(iter153.encode('utf-8') if sys.version_info[0] == 2 else iter153)
+            for iter160 in self.groupList:
+                oprot.writeString(iter160.encode('utf-8') if sys.version_info[0] == 2 else iter160)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:
@@ -13290,10 +13560,10 @@ class revokeEntitySharingFromGroups_args(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.groupList = []
-                    (_etype157, _size154) = iprot.readListBegin()
-                    for _i158 in range(_size154):
-                        _elem159 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.groupList.append(_elem159)
+                    (_etype164, _size161) = iprot.readListBegin()
+                    for _i165 in range(_size161):
+                        _elem166 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupList.append(_elem166)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -13323,8 +13593,8 @@ class revokeEntitySharingFromGroups_args(object):
         if self.groupList is not None:
             oprot.writeFieldBegin('groupList', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.groupList))
-            for iter160 in self.groupList:
-                oprot.writeString(iter160.encode('utf-8') if sys.version_info[0] == 2 else iter160)
+            for iter167 in self.groupList:
+                oprot.writeString(iter167.encode('utf-8') if sys.version_info[0] == 2 else iter167)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.permissionTypeId is not None:

@@ -1227,6 +1227,32 @@ service Airavata extends base_api.BaseAPI {
             4: airavata_errors.AiravataSystemException ase,
             5: airavata_errors.AuthorizationException ae)
 
+  /**
+   *
+   * Get Cpu Usages
+   * Get Cpu Hours used by experiments within a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+   * 
+   * @param gatewayId
+   *       Unique identifier of the gateway making the request to fetch statistics.
+   *
+   * @param fromTime
+   *       Starting date time.
+   *
+   * @param toTime
+   *       Ending date time.
+   *
+   **/
+
+list<experiment_model.CpuUsage> getCpuUsages(1: required security_model.AuthzToken authzToken,
+                            2: required string gatewayId,
+                            3: required i64 fromTime,
+                            4: required i64 toTime)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
+
+
 /*
  *
  * API definitions for App Catalog related operations

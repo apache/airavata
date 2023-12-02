@@ -170,6 +170,17 @@ public class SharingRegistryService {
     public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getGroups(java.lang.String domainId, int offset, int limit) throws org.apache.thrift.TException;
 
     /**
+     * <p>API method to get groups in a domainId filtered by creation date.</p>
+     * 
+     * @param domainId
+     * @param fromTime
+     * @param toTime
+     * @param offset
+     * @param limit
+     */
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getGroupsFilteredByCreationDate(java.lang.String domainId, long fromTime, long toTime, int offset, int limit) throws org.apache.thrift.TException;
+
+    /**
      * <p>API method to add list of users to a group</p>
      * 
      * @param domainId
@@ -542,6 +553,8 @@ public class SharingRegistryService {
     public void getGroup(java.lang.String domainId, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.sharing.registry.models.UserGroup> resultHandler) throws org.apache.thrift.TException;
 
     public void getGroups(java.lang.String domainId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException;
+
+    public void getGroupsFilteredByCreationDate(java.lang.String domainId, long fromTime, long toTime, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException;
 
     public void addUsersToGroup(java.lang.String domainId, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -1143,6 +1156,34 @@ public class SharingRegistryService {
         return result.success;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getGroups failed: unknown result");
+    }
+
+    @Override
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getGroupsFilteredByCreationDate(java.lang.String domainId, long fromTime, long toTime, int offset, int limit) throws org.apache.thrift.TException
+    {
+      send_getGroupsFilteredByCreationDate(domainId, fromTime, toTime, offset, limit);
+      return recv_getGroupsFilteredByCreationDate();
+    }
+
+    public void send_getGroupsFilteredByCreationDate(java.lang.String domainId, long fromTime, long toTime, int offset, int limit) throws org.apache.thrift.TException
+    {
+      getGroupsFilteredByCreationDate_args args = new getGroupsFilteredByCreationDate_args();
+      args.setDomainId(domainId);
+      args.setFromTime(fromTime);
+      args.setToTime(toTime);
+      args.setOffset(offset);
+      args.setLimit(limit);
+      sendBase("getGroupsFilteredByCreationDate", args);
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> recv_getGroupsFilteredByCreationDate() throws org.apache.thrift.TException
+    {
+      getGroupsFilteredByCreationDate_result result = new getGroupsFilteredByCreationDate_result();
+      receiveBase(result, "getGroupsFilteredByCreationDate");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getGroupsFilteredByCreationDate failed: unknown result");
     }
 
     @Override
@@ -2954,6 +2995,53 @@ public class SharingRegistryService {
     }
 
     @Override
+    public void getGroupsFilteredByCreationDate(java.lang.String domainId, long fromTime, long toTime, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getGroupsFilteredByCreationDate_call method_call = new getGroupsFilteredByCreationDate_call(domainId, fromTime, toTime, offset, limit, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getGroupsFilteredByCreationDate_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> {
+      private java.lang.String domainId;
+      private long fromTime;
+      private long toTime;
+      private int offset;
+      private int limit;
+      public getGroupsFilteredByCreationDate_call(java.lang.String domainId, long fromTime, long toTime, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.domainId = domainId;
+        this.fromTime = fromTime;
+        this.toTime = toTime;
+        this.offset = offset;
+        this.limit = limit;
+      }
+
+      @Override
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getGroupsFilteredByCreationDate", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getGroupsFilteredByCreationDate_args args = new getGroupsFilteredByCreationDate_args();
+        args.setDomainId(domainId);
+        args.setFromTime(fromTime);
+        args.setToTime(toTime);
+        args.setOffset(offset);
+        args.setLimit(limit);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      @Override
+      public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getGroupsFilteredByCreationDate();
+      }
+    }
+
+    @Override
     public void addUsersToGroup(java.lang.String domainId, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       addUsersToGroup_call method_call = new addUsersToGroup_call(domainId, userIds, groupId, resultHandler, this, ___protocolFactory, ___transport);
@@ -4550,6 +4638,7 @@ public class SharingRegistryService {
       processMap.put("deleteGroup", new deleteGroup());
       processMap.put("getGroup", new getGroup());
       processMap.put("getGroups", new getGroups());
+      processMap.put("getGroupsFilteredByCreationDate", new getGroupsFilteredByCreationDate());
       processMap.put("addUsersToGroup", new addUsersToGroup());
       processMap.put("removeUsersFromGroup", new removeUsersFromGroup());
       processMap.put("transferGroupOwnership", new transferGroupOwnership());
@@ -5173,6 +5262,34 @@ public class SharingRegistryService {
       public getGroups_result getResult(I iface, getGroups_args args) throws org.apache.thrift.TException {
         getGroups_result result = new getGroups_result();
         result.success = iface.getGroups(args.domainId, args.offset, args.limit);
+        return result;
+      }
+    }
+
+    public static class getGroupsFilteredByCreationDate<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getGroupsFilteredByCreationDate_args> {
+      public getGroupsFilteredByCreationDate() {
+        super("getGroupsFilteredByCreationDate");
+      }
+
+      @Override
+      public getGroupsFilteredByCreationDate_args getEmptyArgsInstance() {
+        return new getGroupsFilteredByCreationDate_args();
+      }
+
+      @Override
+      protected boolean isOneway() {
+        return false;
+      }
+
+      @Override
+      protected boolean rethrowUnhandledExceptions() {
+        return false;
+      }
+
+      @Override
+      public getGroupsFilteredByCreationDate_result getResult(I iface, getGroupsFilteredByCreationDate_args args) throws org.apache.thrift.TException {
+        getGroupsFilteredByCreationDate_result result = new getGroupsFilteredByCreationDate_result();
+        result.success = iface.getGroupsFilteredByCreationDate(args.domainId, args.fromTime, args.toTime, args.offset, args.limit);
         return result;
       }
     }
@@ -6483,6 +6600,7 @@ public class SharingRegistryService {
       processMap.put("deleteGroup", new deleteGroup());
       processMap.put("getGroup", new getGroup());
       processMap.put("getGroups", new getGroups());
+      processMap.put("getGroupsFilteredByCreationDate", new getGroupsFilteredByCreationDate());
       processMap.put("addUsersToGroup", new addUsersToGroup());
       processMap.put("removeUsersFromGroup", new removeUsersFromGroup());
       processMap.put("transferGroupOwnership", new transferGroupOwnership());
@@ -7813,6 +7931,73 @@ public class SharingRegistryService {
       @Override
       public void start(I iface, getGroups_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
         iface.getGroups(args.domainId, args.offset, args.limit,resultHandler);
+      }
+    }
+
+    public static class getGroupsFilteredByCreationDate<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getGroupsFilteredByCreationDate_args, java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> {
+      public getGroupsFilteredByCreationDate() {
+        super("getGroupsFilteredByCreationDate");
+      }
+
+      @Override
+      public getGroupsFilteredByCreationDate_args getEmptyArgsInstance() {
+        return new getGroupsFilteredByCreationDate_args();
+      }
+
+      @Override
+      public org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>>() { 
+          @Override
+          public void onComplete(java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> o) {
+            getGroupsFilteredByCreationDate_result result = new getGroupsFilteredByCreationDate_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          @Override
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            getGroupsFilteredByCreationDate_result result = new getGroupsFilteredByCreationDate_result();
+            if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      @Override
+      protected boolean isOneway() {
+        return false;
+      }
+
+      @Override
+      public void start(I iface, getGroupsFilteredByCreationDate_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>> resultHandler) throws org.apache.thrift.TException {
+        iface.getGroupsFilteredByCreationDate(args.domainId, args.fromTime, args.toTime, args.offset, args.limit,resultHandler);
       }
     }
 
@@ -27410,6 +27595,1187 @@ public class SharingRegistryService {
   }
 
   @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
+  public static class getGroupsFilteredByCreationDate_args implements org.apache.thrift.TBase<getGroupsFilteredByCreationDate_args, getGroupsFilteredByCreationDate_args._Fields>, java.io.Serializable, Cloneable, Comparable<getGroupsFilteredByCreationDate_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGroupsFilteredByCreationDate_args");
+
+    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField FROM_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("fromTime", org.apache.thrift.protocol.TType.I64, (short)2);
+    private static final org.apache.thrift.protocol.TField TO_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("toTime", org.apache.thrift.protocol.TType.I64, (short)3);
+    private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I32, (short)4);
+    private static final org.apache.thrift.protocol.TField LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("limit", org.apache.thrift.protocol.TType.I32, (short)5);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getGroupsFilteredByCreationDate_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getGroupsFilteredByCreationDate_argsTupleSchemeFactory();
+
+    public @org.apache.thrift.annotation.Nullable java.lang.String domainId; // required
+    public long fromTime; // required
+    public long toTime; // required
+    public int offset; // required
+    public int limit; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      DOMAIN_ID((short)1, "domainId"),
+      FROM_TIME((short)2, "fromTime"),
+      TO_TIME((short)3, "toTime"),
+      OFFSET((short)4, "offset"),
+      LIMIT((short)5, "limit");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      @org.apache.thrift.annotation.Nullable
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // DOMAIN_ID
+            return DOMAIN_ID;
+          case 2: // FROM_TIME
+            return FROM_TIME;
+          case 3: // TO_TIME
+            return TO_TIME;
+          case 4: // OFFSET
+            return OFFSET;
+          case 5: // LIMIT
+            return LIMIT;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      @org.apache.thrift.annotation.Nullable
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      @Override
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      @Override
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __FROMTIME_ISSET_ID = 0;
+    private static final int __TOTIME_ISSET_ID = 1;
+    private static final int __OFFSET_ISSET_ID = 2;
+    private static final int __LIMIT_ISSET_ID = 3;
+    private byte __isset_bitfield = 0;
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.FROM_TIME, new org.apache.thrift.meta_data.FieldMetaData("fromTime", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.TO_TIME, new org.apache.thrift.meta_data.FieldMetaData("toTime", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.OFFSET, new org.apache.thrift.meta_data.FieldMetaData("offset", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.LIMIT, new org.apache.thrift.meta_data.FieldMetaData("limit", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGroupsFilteredByCreationDate_args.class, metaDataMap);
+    }
+
+    public getGroupsFilteredByCreationDate_args() {
+    }
+
+    public getGroupsFilteredByCreationDate_args(
+      java.lang.String domainId,
+      long fromTime,
+      long toTime,
+      int offset,
+      int limit)
+    {
+      this();
+      this.domainId = domainId;
+      this.fromTime = fromTime;
+      setFromTimeIsSet(true);
+      this.toTime = toTime;
+      setToTimeIsSet(true);
+      this.offset = offset;
+      setOffsetIsSet(true);
+      this.limit = limit;
+      setLimitIsSet(true);
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getGroupsFilteredByCreationDate_args(getGroupsFilteredByCreationDate_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetDomainId()) {
+        this.domainId = other.domainId;
+      }
+      this.fromTime = other.fromTime;
+      this.toTime = other.toTime;
+      this.offset = other.offset;
+      this.limit = other.limit;
+    }
+
+    @Override
+    public getGroupsFilteredByCreationDate_args deepCopy() {
+      return new getGroupsFilteredByCreationDate_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.domainId = null;
+      setFromTimeIsSet(false);
+      this.fromTime = 0;
+      setToTimeIsSet(false);
+      this.toTime = 0;
+      setOffsetIsSet(false);
+      this.offset = 0;
+      setLimitIsSet(false);
+      this.limit = 0;
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    public java.lang.String getDomainId() {
+      return this.domainId;
+    }
+
+    public getGroupsFilteredByCreationDate_args setDomainId(@org.apache.thrift.annotation.Nullable java.lang.String domainId) {
+      this.domainId = domainId;
+      return this;
+    }
+
+    public void unsetDomainId() {
+      this.domainId = null;
+    }
+
+    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
+    public boolean isSetDomainId() {
+      return this.domainId != null;
+    }
+
+    public void setDomainIdIsSet(boolean value) {
+      if (!value) {
+        this.domainId = null;
+      }
+    }
+
+    public long getFromTime() {
+      return this.fromTime;
+    }
+
+    public getGroupsFilteredByCreationDate_args setFromTime(long fromTime) {
+      this.fromTime = fromTime;
+      setFromTimeIsSet(true);
+      return this;
+    }
+
+    public void unsetFromTime() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __FROMTIME_ISSET_ID);
+    }
+
+    /** Returns true if field fromTime is set (has been assigned a value) and false otherwise */
+    public boolean isSetFromTime() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __FROMTIME_ISSET_ID);
+    }
+
+    public void setFromTimeIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __FROMTIME_ISSET_ID, value);
+    }
+
+    public long getToTime() {
+      return this.toTime;
+    }
+
+    public getGroupsFilteredByCreationDate_args setToTime(long toTime) {
+      this.toTime = toTime;
+      setToTimeIsSet(true);
+      return this;
+    }
+
+    public void unsetToTime() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __TOTIME_ISSET_ID);
+    }
+
+    /** Returns true if field toTime is set (has been assigned a value) and false otherwise */
+    public boolean isSetToTime() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __TOTIME_ISSET_ID);
+    }
+
+    public void setToTimeIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __TOTIME_ISSET_ID, value);
+    }
+
+    public int getOffset() {
+      return this.offset;
+    }
+
+    public getGroupsFilteredByCreationDate_args setOffset(int offset) {
+      this.offset = offset;
+      setOffsetIsSet(true);
+      return this;
+    }
+
+    public void unsetOffset() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __OFFSET_ISSET_ID);
+    }
+
+    /** Returns true if field offset is set (has been assigned a value) and false otherwise */
+    public boolean isSetOffset() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __OFFSET_ISSET_ID);
+    }
+
+    public void setOffsetIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __OFFSET_ISSET_ID, value);
+    }
+
+    public int getLimit() {
+      return this.limit;
+    }
+
+    public getGroupsFilteredByCreationDate_args setLimit(int limit) {
+      this.limit = limit;
+      setLimitIsSet(true);
+      return this;
+    }
+
+    public void unsetLimit() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __LIMIT_ISSET_ID);
+    }
+
+    /** Returns true if field limit is set (has been assigned a value) and false otherwise */
+    public boolean isSetLimit() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __LIMIT_ISSET_ID);
+    }
+
+    public void setLimitIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __LIMIT_ISSET_ID, value);
+    }
+
+    @Override
+    public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
+      switch (field) {
+      case DOMAIN_ID:
+        if (value == null) {
+          unsetDomainId();
+        } else {
+          setDomainId((java.lang.String)value);
+        }
+        break;
+
+      case FROM_TIME:
+        if (value == null) {
+          unsetFromTime();
+        } else {
+          setFromTime((java.lang.Long)value);
+        }
+        break;
+
+      case TO_TIME:
+        if (value == null) {
+          unsetToTime();
+        } else {
+          setToTime((java.lang.Long)value);
+        }
+        break;
+
+      case OFFSET:
+        if (value == null) {
+          unsetOffset();
+        } else {
+          setOffset((java.lang.Integer)value);
+        }
+        break;
+
+      case LIMIT:
+        if (value == null) {
+          unsetLimit();
+        } else {
+          setLimit((java.lang.Integer)value);
+        }
+        break;
+
+      }
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    @Override
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case DOMAIN_ID:
+        return getDomainId();
+
+      case FROM_TIME:
+        return getFromTime();
+
+      case TO_TIME:
+        return getToTime();
+
+      case OFFSET:
+        return getOffset();
+
+      case LIMIT:
+        return getLimit();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    @Override
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case DOMAIN_ID:
+        return isSetDomainId();
+      case FROM_TIME:
+        return isSetFromTime();
+      case TO_TIME:
+        return isSetToTime();
+      case OFFSET:
+        return isSetOffset();
+      case LIMIT:
+        return isSetLimit();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that instanceof getGroupsFilteredByCreationDate_args)
+        return this.equals((getGroupsFilteredByCreationDate_args)that);
+      return false;
+    }
+
+    public boolean equals(getGroupsFilteredByCreationDate_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_domainId = true && this.isSetDomainId();
+      boolean that_present_domainId = true && that.isSetDomainId();
+      if (this_present_domainId || that_present_domainId) {
+        if (!(this_present_domainId && that_present_domainId))
+          return false;
+        if (!this.domainId.equals(that.domainId))
+          return false;
+      }
+
+      boolean this_present_fromTime = true;
+      boolean that_present_fromTime = true;
+      if (this_present_fromTime || that_present_fromTime) {
+        if (!(this_present_fromTime && that_present_fromTime))
+          return false;
+        if (this.fromTime != that.fromTime)
+          return false;
+      }
+
+      boolean this_present_toTime = true;
+      boolean that_present_toTime = true;
+      if (this_present_toTime || that_present_toTime) {
+        if (!(this_present_toTime && that_present_toTime))
+          return false;
+        if (this.toTime != that.toTime)
+          return false;
+      }
+
+      boolean this_present_offset = true;
+      boolean that_present_offset = true;
+      if (this_present_offset || that_present_offset) {
+        if (!(this_present_offset && that_present_offset))
+          return false;
+        if (this.offset != that.offset)
+          return false;
+      }
+
+      boolean this_present_limit = true;
+      boolean that_present_limit = true;
+      if (this_present_limit || that_present_limit) {
+        if (!(this_present_limit && that_present_limit))
+          return false;
+        if (this.limit != that.limit)
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
+      if (isSetDomainId())
+        hashCode = hashCode * 8191 + domainId.hashCode();
+
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(fromTime);
+
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(toTime);
+
+      hashCode = hashCode * 8191 + offset;
+
+      hashCode = hashCode * 8191 + limit;
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getGroupsFilteredByCreationDate_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.compare(isSetDomainId(), other.isSetDomainId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDomainId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetFromTime(), other.isSetFromTime());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFromTime()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fromTime, other.fromTime);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetToTime(), other.isSetToTime());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetToTime()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.toTime, other.toTime);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetOffset(), other.isSetOffset());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetOffset()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.offset, other.offset);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.compare(isSetLimit(), other.isSetLimit());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetLimit()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.limit, other.limit);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    @Override
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    @Override
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    @Override
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getGroupsFilteredByCreationDate_args(");
+      boolean first = true;
+
+      sb.append("domainId:");
+      if (this.domainId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domainId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("fromTime:");
+      sb.append(this.fromTime);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("toTime:");
+      sb.append(this.toTime);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("offset:");
+      sb.append(this.offset);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("limit:");
+      sb.append(this.limit);
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (domainId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
+      }
+      // alas, we cannot check 'fromTime' because it's a primitive and you chose the non-beans generator.
+      // alas, we cannot check 'toTime' because it's a primitive and you chose the non-beans generator.
+      // alas, we cannot check 'offset' because it's a primitive and you chose the non-beans generator.
+      // alas, we cannot check 'limit' because it's a primitive and you chose the non-beans generator.
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getGroupsFilteredByCreationDate_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      @Override
+      public getGroupsFilteredByCreationDate_argsStandardScheme getScheme() {
+        return new getGroupsFilteredByCreationDate_argsStandardScheme();
+      }
+    }
+
+    private static class getGroupsFilteredByCreationDate_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getGroupsFilteredByCreationDate_args> {
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getGroupsFilteredByCreationDate_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // DOMAIN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.domainId = iprot.readString();
+                struct.setDomainIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // FROM_TIME
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.fromTime = iprot.readI64();
+                struct.setFromTimeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // TO_TIME
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.toTime = iprot.readI64();
+                struct.setToTimeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // OFFSET
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.offset = iprot.readI32();
+                struct.setOffsetIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 5: // LIMIT
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.limit = iprot.readI32();
+                struct.setLimitIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        if (!struct.isSetFromTime()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'fromTime' was not found in serialized data! Struct: " + toString());
+        }
+        if (!struct.isSetToTime()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'toTime' was not found in serialized data! Struct: " + toString());
+        }
+        if (!struct.isSetOffset()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'offset' was not found in serialized data! Struct: " + toString());
+        }
+        if (!struct.isSetLimit()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'limit' was not found in serialized data! Struct: " + toString());
+        }
+        struct.validate();
+      }
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getGroupsFilteredByCreationDate_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.domainId != null) {
+          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
+          oprot.writeString(struct.domainId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldBegin(FROM_TIME_FIELD_DESC);
+        oprot.writeI64(struct.fromTime);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(TO_TIME_FIELD_DESC);
+        oprot.writeI64(struct.toTime);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(OFFSET_FIELD_DESC);
+        oprot.writeI32(struct.offset);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(LIMIT_FIELD_DESC);
+        oprot.writeI32(struct.limit);
+        oprot.writeFieldEnd();
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getGroupsFilteredByCreationDate_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      @Override
+      public getGroupsFilteredByCreationDate_argsTupleScheme getScheme() {
+        return new getGroupsFilteredByCreationDate_argsTupleScheme();
+      }
+    }
+
+    private static class getGroupsFilteredByCreationDate_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getGroupsFilteredByCreationDate_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getGroupsFilteredByCreationDate_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        oprot.writeString(struct.domainId);
+        oprot.writeI64(struct.fromTime);
+        oprot.writeI64(struct.toTime);
+        oprot.writeI32(struct.offset);
+        oprot.writeI32(struct.limit);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getGroupsFilteredByCreationDate_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.domainId = iprot.readString();
+        struct.setDomainIdIsSet(true);
+        struct.fromTime = iprot.readI64();
+        struct.setFromTimeIsSet(true);
+        struct.toTime = iprot.readI64();
+        struct.setToTimeIsSet(true);
+        struct.offset = iprot.readI32();
+        struct.setOffsetIsSet(true);
+        struct.limit = iprot.readI32();
+        struct.setLimitIsSet(true);
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
+  public static class getGroupsFilteredByCreationDate_result implements org.apache.thrift.TBase<getGroupsFilteredByCreationDate_result, getGroupsFilteredByCreationDate_result._Fields>, java.io.Serializable, Cloneable, Comparable<getGroupsFilteredByCreationDate_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGroupsFilteredByCreationDate_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getGroupsFilteredByCreationDate_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getGroupsFilteredByCreationDate_resultTupleSchemeFactory();
+
+    public @org.apache.thrift.annotation.Nullable java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      @org.apache.thrift.annotation.Nullable
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      @org.apache.thrift.annotation.Nullable
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      @Override
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      @Override
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.UserGroup.class))));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGroupsFilteredByCreationDate_result.class, metaDataMap);
+    }
+
+    public getGroupsFilteredByCreationDate_result() {
+    }
+
+    public getGroupsFilteredByCreationDate_result(
+      java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getGroupsFilteredByCreationDate_result(getGroupsFilteredByCreationDate_result other) {
+      if (other.isSetSuccess()) {
+        java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> __this__success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(other.success.size());
+        for (org.apache.airavata.sharing.registry.models.UserGroup other_element : other.success) {
+          __this__success.add(new org.apache.airavata.sharing.registry.models.UserGroup(other_element));
+        }
+        this.success = __this__success;
+      }
+    }
+
+    @Override
+    public getGroupsFilteredByCreationDate_result deepCopy() {
+      return new getGroupsFilteredByCreationDate_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    public java.util.Iterator<org.apache.airavata.sharing.registry.models.UserGroup> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.sharing.registry.models.UserGroup elem) {
+      if (this.success == null) {
+        this.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>();
+      }
+      this.success.add(elem);
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    public java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> getSuccess() {
+      return this.success;
+    }
+
+    public getGroupsFilteredByCreationDate_result setSuccess(@org.apache.thrift.annotation.Nullable java.util.List<org.apache.airavata.sharing.registry.models.UserGroup> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    @Override
+    public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.util.List<org.apache.airavata.sharing.registry.models.UserGroup>)value);
+        }
+        break;
+
+      }
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    @Override
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    @Override
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that instanceof getGroupsFilteredByCreationDate_result)
+        return this.equals((getGroupsFilteredByCreationDate_result)that);
+      return false;
+    }
+
+    public boolean equals(getGroupsFilteredByCreationDate_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetSuccess()) ? 131071 : 524287);
+      if (isSetSuccess())
+        hashCode = hashCode * 8191 + success.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(getGroupsFilteredByCreationDate_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.compare(isSetSuccess(), other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    @org.apache.thrift.annotation.Nullable
+    @Override
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    @Override
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getGroupsFilteredByCreationDate_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getGroupsFilteredByCreationDate_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      @Override
+      public getGroupsFilteredByCreationDate_resultStandardScheme getScheme() {
+        return new getGroupsFilteredByCreationDate_resultStandardScheme();
+      }
+    }
+
+    private static class getGroupsFilteredByCreationDate_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getGroupsFilteredByCreationDate_result> {
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getGroupsFilteredByCreationDate_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list24.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem25;
+                  for (int _i26 = 0; _i26 < _list24.size; ++_i26)
+                  {
+                    _elem25 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem25.read(iprot);
+                    struct.success.add(_elem25);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getGroupsFilteredByCreationDate_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter27 : struct.success)
+            {
+              _iter27.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getGroupsFilteredByCreationDate_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      @Override
+      public getGroupsFilteredByCreationDate_resultTupleScheme getScheme() {
+        return new getGroupsFilteredByCreationDate_resultTupleScheme();
+      }
+    }
+
+    private static class getGroupsFilteredByCreationDate_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getGroupsFilteredByCreationDate_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getGroupsFilteredByCreationDate_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter28 : struct.success)
+            {
+              _iter28.write(oprot);
+            }
+          }
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getGroupsFilteredByCreationDate_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list29 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list29.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem30;
+            for (int _i31 = 0; _i31 < _list29.size; ++_i31)
+            {
+              _elem30 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem30.read(iprot);
+              struct.success.add(_elem30);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
   public static class addUsersToGroup_args implements org.apache.thrift.TBase<addUsersToGroup_args, addUsersToGroup_args._Fields>, java.io.Serializable, Cloneable, Comparable<addUsersToGroup_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUsersToGroup_args");
 
@@ -27917,13 +29283,13 @@ public class SharingRegistryService {
             case 2: // USER_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
-                  struct.userIds = new java.util.ArrayList<java.lang.String>(_list24.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem25;
-                  for (int _i26 = 0; _i26 < _list24.size; ++_i26)
+                  org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                  struct.userIds = new java.util.ArrayList<java.lang.String>(_list32.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem33;
+                  for (int _i34 = 0; _i34 < _list32.size; ++_i34)
                   {
-                    _elem25 = iprot.readString();
-                    struct.userIds.add(_elem25);
+                    _elem33 = iprot.readString();
+                    struct.userIds.add(_elem33);
                   }
                   iprot.readListEnd();
                 }
@@ -27965,9 +29331,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(USER_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userIds.size()));
-            for (java.lang.String _iter27 : struct.userIds)
+            for (java.lang.String _iter35 : struct.userIds)
             {
-              oprot.writeString(_iter27);
+              oprot.writeString(_iter35);
             }
             oprot.writeListEnd();
           }
@@ -27999,9 +29365,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.domainId);
         {
           oprot.writeI32(struct.userIds.size());
-          for (java.lang.String _iter28 : struct.userIds)
+          for (java.lang.String _iter36 : struct.userIds)
           {
-            oprot.writeString(_iter28);
+            oprot.writeString(_iter36);
           }
         }
         oprot.writeString(struct.groupId);
@@ -28013,13 +29379,13 @@ public class SharingRegistryService {
         struct.domainId = iprot.readString();
         struct.setDomainIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list29 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.userIds = new java.util.ArrayList<java.lang.String>(_list29.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem30;
-          for (int _i31 = 0; _i31 < _list29.size; ++_i31)
+          org.apache.thrift.protocol.TList _list37 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.userIds = new java.util.ArrayList<java.lang.String>(_list37.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem38;
+          for (int _i39 = 0; _i39 < _list37.size; ++_i39)
           {
-            _elem30 = iprot.readString();
-            struct.userIds.add(_elem30);
+            _elem38 = iprot.readString();
+            struct.userIds.add(_elem38);
           }
         }
         struct.setUserIdsIsSet(true);
@@ -29023,13 +30389,13 @@ public class SharingRegistryService {
             case 2: // USER_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
-                  struct.userIds = new java.util.ArrayList<java.lang.String>(_list32.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem33;
-                  for (int _i34 = 0; _i34 < _list32.size; ++_i34)
+                  org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
+                  struct.userIds = new java.util.ArrayList<java.lang.String>(_list40.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem41;
+                  for (int _i42 = 0; _i42 < _list40.size; ++_i42)
                   {
-                    _elem33 = iprot.readString();
-                    struct.userIds.add(_elem33);
+                    _elem41 = iprot.readString();
+                    struct.userIds.add(_elem41);
                   }
                   iprot.readListEnd();
                 }
@@ -29071,9 +30437,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(USER_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userIds.size()));
-            for (java.lang.String _iter35 : struct.userIds)
+            for (java.lang.String _iter43 : struct.userIds)
             {
-              oprot.writeString(_iter35);
+              oprot.writeString(_iter43);
             }
             oprot.writeListEnd();
           }
@@ -29105,9 +30471,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.domainId);
         {
           oprot.writeI32(struct.userIds.size());
-          for (java.lang.String _iter36 : struct.userIds)
+          for (java.lang.String _iter44 : struct.userIds)
           {
-            oprot.writeString(_iter36);
+            oprot.writeString(_iter44);
           }
         }
         oprot.writeString(struct.groupId);
@@ -29119,13 +30485,13 @@ public class SharingRegistryService {
         struct.domainId = iprot.readString();
         struct.setDomainIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list37 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.userIds = new java.util.ArrayList<java.lang.String>(_list37.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem38;
-          for (int _i39 = 0; _i39 < _list37.size; ++_i39)
+          org.apache.thrift.protocol.TList _list45 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.userIds = new java.util.ArrayList<java.lang.String>(_list45.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem46;
+          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
           {
-            _elem38 = iprot.readString();
-            struct.userIds.add(_elem38);
+            _elem46 = iprot.readString();
+            struct.userIds.add(_elem46);
           }
         }
         struct.setUserIdsIsSet(true);
@@ -31193,13 +32559,13 @@ public class SharingRegistryService {
             case 3: // ADMIN_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
-                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list40.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem41;
-                  for (int _i42 = 0; _i42 < _list40.size; ++_i42)
+                  org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
+                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list48.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem49;
+                  for (int _i50 = 0; _i50 < _list48.size; ++_i50)
                   {
-                    _elem41 = iprot.readString();
-                    struct.adminIds.add(_elem41);
+                    _elem49 = iprot.readString();
+                    struct.adminIds.add(_elem49);
                   }
                   iprot.readListEnd();
                 }
@@ -31238,9 +32604,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(ADMIN_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.adminIds.size()));
-            for (java.lang.String _iter43 : struct.adminIds)
+            for (java.lang.String _iter51 : struct.adminIds)
             {
-              oprot.writeString(_iter43);
+              oprot.writeString(_iter51);
             }
             oprot.writeListEnd();
           }
@@ -31268,9 +32634,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.groupId);
         {
           oprot.writeI32(struct.adminIds.size());
-          for (java.lang.String _iter44 : struct.adminIds)
+          for (java.lang.String _iter52 : struct.adminIds)
           {
-            oprot.writeString(_iter44);
+            oprot.writeString(_iter52);
           }
         }
       }
@@ -31283,13 +32649,13 @@ public class SharingRegistryService {
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list45 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list45.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem46;
-          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
+          org.apache.thrift.protocol.TList _list53 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list53.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem54;
+          for (int _i55 = 0; _i55 < _list53.size; ++_i55)
           {
-            _elem46 = iprot.readString();
-            struct.adminIds.add(_elem46);
+            _elem54 = iprot.readString();
+            struct.adminIds.add(_elem54);
           }
         }
         struct.setAdminIdsIsSet(true);
@@ -32299,13 +33665,13 @@ public class SharingRegistryService {
             case 3: // ADMIN_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
-                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list48.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem49;
-                  for (int _i50 = 0; _i50 < _list48.size; ++_i50)
+                  org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
+                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list56.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem57;
+                  for (int _i58 = 0; _i58 < _list56.size; ++_i58)
                   {
-                    _elem49 = iprot.readString();
-                    struct.adminIds.add(_elem49);
+                    _elem57 = iprot.readString();
+                    struct.adminIds.add(_elem57);
                   }
                   iprot.readListEnd();
                 }
@@ -32344,9 +33710,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(ADMIN_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.adminIds.size()));
-            for (java.lang.String _iter51 : struct.adminIds)
+            for (java.lang.String _iter59 : struct.adminIds)
             {
-              oprot.writeString(_iter51);
+              oprot.writeString(_iter59);
             }
             oprot.writeListEnd();
           }
@@ -32374,9 +33740,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.groupId);
         {
           oprot.writeI32(struct.adminIds.size());
-          for (java.lang.String _iter52 : struct.adminIds)
+          for (java.lang.String _iter60 : struct.adminIds)
           {
-            oprot.writeString(_iter52);
+            oprot.writeString(_iter60);
           }
         }
       }
@@ -32389,13 +33755,13 @@ public class SharingRegistryService {
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list53 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list53.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem54;
-          for (int _i55 = 0; _i55 < _list53.size; ++_i55)
+          org.apache.thrift.protocol.TList _list61 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list61.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem62;
+          for (int _i63 = 0; _i63 < _list61.size; ++_i63)
           {
-            _elem54 = iprot.readString();
-            struct.adminIds.add(_elem54);
+            _elem62 = iprot.readString();
+            struct.adminIds.add(_elem62);
           }
         }
         struct.setAdminIdsIsSet(true);
@@ -36082,14 +37448,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list56.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem57;
-                  for (int _i58 = 0; _i58 < _list56.size; ++_i58)
+                  org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list64.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem65;
+                  for (int _i66 = 0; _i66 < _list64.size; ++_i66)
                   {
-                    _elem57 = new org.apache.airavata.sharing.registry.models.User();
-                    _elem57.read(iprot);
-                    struct.success.add(_elem57);
+                    _elem65 = new org.apache.airavata.sharing.registry.models.User();
+                    _elem65.read(iprot);
+                    struct.success.add(_elem65);
                   }
                   iprot.readListEnd();
                 }
@@ -36127,9 +37493,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.User _iter59 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.User _iter67 : struct.success)
             {
-              _iter59.write(oprot);
+              _iter67.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -36169,9 +37535,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.User _iter60 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.User _iter68 : struct.success)
             {
-              _iter60.write(oprot);
+              _iter68.write(oprot);
             }
           }
         }
@@ -36186,14 +37552,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list61 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list61.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem62;
-            for (int _i63 = 0; _i63 < _list61.size; ++_i63)
+            org.apache.thrift.protocol.TList _list69 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list69.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem70;
+            for (int _i71 = 0; _i71 < _list69.size; ++_i71)
             {
-              _elem62 = new org.apache.airavata.sharing.registry.models.User();
-              _elem62.read(iprot);
-              struct.success.add(_elem62);
+              _elem70 = new org.apache.airavata.sharing.registry.models.User();
+              _elem70.read(iprot);
+              struct.success.add(_elem70);
             }
           }
           struct.setSuccessIsSet(true);
@@ -37285,14 +38651,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list64.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem65;
-                  for (int _i66 = 0; _i66 < _list64.size; ++_i66)
+                  org.apache.thrift.protocol.TList _list72 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list72.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem73;
+                  for (int _i74 = 0; _i74 < _list72.size; ++_i74)
                   {
-                    _elem65 = new org.apache.airavata.sharing.registry.models.UserGroup();
-                    _elem65.read(iprot);
-                    struct.success.add(_elem65);
+                    _elem73 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem73.read(iprot);
+                    struct.success.add(_elem73);
                   }
                   iprot.readListEnd();
                 }
@@ -37330,9 +38696,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter67 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter75 : struct.success)
             {
-              _iter67.write(oprot);
+              _iter75.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -37372,9 +38738,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter68 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter76 : struct.success)
             {
-              _iter68.write(oprot);
+              _iter76.write(oprot);
             }
           }
         }
@@ -37389,14 +38755,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list69 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list69.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem70;
-            for (int _i71 = 0; _i71 < _list69.size; ++_i71)
+            org.apache.thrift.protocol.TList _list77 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list77.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem78;
+            for (int _i79 = 0; _i79 < _list77.size; ++_i79)
             {
-              _elem70 = new org.apache.airavata.sharing.registry.models.UserGroup();
-              _elem70.read(iprot);
-              struct.success.add(_elem70);
+              _elem78 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem78.read(iprot);
+              struct.success.add(_elem78);
             }
           }
           struct.setSuccessIsSet(true);
@@ -37922,13 +39288,13 @@ public class SharingRegistryService {
             case 2: // CHILD_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list72 = iprot.readListBegin();
-                  struct.childIds = new java.util.ArrayList<java.lang.String>(_list72.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem73;
-                  for (int _i74 = 0; _i74 < _list72.size; ++_i74)
+                  org.apache.thrift.protocol.TList _list80 = iprot.readListBegin();
+                  struct.childIds = new java.util.ArrayList<java.lang.String>(_list80.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem81;
+                  for (int _i82 = 0; _i82 < _list80.size; ++_i82)
                   {
-                    _elem73 = iprot.readString();
-                    struct.childIds.add(_elem73);
+                    _elem81 = iprot.readString();
+                    struct.childIds.add(_elem81);
                   }
                   iprot.readListEnd();
                 }
@@ -37970,9 +39336,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(CHILD_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.childIds.size()));
-            for (java.lang.String _iter75 : struct.childIds)
+            for (java.lang.String _iter83 : struct.childIds)
             {
-              oprot.writeString(_iter75);
+              oprot.writeString(_iter83);
             }
             oprot.writeListEnd();
           }
@@ -38004,9 +39370,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.domainId);
         {
           oprot.writeI32(struct.childIds.size());
-          for (java.lang.String _iter76 : struct.childIds)
+          for (java.lang.String _iter84 : struct.childIds)
           {
-            oprot.writeString(_iter76);
+            oprot.writeString(_iter84);
           }
         }
         oprot.writeString(struct.groupId);
@@ -38018,13 +39384,13 @@ public class SharingRegistryService {
         struct.domainId = iprot.readString();
         struct.setDomainIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list77 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.childIds = new java.util.ArrayList<java.lang.String>(_list77.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem78;
-          for (int _i79 = 0; _i79 < _list77.size; ++_i79)
+          org.apache.thrift.protocol.TList _list85 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.childIds = new java.util.ArrayList<java.lang.String>(_list85.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem86;
+          for (int _i87 = 0; _i87 < _list85.size; ++_i87)
           {
-            _elem78 = iprot.readString();
-            struct.childIds.add(_elem78);
+            _elem86 = iprot.readString();
+            struct.childIds.add(_elem86);
           }
         }
         struct.setChildIdsIsSet(true);
@@ -40460,14 +41826,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list80 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list80.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem81;
-                  for (int _i82 = 0; _i82 < _list80.size; ++_i82)
+                  org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list88.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem89;
+                  for (int _i90 = 0; _i90 < _list88.size; ++_i90)
                   {
-                    _elem81 = new org.apache.airavata.sharing.registry.models.UserGroup();
-                    _elem81.read(iprot);
-                    struct.success.add(_elem81);
+                    _elem89 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem89.read(iprot);
+                    struct.success.add(_elem89);
                   }
                   iprot.readListEnd();
                 }
@@ -40505,9 +41871,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter83 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter91 : struct.success)
             {
-              _iter83.write(oprot);
+              _iter91.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -40547,9 +41913,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter84 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter92 : struct.success)
             {
-              _iter84.write(oprot);
+              _iter92.write(oprot);
             }
           }
         }
@@ -40564,14 +41930,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list85 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list85.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem86;
-            for (int _i87 = 0; _i87 < _list85.size; ++_i87)
+            org.apache.thrift.protocol.TList _list93 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list93.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem94;
+            for (int _i95 = 0; _i95 < _list93.size; ++_i95)
             {
-              _elem86 = new org.apache.airavata.sharing.registry.models.UserGroup();
-              _elem86.read(iprot);
-              struct.success.add(_elem86);
+              _elem94 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem94.read(iprot);
+              struct.success.add(_elem94);
             }
           }
           struct.setSuccessIsSet(true);
@@ -46263,14 +47629,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.EntityType>(_list88.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.EntityType _elem89;
-                  for (int _i90 = 0; _i90 < _list88.size; ++_i90)
+                  org.apache.thrift.protocol.TList _list96 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.EntityType>(_list96.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.EntityType _elem97;
+                  for (int _i98 = 0; _i98 < _list96.size; ++_i98)
                   {
-                    _elem89 = new org.apache.airavata.sharing.registry.models.EntityType();
-                    _elem89.read(iprot);
-                    struct.success.add(_elem89);
+                    _elem97 = new org.apache.airavata.sharing.registry.models.EntityType();
+                    _elem97.read(iprot);
+                    struct.success.add(_elem97);
                   }
                   iprot.readListEnd();
                 }
@@ -46308,9 +47674,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.EntityType _iter91 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.EntityType _iter99 : struct.success)
             {
-              _iter91.write(oprot);
+              _iter99.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -46350,9 +47716,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.EntityType _iter92 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.EntityType _iter100 : struct.success)
             {
-              _iter92.write(oprot);
+              _iter100.write(oprot);
             }
           }
         }
@@ -46367,14 +47733,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list93 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.EntityType>(_list93.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.EntityType _elem94;
-            for (int _i95 = 0; _i95 < _list93.size; ++_i95)
+            org.apache.thrift.protocol.TList _list101 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.EntityType>(_list101.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.EntityType _elem102;
+            for (int _i103 = 0; _i103 < _list101.size; ++_i103)
             {
-              _elem94 = new org.apache.airavata.sharing.registry.models.EntityType();
-              _elem94.read(iprot);
-              struct.success.add(_elem94);
+              _elem102 = new org.apache.airavata.sharing.registry.models.EntityType();
+              _elem102.read(iprot);
+              struct.success.add(_elem102);
             }
           }
           struct.setSuccessIsSet(true);
@@ -51661,14 +53027,14 @@ public class SharingRegistryService {
             case 3: // FILTERS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list96 = iprot.readListBegin();
-                  struct.filters = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.SearchCriteria>(_list96.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.SearchCriteria _elem97;
-                  for (int _i98 = 0; _i98 < _list96.size; ++_i98)
+                  org.apache.thrift.protocol.TList _list104 = iprot.readListBegin();
+                  struct.filters = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.SearchCriteria>(_list104.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.SearchCriteria _elem105;
+                  for (int _i106 = 0; _i106 < _list104.size; ++_i106)
                   {
-                    _elem97 = new org.apache.airavata.sharing.registry.models.SearchCriteria();
-                    _elem97.read(iprot);
-                    struct.filters.add(_elem97);
+                    _elem105 = new org.apache.airavata.sharing.registry.models.SearchCriteria();
+                    _elem105.read(iprot);
+                    struct.filters.add(_elem105);
                   }
                   iprot.readListEnd();
                 }
@@ -51729,9 +53095,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(FILTERS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.filters.size()));
-            for (org.apache.airavata.sharing.registry.models.SearchCriteria _iter99 : struct.filters)
+            for (org.apache.airavata.sharing.registry.models.SearchCriteria _iter107 : struct.filters)
             {
-              _iter99.write(oprot);
+              _iter107.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -51765,9 +53131,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.userId);
         {
           oprot.writeI32(struct.filters.size());
-          for (org.apache.airavata.sharing.registry.models.SearchCriteria _iter100 : struct.filters)
+          for (org.apache.airavata.sharing.registry.models.SearchCriteria _iter108 : struct.filters)
           {
-            _iter100.write(oprot);
+            _iter108.write(oprot);
           }
         }
         oprot.writeI32(struct.offset);
@@ -51782,14 +53148,14 @@ public class SharingRegistryService {
         struct.userId = iprot.readString();
         struct.setUserIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list101 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.filters = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.SearchCriteria>(_list101.size);
-          @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.SearchCriteria _elem102;
-          for (int _i103 = 0; _i103 < _list101.size; ++_i103)
+          org.apache.thrift.protocol.TList _list109 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.filters = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.SearchCriteria>(_list109.size);
+          @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.SearchCriteria _elem110;
+          for (int _i111 = 0; _i111 < _list109.size; ++_i111)
           {
-            _elem102 = new org.apache.airavata.sharing.registry.models.SearchCriteria();
-            _elem102.read(iprot);
-            struct.filters.add(_elem102);
+            _elem110 = new org.apache.airavata.sharing.registry.models.SearchCriteria();
+            _elem110.read(iprot);
+            struct.filters.add(_elem110);
           }
         }
         struct.setFiltersIsSet(true);
@@ -52216,14 +53582,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list104 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.Entity>(_list104.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.Entity _elem105;
-                  for (int _i106 = 0; _i106 < _list104.size; ++_i106)
+                  org.apache.thrift.protocol.TList _list112 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.Entity>(_list112.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.Entity _elem113;
+                  for (int _i114 = 0; _i114 < _list112.size; ++_i114)
                   {
-                    _elem105 = new org.apache.airavata.sharing.registry.models.Entity();
-                    _elem105.read(iprot);
-                    struct.success.add(_elem105);
+                    _elem113 = new org.apache.airavata.sharing.registry.models.Entity();
+                    _elem113.read(iprot);
+                    struct.success.add(_elem113);
                   }
                   iprot.readListEnd();
                 }
@@ -52261,9 +53627,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.Entity _iter107 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.Entity _iter115 : struct.success)
             {
-              _iter107.write(oprot);
+              _iter115.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -52303,9 +53669,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.Entity _iter108 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.Entity _iter116 : struct.success)
             {
-              _iter108.write(oprot);
+              _iter116.write(oprot);
             }
           }
         }
@@ -52320,14 +53686,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list109 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.Entity>(_list109.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.Entity _elem110;
-            for (int _i111 = 0; _i111 < _list109.size; ++_i111)
+            org.apache.thrift.protocol.TList _list117 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.Entity>(_list117.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.Entity _elem118;
+            for (int _i119 = 0; _i119 < _list117.size; ++_i119)
             {
-              _elem110 = new org.apache.airavata.sharing.registry.models.Entity();
-              _elem110.read(iprot);
-              struct.success.add(_elem110);
+              _elem118 = new org.apache.airavata.sharing.registry.models.Entity();
+              _elem118.read(iprot);
+              struct.success.add(_elem118);
             }
           }
           struct.setSuccessIsSet(true);
@@ -53330,14 +54696,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list112 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list112.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem113;
-                  for (int _i114 = 0; _i114 < _list112.size; ++_i114)
+                  org.apache.thrift.protocol.TList _list120 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list120.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem121;
+                  for (int _i122 = 0; _i122 < _list120.size; ++_i122)
                   {
-                    _elem113 = new org.apache.airavata.sharing.registry.models.User();
-                    _elem113.read(iprot);
-                    struct.success.add(_elem113);
+                    _elem121 = new org.apache.airavata.sharing.registry.models.User();
+                    _elem121.read(iprot);
+                    struct.success.add(_elem121);
                   }
                   iprot.readListEnd();
                 }
@@ -53375,9 +54741,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.User _iter115 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.User _iter123 : struct.success)
             {
-              _iter115.write(oprot);
+              _iter123.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -53417,9 +54783,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.User _iter116 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.User _iter124 : struct.success)
             {
-              _iter116.write(oprot);
+              _iter124.write(oprot);
             }
           }
         }
@@ -53434,14 +54800,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list117 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list117.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem118;
-            for (int _i119 = 0; _i119 < _list117.size; ++_i119)
+            org.apache.thrift.protocol.TList _list125 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list125.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem126;
+            for (int _i127 = 0; _i127 < _list125.size; ++_i127)
             {
-              _elem118 = new org.apache.airavata.sharing.registry.models.User();
-              _elem118.read(iprot);
-              struct.success.add(_elem118);
+              _elem126 = new org.apache.airavata.sharing.registry.models.User();
+              _elem126.read(iprot);
+              struct.success.add(_elem126);
             }
           }
           struct.setSuccessIsSet(true);
@@ -54444,14 +55810,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list120 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list120.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem121;
-                  for (int _i122 = 0; _i122 < _list120.size; ++_i122)
+                  org.apache.thrift.protocol.TList _list128 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list128.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem129;
+                  for (int _i130 = 0; _i130 < _list128.size; ++_i130)
                   {
-                    _elem121 = new org.apache.airavata.sharing.registry.models.User();
-                    _elem121.read(iprot);
-                    struct.success.add(_elem121);
+                    _elem129 = new org.apache.airavata.sharing.registry.models.User();
+                    _elem129.read(iprot);
+                    struct.success.add(_elem129);
                   }
                   iprot.readListEnd();
                 }
@@ -54489,9 +55855,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.User _iter123 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.User _iter131 : struct.success)
             {
-              _iter123.write(oprot);
+              _iter131.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -54531,9 +55897,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.User _iter124 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.User _iter132 : struct.success)
             {
-              _iter124.write(oprot);
+              _iter132.write(oprot);
             }
           }
         }
@@ -54548,14 +55914,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list125 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list125.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem126;
-            for (int _i127 = 0; _i127 < _list125.size; ++_i127)
+            org.apache.thrift.protocol.TList _list133 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.User>(_list133.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.User _elem134;
+            for (int _i135 = 0; _i135 < _list133.size; ++_i135)
             {
-              _elem126 = new org.apache.airavata.sharing.registry.models.User();
-              _elem126.read(iprot);
-              struct.success.add(_elem126);
+              _elem134 = new org.apache.airavata.sharing.registry.models.User();
+              _elem134.read(iprot);
+              struct.success.add(_elem134);
             }
           }
           struct.setSuccessIsSet(true);
@@ -55558,14 +56924,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list128 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list128.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem129;
-                  for (int _i130 = 0; _i130 < _list128.size; ++_i130)
+                  org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list136.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem137;
+                  for (int _i138 = 0; _i138 < _list136.size; ++_i138)
                   {
-                    _elem129 = new org.apache.airavata.sharing.registry.models.UserGroup();
-                    _elem129.read(iprot);
-                    struct.success.add(_elem129);
+                    _elem137 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem137.read(iprot);
+                    struct.success.add(_elem137);
                   }
                   iprot.readListEnd();
                 }
@@ -55603,9 +56969,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter131 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter139 : struct.success)
             {
-              _iter131.write(oprot);
+              _iter139.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -55645,9 +57011,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter132 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter140 : struct.success)
             {
-              _iter132.write(oprot);
+              _iter140.write(oprot);
             }
           }
         }
@@ -55662,14 +57028,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list133 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list133.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem134;
-            for (int _i135 = 0; _i135 < _list133.size; ++_i135)
+            org.apache.thrift.protocol.TList _list141 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list141.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem142;
+            for (int _i143 = 0; _i143 < _list141.size; ++_i143)
             {
-              _elem134 = new org.apache.airavata.sharing.registry.models.UserGroup();
-              _elem134.read(iprot);
-              struct.success.add(_elem134);
+              _elem142 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem142.read(iprot);
+              struct.success.add(_elem142);
             }
           }
           struct.setSuccessIsSet(true);
@@ -56672,14 +58038,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list136.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem137;
-                  for (int _i138 = 0; _i138 < _list136.size; ++_i138)
+                  org.apache.thrift.protocol.TList _list144 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list144.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem145;
+                  for (int _i146 = 0; _i146 < _list144.size; ++_i146)
                   {
-                    _elem137 = new org.apache.airavata.sharing.registry.models.UserGroup();
-                    _elem137.read(iprot);
-                    struct.success.add(_elem137);
+                    _elem145 = new org.apache.airavata.sharing.registry.models.UserGroup();
+                    _elem145.read(iprot);
+                    struct.success.add(_elem145);
                   }
                   iprot.readListEnd();
                 }
@@ -56717,9 +58083,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter139 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter147 : struct.success)
             {
-              _iter139.write(oprot);
+              _iter147.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -56759,9 +58125,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.UserGroup _iter140 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.UserGroup _iter148 : struct.success)
             {
-              _iter140.write(oprot);
+              _iter148.write(oprot);
             }
           }
         }
@@ -56776,14 +58142,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list141 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list141.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem142;
-            for (int _i143 = 0; _i143 < _list141.size; ++_i143)
+            org.apache.thrift.protocol.TList _list149 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.UserGroup>(_list149.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.UserGroup _elem150;
+            for (int _i151 = 0; _i151 < _list149.size; ++_i151)
             {
-              _elem142 = new org.apache.airavata.sharing.registry.models.UserGroup();
-              _elem142.read(iprot);
-              struct.success.add(_elem142);
+              _elem150 = new org.apache.airavata.sharing.registry.models.UserGroup();
+              _elem150.read(iprot);
+              struct.success.add(_elem150);
             }
           }
           struct.setSuccessIsSet(true);
@@ -62475,14 +63841,14 @@ public class SharingRegistryService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list144 = iprot.readListBegin();
-                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list144.size);
-                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.PermissionType _elem145;
-                  for (int _i146 = 0; _i146 < _list144.size; ++_i146)
+                  org.apache.thrift.protocol.TList _list152 = iprot.readListBegin();
+                  struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list152.size);
+                  @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.PermissionType _elem153;
+                  for (int _i154 = 0; _i154 < _list152.size; ++_i154)
                   {
-                    _elem145 = new org.apache.airavata.sharing.registry.models.PermissionType();
-                    _elem145.read(iprot);
-                    struct.success.add(_elem145);
+                    _elem153 = new org.apache.airavata.sharing.registry.models.PermissionType();
+                    _elem153.read(iprot);
+                    struct.success.add(_elem153);
                   }
                   iprot.readListEnd();
                 }
@@ -62520,9 +63886,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.sharing.registry.models.PermissionType _iter147 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.PermissionType _iter155 : struct.success)
             {
-              _iter147.write(oprot);
+              _iter155.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -62562,9 +63928,9 @@ public class SharingRegistryService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.sharing.registry.models.PermissionType _iter148 : struct.success)
+            for (org.apache.airavata.sharing.registry.models.PermissionType _iter156 : struct.success)
             {
-              _iter148.write(oprot);
+              _iter156.write(oprot);
             }
           }
         }
@@ -62579,14 +63945,14 @@ public class SharingRegistryService {
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list149 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list149.size);
-            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.PermissionType _elem150;
-            for (int _i151 = 0; _i151 < _list149.size; ++_i151)
+            org.apache.thrift.protocol.TList _list157 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+            struct.success = new java.util.ArrayList<org.apache.airavata.sharing.registry.models.PermissionType>(_list157.size);
+            @org.apache.thrift.annotation.Nullable org.apache.airavata.sharing.registry.models.PermissionType _elem158;
+            for (int _i159 = 0; _i159 < _list157.size; ++_i159)
             {
-              _elem150 = new org.apache.airavata.sharing.registry.models.PermissionType();
-              _elem150.read(iprot);
-              struct.success.add(_elem150);
+              _elem158 = new org.apache.airavata.sharing.registry.models.PermissionType();
+              _elem158.read(iprot);
+              struct.success.add(_elem158);
             }
           }
           struct.setSuccessIsSet(true);
@@ -63285,13 +64651,13 @@ public class SharingRegistryService {
             case 3: // USER_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list152 = iprot.readListBegin();
-                  struct.userList = new java.util.ArrayList<java.lang.String>(_list152.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem153;
-                  for (int _i154 = 0; _i154 < _list152.size; ++_i154)
+                  org.apache.thrift.protocol.TList _list160 = iprot.readListBegin();
+                  struct.userList = new java.util.ArrayList<java.lang.String>(_list160.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem161;
+                  for (int _i162 = 0; _i162 < _list160.size; ++_i162)
                   {
-                    _elem153 = iprot.readString();
-                    struct.userList.add(_elem153);
+                    _elem161 = iprot.readString();
+                    struct.userList.add(_elem161);
                   }
                   iprot.readListEnd();
                 }
@@ -63349,9 +64715,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(USER_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userList.size()));
-            for (java.lang.String _iter155 : struct.userList)
+            for (java.lang.String _iter163 : struct.userList)
             {
-              oprot.writeString(_iter155);
+              oprot.writeString(_iter163);
             }
             oprot.writeListEnd();
           }
@@ -63387,9 +64753,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.userList.size());
-          for (java.lang.String _iter156 : struct.userList)
+          for (java.lang.String _iter164 : struct.userList)
           {
-            oprot.writeString(_iter156);
+            oprot.writeString(_iter164);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -63404,13 +64770,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list157 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.userList = new java.util.ArrayList<java.lang.String>(_list157.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem158;
-          for (int _i159 = 0; _i159 < _list157.size; ++_i159)
+          org.apache.thrift.protocol.TList _list165 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.userList = new java.util.ArrayList<java.lang.String>(_list165.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem166;
+          for (int _i167 = 0; _i167 < _list165.size; ++_i167)
           {
-            _elem158 = iprot.readString();
-            struct.userList.add(_elem158);
+            _elem166 = iprot.readString();
+            struct.userList.add(_elem166);
           }
         }
         struct.setUserListIsSet(true);
@@ -64509,13 +65875,13 @@ public class SharingRegistryService {
             case 3: // USER_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list160 = iprot.readListBegin();
-                  struct.userList = new java.util.ArrayList<java.lang.String>(_list160.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem161;
-                  for (int _i162 = 0; _i162 < _list160.size; ++_i162)
+                  org.apache.thrift.protocol.TList _list168 = iprot.readListBegin();
+                  struct.userList = new java.util.ArrayList<java.lang.String>(_list168.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem169;
+                  for (int _i170 = 0; _i170 < _list168.size; ++_i170)
                   {
-                    _elem161 = iprot.readString();
-                    struct.userList.add(_elem161);
+                    _elem169 = iprot.readString();
+                    struct.userList.add(_elem169);
                   }
                   iprot.readListEnd();
                 }
@@ -64562,9 +65928,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(USER_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userList.size()));
-            for (java.lang.String _iter163 : struct.userList)
+            for (java.lang.String _iter171 : struct.userList)
             {
-              oprot.writeString(_iter163);
+              oprot.writeString(_iter171);
             }
             oprot.writeListEnd();
           }
@@ -64597,9 +65963,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.userList.size());
-          for (java.lang.String _iter164 : struct.userList)
+          for (java.lang.String _iter172 : struct.userList)
           {
-            oprot.writeString(_iter164);
+            oprot.writeString(_iter172);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -64613,13 +65979,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list165 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.userList = new java.util.ArrayList<java.lang.String>(_list165.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem166;
-          for (int _i167 = 0; _i167 < _list165.size; ++_i167)
+          org.apache.thrift.protocol.TList _list173 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.userList = new java.util.ArrayList<java.lang.String>(_list173.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem174;
+          for (int _i175 = 0; _i175 < _list173.size; ++_i175)
           {
-            _elem166 = iprot.readString();
-            struct.userList.add(_elem166);
+            _elem174 = iprot.readString();
+            struct.userList.add(_elem174);
           }
         }
         struct.setUserListIsSet(true);
@@ -65796,13 +67162,13 @@ public class SharingRegistryService {
             case 3: // GROUP_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list168 = iprot.readListBegin();
-                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list168.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem169;
-                  for (int _i170 = 0; _i170 < _list168.size; ++_i170)
+                  org.apache.thrift.protocol.TList _list176 = iprot.readListBegin();
+                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list176.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem177;
+                  for (int _i178 = 0; _i178 < _list176.size; ++_i178)
                   {
-                    _elem169 = iprot.readString();
-                    struct.groupList.add(_elem169);
+                    _elem177 = iprot.readString();
+                    struct.groupList.add(_elem177);
                   }
                   iprot.readListEnd();
                 }
@@ -65860,9 +67226,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(GROUP_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.groupList.size()));
-            for (java.lang.String _iter171 : struct.groupList)
+            for (java.lang.String _iter179 : struct.groupList)
             {
-              oprot.writeString(_iter171);
+              oprot.writeString(_iter179);
             }
             oprot.writeListEnd();
           }
@@ -65898,9 +67264,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.groupList.size());
-          for (java.lang.String _iter172 : struct.groupList)
+          for (java.lang.String _iter180 : struct.groupList)
           {
-            oprot.writeString(_iter172);
+            oprot.writeString(_iter180);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -65915,13 +67281,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list173 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.groupList = new java.util.ArrayList<java.lang.String>(_list173.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem174;
-          for (int _i175 = 0; _i175 < _list173.size; ++_i175)
+          org.apache.thrift.protocol.TList _list181 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.groupList = new java.util.ArrayList<java.lang.String>(_list181.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem182;
+          for (int _i183 = 0; _i183 < _list181.size; ++_i183)
           {
-            _elem174 = iprot.readString();
-            struct.groupList.add(_elem174);
+            _elem182 = iprot.readString();
+            struct.groupList.add(_elem182);
           }
         }
         struct.setGroupListIsSet(true);
@@ -67020,13 +68386,13 @@ public class SharingRegistryService {
             case 3: // GROUP_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list176 = iprot.readListBegin();
-                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list176.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _elem177;
-                  for (int _i178 = 0; _i178 < _list176.size; ++_i178)
+                  org.apache.thrift.protocol.TList _list184 = iprot.readListBegin();
+                  struct.groupList = new java.util.ArrayList<java.lang.String>(_list184.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _elem185;
+                  for (int _i186 = 0; _i186 < _list184.size; ++_i186)
                   {
-                    _elem177 = iprot.readString();
-                    struct.groupList.add(_elem177);
+                    _elem185 = iprot.readString();
+                    struct.groupList.add(_elem185);
                   }
                   iprot.readListEnd();
                 }
@@ -67073,9 +68439,9 @@ public class SharingRegistryService {
           oprot.writeFieldBegin(GROUP_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.groupList.size()));
-            for (java.lang.String _iter179 : struct.groupList)
+            for (java.lang.String _iter187 : struct.groupList)
             {
-              oprot.writeString(_iter179);
+              oprot.writeString(_iter187);
             }
             oprot.writeListEnd();
           }
@@ -67108,9 +68474,9 @@ public class SharingRegistryService {
         oprot.writeString(struct.entityId);
         {
           oprot.writeI32(struct.groupList.size());
-          for (java.lang.String _iter180 : struct.groupList)
+          for (java.lang.String _iter188 : struct.groupList)
           {
-            oprot.writeString(_iter180);
+            oprot.writeString(_iter188);
           }
         }
         oprot.writeString(struct.permissionTypeId);
@@ -67124,13 +68490,13 @@ public class SharingRegistryService {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list181 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.groupList = new java.util.ArrayList<java.lang.String>(_list181.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem182;
-          for (int _i183 = 0; _i183 < _list181.size; ++_i183)
+          org.apache.thrift.protocol.TList _list189 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.groupList = new java.util.ArrayList<java.lang.String>(_list189.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem190;
+          for (int _i191 = 0; _i191 < _list189.size; ++_i191)
           {
-            _elem182 = iprot.readString();
-            struct.groupList.add(_elem182);
+            _elem190 = iprot.readString();
+            struct.groupList.add(_elem190);
           }
         }
         struct.setGroupListIsSet(true);

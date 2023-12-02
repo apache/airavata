@@ -72,6 +72,13 @@ struct UserConfigurationDataModel {
     12: optional list<scheduling_model.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList,
 }
 
+struct CpuUsage {
+    1: required string experimentId,
+    2: required string executionId,
+    3: required string userName,
+    4: required i64 cpuHours
+}
+
 /**
  * A structure holding the experiment metadata and its child models.
  *

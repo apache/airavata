@@ -42,17 +42,9 @@ public class SearchCriteria implements org.apache.thrift.TBase<SearchCriteria, S
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new SearchCriteriaStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new SearchCriteriaTupleSchemeFactory();
 
-  /**
-   * 
-   * @see EntitySearchField
-   */
-  public @org.apache.thrift.annotation.Nullable EntitySearchField searchField; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String value; // optional
-  /**
-   * 
-   * @see SearchCondition
-   */
-  public @org.apache.thrift.annotation.Nullable SearchCondition searchCondition; // optional
+  private @org.apache.thrift.annotation.Nullable EntitySearchField searchField; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String value; // optional
+  private @org.apache.thrift.annotation.Nullable SearchCondition searchCondition; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -188,9 +180,8 @@ public class SearchCriteria implements org.apache.thrift.TBase<SearchCriteria, S
    * 
    * @see EntitySearchField
    */
-  public SearchCriteria setSearchField(@org.apache.thrift.annotation.Nullable EntitySearchField searchField) {
+  public void setSearchField(@org.apache.thrift.annotation.Nullable EntitySearchField searchField) {
     this.searchField = searchField;
-    return this;
   }
 
   public void unsetSearchField() {
@@ -213,9 +204,8 @@ public class SearchCriteria implements org.apache.thrift.TBase<SearchCriteria, S
     return this.value;
   }
 
-  public SearchCriteria setValue(@org.apache.thrift.annotation.Nullable java.lang.String value) {
+  public void setValue(@org.apache.thrift.annotation.Nullable java.lang.String value) {
     this.value = value;
-    return this;
   }
 
   public void unsetValue() {
@@ -246,9 +236,8 @@ public class SearchCriteria implements org.apache.thrift.TBase<SearchCriteria, S
    * 
    * @see SearchCondition
    */
-  public SearchCriteria setSearchCondition(@org.apache.thrift.annotation.Nullable SearchCondition searchCondition) {
+  public void setSearchCondition(@org.apache.thrift.annotation.Nullable SearchCondition searchCondition) {
     this.searchCondition = searchCondition;
-    return this;
   }
 
   public void unsetSearchCondition() {
@@ -559,8 +548,6 @@ public class SearchCriteria implements org.apache.thrift.TBase<SearchCriteria, S
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

@@ -1902,6 +1902,49 @@ class APIServerClient(object):
                              )
             raise
 
+    def get_cpu_usages(self, authz_token, gateway_id, from_time, to_time):
+        """
+
+        Get Cpu Usages
+        Get Cpu Hours used by experiments within a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+
+        @param gateway_id
+              Unique identifier of the gateway making the request to fetch usage.
+
+        @param from_time
+              Starting date time.
+
+        @param to_time
+              Ending date time.
+
+
+
+        Parameters:
+         - authz_token
+         - gateway_id
+         - from_time
+         - to_time
+        """
+
+        try:
+            return self.api_server_client_pool.getCpuUsages(authz_token, gateway_id, from_time, to_time)
+        except InvalidRequestException:
+            logger.exception("Error occurred in get_cpu_usages, probably due to invalid parameters ",
+                             )
+            raise
+        except AiravataClientException:
+            logger.exception("Error occurred in get_cpu_usages, probably due to  client misconfiguration ",
+                             )
+            raise
+        except AiravataSystemException:
+            logger.exception("Error occurred in get_cpu_usages, probably due to server side error ",
+                            )
+            raise
+        except AuthorizationException:
+            logger.exception("Error occurred in get_cpu_usages, probably due to invalid authz token ",
+                             )
+            raise
+
     def register_application_module(self, authz_token, gateway_id, application_module):
         """
 

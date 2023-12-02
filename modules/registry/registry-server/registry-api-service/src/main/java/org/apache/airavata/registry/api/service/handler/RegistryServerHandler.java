@@ -77,6 +77,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 public class RegistryServerHandler implements RegistryService.Iface {
@@ -1240,6 +1241,43 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error(airavataExperimentId, "Error while retrieving the job details", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     *
+     * Get Cpu Usages
+     * Get Cpu Hours used by experiments within a specific time period. This feature is available only for admins of a particular gateway. Gateway admin access is managed by the user roles.
+     * 
+     * @param gatewayId Unique identifier of the gateway making the request to fetch statistics.
+     *
+     * @param fromTime Starting date time.
+     *
+     * @param toTime Ending date time.
+     *
+     */
+    @Override
+    public List<CpuUsage> getCpuUsages(String gatewayId, long fromTime, long toTime) throws RegistryServiceException, TException {
+        if(!isGatewayExistInternal(gatewayId)) {
+            logger.error("Gateway does not exist. Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            List<CpuUsage> cpuUsages = new ArrayList<>();
+            Timestamp fromTimeStamp = new Timestamp(fromTime);
+            Timestamp toTimestamp = new Timestamp(toTime);
+            if(fromTimeStamp.after(toTimestamp)) {
+                logger.error("fromTime must not be after toTime");
+                return cpuUsages;
+            }
+            cpuUsages = jobRepository.getCpuUsages(gatewayId, fromTime, toTime);
+            return cpuUsages;
+            
+        } catch (Exception e) {
+            logger.error("Error while retrieving cpu usages " + e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving cpu usages. More info : " + e.getMessage());
             throw exception;
         }
     }
