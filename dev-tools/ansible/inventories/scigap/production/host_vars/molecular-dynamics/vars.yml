@@ -52,7 +52,7 @@ django_extra_settings:
     Shared:
       path: /var/www/portals/gateway-user-data/molecular-dynamics/shared
 
-admin_emails: "[('Giri Krishnan', 'gkrishnan@health.ucsd.edu'),('Eroma Abeysinghe', 'eroma@gatech.edu')]"
+admin_emails: "[('Diego Gomes', 'deb0054@auburn.edu'),('Sudhakar Pamidighantam', 'spamidig@gatech.edu'),('Eroma Abeysinghe', 'eroma@gatech.edu')]"
 portal_title: "Molecular Dynamics Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
