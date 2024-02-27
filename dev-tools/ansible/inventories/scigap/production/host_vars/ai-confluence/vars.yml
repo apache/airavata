@@ -50,7 +50,7 @@ experiment_data_dir: "{{ user_data_dir }}/ai-confluence"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVSe+qdmtbC0557O4C+Xv5jrSr66Wjj/zx9fDHhX3j5xHxWA90mnc5HNfFRSM+IqL4kICY83M7YQWClOdpITMb1tLFNzY4ZkR4X7xTxFw8MGkMGm3lEPFhr2Sht7CwC3Br/5x4wUIlNfWMkWmRT+evaM1GGHozkjgCVutsSINLKbz38L2/ZYlJ5l14WaCq602IY8qUFDNUzSC8Tl44IyG9l6ocnEvE4sBbMiFKx38jIRTlZDyIqJ5V1WzeW0xm7wzVQQsAQHn7x2yTNgJ2I6EX4kJeyjwXIbl4N70QuISaHz4XOe6/L1a/c2fMuLmjc5GgjoUPxscvyCvCrTSu/3Zf"
 django_user_data_archive_max_age_days: 180
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+admin_emails: "[('Sudhakar Pamidighantam', 'spamidig@gatech.edu'),('Eroma Abeysinghe', 'eroma@gatech.edu'),('Diab Abueidda','abueidd2@illinois.edu')]"
 portal_title: "AI Confluence Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
