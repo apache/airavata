@@ -44,7 +44,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFkcK2
 django_hidden_airavata_apps: "[]"
 django_user_data_archive_max_age_days: 180
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Samuel Rivera','sammy.rivera@oregonstate.edu'),('Meghna Babbar-Sebens','meghna@oregonstate.edu')]"
+admin_emails: "[('Eroma Abeysinghe', 'eroma@gatech.edu'),('Samuel Rivera','sammy.rivera@oregonstate.edu'),('Meghna Babbar-Sebens','meghna@oregonstate.edu')]"
 portal_title: "InterACTWEL Gateway"
 
 ...
