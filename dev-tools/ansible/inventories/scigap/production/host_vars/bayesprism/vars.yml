@@ -58,7 +58,7 @@ gateway_id: "bayesprism"
 experiment_data_dir: "{{ user_data_dir }}/bayesprism"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKu0jZiwCbADA1JeyU+HNQWsMmY+kgryiwt7C1Apt2CqECtFFOUW+uEvWDVFHqdzitAXUbo+0ZiEzdr4Qk045s+HdFe5R1Z9QhxNNSePJpmQldbW+h6NpdrdsXmHsocPcm6cHVbYNUCRvuTf9qy0cZBlYV09yXzWg2oSXRkcNMJuvjXCDQJk5VyxpQz8vk2Px/fEFkRikvACeotUaKvCjxVXc+h+Q4vRmKlrBOG9GGJRliqLEopu0jKVZ68QmfYANsD/i2/SOGn2XPR8wqTSUjcwlrG9avE7DwEPB2lynRvngklp/fUeBGFcujqEpdZ0A1dYqgV6Lrls/x3aFCw0i/"
 
-admin_emails: "[('Eroma Abeysinghe', 'eabeysin@iu.edu'),('Tinyi Chu', 'ChuT@mskcc.org'),('Zhong Wang', 'zw355@cornell.edu')]"
+admin_emails: "[('Eroma Abeysinghe', 'eroma@gatech.edu'),('Tinyi Chu', 'ChuT@mskcc.org'),('Zhong Wang', 'zw355@cornell.edu')]"
 portal_title: "BayesPrism Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
