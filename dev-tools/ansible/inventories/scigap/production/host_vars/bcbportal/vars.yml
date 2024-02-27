@@ -49,7 +49,7 @@ experiment_data_dir: "{{ user_data_dir }}/bcbportal"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1WOyu47oKrRhIBUGI5aJsFk4wxCEgf3DzFdlYrWbGacfEETbE1Cxe8Tdj5TevIflui+HWJq5quHkMiZtHhGZbC4JMDKlzJaBn5vHpEAWtyvCXglkpu+Q+/XGLOwqy4XGa4rdf/CXvuWgc5+XCBb++A/eBswQVPt4C631Xsym7LA1NQXK3XxJApP/2IHnWtJI2d9g5TnzH8Oa99d146KmAKMl73lsCZtC1saBtGRsggJ7dRal7ush3XqiNCMgWPM8QU0ogbOBXDUZKRGAoY+frDaJdA3eQISiRRknpFyZwWcXU0CGnqaBiJdJEGYKLMvP9qBz/juN8jKMBkEJLGU1/"
 django_user_data_archive_max_age_days: 180
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu')]"
+admin_emails: "[('Rob Quick', 'rquick@iu.edu'),('Jun Wang','wang208@iu.edu'),('Eroma Abeysinghe','eroma@gatech.edu')]"
 portal_title: "BCB Gateway"
 
 django_google_analytics_tracking_id: "UA-178055397-1"
