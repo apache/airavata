@@ -57,7 +57,7 @@ gateway_id: "vlab-plasmascience"
 experiment_data_dir: "{{ user_data_dir }}/vlab-plasmascience"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCQ+coR/ZU4cnFFKt7jXUxbSQiEvSJtRl8gT6ZgE5kbMKjruAnwVH0H9M/FUyOxutT7p4qMmdBuRJJtUNiYfPJ/zgJqGweoXbk5sJwYRBSM2v8DNI9394ffun3N+46MMhaSinBDbhLPXOE9sPZlfmhUozwsC7+32Hd0Hv48cYpNCDB8ccsKzCcUzfD/OesIxuM1d8FE4O0FA66MrPmquzQM0otG2Tx7nOeFMjXWzYgk0fhEYJHMHhdMXRoVVT/eeuTvvmOGDbTNwtWaG/hoBAL643Tk/YgILE03WrmS0iULmC9DZ8sxCntFpqZjlOn5H9MvFwV3xfAU3RsaDw3xAGg7"
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu'),('Cameron Smith', 'smithc11@rpi.edu')]"
+admin_emails: "[('Eroma Abeysinghe', 'eroma@gatech.edu'),('Cameron Smith', 'smithc11@rpi.edu')]"
 portal_title: "Plasma Science Virtual Laboratory"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
