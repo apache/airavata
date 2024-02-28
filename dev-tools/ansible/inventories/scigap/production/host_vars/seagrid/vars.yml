@@ -55,7 +55,7 @@ django_extra_settings:
     Shared:
       path: /var/www/portals/gateway-user-data/seagrid/Shared
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'), ('Sudhakar Pamidighantam', 'pamidigs@iu.edu'), ('Eroma Abeysinghe', 'eabeysin@iu.edu')]"
+admin_emails: "[('Sudhakar Pamidighantam', 'spamidig@gatech.edu'), ('Eroma Abeysinghe', 'eabeysin@gatech.edu')]"
 portal_title: "SEAGrid Portal"
 
 django_google_analytics_tracking_id: "UA-110457476-1"
