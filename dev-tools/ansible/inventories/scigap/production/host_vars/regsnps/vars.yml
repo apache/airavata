@@ -57,7 +57,7 @@ experiment_data_dir: "{{ user_data_dir }}/regsnps"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAlldWcIK6yNgrj8Firns6JzHVv7iHEdj+VRe6GBIbPSsvY70dx6wfxxCaQvaEvfbXasdPsteTGxjYZ1qSiFQ5XWbX0azThxtMpz/ycQ0V9npsEhRMQ7dzRCI/r5RJOMryVK8KeHRxKJC3SUg4NkDqQ9TFkxYv0vWdsuhPFflpR2QvacD4kfh7nBvVhjxLqSlyDYJEJkKBuvx2n6p+Kx9sr9V1UXDZl22TXyTIHGdVwcTS6nhItqMeSCtBDsofv7U1xvKCb3u4D0tXlSAgLv7Anc+CQmJlj6QJQV4U2fsRy0eW+kkn5U3Dza9km0aXdAo+VHuBXdCGTG13e7yTgRRr"
 django_user_data_archive_max_age_days: 180
 
-admin_emails: "[('CIRC', 'circ-iu-group@iu.edu')]"
+admin_emails: "[('Rob Quick', 'rquick@iu.edu'),('Wang Jun','wang208@iu.edu')]"
 portal_title: "RegSNPs Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
