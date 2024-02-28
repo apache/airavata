@@ -66,7 +66,7 @@ gateway_id: "smiles"
 experiment_data_dir: "{{ user_data_dir }}/smiles"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBya+UFROosd6bakQ9u44egbNI0n0aDgjNviif7c7HnUVT1NzmvTy4tqzWJOj5XFsZ0cvM8Csn/BazI93g9YvVxovPnH/gyu3gUZgV/XbV4ZRRmEFXV43K0CzSqRaAHMf7pLPsH4fyuWjKTuJDV3bUXdd75b0TetjzfKwT43moEmLG/G2Je3eMWZ37aHYaDcyCSPgOihZTiQebiqp4draZHvA/+DC4T7KUqRyty8XSW9Vdp8pW09NhY+J7fXg0jbN6W/mCD9OqG/jcPcPc7GpxnNNeUeCQ2yelzJ3UEgIIkO8vnTjotXGThPezRxGh537qCZRuOLpcwZBve+VrtVsT"
 
-admin_emails: "[('Sudhakar Pamidighantam', 'spamidig@gatech.edu'), ('Eroma Abeysinghe', 'eabeysin@gatech.edu')]"
+admin_emails: "[('Sudhakar Pamidighantam', 'spamidig@gatech.edu'), ('Eroma Abeysinghe', 'eroma@gatech.edu')]"
 portal_title: "SMILES Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
