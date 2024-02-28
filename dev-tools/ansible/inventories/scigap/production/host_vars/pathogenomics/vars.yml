@@ -44,7 +44,7 @@ gateway_id: "pathogenomics"
 experiment_data_dir: "{{ user_data_dir }}/pathogenomics"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdBkivRTDH/x7ajbhEY8b80WuxA11culrVUgH8x3GoVb0YT5VyrdLRPG/Nj2cFV2VrlGhvQg6gUv+WgIHvfp/hGFNzDH2REeZNcnvVk1LXbQm/kDl1yn+u56IcclUyi86SjLUrx89zhOg+Q5LlbpNX3LUirvbr197F6fVxprYGPsyI+abXcQWnHzW3LGocyYpYbZ+g1+nyBhA47VoWxkK278dWdZo/0XxzEKM0ZLHTplHOpx+vo1404GUvHFe1UD4rSR4o6n/7ep7D8XwjioWCrS/8bHbUHPZ8sOtM1H2qfonPUAkV3O82FiuElmKykApaaTo/UBtzMVNgq7edENfh"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Suresh Marru','smarru@iu.edu')]"
+admin_emails: "[('Eroma Abeysinghe', 'eroma@gatech.edu'),('Suresh Marru','smarru@gatech.edu')]"
 portal_title: "Pathogenomics Gateway"
 
 ...
