@@ -16,7 +16,7 @@
                 {% endif %}
                     class="btn btn-primary btn-block mt-3">
                   {% if external.logo %}
-                  <img src="{% static external.logo %}"/>
+                  <img src="{% static external.logo %}" alt="Sign in with {{ external.name }}"/>
                   {% endif %}
                         Sign in with {{ external.name }}
                 </a>
