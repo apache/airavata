@@ -84,7 +84,7 @@ nasa-veda ansible_host=156.56.104.84
 smiles ansible_host=scigap13.sciencegateways.iu.edu ansible_user=root
 
 # dev-smiles server
-dev-smiles ansible_host=149.165.169.43 ansible_user=exouser
+dev-smiles ansible_host=149.165.153.189 ansible_user=exouser
 
 # vlab-plasmasciene server
 vlab-plasmascience ansible_host=149.165.172.104 ansible_user=exouser
