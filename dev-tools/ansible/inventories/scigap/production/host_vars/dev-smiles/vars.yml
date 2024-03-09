@@ -23,7 +23,7 @@
 # TODO: tus not setup yet
 tusd_vhost_servername:
 
-# NOTE: Dev SMILES poral is deployed to a Jetstream2 VM
+# NOTE: Dev SMILES portal is deployed to a Jetstream2 VM
 real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
 user_data_dir: "/var/www/portals/gateway-user-data"
 gateway_data_store_hostname: "dev.smiles.js2.seagrid.org"
@@ -43,7 +43,7 @@ ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.
 # Increase max upload size to 2GB
 #django_file_upload_max_file_size_mb: 2000
 
-django_extra_settings:
+#django_extra_settings:
 #  CELERY_BROKER_URL: "redis://localhost:6379"
 #  CELERY_RESULT_BACKEND: "redis://localhost:6379"
 #  LOGIN_REDIRECT_URL: "/smiles/home/lit-dp-list"
@@ -59,7 +59,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 auth_options:
   password:
     name: "Dev SMILES Gateway"
-  external:
+#  external:
 #    - name: "Existing Institution Credentials"
 #      idp_alias: "cilogon"
 #      logo: "images/cilogon-logo-24x24-b.png"
