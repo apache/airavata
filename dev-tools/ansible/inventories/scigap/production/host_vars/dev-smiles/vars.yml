@@ -66,7 +66,7 @@ auth_options:
 
 gateway_id: "dev-smiles"
 experiment_data_dir: "{{ user_data_dir }}/dev-smiles"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBya+UFROosd6bakQ9u44egbNI0n0aDgjNviif7c7HnUVT1NzmvTy4tqzWJOj5XFsZ0cvM8Csn/BazI93g9YvVxovPnH/gyu3gUZgV/XbV4ZRRmEFXV43K0CzSqRaAHMf7pLPsH4fyuWjKTuJDV3bUXdd75b0TetjzfKwT43moEmLG/G2Je3eMWZ37aHYaDcyCSPgOihZTiQebiqp4draZHvA/+DC4T7KUqRyty8XSW9Vdp8pW09NhY+J7fXg0jbN6W/mCD9OqG/jcPcPc7GpxnNNeUeCQ2yelzJ3UEgIIkO8vnTjotXGThPezRxGh537qCZRuOLpcwZBve+VrtVsT"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC0f7ibDSSaaXNOb8CCGtIfwlifSiE3TVkWs4/NsaaGuR03WJitSOhiIaS1oZFne39xQIOGZLPsJjO4WzA5/JVhO1JxvoDVjyK5zBQD2K95RXyEXOJH68Qp8GtL08juXepsqiLDXAO/1pM4T1Pyvv+lkGbxxNeaeUw6N+fX4guxny/yGZyESJmwX14bPMvKre0r1QJRNbI1oH+JYxT1icEJucqDDYVxVaG+h97SY5gyy5mxm1QZO9g17CaAzBCwc0ZhERUtEaECmqjzFxndql5lob86UfYCZa4CY2GJko+FBEh4GDRBHSSjF7S2lrHoTNMSUu8Um/9eBv1Q2I7iVeMF"
 
 admin_emails: "[('Sudhakar Pamidighantam', 'spamidig@gatech.edu'), ('Eroma Abeysinghe', 'eroma@gatech.edu'), ('Lahiru Jayathilake', 'ljayathilake3@gatech.edu')]"
 portal_title: "Dev SMILES Gateway"
