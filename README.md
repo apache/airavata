@@ -20,8 +20,7 @@ The Airavata Django Portal works with Python versions 3.6 - 3.10. You'll need
 one of these versions installed locally.
 
 You'll also need Node.js and yarn to build the JavaScript frontend code. Please
-install
-[the most recent LTS version of Node.js](https://nodejs.org/en/download/). You
+install Node.js version 19. You
 can also use [nvm](https://github.com/nvm-sh/nvm) to manage the Node.js install.
 If you have nvm installed you can run `nvm install && nvm use` before running
 any yarn commands. See
