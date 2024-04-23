@@ -22,6 +22,8 @@
 airavata_django_extra_dependencies:
   - name: "git+ssh://git@github.com/SciGaP/trecx-django-app.git#egg=trecx-django-app"
     editable: true
+  - name: "git+ssh://git@github.com/SciGaP/bsr-django-app.git#egg=bsr-django-app"
+    editable: true
 
 vhost_servername: "amosgateway.org"
 
