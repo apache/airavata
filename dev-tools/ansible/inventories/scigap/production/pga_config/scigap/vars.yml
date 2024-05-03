@@ -58,7 +58,7 @@ gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['circ-iu-group@iu.edu']"
+admin_emails: "['ARTISAN@groups.gatech.edu']"
 portal_email_username: "django.portal@scigap.org"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "scigap"
