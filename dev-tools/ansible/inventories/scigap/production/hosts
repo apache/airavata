@@ -80,6 +80,7 @@ ai-confluence ansible_host=156.56.104.84
 molecular-dynamics ansible_host=156.56.104.84
 nasa-veda ansible_host=156.56.104.84
 enveomics ansible_host=156.56.104.84
+dt4h ansible_host=156.56.104.84
 
 # smiles server
 smiles ansible_host=scigap13.sciencegateways.iu.edu ansible_user=root
