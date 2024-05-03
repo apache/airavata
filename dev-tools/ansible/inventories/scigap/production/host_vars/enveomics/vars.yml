@@ -41,13 +41,13 @@ auth_options:
   password:
     name: "Enveomics Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "enveomics"
 experiment_data_dir: "{{ user_data_dir }}/enveomics"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp8LKgKow4ksZJLSm/6qwKA9D1w4+CQcjgl0VJHZSTGFxPxG4Z75hgIlLDDe5tpa8pfwgKywIn8/QNvay2B7lgrEtxH/MkJYoeRiz8w9gq9svWYddFGq+rSAWtyaB3KroPL4N77xiZ6BnGsjhQY80Umsusj4SP3ue1L/2mKkN/POOPP75b2lONxJqYwMT2Bdusa6lbReEM9iv089Ef0nRAfxhOh2mX9/XghDBcx6GYEqcs2rvaQkwEcqroJiozTgcROJLp5kwCdJ/O5vdr3wIoAqOWlyUbU32oGiHvDcz2GYNxyZUeEC6M5sxtz3NzqSHVtl8sJKS2UOuNOH+sbuvZ"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCPZ6+D+iJH7SPuT2p4pyxRC3ooEjuA59/d5QI3NWD9FJ9P0z1+FJpjAvhnosWjnNUPrQxiyBQg9fJHAlPnWh3LgQB9h+Xy/uiy8CXiINu3J6cdu0amMyGumIc5gWHE1MkexNiq1itQuIFrBaqWdW22NTKefhpU1RIZ1pOk8fxfRyAVDsGV/tNoAsGp82Es86QOKexHbxQJG2wtnnGlWyv9axjsTo/8pTZUT5ikU49uY/7yx58UAVCeqx1LOi62EN/NR4tCCrpu9NtyKuUqkQmhidapDDCiyy3nwD/7WphE+tXoPu51+ltrGv0R3uFQpm6FfdP4oocaK8DqtjAVjidR"
 #django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu'),('Eroma Abeysinghe','eroma@gatech.edu')]"
