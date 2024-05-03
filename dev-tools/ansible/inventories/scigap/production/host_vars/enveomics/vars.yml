@@ -1,0 +1,57 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# TODO: tus not setup yet
+tusd_vhost_servername:
+
+vhost_servername: "enveomics.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# Increase max upload size to 200MB
+#django_file_upload_max_file_size_mb: 200
+
+## Keycloak related variables
+tenant_domain: "enveomics"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Enveomics Gateway"
+  external:
+#    - name: "Existing Institution Credentials"
+#      idp_alias: "cilogon"
+#      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "enveomics"
+experiment_data_dir: "{{ user_data_dir }}/enveomics"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp8LKgKow4ksZJLSm/6qwKA9D1w4+CQcjgl0VJHZSTGFxPxG4Z75hgIlLDDe5tpa8pfwgKywIn8/QNvay2B7lgrEtxH/MkJYoeRiz8w9gq9svWYddFGq+rSAWtyaB3KroPL4N77xiZ6BnGsjhQY80Umsusj4SP3ue1L/2mKkN/POOPP75b2lONxJqYwMT2Bdusa6lbReEM9iv089Ef0nRAfxhOh2mX9/XghDBcx6GYEqcs2rvaQkwEcqroJiozTgcROJLp5kwCdJ/O5vdr3wIoAqOWlyUbU32oGiHvDcz2GYNxyZUeEC6M5sxtz3NzqSHVtl8sJKS2UOuNOH+sbuvZ"
+#django_user_data_archive_max_age_days: 180
+
+admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu'),('Eroma Abeysinghe','eroma@gatech.edu')]"
+portal_title: "Enveomics Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...
