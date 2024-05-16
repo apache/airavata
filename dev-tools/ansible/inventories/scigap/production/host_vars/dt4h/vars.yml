@@ -41,13 +41,13 @@ auth_options:
   password:
     name: "DT4H Gateway"
   external:
-#    - name: "Existing Institution Credentials"
-#      idp_alias: "cilogon"
-#      logo: "images/cilogon-logo-24x24-b.png"
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
 
 gateway_id: "dth-gateway"
 experiment_data_dir: "{{ user_data_dir }}/dth-gateway"
-#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp8LKgKow4ksZJLSm/6qwKA9D1w4+CQcjgl0VJHZSTGFxPxG4Z75hgIlLDDe5tpa8pfwgKywIn8/QNvay2B7lgrEtxH/MkJYoeRiz8w9gq9svWYddFGq+rSAWtyaB3KroPL4N77xiZ6BnGsjhQY80Umsusj4SP3ue1L/2mKkN/POOPP75b2lONxJqYwMT2Bdusa6lbReEM9iv089Ef0nRAfxhOh2mX9/XghDBcx6GYEqcs2rvaQkwEcqroJiozTgcROJLp5kwCdJ/O5vdr3wIoAqOWlyUbU32oGiHvDcz2GYNxyZUeEC6M5sxtz3NzqSHVtl8sJKS2UOuNOH+sbuvZ"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCezRunCKlTfDr4src/q6jSFXjQXI8T6MDlm2awEbL88XWVQl2aLNlKcime7a6ZZVcaEjjzs1w/v1clIieVwc+WPRXs04xROFtvfG+M064WYghAk2J6RhoDhw+W+6H0xmOlbDsKPLm8FZNA2lyDEXshZxXf66S1KLVuW7Bdq864szt3N4iCBTnxtjZ/nF7c0jV7FYhVt7hs+Xh5edIeGztjONf/Pfhe5J0tSA1i8cY0oqzmfB2oh88+l/P6VkmtPznMG4cRqFnGVYq3QnpEm2/iUQ5BxvTY8jOuByykb5wy3HPGsgRy/mWA0hDls12drUazos+Y8MXu6PwqHFPHY7gx"
 #django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('Rob Quick','rquick@iu.edu'),('Eroma Abeysinghe','eroma@gatech.edu')]"
