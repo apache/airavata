@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "name": "",
+  "description": "User interface for Apache Airavata.",
+  "version": "1.0.0",
+  "author": "Ganning Xu",
+  "main": "app/background.js",
+  "scripts": {
+    "dev": "nextron",
+    "proxy": "chmod +x ./proxy/novnc_proxy && ./proxy/novnc_proxy",
+    "build": "nextron build",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@novnc/novnc": "^1.3.0",
+    "electron-serve": "^1.3.0",
+    "electron-store": "^8.2.0",
+    "framer-motion": "^11.2.0",
+    "react-icons": "^5.2.1",
+    "react-vnc": "^1.0.0"
+  },
+  "devDependencies": {
+    "electron": "^29.3.0",
+    "electron-builder": "^24.13.3",
+    "next": "^13.5.6",
+    "nextron": "^8.15.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
