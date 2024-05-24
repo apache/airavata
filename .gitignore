@@ -46,3 +46,4 @@ airavata-local-agent/app
 airavata-local-agent/proxy/config.txt
 airavata-local-agent/proxy/websockify
 airavata-local-agent/renderer/.next
+airavata-local-agent/dist
