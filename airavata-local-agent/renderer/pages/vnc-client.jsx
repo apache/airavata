@@ -64,12 +64,13 @@ const VncClient = () =>
         title: 'Proxy started',
         description: "",
         status: 'success',
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
 
       setHostname('ws://' + hostname);
       setPort(port);
+      setRendering(true);
     });
 
     window.vnc.proxyStopped((event, restart) =>
@@ -90,6 +91,7 @@ const VncClient = () =>
     {
       console.log("unmounting component...");
       router.events.off("routeChangeStart", exitingFunction);
+      setRendering(false);
     };
 
   }, []);
@@ -125,14 +127,14 @@ const VncClient = () =>
               <Alert status='info' rounded='md'>
                 <AlertIcon />
                 <Text>
-                  We're attempting to start the VNC server and proxy. This will take longer if this is your first time using the VNC client. Please wait...
+                  We're attempting to start the VNC server and proxy. This will take longer if this is your first time using the VNC client, or if your wifi connection is slower. Please wait...
                 </Text>
               </Alert>
             </>
           )
         }
 
-        {!rendering && (
+        {/* {!rendering && (
           <>
             <Container mt={16}>
               <Heading size='lg' color='blue.600'>
@@ -185,15 +187,16 @@ const VncClient = () =>
                   }} placeholder='Password' />
                 </FormControl>
 
-                <Button onClick={handleSubmitInfo} colorScheme='blue' w='full' isDisabled={loading}>
-                  Connect to VNC server
-                </Button>
+
+              <Button onClick={handleSubmitInfo} colorScheme='blue' w='full' isDisabled={loading}>
+                Connect to VNC server
+              </Button>
               </VStack>
 
             </Container>
           </>
         )
-        }
+        } */}
 
         {rendering && (
           <>
@@ -217,9 +220,9 @@ const VncClient = () =>
                 onDisconnect={handleOnDisconnect}
               />
 
-              <Button onClick={handleDisconnect} colorScheme='red' mt={4}>
+              {/* <Button onClick={handleDisconnect} colorScheme='red' mt={4}>
                 Disconnect
-              </Button>
+              </Button> */}
             </Box>
           </>
         )

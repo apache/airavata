@@ -77,7 +77,6 @@ ipcMain.on('start-proxy', startIt);
 async function startIt(event)
 {
 
-  console.log("start-proxy");
   let cmd = spawn('./proxy/novnc_proxy', { shell: true });
 
   cmd.stdout.on('data', (data) =>
@@ -91,7 +90,6 @@ async function startIt(event)
         const lines = data.split('\n');
         const hostname = lines[0];
         const port = lines[1];
-        console.log(hostname, port);
         event.sender.send('proxy-started', hostname, port);
       });
     }
@@ -133,9 +131,6 @@ async function startIt(event)
 
 async function stopIt(event, restart)
 {
-  console.log('stop-proxy');
-
-
   exec('kill -9 $(lsof -ti:6080)',
     (error, stdout, stderr) =>
     {
