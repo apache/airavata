@@ -7,6 +7,7 @@ const fs = require('fs');
 
 
 const isProd = process.env.NODE_ENV === 'production';
+const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
 
 if (isProd)
 {
@@ -43,6 +44,18 @@ app.on('window-all-closed', () =>
 {
   app.quit();
 });
+
+app.on("before-quit", (event) =>
+{
+  // stop the proxy so it's not constantly running in the bkg
+  exec(KILL_CMD,
+    (error, stdout, stderr) =>
+    {
+      event.sender.send('proxy-stopped', restart);
+    });
+  process.exit(); // really let the app exit now
+});
+
 
 ipcMain.on('message', async (event, arg) =>
 {
@@ -131,12 +144,10 @@ async function startIt(event)
 
 async function stopIt(event, restart)
 {
-  exec('kill -9 $(lsof -ti:6080)',
+  exec(KILL_CMD,
     (error, stdout, stderr) =>
     {
       event.sender.send('proxy-stopped', restart);
     });
-
-
 }
 ipcMain.on('stop-proxy', stopIt);
