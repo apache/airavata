@@ -5,7 +5,6 @@ import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
 
-
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
 
