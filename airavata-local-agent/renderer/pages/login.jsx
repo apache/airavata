@@ -21,7 +21,7 @@ const Login = () =>
     {
       // handle login
       // setError("Invalid username or password.");
-      router.push('/vnc-client');
+      router.push('/list-experiments');
     }
   };
 
