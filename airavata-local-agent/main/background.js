@@ -30,11 +30,11 @@ if (isProd)
 
   if (isProd)
   {
-    await mainWindow.loadURL('app://./home');
+    await mainWindow.loadURL('app://./tabs-view');
   } else
   {
     const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/home`);
+    await mainWindow.loadURL(`http://localhost:${port}/tabs-view`);
     mainWindow.webContents.openDevTools();
   }
 })();
