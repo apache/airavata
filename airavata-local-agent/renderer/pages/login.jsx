@@ -2,26 +2,21 @@ import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Bu
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const Login = () =>
-{
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = async () =>
-  {
-    if (username === "")
-    {
+  const handleLogin = async () => {
+    if (username === "") {
       setError("Username cannot be blank.");
-    } else if (password === "")
-    {
+    } else if (password === "") {
       setError("Password cannot be blank.");
-    } else
-    {
+    } else {
       // handle login
       // setError("Invalid username or password.");
-      router.push('/list-experiments');
+      router.push('/tabs-view');
     }
   };
 
@@ -48,16 +43,14 @@ const Login = () =>
 
           <FormControl>
             <FormLabel>Airavata Username</FormLabel>
-            <Input type='text' value={username} onChange={(e) =>
-            {
+            <Input type='text' value={username} onChange={(e) => {
               setUsername(e.target.value);
             }} placeholder='Username' />
           </FormControl>
 
           <FormControl>
             <FormLabel>Airavata Password</FormLabel>
-            <Input type='password' value={password} onChange={(e) =>
-            {
+            <Input type='password' value={password} onChange={(e) => {
               setPassword(e.target.value);
             }} placeholder='Password' />
           </FormControl>
