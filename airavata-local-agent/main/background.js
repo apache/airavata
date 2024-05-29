@@ -8,16 +8,13 @@ const fs = require('fs');
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
 
-if (isProd)
-{
+if (isProd) {
   serve({ directory: 'app' });
-} else
-{
+} else {
   app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
 
-; (async () =>
-{
+; (async () => {
   await app.whenReady();
 
   const mainWindow = createWindow('main', {
@@ -28,56 +25,44 @@ if (isProd)
     },
   });
 
-  if (isProd)
-  {
-    await mainWindow.loadURL('app://./tabs-view');
-  } else
-  {
+  if (isProd) {
+    await mainWindow.loadURL('app://./home');
+  } else {
     const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/tabs-view`);
+    await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
 })();
 
-app.on('window-all-closed', () =>
-{
+app.on('window-all-closed', () => {
   app.quit();
 });
 
-app.on("before-quit", (event) =>
-{
+app.on("before-quit", (event) => {
   // stop the proxy so it's not constantly running in the bkg
   exec(KILL_CMD,
-    (error, stdout, stderr) =>
-    {
+    (error, stdout, stderr) => {
       event.sender.send('proxy-stopped', restart);
     });
   process.exit(); // really let the app exit now
 });
 
 
-ipcMain.on('message', async (event, arg) =>
-{
+ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`);
 });
 
-function runit(cmd, timeout)
-{
+function runit(cmd, timeout) {
   // https://stackoverflow.com/questions/31727684/node-js-exec-doesnt-callback-if-exec-an-exe
-  return new Promise(function (resolve, reject)
-  {
-    var ch = exec(cmd, function (error, stdout, stderr)
-    {
-      if (error)
-      {
+  return new Promise(function (resolve, reject) {
+    var ch = exec(cmd, function (error, stdout, stderr) {
+      if (error) {
         reject(error);
-      } else
-      {
+      } else {
         resolve("program exited without an error");
       }
     });
-    setTimeout(function ()
-    {
+    setTimeout(function () {
       resolve("program still running");
     }, timeout);
   });
@@ -86,19 +71,15 @@ function runit(cmd, timeout)
 
 ipcMain.on('start-proxy', startIt);
 
-async function startIt(event)
-{
+async function startIt(event) {
 
   let cmd = spawn('./proxy/novnc_proxy', { shell: true });
 
-  cmd.stdout.on('data', (data) =>
-  {
+  cmd.stdout.on('data', (data) => {
     data = data.toString().trim();
 
-    if (data == "HANG_NOW")
-    {
-      fs.readFile('./proxy/config.txt', 'utf8', (err, data) =>
-      {
+    if (data == "HANG_NOW") {
+      fs.readFile('./proxy/config.txt', 'utf8', (err, data) => {
         const lines = data.split('\n');
         const hostname = lines[0];
         const port = lines[1];
@@ -107,13 +88,11 @@ async function startIt(event)
     }
   });
 
-  cmd.stderr.on('data', (data) =>
-  {
+  cmd.stderr.on('data', (data) => {
     console.error(`stderr: ${data}`);
   });
 
-  cmd.on('close', async (code) =>
-  {
+  cmd.on('close', async (code) => {
     console.log(`child process exited with code ${code}`);
     await stopIt(event, true);
   });
@@ -141,11 +120,9 @@ async function startIt(event)
   // event.sender.send('proxy-started', 'localhost', 5900);
 }
 
-async function stopIt(event, restart)
-{
+async function stopIt(event, restart) {
   exec(KILL_CMD,
-    (error, stdout, stderr) =>
-    {
+    (error, stdout, stderr) => {
       event.sender.send('proxy-stopped', restart);
     });
 }

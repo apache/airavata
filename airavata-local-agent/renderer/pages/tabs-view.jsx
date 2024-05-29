@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Spacer, Container, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon } from "@chakra-ui/react";
-import { SAMPLE_JSON_RESPONSE, dateToAgo } from "../lib/utilityFuncs";
+import { SAMPLE_JSON_RESPONSE, dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
@@ -15,9 +15,7 @@ const getColorScheme = (status) => {
   }
 };
 
-const truncate = (str, n) => {
-  return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
-};
+
 
 const activeStyles = {
   bg: 'blue.100',
@@ -120,7 +118,7 @@ const TabsView = () => {
               arrOfTabsInfo.map((tabInfo, index) => {
                 return (
                   <Tab key={tabInfo.associatedID} _selected={activeStyles}>
-                    <Text whiteSpace='nowrap'>{truncate(tabInfo.tabName, 1000)}</Text>
+                    <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
                     <Icon as={IoClose} transition='all .2s' onClick={() => {
                       handleRemoveTab(tabInfo.associatedID, index + 1);
                     }} _hover={{
