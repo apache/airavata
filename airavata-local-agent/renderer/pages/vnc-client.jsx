@@ -116,10 +116,6 @@ const VncClient = () =>
 
   return (
     <React.Fragment>
-      <Head>
-        <title>Airavata UI</title>
-      </Head>
-
       <NavContainer activePage='VNC Client'>
         {
           loading && (
