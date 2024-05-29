@@ -105,31 +105,41 @@ const TabsView = () => {
   return (
     <>
       <Tabs variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
-        <TabList alignItems='center'>
-          <Tab _selected={activeStyles}>
-            <Icon as={FaHome} mr={2} />
-            List Experiments</Tab>
+        <Flex alignItems='center' gap={2}>
+          <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
+            <Tab _selected={activeStyles} minW='200px'>
+              <Icon as={FaHome} mr={2} />
+              List Experiments</Tab>
 
-          {/* <Icon as={FaPlus} ml={2} color='blue.400' onClick={handleAddTab} _hover={{
+            {/* <Icon as={FaPlus} ml={2} color='blue.400' onClick={handleAddTab} _hover={{
             color: 'blue.600',
             cursor: 'pointer'
           }} /> */}
 
-          {
-            arrOfTabsInfo.map((tabInfo, index) => {
-              return (
-                <Tab key={tabInfo.associatedID} _selected={activeStyles}>
-                  {truncate(tabInfo.tabName, 20)}
-                  <Icon as={IoClose} transition='all .2s' onClick={() => {
-                    handleRemoveTab(tabInfo.associatedID, index + 1);
-                  }} _hover={{
-                    color: 'red.500',
-                  }} />
-                </Tab>
-              );
-            })
-          }
-        </TabList>
+            {
+              arrOfTabsInfo.map((tabInfo, index) => {
+                return (
+                  <Tab key={tabInfo.associatedID} _selected={activeStyles}>
+                    <Text whiteSpace='nowrap'>{truncate(tabInfo.tabName, 1000)}</Text>
+                    <Icon as={IoClose} transition='all .2s' onClick={() => {
+                      handleRemoveTab(tabInfo.associatedID, index + 1);
+                    }} _hover={{
+                      color: 'red.500',
+                    }} />
+                  </Tab>
+                );
+              })
+            }
+          </TabList>
+          {/* 
+
+          <Box>
+            <Flex alignItems='center' gap={4}>
+              <Img src="/images/a-logo.png" maxH='45px' />
+            </Flex>
+          </Box> */}
+        </Flex>
+
 
         <TabPanels>
           <TabPanel>
