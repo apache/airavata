@@ -12,8 +12,6 @@ const fetchData = async (
   ).then(async (res) => await res.json());
 };
 
-
-
 const getColorScheme = (status) =>
 {
   switch (status)
