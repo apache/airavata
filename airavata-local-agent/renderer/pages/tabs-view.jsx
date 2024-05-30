@@ -3,6 +3,15 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Spacer, Container
 import { SAMPLE_JSON_RESPONSE, dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import {
+  Pagination,
+  usePagination,
+  PaginationNext,
+  PaginationPage,
+  PaginationPrevious,
+  PaginationContainer,
+  PaginationPageGroup,
+} from "@ajna/pagination";
 
 const getColorScheme = (status) => {
   switch (status) {
@@ -18,6 +27,7 @@ const getColorScheme = (status) => {
 const tabSelectedStyles = {
   bg: 'blue.100',
 };
+
 
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
@@ -136,12 +146,12 @@ const TabsView = () => {
           </Box> */}
         </Flex>
 
-
         <TabPanels>
           <TabPanel>
+
             <Stack direction='column' spacing={4}>
               {
-                SAMPLE_JSON_RESPONSE.results.map((experiment) => {
+                SAMPLE_JSON_RESPONSE?.results.map((experiment) => {
                   return (
                     <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
                       <Flex>
@@ -199,6 +209,8 @@ const TabsView = () => {
                 })
               }
             </Stack>
+
+            <Text mt={4} textAlign='center' fontStyle='italic'>{SAMPLE_JSON_RESPONSE?.results.length} experiments total</Text>
           </TabPanel>
 
           {
