@@ -19,6 +19,7 @@ const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
+
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 
 const TabsView = () => {
@@ -46,13 +47,7 @@ const TabsView = () => {
     delete associatedIDToIndex[associatedID];
     setArrOfTabsInfo(oldArr => oldArr.filter((tabInfo, i) => tabInfo.associatedID !== associatedID));
 
-
-    console.log("index: ", index);
-    console.log("tabIndex: ", tabIndex);
-
     setTabIndex(oldIndex => {
-      console.log(index, tabIndex);
-
       if (index == tabIndex) {
         return 0;
       }
@@ -68,7 +63,6 @@ const TabsView = () => {
 
   const handleAddTab = (type, experimentID, name) => {
     const associatedID = type + "_" + experimentID;
-    console.log("Adding tab with associatedID: ", associatedID);
 
     /*
     - each time when clicking on an experiment,
@@ -90,6 +84,7 @@ const TabsView = () => {
       } else if (type === 'JN') {
         component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
       }
+
       setArrOfTabsInfo(oldArr => [...oldArr, {
         associatedID: associatedID,
         tabName: type + ' ' + name,
@@ -104,19 +99,18 @@ const TabsView = () => {
     setTabIndex(index);
   };
 
+  const isOpenTab = (type, experimentID) => {
+    return (type + "_" + experimentID) in associatedIDToIndex;
+  };
+
   return (
     <>
-      <Tabs variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
+      <Tabs index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center' gap={2}>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
             <Tab _selected={tabSelectedStyles} minW='200px'>
               <Icon as={FaHome} mr={2} />
               List Experiments</Tab>
-
-            {/* <Icon as={FaPlus} ml={2} color='blue.400' onClick={handleAddTab} _hover={{
-            color: 'blue.600',
-            cursor: 'pointer'
-          }} /> */}
 
             {
               arrOfTabsInfo.map((tabInfo, index) => {
@@ -133,8 +127,8 @@ const TabsView = () => {
               })
             }
           </TabList>
-          {/* 
 
+          {/* 
           <Box>
             <Flex alignItems='center' gap={4}>
               <Img src="/images/a-logo.png" maxH='45px' />
@@ -179,7 +173,7 @@ const TabsView = () => {
                           Jupyter
 
                           {
-                            ("JN" + "_" + experiment.experimentId in associatedIDToIndex) &&
+                            isOpenTab('JN', experiment.experimentId) &&
                             <Spinner ml={2} />
                           }
 
@@ -190,9 +184,11 @@ const TabsView = () => {
                             <Button colorScheme='blue' size='sm' onClick={() => {
                               handleAddTab('VMD', experiment.experimentId, experiment.name);
                             }}
-                            >VMD
+                            >
+                              VMD
+
                               {
-                                ("VMD" + "_" + experiment.experimentId in associatedIDToIndex) &&
+                                isOpenTab('VMD', experiment.experimentId) &&
                                 <Spinner ml={2} />
                               }</Button>
                           )
@@ -206,7 +202,7 @@ const TabsView = () => {
           </TabPanel>
 
           {
-            arrOfTabsInfo.map((tabInfo, index) => {
+            arrOfTabsInfo.map((tabInfo) => {
               return (
                 <TabPanel key={tabInfo.associatedID}>
                   {tabInfo.component}
