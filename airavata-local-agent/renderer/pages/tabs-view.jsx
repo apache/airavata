@@ -15,9 +15,7 @@ const getColorScheme = (status) => {
   }
 };
 
-
-
-const activeStyles = {
+const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
@@ -86,10 +84,16 @@ const TabsView = () => {
       const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index
       associatedIDToIndex[associatedID] = newTabIndex;
 
+      let component;
+      if (type === 'VMD') {
+        component = <Box>{type} {experimentID}</Box>;
+      } else if (type === 'JN') {
+        component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
+      }
       setArrOfTabsInfo(oldArr => [...oldArr, {
         associatedID: associatedID,
         tabName: type + ' ' + name,
-        component: <Box>{type} {experimentID}</Box>
+        component: component
       }]);
 
       setTabIndex(newTabIndex);
@@ -105,7 +109,7 @@ const TabsView = () => {
       <Tabs variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center' gap={2}>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
-            <Tab _selected={activeStyles} minW='200px'>
+            <Tab _selected={tabSelectedStyles} minW='200px'>
               <Icon as={FaHome} mr={2} />
               List Experiments</Tab>
 
@@ -117,7 +121,7 @@ const TabsView = () => {
             {
               arrOfTabsInfo.map((tabInfo, index) => {
                 return (
-                  <Tab key={tabInfo.associatedID} _selected={activeStyles}>
+                  <Tab key={tabInfo.associatedID} _selected={tabSelectedStyles}>
                     <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
                     <Icon as={IoClose} transition='all .2s' onClick={() => {
                       handleRemoveTab(tabInfo.associatedID, index + 1);
