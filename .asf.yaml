@@ -39,7 +39,7 @@ github:
     - workflow
     - bigdata
 
-features:
+  features:
     wiki: false
     issues: true
     projects: true
