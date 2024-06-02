@@ -32,6 +32,8 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
+
+
 })();
 
 app.on('window-all-closed', () => {
@@ -126,4 +128,6 @@ async function stopIt(event, restart) {
       event.sender.send('proxy-stopped', restart);
     });
 }
+
 ipcMain.on('stop-proxy', stopIt);
+
