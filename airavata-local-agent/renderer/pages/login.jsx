@@ -1,6 +1,8 @@
-import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Spacer } from "@chakra-ui/react";
+import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+const SIGN_UP_URL = "https://md.cybershuttle.org/auth/create-account";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -21,55 +23,68 @@ const Login = () => {
   };
 
   return (
-    <Center mt={16}>
+    <Center mt={16} maxW='400px' mx='auto'>
       <Box>
         <Flex alignItems='center' gap={2}>
           <Img src='/images/a-logo.png' maxH='50px' />
-          <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Airavata UI</Text>
+          <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Airavata Local Agent</Text>
         </Flex>
 
 
-        <VStack mt={8} w='500px' spacing={4}>
-          {
-            error !== "" && (
-              <Alert status='error' rounded='md' mt={2}>
-                <AlertIcon />
-                <Text>
-                  <Text as='span' color='red.800' fontWeight='bold'>Login Failed</Text>. {error}
-                </Text>
-              </Alert>
-            )
-          }
+        <Box shadow='lg' rounded='md' p={4} mt={8}>
+          <Box>
+            <Heading size='md' textAlign="left" color='blue.500'>Log in with Molecular Dynamics Gateway</Heading>
+            {/* <Link>(create an account)</Link> */}
 
-          <FormControl>
-            <FormLabel>Airavata Username</FormLabel>
-            <Input type='text' value={username} onChange={(e) => {
-              setUsername(e.target.value);
-            }} placeholder='Username' />
-          </FormControl>
+            <Text mt={2}>If you need to create an account, <Link color='blue.500' href={SIGN_UP_URL} target="_blank">you can sign up here</Link>. You can close the pop-up window after you see "Account request processed successfully...".</Text>
+          </Box>
 
-          <FormControl>
-            <FormLabel>Airavata Password</FormLabel>
-            <Input type='password' value={password} onChange={(e) => {
-              setPassword(e.target.value);
-            }} placeholder='Password' />
-          </FormControl>
+          <VStack mt={4} w='500px' spacing={4}>
+            {
+              error !== "" && (
+                <Alert status='error' rounded='md' mt={2}>
+                  <AlertIcon />
+                  <Text>
+                    <Text as='span' color='red.800' fontWeight='bold'>Login Failed</Text>. {error}
+                  </Text>
+                </Alert>
+              )
+            }
 
-          <Button colorScheme='blue' onClick={handleLogin} w='full'>Login to Airavata UI</Button>
 
-          <Flex alignItems='center' w='full'>
-            <Box>
-              <Text><Link color='blue.500' href='/home'>Back to home</Link></Text>
-            </Box>
+            <FormControl>
+              <FormLabel>Username</FormLabel>
+              <Input type='text' value={username} onChange={(e) => {
+                setUsername(e.target.value);
+              }} placeholder='Username' />
+            </FormControl>
 
-            {/* <Spacer />
+            <FormControl>
+              <FormLabel>Password</FormLabel>
+              <Input type='password' value={password} onChange={(e) => {
+                setPassword(e.target.value);
+              }} placeholder='Password' />
+            </FormControl>
 
-                        <Box>
-                            <Text><Link>Back to home</Link></Text>
-                        </Box> */}
-          </Flex>
+            <Button colorScheme='blue' onClick={handleLogin} w='full'>Login with Molecular Dynamics Gateway</Button>
+          </VStack>
+        </Box>
 
-        </VStack>
+
+        <Box shadow='lg' rounded='md' p={4} mt={8}>
+          <Box>
+            <Heading size='md' textAlign="left" color='blue.500'>Log in with your existing organizational login</Heading>
+
+            <Button colorScheme='blue' w='full' mt={2}>Login with Existing Institution Credentials</Button>
+          </Box>
+        </Box>
+
+
+        {/* <Flex alignItems='center' w='full'>
+          <Box>
+            <Text><Link color='blue.500' href='/home'>Back to home</Link></Text>
+          </Box>
+        </Flex> */}
       </Box>
     </Center>
   );

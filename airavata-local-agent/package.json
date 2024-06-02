@@ -9,6 +9,11 @@
     "dev": "nextron",
     "proxy": "chmod +x ./proxy/novnc_proxy && ./proxy/novnc_proxy",
     "build": "nextron build",
+    "build:mac": "nextron build --mac",
+    "build:mac:universal": "nextron build --mac --universal",
+    "build:linux": "nextron build --linux",
+    "build:win32": "nextron build --win --ia32",
+    "build:win64": "nextron build --win --x64",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
