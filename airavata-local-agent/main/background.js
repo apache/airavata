@@ -1,12 +1,18 @@
 import path from 'path';
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, protocol, session, net } from 'electron';
+const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
+// import electronisdev
+
+
+const ProtocolRegistry = require("protocol-registry");
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
+
 
 if (isProd) {
   serve({ directory: 'app' });
@@ -24,6 +30,26 @@ if (isProd) {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
+  const AIRAVATA_PROTOCOL = 'airavata';
+  if (!isProd) {
+    ProtocolRegistry
+      .register({
+        protocol: AIRAVATA_PROTOCOL,
+        command: `"${process.execPath}" "${path.resolve(
+          process.argv[1]
+        )}" $_URL_`,
+        override: true,
+        script: true,
+        terminal: !isProd,
+      })
+      .then(() => console.log("Successfully registered"))
+      .catch(console.error);
+  } else {
+    if (!app.isDefaultProtocolClient(AIRAVATA_PROTOCOL)) {
+      app.setAsDefaultProtocolClient(AIRAVATA_PROTOCOL);
+    }
+  }
 
   if (isProd) {
     await mainWindow.loadURL('app://./home');
