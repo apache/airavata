@@ -224,6 +224,9 @@ const TabsView = () => {
           }
         </TabPanels>
       </Tabs>
+
+
+      <Link href='/vnc-client'>VNC Client</Link>
     </>
   );
 };
