@@ -22,6 +22,11 @@ const Login = () => {
     }
   };
 
+  const handleCiLogin = async () => {
+    window.auth.ciLogonLogin();
+
+  };
+
   return (
     <Center mt={16} maxW='400px' mx='auto'>
       <Box>
@@ -75,7 +80,7 @@ const Login = () => {
           <Box>
             <Heading size='md' textAlign="left" color='blue.500'>Log in with your existing organizational login</Heading>
 
-            <Button colorScheme='blue' w='full' mt={2}>Login with Existing Institution Credentials</Button>
+            <Button colorScheme='blue' w='full' mt={2} onClick={handleCiLogin}>Login with Existing Institution Credentials</Button>
           </Box>
         </Box>
 

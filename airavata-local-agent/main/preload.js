@@ -1,17 +1,14 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const handler = {
-  send(channel, value)
-  {
+  send(channel, value) {
     ipcRenderer.send(channel, value);
   },
-  on(channel, callback)
-  {
+  on(channel, callback) {
     const subscription = (_event, ...args) => callback(...args);
     ipcRenderer.on(channel, subscription);
 
-    return () =>
-    {
+    return () => {
       ipcRenderer.removeListener(channel, subscription);
     };
   },
@@ -19,18 +16,23 @@ const handler = {
 
 contextBridge.exposeInMainWorld('ipc', handler);
 
+contextBridge.exposeInMainWorld('auth', {
+  ciLogonLogin: () => ipcRenderer.send('ci-logon-login'),
+  ciLogonSuccess: (callback) => {
+    ipcRenderer.once('ci-logon-success', callback);
+  }
+});
+
 contextBridge.exposeInMainWorld('vnc', {
   startProxy: () => ipcRenderer.send('start-proxy'),
 
-  proxyStarted: (callback) =>
-  {
+  proxyStarted: (callback) => {
     ipcRenderer.once('proxy-started', (event, hostname, port) => callback(event, hostname, port));
   },
 
   stopProxy: (restart) => ipcRenderer.send('stop-proxy', restart),
 
-  proxyStopped: (callback) =>
-  {
+  proxyStopped: (callback) => {
     ipcRenderer.once('proxy-stopped', callback);
   }
 });
