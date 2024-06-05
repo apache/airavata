@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Spacer, Container, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon } from "@chakra-ui/react";
 import { SAMPLE_JSON_RESPONSE, dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -112,6 +112,33 @@ const TabsView = () => {
   const isOpenTab = (type, experimentID) => {
     return (type + "_" + experimentID) in associatedIDToIndex;
   };
+
+  useEffect(() => {
+    // fetch experiments
+    async function fetchExperiments() {
+      try {
+        const accessToken = localStorage.getItem('accessToken');
+        console.log(accessToken);
+
+        // access token should be sent as bearer token
+        const response = await fetch('https://md.cybershuttle.org/api/experiment-search/', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Origin': 'https://md.cybershuttle.org'
+          },
+        });
+
+        const data = await response.json();
+        console.log(data);
+        // const data = await response.json();
+        // console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchExperiments();
+  }, []);
 
   return (
     <>

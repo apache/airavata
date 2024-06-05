@@ -1,6 +1,6 @@
 import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SIGN_UP_URL = "https://md.cybershuttle.org/auth/create-account";
 
@@ -24,8 +24,21 @@ const Login = () => {
 
   const handleCiLogin = async () => {
     window.auth.ciLogonLogin();
-
   };
+
+  useEffect(() => {
+    window.auth.ciLogonSuccess((event, token) => {
+      if (!token) {
+        console.error("Error logging in with CI logon", error);
+        setError("Error logging in with CI logon");
+      } else {
+        console.log("Logged in with CI logon", token);
+
+        window.localStorage.setItem("accessToken", token);
+        router.push('/tabs-view');
+      }
+    });
+  });
 
   return (
     <Center mt={16} maxW='400px' mx='auto'>
