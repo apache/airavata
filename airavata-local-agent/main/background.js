@@ -46,9 +46,10 @@ if (isProd) {
       .then(() => console.log("Successfully registered"))
       .catch(console.error);
   } else {
-    if (!app.isDefaultProtocolClient(AIRAVATA_PROTOCOL)) {
-      app.setAsDefaultProtocolClient(AIRAVATA_PROTOCOL);
-    }
+    // TODO: uncomment when in prod
+    // if (!app.isDefaultProtocolClient(AIRAVATA_PROTOCOL)) {
+    //   app.setAsDefaultProtocolClient(AIRAVATA_PROTOCOL);
+    // }
   }
 
   if (isProd) {
@@ -96,6 +97,43 @@ function runit(cmd, timeout) {
   });
 }
 
+ipcMain.on('ci-logon-login', async (event) => {
+
+  var authWindow = createWindow('authWindow', {
+    width: 800,
+    height: 600,
+    show: false,
+    'node-integration': false,
+    'web-security': false
+  });
+
+  authWindow.loadURL('https://cilogon.org/authorize?scope=openid email profile org.cilogon.userinfo&response_type=code&client_id=cilogon:/client_id/7e4a2d5e7dcf7d153857a33da199e12&redirect_uri=https://iam.scigap.org/auth/realms/molecular-dynamics/broker/cilogon/endpoint');
+
+
+  authWindow.show();
+  authWindow.webContents.on('will-redirect', (e, url) => {
+    console.log(url);
+
+    const keywords = [
+      'code', 'iam.scigap.org', 'molecular-dynamics'
+    ];
+
+    for (let keyword of keywords) {
+      if (!url.includes(keyword)) {
+        return;
+      }
+    }
+    // get the code parameter from the url
+    const rawCode = /code=([^&]*)/.exec(url) || null;
+    const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
+    if (code) {
+      // console.log("WE HAVE THE CODE:", code);
+      // event.sender.send('ci-logon-code', code);
+      // authWindow.close();
+      console.log("WE HAVE THE CODE:", code);
+    }
+  });
+});
 
 ipcMain.on('start-proxy', startIt);
 
