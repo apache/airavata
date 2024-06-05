@@ -31,26 +31,6 @@ if (isProd) {
     },
   });
 
-  const AIRAVATA_PROTOCOL = 'airavata';
-  if (!isProd) {
-    ProtocolRegistry
-      .register({
-        protocol: AIRAVATA_PROTOCOL,
-        command: `"${process.execPath}" "${path.resolve(
-          process.argv[1]
-        )}" $_URL_`,
-        override: true,
-        script: true,
-        terminal: !isProd,
-      })
-      .then(() => console.log("Successfully registered"))
-      .catch(console.error);
-  } else {
-    // TODO: uncomment when in prod
-    // if (!app.isDefaultProtocolClient(AIRAVATA_PROTOCOL)) {
-    //   app.setAsDefaultProtocolClient(AIRAVATA_PROTOCOL);
-    // }
-  }
 
   if (isProd) {
     await mainWindow.loadURL('app://./home');
@@ -100,11 +80,26 @@ function runit(cmd, timeout) {
 async function getToken(url) {
   console.log("getting token from url: ", url);
 
-  return "token";
+  // get the `code` parameter from the url
+  const rawCode = /code=([^&]*)/.exec(url) || null;
+  const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
+
+  if (code) {
+    const resp = await fetch(`http://localhost:3000/get-token-from-code?code=${code}`);
+
+    const data = await resp.json();
+
+    console.log("TOKEN: ", data.access_token);
+    const token = data.access_token;
+
+    return token;
+
+  } else {
+    return null;
+  }
 }
 
 ipcMain.on('ci-logon-login', async (event) => {
-
   var authWindow = createWindow('authWindow', {
     width: 800,
     height: 600,
@@ -122,32 +117,15 @@ ipcMain.on('ci-logon-login', async (event) => {
 
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
       const token = await getToken(url);
-      console.log("token: ", token);
-      // event.sender.send('ci-logon-code', code);
+
+      console.log("token we're sending back...", token);
+      event.sender.send('ci-logon-success', token);
+      authWindow.close();
     }
 
-    // const keywords = [
-    //   'code', 'iam.scigap.org', 'molecular-dynamics'
-    // ];
-
-    // for (let keyword of keywords) {
-    //   if (!url.includes(keyword)) {
-    //     return;
-    //   }
-    // }
-    // // get the code parameter from the url
-    // const rawCode = /code=([^&]*)/.exec(url) || null;
-    // const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
-    // if (code) {
-    //   // console.log("WE HAVE THE CODE:", code);
-    //   // event.sender.send('ci-logon-code', code);
-    //   // authWindow.close();
-    //   console.log("WE HAVE THE CODE:", code);
-
-    //   // the cilogon code isnt what we need, we need the iam sci one
-    // }
   });
 });
+
 
 ipcMain.on('start-proxy', startIt);
 
@@ -175,28 +153,6 @@ async function startIt(event) {
     console.log(`child process exited with code ${code}`);
     await stopIt(event, true);
   });
-  // runit('./proxy/novnc_proxy &', 20000).then(function (data)
-  // {
-  //   console.log("success: ", data);
-  //   // fs.readFile('./proxy/config.txt', 'utf8', (err, data) =>
-  //   // {
-  //   //   // the file is formatted like:
-  //   //   // hostname
-  //   //   // port
-  //   //   // read both 
-  //   //   const lines = data.split('\n');
-  //   //   const hostname = lines[0];
-  //   //   const port = lines[1];
-  //   //   console.log(hostname, port);
-  //   // });
-
-  // }, function (err)
-  // {
-  //   console.log("fail: ", err);
-  // });
-
-
-  // event.sender.send('proxy-started', 'localhost', 5900);
 }
 
 async function stopIt(event, restart) {
