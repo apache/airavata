@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Spacer, Container, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon } from "@chakra-ui/react";
+import {
+  Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Spacer, Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon
+} from "@chakra-ui/react";
 import { SAMPLE_JSON_RESPONSE, dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
@@ -227,109 +237,180 @@ const TabsView = () => {
         <TabPanels>
           <TabPanel>
 
-            <Stack direction='column' spacing={4}>
-
-              <Pagination
-                currentPage={currentPage}
-                isDisabled={isDisabled}
-                onPageChange={handlePageChange}
-              >
 
 
 
+            <Pagination
+              currentPage={currentPage}
+              isDisabled={isDisabled}
+              onPageChange={handlePageChange}
+            >
+              <TableContainer>
+                <Table variant='simple'>
+                  <Thead>
+                    <Tr>
+                      <Th>Name</Th>
+                      <Th>User</Th>
+                      <Th>Time</Th>
+                      <Th>Status</Th>
+                      <Th>Actions</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {
+                      experiments?.results?.map((experiment) => {
+                        return (
+                          <Tr key={experiment.experimentId} fontSize='sm'>
+                            <Td>
+                              {/* <Text>{experiment.name}</Text> */}
+                              <Box wordWrap='break-word'>
+                                <Text whiteSpace='pre-wrap'>{experiment.name}</Text>
+                              </Box>
+                            </Td>
+
+                            <Td>
+                              <Text>{experiment.userName}</Text>
+                            </Td>
+
+                            <Td>
+                              <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
+                            </Td>
+
+                            <Td>
+                              <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
+                            </Td>
+
+                            <Td>
+                              <HStack mt={4}>
+                                <Button colorScheme='orange' size='xs' onClick={() => {
+                                  handleAddTab('JN', experiment.experimentId, experiment.name);
+                                }}>
+
+                                  Jupyter
+
+                                  {
+                                    isOpenTab('JN', experiment.experimentId) &&
+                                    <Spinner ml={2} />
+                                  }
+
+                                </Button>
+                                {
+                                  // only show jupyter button if executionId starts with "NAMD_*".
+                                  experiment.executionId.startsWith('NAMD_') && (
+                                    <Button colorScheme='blue' size='xs' onClick={() => {
+                                      handleAddTab('VMD', experiment.experimentId, experiment.name);
+                                    }}
+                                    >
+                                      VMD
+
+                                      {
+                                        isOpenTab('VMD', experiment.experimentId) &&
+                                        <Spinner ml={2} />
+                                      }</Button>
+                                  )
+                                }
+                              </HStack>
+                            </Td>
+
+                          </Tr>
+                        );
+                      })
+                    }
+
+                    {/* {
+                    experiments?.results?.map((experiment) => {
+                      return (
+                        <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
+                          <Flex>
+                            <Box>
+                              <Text fontWeight='bold'>{experiment.name}</Text>
+                            </Box>
+                            <Spacer />
+                            <Box>
+                              <Flex gap={2} alignItems='center'>
+                                <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
+
+                                <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
+
+                              </Flex>
+                            </Box>
+                          </Flex>
+
+                          {experiment.description &&
+                            <Box mt={4}>
+                              <Text>{experiment.description}</Text>
+                            </Box>
+                          }
+
+                          <HStack mt={4}>
+                            <Button colorScheme='orange' size='sm' onClick={() => {
+                              handleAddTab('JN', experiment.experimentId, experiment.name);
+                            }}>
+
+                              Jupyter
+
+                              {
+                                isOpenTab('JN', experiment.experimentId) &&
+                                <Spinner ml={2} />
+                              }
+
+                            </Button>
+                            {
+                              // only show jupyter button if executionId starts with "NAMD_*".
+                              experiment.executionId.startsWith('NAMD_') && (
+                                <Button colorScheme='blue' size='sm' onClick={() => {
+                                  handleAddTab('VMD', experiment.experimentId, experiment.name);
+                                }}
+                                >
+                                  VMD
+
+                                  {
+                                    isOpenTab('VMD', experiment.experimentId) &&
+                                    <Spinner ml={2} />
+                                  }</Button>
+                              )
+                            }
+                          </HStack>
+                        </Box>
+                      );
+                    })
+                  } */}
+
+                  </Tbody>
+                </Table>
+              </TableContainer>
+              <Flex align='center' gap={4} justify='center' mt={2}>
+                <PaginationPrevious
+                  _hover={{
+                    bg: "blue.300",
+                  }}
+                  bg="blue.200"
+                  onClick={() => console.warn("I'm clicking the previous")}
+                >
+                  <Text>Previous</Text>
+                </PaginationPrevious>
 
                 {
-                  experiments?.results?.map((experiment) => {
-                    return (
-                      <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
-                        <Flex>
-                          <Box>
-                            <Text fontWeight='bold'>{experiment.name}</Text>
-                          </Box>
-                          <Spacer />
-                          <Box>
-                            <Flex gap={2} alignItems='center'>
-                              <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
-
-                              <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
-
-                            </Flex>
-                          </Box>
-                        </Flex>
-
-                        {experiment.description &&
-                          <Box mt={4}>
-                            <Text>{experiment.description}</Text>
-                          </Box>
-                        }
-
-                        <HStack mt={4}>
-                          <Button colorScheme='orange' size='sm' onClick={() => {
-                            handleAddTab('JN', experiment.experimentId, experiment.name);
-                          }}>
-
-                            Jupyter
-
-                            {
-                              isOpenTab('JN', experiment.experimentId) &&
-                              <Spinner ml={2} />
-                            }
-
-                          </Button>
-                          {
-                            // only show jupyter button if executionId starts with "NAMD_*".
-                            experiment.executionId.startsWith('NAMD_') && (
-                              <Button colorScheme='blue' size='sm' onClick={() => {
-                                handleAddTab('VMD', experiment.experimentId, experiment.name);
-                              }}
-                              >
-                                VMD
-
-                                {
-                                  isOpenTab('VMD', experiment.experimentId) &&
-                                  <Spinner ml={2} />
-                                }</Button>
-                            )
-                          }
-                        </HStack>
-                      </Box>
-                    );
-                  })
-                }
+                  isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize} to {(currentPage) * pageSize - 1}</Text>}
 
 
-                <Flex align='center' gap={2} justify='space-between'>
-                  <PaginationPrevious
-                    _hover={{
-                      bg: "blue.300",
-                    }}
-                    bg="blue.200"
-                    onClick={() => console.warn("I'm clicking the previous")}
-                  >
-                    <Text>Previous</Text>
-                  </PaginationPrevious>
-
-                  {
-                    isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize} to {(currentPage) * pageSize - 1}</Text>}
+                <PaginationNext
+                  _hover={{
+                    bg: "blue.300",
+                  }}
+                  bg="blue.200"
+                  onClick={() => console.warn("I'm clicking the next")}
+                  isDisabled={experiments?.results?.length < pageSize}
+                >
+                  <Text>Next</Text>
+                </PaginationNext>
 
 
-                  <PaginationNext
-                    _hover={{
-                      bg: "blue.300",
-                    }}
-                    bg="blue.200"
-                    onClick={() => console.warn("I'm clicking the next")}
-                    isDisabled={isDisabled}
-                  >
-                    <Text>Next</Text>
-                  </PaginationNext>
+              </Flex>
 
 
-                </Flex>
+            </Pagination>
 
-
-              </Pagination>
-            </Stack>
           </TabPanel>
 
           {
@@ -342,7 +423,7 @@ const TabsView = () => {
             })
           }
         </TabPanels>
-      </Tabs>
+      </Tabs >
 
 
       <Link href='/vnc-client'>VNC Client</Link>
