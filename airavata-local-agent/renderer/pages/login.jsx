@@ -30,6 +30,7 @@ const Login = () => {
     window.auth.ciLogonSuccess((event, token) => {
       if (!token) {
         console.error("Error logging in with CI logon", error);
+        window.auth.ciLogonLogin();
         setError("Error logging in with CI logon");
       } else {
         console.log("Logged in with CI logon", token);

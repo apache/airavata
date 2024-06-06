@@ -35,6 +35,7 @@ const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [arrOfTabsInfo, setArrOfTabsInfo] = useState([]);
+  const [experiments, setExperiments] = useState([]);
 
   /*
     arrOfTabsInfo looks like array of: 
@@ -121,15 +122,15 @@ const TabsView = () => {
         console.log(accessToken);
 
         // access token should be sent as bearer token
-        const response = await fetch('https://md.cybershuttle.org/api/experiment-search/', {
+        const response = await fetch('https://md.cybershuttle.org/api/experiment-search/?format=json', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
-            'Origin': 'https://md.cybershuttle.org'
           },
         });
 
         const data = await response.json();
-        console.log(data);
+
+        setExperiments(data);
         // const data = await response.json();
         // console.log(data);
       } catch (error) {
@@ -178,7 +179,7 @@ const TabsView = () => {
 
             <Stack direction='column' spacing={4}>
               {
-                SAMPLE_JSON_RESPONSE?.results.map((experiment) => {
+                experiments?.results?.map((experiment) => {
                   return (
                     <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
                       <Flex>
@@ -237,7 +238,7 @@ const TabsView = () => {
               }
             </Stack>
 
-            <Text mt={4} textAlign='center' fontStyle='italic'>{SAMPLE_JSON_RESPONSE?.results.length} experiments total</Text>
+            <Text mt={4} textAlign='center' fontStyle='italic'>{experiments?.results?.length} experiments total</Text>
           </TabPanel>
 
           {
