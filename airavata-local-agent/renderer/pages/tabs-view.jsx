@@ -28,7 +28,20 @@ const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
+let accessToken = '';
+const fetchExperiments = async (pageSize, offset) => {
+  if (!accessToken) {
+    accessToken = localStorage.getItem('accessToken');
+  }
 
+  return await fetch(
+    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  }
+  ).then(async (res) => await res.json());
+};
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 
@@ -36,6 +49,25 @@ const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [arrOfTabsInfo, setArrOfTabsInfo] = useState([]);
   const [experiments, setExperiments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const {
+    pages,
+    pagesCount,
+    offset,
+    currentPage,
+    setCurrentPage,
+    setIsDisabled,
+    isDisabled,
+    pageSize,
+    setPageSize,
+  } = usePagination({
+    initialState: {
+      pageSize: 10,
+      isDisabled: false,
+      currentPage: 1,
+    },
+  });
 
   /*
     arrOfTabsInfo looks like array of: 
@@ -115,31 +147,49 @@ const TabsView = () => {
   };
 
   useEffect(() => {
-    // fetch experiments
-    async function fetchExperiments() {
-      try {
-        const accessToken = localStorage.getItem('accessToken');
-        console.log(accessToken);
-
-        // access token should be sent as bearer token
-        const response = await fetch('https://md.cybershuttle.org/api/experiment-search/?format=json', {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
-        });
-
-        const data = await response.json();
-
+    setIsLoading(true);
+    fetchExperiments(pageSize, offset)
+      .then((data) => {
         setExperiments(data);
-        // const data = await response.json();
-        // console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
+        setIsLoading(false);
+      })
+      .catch((error) => console.error("App =>", error));
+  }, [currentPage, pageSize, offset]);
 
-    fetchExperiments();
-  }, []);
+  const handlePageChange = (nextPage) => {
+    // -> request new data using the page number
+    setCurrentPage(nextPage);
+    console.log("request new data with ->", nextPage);
+  };
+
+
+
+  // useEffect(() => {
+  //   // fetch experiments
+  //   async function fetchExperiments() {
+  //     try {
+  //       const accessToken = localStorage.getItem('accessToken');
+  //       console.log(accessToken);
+
+  //       // access token should be sent as bearer token
+  //       const response = await fetch('https://md.cybershuttle.org/api/experiment-search/?format=json', {
+  //         headers: {
+  //           'Authorization': `Bearer ${accessToken}`,
+  //         },
+  //       });
+
+  //       const data = await response.json();
+
+  //       setExperiments(data);
+  //       // const data = await response.json();
+  //       // console.log(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+
+  //   fetchExperiments();
+  // }, []);
 
   return (
     <>
@@ -178,67 +228,108 @@ const TabsView = () => {
           <TabPanel>
 
             <Stack direction='column' spacing={4}>
-              {
-                experiments?.results?.map((experiment) => {
-                  return (
-                    <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
-                      <Flex>
-                        <Box>
-                          <Text fontWeight='bold'>{experiment.name}</Text>
-                        </Box>
-                        <Spacer />
-                        <Box>
-                          <Flex gap={2} alignItems='center'>
-                            <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
 
-                            <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
+              <Pagination
+                currentPage={currentPage}
+                isDisabled={isDisabled}
+                onPageChange={handlePageChange}
+              >
 
-                          </Flex>
-                        </Box>
-                      </Flex>
 
-                      {experiment.description &&
-                        <Box mt={4}>
-                          <Text>{experiment.description}</Text>
-                        </Box>
-                      }
 
-                      <HStack mt={4}>
-                        <Button colorScheme='orange' size='sm' onClick={() => {
-                          handleAddTab('JN', experiment.experimentId, experiment.name);
-                        }}>
 
-                          Jupyter
+                {
+                  experiments?.results?.map((experiment) => {
+                    return (
+                      <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
+                        <Flex>
+                          <Box>
+                            <Text fontWeight='bold'>{experiment.name}</Text>
+                          </Box>
+                          <Spacer />
+                          <Box>
+                            <Flex gap={2} alignItems='center'>
+                              <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
 
-                          {
-                            isOpenTab('JN', experiment.experimentId) &&
-                            <Spinner ml={2} />
-                          }
+                              <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
 
-                        </Button>
-                        {
-                          // only show jupyter button if executionId starts with "NAMD_*".
-                          experiment.executionId.startsWith('NAMD_') && (
-                            <Button colorScheme='blue' size='sm' onClick={() => {
-                              handleAddTab('VMD', experiment.experimentId, experiment.name);
-                            }}
-                            >
-                              VMD
+                            </Flex>
+                          </Box>
+                        </Flex>
 
-                              {
-                                isOpenTab('VMD', experiment.experimentId) &&
-                                <Spinner ml={2} />
-                              }</Button>
-                          )
+                        {experiment.description &&
+                          <Box mt={4}>
+                            <Text>{experiment.description}</Text>
+                          </Box>
                         }
-                      </HStack>
-                    </Box>
-                  );
-                })
-              }
-            </Stack>
 
-            <Text mt={4} textAlign='center' fontStyle='italic'>{experiments?.results?.length} experiments total</Text>
+                        <HStack mt={4}>
+                          <Button colorScheme='orange' size='sm' onClick={() => {
+                            handleAddTab('JN', experiment.experimentId, experiment.name);
+                          }}>
+
+                            Jupyter
+
+                            {
+                              isOpenTab('JN', experiment.experimentId) &&
+                              <Spinner ml={2} />
+                            }
+
+                          </Button>
+                          {
+                            // only show jupyter button if executionId starts with "NAMD_*".
+                            experiment.executionId.startsWith('NAMD_') && (
+                              <Button colorScheme='blue' size='sm' onClick={() => {
+                                handleAddTab('VMD', experiment.experimentId, experiment.name);
+                              }}
+                              >
+                                VMD
+
+                                {
+                                  isOpenTab('VMD', experiment.experimentId) &&
+                                  <Spinner ml={2} />
+                                }</Button>
+                            )
+                          }
+                        </HStack>
+                      </Box>
+                    );
+                  })
+                }
+
+
+                <Flex align='center' gap={2} justify='space-between'>
+                  <PaginationPrevious
+                    _hover={{
+                      bg: "blue.300",
+                    }}
+                    bg="blue.200"
+                    onClick={() => console.warn("I'm clicking the previous")}
+                  >
+                    <Text>Previous</Text>
+                  </PaginationPrevious>
+
+                  {
+                    isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize} to {(currentPage) * pageSize - 1}</Text>}
+
+
+                  <PaginationNext
+                    _hover={{
+                      bg: "blue.300",
+                    }}
+                    bg="blue.200"
+                    onClick={() => console.warn("I'm clicking the next")}
+                    isDisabled={isDisabled}
+                  >
+                    <Text>Next</Text>
+                  </PaginationNext>
+
+
+                </Flex>
+
+
+              </Pagination>
+            </Stack>
           </TabPanel>
 
           {
