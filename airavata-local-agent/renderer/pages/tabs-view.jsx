@@ -34,6 +34,24 @@ const getColorScheme = (status) => {
   }
 };
 
+const getExperimentApplication = (executionId) => {
+
+
+  if (executionId.startsWith("AlphaFold2")) {
+    return "AlphaFold2";
+  } else if (executionId.startsWith("NAMD3_gpu")) {
+    return "NAMD3 GPU";
+  } else if (executionId.startsWith("NAMD_Diego")) {
+    return "NAMD3 Single Node";
+  } else if (executionId.startsWith("NAMD3")) {
+    return "NAMD3";
+  } else if (executionId.startsWith("NAMD")) {
+    return "NAMD";
+  }
+
+
+};
+
 const tabSelectedStyles = {
   bg: 'blue.100',
 };
@@ -209,35 +227,6 @@ const TabsView = () => {
     console.log("request new data with ->", nextPage);
   };
 
-
-
-  // useEffect(() => {
-  //   // fetch experiments
-  //   async function fetchExperiments() {
-  //     try {
-  //       const accessToken = localStorage.getItem('accessToken');
-  //       console.log(accessToken);
-
-  //       // access token should be sent as bearer token
-  //       const response = await fetch('https://md.cybershuttle.org/api/experiment-search/?format=json', {
-  //         headers: {
-  //           'Authorization': `Bearer ${accessToken}`,
-  //         },
-  //       });
-
-  //       const data = await response.json();
-
-  //       setExperiments(data);
-  //       // const data = await response.json();
-  //       // console.log(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-
-  //   fetchExperiments();
-  // }, []);
-
   return (
     <>
       <Tabs index={tabIndex} onChange={handleTabsChange}>
@@ -277,6 +266,7 @@ const TabsView = () => {
                     <Tr>
                       <Th>Name</Th>
                       <Th>User</Th>
+                      <Th>Type</Th>
                       <Th>Time</Th>
                       <Th>Status</Th>
                       <Th>Actions</Th>
@@ -295,6 +285,10 @@ const TabsView = () => {
 
                             <Td>
                               <Text>{experiment.userName}</Text>
+                            </Td>
+
+                            <Td>
+                              <Text>{getExperimentApplication(experiment.executionId)}</Text>
                             </Td>
 
                             <Td>
@@ -342,64 +336,6 @@ const TabsView = () => {
                       })
                     }
 
-                    {/* {
-                    experiments?.results?.map((experiment) => {
-                      return (
-                        <Box p={4} bg='gray.100' rounded='md' key={experiment.experimentId}>
-                          <Flex>
-                            <Box>
-                              <Text fontWeight='bold'>{experiment.name}</Text>
-                            </Box>
-                            <Spacer />
-                            <Box>
-                              <Flex gap={2} alignItems='center'>
-                                <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
-
-                                <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
-
-                              </Flex>
-                            </Box>
-                          </Flex>
-
-                          {experiment.description &&
-                            <Box mt={4}>
-                              <Text>{experiment.description}</Text>
-                            </Box>
-                          }
-
-                          <HStack mt={4}>
-                            <Button colorScheme='orange' size='sm' onClick={() => {
-                              handleAddTab('JN', experiment.experimentId, experiment.name);
-                            }}>
-
-                              Jupyter
-
-                              {
-                                isOpenTab('JN', experiment.experimentId) &&
-                                <Spinner ml={2} />
-                              }
-
-                            </Button>
-                            {
-                              // only show jupyter button if executionId starts with "NAMD_*".
-                              experiment.executionId.startsWith('NAMD_') && (
-                                <Button colorScheme='blue' size='sm' onClick={() => {
-                                  handleAddTab('VMD', experiment.experimentId, experiment.name);
-                                }}
-                                >
-                                  VMD
-
-                                  {
-                                    isOpenTab('VMD', experiment.experimentId) &&
-                                    <Spinner ml={2} />
-                                  }</Button>
-                              )
-                            }
-                          </HStack>
-                        </Box>
-                      );
-                    })
-                  } */}
 
                   </Tbody>
                 </Table>
