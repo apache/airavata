@@ -8,7 +8,8 @@ import {
   Th,
   Td,
   TableCaption,
-  TableContainer, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon
+  TableContainer, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon,
+  Divider
 } from "@chakra-ui/react";
 import { SAMPLE_JSON_RESPONSE, dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -212,11 +213,17 @@ const TabsView = () => {
   };
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    const obj = JSON.parse(atob(accessToken.split('.')[1]));
+    try {
 
-    setName(obj.name);
-    setEmail(obj.email);
+
+      const accessToken = localStorage.getItem('accessToken');
+      const obj = JSON.parse(atob(accessToken.split('.')[1]));
+
+      setName(obj.name);
+      setEmail(obj.email);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
   useEffect(() => {
     setIsLoading(true);
@@ -413,8 +420,12 @@ const TabsView = () => {
         </TabPanels>
       </Tabs >
 
+      <Divider />
 
-      <Link href='/vnc-client'>VNC Client</Link>
+      <Text my={1} textAlign='center'>Developed by the Apache Airavata Team</Text>
+
+
+      {/* <Link href='/vnc-client'>VNC Client</Link> */}
     </>
   );
 };
