@@ -27,15 +27,18 @@ const Login = () => {
   };
 
   useEffect(() => {
-    window.auth.ciLogonSuccess((event, token) => {
-      if (!token) {
+    window.auth.ciLogonSuccess((event, accessToken, refreshToken) => {
+      if (!accessToken || !refreshToken) {
+
+        console.log(accessToken, refreshToken);
         console.error("Error logging in with CI logon", error);
         window.auth.ciLogonLogin();
         setError("Error logging in with CI logon");
       } else {
-        console.log("Logged in with CI logon", token);
+        console.log("Logged in with CI logon", accessToken);
 
-        window.localStorage.setItem("accessToken", token);
+        window.localStorage.setItem("accessToken", accessToken);
+        window.localStorage.setItem("refreshToken", refreshToken);
         router.push('/tabs-view');
       }
     });

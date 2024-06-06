@@ -39,18 +39,55 @@ const tabSelectedStyles = {
 };
 
 let accessToken = '';
+
+const makeFetchForExperiments = async (pageSize, offset) => {
+  let resp = await fetch(
+    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  return resp;
+};
 const fetchExperiments = async (pageSize, offset) => {
   if (!accessToken) {
     accessToken = localStorage.getItem('accessToken');
   }
 
-  return await fetch(
-    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
+  let resp = await makeFetchForExperiments(pageSize, offset);
+
+  // if this fetch request fails, try again after getting a new access token
+  if (!resp.ok) {
+    let refreshToken = localStorage.getItem('refreshToken');
+    const respForRefresh = await fetch(`http://localhost:3000/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+
+    if (!respForRefresh.ok) {
+      console.error('Failed to get new access token');
+      return;
+    }
+
+
+    const data = await respForRefresh.json();
+
+    console.log(data);
+
+    localStorage.setItem('accessToken', data.access_token);
+    localStorage.setItem('refreshToken', data.refresh_token);
+
+    accessToken = data.access_token;
+    resp = await makeFetchForExperiments(pageSize, offset);
+    if (!resp.ok) {
+      console.error('Failed to fetch experiments');
+      return;
+    }
   }
-  ).then(async (res) => await res.json());
+
+  const data = await resp.json();
+
+
+
+  return data;
 };
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
@@ -225,21 +262,10 @@ const TabsView = () => {
               })
             }
           </TabList>
-
-          {/* 
-          <Box>
-            <Flex alignItems='center' gap={4}>
-              <Img src="/images/a-logo.png" maxH='45px' />
-            </Flex>
-          </Box> */}
         </Flex>
 
         <TabPanels>
           <TabPanel>
-
-
-
-
             <Pagination
               currentPage={currentPage}
               isDisabled={isDisabled}
@@ -260,10 +286,9 @@ const TabsView = () => {
                     {
                       experiments?.results?.map((experiment) => {
                         return (
-                          <Tr key={experiment.experimentId} fontSize='sm'>
+                          <Tr key={experiment.experimentId} fontSize='sm' alignItems='center'>
                             <Td>
-                              {/* <Text>{experiment.name}</Text> */}
-                              <Box wordWrap='break-word'>
+                              <Box>
                                 <Text whiteSpace='pre-wrap'>{experiment.name}</Text>
                               </Box>
                             </Td>
@@ -281,7 +306,7 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              <HStack mt={4}>
+                              <HStack>
                                 <Button colorScheme='orange' size='xs' onClick={() => {
                                   handleAddTab('JN', experiment.experimentId, experiment.name);
                                 }}>

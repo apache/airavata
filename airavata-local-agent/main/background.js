@@ -118,13 +118,13 @@ async function getToken(url) {
 
     const data = await resp.json();
 
-    console.log("TOKEN: ", data.access_token);
-    const token = data.access_token;
+    const accessToken = data.access_token;
+    const refreshToken = data.refresh_token;
 
-    return token;
+    return [accessToken, refreshToken];
 
   } else {
-    return null;
+    return [];
   }
 }
 
@@ -145,10 +145,15 @@ ipcMain.on('ci-logon-login', async (event) => {
     console.log(url);
 
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
-      const token = await getToken(url);
+      const tokens = await getToken(url);
 
-      console.log("token we're sending back...", token);
-      event.sender.send('ci-logon-success', token);
+      if (tokens.length > 0) {
+        const [accessToken, refreshToken] = tokens;
+        event.sender.send('ci-logon-success', accessToken, refreshToken);
+      }
+
+      // console.log("token we're sending back...", token);
+      // event.sender.send('ci-logon-success', token);
       authWindow.close();
     }
 
