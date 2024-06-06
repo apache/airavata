@@ -142,19 +142,18 @@ ipcMain.on('ci-logon-login', async (event) => {
 
   authWindow.show();
   authWindow.webContents.on('will-redirect', async (e, url) => {
-    console.log(url);
-
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
+      console.log("The URL is: ", url);
+
       const tokens = await getToken(url);
 
       if (tokens.length > 0) {
         const [accessToken, refreshToken] = tokens;
         event.sender.send('ci-logon-success', accessToken, refreshToken);
       }
-
-      // console.log("token we're sending back...", token);
-      // event.sender.send('ci-logon-success', token);
       authWindow.close();
+      authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+
     }
 
   });
