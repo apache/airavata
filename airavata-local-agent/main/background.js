@@ -23,11 +23,40 @@ if (isProd) {
 ; (async () => {
   await app.whenReady();
 
+  const filter = {
+    urls: ['https://md.cybershuttle.org/*']
+  };
+
+  // session.defaultSession.webRequest.onBeforeSendHeaders(
+  //   filter,
+  //   (details, callback) => {
+  //     console.log(details);
+  //     details.requestHeaders['Origin'] = 'https://md.cybershuttle.org';
+  //     callback({ requestHeaders: details.requestHeaders });
+  //   }
+  // );
+
+  // session.defaultSession.webRequest.onHeadersReceived(
+  //   filter,
+  //   (details, callback) => {
+  //     console.log(details);
+  //     details.responseHeaders['Access-Control-Allow-Origin'] = [
+  //       '*'
+  //     ];
+  //     callback({ responseHeaders: details.responseHeaders });
+  //   }
+  // );
+
+
+  // Construct the BrowserWindow if haven't done so yet...
+
   const mainWindow = createWindow('main', {
     width: 1500,
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      webSecurity: false
+
     },
   });
 
