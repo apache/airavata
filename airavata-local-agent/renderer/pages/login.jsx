@@ -29,14 +29,10 @@ const Login = () => {
   useEffect(() => {
     window.auth.ciLogonSuccess((event, accessToken, refreshToken) => {
       if (!accessToken || !refreshToken) {
-
-        console.log(accessToken, refreshToken);
-        console.error("Error logging in with CI logon", error);
+        console.log("Error logging in with CI logon");
         window.auth.ciLogonLogin();
-        setError("Error logging in with CI logon");
+        setError("Refresh the page and try again, this may sometimes happen.");
       } else {
-        console.log("Logged in with CI logon", accessToken);
-
         window.localStorage.setItem("accessToken", accessToken);
         window.localStorage.setItem("refreshToken", refreshToken);
         router.push('/tabs-view');

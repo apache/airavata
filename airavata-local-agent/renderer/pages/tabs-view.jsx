@@ -88,8 +88,6 @@ const fetchExperiments = async (pageSize, offset) => {
 
     const data = await respForRefresh.json();
 
-    console.log(data);
-
     localStorage.setItem('accessToken', data.access_token);
     localStorage.setItem('refreshToken', data.refresh_token);
 
@@ -115,6 +113,8 @@ const TabsView = () => {
   const [arrOfTabsInfo, setArrOfTabsInfo] = useState([]);
   const [experiments, setExperiments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
 
   const {
     pages,
@@ -212,6 +212,13 @@ const TabsView = () => {
   };
 
   useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    const obj = JSON.parse(atob(accessToken.split('.')[1]));
+
+    setName(obj.name);
+    setEmail(obj.email);
+  }, []);
+  useEffect(() => {
     setIsLoading(true);
     fetchExperiments(pageSize, offset)
       .then((data) => {
@@ -224,13 +231,28 @@ const TabsView = () => {
   const handlePageChange = (nextPage) => {
     // -> request new data using the page number
     setCurrentPage(nextPage);
-    console.log("request new data with ->", nextPage);
   };
 
   return (
     <>
+      <Box py={1} px={2} bg='gray.100'>
+        <Flex>
+          <Text>Airavata Local Agent v1.0.0</Text>
+
+          <Spacer />
+
+          <Text>{name} ({email}), <Text color='blue.400' _hover={{ textDecoration: "underline", cursor: "pointer" }} as='span' onClick={() => {
+            // delete the access token and refresh token
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+
+            // redirect to login page
+            window.location.href = '/login';
+          }}>Log Out</Text></Text>
+        </Flex>
+      </Box>
       <Tabs index={tabIndex} onChange={handleTabsChange}>
-        <Flex alignItems='center' gap={2}>
+        <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
             <Tab _selected={tabSelectedStyles} minW='200px'>
               <Icon as={FaHome} mr={2} />
@@ -251,6 +273,13 @@ const TabsView = () => {
               })
             }
           </TabList>
+
+          {/* <Box bg='gray'>
+            <Flex alignItems='center' gap={4}>
+              <Img src="/images/a-logo.png" maxH='45px' />
+            </Flex>
+          </Box> */}
+
         </Flex>
 
         <TabPanels>
@@ -346,7 +375,6 @@ const TabsView = () => {
                     bg: "blue.300",
                   }}
                   bg="blue.200"
-                  onClick={() => console.warn("I'm clicking the previous")}
                 >
                   <Text>Previous</Text>
                 </PaginationPrevious>
@@ -360,7 +388,6 @@ const TabsView = () => {
                     bg: "blue.300",
                   }}
                   bg="blue.200"
-                  onClick={() => console.warn("I'm clicking the next")}
                   isDisabled={experiments?.results?.length < pageSize}
                 >
                   <Text>Next</Text>
