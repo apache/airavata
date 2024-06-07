@@ -102,6 +102,7 @@ futurewater ansible_host=149.165.154.212 ansible_user=exouser
 
 # Delta Jetstream server
 # delta ansible_host=149.165.153.181 ansible_user=exouser
+delta ansible_host=149.165.173.140 ansible_user=exouser
 
 # Container-Tutorial Jetstream server
 # This JS1 VM no longer exists
