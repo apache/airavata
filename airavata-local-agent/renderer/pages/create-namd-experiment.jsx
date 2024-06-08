@@ -208,7 +208,7 @@ const Home = () => {
               setSettingsOpen(!settingsOpen);
             }
           }>
-            <Heading fontSize='2xl'>Create a New Experiment</Heading>
+            <Heading fontSize='2xl'>Settings for queue complete</Heading>
             <Flex justify='space-between' mt={4}>
               <Box>
                 <Heading>{nodeCount}</Heading>
