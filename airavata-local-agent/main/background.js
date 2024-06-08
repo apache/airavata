@@ -143,8 +143,6 @@ ipcMain.on('ci-logon-login', async (event) => {
   authWindow.show();
   authWindow.webContents.on('will-redirect', async (e, url) => {
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
-      console.log("The URL is: ", url);
-
       const tokens = await getToken(url);
 
       if (tokens.length > 0) {
