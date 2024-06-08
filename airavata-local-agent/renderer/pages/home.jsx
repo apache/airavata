@@ -1,9 +1,11 @@
 import { Button, Container, Img, Text, Flex, Heading, Link, HStack } from "@chakra-ui/react";
+import { HeaderBox } from "../components/HeaderBox";
 
-const Home = () =>
-{
+const Home = () => {
   return (
     <>
+      <HeaderBox />
+
       <Container maxW='container.sm' p={4} mt={4}>
         <Flex alignItems='center' gap={2}>
           <Img src='/images/a-logo.png' maxH='50px' />

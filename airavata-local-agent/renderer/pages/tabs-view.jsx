@@ -18,11 +18,10 @@ import {
   Pagination,
   usePagination,
   PaginationNext,
-  PaginationPage,
   PaginationPrevious,
-  PaginationContainer,
-  PaginationPageGroup,
 } from "@ajna/pagination";
+import { useRouter } from "next/router";
+import { HeaderBox } from "../components/HeaderBox";
 
 const getColorScheme = (status) => {
   switch (status) {
@@ -36,8 +35,6 @@ const getColorScheme = (status) => {
 };
 
 const getExperimentApplication = (executionId) => {
-
-
   if (executionId.startsWith("AlphaFold2")) {
     return "AlphaFold2";
   } else if (executionId.startsWith("NAMD3_gpu")) {
@@ -70,6 +67,8 @@ const makeFetchForExperiments = async (pageSize, offset) => {
   return resp;
 };
 const fetchExperiments = async (pageSize, offset) => {
+
+
   if (!accessToken) {
     accessToken = localStorage.getItem('accessToken');
   }
@@ -102,8 +101,6 @@ const fetchExperiments = async (pageSize, offset) => {
 
   const data = await resp.json();
 
-
-
   return data;
 };
 
@@ -116,6 +113,7 @@ const TabsView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const router = useRouter();
 
   const {
     pages,
@@ -214,8 +212,6 @@ const TabsView = () => {
 
   useEffect(() => {
     try {
-
-
       const accessToken = localStorage.getItem('accessToken');
       const obj = JSON.parse(atob(accessToken.split('.')[1]));
 
@@ -223,6 +219,7 @@ const TabsView = () => {
       setEmail(obj.email);
     } catch (error) {
       console.log(error);
+      router.push('/login');
     }
   }, []);
   useEffect(() => {
@@ -242,22 +239,7 @@ const TabsView = () => {
 
   return (
     <>
-      <Box py={1} px={2} bg='gray.100'>
-        <Flex>
-          <Text>Airavata Local Agent v1.0.0</Text>
-
-          <Spacer />
-
-          <Text>{name} ({email}), <Text color='blue.400' _hover={{ textDecoration: "underline", cursor: "pointer" }} as='span' onClick={() => {
-            // delete the access token and refresh token
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-
-            // redirect to login page
-            window.location.href = '/login';
-          }}>Log Out</Text></Text>
-        </Flex>
-      </Box>
+      <HeaderBox name={name} email={email} />
       <Tabs index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
