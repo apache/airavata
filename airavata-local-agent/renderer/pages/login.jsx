@@ -1,5 +1,4 @@
 import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
 
@@ -9,7 +8,6 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleLogin = async () => {
     setError("Molecular Dynamics Gateway login is not yet implemented, please use the organizational login.");
@@ -23,33 +21,35 @@ const Login = () => {
     } else {
       // handle login
       // setError("Invalid username or password.");
-      router.push('/tabs-view');
+      window.location.href = "/tabs-view";
     }
   };
+
+
 
   const handleCiLogin = async () => {
     window.auth.ciLogonLogin();
   };
 
-  let tries = 0;
-
   useEffect(() => {
+    if (localStorage.getItem("ciLoginAuto") === "true") {
+      localStorage.removeItem("ciLoginAuto");
+      window.auth.ciLogonLogin();
+    }
     window.auth.ciLogonSuccess((event, accessToken, refreshToken) => {
       if (!accessToken || !refreshToken) {
         console.log("Error logging in with CI logon");
-        tries++;
-        window.auth.ciLogonLogin();
-
-        if (tries > 3) {
-          setError("Refresh the page and try again, this may sometimes happen.");
-        }
+        localStorage.setItem("ciLoginAuto", "true");
+        location.reload();
+        // setError("Refresh the page and try logging in again, this may sometimes happen.");
       } else {
         window.localStorage.setItem("accessToken", accessToken);
         window.localStorage.setItem("refreshToken", refreshToken);
-        router.push('/tabs-view');
+        localStorage.removeItem("ciLoginAuto");
+        window.location.href = "/tabs-view";
       }
     });
-  });
+  }, []);
 
   return (
     <>

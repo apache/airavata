@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import {
-  Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Spacer, Table,
+  Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
-  TableContainer, Img, Text, Flex, Spinner, Link, HStack, VStack, Stack, Badge, Icon,
-  Divider
+  TableContainer, Text, Flex, Spinner, HStack, Badge, Icon,
+  Divider,
+  Spacer
 } from "@chakra-ui/react";
-import { SAMPLE_JSON_RESPONSE, dateToAgo, truncTextToN } from "../lib/utilityFuncs";
+import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import {
@@ -116,15 +115,11 @@ const TabsView = () => {
   const router = useRouter();
 
   const {
-    pages,
-    pagesCount,
     offset,
     currentPage,
     setCurrentPage,
-    setIsDisabled,
     isDisabled,
     pageSize,
-    setPageSize,
   } = usePagination({
     initialState: {
       pageSize: 10,
@@ -302,7 +297,13 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              <Text>{experiment.userName}</Text>
+                              {
+                                experiment.userName === email ? (
+                                  <Text color='green'>{experiment.userName}</Text>
+                                ) : (
+                                  <Text>{experiment.userName}</Text>
+                                )
+                              }
                             </Td>
 
                             <Td>
@@ -322,14 +323,11 @@ const TabsView = () => {
                                 <Button colorScheme='orange' size='xs' onClick={() => {
                                   handleAddTab('JN', experiment.experimentId, experiment.name);
                                 }}>
-
                                   Jupyter
-
                                   {
                                     isOpenTab('JN', experiment.experimentId) &&
                                     <Spinner ml={2} />
                                   }
-
                                 </Button>
                                 {
                                   // only show jupyter button if executionId starts with "NAMD_*".
@@ -359,6 +357,19 @@ const TabsView = () => {
                 </Table>
               </TableContainer>
               <Flex align='center' gap={4} justify='center' mt={2}>
+                {
+                  currentPage > 1 && (
+                    <Button onClick={() => {
+                      handlePageChange(1);
+                    }} _hover={{
+                      bg: "blue.300",
+                    }}
+                      bg="blue.100" size='sm'>
+                      Back to first
+                    </Button>
+                  )
+                }
+
                 <PaginationPrevious
                   _hover={{
                     bg: "blue.300",
@@ -371,7 +382,6 @@ const TabsView = () => {
                 {
                   isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize} to {(currentPage) * pageSize - 1}</Text>}
 
-
                 <PaginationNext
                   _hover={{
                     bg: "blue.300",
@@ -381,7 +391,6 @@ const TabsView = () => {
                 >
                   <Text>Next</Text>
                 </PaginationNext>
-
 
               </Flex>
 
