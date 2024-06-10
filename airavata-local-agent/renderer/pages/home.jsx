@@ -24,7 +24,7 @@ const Home = () => {
         <HStack spacing={4} mt={2}>
           <Button as='a' href='/login' colorScheme='blue'>Login to Airavata UI</Button>
 
-          <Button as='a' href='/login' bg='black' color='white' _hover={{
+          <Button as='a' target="_blank" href='https://github.com/apache/airavata/pull/435' bg='black' color='white' _hover={{
             'bg': "#404040"
           }}>Contribute on GitHub</Button>
 
