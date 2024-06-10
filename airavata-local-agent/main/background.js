@@ -60,6 +60,11 @@ if (isProd) {
     },
   });
 
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    require('electron').shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
 
   if (isProd) {
     await mainWindow.loadURL('app://./home');
