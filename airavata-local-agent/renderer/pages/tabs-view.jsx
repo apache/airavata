@@ -297,13 +297,7 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              {
-                                experiment.userName === email ? (
-                                  <Text color='green'>{experiment.userName}</Text>
-                                ) : (
-                                  <Text>{experiment.userName}</Text>
-                                )
-                              }
+                              <Text>{experiment.userName === email ? "You" : experiment.userName}</Text>
                             </Td>
 
                             <Td>
