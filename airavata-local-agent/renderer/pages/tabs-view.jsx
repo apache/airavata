@@ -21,6 +21,7 @@ import {
 } from "@ajna/pagination";
 import { useRouter } from "next/router";
 import { HeaderBox } from "../components/HeaderBox";
+import { Footer } from "../components/Footer";
 
 const getColorScheme = (status) => {
   switch (status) {
@@ -385,10 +386,7 @@ const TabsView = () => {
                 >
                   <Text>Next</Text>
                 </PaginationNext>
-
               </Flex>
-
-
             </Pagination>
 
           </TabPanel>
@@ -405,10 +403,7 @@ const TabsView = () => {
         </TabPanels>
       </Tabs >
 
-      <Divider />
-
-      <Text my={1} textAlign='center'>Developed by the Apache Airavata Team</Text>
-
+      <Footer />
 
       {/* <Link href='/vnc-client'>VNC Client</Link> */}
     </>
