@@ -14,8 +14,25 @@ import {
 } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
+import { Footer } from "../components/Footer";
 
 const Home = () => {
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      const obj = JSON.parse(atob(accessToken.split('.')[1]));
+
+      setUserName(obj.name);
+      setEmail(obj.email);
+    } catch (error) {
+      console.log(error);
+      router.push('/login');
+    }
+  }, []);
+
   const [name, setName] = useState("NAMD on " + new Date().toLocaleDateString() + " at " + new Date().toLocaleTimeString());
 
   const [desc, setDesc] = useState("Enter description here");
@@ -48,7 +65,7 @@ const Home = () => {
   }, [project]);
   return (
     <>
-      <HeaderBox />
+      <HeaderBox name={userName} email={email} />
 
       <Container maxW='container.md' p={4} mt={4}>
         <Stack direction='column' spacing={4}>
@@ -301,6 +318,8 @@ const Home = () => {
 
         </Stack>
       </Container>
+
+      <Footer />
     </>
   );
 };
