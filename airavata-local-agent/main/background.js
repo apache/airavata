@@ -5,10 +5,6 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
-// import electronisdev
-
-
-const ProtocolRegistry = require("protocol-registry");
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
@@ -114,7 +110,6 @@ function runit(cmd, timeout) {
 async function getToken(url) {
   console.log("getting token from url: ", url);
 
-  // get the `code` parameter from the url
   const rawCode = /code=([^&]*)/.exec(url) || null;
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
