@@ -69,8 +69,6 @@ const makeFetchForExperiments = async (pageSize, offset) => {
   return resp;
 };
 const fetchExperiments = async (pageSize, offset) => {
-
-
   if (!accessToken) {
     accessToken = localStorage.getItem('accessToken');
   }
@@ -86,7 +84,6 @@ const fetchExperiments = async (pageSize, offset) => {
       console.error('Failed to get new access token');
       return;
     }
-
 
     const data = await respForRefresh.json();
 
@@ -220,6 +217,7 @@ const TabsView = () => {
       router.push('/login');
     }
   }, []);
+
   useEffect(() => {
     setIsLoading(true);
     fetchExperiments(pageSize, offset)
@@ -260,13 +258,6 @@ const TabsView = () => {
               })
             }
           </TabList>
-
-          {/* <Box bg='gray'>
-            <Flex alignItems='center' gap={4}>
-              <Img src="/images/a-logo.png" maxH='45px' />
-            </Flex>
-          </Box> */}
-
         </Flex>
 
         <TabPanels>
@@ -343,13 +334,10 @@ const TabsView = () => {
                                 }
                               </HStack>
                             </Td>
-
                           </Tr>
                         );
                       })
                     }
-
-
                   </Tbody>
                 </Table>
               </TableContainer>
@@ -390,7 +378,6 @@ const TabsView = () => {
                 </PaginationNext>
               </Flex>
             </Pagination>
-
           </TabPanel>
 
           {
@@ -404,10 +391,7 @@ const TabsView = () => {
           }
         </TabPanels>
       </Tabs >
-
       <Footer />
-
-      {/* <Link href='/vnc-client'>VNC Client</Link> */}
     </>
   );
 };
