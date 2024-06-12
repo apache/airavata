@@ -25,8 +25,6 @@ const Login = () => {
     }
   };
 
-
-
   const handleCiLogin = async () => {
     window.auth.ciLogonLogin();
   };
@@ -61,7 +59,6 @@ const Login = () => {
             <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Airavata Local Agent</Text>
           </Flex>
 
-
           {
             error !== "" && (
               <Alert status='error' rounded='md' mt={2}>
@@ -74,23 +71,15 @@ const Login = () => {
           }
 
           <Box shadow='md' rounded='md' p={4} mt={4}>
-            <Box>
-              <Heading size='md' textAlign="left" color='blue.500'>Log in with your existing organizational login</Heading>
-
-              <Button colorScheme='blue' w='full' mt={2} onClick={handleCiLogin}>Login with Existing Institution Credentials</Button>
-            </Box>
+            <Heading size='md' textAlign="left" color='blue.500'>Log in with your existing organizational login</Heading>
+            <Button colorScheme='blue' w='full' mt={2} onClick={handleCiLogin}>Login with Existing Institution Credentials</Button>
           </Box>
-
 
           <Box shadow='md' rounded='md' p={4} mt={8}>
             <Heading size='md' textAlign="left" color='blue.500'>Log in with Molecular Dynamics Gateway</Heading>
-            {/* <Link>(create an account)</Link> */}
-
             <Text mt={2}>If you need to create an account, <Link color='blue.500' href={SIGN_UP_URL} target="_blank">you can sign up here</Link>. You can close the pop-up window after you see "Account request processed successfully...".</Text>
 
-
             <VStack mt={4} w='500px' spacing={4}>
-
               <FormControl>
                 <FormLabel>Username</FormLabel>
                 <Input type='text' value={username} onChange={(e) => {
@@ -108,9 +97,6 @@ const Login = () => {
               <Button colorScheme='blue' onClick={handleLogin} w='full' isDisabled>Login with Molecular Dynamics Gateway</Button>
             </VStack>
           </Box>
-
-
-
 
           <Text mt={4} textAlign='center'><Link color='blue.500' href='/home'>Back to home</Link></Text>
         </Box>

@@ -29,7 +29,8 @@ const Home = () => {
       setEmail(obj.email);
     } catch (error) {
       console.log(error);
-      router.push('/login');
+
+      window.location.href = "/login";
     }
   }, []);
 

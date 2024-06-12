@@ -1,13 +1,8 @@
 import { Box, Text, Button, Flex, Spacer, Img } from '@chakra-ui/react';
 import { MdPause, MdPlayArrow } from "react-icons/md";
-import { useRouter } from 'next/router';
-export const NavBar = () =>
-{
-    const router = useRouter();
-    const handleLogout = () =>
-    {
-        console.log("logging out logic...");
-        router.push("/login");
+export const NavBar = () => {
+    const handleLogout = () => {
+        window.location.href = "/login";
     };
     return (
         <>
