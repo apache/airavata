@@ -27,6 +27,8 @@ const getColorScheme = (status) => {
   switch (status) {
     case 'COMPLETED':
       return 'green';
+    case 'EXECUTING':
+      return 'yellow';
     case 'CREATED':
       return 'blue';
     default:

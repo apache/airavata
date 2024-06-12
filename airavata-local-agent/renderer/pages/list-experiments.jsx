@@ -5,17 +5,14 @@ import { dateToAgo, SAMPLE_JSON_RESPONSE } from "../lib/utilityFuncs";
 const fetchData = async (
   pageSize,
   offset
-) =>
-{
+) => {
   return await fetch(
     `https://pokeapi.co/api/v2/pokemon?limit=${pageSize}&offset=${offset}` // TODO: replace this URL with the actual one
   ).then(async (res) => await res.json());
 };
 
-const getColorScheme = (status) =>
-{
-  switch (status)
-  {
+const getColorScheme = (status) => {
+  switch (status) {
     case 'COMPLETED':
       return 'green';
     case 'CREATED':
@@ -25,15 +22,13 @@ const getColorScheme = (status) =>
   }
 };
 
-const ListExperiments = () =>
-{
+const ListExperiments = () => {
   return (
     <>
       <NavContainer activePage="List Experiments">
         <Stack direction='column' spacing={4}>
           {
-            SAMPLE_JSON_RESPONSE.results.map((experiment) =>
-            {
+            SAMPLE_JSON_RESPONSE.results.map((experiment) => {
               return (
                 <Box p={4} bg='gray.100' rounded='md'>
                   <Flex>

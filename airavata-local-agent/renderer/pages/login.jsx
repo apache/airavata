@@ -105,14 +105,14 @@ const Login = () => {
                 }} placeholder='Password' />
               </FormControl>
 
-              <Button colorScheme='blue' onClick={handleLogin} w='full'>Login with Molecular Dynamics Gateway</Button>
+              <Button colorScheme='blue' onClick={handleLogin} w='full' isDisabled>Login with Molecular Dynamics Gateway</Button>
             </VStack>
           </Box>
 
 
 
 
-          <Text mt={4}><Link color='blue.500' href='/home'>{"<--"} Back to home</Link></Text>
+          <Text mt={4} textAlign='center'><Link color='blue.500' href='/home'>Back to home</Link></Text>
         </Box>
       </Center >
     </>
