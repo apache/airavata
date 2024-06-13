@@ -15,6 +15,7 @@ import {
 import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
+import tus from 'tus-js-client';
 
 const Home = () => {
   const [userName, setUserName] = useState('');
@@ -22,11 +23,12 @@ const Home = () => {
 
   useEffect(() => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const obj = JSON.parse(atob(accessToken.split('.')[1]));
+      const theAccessToken = localStorage.getItem('accessToken');
+      const obj = JSON.parse(atob(theAccessToken.split('.')[1]));
 
       setUserName(obj.name);
       setEmail(obj.email);
+      setAccessToken(theAccessToken);
     } catch (error) {
       console.log(error);
 
@@ -58,12 +60,13 @@ const Home = () => {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [queue, setQueue] = useState("compute");
+  const [instructionsFile, setInstructionsFile] = useState(null);
+  const [accessToken, setAccessToken] = useState("");
 
+  const getCookieValue = (name) => (
+    document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+  );
 
-
-  useEffect(() => {
-    console.log("project: ", project);
-  }, [project]);
   return (
     <>
       <HeaderBox name={userName} email={email} />
@@ -150,7 +153,55 @@ const Home = () => {
 
           <FormControl>
             <FormLabel>MD-Instructions-Input</FormLabel>
-            <Input type='file' placeholder='upload file' />
+            <Input type='file' placeholder='upload file' onChange={async (e) => {
+              const file = e.target.files[0];
+
+              console.log("Uploading...", file);
+
+              var upload = new tus.Upload(file, {
+                endpoint: "https://tus.airavata.org/files/",
+                metadata: {
+                  filename: file.name,
+                  filetype: file.type
+                },
+
+
+                onError: function (error) {
+                  console.log("Failed because: " + error);
+                },
+                onProgress: function (bytesUploaded, bytesTotal) {
+                  var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
+                  console.log(bytesUploaded, bytesTotal, percentage + "%");
+                },
+                onSuccess: function () {
+                  console.log("Download %s from %s", upload.file.name, upload.url);
+
+                  const url = upload.url;
+
+                  let form_data = new FormData();
+                  form_data.set('data', {
+                    "uploadURL": url
+                  });
+
+                  fetch("https://md.cybershuttle.org/api/tus-upload-finish", {
+                    method: "POST",
+                    data: form_data,
+                    credentials: "include",
+                    headers: {
+                      'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryOOWgWP671DGDVKBL',
+                      'X-Csrftoken': getCookieValue('csrftoken')
+                    }
+                  });
+
+                }
+
+
+              });
+
+              upload.start();
+
+
+            }} />
             <FormHelperText>NAMD conf file/QuickMD conf file.</FormHelperText>
           </FormControl>
 
