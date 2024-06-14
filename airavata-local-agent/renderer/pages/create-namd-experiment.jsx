@@ -10,7 +10,8 @@ import {
   Button,
   Textarea,
   Checkbox,
-  Spacer
+  Spacer,
+  useToast,
 } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ import { Footer } from "../components/Footer";
 import tus from 'tus-js-client';
 
 const Home = () => {
+  const toast = useToast();
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
 
@@ -713,7 +715,19 @@ const Home = () => {
         }
       });
 
-      console.log(resp1);
+      if (resp1.ok) {
+        toast({
+          title: 'Experiment created and launched.',
+          description: "Redirecting you soon...",
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+
+        setTimeout(() => {
+          window.location.href = '/tabs-view';
+        }, 3000);
+      }
     }
 
   };
