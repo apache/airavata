@@ -12,6 +12,7 @@ import {
   Checkbox,
   Spacer,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
@@ -31,13 +32,14 @@ const Home = () => {
   const [project, setProject] = useState("option1");
   const [executionType, setExecutionType] = useState("CPU");
 
-  const [contPrev, setContPrev] = useState(true);
+  const [contPrev, setContPrev] = useState(false);
+  const [prevJobId, setPrevJobId] = useState("");
 
   const [replicate, setReplicate] = useState(false);
   const [numReplicas, setNumReplicas] = useState(0);
 
   const [allocation, setAllocation] = useState("default");
-  const [computeResource, setComputeResource] = useState("expanse");
+  const [computeResource, setComputeResource] = useState("expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32");
 
   const [nodeCount, setNodeCount] = useState(1);
   const [coreCount, setCoreCount] = useState(128);
@@ -55,6 +57,9 @@ const Home = () => {
   const [fParamUri, setFParamUri] = useState("");
   const [constraintsUri, setConstraintsUri] = useState("");
   const [optionalUri, setOptionalUri] = useState("");
+  const [replicasList, setReplicasList] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   // INPUT STATES
   const [projectObjArray, setProjectObjArray] = useState([]);
@@ -147,7 +152,7 @@ const Home = () => {
   }, []);
 
   const handleSaveAndLaunch = async () => {
-
+    setLoading(true);
     let idx0 = {
       "name": "Execution_Type",
       "value": executionType,
@@ -182,7 +187,6 @@ const Home = () => {
       "_key": "d3fc9f5e-864c-4d57-b9f5-d0aa8366ab17",
       "show": true
     };
-
     let idx1 = {
       "name": "Continue_from_Previous_Run?",
       "value": contPrev ? "yes" : "no",
@@ -213,10 +217,9 @@ const Home = () => {
       "_key": "cdc7da81-7c5a-46b7-9390-523acc812b03",
       "show": true
     };
-
     let idx2 = {
       "name": "Previous_JobID",
-      "value": null,
+      "value": prevJobId,
       "type": 0,
       "applicationArgument": "-r",
       "standardInput": false,
@@ -246,7 +249,6 @@ const Home = () => {
       "_key": "d8946d70-de6a-42dd-8516-0fff7934f822",
       "show": false
     };
-
     let idx3 = {
       "name": "MD-Instructions-Input",
       "value": mdInstructionsUri,
@@ -265,7 +267,6 @@ const Home = () => {
       "_key": "8dcbe73c-050a-4d7b-a3fc-60709f8d5ae1",
       "show": true
     };
-
     let idx4 = {
       "name": "Coordinates-PDB-File",
       "value": coordinatesUri,
@@ -284,7 +285,6 @@ const Home = () => {
       "_key": "ac9275a8-3ebd-4629-a383-3ba7784a6a10",
       "show": true
     };
-
     let idx5 = {
       "name": "Protein-Structure-File_PSF",
       "value": proteinPSFUri,
@@ -303,7 +303,6 @@ const Home = () => {
       "_key": "cc9f6cff-5d49-45b4-a549-2955c4205694",
       "show": true
     };
-
     let idx6 = {
       "name": "FF-Parameter-Files",
       "value": fParamUri,
@@ -322,7 +321,6 @@ const Home = () => {
       "_key": "a3407d94-a944-43e6-83a4-7f71ac292fe0",
       "show": true
     };
-
     let idx7 = {
       "name": "Constraints-PDB",
       "value": constraintsUri,
@@ -341,7 +339,6 @@ const Home = () => {
       "_key": "841373ea-65c7-422c-8391-d3efad517034",
       "show": true
     };
-
     let idx8 = {
       "name": "Optional_Inputs",
       "value": optionalUri,
@@ -360,10 +357,9 @@ const Home = () => {
       "_key": "b55a91ae-120e-4c2a-8d6b-66af6d646773",
       "show": true
     };
-
     let idx9 = {
       "name": "Replicate?",
-      "value": replicate ? replicate : null,
+      "value": replicate ? "yes" : "no",
       "type": 0,
       "applicationArgument": null,
       "standardInput": false,
@@ -391,7 +387,6 @@ const Home = () => {
       "_key": "4b97eb71-9905-481c-9a8a-9cbc8593a04f",
       "show": true
     };
-
     let idx10 = {
       "name": "Number of Replicas",
       "value": numReplicas,
@@ -424,10 +419,9 @@ const Home = () => {
       "_key": "b23a0853-7379-41af-b78f-d6dd0af5b8cf",
       "show": false
     };
-
     let idx11 = {
       "name": "Restart_Replicas_List",
-      "value": null,
+      "value": replicasList,
       "type": 0,
       "applicationArgument": "-l",
       "standardInput": false,
@@ -457,7 +451,6 @@ const Home = () => {
       "_key": "48dc33a0-3a7f-410a-b1b4-350f4e762566",
       "show": false
     };
-
     let idx12 = {
       "name": "GPU Resource Warning",
       "value": null,
@@ -685,7 +678,7 @@ const Home = () => {
           overrideLoginUserName: null,
           overrideScratchLocation: null,
           queueName: queue,
-          resourceHostId: "expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32",
+          resourceHostId: computeResource,
           staticWorkingDir: null,
           totalCPUCount: coreCount,
           totalPhysicalMemory: physMemory,
@@ -724,11 +717,16 @@ const Home = () => {
           isClosable: true,
         });
 
+        setLoading(false);
+
         setTimeout(() => {
-          window.location.href = '/tabs-view';
+          // window.location.href = '/tabs-view';
         }, 3000);
+
       }
     }
+
+    setLoading(false);
 
   };
 
@@ -817,6 +815,21 @@ const Home = () => {
             }}>Yes</Checkbox>
           </FormControl>
 
+          {
+            contPrev && (
+              <FormControl>
+                <FormLabel>Previous JobID</FormLabel>
+                <Input type='text' value={prevJobId} onChange={(e) => {
+                  setPrevJobId(e.target.value);
+                }} />
+
+                <FormHelperText>JobID from the previous run from which the restart/reuse data is to be extracted.
+                </FormHelperText>
+              </FormControl>
+
+            )
+          }
+
 
           <FormControl>
             <FormLabel>MD-Instructions-Input</FormLabel>
@@ -883,25 +896,37 @@ const Home = () => {
 
           {
             replicate && (
+              <>
+                <FormControl>
+                  <FormLabel>Number of replicas</FormLabel>
+                  <Input type='number' value={numReplicas} onChange={(e) => setNumReplicas(e.target.value)} />
+                  <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
+                  </FormHelperText>
+                </FormControl>
 
-              <FormControl>
-                <FormLabel>Number of replicas</FormLabel>
-                <Input type='number' value={numReplicas} onChange={(e) => setNumReplicas(e.target.value)} />
-                <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
-                </FormHelperText>
-              </FormControl>)
+                {contPrev &&
+                  <FormControl>
+                    <FormLabel>Restart replicas list</FormLabel>
+                    <Input type='text' value={replicasList} onChange={(e) => setReplicasList(e.target.value)} />
+                    <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
+                    </FormHelperText>
+                  </FormControl>}
+
+              </>
+
+            )
           }
 
 
           <FormControl>
-            <FormLabel>Allocation</FormLabel>
+            <FormLabel>Allocation (only default is currently supported)</FormLabel>
 
             <Select placeholder='Select an allocation' value={allocation} onChange={(e) => {
               setAllocation(e.target.value);
             }}>
               <option value='default'>Default</option>
-              <option value='personal'>Diego's Personal</option>
-              <option value='option3'>Fatemeh's Profile</option>
+              {/* <option value='personal'>Diego's Personal</option>
+              <option value='option3'>Fatemeh's Profile</option> */}
             </Select>
           </FormControl>
 
@@ -911,9 +936,9 @@ const Home = () => {
             <Select placeholder='Select a compute resource' value={computeResource} onChange={(e) => {
               setComputeResource(e.target.value);
             }}>
-              <option value='expanse'>Expanse</option>
-              <option value='bridges2'>Bridges2</option>
-              <option value='ncsasdelta'>NCSADelta</option>
+              <option value='expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32'>Expanse</option>
+              {/* <option value='Bridges2_2f297e9d-fe9e-4edb-af0d-ec3ad43241e9'>Bridges2</option>
+              <option value='ncsasdelta'>NCSADelta</option> */}
             </Select>
           </FormControl>
 
@@ -967,14 +992,21 @@ const Home = () => {
                 </FormControl>
                 <FormControl>
                   <FormLabel>Node Count</FormLabel>
-                  <Input type='number' value={nodeCount} onChange={(e) => setNodeCount(e.target.value)} />
+                  <Input type='number' value={nodeCount} onChange={(e) => {
+                    setCoreCount(128 * e.target.value);
+                    setNodeCount(e.target.value);
+                  }} />
                   <FormHelperText> Max Allowed Nodes = 728
                   </FormHelperText>
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>Total Core Count</FormLabel>
-                  <Input type='number' value={coreCount} onChange={(e) => setNodeCount(e.target.value)} />
+                  <Input type='number' value={coreCount} onChange={(e) => {
+
+                    setNodeCount(Math.ceil(e.target.value / 128));
+                    setCoreCount(e.target.value);
+                  }} />
                   <FormHelperText> Max Allowed Cores = 93184. There are 128 cores per node.
                   </FormHelperText>
                 </FormControl>
@@ -1011,7 +1043,13 @@ const Home = () => {
 
             <Spacer />
             <HStack>
-              <Button colorScheme='green' onClick={handleSaveAndLaunch}>Save and Launch</Button>
+              <Button colorScheme='green' onClick={handleSaveAndLaunch} isDisabled={loading}>
+                {
+                  loading && (
+                    <Spinner />
+                  )
+                }
+                Save and Launch</Button>
             </HStack>
           </Flex>
 
