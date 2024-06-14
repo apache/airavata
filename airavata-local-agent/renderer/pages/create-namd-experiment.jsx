@@ -21,21 +21,6 @@ const Home = () => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
 
-  useEffect(() => {
-    try {
-      const theAccessToken = localStorage.getItem('accessToken');
-      const obj = JSON.parse(atob(theAccessToken.split('.')[1]));
-
-      setUserName(obj.name);
-      setEmail(obj.email);
-      setAccessToken(theAccessToken);
-    } catch (error) {
-      console.log(error);
-
-      window.location.href = "/login";
-    }
-  }, []);
-
   const [name, setName] = useState("NAMD on " + new Date().toLocaleDateString() + " at " + new Date().toLocaleTimeString());
 
   const [desc, setDesc] = useState("Enter description here");
@@ -47,6 +32,7 @@ const Home = () => {
   const [contPrev, setContPrev] = useState(true);
 
   const [replicate, setReplicate] = useState(false);
+  const [numReplicas, setNumReplicas] = useState(0);
 
   const [allocation, setAllocation] = useState("default");
   const [computeResource, setComputeResource] = useState("expanse");
@@ -54,18 +40,683 @@ const Home = () => {
   const [nodeCount, setNodeCount] = useState(1);
   const [coreCount, setCoreCount] = useState(128);
   const [timeLimit, setTimeLimit] = useState(2);
-  const [physMemory, setPhysMemory] = useState(1);
+  const [physMemory, setPhysMemory] = useState(null);
 
   const [emailNotif, setEmailNotif] = useState(false);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [queue, setQueue] = useState("compute");
-  const [instructionsFile, setInstructionsFile] = useState(null);
   const [accessToken, setAccessToken] = useState("");
+  const [mdInstructionsUri, setMdInstructionsUri] = useState("");
+  const [proteinPSFUri, setProteinPSFUri] = useState("");
+  const [coordinatesUri, setCoordinatesUri] = useState("");
+  const [fParamUri, setFParamUri] = useState("");
+  const [constraintsUri, setConstraintsUri] = useState("");
+  const [optionalUri, setOptionalUri] = useState("");
 
-  const getCookieValue = (name) => (
-    document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
-  );
+  // INPUT STATES
+  const [projectObjArray, setProjectObjArray] = useState([]);
+
+  const uploadFile = (file, setHandler) => {
+    console.log("Uploading...", file);
+
+    var upload = new tus.Upload(file, {
+      endpoint: "https://tus.airavata.org/files/",
+      metadata: {
+        filename: file.name,
+        filetype: file.type
+      },
+
+      onError: function (error) {
+        console.log("Failed because: " + error);
+      },
+      onProgress: function (bytesUploaded, bytesTotal) {
+        var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
+        console.log(bytesUploaded, bytesTotal, percentage + "%");
+      },
+      onSuccess: function () {
+        console.log("Download %s from %s", upload.file.name, upload.url);
+
+        const url = upload.url;
+
+        let form_data = new FormData();
+        form_data.append('uploadURL', url);
+
+        fetch("https://md.cybershuttle.org/api/tus-upload-finish", {
+          method: "POST",
+          body: form_data,
+          credentials: "include",
+          headers: {
+            'Authorization': 'Bearer ' + accessToken
+          }
+        }).then((resp) => resp.json())
+          .then((data) => {
+            const uri = data["data-product"]["productUri"];
+            console.log("Saving...", uri);
+            setHandler(uri);
+          });
+
+      }
+
+
+    });
+
+    upload.start();
+  };
+
+  useEffect((e) => {
+    try {
+      const theAccessToken = localStorage.getItem('accessToken');
+      const obj = JSON.parse(atob(theAccessToken.split('.')[1]));
+
+      setUserName(obj.name);
+      setEmail(obj.email);
+      setAccessToken(theAccessToken);
+
+      async function getProjects() {
+        const resp = await fetch("https://md.cybershuttle.org/api/projects/?format=json&limit=100", {
+          headers: {
+            "Authorization": "Bearer " + theAccessToken
+          }
+        });
+
+        const data = await resp.json();
+
+        let items = [];
+
+        data.results.forEach((e) => {
+          items.push({
+            "projectID": e.projectID,
+            "projectName": e.name
+          });
+        });
+        setProjectObjArray(items);
+        setProject(items[0].projectID);
+      }
+
+      getProjects().catch((error) => {
+        window.location.href = '/login';
+      })
+        ;
+    } catch (error) {
+      console.log(error);
+      window.location.href = "/login";
+    }
+  }, []);
+
+  const handleSaveAndLaunch = async () => {
+
+    let idx0 = {
+      "name": "Execution_Type",
+      "value": executionType,
+      "type": 0,
+      "applicationArgument": "-t",
+      "standardInput": false,
+      "userFriendlyDescription": "CPU or GPU executable to be used. If you chose GPU please make sure GPU partitions are selected at the Resource selection below.",
+      "metaData": {
+        "editor": {
+          "ui-component-id": "radio-button-input-editor",
+          "config": {
+            "options": [
+              {
+                "value": "CPU",
+                "text": " CPU"
+              },
+              {
+                "value": "GPU",
+                "text": "GPU"
+              }
+            ]
+          }
+        }
+      },
+      "inputOrder": 0,
+      "isRequired": true,
+      "requiredToAddedToCommandLine": true,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "d3fc9f5e-864c-4d57-b9f5-d0aa8366ab17",
+      "show": true
+    };
+
+    let idx1 = {
+      "name": "Continue_from_Previous_Run?",
+      "value": contPrev ? "yes" : "no",
+      "type": 0,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": null,
+      "metaData": {
+        "editor": {
+          "ui-component-id": "checkbox-input-editor",
+          "config": {
+            "options": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              }
+            ]
+          }
+        }
+      },
+      "inputOrder": 1,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "cdc7da81-7c5a-46b7-9390-523acc812b03",
+      "show": true
+    };
+
+    let idx2 = {
+      "name": "Previous_JobID",
+      "value": null,
+      "type": 0,
+      "applicationArgument": "-r",
+      "standardInput": false,
+      "userFriendlyDescription": "JobID from the previous run from which the restart/reuse data is to be extracted.",
+      "metaData": {
+        "editor": {
+          "dependencies": {
+            "show": {
+              "Continue_from_Previous_Run?": {
+                "comparison": "equals",
+                "value": "yes"
+              }
+            },
+            "showOptions": {
+              "isRequired": true
+            }
+          }
+        }
+      },
+      "inputOrder": 2,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": true,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "d8946d70-de6a-42dd-8516-0fff7934f822",
+      "show": false
+    };
+
+    let idx3 = {
+      "name": "MD-Instructions-Input",
+      "value": mdInstructionsUri,
+      "type": 3,
+      "applicationArgument": "-i",
+      "standardInput": false,
+      "userFriendlyDescription": "NAMD conf file/QuickMD conf file",
+      "metaData": null,
+      "inputOrder": 3,
+      "isRequired": true,
+      "requiredToAddedToCommandLine": true,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "8dcbe73c-050a-4d7b-a3fc-60709f8d5ae1",
+      "show": true
+    };
+
+    let idx4 = {
+      "name": "Coordinates-PDB-File",
+      "value": coordinatesUri,
+      "type": 3,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "PDB coordinates files needed but could be uploaded using optional upload below together with other needed files",
+      "metaData": null,
+      "inputOrder": 4,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "ac9275a8-3ebd-4629-a383-3ba7784a6a10",
+      "show": true
+    };
+
+    let idx5 = {
+      "name": "Protein-Structure-File_PSF",
+      "value": proteinPSFUri,
+      "type": 3,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files",
+      "metaData": null,
+      "inputOrder": 5,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "cc9f6cff-5d49-45b4-a549-2955c4205694",
+      "show": true
+    };
+
+    let idx6 = {
+      "name": "FF-Parameter-Files",
+      "value": fParamUri,
+      "type": 4,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files",
+      "metaData": null,
+      "inputOrder": 6,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "a3407d94-a944-43e6-83a4-7f71ac292fe0",
+      "show": true
+    };
+
+    let idx7 = {
+      "name": "Constraints-PDB",
+      "value": constraintsUri,
+      "type": 3,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "Constraints file in pdb",
+      "metaData": null,
+      "inputOrder": 7,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "841373ea-65c7-422c-8391-d3efad517034",
+      "show": true
+    };
+
+    let idx8 = {
+      "name": "Optional_Inputs",
+      "value": optionalUri,
+      "type": 4,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl.",
+      "metaData": null,
+      "inputOrder": 8,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "b55a91ae-120e-4c2a-8d6b-66af6d646773",
+      "show": true
+    };
+
+    let idx9 = {
+      "name": "Replicate?",
+      "value": replicate ? replicate : null,
+      "type": 0,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "Optionally Specify if Replicated runs needed. Make sure the resources requested are commensurate, such as as many nodes as replicas.",
+      "metaData": {
+        "editor": {
+          "ui-component-id": "checkbox-input-editor",
+          "config": {
+            "options": [
+              {
+                "value": "yes",
+                "text": "Yes"
+              }
+            ]
+          }
+        }
+      },
+      "inputOrder": 9,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "4b97eb71-9905-481c-9a8a-9cbc8593a04f",
+      "show": true
+    };
+
+    let idx10 = {
+      "name": "Number of Replicas",
+      "value": numReplicas,
+      "type": 1,
+      "applicationArgument": "-n",
+      "standardInput": false,
+      "userFriendlyDescription": "Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.",
+      "metaData": {
+        "editor": {
+          "dependencies": {
+            "show": {
+              "Replicate?": {
+                "comparison": "equals",
+                "value": "yes"
+              }
+            },
+            "showOptions": {
+              "isRequired": true
+            }
+          }
+        }
+      },
+      "inputOrder": 10,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": true,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "b23a0853-7379-41af-b78f-d6dd0af5b8cf",
+      "show": false
+    };
+
+    let idx11 = {
+      "name": "Restart_Replicas_List",
+      "value": null,
+      "type": 0,
+      "applicationArgument": "-l",
+      "standardInput": false,
+      "userFriendlyDescription": "Optionally specify a comma delimited list of replicas to restart (incomplete runs from a previous job), Make sure the resources requested are commensurate, such as as many nodes as replicas.",
+      "metaData": {
+        "editor": {
+          "dependencies": {
+            "show": {
+              "Continue_from_Previous_Run?": {
+                "comparison": "equals",
+                "value": "yes"
+              }
+            },
+            "showOptions": {
+              "isRequired": false
+            }
+          }
+        }
+      },
+      "inputOrder": 11,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": true,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": false,
+      "overrideFilename": null,
+      "_key": "48dc33a0-3a7f-410a-b1b4-350f4e762566",
+      "show": false
+    };
+
+    let idx12 = {
+      "name": "GPU Resource Warning",
+      "value": null,
+      "type": 0,
+      "applicationArgument": null,
+      "standardInput": false,
+      "userFriendlyDescription": "The GPU Execution_Type  selected above  requires GPU partition selection. Otherwise it may lead to failed run.",
+      "metaData": {
+        "editor": {
+          "dependencies": {
+            "show": {
+              "Execution_Type": {
+                "comparison": "equals",
+                "value": "GPU"
+              }
+            },
+            "showOptions": {
+              "isRequired": false
+            }
+          }
+        }
+      },
+      "inputOrder": 12,
+      "isRequired": false,
+      "requiredToAddedToCommandLine": false,
+      "dataStaged": false,
+      "storageResourceId": null,
+      "isReadOnly": true,
+      "overrideFilename": null,
+      "_key": "a9b3c3df-2d1c-4e1e-98d0-c3dc9305304d",
+      "show": false
+    };
+
+    const payload = {
+      creationTime: null,
+      description: null,
+      emailAddresses: null,
+      enableEmailNotification: emailNotif,
+      errors: null,
+      executionId: "NAMD_dd041e87-1dde-4e57-8ec4-23af2ffa1ba0",
+      experimentId: null,
+      experimentInputs: [
+        idx0, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9, idx10, idx11, idx12
+      ],
+      experimentName: name,
+      experimentOutputs: [
+        {
+          "name": "Coordinate_Files",
+          "value": "*.coor",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "5ae7bfae-da14-49f1-910d-e182bc5be625"
+        },
+        {
+          "name": "NAMD-Standard-Error",
+          "value": null,
+          "type": 6,
+          "applicationArgument": null,
+          "isRequired": true,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": {
+            "file-metadata": {
+              "mime-type": "text/plain"
+            }
+          },
+          "intermediateOutput": null,
+          "_key": "904618c5-0b0d-4d7b-9034-88e673248e1f"
+        },
+        {
+          "name": "NAMD-Standard-Out",
+          "value": null,
+          "type": 5,
+          "applicationArgument": null,
+          "isRequired": true,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": {
+            "file-metadata": {
+              "mime-type": "text/plain"
+            }
+          },
+          "intermediateOutput": null,
+          "_key": "0117b5f8-3dda-4479-ac03-b73bd58b63f3"
+        },
+        {
+          "name": "Output_Index_files",
+          "value": "*.idx",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "b6c1e7bb-25a2-4b77-b5ca-6ff46bbfde5d"
+        },
+        {
+          "name": "Output_PDB_Files",
+          "value": "*.pdb",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "fc62735e-f3db-466a-aa04-04e8beb725f6"
+        },
+        {
+          "name": "Output_PSF_Files",
+          "value": "*.psf",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "a8866cff-5267-4aea-b077-5fb6cc47a01e"
+        },
+        {
+          "name": "Replica_Outputs",
+          "value": "*.out",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "50203f5c-9d01-4ccc-9d58-eed8356aa89e"
+        },
+        {
+          "name": "Restart_Files",
+          "value": "*.restart.*",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "6ef4347c-534e-4369-8b03-cc192a8b3e37"
+        },
+        {
+          "name": "Trajectory-Files",
+          "value": "*.dcd",
+          "type": 4,
+          "applicationArgument": null,
+          "isRequired": false,
+          "requiredToAddedToCommandLine": false,
+          "dataMovement": false,
+          "location": null,
+          "searchQuery": null,
+          "outputStreaming": false,
+          "storageResourceId": null,
+          "metaData": null,
+          "intermediateOutput": null,
+          "_key": "ba62f8a0-0b3a-42ad-bc94-a4cbe5ad03d7"
+        }
+      ],
+      experimentStatus: null,
+      experimentType: 0,
+      gatewayId: null,
+      processes: null,
+      projectId: project,
+      userHasWriteAccess: true,
+      userName: null,
+      workflow: null,
+      userConfigurationData: {
+        airavataAutoSchedule: false,
+        autoScheduledCompResourceSchedulingList: null,
+        experimentDataDir: null,
+        generateCert: false,
+        groupResourceProfileId: "f47130f7-33a8-4856-8ac9-19967724c1b8",
+        overrideManualScheduledParams: false,
+        shareExperimentPublicly: false,
+        storageId: null,
+        throttleResources: false,
+        useUserCRPref: false,
+        userDN: null,
+        computationalResourceScheduling: {
+          chessisNumber: null,
+          nodeCount: nodeCount,
+          numberOfThreads: null,
+          overrideAllocationProjectNumber: null,
+          overrideLoginUserName: null,
+          overrideScratchLocation: null,
+          queueName: queue,
+          resourceHostId: "expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32",
+          staticWorkingDir: null,
+          totalCPUCount: coreCount,
+          totalPhysicalMemory: physMemory,
+          wallTimeLimit: timeLimit
+        }
+      }
+    };
+
+    const resp = await fetch("https://md.cybershuttle.org/api/experiments/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + accessToken
+      }
+    });
+
+    const data = await resp.json();
+
+    if (data.experimentId !== null) {
+      // launch the experiment
+      const resp1 = await fetch(`https://md.cybershuttle.org/api/experiments/${data.experimentId}/launch/`, {
+        method: "POST",
+        boody: {},
+        headers: {
+          "Authorization": "Bearer " + accessToken
+        }
+      });
+
+      console.log(resp1);
+    }
+
+  };
 
   return (
     <>
@@ -113,9 +764,11 @@ const Home = () => {
             <Select placeholder='Select option' value={project} onChange={(e) => {
               setProject(e.target.value);
             }}>
-              <option value='option1'>Default Project</option>
-              <option value='option2'>Option 2</option>
-              <option value='option3'>Option 3</option>
+              {projectObjArray.map((e) => {
+                return (
+                  <option key={e.projectID} value={e.projectID}>{e.projectName}</option>
+                );
+              })}
             </Select>
           </FormControl>
 
@@ -153,61 +806,25 @@ const Home = () => {
 
           <FormControl>
             <FormLabel>MD-Instructions-Input</FormLabel>
-            <Input type='file' placeholder='upload file' onChange={async (e) => {
-              const file = e.target.files[0];
-
-              console.log("Uploading...", file);
-
-              var upload = new tus.Upload(file, {
-                endpoint: "https://tus.airavata.org/files/",
-                metadata: {
-                  filename: file.name,
-                  filetype: file.type
-                },
-
-
-                onError: function (error) {
-                  console.log("Failed because: " + error);
-                },
-                onProgress: function (bytesUploaded, bytesTotal) {
-                  var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
-                  console.log(bytesUploaded, bytesTotal, percentage + "%");
-                },
-                onSuccess: function () {
-                  console.log("Download %s from %s", upload.file.name, upload.url);
-
-                  const url = upload.url;
-
-                  let form_data = new FormData();
-                  form_data.set('data', {
-                    "uploadURL": url
-                  });
-
-                  fetch("https://md.cybershuttle.org/api/tus-upload-finish", {
-                    method: "POST",
-                    data: form_data,
-                    credentials: "include",
-                    headers: {
-                      'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryOOWgWP671DGDVKBL',
-                      'X-Csrftoken': getCookieValue('csrftoken')
-                    }
-                  });
-
-                }
-
-
-              });
-
-              upload.start();
-
-
+            <Input type='file' placeholder='upload file' onChange={(e) => {
+              uploadFile(e.target.files[0], setMdInstructionsUri);
             }} />
             <FormHelperText>NAMD conf file/QuickMD conf file.</FormHelperText>
           </FormControl>
 
           <FormControl>
+            <FormLabel>Coordinates-PDB-File</FormLabel>
+            <Input type='file' placeholder='upload file' onChange={(e) => {
+              uploadFile(e.target.files[0], setCoordinatesUri);
+            }} />
+            <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files.</FormHelperText>
+          </FormControl>
+
+          <FormControl>
             <FormLabel>Protein-Structure-File_PSF</FormLabel>
-            <Input type='file' placeholder='upload file' />
+            <Input type='file' placeholder='upload file' onChange={(e) => {
+              uploadFile(e.target.files[0], setProteinPSFUri);
+            }} />
             <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files
             </FormHelperText>
           </FormControl>
@@ -215,14 +832,18 @@ const Home = () => {
 
           <FormControl>
             <FormLabel>FF-Parameter-Files</FormLabel>
-            <Input type='file' placeholder='upload file' />
+            <Input type='file' placeholder='upload file' onChange={(e) => {
+              uploadFile(e.target.files[0], setFParamUri);
+            }} />
             <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files
             </FormHelperText>
           </FormControl>
 
           <FormControl>
             <FormLabel>Constraints-PDB</FormLabel>
-            <Input type='file' placeholder='upload file' />
+            <Input type='file' placeholder='upload file' onChange={(e) => {
+              uploadFile(e.target.files[0], setConstraintsUri);
+            }} />
             <FormHelperText>Constraints file in pdb
             </FormHelperText>
           </FormControl>
@@ -230,7 +851,9 @@ const Home = () => {
           <FormControl>
             <FormLabel>Optional_Inputs
             </FormLabel>
-            <Input type='file' placeholder='upload file' />
+            <Input type='file' placeholder='upload file' onChange={(e) => {
+              uploadFile(e.target.files[0], setOptionalUri);
+            }} />
             <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl.
             </FormHelperText>
           </FormControl>
@@ -243,6 +866,17 @@ const Home = () => {
             }}>Yes</Checkbox>
             <FormHelperText>Optionally Specify if Replicated runs needed. Make sure the resources requested are commensurate, such as as many nodes as replicas.</FormHelperText>
           </FormControl>
+
+          {
+            replicate && (
+
+              <FormControl>
+                <FormLabel>Number of replicas</FormLabel>
+                <Input type='number' value={numReplicas} onChange={(e) => setNumReplicas(e.target.value)} />
+                <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
+                </FormHelperText>
+              </FormControl>)
+          }
 
 
           <FormControl>
@@ -363,8 +997,7 @@ const Home = () => {
 
             <Spacer />
             <HStack>
-              <Button colorScheme='green'>Save and Launch</Button>
-              <Button colorScheme='blue'>Save</Button>
+              <Button colorScheme='green' onClick={handleSaveAndLaunch}>Save and Launch</Button>
             </HStack>
           </Flex>
 
