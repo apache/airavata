@@ -14,10 +14,9 @@ import {
   useToast
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
-import { NavContainer } from '../components/NavContainer';
 import { useRouter } from "next/router";
 
-const VncClient = () => {
+export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   // Can't import regularly because of SSR (next.js)
   const VncScreen = dynamic(() => {
     return import('react-vnc').then((mod) => mod.VncScreen);
@@ -48,10 +47,13 @@ const VncClient = () => {
   useEffect(() => {
     setLoading(true);
 
-    window.vnc.startProxy();
+    window.vnc.startProxy(experimentId);
 
-    window.vnc.proxyStarted((event, hostname, port) => {
-      console.log('Proxy started', hostname, port);
+    window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
+      console.log('Proxy started for', hostname, port, theExperimentId);
+      if (experimentId !== theExperimentId) {
+        return;
+      }
       setLoading(false);
       toast({
         title: 'Proxy started',
@@ -69,18 +71,19 @@ const VncClient = () => {
     window.vnc.proxyStopped((event, restart) => {
       console.log('Proxy stopped');
 
-      if (restart) window.vnc.startProxy();
+      if (restart) window.vnc.startProxy(experimentId);
     });
 
     const exitingFunction = () => {
-      window.vnc.stopProxy(false); // false = don't restart
-    };
+      console.log("running stop on", experimentId);
+      window.vnc.stopProxy(false, experimentId); // false = don't restart
 
-    router.events.on("routeChangeStart", exitingFunction);
+    };
 
     return () => {
       console.log("unmounting component...");
-      router.events.off("routeChangeStart", exitingFunction);
+      // router.events.off("routeChangeStart", exitingFunction);
+      exitingFunction();
       setRendering(false);
     };
 
@@ -217,5 +220,3 @@ const VncClient = () => {
     </React.Fragment>
   );
 };
-
-export default VncClient;

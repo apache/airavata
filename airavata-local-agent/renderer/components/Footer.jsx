@@ -15,6 +15,11 @@ export const Footer = () => {
                     <Text>•</Text>
 
                     <Link color='blue.400' href='/create-namd-experiment'>Create NAMD Experiment</Link>
+
+                    <Text>•</Text>
+
+                    <Link color='blue.400' href='/vnc-client'>VNC Client</Link>
+
                 </Stack>
             </Flex >
         </>

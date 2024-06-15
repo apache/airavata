@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Define the file containing the port number
+PORT_FILE="port_num.txt"
+
+# Check if the file exists
+if [[ ! -f "$PORT_FILE" ]]; then
+  echo "Error: File $PORT_FILE does not exist."
+  exit 1
+fi
+
+# Read the current port number from the file
+CURRENT_PORT=$(cat "$PORT_FILE")
+
+# Check if the current port number is a valid number
+if ! [[ "$CURRENT_PORT" =~ ^[0-9]+$ ]]; then
+  echo "Error: The content of $PORT_FILE is not a valid number."
+  exit 1
+fi
+
+# Increment the port number by 1
+NEW_PORT=$((CURRENT_PORT + 1))
+
+# Update the file with the new port number
+echo "$NEW_PORT" > "$PORT_FILE"
+
+# Output the new port number
+echo "The new port number is: $NEW_PORT"

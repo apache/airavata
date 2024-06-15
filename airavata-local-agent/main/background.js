@@ -8,7 +8,7 @@ const fs = require('fs');
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
-
+let experimentIdToCmd = {};
 
 if (isProd) {
   serve({ directory: 'app' });
@@ -159,8 +159,13 @@ ipcMain.on('ci-logon-login', async (event) => {
 
 ipcMain.on('start-proxy', startIt);
 
-async function startIt(event) {
+let cmd;
+
+async function startIt(event, experimentId) {
+  console.log("experimentId: ", experimentId);
   let cmd = spawn('./proxy/novnc_proxy', { shell: true });
+
+
 
   cmd.stdout.on('data', (data) => {
     data = data.toString().trim();
@@ -170,7 +175,7 @@ async function startIt(event) {
         const lines = data.split('\n');
         const hostname = lines[0];
         const port = lines[1];
-        event.sender.send('proxy-started', hostname, port);
+        event.sender.send('proxy-started', hostname, port, experimentId);
       });
     }
   });
@@ -181,15 +186,19 @@ async function startIt(event) {
 
   cmd.on('close', async (code) => {
     console.log(`child process exited with code ${code}`);
-    await stopIt(event, true);
+    await stopIt(event, true, experimentId);
   });
+
+  experimentIdToCmd[experimentId] = cmd;
 }
 
-async function stopIt(event, restart) {
-  exec(KILL_CMD,
-    (error, stdout, stderr) => {
-      event.sender.send('proxy-stopped', restart);
-    });
+async function stopIt(event, restart, experimentId) {
+  // exec(KILL_CMD,
+  //   (error, stdout, stderr) => {
+  //     event.sender.send('proxy-stopped', restart);
+  //   });
+  console.log("the exp id", experimentId);
+  experimentIdToCmd[experimentId].kill();
 }
 
 ipcMain.on('stop-proxy', stopIt);
