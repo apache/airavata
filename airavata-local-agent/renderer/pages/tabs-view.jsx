@@ -58,50 +58,7 @@ const tabSelectedStyles = {
 
 let accessToken = '';
 
-const makeFetchForExperiments = async (pageSize, offset) => {
-  let resp = await fetch(
-    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  });
 
-  return resp;
-};
-const fetchExperiments = async (pageSize, offset) => {
-  if (!accessToken) {
-    accessToken = localStorage.getItem('accessToken');
-  }
-
-  let resp = await makeFetchForExperiments(pageSize, offset);
-
-  // if this fetch request fails, try again after getting a new access token
-  if (!resp.ok) {
-    let refreshToken = localStorage.getItem('refreshToken');
-    const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
-
-    if (!respForRefresh.ok) {
-      console.error('Failed to get new access token');
-      return;
-    }
-
-    const data = await respForRefresh.json();
-
-    localStorage.setItem('accessToken', data.access_token);
-    localStorage.setItem('refreshToken', data.refresh_token);
-
-    accessToken = data.access_token;
-    resp = await makeFetchForExperiments(pageSize, offset);
-    if (!resp.ok) {
-      console.error('Failed to fetch experiments');
-      return;
-    }
-  }
-
-  const data = await resp.json();
-
-  return data;
-};
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 
@@ -205,16 +162,66 @@ const TabsView = () => {
     return (type + "_" + experimentID) in associatedIDToIndex;
   };
 
+  const makeFetchForExperiments = async (pageSize, offset) => {
+    let resp = await fetch(
+      `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    return resp;
+  };
+
+  const fetchExperiments = async (pageSize, offset) => {
+    if (!accessToken) {
+      accessToken = localStorage.getItem('accessToken');
+    }
+
+    let resp = await makeFetchForExperiments(pageSize, offset);
+
+    // if this fetch request fails, try again after getting a new access token
+    if (!resp.ok) {
+      let refreshToken = localStorage.getItem('refreshToken');
+      const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+
+      if (!respForRefresh.ok) {
+        console.error('Failed to get new access token');
+        return;
+      }
+
+      const data = await respForRefresh.json();
+
+      localStorage.setItem('accessToken', data.access_token);
+      localStorage.setItem('refreshToken', data.refresh_token);
+
+      accessToken = data.access_token;
+
+      setNameAndEmail();
+      resp = await makeFetchForExperiments(pageSize, offset);
+      if (!resp.ok) {
+        console.error('Failed to fetch experiments');
+        return;
+      }
+    }
+
+    const data = await resp.json();
+    return data;
+  };
+
+  const setNameAndEmail = () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const obj = JSON.parse(atob(accessToken.split('.')[1]));
+
+    setName(obj.name);
+    setEmail(obj.email);
+  };
+
   useEffect(() => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const obj = JSON.parse(atob(accessToken.split('.')[1]));
-
-      setName(obj.name);
-      setEmail(obj.email);
+      setNameAndEmail();
     } catch (error) {
       console.log(error);
-      router.push('/login');
     }
   }, []);
 
@@ -225,7 +232,10 @@ const TabsView = () => {
         setExperiments(data);
         setIsLoading(false);
       })
-      .catch((error) => console.error("App =>", error));
+      .catch((error) => {
+        console.error("App =>", error);
+        window.location.href = "/login";
+      });
   }, [currentPage, pageSize, offset]);
 
   const handlePageChange = (nextPage) => {

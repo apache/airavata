@@ -121,8 +121,6 @@ async function getToken(url) {
     const accessToken = data.access_token;
     const refreshToken = data.refresh_token;
 
-    console.log('DATA:', data);
-
     return [accessToken, refreshToken];
 
   } else {
