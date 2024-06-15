@@ -63,6 +63,19 @@ const Home = () => {
 
   // INPUT STATES
   const [projectObjArray, setProjectObjArray] = useState([]);
+  const [resourcesObjArray, setResourcesObjArray] = useState([]);
+  const [allocationObjArray, setAllocationObjArray] = useState([]);
+
+  const getAllocationObjById = (id) => {
+    return allocationObjArray.find(item => item.allocationId === id);
+  };
+
+  const getComputeResourcePolicesByComputeResourceId = (id) => {
+    let allocationObj = getAllocationObjById(allocation);
+
+    let policyObj = allocationObj.computeResourcePolicies.find(item => item.computeResourceId === id);
+    return policyObj;
+  };
 
   const uploadFile = (file, setHandler) => {
     console.log("Uploading...", file);
@@ -128,7 +141,6 @@ const Home = () => {
         });
 
         const data = await resp.json();
-
         let items = [];
 
         data.results.forEach((e) => {
@@ -141,10 +153,41 @@ const Home = () => {
         setProject(items[0].projectID);
       }
 
+      async function getGroupResourceProfileList() {
+        const resp = await fetch("https://md.cybershuttle.org/api/group-resource-profiles/?format=json", {
+          headers: {
+            "Authorization": "Bearer " + theAccessToken
+          }
+        });
+
+        const data = await resp.json();
+        let items = [];
+
+        data.forEach((e) => {
+          items.push({
+            "allocationName": e.groupResourceProfileName,
+            "allocationId": e.groupResourceProfileId,
+            "computePreferences": e.computePreferences, // is an array
+            "computeResourcePolicies": e.computeResourcePolicies
+          });
+        });
+
+        setAllocationObjArray(items);
+        setAllocation(items[0].allocationId);
+        setComputeResource(items[0].computePreferences[0].computeResourceId);
+      }
+
       getProjects().catch((error) => {
         window.location.href = '/login';
-      })
-        ;
+      });
+
+      getGroupResourceProfileList().catch((error) => {
+        console.error(error);
+        window.location.href = '/login';
+      });
+
+
+
     } catch (error) {
       console.log(error);
       window.location.href = "/login";
@@ -924,7 +967,14 @@ const Home = () => {
             <Select placeholder='Select an allocation' value={allocation} onChange={(e) => {
               setAllocation(e.target.value);
             }}>
-              <option value='default'>Default</option>
+              {
+                allocationObjArray.map((item) => {
+                  return (
+                    <option key={item.allocationId} value={item.allocationId}>{item.allocationName}</option>
+                  );
+                })
+              }
+              {/* <option value='default'>Default</option> */}
               {/* <option value='personal'>Diego's Personal</option>
               <option value='option3'>Fatemeh's Profile</option> */}
             </Select>
@@ -936,9 +986,13 @@ const Home = () => {
             <Select placeholder='Select a compute resource' value={computeResource} onChange={(e) => {
               setComputeResource(e.target.value);
             }}>
-              <option value='expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32'>Expanse</option>
-              {/* <option value='Bridges2_2f297e9d-fe9e-4edb-af0d-ec3ad43241e9'>Bridges2</option>
-              <option value='ncsasdelta'>NCSADelta</option> */}
+              {
+                getAllocationObjById(allocation)?.computePreferences.map((item) => {
+                  return (
+                    <option key={item.computeResourceId} value={item.computeResourceId}>{item.computeResourceId.split("_")[0]}</option>
+                  );
+                })
+              }
             </Select>
           </FormControl>
 
@@ -984,10 +1038,17 @@ const Home = () => {
                   <Select placeholder='Select a queue' value={queue} onChange={(e) => {
                     setQueue(e.target.value);
                   }}>
-                    <option value='compute'>compute</option>
+                    {
+                      getComputeResourcePolicesByComputeResourceId(computeResource)?.allowedBatchQueues?.map((item) => {
+                        return (
+                          <option key={item} value={item}>{item}</option>
+                        );
+                      })
+                    }
+                    {/* <option value='compute'>compute</option>
                     <option value='gpu'>gpu</option>
                     <option value='gpu-shared'>gpu-shared</option>
-                    <option value='shared'>shared</option>
+                    <option value='shared'>shared</option>*/}
                   </Select>
                 </FormControl>
                 <FormControl>

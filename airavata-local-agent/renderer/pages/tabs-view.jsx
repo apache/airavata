@@ -330,7 +330,6 @@ const TabsView = () => {
                                     }}
                                     >
                                       VMD
-
                                       {
                                         isOpenTab('VMD', experiment.experimentId) &&
                                         <Spinner ml={2} />
