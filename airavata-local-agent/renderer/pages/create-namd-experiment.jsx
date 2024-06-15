@@ -812,7 +812,6 @@ const Home = () => {
             )
           }
 
-
           {/* Project input */}
           <FormControl>
             <FormLabel>Project</FormLabel>

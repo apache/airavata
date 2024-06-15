@@ -44,11 +44,48 @@ usage() {
     exit 2
 }
 
+# Define the file containing the port number
+PORT_FILE="./proxy/port_num.txt"
+
+# Define the maximum port number and reset value
+MAX_PORT=7080
+RESET_PORT=6080
+
+# Check if the file exists
+if [[ ! -f "$PORT_FILE" ]]; then
+  echo "Error: File $PORT_FILE does not exist."
+  exit 1
+fi
+
+# Read the current port number from the file
+CURRENT_PORT=$(cat "$PORT_FILE")
+
+# Check if the current port number is a valid number
+if ! [[ "$CURRENT_PORT" =~ ^[0-9]+$ ]]; then
+  echo "Error: The content of $PORT_FILE is not a valid number."
+  exit 1
+fi
+
+# Check if the current port number is greater than the maximum port number
+if [[ "$CURRENT_PORT" -gt "$MAX_PORT" ]]; then
+  NEW_PORT=$RESET_PORT
+else
+  # Increment the port number by 1
+  NEW_PORT=$((CURRENT_PORT + 1))
+fi
+
+# Update the file with the new port number
+echo "$NEW_PORT" > "$PORT_FILE"
+
+# Output the new port number
+echo "Using port number: $NEW_PORT"
+
 NAME="$(basename $0)"
 REAL_NAME="$(readlink -f $0)"
 HERE="$(cd "$(dirname "$REAL_NAME")" && pwd)"
 HOST=""
-PORT="6080"
+# PORT="6080"
+PORT="$NEW_PORT"
 LISTEN="$PORT"
 VNC_DEST="localhost:5900" # THIS IS THE LINE TO CHANGE WHEN WE GET THE ACTUAL URL (instead of docker)
 CERT=""

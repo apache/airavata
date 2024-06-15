@@ -19,6 +19,8 @@ import {
 } from "@ajna/pagination";
 import { HeaderBox } from "../components/HeaderBox";
 import { Footer } from "../components/Footer";
+// import VncClient from "./vnc-client";
+import { VNCViewer } from "../components/VNCViewer";
 
 const getColorScheme = (status) => {
   switch (status) {
@@ -144,7 +146,13 @@ const TabsView = () => {
 
       let component;
       if (type === 'VMD') {
-        component = <Box>{type} {experimentID}</Box>;
+        // here, we need to make a fetch
+
+        // assume the fetch was OK
+        let hostURL = "https://example.com";
+        let port = "1500";
+
+        component = <VNCViewer reqHost={hostURL} reqPort={port} experimentId={experimentID} />;
       } else if (type === 'JN') {
         component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
       }
