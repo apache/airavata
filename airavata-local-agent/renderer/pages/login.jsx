@@ -37,13 +37,26 @@ const Login = () => {
     window.auth.ciLogonSuccess((event, accessToken, refreshToken) => {
       if (!accessToken || !refreshToken) {
         console.log("Error logging in with CI logon");
+
+        const numTriesAlready = localStorage.getItem("numTries");
+        if (numTriesAlready == null) {
+          localStorage.setItem('numTries', 1);
+        } else if (parseInt(numTriesAlready) < 4) {
+          localStorage.setItem('numTries', parseInt(numTriesAlready) + 1);
+        } else {
+          localStorage.setItem('numTries', 0);
+          localStorage.setItem('ciLoginAuto', "false");
+          setError("Refresh the page and try logging in again, this may sometimes happen.");
+          return;
+        }
+
         localStorage.setItem("ciLoginAuto", "true");
         location.reload();
-        // setError("Refresh the page and try logging in again, this may sometimes happen.");
       } else {
         window.localStorage.setItem("accessToken", accessToken);
         window.localStorage.setItem("refreshToken", refreshToken);
         localStorage.removeItem("ciLoginAuto");
+        localStorage.setItem('numTries', 0);
         window.location.href = "/tabs-view";
       }
     });
