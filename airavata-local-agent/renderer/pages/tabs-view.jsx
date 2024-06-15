@@ -53,8 +53,6 @@ const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
-let accessToken = '';
-
 const makeFetchForExperiments = async (pageSize, offset, token) => {
   let resp = await fetch(
     `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
@@ -67,6 +65,7 @@ const makeFetchForExperiments = async (pageSize, offset, token) => {
 };
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
+let accessToken = "";
 
 const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -168,34 +167,35 @@ const TabsView = () => {
     return (type + "_" + experimentID) in associatedIDToIndex;
   };
 
-  const fetchExperiments = async (pageSize, offset) => {
-    if (!accessToken) {
-      accessToken = localStorage.getItem('accessToken');
+  const getAccessTokenFromRefreshToken = async (refreshToken) => {
+    const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+
+    if (!respForRefresh.ok) {
+      throw new Error("Failed to fetch new access token (refresh token)");
     }
 
+    const data = await respForRefresh.json();
+    return [data.access_token, data.refresh_token];
+  };
+
+  const fetchExperiments = async (pageSize, offset) => {
     let resp = await makeFetchForExperiments(pageSize, offset, accessToken);
 
     // if this fetch request fails, try again after getting a new access token
     if (!resp.ok) {
       let refreshToken = localStorage.getItem('refreshToken');
-      const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
 
-      if (!respForRefresh.ok) {
-        throw new Error("Failed to fetch new experiments");
-      }
+      const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
 
-      const data = await respForRefresh.json();
+      localStorage.setItem('accessToken', newAccessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
 
-      localStorage.setItem('accessToken', data.access_token);
-      localStorage.setItem('refreshToken', data.refresh_token);
-
-      accessToken = data.access_token;
+      accessToken = newAccessToken;
 
       setNameAndEmail();
       resp = await makeFetchForExperiments(pageSize, offset, accessToken); // done with the new accessToken
       if (!resp.ok) {
-        console.error('Failed to fetch experiments');
-        return;
+        throw new Error("Failed to fetch new experiments (new access token)");
       }
     }
 
@@ -205,7 +205,7 @@ const TabsView = () => {
 
   const setNameAndEmail = () => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) return;
       const obj = JSON.parse(atob(accessToken.split('.')[1]));
 
       setName(obj.name);
@@ -216,11 +216,8 @@ const TabsView = () => {
   };
 
   useEffect(() => {
-    setNameAndEmail();
-  }, []);
-
-  useEffect(() => {
     setIsLoading(true);
+    accessToken = localStorage.getItem("accessToken");
     fetchExperiments(pageSize, offset)
       .then((data) => {
         setExperiments(data);
@@ -231,6 +228,10 @@ const TabsView = () => {
         window.location.href = "/login";
       });
   }, [currentPage, pageSize, offset]);
+
+  useEffect(() => {
+    setNameAndEmail();
+  }, []);
 
   const handlePageChange = (nextPage) => {
     // -> request new data using the page number
