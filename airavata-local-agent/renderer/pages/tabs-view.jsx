@@ -7,8 +7,6 @@ import {
   Th,
   Td,
   TableContainer, Text, Flex, Spinner, HStack, Badge, Icon,
-  Divider,
-  Spacer
 } from "@chakra-ui/react";
 import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -19,7 +17,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@ajna/pagination";
-import { useRouter } from "next/router";
 import { HeaderBox } from "../components/HeaderBox";
 import { Footer } from "../components/Footer";
 
@@ -47,9 +44,9 @@ const getExperimentApplication = (executionId) => {
     return "NAMD3";
   } else if (executionId.startsWith("NAMD")) {
     return "NAMD";
+  } else if (executionId.startsWith("VMD")) {
+    return "VMD";
   }
-
-
 };
 
 const tabSelectedStyles = {
@@ -58,18 +55,35 @@ const tabSelectedStyles = {
 
 let accessToken = '';
 
+const makeFetchForExperiments = async (pageSize, offset, token) => {
+  let resp = await fetch(
+    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
+  return resp;
+};
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 
 const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [arrOfTabsInfo, setArrOfTabsInfo] = useState([]);
+  /*
+   arrOfTabsInfo looks like array of: 
+   {
+     'associatedID': 'VMD' + experimentId,
+     'tabName': 'VMD' + name,
+     'component': <VMDComponent />
+   }
+ */
+
   const [experiments, setExperiments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const router = useRouter();
 
   const {
     offset,
@@ -85,14 +99,6 @@ const TabsView = () => {
     },
   });
 
-  /*
-    arrOfTabsInfo looks like array of: 
-    {
-      'associatedID': 'VMD' + experimentId,
-      'tabName': 'VMD' + name,
-      'component': <VMDComponent />
-    }
-  */
 
   const handleRemoveTab = (associatedID, index) => {
     /*
@@ -162,23 +168,12 @@ const TabsView = () => {
     return (type + "_" + experimentID) in associatedIDToIndex;
   };
 
-  const makeFetchForExperiments = async (pageSize, offset) => {
-    let resp = await fetch(
-      `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    return resp;
-  };
-
   const fetchExperiments = async (pageSize, offset) => {
     if (!accessToken) {
       accessToken = localStorage.getItem('accessToken');
     }
 
-    let resp = await makeFetchForExperiments(pageSize, offset);
+    let resp = await makeFetchForExperiments(pageSize, offset, accessToken);
 
     // if this fetch request fails, try again after getting a new access token
     if (!resp.ok) {
@@ -186,8 +181,7 @@ const TabsView = () => {
       const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
 
       if (!respForRefresh.ok) {
-        console.error('Failed to get new access token');
-        return;
+        throw new Error("Failed to fetch new experiments");
       }
 
       const data = await respForRefresh.json();
@@ -198,7 +192,7 @@ const TabsView = () => {
       accessToken = data.access_token;
 
       setNameAndEmail();
-      resp = await makeFetchForExperiments(pageSize, offset);
+      resp = await makeFetchForExperiments(pageSize, offset, accessToken); // done with the new accessToken
       if (!resp.ok) {
         console.error('Failed to fetch experiments');
         return;
@@ -210,19 +204,19 @@ const TabsView = () => {
   };
 
   const setNameAndEmail = () => {
-    const accessToken = localStorage.getItem('accessToken');
-    const obj = JSON.parse(atob(accessToken.split('.')[1]));
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      const obj = JSON.parse(atob(accessToken.split('.')[1]));
 
-    setName(obj.name);
-    setEmail(obj.email);
+      setName(obj.name);
+      setEmail(obj.email);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    try {
-      setNameAndEmail();
-    } catch (error) {
-      console.log(error);
-    }
+    setNameAndEmail();
   }, []);
 
   useEffect(() => {
