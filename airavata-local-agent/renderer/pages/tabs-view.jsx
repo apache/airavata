@@ -78,7 +78,7 @@ const fetchExperiments = async (pageSize, offset) => {
   // if this fetch request fails, try again after getting a new access token
   if (!resp.ok) {
     let refreshToken = localStorage.getItem('refreshToken');
-    const respForRefresh = await fetch(`http://localhost:3000/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+    const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
 
     if (!respForRefresh.ok) {
       console.error('Failed to get new access token');

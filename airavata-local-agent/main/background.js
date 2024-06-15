@@ -114,12 +114,14 @@ async function getToken(url) {
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
   if (code) {
-    const resp = await fetch(`http://localhost:3000/get-token-from-code?code=${code}`);
+    const resp = await fetch(`https://md.cybershuttle.org/auth/get-token-from-code/?code=${code}`);
 
     const data = await resp.json();
 
     const accessToken = data.access_token;
     const refreshToken = data.refresh_token;
+
+    console.log('DATA:', data);
 
     return [accessToken, refreshToken];
 

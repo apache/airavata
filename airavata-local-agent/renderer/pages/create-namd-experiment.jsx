@@ -720,7 +720,7 @@ const Home = () => {
         setLoading(false);
 
         setTimeout(() => {
-          // window.location.href = '/tabs-view';
+          window.location.href = '/tabs-view';
         }, 3000);
 
       }
