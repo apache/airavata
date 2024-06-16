@@ -100,22 +100,6 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
 
   }, []);
 
-  const handleSubmitInfo = () => {
-    setTimesConnected(timesConnected + 1);
-
-    // here we need to get the hostname and port through the novnc_proxy script
-
-
-    console.log("Connecting to", hostname, port);
-
-    setRendering(true);
-  };
-
-  const handleDisconnect = () => {
-    setTimesConnected(0);
-    setRendering(false); // unmounting the component auto-disconnects
-  };
-
   return (
     <React.Fragment>
       {
@@ -145,7 +129,7 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       {rendering && (
         <>
           <Box textAlign='center'>
-            <VNCItem url={hostname + ':' + port} username={username} password={password} vncRef={vncRef} onDisconnect={handleDisconnect} />
+            <VNCItem url={hostname + ':' + port} username={username} password={password} vncRef={vncRef} handleOnDisconnect={handleOnDisconnect} />
 
             {/* <Button onClick={handleDisconnect} colorScheme='red' mt={4}>
                 Disconnect

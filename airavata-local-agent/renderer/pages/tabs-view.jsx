@@ -249,7 +249,7 @@ const TabsView = () => {
   return (
     <>
       <HeaderBox name={name} email={email} />
-      <Tabs index={tabIndex} onChange={handleTabsChange} isLazy>
+      <Tabs index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
             <Tab _selected={tabSelectedStyles} minW='200px'>

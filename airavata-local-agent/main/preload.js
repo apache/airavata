@@ -34,5 +34,13 @@ contextBridge.exposeInMainWorld('vnc', {
 
   proxyStopped: (callback) => {
     ipcRenderer.once('proxy-stopped', callback);
-  }
+  },
+
+
+  killedAllWebsockify: (callback) => {
+    ipcRenderer.once('killed-all-websockify', callback);
+  },
+
+
+  killAllWebsockify: () => ipcRenderer.send('kill-all-websockify'),
 });
