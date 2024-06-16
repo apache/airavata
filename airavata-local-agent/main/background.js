@@ -7,7 +7,7 @@ const { exec, spawn } = require('child_process');
 const fs = require('fs');
 
 const isProd = process.env.NODE_ENV === 'production';
-const KILL_CMD = 'kill -9 $(lsof -ti:6080)';
+const KILL_CMD = 'pkill -f websockify';
 let experimentIdToCmd = {};
 
 if (isProd) {
@@ -18,41 +18,12 @@ if (isProd) {
 
 ; (async () => {
   await app.whenReady();
-
-  const filter = {
-    urls: ['https://md.cybershuttle.org/*']
-  };
-
-  // session.defaultSession.webRequest.onBeforeSendHeaders(
-  //   filter,
-  //   (details, callback) => {
-  //     console.log(details);
-  //     details.requestHeaders['Origin'] = 'https://md.cybershuttle.org';
-  //     callback({ requestHeaders: details.requestHeaders });
-  //   }
-  // );
-
-  // session.defaultSession.webRequest.onHeadersReceived(
-  //   filter,
-  //   (details, callback) => {
-  //     console.log(details);
-  //     details.responseHeaders['Access-Control-Allow-Origin'] = [
-  //       '*'
-  //     ];
-  //     callback({ responseHeaders: details.responseHeaders });
-  //   }
-  // );
-
-
-  // Construct the BrowserWindow if haven't done so yet...
-
   const mainWindow = createWindow('main', {
-    width: 1500,
-    height: 800,
+    width: 1900,
+    height: 1000,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false
-
     },
   });
 
@@ -195,3 +166,9 @@ async function stopIt(event, restart, experimentId) {
 
 ipcMain.on('stop-proxy', stopIt);
 
+ipcMain.on('kill-all-websockify', (event) => {
+  exec(KILL_CMD,
+    (error, stdout, stderr) => {
+      event.sender.send('killed-all-websockify', error);
+    });
+});
