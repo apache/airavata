@@ -5,6 +5,7 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
+import { logger } from '../renderer/lib/logger';
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
@@ -80,7 +81,6 @@ function runit(cmd, timeout) {
 
 async function getToken(url) {
   console.log(url);
-
   const rawCode = /code=([^&]*)/.exec(url) || null;
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
