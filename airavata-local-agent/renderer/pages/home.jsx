@@ -1,6 +1,6 @@
 import { Button, Container, Img, Text, Flex, Heading, Link, HStack } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
-
+import { logger } from "../lib/logger";
 const Home = () => {
   return (
     <>
