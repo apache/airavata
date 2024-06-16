@@ -19,7 +19,6 @@ import {
 } from "@ajna/pagination";
 import { HeaderBox } from "../components/HeaderBox";
 import { Footer } from "../components/Footer";
-// import VncClient from "./vnc-client";
 import { VNCViewer } from "../components/VNCViewer";
 
 const getColorScheme = (status) => {
