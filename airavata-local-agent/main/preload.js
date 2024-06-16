@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld('auth', {
 });
 
 contextBridge.exposeInMainWorld('vnc', {
-  startProxy: (experimentId) => ipcRenderer.send('start-proxy', experimentId),
+  startProxy: (experimentId, reqHost, reqPort) => ipcRenderer.send('start-proxy', experimentId, reqHost, reqPort),
 
   proxyStarted: (callback) => {
     ipcRenderer.once('proxy-started', (event, hostname, port, experimentId) => callback(event, hostname, port, experimentId));

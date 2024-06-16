@@ -14,17 +14,19 @@ import {
   useToast
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
-import { useRouter } from "next/router";
+
+let count = 0;
+
+
+const VNCItem = dynamic(() => {
+  return import('../components/VNCItem').then((mod) => mod.VNCItem);
+}, { ssr: false });
 
 export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
+  // console.log(reqHost, reqPort);
   // Can't import regularly because of SSR (next.js)
-  const VncScreen = dynamic(() => {
-    return import('react-vnc').then((mod) => mod.VncScreen);
-  }, { ssr: false });
 
-
-  const router = useRouter();
-  const ref = useRef();
+  const vncRef = useRef(null);
   const toast = useToast();
   const [password, setPassword] = useState('1234');
   const [hostname, setHostname] = useState('ws://PoopyPro.local');
@@ -33,6 +35,7 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   const [rendering, setRendering] = useState(false);
   const [timesConnected, setTimesConnected] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
 
   const handleOnCredentialsRequired = (rfb) => {
@@ -40,18 +43,23 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   };
 
   const handleOnDisconnect = (rfb) => {
-    console.log('Disconnected');
+    console.log(experimentId, 'Disconnected');
+    setError("Something went wrong, please try again.");
     setRendering(false);
   };
+
+  count++;
+  console.log("component render number: ", count);
 
   useEffect(() => {
     setLoading(true);
 
-    window.vnc.startProxy(experimentId);
+    window.vnc.startProxy(experimentId, reqHost, reqPort);
 
     window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
       console.log('Proxy started for', hostname, port, theExperimentId);
       if (experimentId !== theExperimentId) {
+        console.log("returning...");
         return;
       }
       setLoading(false);
@@ -66,12 +74,15 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       setHostname('ws://' + hostname);
       setPort(port);
       setRendering(true);
+      const { connect, connected, disconnect } = vncRef.current ?? {};
+
+      connect?.();
     });
 
     window.vnc.proxyStopped((event, restart) => {
       console.log('Proxy stopped');
 
-      if (restart) window.vnc.startProxy(experimentId);
+      if (restart) window.vnc.startProxy(experimentId, reqHost, reqPort);
     });
 
     const exitingFunction = () => {
@@ -108,6 +119,17 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   return (
     <React.Fragment>
       {
+        error !== "" && (
+          <Alert status='error' rounded='md'>
+            <AlertIcon />
+            <Text>
+              {error}
+            </Text>
+          </Alert>
+        )
+      }
+
+      {
         loading && (
           <>
             <Alert status='info' rounded='md'>
@@ -120,91 +142,10 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
         )
       }
 
-      {/* {!rendering && (
-          <>
-            <Container mt={16}>
-              <Heading size='lg' color='blue.600'>
-                Connection Information
-              </Heading>
-
-              {
-                timesConnected > 0 && (
-                  <Alert status='error' rounded='md' mt={2}>
-                    <AlertIcon />
-                    <Text>
-                      <Text as='span' color='red.800' fontWeight='bold'>Something went wrong</Text>. Please make sure your VNC server is running and your web proxy is running.
-                    </Text>
-                  </Alert>
-                )
-              }
-
-              <VStack spacing={4} mt={4}>
-                <FormControl>
-                  <FormLabel>VNC Server Hostname</FormLabel>
-                  <Input type='text' value={hostname} onChange={(e) =>
-                  {
-                    setHostname(e.target.value);
-                  }} placeholder='ws://your-url' />
-                </FormControl>
-
-
-                <FormControl>
-                  <FormLabel>VNC Server Port</FormLabel>
-                  <Input type='text' value={port} onChange={(e) =>
-                  {
-                    setPort(e.target.value);
-                  }} placeholder='Port' />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Username</FormLabel>
-                  <Input type='text' value={username} onChange={(e) =>
-                  {
-                    setUsername(e.target.value);
-                  }} placeholder='Username' />
-                </FormControl>
-
-
-                <FormControl>
-                  <FormLabel>Password</FormLabel>
-                  <Input type='password' value={password} onChange={(e) =>
-                  {
-                    setPassword(e.target.value);
-                  }} placeholder='Password' />
-                </FormControl>
-
-
-              <Button onClick={handleSubmitInfo} colorScheme='blue' w='full' isDisabled={loading}>
-                Connect to VNC server
-              </Button>
-              </VStack>
-
-            </Container>
-          </>
-        )
-        } */}
-
       {rendering && (
         <>
           <Box textAlign='center'>
-            <VncScreen
-              url={hostname + ':' + port}
-              scaleViewport
-              background="#000000"
-              style={{
-                width: '100%',
-                height: '75vh',
-              }}
-              rfbOptions={{
-                credentials: {
-                  username,
-                  password
-                }
-              }}
-              ref={ref}
-              onCredentialsRequired={handleOnCredentialsRequired}
-              onDisconnect={handleOnDisconnect}
-            />
+            <VNCItem url={hostname + ':' + port} username={username} password={password} vncRef={vncRef} onDisconnect={handleDisconnect} />
 
             {/* <Button onClick={handleDisconnect} colorScheme='red' mt={4}>
                 Disconnect

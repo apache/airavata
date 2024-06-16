@@ -159,15 +159,12 @@ ipcMain.on('ci-logon-login', async (event) => {
 
 ipcMain.on('start-proxy', startIt);
 
-let cmd;
-
-async function startIt(event, experimentId) {
+async function startIt(event, experimentId, reqHost, reqPort) {
   console.log("experimentId: ", experimentId);
-  let cmd = spawn('./proxy/novnc_proxy', { shell: true });
-
-
+  let cmd = spawn(`./proxy/novnc_proxy --reqHost ${reqHost}  --reqPort ${reqPort}`, { shell: true });
 
   cmd.stdout.on('data', (data) => {
+    console.log(data.toString());
     data = data.toString().trim();
 
     if (data == "HANG_NOW") {
@@ -185,7 +182,7 @@ async function startIt(event, experimentId) {
   });
 
   cmd.on('close', async (code) => {
-    console.log(`child process exited with code ${code}`);
+    console.log(`Websockify proxy stopped with code: ${code}`);
     await stopIt(event, true, experimentId);
   });
 
@@ -193,11 +190,6 @@ async function startIt(event, experimentId) {
 }
 
 async function stopIt(event, restart, experimentId) {
-  // exec(KILL_CMD,
-  //   (error, stdout, stderr) => {
-  //     event.sender.send('proxy-stopped', restart);
-  //   });
-  console.log("the exp id", experimentId);
   experimentIdToCmd[experimentId].kill();
 }
 
