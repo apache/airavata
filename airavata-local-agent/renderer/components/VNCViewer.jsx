@@ -1,21 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Head from 'next/head';
 import {
-  Heading, FormControl,
-  FormLabel,
   Box,
-  Input,
   Text,
-  Container,
-  VStack,
-  Button,
   Alert,
   AlertIcon,
   useToast
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
-
-let count = 0;
 
 
 const VNCItem = dynamic(() => {
@@ -37,19 +28,11 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-
-  const handleOnCredentialsRequired = (rfb) => {
-    console.log('Credentials required');
-  };
-
   const handleOnDisconnect = (rfb) => {
     console.log(experimentId, 'Disconnected');
     setError("Something went wrong, please try again.");
     setRendering(false);
   };
-
-  count++;
-  console.log("component render number: ", count);
 
   useEffect(() => {
     setLoading(true);
@@ -59,7 +42,6 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
     window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
       console.log('Proxy started for', hostname, port, theExperimentId);
       if (experimentId !== theExperimentId) {
-        console.log("returning...");
         return;
       }
       setLoading(false);
@@ -130,10 +112,6 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
         <>
           <Box textAlign='center'>
             <VNCItem url={hostname + ':' + port} username={username} password={password} vncRef={vncRef} handleOnDisconnect={handleOnDisconnect} />
-
-            {/* <Button onClick={handleDisconnect} colorScheme='red' mt={4}>
-                Disconnect
-              </Button> */}
           </Box>
         </>
       )
