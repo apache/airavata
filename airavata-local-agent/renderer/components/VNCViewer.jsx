@@ -4,7 +4,8 @@ import {
   Text,
   Alert,
   AlertIcon,
-  useToast
+  useToast,
+  Tooltip
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 
@@ -117,8 +118,7 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       )
       }
 
-
-
+      <Tooltip label="VNC Server URL. This is where the application creates a proxy to."><Text textAlign='center' mt={2}>{reqHost + ":" + reqPort}</Text></Tooltip>
 
     </React.Fragment>
   );

@@ -79,7 +79,7 @@ function runit(cmd, timeout) {
 }
 
 async function getToken(url) {
-  console.log("getting token from url: ", url);
+  console.log(url);
 
   const rawCode = /code=([^&]*)/.exec(url) || null;
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
@@ -131,11 +131,9 @@ ipcMain.on('ci-logon-login', async (event) => {
 ipcMain.on('start-proxy', startIt);
 
 async function startIt(event, experimentId, reqHost, reqPort) {
-  console.log("experimentId: ", experimentId);
   let cmd = spawn(`./proxy/novnc_proxy --reqHost ${reqHost}  --reqPort ${reqPort}`, { shell: true });
 
   cmd.stdout.on('data', (data) => {
-    console.log(data.toString());
     data = data.toString().trim();
 
     if (data == "HANG_NOW") {

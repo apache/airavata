@@ -9,7 +9,7 @@ const Home = () => {
       <Container maxW='container.sm' p={4} mt={4}>
         <Flex alignItems='center' gap={2}>
           <Img src='/images/a-logo.png' maxH='50px' />
-          <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Airavata UI</Text>
+          <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Airavata Local Agent</Text>
         </Flex>
 
         <Heading fontSize='2xl' mt={4} color='blue.500'>Overview</Heading>
