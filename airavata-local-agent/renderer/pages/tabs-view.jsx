@@ -149,8 +149,8 @@ const TabsView = () => {
         // here, we need to make a fetch
 
         // assume the fetch was OK
-        let hostURL = "https://example.com";
-        let port = "1500";
+        let hostURL = "localhost";
+        let port = "5900";
 
         component = <VNCViewer reqHost={hostURL} reqPort={port} experimentId={experimentID} />;
       } else if (type === 'JN') {
@@ -249,7 +249,7 @@ const TabsView = () => {
   return (
     <>
       <HeaderBox name={name} email={email} />
-      <Tabs index={tabIndex} onChange={handleTabsChange}>
+      <Tabs index={tabIndex} onChange={handleTabsChange} isLazy>
         <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
             <Tab _selected={tabSelectedStyles} minW='200px'>
