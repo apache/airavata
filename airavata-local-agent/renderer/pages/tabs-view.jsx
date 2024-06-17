@@ -7,6 +7,7 @@ import {
   Th,
   Td,
   TableContainer, Text, Flex, Spinner, HStack, Badge, Icon,
+  Alert, AlertIcon
 } from "@chakra-ui/react";
 import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -67,6 +68,7 @@ const makeFetchForExperiments = async (pageSize, offset, token) => {
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
+let gatewayId = "";
 
 const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -84,6 +86,7 @@ const TabsView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [isLoadingSession, setIsLoadingSession] = useState(false);
 
   const {
     offset,
@@ -126,7 +129,8 @@ const TabsView = () => {
     }
   };
 
-  const handleAddTab = (type, experimentID, name) => {
+  const handleAddTab = async (type, experimentID, name) => {
+    setIsLoadingSession(true);
     const associatedID = type + "_" + experimentID;
 
     /*
@@ -144,15 +148,43 @@ const TabsView = () => {
       associatedIDToIndex[associatedID] = newTabIndex;
 
       let component;
-      if (type === 'VMD') {
-        // here, we need to make a fetch
+      const headers = {
+        "Authorization": "Bearer " + accessToken,
+        "X-Claims": JSON.stringify({
+          "userName": email,
+          "gatewayID": gatewayId
+        }),
+        "Content-Type": "application/json"
+      };
 
-        // assume the fetch was OK
-        let hostURL = "localhost";
-        let port = "5900";
+      const body = {
+        "expId": experimentID,
+        "application": "VMD"
+      };
+
+      const url = "http://74.235.88.134:9001/api/v1/application/launch";
+
+      if (type === 'VMD') {
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(body)
+        });
+
+        const data = await resp.json();
+        let hostURL = "74.235.88.134";
+        let port = data.allocatedPorts[0];
 
         component = <VNCViewer reqHost={hostURL} reqPort={port} experimentId={experimentID} />;
       } else if (type === 'JN') {
+
+        body["application"] = "JN";
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(body)
+        });
+
         component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
       }
 
@@ -164,6 +196,8 @@ const TabsView = () => {
 
       setTabIndex(newTabIndex);
     }
+
+    setIsLoadingSession(false);
   };
 
   const handleTabsChange = (index) => {
@@ -217,6 +251,7 @@ const TabsView = () => {
 
       setName(obj.name);
       setEmail(obj.email);
+      getGatewayId(obj.email);
     } catch (error) {
       console.error(error);
     }
@@ -236,6 +271,21 @@ const TabsView = () => {
       });
   }, [currentPage, pageSize, offset]);
 
+  const getGatewayId = async (emailAddress) => {
+    console.log("email", emailAddress);
+    if (!emailAddress) {
+      return;
+    }
+    const resp = await fetch(`https://md.cybershuttle.org/api/user-profiles/${emailAddress}/`, {
+      headers: {
+        "Authorization": "Bearer " + accessToken
+      }
+    });
+
+    const data = await resp.json();
+    gatewayId = data.gatewayId;
+  };
+
   useEffect(() => {
     setNameAndEmail();
   }, []);
@@ -248,6 +298,19 @@ const TabsView = () => {
   return (
     <>
       <HeaderBox name={name} email={email} />
+      {
+        isLoadingSession && (
+          <>
+            <Alert status='info' rounded='md' mb={2}>
+              {/* <AlertIcon /> */}
+              <Spinner mr={2} />
+              <Text>
+                Currently loading your session, this may take one or two minutes...
+              </Text>
+            </Alert>
+          </>
+        )
+      }
       <Tabs index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
