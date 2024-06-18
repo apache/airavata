@@ -41,8 +41,6 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
-
-
 })();
 
 app.on('window-all-closed', () => {
@@ -124,7 +122,6 @@ ipcMain.on('ci-logon-login', async (event) => {
       authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
 
     }
-
   });
 });
 

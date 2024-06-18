@@ -7,7 +7,8 @@ import {
   Th,
   Td,
   TableContainer, Text, Flex, Spinner, HStack, Badge, Icon,
-  Alert, AlertIcon
+  Alert, Select, Grid, GridItem,
+  Input
 } from "@chakra-ui/react";
 import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -36,7 +37,9 @@ const getColorScheme = (status) => {
 };
 
 const getExperimentApplication = (executionId) => {
-  if (executionId.startsWith("AlphaFold2")) {
+  if (!executionId) {
+    return ("N/A");
+  } else if (executionId.startsWith("AlphaFold2")) {
     return "AlphaFold2";
   } else if (executionId.startsWith("NAMD3_gpu")) {
     return "NAMD3 GPU";
@@ -55,9 +58,9 @@ const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
-const makeFetchForExperiments = async (pageSize, offset, token) => {
+const makeFetchForExperiments = async (pageSize, offset, token, filterString) => {
   let resp = await fetch(
-    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}`, {
+    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}&${filterString}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -87,6 +90,10 @@ const TabsView = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isLoadingSession, setIsLoadingSession] = useState(false);
+
+  const [filterAttribute, setFilterAttribute] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterText, setFilterText] = useState("");
 
   const {
     offset,
@@ -178,7 +185,7 @@ const TabsView = () => {
         component = <VNCViewer reqHost={hostURL} reqPort={port} experimentId={experimentID} />;
       } else if (type === 'JN') {
 
-        body["application"] = "JN";
+        body["application"] = "JUPYTER_LAB";
         const resp = await fetch(url, {
           method: "POST",
           headers: headers,
@@ -219,8 +226,26 @@ const TabsView = () => {
     return [data.access_token, data.refresh_token];
   };
 
-  const fetchExperiments = async (pageSize, offset) => {
-    let resp = await makeFetchForExperiments(pageSize, offset, accessToken);
+  const addPropertyToParamsIfNotDefault = (params, obj, key, defaultVal) => {
+    if (obj && obj[key] !== undefined && obj[key] !== "" && obj[key] !== defaultVal) {
+      params.set(key, obj[key]);
+    }
+  };
+
+  const fetchExperiments = async (pageSize, offset, filterCriteria) => {
+    console.log(filterCriteria);
+    const urlParams = new URLSearchParams();
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "STATUS", "ALL");
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "USER_NAME", "");
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "EXPERIMENT_NAME", "");
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "EXPERIMENT_DESC", "");
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "APPLICATION_ID", "");
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "PROJECT_ID", "");
+    addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "JOB_ID", "");
+
+    console.log(urlParams.toString());
+
+    let resp = await makeFetchForExperiments(pageSize, offset, accessToken, urlParams.toString());
 
     // if this fetch request fails, try again after getting a new access token
     if (!resp.ok) {
@@ -234,7 +259,7 @@ const TabsView = () => {
       accessToken = newAccessToken;
 
       setNameAndEmail();
-      resp = await makeFetchForExperiments(pageSize, offset, accessToken); // done with the new accessToken
+      resp = await makeFetchForExperiments(pageSize, offset, accessToken, urlParams.toString()); // done with the new accessToken
       if (!resp.ok) {
         throw new Error("Failed to fetch new experiments (new access token)");
       }
@@ -260,7 +285,7 @@ const TabsView = () => {
   useEffect(() => {
     setIsLoading(true);
     accessToken = localStorage.getItem("accessToken");
-    fetchExperiments(pageSize, offset)
+    fetchExperiments(pageSize, offset, getFilterObj())
       .then((data) => {
         setExperiments(data);
         setIsLoading(false);
@@ -290,8 +315,30 @@ const TabsView = () => {
     setNameAndEmail();
   }, []);
 
+  const getFilterObj = () => {
+    const obj = {
+      "STATUS": filterStatus.toUpperCase(),
+    };
+
+    obj[filterAttribute] = filterText;
+
+    return obj;
+  };
+
+  const handleFilterChange = () => {
+    setIsLoading(true);
+    setCurrentPage(1);
+    fetchExperiments(pageSize, 0, getFilterObj()).then((data) => {
+      setExperiments(data);
+      setIsLoading(false);
+    })
+      .catch((error) => {
+        console.error("App =>", error);
+        window.location.href = "/login";
+      });
+  };
+
   const handlePageChange = (nextPage) => {
-    // -> request new data using the page number
     setCurrentPage(nextPage);
   };
 
@@ -311,6 +358,7 @@ const TabsView = () => {
           </>
         )
       }
+
       <Tabs index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
@@ -337,6 +385,50 @@ const TabsView = () => {
 
         <TabPanels>
           <TabPanel>
+            <Grid templateColumns='repeat(4, 1fr)' gap={6}>
+              <GridItem w='100%' h='10'>
+                <Input placeholder="Search Text" value={filterText} onChange={(e) => setFilterText(e.target.value)} />
+              </GridItem>
+              <GridItem w='100%' h='10' >
+                <Select variant='outline' placeholder='Search Attribute' value={filterAttribute} onChange={(e) => setFilterAttribute(e.target.value)}>
+                  <option value="USER_NAME">User Name</option>
+                  <option value="EXPERIMENT_NAME">Experiment Name</option>
+                  <option value="EXPERIMENT_DESC">Experiment Description</option>
+                  <option value="APPLICATION_ID">Application ID</option>
+                  <option value="PROJECT_ID">Project ID</option>
+                  <option value="JOB_ID">Job ID</option>
+                </Select>
+
+              </GridItem>
+              <GridItem w='100%' h='10'>
+                <Select variant='outline' placeholder='Experiment Status' value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                  <option value="CREATED">Created</option>
+                  <option value="VALIDATED">Validated</option>
+                  <option value="SCHEDULED">Scheduled</option>
+                  <option value="LAUNCHED">Launched</option>
+                  <option value="EXECUTING">Executing</option>
+                  <option value="CANCELED">Canceled</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="FAILED">Failed</option>
+                </Select>
+              </GridItem>
+              <GridItem w='100%' h='10'>
+
+                <HStack>
+                  <Button w='full' onClick={() => {
+                    setCurrentPage(1);
+                    setFilterAttribute("");
+                    setFilterText("");
+                    setFilterStatus("");
+                  }}>Reset</Button>
+
+                  <Button w='full' onClick={handleFilterChange} _hover={{
+                    bg: "blue.300",
+                  }}
+                    bg="blue.200">Search</Button>
+                </HStack>
+              </GridItem>
+            </Grid>
             <Pagination
               currentPage={currentPage}
               isDisabled={isDisabled}
@@ -394,7 +486,7 @@ const TabsView = () => {
                                 </Button>
                                 {
                                   // only show jupyter button if executionId starts with "NAMD_*".
-                                  experiment.executionId.startsWith('NAMD_') && (
+                                  experiment.executionId?.startsWith('NAMD_') && (
                                     <Button colorScheme='blue' size='xs' onClick={() => {
                                       handleAddTab('VMD', experiment.experimentId, experiment.name);
                                     }}
