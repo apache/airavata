@@ -19,7 +19,6 @@ export const HeaderBox = ({ name, email }) => {
               // delete the access token and refresh token
               localStorage.removeItem('accessToken');
               localStorage.removeItem('refreshToken');
-
               // redirect to login page
               window.location.href = '/login';
             }}>Log Out</Text></Text>

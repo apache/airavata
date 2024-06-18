@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('auth', {
   ciLogonLogin: () => ipcRenderer.send('ci-logon-login'),
   ciLogonSuccess: (callback) => {
     ipcRenderer.once('ci-logon-success', callback);
-  }
+  },
 });
 
 contextBridge.exposeInMainWorld('vnc', {
