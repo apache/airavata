@@ -18,19 +18,16 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   // console.log(reqHost, reqPort);
   // Can't import regularly because of SSR (next.js)
 
-  const vncRef = useRef(null);
   const toast = useToast();
-  const [password, setPassword] = useState('1234');
+  const username = "";
+  const password = '1234';
   const [hostname, setHostname] = useState('ws://PoopyPro.local');
   const [port, setPort] = useState('6080');
-  const [username, setUsername] = useState('');
   const [rendering, setRendering] = useState(false);
-  const [timesConnected, setTimesConnected] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleOnDisconnect = (rfb) => {
-    console.log(experimentId, 'Disconnected');
     setError("Something went wrong, please try again.");
     setRendering(false);
   };
@@ -39,8 +36,9 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
     setLoading(true);
 
     setTimeout(() => {
+      console.log("starting proxy for", experimentId, reqHost, reqPort);
       window.vnc.startProxy(experimentId, reqHost, reqPort);
-    }, 5000);
+    }, 10000);
 
 
     window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
@@ -60,9 +58,6 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       setHostname('ws://' + hostname);
       setPort(port);
       setRendering(true);
-      const { connect, connected, disconnect } = vncRef.current ?? {};
-
-      connect?.();
     });
 
     window.vnc.proxyStopped((event, restart) => {
@@ -74,12 +69,10 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
     const exitingFunction = () => {
       console.log("running stop on", experimentId);
       window.vnc.stopProxy(false, experimentId); // false = don't restart
-
     };
 
     return () => {
       console.log("unmounting component...");
-      // router.events.off("routeChangeStart", exitingFunction);
       exitingFunction();
       setRendering(false);
     };
@@ -115,7 +108,7 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       {rendering && (
         <>
           <Box textAlign='center'>
-            <VNCItem url={hostname + ':' + port} username={username} password={password} vncRef={vncRef} handleOnDisconnect={handleOnDisconnect} />
+            <VNCItem url={hostname + ':' + port} username={username} password={password} handleOnDisconnect={handleOnDisconnect} />
           </Box>
         </>
       )

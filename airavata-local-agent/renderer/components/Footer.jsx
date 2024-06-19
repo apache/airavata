@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Link, Spacer, Stack, Text, Tooltip, useToast } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Link, Spacer, Stack, Text, Tooltip, useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export const Footer = () => {
@@ -38,7 +38,7 @@ export const Footer = () => {
 
           <Tooltip label="This will end all running VMD sessions. Please use cautiously."><Button colorScheme='red' size='xs' onClick={
             () => window.vnc.killAllWebsockify()
-          }>stop all websockify</Button></Tooltip>
+          }>stop websockify</Button></Tooltip>
 
         </Stack>
       </Flex >
