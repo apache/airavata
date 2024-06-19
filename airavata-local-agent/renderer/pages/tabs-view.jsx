@@ -23,6 +23,9 @@ import {
 import { HeaderBox } from "../components/HeaderBox";
 import { Footer } from "../components/Footer";
 import { VNCViewer } from "../components/VNCViewer";
+import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+dayjs.extend(relativeTime);
 
 const getColorScheme = (status) => {
   switch (status) {
@@ -191,7 +194,12 @@ const TabsView = () => {
 
         if (!resp.ok) {
           setIsLoadingSession(false);
-          console.error("Failed to fetch VMD launch", resp);
+          toast({
+            title: "Failed to launch VMD",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
           return;
         }
         const data = await resp.json();
@@ -363,6 +371,14 @@ const TabsView = () => {
         isClosable: true,
       });
       return;
+    } else if (filterText === "" && filterAttribute === "" && filterStatus === "") {
+      toast({
+        title: "Please enter a search text or select a search attribute or select an experiment status",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
     }
 
     setIsLoading(true);
@@ -385,7 +401,6 @@ const TabsView = () => {
         isLoadingSession && (
           <>
             <Alert status='info' rounded='md' mb={2}>
-              {/* <AlertIcon /> */}
               <Spinner mr={2} />
               <Text>
                 Currently loading your session, this may take one or two minutes...
@@ -503,7 +518,7 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              <Text>{dateToAgo(new Date(experiment.statusUpdateTime))} ago</Text>
+                              <Text>{dayjs(experiment.statusUpdateTime).fromNow(true)} ago</Text>
                             </Td>
 
                             <Td>
