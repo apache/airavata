@@ -285,6 +285,16 @@ const TabsView = () => {
 
       const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
 
+      if (!newAccessToken || !newRefreshToken) {
+        toast({
+          title: "Your account has to be activated. Check back later",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+
+      }
       localStorage.setItem('accessToken', newAccessToken);
       localStorage.setItem('refreshToken', newRefreshToken);
 
@@ -322,7 +332,7 @@ const TabsView = () => {
     fetchExperiments(pageSize, offset, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
-        window.location.href = "/login";
+        // window.location.href = "/login";
       });
   }, [currentPage, pageSize, offset]);
 
@@ -386,7 +396,7 @@ const TabsView = () => {
     fetchExperiments(pageSize, 0, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
-        window.location.href = "/login";
+        // window.location.href = "/login";
       });
   };
 
@@ -445,8 +455,8 @@ const TabsView = () => {
                   <option value="USER_NAME">User Name</option>
                   <option value="EXPERIMENT_NAME">Experiment Name</option>
                   <option value="EXPERIMENT_DESC">Experiment Description</option>
-                  <option value="APPLICATION_ID">Application ID</option>
-                  <option value="PROJECT_ID">Project ID</option>
+                  {/* <option value="APPLICATION_ID">Application ID</option>
+                  <option value="PROJECT_ID">Project ID</option> */}
                   <option value="JOB_ID">Job ID</option>
                 </Select>
 
@@ -583,7 +593,12 @@ const TabsView = () => {
                 </PaginationPrevious>
 
                 {
-                  isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize - 1 + 1}</Text>}
+                  // isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize - 1 + 1}</Text>}
+
+                  // if there are less than pageSize results, then show the number of results
+                  // otherwise, show the range of results
+                  isLoading ? <Spinner /> : experiments?.results?.length < pageSize ? <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage - 1) * pageSize + experiments?.results?.length}</Text> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize}</Text>
+                }
 
                 <PaginationNext
                   _hover={{

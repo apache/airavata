@@ -17,6 +17,7 @@ export const HeaderBox = ({ name, email }) => {
           ) : (
             <Text>{name} ({email}), <Text color='blue.400' _hover={{ textDecoration: "underline", cursor: "pointer" }} as='span' onClick={() => {
               // delete the access token and refresh token
+              // console.log("Running this code...");
               localStorage.removeItem('accessToken');
               localStorage.removeItem('refreshToken');
               // redirect to login page

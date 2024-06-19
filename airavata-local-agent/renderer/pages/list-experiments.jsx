@@ -61,9 +61,6 @@ const ListExperiments = () => {
                       )
                     }
                   </HStack>
-
-
-
                 </Box>
               );
             })

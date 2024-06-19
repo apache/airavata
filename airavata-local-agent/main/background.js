@@ -5,7 +5,6 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
-import { logger } from '../renderer/lib/logger';
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
@@ -27,6 +26,7 @@ if (isProd) {
       webSecurity: false
     },
   });
+
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     require('electron').shell.openExternal(url);
@@ -61,22 +61,6 @@ ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`);
 });
 
-function runit(cmd, timeout) {
-  // https://stackoverflow.com/questions/31727684/node-js-exec-doesnt-callback-if-exec-an-exe
-  return new Promise(function (resolve, reject) {
-    var ch = exec(cmd, function (error, stdout, stderr) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve("program exited without an error");
-      }
-    });
-    setTimeout(function () {
-      resolve("program still running");
-    }, timeout);
-  });
-}
-
 async function getToken(url) {
   console.log(url);
   const rawCode = /code=([^&]*)/.exec(url) || null;
@@ -99,15 +83,14 @@ async function getToken(url) {
 
 ipcMain.on('ci-logon-login', async (event) => {
   var authWindow = createWindow('authWindow', {
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     show: false,
     'node-integration': false,
     'web-security': false
   });
 
   authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-
 
   authWindow.show();
   authWindow.webContents.on('will-redirect', async (e, url) => {
@@ -116,6 +99,7 @@ ipcMain.on('ci-logon-login', async (event) => {
 
       if (tokens.length > 0) {
         const [accessToken, refreshToken] = tokens;
+        console.log("Tokens", accessToken, refreshToken);
         event.sender.send('ci-logon-success', accessToken, refreshToken);
       }
       authWindow.close();

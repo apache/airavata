@@ -65,7 +65,7 @@ const Login = () => {
   return (
     <>
       <HeaderBox />
-      <Center mt={16} maxW='400px' mx='auto'>
+      <Center mt={16} maxW='500px' mx='auto'>
         <Box>
           <Flex alignItems='center' gap={2}>
             <Img src='/images/a-logo.png' maxH='50px' />
@@ -85,10 +85,10 @@ const Login = () => {
 
           <Box shadow='md' rounded='md' p={4} mt={4}>
             <Heading size='md' textAlign="left" color='blue.500'>Log in with your existing organizational login</Heading>
-            <Button colorScheme='blue' w='full' mt={2} onClick={handleCiLogin}>Login with Existing Institution Credentials</Button>
+            <Button colorScheme='blue' w='full' mt={4} onClick={handleCiLogin}>Login with Existing Institution Credentials</Button>
           </Box>
 
-          <Box shadow='md' rounded='md' p={4} mt={8}>
+          {/* <Box shadow='md' rounded='md' p={4} mt={8}>
             <Heading size='md' textAlign="left" color='blue.500'>Log in with Molecular Dynamics Gateway</Heading>
             <Text mt={2}>If you need to create an account, <Link color='blue.500' href={SIGN_UP_URL} target="_blank">you can sign up here</Link>. You can close the pop-up window after you see "Account request processed successfully...".</Text>
 
@@ -109,7 +109,7 @@ const Login = () => {
 
               <Button colorScheme='blue' onClick={handleLogin} w='full' isDisabled>Login with Molecular Dynamics Gateway</Button>
             </VStack>
-          </Box>
+          </Box> */}
 
           <Text mt={4} textAlign='center'><Link color='blue.500' href='/home'>Back to home</Link></Text>
         </Box>
