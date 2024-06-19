@@ -38,7 +38,10 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   useEffect(() => {
     setLoading(true);
 
-    window.vnc.startProxy(experimentId, reqHost, reqPort);
+    setTimeout(() => {
+      window.vnc.startProxy(experimentId, reqHost, reqPort);
+    }, 5000);
+
 
     window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
       console.log('Proxy started for', hostname, port, theExperimentId);

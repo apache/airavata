@@ -8,7 +8,8 @@ import {
   Td,
   TableContainer, Text, Flex, Spinner, HStack, Badge, Icon,
   Alert, Select, Grid, GridItem,
-  Input
+  Input,
+  useToast
 } from "@chakra-ui/react";
 import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -28,9 +29,13 @@ const getColorScheme = (status) => {
     case 'COMPLETED':
       return 'green';
     case 'EXECUTING':
-      return 'yellow';
+      return 'gray';
     case 'CREATED':
       return 'blue';
+    case 'CANCELED':
+      return 'yellow';
+    case 'FAILED':
+      return 'red';
     default:
       return 'red';
   }
@@ -57,6 +62,13 @@ const getExperimentApplication = (executionId) => {
 const tabSelectedStyles = {
   bg: 'blue.100',
 };
+
+const isValidStatusVMD = (status) => {
+  let invalidStatus = ["CANCELED"]; // TODO here
+  return !invalidStatus.includes(status);
+};
+
+// jupyterlab CAN have VMD
 
 const makeFetchForExperiments = async (pageSize, offset, token, filterString) => {
   let resp = await fetch(
@@ -94,6 +106,7 @@ const TabsView = () => {
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterText, setFilterText] = useState("");
+  const toast = useToast();
 
   const {
     offset,
@@ -151,8 +164,6 @@ const TabsView = () => {
     if (associatedID in associatedIDToIndex) {
       setTabIndex(associatedIDToIndex[associatedID]);
     } else {
-      const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index
-      associatedIDToIndex[associatedID] = newTabIndex;
 
       let component;
       const headers = {
@@ -178,8 +189,13 @@ const TabsView = () => {
           body: JSON.stringify(body)
         });
 
+        if (!resp.ok) {
+          setIsLoadingSession(false);
+          console.error("Failed to fetch VMD launch", resp);
+          return;
+        }
         const data = await resp.json();
-        let hostURL = "74.235.88.134";
+        let hostURL = "18.217.79.150";
         let port = data.allocatedPorts[0];
 
         component = <VNCViewer reqHost={hostURL} reqPort={port} experimentId={experimentID} />;
@@ -192,8 +208,18 @@ const TabsView = () => {
           body: JSON.stringify(body)
         });
 
+        // url 
+
+        // 18.217.79.150:8888
+        // 8888 = port
+        // http://18.217.79.150:8888
+
         component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
       }
+
+      const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index
+      associatedIDToIndex[associatedID] = newTabIndex;
+
 
       setArrOfTabsInfo(oldArr => [...oldArr, {
         associatedID: associatedID,
@@ -233,7 +259,7 @@ const TabsView = () => {
   };
 
   const fetchExperiments = async (pageSize, offset, filterCriteria) => {
-    console.log(filterCriteria);
+    setIsLoading(true);
     const urlParams = new URLSearchParams();
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "STATUS", "ALL");
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "USER_NAME", "");
@@ -242,8 +268,6 @@ const TabsView = () => {
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "APPLICATION_ID", "");
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "PROJECT_ID", "");
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "JOB_ID", "");
-
-    console.log(urlParams.toString());
 
     let resp = await makeFetchForExperiments(pageSize, offset, accessToken, urlParams.toString());
 
@@ -266,6 +290,9 @@ const TabsView = () => {
     }
 
     const data = await resp.json();
+
+    setExperiments(data);
+    setIsLoading(false);
     return data;
   };
 
@@ -283,13 +310,8 @@ const TabsView = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
     accessToken = localStorage.getItem("accessToken");
     fetchExperiments(pageSize, offset, getFilterObj())
-      .then((data) => {
-        setExperiments(data);
-        setIsLoading(false);
-      })
       .catch((error) => {
         console.error("App =>", error);
         window.location.href = "/login";
@@ -319,19 +341,33 @@ const TabsView = () => {
     const obj = {
       "STATUS": filterStatus.toUpperCase(),
     };
-
     obj[filterAttribute] = filterText;
-
     return obj;
   };
 
+
   const handleFilterChange = () => {
+    if (filterText === "" && filterAttribute !== "") {
+      toast({
+        title: "Please enter a search text",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    } else if (filterText !== "" && filterAttribute === "") {
+      toast({
+        title: "Please select a search attribute",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     setIsLoading(true);
     setCurrentPage(1);
-    fetchExperiments(pageSize, 0, getFilterObj()).then((data) => {
-      setExperiments(data);
-      setIsLoading(false);
-    })
+    fetchExperiments(pageSize, 0, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
         window.location.href = "/login";
@@ -385,12 +421,12 @@ const TabsView = () => {
 
         <TabPanels>
           <TabPanel>
-            <Grid templateColumns='repeat(4, 1fr)' gap={6}>
+            <Grid templateColumns='repeat(4, 1fr)' gap={2} mb={4}>
               <GridItem w='100%' h='10'>
-                <Input placeholder="Search Text" value={filterText} onChange={(e) => setFilterText(e.target.value)} />
+                <Input size='sm' placeholder="Search Text" value={filterText} onChange={(e) => setFilterText(e.target.value)} />
               </GridItem>
               <GridItem w='100%' h='10' >
-                <Select variant='outline' placeholder='Search Attribute' value={filterAttribute} onChange={(e) => setFilterAttribute(e.target.value)}>
+                <Select size='sm' variant='outline' placeholder='Search Attribute' value={filterAttribute} onChange={(e) => setFilterAttribute(e.target.value)}>
                   <option value="USER_NAME">User Name</option>
                   <option value="EXPERIMENT_NAME">Experiment Name</option>
                   <option value="EXPERIMENT_DESC">Experiment Description</option>
@@ -401,7 +437,7 @@ const TabsView = () => {
 
               </GridItem>
               <GridItem w='100%' h='10'>
-                <Select variant='outline' placeholder='Experiment Status' value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                <Select size='sm' variant='outline' placeholder='Experiment Status' value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="CREATED">Created</option>
                   <option value="VALIDATED">Validated</option>
                   <option value="SCHEDULED">Scheduled</option>
@@ -415,14 +451,15 @@ const TabsView = () => {
               <GridItem w='100%' h='10'>
 
                 <HStack>
-                  <Button w='full' onClick={() => {
+                  <Button size='sm' w='full' onClick={() => {
                     setCurrentPage(1);
                     setFilterAttribute("");
                     setFilterText("");
                     setFilterStatus("");
+                    fetchExperiments(pageSize, 0, {});
                   }}>Reset</Button>
 
-                  <Button w='full' onClick={handleFilterChange} _hover={{
+                  <Button size='sm' w='full' onClick={handleFilterChange} _hover={{
                     bg: "blue.300",
                   }}
                     bg="blue.200">Search</Button>
@@ -441,7 +478,7 @@ const TabsView = () => {
                       <Th>Name</Th>
                       <Th>User</Th>
                       <Th>Type</Th>
-                      <Th>Time</Th>
+                      <Th>Created</Th>
                       <Th>Status</Th>
                       <Th>Actions</Th>
                     </Tr>
@@ -486,7 +523,7 @@ const TabsView = () => {
                                 </Button>
                                 {
                                   // only show jupyter button if executionId starts with "NAMD_*".
-                                  experiment.executionId?.startsWith('NAMD_') && (
+                                  experiment.executionId?.startsWith('NAMD_') && isValidStatusVMD(experiment.experimentStatus) && (
                                     <Button colorScheme='blue' size='xs' onClick={() => {
                                       handleAddTab('VMD', experiment.experimentId, experiment.name);
                                     }}
@@ -531,7 +568,7 @@ const TabsView = () => {
                 </PaginationPrevious>
 
                 {
-                  isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize} to {(currentPage) * pageSize - 1}</Text>}
+                  isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize - 1 + 1}</Text>}
 
                 <PaginationNext
                   _hover={{
