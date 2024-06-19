@@ -120,7 +120,6 @@ ipcMain.on('ci-logon-login', async (event) => {
       }
       authWindow.close();
       authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-
     }
   });
 });
