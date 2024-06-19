@@ -54,9 +54,9 @@ const Home = () => {
   const [mdInstructionsUri, setMdInstructionsUri] = useState("");
   const [proteinPSFUri, setProteinPSFUri] = useState("");
   const [coordinatesUri, setCoordinatesUri] = useState("");
-  const [fParamUri, setFParamUri] = useState("");
+  const [fParamUri, setFParamUri] = useState([]);
   const [constraintsUri, setConstraintsUri] = useState("");
-  const [optionalUri, setOptionalUri] = useState("");
+  const [optionalUri, setOptionalUri] = useState([]);
   const [replicasList, setReplicasList] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -77,14 +77,80 @@ const Home = () => {
     return policyObj;
   };
 
+  const uploadMultipleFiles = (files, setHandler) => {
+    if (!files || files.length === 0) {
+      return;
+    }
+    console.log("Uploading...", files);
+
+    Array.prototype.forEach.call(files, function (file) {
+      let upload = new tus.Upload(file, {
+        endpoint: "https://tus.airavata.org/files/",
+        metadata: {
+          filename: file.name,
+          filetype: file.type || "text/plain",
+          "mime-type": file.type || "text/plain"
+        },
+
+        onError: function (error) {
+          console.log("Failed because: " + error);
+        },
+        onProgress: function (bytesUploaded, bytesTotal) {
+          var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
+          console.log(bytesUploaded, bytesTotal, percentage + "%");
+        },
+        onSuccess: function () {
+          console.log("Download %s from %s", upload.file.name, upload.url);
+
+          const url = upload.url;
+
+          let form_data = new FormData();
+          form_data.append('uploadURL', url);
+
+          fetch("https://md.cybershuttle.org/api/tus-upload-finish", {
+            method: "POST",
+            body: form_data,
+            credentials: "include",
+            headers: {
+              'Authorization': 'Bearer ' + accessToken
+            }
+          }).then((resp) => resp.json())
+            .then((data) => {
+              const uri = data["data-product"]["productUri"];
+              console.log("Saving...", uri);
+
+              setHandler((prev) => {
+                return [...prev, uri];
+              });
+            })
+            .catch((error) => {
+              toast({
+                title: "Error",
+                description: error.message,
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+              });
+            });
+
+        }
+      });
+
+      upload.start();
+    });
+  };
+
   const uploadFile = (file, setHandler) => {
     console.log("Uploading...", file);
+    if (!file) {
+      return;
+    }
 
     var upload = new tus.Upload(file, {
       endpoint: "https://tus.airavata.org/files/",
-      metadata: {
+      MetaData: {
         filename: file.name,
-        filetype: file.type
+        filetype: file.type || "text/plain",
       },
 
       onError: function (error) {
@@ -114,12 +180,20 @@ const Home = () => {
             const uri = data["data-product"]["productUri"];
             console.log("Saving...", uri);
             setHandler(uri);
+          }).catch((error) => {
+            toast({
+              title: "Error",
+              description: error.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true,
+            });
           });
 
       }
-
-
     });
+
+
 
     upload.start();
   };
@@ -348,7 +422,7 @@ const Home = () => {
     };
     let idx6 = {
       "name": "FF-Parameter-Files",
-      "value": fParamUri,
+      "value": fParamUri.join(","),
       "type": 4,
       "applicationArgument": null,
       "standardInput": false,
@@ -384,7 +458,7 @@ const Home = () => {
     };
     let idx8 = {
       "name": "Optional_Inputs",
-      "value": optionalUri,
+      "value": optionalUri.join(","),
       "type": 4,
       "applicationArgument": null,
       "standardInput": false,
@@ -762,9 +836,9 @@ const Home = () => {
 
         setLoading(false);
 
-        setTimeout(() => {
-          window.location.href = '/tabs-view';
-        }, 3000);
+        // setTimeout(() => {
+        //   window.location.href = '/tabs-view';
+        // }, 3000);
 
       }
     }
@@ -878,7 +952,7 @@ const Home = () => {
             <Input type='file' placeholder='upload file' onChange={(e) => {
               uploadFile(e.target.files[0], setMdInstructionsUri);
             }} />
-            <FormHelperText>NAMD conf file/QuickMD conf file.</FormHelperText>
+            <FormHelperText>NAMD conf file/QuickMD conf file. {mdInstructionsUri}</FormHelperText>
           </FormControl>
 
           <FormControl>
@@ -886,7 +960,7 @@ const Home = () => {
             <Input type='file' placeholder='upload file' onChange={(e) => {
               uploadFile(e.target.files[0], setCoordinatesUri);
             }} />
-            <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files.</FormHelperText>
+            <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files. {coordinatesUri}</FormHelperText>
           </FormControl>
 
           <FormControl>
@@ -894,17 +968,17 @@ const Home = () => {
             <Input type='file' placeholder='upload file' onChange={(e) => {
               uploadFile(e.target.files[0], setProteinPSFUri);
             }} />
-            <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files
+            <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files. {proteinPSFUri}
             </FormHelperText>
           </FormControl>
 
 
           <FormControl>
             <FormLabel>FF-Parameter-Files</FormLabel>
-            <Input type='file' placeholder='upload file' onChange={(e) => {
-              uploadFile(e.target.files[0], setFParamUri);
+            <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
+              uploadMultipleFiles(e.target.files, setFParamUri);
             }} />
-            <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files
+            <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",")}
             </FormHelperText>
           </FormControl>
 
@@ -913,17 +987,17 @@ const Home = () => {
             <Input type='file' placeholder='upload file' onChange={(e) => {
               uploadFile(e.target.files[0], setConstraintsUri);
             }} />
-            <FormHelperText>Constraints file in pdb
+            <FormHelperText>Constraints file in pdb. {constraintsUri}
             </FormHelperText>
           </FormControl>
 
           <FormControl>
             <FormLabel>Optional_Inputs
             </FormLabel>
-            <Input type='file' placeholder='upload file' onChange={(e) => {
-              uploadFile(e.target.files[0], setOptionalUri);
+            <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
+              uploadMultipleFiles(e.target.files, setOptionalUri);
             }} />
-            <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl.
+            <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",")}
             </FormHelperText>
           </FormControl>
 

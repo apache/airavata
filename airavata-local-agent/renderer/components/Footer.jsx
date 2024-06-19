@@ -30,10 +30,10 @@ export const Footer = () => {
           <Text>•</Text>
 
           <Link color='blue.400' href='/create-namd-experiment'>Create NAMD Experiment</Link>
-
+          {/* 
           <Text>•</Text>
 
-          <Link color='blue.400' href='/vnc-client'>VNC Client</Link>
+          <Link color='blue.400' href='/vnc-client'>VNC Client</Link> */}
           <Text>•</Text>
 
           <Tooltip label="This will end all running VMD sessions. Please use cautiously."><Button colorScheme='red' size='xs' onClick={
