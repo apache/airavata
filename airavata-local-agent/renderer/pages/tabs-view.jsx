@@ -180,7 +180,8 @@ const TabsView = () => {
 
       const body = {
         "expId": experimentID,
-        "application": "VMD"
+        "application": "VMD",
+        "wallTimeLimit": 60, // TODO: get this from the user
       };
 
       const url = "http://74.235.88.134:9001/api/v1/application/launch";

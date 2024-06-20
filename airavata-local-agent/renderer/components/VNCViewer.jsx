@@ -5,7 +5,8 @@ import {
   Alert,
   AlertIcon,
   useToast,
-  Tooltip
+  Tooltip,
+  Button
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 
@@ -31,6 +32,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [serverPort, setServerPort] = useState("loading");
+  const [showDevSettings, setShowDevSettings] = useState(false);
 
   const handleOnDisconnect = (rfb) => {
     setError("The VNC server started, but we could not connect to it. Please try again.");
@@ -43,25 +45,22 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
     if (!reqPort) {
       // create the interval
       interval = setInterval(async () => {
-        const resp = await fetch("http://74.235.88.134:9001/api/v1/application/launch", {
+        const resp = await fetch(`http://74.235.88.134:9001/api/v1/application/${applicationId}/connect`, {
           method: "POST",
           headers: headers,
-          body: JSON.stringify({
-            expId: experimentId,
-            application: "VMD"
-          })
+          // body: JSON.stringify({
+          //   expId: experimentId,
+          //   application: "VMD"
+          // })
         });
 
         if (!resp.ok) {
           console.log("Error fetching the application status");
           clearInterval(interval);
-
           setError("Error launching the VNC server");
           setServerPort("error");
           setLoading(false);
-
           return;
-
         }
 
         const data = await resp.json();
@@ -119,7 +118,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
     const exitingFunction = async () => {
       console.log("running stop on", experimentId);
       window.vnc.stopProxy(false, experimentId); // false = don't restart
-      await fetch(`http://74.235.88.134:9001/api/v1/application/terminate/${applicationId}`, {
+      await fetch(`http://74.235.88.134:9001/api/v1/application/${applicationId}/terminate`, {
         method: "POST",
         headers: headers,
 
@@ -170,11 +169,22 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
       )
       }
 
-      <Tooltip label="VNC Server URL. This is where the application creates a proxy to."><Text textAlign='center' mt={2}>{reqHost + ":" + serverPort}</Text></Tooltip>
+      <Button onClick={() => setShowDevSettings(!showDevSettings)} mt={4} variant='link'>{
+        showDevSettings ? "Hide" : "Show"
+      } Dev Settings</Button>
 
-      {/* ApplicationID */}
-      <Tooltip label="Application ID. This is the ID of the application that is running."><Text textAlign='center' mt={2}>{applicationId}</Text></Tooltip>
+      {
+        showDevSettings && (
+          <Box mt={4}>
 
+            <Text><Text as='span' fontWeight='bold'>VNC Server URL: </Text>{reqHost + ":" + serverPort}</Text>
+
+            <Text><Text as='span' fontWeight='bold'>Application ID: </Text>{applicationId}</Text>
+
+            <Text><Text as='span' fontWeight='bold'>Experiment ID: </Text>{experimentId}</Text>
+          </Box>
+        )
+      }
     </React.Fragment>
   );
 };
