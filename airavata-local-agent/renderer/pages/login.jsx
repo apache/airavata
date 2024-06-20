@@ -1,4 +1,4 @@
-import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading } from "@chakra-ui/react";
+import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
 
@@ -8,6 +8,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setError("Molecular Dynamics Gateway login is not yet implemented, please use the organizational login.");
@@ -26,6 +27,7 @@ const Login = () => {
   };
 
   const handleCiLogin = async () => {
+    setLoading(true);
     window.auth.ciLogonLogin();
   };
 
@@ -84,8 +86,12 @@ const Login = () => {
           }
 
           <Box shadow='md' rounded='md' p={4} mt={4}>
-            <Heading size='md' textAlign="left" color='blue.500'>Log in with your existing organizational login</Heading>
-            <Button colorScheme='blue' w='full' mt={4} onClick={handleCiLogin}>Login with Existing Institution Credentials</Button>
+            <Heading size='md' textAlign="left" color='blue.500'>
+
+              Log in with your existing organizational login</Heading>
+            <Button colorScheme='blue' w='full' mt={4} onClick={handleCiLogin}> {
+              loading && <Spinner mr={2} />
+            }Login with Existing Institution Credentials</Button>
           </Box>
 
           {/* <Box shadow='md' rounded='md' p={4} mt={8}>

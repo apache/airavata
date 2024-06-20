@@ -27,6 +27,10 @@ if (isProd) {
     },
   });
 
+  session.defaultSession.clearStorageData([], (data) => {
+    console.log("Cleared storage data", data);
+  });
+
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     require('electron').shell.openExternal(url);
@@ -82,6 +86,8 @@ async function getToken(url) {
 }
 
 ipcMain.on('ci-logon-login', async (event) => {
+
+  console.log("Logging in with CI logon");
   var authWindow = createWindow('authWindow', {
     width: 1200,
     height: 800,
@@ -89,6 +95,34 @@ ipcMain.on('ci-logon-login', async (event) => {
     'node-integration': false,
     'web-security': false
   });
+
+
+  // authWindow.loadURL('https://md.cybershuttle.org/auth/logout');
+
+  // authWindow.webContents.on('will-redirect', async (e, url) => {
+  //   if (url === "https://md.cybershuttle.org/") {
+  //     console.log("this is the URL");
+  //     authWindow.loadURL('https://md.cybershuttle.org/auth/login');
+  //     authWindow.show();
+  //   } else if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
+  //     const tokens = await getToken(url);
+
+  //     if (tokens.length > 0) {
+  //       const [accessToken, refreshToken] = tokens;
+  //       console.log("Tokens", accessToken, refreshToken);
+  //       event.sender.send('ci-logon-success', accessToken, refreshToken);
+  //     }
+  //     authWindow.close();
+  //     authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+  //   }
+  // });
+
+  // setTimeout(() => {
+  //   authWindow.loadURL('https://md.cybershuttle.org/auth/login');
+  //   authWindow.show();
+  // }, 2500);
+
+
 
   authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
 
