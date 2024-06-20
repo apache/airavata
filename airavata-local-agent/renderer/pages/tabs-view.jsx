@@ -295,9 +295,10 @@ const TabsView = () => {
         toast({
           title: "Your account has to be activated. Check back later",
           status: "error",
-          duration: 3000,
+          duration: 10000,
           isClosable: true,
         });
+        setIsLoading(false);
         return;
 
       }
