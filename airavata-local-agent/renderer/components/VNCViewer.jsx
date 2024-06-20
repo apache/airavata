@@ -33,7 +33,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
   const [serverPort, setServerPort] = useState("loading");
 
   const handleOnDisconnect = (rfb) => {
-    setError("Something went wrong, please try again.");
+    setError("The VNC server started, but we could not connect to it. Please try again.");
     setRendering(false);
   };
 
@@ -56,7 +56,8 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
           console.log("Error fetching the application status");
           clearInterval(interval);
 
-          setError("Error fetching the application status");
+          setError("Error launching the VNC server");
+          setServerPort("error");
           setLoading(false);
 
           return;
@@ -78,7 +79,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
           clearInterval(interval);
         }
 
-      }, 2000);
+      }, 5000);
     } else {
       // start the proxy
       window.vnc.startProxy(experimentId, reqHost, reqPort);
