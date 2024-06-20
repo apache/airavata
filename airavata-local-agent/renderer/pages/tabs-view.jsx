@@ -9,7 +9,8 @@ import {
   TableContainer, Text, Flex, Spinner, HStack, Badge, Icon,
   Alert, Select, Grid, GridItem,
   Input,
-  useToast
+  useToast,
+  Tooltip
 } from "@chakra-ui/react";
 import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -105,7 +106,6 @@ const TabsView = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isLoadingSession, setIsLoadingSession] = useState(false);
-
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterText, setFilterText] = useState("");
@@ -204,9 +204,15 @@ const TabsView = () => {
         }
         const data = await resp.json();
         let hostURL = "18.217.79.150";
-        let port = data.allocatedPorts[0];
+        let applicationId = data?.applicationId;
+        let port;
 
-        component = <VNCViewer reqHost={hostURL} reqPort={port} experimentId={experimentID} />;
+        if (data?.allocatedPorts) {
+          port = data.allocatedPorts[0];
+        }
+
+
+        component = <VNCViewer applicationId={applicationId} reqHost={hostURL} reqPort={port} experimentId={experimentID} headers={headers} />;
       } else if (type === 'JN') {
 
         body["application"] = "JUPYTER_LAB";
@@ -515,7 +521,28 @@ const TabsView = () => {
                           <Tr key={experiment.experimentId} fontSize='sm' alignItems='center'>
                             <Td>
                               <Box>
-                                <Text whiteSpace='pre-wrap'>{experiment.name}</Text>
+                                <Tooltip label={experiment.experimentId}>
+                                  <Text whiteSpace='pre-wrap'
+                                    _hover={{
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={
+                                      () => {
+                                        // copy experimentID to clipboard
+                                        navigator.clipboard.writeText(experiment.experimentId);
+
+                                        toast({
+                                          title: `Experiment ID copied to clipboard`,
+                                          description: experiment.experimentId,
+                                          status: "success",
+                                          duration: 3000,
+                                          isClosable: true,
+                                        });
+
+                                      }
+                                    }>{experiment.name}
+                                  </Text>
+                                </Tooltip>
                               </Box>
                             </Td>
 
@@ -528,7 +555,7 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              <Text>{dayjs(experiment.statusUpdateTime).fromNow(true)} ago</Text>
+                              <Tooltip label={new Date(experiment.statusUpdateTime).toLocaleString()}><Text>{dayjs(experiment.statusUpdateTime).fromNow(true)} ago</Text></Tooltip>
                             </Td>
 
                             <Td>
