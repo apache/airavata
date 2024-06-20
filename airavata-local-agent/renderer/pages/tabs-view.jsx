@@ -314,7 +314,6 @@ const TabsView = () => {
     }
 
     const data = await resp.json();
-
     setExperiments(data);
     setIsLoading(false);
     return data;
@@ -619,12 +618,16 @@ const TabsView = () => {
                   <Text>Previous</Text>
                 </PaginationPrevious>
 
+
+
+
+
                 {
                   // isLoading ? <Spinner /> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize - 1 + 1}</Text>}
 
                   // if there are less than pageSize results, then show the number of results
                   // otherwise, show the range of results
-                  isLoading ? <Spinner /> : experiments?.results?.length < pageSize ? <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage - 1) * pageSize + experiments?.results?.length}</Text> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize}</Text>
+                  isLoading ? <Spinner /> : experiments?.results?.length === 0 ? <Text>No experiments</Text> : experiments?.results?.length < pageSize ? <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage - 1) * pageSize + experiments?.results?.length}</Text> : <Text>Showing {(currentPage - 1) * pageSize + 1} to {(currentPage) * pageSize}</Text>
                 }
 
                 <PaginationNext
@@ -632,7 +635,7 @@ const TabsView = () => {
                     bg: "blue.300",
                   }}
                   bg="blue.200"
-                  isDisabled={experiments?.results?.length < pageSize}
+                  isDisabled={experiments?.next === null}
                 >
                   <Text>Next</Text>
                 </PaginationNext>
