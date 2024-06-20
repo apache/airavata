@@ -13,6 +13,7 @@ import {
   Spacer,
   useToast,
   Spinner,
+  Badge,
 } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
@@ -798,9 +799,9 @@ const Home = () => {
 
         setLoading(false);
 
-        // setTimeout(() => {
-        //   window.location.href = '/tabs-view';
-        // }, 3000);
+        setTimeout(() => {
+          window.location.href = '/tabs-view';
+        }, 3000);
 
       }
     }
@@ -816,7 +817,9 @@ const Home = () => {
       <Container maxW='container.md' p={4} mt={4}>
         <Stack direction='column' spacing={4}>
 
-          <Text>NAMD</Text>
+          <Box>
+            <Badge>NAMD</Badge>
+          </Box>
 
           <Heading mt={-4} fontSize='3xl'>Create a New Experiment</Heading>
 
@@ -826,17 +829,17 @@ const Home = () => {
             <Input type='text' value={name} onChange={(e) => setName(e.target.value)} />
           </FormControl>
 
-          <Text _hover={{
-            'textDecoration': "underline",
-            'cursor': "pointer"
-          }} onClick={
-            () => {
-              setDescOpen(!descOpen);
-            }
-          }>{
-              descOpen ? "Hide Description" : "Add Description"
-            }
-          </Text>
+          <Box>
+            <Button variant="link"
+              onClick={
+                () => {
+                  setDescOpen(!descOpen);
+                }
+              }>{
+                descOpen ? "Hide Description" : "Add Description"
+              }
+            </Button>
+          </Box>
 
           {
             descOpen && (
@@ -869,131 +872,132 @@ const Home = () => {
 
           <Heading mt={4} fontSize='3xl'>Application Configuration</Heading>
 
-          <Heading fontSize='xl'>Application Inputs</Heading>
+          <Stack spacing={4} border='1px solid lightgray' p={4} rounded='md'>
 
-          <FormControl>
-            <RadioGroup onChange={setExecutionType} value={executionType}>
-              <Stack direction='column'>
-                <Radio value="CPU">CPU</Radio>
+            <Heading fontSize='xl'>Application Inputs</Heading>
 
-                <Radio value="GPU">GPU</Radio>
-              </Stack>
-            </RadioGroup>
+            <FormControl>
+              <RadioGroup onChange={setExecutionType} value={executionType}>
+                <Stack direction='column'>
+                  <Radio value="CPU">CPU</Radio>
 
-            <FormHelperText>CPU or GPU executable to be used. If you chose GPU please make sure GPU partitions are selected at the Resource selection below.
-            </FormHelperText>
-          </FormControl>
+                  <Radio value="GPU">GPU</Radio>
+                </Stack>
+              </RadioGroup>
 
-
-
-          <FormControl>
-            <FormLabel>Continue from Previous Run</FormLabel>
-            <Checkbox isChecked={contPrev} onChange={(e) => {
-              setContPrev(e.target.checked);
-            }}>Yes</Checkbox>
-          </FormControl>
-
-          {
-            contPrev && (
-              <FormControl>
-                <FormLabel>Previous JobID</FormLabel>
-                <Input type='text' value={prevJobId} onChange={(e) => {
-                  setPrevJobId(e.target.value);
-                }} />
-
-                <FormHelperText>JobID from the previous run from which the restart/reuse data is to be extracted.
-                </FormHelperText>
-              </FormControl>
-
-            )
-          }
+              <FormHelperText>CPU or GPU executable to be used. If you chose GPU please make sure GPU partitions are selected at the Resource selection below.
+              </FormHelperText>
+            </FormControl>
 
 
-          <FormControl>
-            <FormLabel>MD-Instructions-Input</FormLabel>
-            <Input type='file' placeholder='upload file' onChange={(e) => {
-              uploadFile(e.target.files[0], setMdInstructionsUri);
-            }} />
-            <FormHelperText>NAMD conf file/QuickMD conf file. {mdInstructionsUri}</FormHelperText>
-          </FormControl>
 
-          <FormControl>
-            <FormLabel>Coordinates-PDB-File</FormLabel>
-            <Input type='file' placeholder='upload file' onChange={(e) => {
-              uploadFile(e.target.files[0], setCoordinatesUri);
-            }} />
-            <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files. {coordinatesUri}</FormHelperText>
-          </FormControl>
+            <FormControl>
+              <FormLabel>Continue from Previous Run</FormLabel>
+              <Checkbox isChecked={contPrev} onChange={(e) => {
+                setContPrev(e.target.checked);
+              }}>Yes</Checkbox>
+            </FormControl>
 
-          <FormControl>
-            <FormLabel>Protein-Structure-File_PSF</FormLabel>
-            <Input type='file' placeholder='upload file' onChange={(e) => {
-              uploadFile(e.target.files[0], setProteinPSFUri);
-            }} />
-            <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files. {proteinPSFUri}
-            </FormHelperText>
-          </FormControl>
-
-
-          <FormControl>
-            <FormLabel>FF-Parameter-Files</FormLabel>
-            <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
-              uploadMultipleFiles(e.target.files, setFParamUri);
-            }} />
-            <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",")}
-            </FormHelperText>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Constraints-PDB</FormLabel>
-            <Input type='file' placeholder='upload file' onChange={(e) => {
-              uploadFile(e.target.files[0], setConstraintsUri);
-            }} />
-            <FormHelperText>Constraints file in pdb. {constraintsUri}
-            </FormHelperText>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Optional_Inputs
-            </FormLabel>
-            <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
-              uploadMultipleFiles(e.target.files, setOptionalUri);
-            }} />
-            <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",")}
-            </FormHelperText>
-          </FormControl>
-
-
-          <FormControl>
-            <FormLabel>Replicate</FormLabel>
-            <Checkbox isChecked={replicate} onChange={(e) => {
-              setReplicate(e.target.checked);
-            }}>Yes</Checkbox>
-            <FormHelperText>Optionally Specify if Replicated runs needed. Make sure the resources requested are commensurate, such as as many nodes as replicas.</FormHelperText>
-          </FormControl>
-
-          {
-            replicate && (
-              <>
+            {
+              contPrev && (
                 <FormControl>
-                  <FormLabel>Number of replicas</FormLabel>
-                  <Input type='number' value={numReplicas} onChange={(e) => setNumReplicas(e.target.value)} />
-                  <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
+                  <FormLabel>Previous JobID</FormLabel>
+                  <Input type='text' value={prevJobId} onChange={(e) => {
+                    setPrevJobId(e.target.value);
+                  }} />
+
+                  <FormHelperText>JobID from the previous run from which the restart/reuse data is to be extracted.
                   </FormHelperText>
                 </FormControl>
 
-                {contPrev &&
+              )
+            }
+
+
+            <FormControl>
+              <FormLabel>MD-Instructions-Input</FormLabel>
+              <Input type='file' placeholder='upload file' onChange={(e) => {
+                uploadFile(e.target.files[0], setMdInstructionsUri);
+              }} />
+              <FormHelperText>NAMD conf file/QuickMD conf file. {mdInstructionsUri}</FormHelperText>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Coordinates-PDB-File</FormLabel>
+              <Input type='file' placeholder='upload file' onChange={(e) => {
+                uploadFile(e.target.files[0], setCoordinatesUri);
+              }} />
+              <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files. {coordinatesUri}</FormHelperText>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Protein-Structure-File_PSF</FormLabel>
+              <Input type='file' placeholder='upload file' onChange={(e) => {
+                uploadFile(e.target.files[0], setProteinPSFUri);
+              }} />
+              <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files. {proteinPSFUri}
+              </FormHelperText>
+            </FormControl>
+
+
+            <FormControl>
+              <FormLabel>FF-Parameter-Files</FormLabel>
+              <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
+                uploadMultipleFiles(e.target.files, setFParamUri);
+              }} />
+              <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",")}
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Constraints-PDB</FormLabel>
+              <Input type='file' placeholder='upload file' onChange={(e) => {
+                uploadFile(e.target.files[0], setConstraintsUri);
+              }} />
+              <FormHelperText>Constraints file in pdb. {constraintsUri}
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Optional_Inputs
+              </FormLabel>
+              <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
+                uploadMultipleFiles(e.target.files, setOptionalUri);
+              }} />
+              <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",")}
+              </FormHelperText>
+            </FormControl>
+
+
+            <FormControl>
+              <FormLabel>Replicate</FormLabel>
+              <Checkbox isChecked={replicate} onChange={(e) => {
+                setReplicate(e.target.checked);
+              }}>Yes</Checkbox>
+              <FormHelperText>Optionally Specify if Replicated runs needed. Make sure the resources requested are commensurate, such as as many nodes as replicas.</FormHelperText>
+            </FormControl>
+
+            {
+              replicate && (
+                <>
                   <FormControl>
-                    <FormLabel>Restart replicas list</FormLabel>
-                    <Input type='text' value={replicasList} onChange={(e) => setReplicasList(e.target.value)} />
+                    <FormLabel>Number of replicas</FormLabel>
+                    <Input type='number' value={numReplicas} onChange={(e) => setNumReplicas(e.target.value)} />
                     <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
                     </FormHelperText>
-                  </FormControl>}
+                  </FormControl>
+                </>
+              )
+            }
 
-              </>
-
-            )
-          }
+            {contPrev &&
+              <FormControl>
+                <FormLabel>Restart replicas list</FormLabel>
+                <Input type='text' value={replicasList} onChange={(e) => setReplicasList(e.target.value)} />
+                <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
+                </FormHelperText>
+              </FormControl>}
+          </Stack>
 
 
           <FormControl>
@@ -1039,7 +1043,7 @@ const Home = () => {
               setSettingsOpen(!settingsOpen);
             }
           }>
-            <Heading fontSize='2xl'>Settings for queue complete</Heading>
+            <Heading fontSize='2xl'>Settings for queue {queue}</Heading>
             <Flex justify='space-between' mt={4}>
               <Box>
                 <Heading>{nodeCount}</Heading>
@@ -1139,7 +1143,16 @@ const Home = () => {
 
             <Spacer />
             <HStack>
-              <Button colorScheme='green' onClick={handleSaveAndLaunch} isDisabled={loading}>
+              <Button
+                colorScheme='green'
+                onClick={handleSaveAndLaunch}
+                isDisabled={
+                  executionType === "" ||
+                  (contPrev === true && prevJobId === "") ||
+                  mdInstructionsUri === "" ||
+                  (replicate === true && numReplicas === 0)
+
+                }>
                 {
                   loading && (
                     <Spinner />
