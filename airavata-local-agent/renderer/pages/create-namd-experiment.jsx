@@ -77,80 +77,17 @@ const Home = () => {
     return policyObj;
   };
 
-  const uploadMultipleFiles = (files, setHandler) => {
-    if (!files || files.length === 0) {
+  const tusAndFetchUpload = (file, setHandler, type = "single") => {
+    if (!file || !(type === "single" || type === "multiple")) {
+      console.error("Invalid arguments passed to tusAndFetchUpload.");
       return;
     }
-    console.log("Uploading...", files);
-
-    Array.prototype.forEach.call(files, function (file) {
-      let upload = new tus.Upload(file, {
-        endpoint: "https://tus.airavata.org/files/",
-        metadata: {
-          filename: file.name,
-          filetype: file.type || "text/plain",
-          "mime-type": file.type || "text/plain"
-        },
-
-        onError: function (error) {
-          console.log("Failed because: " + error);
-        },
-        onProgress: function (bytesUploaded, bytesTotal) {
-          var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
-          console.log(bytesUploaded, bytesTotal, percentage + "%");
-        },
-        onSuccess: function () {
-          console.log("Download %s from %s", upload.file.name, upload.url);
-
-          const url = upload.url;
-
-          let form_data = new FormData();
-          form_data.append('uploadURL', url);
-
-          fetch("https://md.cybershuttle.org/api/tus-upload-finish", {
-            method: "POST",
-            body: form_data,
-            credentials: "include",
-            headers: {
-              'Authorization': 'Bearer ' + accessToken
-            }
-          }).then((resp) => resp.json())
-            .then((data) => {
-              const uri = data["data-product"]["productUri"];
-              console.log("Saving...", uri);
-
-              setHandler((prev) => {
-                return [...prev, uri];
-              });
-            })
-            .catch((error) => {
-              toast({
-                title: "Error",
-                description: error.message,
-                status: "error",
-                duration: 9000,
-                isClosable: true,
-              });
-            });
-
-        }
-      });
-
-      upload.start();
-    });
-  };
-
-  const uploadFile = (file, setHandler) => {
-    console.log("Uploading...", file);
-    if (!file) {
-      return;
-    }
-
-    var upload = new tus.Upload(file, {
+    let upload = new tus.Upload(file, {
       endpoint: "https://tus.airavata.org/files/",
-      MetaData: {
+      metadata: {
         filename: file.name,
         filetype: file.type || "text/plain",
+        "mime-type": file.type || "text/plain"
       },
 
       onError: function (error) {
@@ -179,8 +116,16 @@ const Home = () => {
           .then((data) => {
             const uri = data["data-product"]["productUri"];
             console.log("Saving...", uri);
-            setHandler(uri);
-          }).catch((error) => {
+
+            if (type === "single") {
+              setHandler(uri);
+            } else if (type === "multiple") {
+              setHandler((prev) => {
+                return [...prev, uri];
+              });
+            }
+          })
+          .catch((error) => {
             toast({
               title: "Error",
               description: error.message,
@@ -193,9 +138,26 @@ const Home = () => {
       }
     });
 
-
-
     upload.start();
+  };
+
+  const uploadMultipleFiles = (files, setHandler) => {
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    Array.prototype.forEach.call(files, function (file) {
+      tusAndFetchUpload(file, setHandler, "multiple");
+    });
+  };
+
+  const uploadFile = (file, setHandler) => {
+    console.log("Uploading...", file);
+    if (!file) {
+      return;
+    }
+
+    tusAndFetchUpload(file, setHandler, "single");
   };
 
   useEffect((e) => {

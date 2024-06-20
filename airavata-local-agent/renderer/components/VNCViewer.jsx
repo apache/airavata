@@ -14,8 +14,12 @@ const VNCItem = dynamic(() => {
   return import('../components/VNCItem').then((mod) => mod.VNCItem);
 }, { ssr: false });
 
-export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
-  // console.log(reqHost, reqPort);
+export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPort, experimentId }) => {
+  console.log("Application ID", applicationId);
+  console.log("Experiment ID", experimentId);
+  console.log("Request Host", reqHost);
+  console.log("Request Port", reqPort);
+
   // Can't import regularly because of SSR (next.js)
 
   const toast = useToast();
@@ -26,6 +30,7 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
   const [rendering, setRendering] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [serverPort, setServerPort] = useState("loading");
 
   const handleOnDisconnect = (rfb) => {
     setError("Something went wrong, please try again.");
@@ -34,11 +39,55 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
 
   useEffect(() => {
     setLoading(true);
+    let interval;
+    if (!reqPort) {
+      // create the interval
+      interval = setInterval(async () => {
+        const resp = await fetch("http://74.235.88.134:9001/api/v1/application/launch", {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            expId: experimentId,
+            application: "VMD"
+          })
+        });
 
-    setTimeout(() => {
-      console.log("starting proxy for", experimentId, reqHost, reqPort);
+        if (!resp.ok) {
+          console.log("Error fetching the application status");
+          clearInterval(interval);
+
+          setError("Error fetching the application status");
+          setLoading(false);
+
+          return;
+
+        }
+
+        const data = await resp.json();
+
+        if (data.status === "PENDING") {
+          console.log("Waiting for the application to launch...");
+        } else if (data.status === "COMPLETED") {
+          let port = data.allocatedPorts[0];
+          console.log("Port is", port);
+
+          setServerPort(port);
+
+          // start the proxy
+          window.vnc.startProxy(experimentId, reqHost, port);
+          clearInterval(interval);
+        }
+
+      }, 2000);
+    } else {
+      // start the proxy
       window.vnc.startProxy(experimentId, reqHost, reqPort);
-    }, 10000);
+    }
+
+    // setTimeout(() => {
+    //   console.log("starting proxy for", experimentId, reqHost, reqPort);
+    //   window.vnc.startProxy(experimentId, reqHost, reqPort);
+    // }, 10000);
 
 
     window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
@@ -66,13 +115,19 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       if (restart) window.vnc.startProxy(experimentId, reqHost, reqPort);
     });
 
-    const exitingFunction = () => {
+    const exitingFunction = async () => {
       console.log("running stop on", experimentId);
       window.vnc.stopProxy(false, experimentId); // false = don't restart
+      await fetch(`http://74.235.88.134:9001/api/v1/application/terminate/${applicationId}`, {
+        method: "POST",
+        headers: headers,
+
+      });
     };
 
     return () => {
       console.log("unmounting component...");
+      clearInterval(interval);
       exitingFunction();
       setRendering(false);
     };
@@ -98,7 +153,7 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
             <Alert status='info' rounded='md'>
               <AlertIcon />
               <Text>
-                We're attempting to start the VNC server and proxy. This will take longer if this is your first time using the VNC client, or if your wifi connection is slower. Please wait...
+                We're attempting to start the server and proxy. This will take longer if this is your first time using the VNC client, or if your wifi connection is slower. Please wait...
               </Text>
             </Alert>
           </>
@@ -114,7 +169,10 @@ export const VNCViewer = ({ reqHost, reqPort, experimentId }) => {
       )
       }
 
-      <Tooltip label="VNC Server URL. This is where the application creates a proxy to."><Text textAlign='center' mt={2}>{reqHost + ":" + reqPort}</Text></Tooltip>
+      <Tooltip label="VNC Server URL. This is where the application creates a proxy to."><Text textAlign='center' mt={2}>{reqHost + ":" + serverPort}</Text></Tooltip>
+
+      {/* ApplicationID */}
+      <Tooltip label="Application ID. This is the ID of the application that is running."><Text textAlign='center' mt={2}>{applicationId}</Text></Tooltip>
 
     </React.Fragment>
   );
