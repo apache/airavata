@@ -6,7 +6,8 @@ import {
   AlertIcon,
   useToast,
   Tooltip,
-  Button
+  Button,
+  Code
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 
@@ -16,10 +17,10 @@ const VNCItem = dynamic(() => {
 }, { ssr: false });
 
 export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPort, experimentId }) => {
-  console.log("Application ID", applicationId);
-  console.log("Experiment ID", experimentId);
-  console.log("Request Host", reqHost);
-  console.log("Request Port", reqPort);
+  // console.log("Application ID", applicationId);
+  // console.log("Experiment ID", experimentId);
+  // console.log("Request Host", reqHost);
+  // console.log("Request Port", reqPort);
 
   // Can't import regularly because of SSR (next.js)
 
@@ -35,8 +36,14 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
   const [showDevSettings, setShowDevSettings] = useState(false);
 
   const handleOnDisconnect = (rfb) => {
-    setError("The VNC server started, but we could not connect to it. Please try again.");
+    // setError("The VNC server started, but we could not connect to it. Please try again.");
     setRendering(false);
+
+    // try again after 5 seconds delay
+    setTimeout(() => {
+      console.log("trying to reconnect...");
+      setRendering(true);
+    }, 5000);
   };
 
   useEffect(() => {
@@ -48,10 +55,6 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
         const resp = await fetch(`http://74.235.88.134:9001/api/v1/application/${applicationId}/connect`, {
           method: "POST",
           headers: headers,
-          // body: JSON.stringify({
-          //   expId: experimentId,
-          //   application: "VMD"
-          // })
         });
 
         if (!resp.ok) {
@@ -68,13 +71,12 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
         if (data.status === "PENDING") {
           console.log("Waiting for the application to launch...");
         } else if (data.status === "COMPLETED") {
-          let port = data.allocatedPorts[0];
-          console.log("Port is", port);
+          let severPort = data.allocatedPorts[0];
 
-          setServerPort(port);
+          setServerPort(severPort);
 
           // start the proxy
-          window.vnc.startProxy(experimentId, reqHost, port);
+          window.vnc.startProxy(experimentId, reqHost, severPort);
           clearInterval(interval);
         }
 
@@ -153,7 +155,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
             <Alert status='info' rounded='md'>
               <AlertIcon />
               <Text>
-                We're attempting to start the server and proxy. This will take longer if this is your first time using the VNC client, or if your wifi connection is slower. Please wait...
+                We're attempting to start the server and proxy. Please make sure you have <Code>git</Code> installed on your computer This will take longer if this is your first time using the VNC client, or if your wifi connection is slower. Please wait...
               </Text>
             </Alert>
           </>
