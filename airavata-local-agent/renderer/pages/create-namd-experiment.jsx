@@ -161,6 +161,16 @@ const Home = () => {
     tusAndFetchUpload(file, setHandler, "single");
   };
 
+  const showToast = (title, description, status = "error") => {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      duration: 9000,
+      isClosable: true,
+    });
+  };
+
   useEffect((e) => {
     try {
       const theAccessToken = localStorage.getItem('accessToken');
@@ -215,19 +225,16 @@ const Home = () => {
       }
 
       getProjects().catch((error) => {
-        window.location.href = '/login';
+        showToast("Something went wrong (this may be because you just signed up and your account is new).", error.message);
       });
 
       getGroupResourceProfileList().catch((error) => {
         console.error(error);
-        window.location.href = '/login';
+        showToast("Something went wrong (this may be because you just signed up and your account is new).", error.message);
       });
-
-
-
     } catch (error) {
       console.log(error);
-      window.location.href = "/login";
+      showToast("Something went wrong (this may be because you just signed up and your account is new).", error.message);
     }
   }, []);
 

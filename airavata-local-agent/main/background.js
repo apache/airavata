@@ -5,6 +5,8 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
+import log from 'electron-log/main';
+
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
@@ -26,6 +28,8 @@ if (isProd) {
       webSecurity: false
     },
   });
+
+  log.warn("App is now ready");
 
   session.defaultSession.clearStorageData([], (data) => {
     console.log("Cleared storage data", data);
@@ -88,6 +92,7 @@ async function getToken(url) {
 ipcMain.on('ci-logon-login', async (event) => {
 
   console.log("Logging in with CI logon");
+  log.warn("Logging in with CI logon");
   var authWindow = createWindow('authWindow', {
     width: 1200,
     height: 800,
@@ -149,6 +154,8 @@ async function startIt(event, experimentId, reqHost, reqPort) {
 
   cmd.stdout.on('data', (data) => {
     data = data.toString().trim();
+    log.warn(data);
+
 
     if (data == "HANG_NOW") {
       fs.readFile('./proxy/config.txt', 'utf8', (err, data) => {
@@ -162,9 +169,11 @@ async function startIt(event, experimentId, reqHost, reqPort) {
 
   cmd.stderr.on('data', (data) => {
     console.error(`stderr: ${data}`);
+    log.error(`stderr: ${data}`);
   });
 
   cmd.on('close', async (code) => {
+    log.warn(`Websockify proxy stopped with code: ${code}`);
     console.log(`Websockify proxy stopped with code: ${code}`);
     await stopIt(event, true, experimentId);
   });

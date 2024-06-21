@@ -10,7 +10,15 @@ import {
   Alert, Select, Grid, GridItem,
   Input,
   useToast,
-  Tooltip
+  Tooltip,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
@@ -26,6 +34,7 @@ import { Footer } from "../components/Footer";
 import { VNCViewer } from "../components/VNCViewer";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
+import ExperimentModal from "../components/ExperimentModal";
 dayjs.extend(relativeTime);
 
 const getColorScheme = (status) => {
@@ -74,16 +83,7 @@ const isValidStatusVMD = (status) => {
 
 // jupyterlab CAN have VMD
 
-const makeFetchForExperiments = async (pageSize, offset, token, filterString) => {
-  let resp = await fetch(
-    `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}&${filterString}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
 
-  return resp;
-};
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
@@ -109,7 +109,10 @@ const TabsView = () => {
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [activeExperimentId, setActiveExperimentId] = useState("");
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
 
   const {
     offset,
@@ -124,6 +127,28 @@ const TabsView = () => {
       currentPage: 1,
     },
   });
+
+  const makeFetchForExperiments = async (pageSize, offset, token, filterString) => {
+    let resp = await fetch(
+      `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}&${filterString}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (resp.status === 500) {
+      toast({
+        title: "Your account does not exist in the system yet. Please contact the administrator.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+
+      setIsLoading(false);
+    }
+
+    return resp;
+  };
 
 
   const handleRemoveTab = (associatedID, index) => {
@@ -294,7 +319,8 @@ const TabsView = () => {
 
       if (!newAccessToken || !newRefreshToken) {
         toast({
-          title: "Your account has to be activated. Check back later",
+          title: "Something went wrong.",
+          description: "If you just made your account, please wait a few minutes and try again, as your account is still being set up. If you have been using the app for a while, please log out and log back in as your session may have expired.",
           status: "error",
           duration: 10000,
           isClosable: true,
@@ -427,6 +453,29 @@ const TabsView = () => {
         )
       }
 
+      <Modal isOpen={isOpen} onClose={onClose} size='full'>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Experiment Details</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {
+              isOpen && (
+                <ExperimentModal experimentId={activeExperimentId} />
+              )
+            }
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant='ghost'>Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+
       <Tabs index={tabIndex} onChange={handleTabsChange}>
         <Flex alignItems='center'>
           <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
@@ -526,22 +575,11 @@ const TabsView = () => {
                                   <Text whiteSpace='pre-wrap'
                                     _hover={{
                                       cursor: "pointer",
+                                    }} transition='all .2s' onClick={() => {
+                                      setActiveExperimentId(experiment.experimentId);
+                                      onOpen();
                                     }}
-                                    onClick={
-                                      () => {
-                                        // copy experimentID to clipboard
-                                        navigator.clipboard.writeText(experiment.experimentId);
-
-                                        toast({
-                                          title: `Experiment ID copied to clipboard`,
-                                          description: experiment.experimentId,
-                                          status: "success",
-                                          duration: 3000,
-                                          isClosable: true,
-                                        });
-
-                                      }
-                                    }>{experiment.name}
+                                  >{experiment.name}
                                   </Text>
                                 </Tooltip>
                               </Box>
