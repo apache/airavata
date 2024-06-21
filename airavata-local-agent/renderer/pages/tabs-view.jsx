@@ -35,6 +35,7 @@ import { VNCViewer } from "../components/VNCViewer";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ExperimentModal from "../components/ExperimentModal";
+import { JupyterLab } from "../components/JupyterLab";
 dayjs.extend(relativeTime);
 
 const getColorScheme = (status) => {
@@ -69,6 +70,9 @@ const getExperimentApplication = (executionId) => {
     return "NAMD";
   } else if (executionId.startsWith("VMD")) {
     return "VMD";
+  } else if (executionId.startsWith("JupyterLab")) {
+
+    return "Jupyter Lab";
   }
 };
 
@@ -146,7 +150,6 @@ const TabsView = () => {
 
       setIsLoading(false);
     }
-
     return resp;
   };
 
@@ -209,7 +212,7 @@ const TabsView = () => {
         "wallTimeLimit": 60, // TODO: get this from the user
       };
 
-      const url = "http://74.235.88.134:9001/api/v1/application/launch";
+      const url = "http://20.51.202.251:9001/api/v1/application/launch";
 
       if (type === 'VMD') {
         const resp = await fetch(url, {
@@ -222,6 +225,7 @@ const TabsView = () => {
           setIsLoadingSession(false);
           toast({
             title: "Failed to launch VMD",
+            description: "This is likely because the experiment is not ready to launch VMD. Please check the experiment status and current working directory.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -248,13 +252,35 @@ const TabsView = () => {
           body: JSON.stringify(body)
         });
 
+        if (!resp.ok) {
+          setIsLoadingSession(false);
+          toast({
+            title: "Failed to launch Jupyter Lab",
+            description: "This is likely because the experiment is not ready to launch Jupyter Notebook. Please check the experiment status and current working directory.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          return;
+        }
+
+        const data = await resp.json();
+        let hostURL = "18.217.79.150";
+        let applicationId = data?.applicationId;
+        let port;
+
+        if (data?.allocatedPorts) {
+          port = data.allocatedPorts[0];
+        }
+        console.log(data);
+        component = <JupyterLab applicationId={applicationId} reqHost={hostURL} reqPort={port} experimentId={experimentID} headers={headers} />;
         // url 
 
         // 18.217.79.150:8888
         // 8888 = port
         // http://18.217.79.150:8888
 
-        component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
+        // component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
       }
 
       const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index
@@ -342,6 +368,8 @@ const TabsView = () => {
     }
 
     const data = await resp.json();
+
+    console.log(data);
     setExperiments(data);
     setIsLoading(false);
     return data;
@@ -440,6 +468,7 @@ const TabsView = () => {
   return (
     <>
       <HeaderBox name={name} email={email} />
+      <Footer />
       {
         isLoadingSession && (
           <>
@@ -453,52 +482,43 @@ const TabsView = () => {
         )
       }
 
-      <Modal isOpen={isOpen} onClose={onClose} size='full'>
+      <Modal isOpen={isOpen} onClose={onClose} size='3xl'>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Experiment Details</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody pb={8}>
             {
               isOpen && (
                 <ExperimentModal experimentId={activeExperimentId} />
               )
             }
           </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant='ghost'>Secondary Action</Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
 
 
       <Tabs index={tabIndex} onChange={handleTabsChange}>
-        <Flex alignItems='center'>
-          <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
-            <Tab _selected={tabSelectedStyles} minW='200px'>
-              <Icon as={FaHome} mr={2} />
-              List Experiments</Tab>
+        <TabList flex='11' alignItems='center' direction="column-reverse" overflowX='scroll' overflowY='hidden'>
+          <Tab _selected={tabSelectedStyles} minW='200px'>
+            <Icon as={FaHome} mr={2} />
+            List Experiments</Tab>
 
-            {
-              arrOfTabsInfo.map((tabInfo, index) => {
-                return (
-                  <Tab key={tabInfo.associatedID} _selected={tabSelectedStyles}>
-                    <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
-                    <Icon as={IoClose} transition='all .2s' onClick={() => {
-                      handleRemoveTab(tabInfo.associatedID, index + 1);
-                    }} _hover={{
-                      color: 'red.500',
-                    }} />
-                  </Tab>
-                );
-              })
-            }
-          </TabList>
-        </Flex>
+          {
+            arrOfTabsInfo.map((tabInfo, index) => {
+              return (
+                <Tab key={tabInfo.associatedID} _selected={tabSelectedStyles}>
+                  <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
+                  <Icon as={IoClose} transition='all .2s' onClick={() => {
+                    handleRemoveTab(tabInfo.associatedID, index + 1);
+                  }} _hover={{
+                    color: 'red.500',
+                  }} />
+                </Tab>
+              );
+            })
+          }
+        </TabList>
 
         <TabPanels>
           <TabPanel>
@@ -594,7 +614,7 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              <Tooltip label={new Date(experiment.statusUpdateTime).toLocaleString()}><Text>{dayjs(experiment.statusUpdateTime).fromNow(true)} ago</Text></Tooltip>
+                              <Tooltip label={new Date(experiment.creationTime).toLocaleString()}><Text>{dayjs(experiment.creationTime).fromNow(true)} ago</Text></Tooltip>
                             </Td>
 
                             <Td>
@@ -693,8 +713,7 @@ const TabsView = () => {
             })
           }
         </TabPanels>
-      </Tabs >
-      <Footer />
+      </Tabs>
     </>
   );
 };

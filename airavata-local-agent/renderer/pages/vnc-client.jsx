@@ -43,6 +43,7 @@ const VncClient = () => {
   const handleOnDisconnect = (rfb) => {
     console.log('Disconnected');
     setRendering(false);
+
   };
 
   useEffect(() => {
@@ -117,75 +118,11 @@ const VncClient = () => {
         )
       }
 
-      {/* {!rendering && (
-          <>
-            <Container mt={16}>
-              <Heading size='lg' color='blue.600'>
-                Connection Information
-              </Heading>
-
-              {
-                timesConnected > 0 && (
-                  <Alert status='error' rounded='md' mt={2}>
-                    <AlertIcon />
-                    <Text>
-                      <Text as='span' color='red.800' fontWeight='bold'>Something went wrong</Text>. Please make sure your VNC server is running and your web proxy is running.
-                    </Text>
-                  </Alert>
-                )
-              }
-
-              <VStack spacing={4} mt={4}>
-                <FormControl>
-                  <FormLabel>VNC Server Hostname</FormLabel>
-                  <Input type='text' value={hostname} onChange={(e) =>
-                  {
-                    setHostname(e.target.value);
-                  }} placeholder='ws://your-url' />
-                </FormControl>
-
-
-                <FormControl>
-                  <FormLabel>VNC Server Port</FormLabel>
-                  <Input type='text' value={port} onChange={(e) =>
-                  {
-                    setPort(e.target.value);
-                  }} placeholder='Port' />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Username</FormLabel>
-                  <Input type='text' value={username} onChange={(e) =>
-                  {
-                    setUsername(e.target.value);
-                  }} placeholder='Username' />
-                </FormControl>
-
-
-                <FormControl>
-                  <FormLabel>Password</FormLabel>
-                  <Input type='password' value={password} onChange={(e) =>
-                  {
-                    setPassword(e.target.value);
-                  }} placeholder='Password' />
-                </FormControl>
-
-
-              <Button onClick={handleSubmitInfo} colorScheme='blue' w='full' isDisabled={loading}>
-                Connect to VNC server
-              </Button>
-              </VStack>
-
-            </Container>
-          </>
-        )
-        } */}
-
       {rendering && (
         <>
           <Box textAlign='center'>
             <VncScreen
-              url={hostname + ':' + port}
+              url={"ws://blah:3211"}
               scaleViewport
               background="#000000"
               style={{

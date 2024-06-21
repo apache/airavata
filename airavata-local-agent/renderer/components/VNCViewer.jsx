@@ -7,7 +7,8 @@ import {
   useToast,
   Tooltip,
   Button,
-  Code
+  Code,
+  Spinner
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 
@@ -33,6 +34,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [serverPort, setServerPort] = useState("loading");
+  const [serverHostname, setServerHostname] = useState("loading");
   const [showDevSettings, setShowDevSettings] = useState(false);
 
   const handleOnDisconnect = (rfb) => {
@@ -49,10 +51,21 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
   useEffect(() => {
     setLoading(true);
     let interval;
+
+    let websocketPort = localStorage.getItem("websocketPort");
+    if (!websocketPort) {
+      websocketPort = 6080;
+    } else {
+      websocketPort = parseInt(websocketPort);
+      websocketPort += 1;
+    }
+
+    localStorage.setItem("websocketPort", websocketPort);
+
     if (!reqPort) {
       // create the interval
       interval = setInterval(async () => {
-        const resp = await fetch(`http://74.235.88.134:9001/api/v1/application/${applicationId}/connect`, {
+        const resp = await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/connect`, {
           method: "POST",
           headers: headers,
         });
@@ -71,59 +84,26 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
         if (data.status === "PENDING") {
           console.log("Waiting for the application to launch...");
         } else if (data.status === "COMPLETED") {
-          let severPort = data.allocatedPorts[0];
+          let severPortFromData = data.allocatedPorts[0];
+          let serverHostnameFromData = data.host;
 
-          setServerPort(severPort);
+          setServerPort(severPortFromData);
+          setServerHostname(serverHostnameFromData);
+          setRendering(true);
+          setLoading(false);
 
-          // start the proxy
-          window.vnc.startProxy(experimentId, reqHost, severPort);
           clearInterval(interval);
         }
 
       }, 5000);
-    } else {
-      // start the proxy
-      window.vnc.startProxy(experimentId, reqHost, reqPort);
     }
-
-    // setTimeout(() => {
-    //   console.log("starting proxy for", experimentId, reqHost, reqPort);
-    //   window.vnc.startProxy(experimentId, reqHost, reqPort);
-    // }, 10000);
-
-
-    window.vnc.proxyStarted((event, hostname, port, theExperimentId) => {
-      console.log('Proxy started for', hostname, port, theExperimentId);
-      if (experimentId !== theExperimentId) {
-        return;
-      }
-      setLoading(false);
-      toast({
-        title: 'Proxy started',
-        description: "",
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-
-      setHostname('ws://' + hostname);
-      setPort(port);
-      setRendering(true);
-    });
-
-    window.vnc.proxyStopped((event, restart) => {
-      console.log('Proxy stopped');
-
-      if (restart) window.vnc.startProxy(experimentId, reqHost, reqPort);
-    });
 
     const exitingFunction = async () => {
       console.log("running stop on", experimentId);
-      window.vnc.stopProxy(false, experimentId); // false = don't restart
-      await fetch(`http://74.235.88.134:9001/api/v1/application/${applicationId}/terminate`, {
+      // window.vnc.stopProxy(false, experimentId); // false = don't restart
+      await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/terminate`, {
         method: "POST",
         headers: headers,
-
       });
     };
 
@@ -153,9 +133,9 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
         loading && (
           <>
             <Alert status='info' rounded='md'>
-              <AlertIcon />
+              <Spinner mr={2} />
               <Text>
-                We're attempting to start the server and proxy. Please make sure you have <Code>git</Code> installed on your computer This will take longer if this is your first time using the VNC client, or if your wifi connection is slower. Please wait...
+                We're currently starting the VNC server, this may take a few minutes. Please wait...
               </Text>
             </Alert>
           </>
@@ -165,7 +145,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
       {rendering && (
         <>
           <Box textAlign='center'>
-            <VNCItem url={hostname + ':' + port} username={username} password={password} handleOnDisconnect={handleOnDisconnect} />
+            <VNCItem url={"ws://20.51.202.251" + ":" + serverPort} username={username} password={password} handleOnDisconnect={handleOnDisconnect} />
           </Box>
         </>
       )
@@ -178,11 +158,8 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
       {
         showDevSettings && (
           <Box mt={4}>
-
-            <Text><Text as='span' fontWeight='bold'>VNC Server URL: </Text>{reqHost + ":" + serverPort}</Text>
-
+            <Text><Text as='span' fontWeight='bold'>Websocket URL: </Text>{"ws://20.51.202.251" + ":" + serverPort}</Text>
             <Text><Text as='span' fontWeight='bold'>Application ID: </Text>{applicationId}</Text>
-
             <Text><Text as='span' fontWeight='bold'>Experiment ID: </Text>{experimentId}</Text>
           </Box>
         )

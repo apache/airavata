@@ -1,12 +1,11 @@
 import path from 'path';
-import { app, ipcMain, protocol, session, net } from 'electron';
+import { app, ipcMain, dialog, session, net } from 'electron';
 const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
 import log from 'electron-log/main';
-
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
@@ -40,6 +39,20 @@ if (isProd) {
     require('electron').shell.openExternal(url);
     return { action: 'deny' };
   });
+
+  mainWindow.on('close', function (e) {
+    var choice = dialog.showMessageBoxSync(this,
+      {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Are you sure you want to close the local agent?'
+      });
+    if (choice == 1) {
+      e.preventDefault();
+    }
+  });
+
 
 
   if (isProd) {
@@ -92,6 +105,7 @@ async function getToken(url) {
 ipcMain.on('ci-logon-login', async (event) => {
 
   console.log("Logging in with CI logon");
+  log.warn('__dirname:', __dirname);
   log.warn("Logging in with CI logon");
   var authWindow = createWindow('authWindow', {
     width: 1200,
@@ -147,24 +161,67 @@ ipcMain.on('ci-logon-login', async (event) => {
   });
 });
 
+ipcMain.on('show-window', (event, url) => {
+  console.log("Showing the window with " + url);
+  let window = createWindow(url, {
+    width: 600,
+    height: 500,
+    'node-integration': false,
+    'web-security': false
+  });
+
+  window.loadURL(url);
+
+  window.show();
+
+});
+
 ipcMain.on('start-proxy', startIt);
 
-async function startIt(event, experimentId, reqHost, reqPort) {
-  let cmd = spawn(`./proxy/novnc_proxy --reqHost ${reqHost}  --reqPort ${reqPort}`, { shell: true });
+async function startIt(event, experimentId, reqHost, reqPort, websocketPort) {
+  console.log('process.resourcesPath:', process.resourcesPath);
+  log.warn('process.resourcesPath:', process.resourcesPath);
+
+  // let cmd = spawn(`./proxy/websockify-js/websockify/websockify.js localhost:${websocketPort} ${reqHost + ":" + reqPort}`, { shell: true });
+
+  let pathToLook = `proxy/websockify-js/websockify/websockify.js localhost:${websocketPort} ${reqHost + ":" + reqPort}`;
+
+  if (isProd) {
+    pathToLook = process.resourcesPath + "/" + pathToLook;
+  } else {
+    pathToLook = __dirname + "/../" + pathToLook;
+  }
+
+  log.warn(pathToLook);
+
+  // replace that with a __dirname path
+  let cmd = spawn("node " + pathToLook, { shell: true });
 
   cmd.stdout.on('data', (data) => {
     data = data.toString().trim();
     log.warn(data);
 
+    if (data.startsWith("DATA_FOR_BKGJS")) {
+      // console.log("DATA_FOR_BKGJS " + source_host + source_port);
 
-    if (data == "HANG_NOW") {
-      fs.readFile('./proxy/config.txt', 'utf8', (err, data) => {
-        const lines = data.split('\n');
-        const hostname = lines[0];
-        const port = lines[1];
-        event.sender.send('proxy-started', hostname, port, experimentId);
-      });
+      console.log("We are sending data back now");
+      log.warn("We are sending data back now");
+
+      const parts = data.split(" ");
+      const hostname = parts[1];
+      const port = parts[2];
+
+      event.sender.send('proxy-started', hostname, port, experimentId);
     }
+
+    // if (data == "HANG_NOW") {
+    //   fs.readFile('./proxy/config.txt', 'utf8', (err, data) => {
+    //     const lines = data.split('\n');
+    //     const hostname = lines[0];
+    //     const port = lines[1];
+    //     event.sender.send('proxy-started', hostname, port, experimentId);
+    //   });
+    // }
   });
 
   cmd.stderr.on('data', (data) => {
@@ -179,6 +236,9 @@ async function startIt(event, experimentId, reqHost, reqPort) {
   });
 
   experimentIdToCmd[experimentId] = cmd;
+
+  // event.sender.send('proxy-started', "hostname", "port", "experimentId");
+
 }
 
 async function stopIt(event, restart, experimentId) {

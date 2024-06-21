@@ -1,7 +1,7 @@
 import { VncScreen } from "react-vnc";
 
 export const VNCItem = ({ vncRef, url, username, password, handleOnDisconnect }) => {
-  console.log("VMD CONNECATING TO", url);
+  console.log("VMD CONNECTING TO", url);
   return (
     <VncScreen
       url={url}

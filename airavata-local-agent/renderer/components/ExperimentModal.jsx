@@ -44,7 +44,14 @@ const ExperimentModal = ({ experimentId }) => {
       <Stack spacing={2} direction='column' divider={<Divider />}>
         <TextWithBoldKey keyName="Name" text={experimentData.experimentName} />
 
+        <TextWithBoldKey keyName="Description" text={experimentData.description} />
+
         <TextWithBoldKey keyName="ExperimentID" text={experimentData.experimentId} />
+
+        <TextWithBoldKey keyName="GatewayID" text={experimentData.gatewayId} />
+
+
+        <TextWithBoldKey keyName="Creation Time" text={new Date(experimentData.creationTime).toLocaleString()} />
 
         <TextWithBoldKey keyName="Owner" text={experimentData.userName} />
 
@@ -52,13 +59,20 @@ const ExperimentModal = ({ experimentId }) => {
 
         <TextWithBoldKey keyName="Queue" text={experimentData.userConfigurationData.computationalResourceScheduling.queueName} />
 
+        <TextWithBoldKey keyName="Node Count" text={experimentData.userConfigurationData.computationalResourceScheduling.nodeCount} />
+
+        <TextWithBoldKey keyName="CPU Count" text={experimentData.userConfigurationData.computationalResourceScheduling.totalCPUCount} />
+
+        <TextWithBoldKey keyName="Wall Time Limit" text={experimentData.userConfigurationData.computationalResourceScheduling.wallTimeLimit} />
+
+
         <Box>
           <Text fontWeight='bold'>Inputs ({experimentData.processes.length} total processes)</Text>
 
           {
             experimentData.processes.map((process, index) => {
               return (
-                <>
+                <Box key={index}>
                   <Text>{process.processId}</Text>
                   <UnorderedList>
                     {
@@ -71,7 +85,7 @@ const ExperimentModal = ({ experimentId }) => {
                       })
                     }
                   </UnorderedList>
-                </>
+                </Box>
 
               );
             })
