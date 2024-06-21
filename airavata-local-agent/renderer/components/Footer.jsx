@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Link, Spacer, Stack, Text, Tooltip, useToast } from '@chakra-ui/react';
+import { Divider, Flex, Link, Spacer, Stack, Text, useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export const Footer = () => {
@@ -20,7 +20,7 @@ export const Footer = () => {
     <>
       <Divider />
       <Flex px={2} py={1} bg='gray.100' align='center'>
-        <Text textAlign='center'>Developed by the Apache Airavata Team</Text>
+        {/* <Text textAlign='center'>Developed by the Apache Airavata Team</Text> */}
 
         <Spacer />
 
@@ -33,12 +33,12 @@ export const Footer = () => {
           {/* 
           <Text>•</Text>
 
-          <Link color='blue.400' href='/vnc-client'>VNC Client</Link> */}
+          <Link color='blue.400' href='/page-with-vnc-test'>VNC TEST</Link>
           <Text>•</Text>
 
           <Tooltip label="This will end all running VMD sessions. Please use cautiously."><Button colorScheme='red' size='xs' onClick={
             () => window.vnc.killAllWebsockify()
-          }>stop websockify</Button></Tooltip>
+          }>stop websockify</Button></Tooltip> */}
 
         </Stack>
       </Flex >
