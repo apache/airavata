@@ -35,7 +35,7 @@ import { VNCViewer } from "../components/VNCViewer";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ExperimentModal from "../components/ExperimentModal";
-import { JupyterLab } from "../components/JupyterLab";
+import JupyterLab from "../components/JupyterLab";
 dayjs.extend(relativeTime);
 
 
@@ -85,7 +85,8 @@ const TabsView = () => {
    {
      'associatedID': 'VMD' + experimentId,
      'tabName': 'VMD' + name,
-     'component': <VMDComponent />
+     'component': <VMDComponent />,
+     'applicationId': from the experiment object
    }
  */
 
@@ -138,7 +139,7 @@ const TabsView = () => {
   };
 
 
-  const handleRemoveTab = (associatedID, index) => {
+  const handleRemoveTab = async (associatedID, applicationId, index) => {
     /*
     - when you close a tab
     - each tab needs to have an event listener that calls a deleteTab function with the associated experiment ID
@@ -162,6 +163,18 @@ const TabsView = () => {
         associatedIDToIndex[key] = value - 1;
       }
     }
+
+    await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/terminate`, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + accessToken,
+        "X-Claims": JSON.stringify({
+          "userName": email,
+          "gatewayID": gatewayId
+        }),
+        "Content-Type": "application/json"
+      },
+    });
   };
 
   const handleAddTab = async (type, experimentID, name) => {
@@ -198,6 +211,7 @@ const TabsView = () => {
 
       const url = "http://20.51.202.251:9001/api/v1/application/launch";
 
+      let applicationId = "";
       if (type === 'VMD') {
         const resp = await fetch(url, {
           method: "POST",
@@ -218,7 +232,7 @@ const TabsView = () => {
         }
         const data = await resp.json();
         let hostURL = "18.217.79.150";
-        let applicationId = data?.applicationId;
+        applicationId = data?.applicationId;
         let port;
 
         if (data?.allocatedPorts) {
@@ -250,7 +264,7 @@ const TabsView = () => {
 
         const data = await resp.json();
         let hostURL = "18.217.79.150";
-        let applicationId = data?.applicationId;
+        applicationId = data?.applicationId;
         let port;
 
         if (data?.allocatedPorts) {
@@ -258,13 +272,6 @@ const TabsView = () => {
         }
 
         component = <JupyterLab applicationId={applicationId} reqHost={hostURL} reqPort={port} experimentId={experimentID} headers={headers} />;
-        // url 
-
-        // 18.217.79.150:8888
-        // 8888 = port
-        // http://18.217.79.150:8888
-
-        // component = <iframe src={'https://jupyter.org/try-jupyter/lab/'} width='100%' height='600px'></iframe>;
       }
 
       const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index
@@ -274,7 +281,8 @@ const TabsView = () => {
       setArrOfTabsInfo(oldArr => [...oldArr, {
         associatedID: associatedID,
         tabName: type + ' ' + name,
-        component: component
+        component: component,
+        applicationId: applicationId,
       }]);
 
       setTabIndex(newTabIndex);
@@ -535,7 +543,7 @@ const TabsView = () => {
                 <Tab key={tabInfo.associatedID} _selected={tabSelectedStyles}>
                   <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
                   <Icon as={IoClose} transition='all .2s' onClick={() => {
-                    handleRemoveTab(tabInfo.associatedID, index + 1);
+                    handleRemoveTab(tabInfo.associatedID, tabInfo.applicationId, index + 1);
                   }} _hover={{
                     color: 'red.500',
                   }} />

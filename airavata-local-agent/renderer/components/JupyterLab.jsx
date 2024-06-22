@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Alert, Spinner, Text } from "@chakra-ui/react";
 
-export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPort, experimentId }) => {
+export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) => {
   const [loading, setLoading] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [serverPort, setServerPort] = useState("loading");
-  const [random, setRandom] = useState(Math.random());
   const [msg, setMsg] = useState("");
 
-
   useEffect(() => {
+
     setLoading(true);
 
     let interval;
     let interval2;
 
     const tryAndLaunchServer = async (port) => {
-      console.log("trying to launch the server...");
+      console.log("polling the jupyter server...");
       try {
         const resp = await fetch(`http://18.217.79.150:${port}/lab?token=1234`);
       } catch (e) {
@@ -32,7 +32,7 @@ export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPo
           } catch (ex) {
 
           }
-        }, 2000);
+        }, 5000);
       }
 
     };
@@ -69,22 +69,12 @@ export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPo
       }, 5000);
     }
 
-    const exitingFunction = async () => {
-      console.log("running stop on", experimentId);
-      await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/terminate`, {
-        method: "POST",
-        headers: headers,
-      });
-    };
-
     return () => {
       console.log("unmounting component...");
       clearInterval(interval);
       clearInterval(interval2);
-      exitingFunction();
       setRendering(false);
     };
-
   }, []);
 
   if (!rendering) {
@@ -97,8 +87,6 @@ export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPo
       </Alert>
     );
   }
-
-
 
   return (
     <>
@@ -113,9 +101,10 @@ export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPo
       }
 
       <h1>Note: If you close this tab, your jupyter session will no longer save any changes.</h1>
-
-
-      {/* <iframe key={random} src={`http://18.217.79.150:${serverPort}/lab?token=1234`} width='100%' height='600px' /> */}
     </>
   );
 };
+
+export default React.memo(JupyterLab, (props, nextProps) => {
+  return true;
+});
