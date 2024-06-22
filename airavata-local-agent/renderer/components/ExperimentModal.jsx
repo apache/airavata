@@ -1,4 +1,4 @@
-import { Box, Divider, ListItem, Stack, Text, Button, VStack, Badge, UnorderedList, useToast } from "@chakra-ui/react";
+import { Box, Divider, ListItem, Stack, Text, Button, VStack, Badge, UnorderedList, useToast, Link } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { TextWithBoldKey } from "./TextWithBoldKey";
 import { getColorScheme } from "../lib/utilityFuncs";
@@ -7,9 +7,19 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
   const toast = useToast();
   const [experimentData, setExperimentData] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(activeExperiment);
   const experimentId = activeExperiment.experimentId;
   const experimentStatus = activeExperiment.experimentStatus;
+  const [experimentOutputs, setExperimentOutputs] = useState([]);
+
+  /*
+  {
+    name: "Coordinate_Files",
+    shouldDisplayText: true/false depending on metadata is null or not,
+    output: the text to display // only present if shouldDisplay is true,
+    uris
+
+  }
+  */
 
   useEffect(() => {
     // Fetch data here
@@ -27,25 +37,105 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
       }
 
       const data = await resp.json();
+      try {
+        await fetchExperimentOutputFiles(data.experimentOutputs);
+      } catch (e) {
+        console.log(e);
+      }
+
       setExperimentData(data);
+    }
+
+    async function fetchExperimentOutputFiles(experimentOutputs) {
+      for (let i = 0; i < experimentOutputs.length; i++) {
+        try {
+          // console.log(experimentOutputs[i]);
+          let outputTypeName = experimentOutputs[i].name;
+          // read experimentOutputs[i] as a comman separated string into a list
+
+          let shouldDisplayText = experimentOutputs[i].metaData !== null;
+
+          if (shouldDisplayText) {
+            console.log(experimentOutputs[i]);
+            // only need to grab the URI
+            let dataUri = experimentOutputs[i].value;
+
+            let resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${dataUri}`, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            });
+
+            const fileName = await resp.headers.get('Content-Disposition').split('filename=')[1].replaceAll('"', '');
+            const text = await resp.text();
+
+            setExperimentOutputs((prev) => {
+              return [
+                ...prev,
+                {
+                  outputTypeName: outputTypeName,
+                  name: fileName,
+                  shouldDisplayText: true,
+                  output: text,
+                  dataUri: dataUri
+                }
+              ];
+            });
+          } else {
+            let fileNames = [];
+            let uris = [];
+            if (!experimentOutputs[i].value.includes(",")) {
+              // continue;
+            } else {
+              uris = experimentOutputs[i].value.split(',');
+              // only need to grab filename from header
+
+
+              for (let j = 0; j < uris.length; j++) {
+                let resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${uris[j]}`, {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`
+                  }
+                });
+
+                const fileName = await resp.headers.get('Content-Disposition').split('filename=')[1].replaceAll('"', '');
+                fileNames.push(fileName);
+              }
+            }
+
+
+            setExperimentOutputs((prev) => {
+              return ([
+                ...prev,
+                {
+                  outputTypeName: outputTypeName,
+                  name: fileNames,
+                  shouldDisplayText: false,
+                  output: null,
+                  dataUri: uris
+                }
+              ]);
+            });
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
     }
 
     fetchExperimentData();
   }, []);
 
   if (!experimentId || !experimentData) {
-    return <h1>Loading...</h1>;
+    return <Text>Loading (this may take a moment)...</Text>;
   }
-
 
 
   return (
     <Box>
-
       <Stack spacing={2} direction='column' divider={<Divider />}>
         {
           (experimentStatus === "CREATED" || experimentStatus === "EXECUTING") &&
-
           <Box>
             <Text fontWeight='bold' mb={2}>Experiment Actions</Text>
 
@@ -82,10 +172,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
                   });
 
                   setRefreshData(Math.random());
-                  // Refresh the experiment data
                   onClose();
-
-
                 }
 
                 setLoading(false);
@@ -142,6 +229,60 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
             }
           </Box>
         }
+
+        <Box>
+          <Text fontWeight='bold'>Outputs</Text>
+
+          {
+            experimentOutputs.map((output, index) => {
+              return (
+                <Box key={index} mb={4}>
+                  {
+                    !output.shouldDisplayText && (
+                      <>
+                        <Text>
+                          {output.outputTypeName}:{" "}
+                        </Text>
+                        <UnorderedList>
+                          {
+                            output.name.map((name, index) => {
+                              return (
+                                <ListItem key={index}>
+                                  <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${output.dataUri[index]}`} target="_blank" color='blue.400'>
+                                    {name}
+                                  </Link>
+                                </ListItem>
+                              );
+                            })
+                          }
+                        </UnorderedList>
+                      </>
+                    )
+                  }
+                  {
+                    output.shouldDisplayText &&
+                    (
+                      <>
+                        <Text>
+                          {output.outputTypeName}:{" "}
+                          <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${output.dataUri}`} target="_blank" color='blue.400'>
+                            {output.name}
+                          </Link>
+                        </Text>
+
+                        <Box maxH='300px' overflow="scroll" bg='gray.100' p={4} rounded='md' mt={2}>
+                          <Text whiteSpace="pre">{output.output}</Text>
+                        </Box>
+                      </>)
+
+                  }
+                </Box>
+              );
+            })
+          }
+
+        </Box>
+
 
         <TextWithBoldKey keyName="Name" text={experimentData.experimentName} />
 
