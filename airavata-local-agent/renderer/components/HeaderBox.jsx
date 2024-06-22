@@ -5,7 +5,7 @@ export const HeaderBox = ({ name, email }) => {
     <Box py={1} px={2} bg='gray.100'>
 
       <Flex>
-        <Text>Airavata Local Agent v1.0.0</Text>
+        <Text>Cybershuttle MD Local Agent v1.0.0</Text>
 
         <Spacer />
 
@@ -20,6 +20,8 @@ export const HeaderBox = ({ name, email }) => {
               // console.log("Running this code...");
               localStorage.removeItem('accessToken');
               localStorage.removeItem('refreshToken');
+
+              window.auth.ciLogonLogout();
               // redirect to login page
               window.location.href = '/login';
             }}>Log Out</Text></Text>

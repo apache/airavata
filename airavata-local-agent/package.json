@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "airvata-local-agent",
+  "name": "cybershuttle-md-local-agent",
   "description": "User interface for Apache Airavata.",
   "version": "1.0.0",
   "author": "Ganning Xu",
