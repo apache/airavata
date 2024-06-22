@@ -515,10 +515,10 @@ const TabsView = () => {
         )
       }
 
-      <Modal isOpen={isOpen} onClose={onClose} size='3xl'>
+      <Modal isOpen={isOpen} onClose={onClose} size='4xl'>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Experiment Details</ModalHeader>
+          <ModalHeader>Experiment Details ({activeExperiment.name})</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={8}>
             {
@@ -543,7 +543,7 @@ const TabsView = () => {
                 <Tab key={tabInfo.associatedID} _selected={tabSelectedStyles}>
                   <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
                   <Icon as={IoClose} transition='all .2s' onClick={() => {
-                    handleRemoveTab(tabInfo.associatedID, tabInfo.applicationId, index + 1);
+                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && handleRemoveTab(tabInfo.associatedID, tabInfo.applicationId, index + 1);
                   }} _hover={{
                     color: 'red.500',
                   }} />
