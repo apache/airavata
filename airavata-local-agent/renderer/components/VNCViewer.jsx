@@ -98,19 +98,9 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
       }, 5000);
     }
 
-    const exitingFunction = async () => {
-      console.log("running stop on", experimentId);
-      // window.vnc.stopProxy(false, experimentId); // false = don't restart
-      await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/terminate`, {
-        method: "POST",
-        headers: headers,
-      });
-    };
-
     return () => {
       console.log("unmounting component...");
       clearInterval(interval);
-      exitingFunction();
       setRendering(false);
     };
 
