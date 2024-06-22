@@ -16,11 +16,6 @@
     "build:win64": "nextron build --win --x64",
     "postinstall": "electron-builder install-app-deps"
   },
-  "build": {
-    "extraResources": [
-      "./proxy/**"
-    ]
-  },
   "dependencies": {
     "@ajna/pagination": "^1.4.19",
     "@chakra-ui/react": "^2.8.2",

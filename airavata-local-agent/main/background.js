@@ -53,8 +53,6 @@ if (isProd) {
     }
   });
 
-
-
   if (isProd) {
     await mainWindow.loadURL('app://./home');
   } else {
@@ -123,34 +121,6 @@ ipcMain.on('ci-logon-login', async (event) => {
     'web-security': false
   });
 
-
-  // authWindow.loadURL('https://md.cybershuttle.org/auth/logout');
-
-  // authWindow.webContents.on('will-redirect', async (e, url) => {
-  //   if (url === "https://md.cybershuttle.org/") {
-  //     console.log("this is the URL");
-  //     authWindow.loadURL('https://md.cybershuttle.org/auth/login');
-  //     authWindow.show();
-  //   } else if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
-  //     const tokens = await getToken(url);
-
-  //     if (tokens.length > 0) {
-  //       const [accessToken, refreshToken] = tokens;
-  //       console.log("Tokens", accessToken, refreshToken);
-  //       event.sender.send('ci-logon-success', accessToken, refreshToken);
-  //     }
-  //     authWindow.close();
-  //     authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-  //   }
-  // });
-
-  // setTimeout(() => {
-  //   authWindow.loadURL('https://md.cybershuttle.org/auth/login');
-  //   authWindow.show();
-  // }, 2500);
-
-
-
   authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
 
   authWindow.show();
@@ -182,84 +152,4 @@ ipcMain.on('show-window', (event, url) => {
 
   window.show();
 
-});
-
-ipcMain.on('start-proxy', startIt);
-
-async function startIt(event, experimentId, reqHost, reqPort, websocketPort) {
-  console.log('process.resourcesPath:', process.resourcesPath);
-  log.warn('process.resourcesPath:', process.resourcesPath);
-
-  // let cmd = spawn(`./proxy/websockify-js/websockify/websockify.js localhost:${websocketPort} ${reqHost + ":" + reqPort}`, { shell: true });
-
-  let pathToLook = `proxy/websockify-js/websockify/websockify.js localhost:${websocketPort} ${reqHost + ":" + reqPort}`;
-
-  if (isProd) {
-    pathToLook = process.resourcesPath + "/" + pathToLook;
-  } else {
-    pathToLook = __dirname + "/../" + pathToLook;
-  }
-
-  log.warn(pathToLook);
-
-  // replace that with a __dirname path
-  let cmd = spawn("node " + pathToLook, { shell: true });
-
-  cmd.stdout.on('data', (data) => {
-    data = data.toString().trim();
-    log.warn(data);
-
-    if (data.startsWith("DATA_FOR_BKGJS")) {
-      // console.log("DATA_FOR_BKGJS " + source_host + source_port);
-
-      console.log("We are sending data back now");
-      log.warn("We are sending data back now");
-
-      const parts = data.split(" ");
-      const hostname = parts[1];
-      const port = parts[2];
-
-      event.sender.send('proxy-started', hostname, port, experimentId);
-    }
-
-    // if (data == "HANG_NOW") {
-    //   fs.readFile('./proxy/config.txt', 'utf8', (err, data) => {
-    //     const lines = data.split('\n');
-    //     const hostname = lines[0];
-    //     const port = lines[1];
-    //     event.sender.send('proxy-started', hostname, port, experimentId);
-    //   });
-    // }
-  });
-
-  cmd.stderr.on('data', (data) => {
-    console.error(`stderr: ${data}`);
-    log.error(`stderr: ${data}`);
-  });
-
-  cmd.on('close', async (code) => {
-    log.warn(`Websockify proxy stopped with code: ${code}`);
-    console.log(`Websockify proxy stopped with code: ${code}`);
-    await stopIt(event, true, experimentId);
-  });
-
-  experimentIdToCmd[experimentId] = cmd;
-
-  // event.sender.send('proxy-started', "hostname", "port", "experimentId");
-
-}
-
-
-
-async function stopIt(event, restart, experimentId) {
-  experimentIdToCmd[experimentId].kill();
-}
-
-ipcMain.on('stop-proxy', stopIt);
-
-ipcMain.on('kill-all-websockify', (event) => {
-  exec(KILL_CMD,
-    (error, stdout, stderr) => {
-      event.sender.send('killed-all-websockify', error);
-    });
 });

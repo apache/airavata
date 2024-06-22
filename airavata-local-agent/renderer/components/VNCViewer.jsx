@@ -1,13 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Text,
   Alert,
   AlertIcon,
-  useToast,
-  Tooltip,
   Button,
-  Code,
   Spinner
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
@@ -18,18 +15,8 @@ const VNCItem = dynamic(() => {
 }, { ssr: false });
 
 export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPort, experimentId }) => {
-  // console.log("Application ID", applicationId);
-  // console.log("Experiment ID", experimentId);
-  // console.log("Request Host", reqHost);
-  // console.log("Request Port", reqPort);
-
-  // Can't import regularly because of SSR (next.js)
-
-  const toast = useToast();
   const username = "";
   const password = '1234';
-  const [hostname, setHostname] = useState('ws://');
-  const [port, setPort] = useState('6080');
   const [rendering, setRendering] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
