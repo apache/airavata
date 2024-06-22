@@ -2,7 +2,12 @@ import { Box, Text, Button, Flex, Spacer, Img } from '@chakra-ui/react';
 import { MdPause, MdPlayArrow } from "react-icons/md";
 export const NavBar = () => {
     const handleLogout = () => {
-        window.location.href = "/login";
+        window.auth.ciLogonLogout();
+
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 2000);
+
     };
     return (
         <>

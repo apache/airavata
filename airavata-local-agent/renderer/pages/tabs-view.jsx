@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Table,
   Thead,
@@ -20,7 +20,7 @@ import {
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { dateToAgo, truncTextToN } from "../lib/utilityFuncs";
+import { getColorScheme, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import {
@@ -38,22 +38,6 @@ import ExperimentModal from "../components/ExperimentModal";
 import { JupyterLab } from "../components/JupyterLab";
 dayjs.extend(relativeTime);
 
-const getColorScheme = (status) => {
-  switch (status) {
-    case 'COMPLETED':
-      return 'green';
-    case 'EXECUTING':
-      return 'gray';
-    case 'CREATED':
-      return 'blue';
-    case 'CANCELED':
-      return 'yellow';
-    case 'FAILED':
-      return 'red';
-    default:
-      return 'red';
-  }
-};
 
 const getExperimentApplication = (executionId) => {
   if (!executionId) {
@@ -113,10 +97,10 @@ const TabsView = () => {
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterText, setFilterText] = useState("");
-  const [activeExperimentId, setActiveExperimentId] = useState("");
+  const [activeExperiment, setActiveExperiment] = useState("");
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const timer = useRef(null);
 
   const {
     offset,
@@ -272,7 +256,7 @@ const TabsView = () => {
         if (data?.allocatedPorts) {
           port = data.allocatedPorts[0];
         }
-        console.log(data);
+
         component = <JupyterLab applicationId={applicationId} reqHost={hostURL} reqPort={port} experimentId={experimentID} headers={headers} />;
         // url 
 
@@ -324,8 +308,10 @@ const TabsView = () => {
     }
   };
 
-  const fetchExperiments = async (pageSize, offset, filterCriteria) => {
-    setIsLoading(true);
+  const fetchExperiments = async (pageSize, offset, filterCriteria, loadingAnimation = true) => {
+    if (loadingAnimation) {
+      setIsLoading(true);
+    }
     const urlParams = new URLSearchParams();
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "STATUS", "ALL");
     addPropertyToParamsIfNotDefault(urlParams, filterCriteria, "USER_NAME", "");
@@ -337,21 +323,33 @@ const TabsView = () => {
 
     let resp = await makeFetchForExperiments(pageSize, offset, accessToken, urlParams.toString());
 
+    // TODO: remove this
     // if this fetch request fails, try again after getting a new access token
     if (!resp.ok) {
       let refreshToken = localStorage.getItem('refreshToken');
 
       const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
 
+      // TODO: delete these
+
       if (!newAccessToken || !newRefreshToken) {
         toast({
           title: "Something went wrong.",
-          description: "If you just made your account, please wait a few minutes and try again, as your account is still being set up. If you have been using the app for a while, please log out and log back in as your session may have expired.",
+          description: <Text>Please login again by <Button
+            variant="link"
+            color="white"
+            onClick={
+              () => {
+                window.location.href = "/login";
+              }
+            }
+          >clicking here</Button>. If you just made your account, please wait a few minutes and try again, as your account is still being set up. If you have been using the app for a while, please log out and log back in as your session may have expired.</Text>,
           status: "error",
-          duration: 10000,
+          duration: 5000,
           isClosable: true,
         });
-        setIsLoading(false);
+
+        if (loadingAnimation) { setIsLoading(false); }
         return;
 
       }
@@ -365,13 +363,11 @@ const TabsView = () => {
       if (!resp.ok) {
         throw new Error("Failed to fetch new experiments (new access token)");
       }
-    }
+    };
 
     const data = await resp.json();
-
-    console.log(data);
     setExperiments(data);
-    setIsLoading(false);
+    if (loadingAnimation) { setIsLoading(false); }
     return data;
   };
 
@@ -390,6 +386,7 @@ const TabsView = () => {
 
   useEffect(() => {
     accessToken = localStorage.getItem("accessToken");
+
     fetchExperiments(pageSize, offset, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
@@ -398,7 +395,6 @@ const TabsView = () => {
   }, [currentPage, pageSize, offset]);
 
   const getGatewayId = async (emailAddress) => {
-    console.log("email", emailAddress);
     if (!emailAddress) {
       return;
     }
@@ -412,9 +408,33 @@ const TabsView = () => {
     gatewayId = data.gatewayId;
   };
 
+  const startAutoUpdateExperiments = () => {
+    timer.current = setInterval(() => {
+      let filterObj = getFilterObj();
+      fetchExperiments(pageSize, offset, getFilterObj(), false)
+        .catch((error) => {
+          console.error("App =>", error);
+          // window.location.href = "/login";
+        });
+
+    }, 5000);
+  };
+
+  const stopAutoUpdateExperiments = () => {
+    clearInterval(timer.current);
+  };
+
   useEffect(() => {
     setNameAndEmail();
   }, []);
+
+  useEffect(() => {
+    startAutoUpdateExperiments();
+
+    return () => {
+      stopAutoUpdateExperiments();
+    };
+  });
 
   const getFilterObj = () => {
     const obj = {
@@ -454,11 +474,16 @@ const TabsView = () => {
 
     setIsLoading(true);
     setCurrentPage(1);
+
+    stopAutoUpdateExperiments();
+
     fetchExperiments(pageSize, 0, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
         // window.location.href = "/login";
       });
+
+    startAutoUpdateExperiments();
   };
 
   const handlePageChange = (nextPage) => {
@@ -490,7 +515,7 @@ const TabsView = () => {
           <ModalBody pb={8}>
             {
               isOpen && (
-                <ExperimentModal experimentId={activeExperimentId} />
+                <ExperimentModal activeExperiment={activeExperiment} onClose={onClose} onOpen={onOpen} />
               )
             }
           </ModalBody>
@@ -557,7 +582,10 @@ const TabsView = () => {
                     setFilterAttribute("");
                     setFilterText("");
                     setFilterStatus("");
+
+                    stopAutoUpdateExperiments();
                     fetchExperiments(pageSize, 0, {});
+                    startAutoUpdateExperiments();
                   }}>Reset</Button>
 
                   <Button size='sm' w='full' onClick={handleFilterChange} _hover={{
@@ -596,7 +624,7 @@ const TabsView = () => {
                                     _hover={{
                                       cursor: "pointer",
                                     }} transition='all .2s' onClick={() => {
-                                      setActiveExperimentId(experiment.experimentId);
+                                      setActiveExperiment(experiment);
                                       onOpen();
                                     }}
                                   >{experiment.name}
@@ -606,7 +634,9 @@ const TabsView = () => {
                             </Td>
 
                             <Td>
-                              <Text>{experiment.userName === email ? "You" : experiment.userName}</Text>
+                              {
+                                experiment.userName === email ? <Badge colorScheme='green'>{experiment.userName}</Badge> : <Text>{experiment.userName}</Text>
+                              }
                             </Td>
 
                             <Td>

@@ -21,6 +21,8 @@ contextBridge.exposeInMainWorld('auth', {
   ciLogonSuccess: (callback) => {
     ipcRenderer.once('ci-logon-success', callback);
   },
+
+  ciLogonLogout: () => ipcRenderer.send('ci-logon-logout'),
 });
 
 contextBridge.exposeInMainWorld('jn', {

@@ -29,6 +29,23 @@ export function dateToAgo(date) {
   return Math.floor(seconds) + " seconds";
 };
 
+export const getColorScheme = (status) => {
+  switch (status) {
+    case 'COMPLETED':
+      return 'green';
+    case 'EXECUTING':
+      return 'gray';
+    case 'CREATED':
+      return 'blue';
+    case 'CANCELED':
+      return 'yellow';
+    case 'FAILED':
+      return 'red';
+    default:
+      return 'red';
+  }
+};
+
 export const truncTextToN = (str, n) => {
   return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
 };

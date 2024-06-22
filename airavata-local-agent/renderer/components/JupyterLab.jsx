@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Alert, Spinner, Text } from "@chakra-ui/react";
 
 export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPort, experimentId }) => {
   const [loading, setLoading] = useState(false);
@@ -87,7 +88,14 @@ export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPo
   }, []);
 
   if (!rendering) {
-    return <h1>Loading...</h1>;
+    return (
+      <Alert status='info' rounded='md'>
+        <Spinner mr={2} />
+        <Text>
+          We're currently starting the Jupyter Notebook, this may take a few minutes. Please wait...
+        </Text>
+      </Alert>
+    );
   }
 
 
@@ -95,7 +103,13 @@ export const JupyterLab = ({ headers, accessToken, applicationId, reqHost, reqPo
   return (
     <>
       {
-        msg && <h1>{msg}</h1>
+        msg && (
+          <Alert status='success' rounded='md'>
+            <Text>
+              {msg}
+            </Text>
+          </Alert>
+        )
       }
 
       <h1>Note: If you close this tab, your jupyter session will no longer save any changes.</h1>

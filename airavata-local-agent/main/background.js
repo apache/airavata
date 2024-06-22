@@ -102,6 +102,14 @@ async function getToken(url) {
   }
 }
 
+ipcMain.on('ci-logon-logout', (event) => {
+  log.warn('logging out');
+  console.log("Logging out with CI logon");
+  session.defaultSession.clearStorageData([], (data) => {
+    console.log("Cleared storage data", data);
+  });
+});
+
 ipcMain.on('ci-logon-login', async (event) => {
 
   console.log("Logging in with CI logon");
@@ -240,6 +248,8 @@ async function startIt(event, experimentId, reqHost, reqPort, websocketPort) {
   // event.sender.send('proxy-started', "hostname", "port", "experimentId");
 
 }
+
+
 
 async function stopIt(event, restart, experimentId) {
   experimentIdToCmd[experimentId].kill();

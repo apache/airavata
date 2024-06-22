@@ -45,7 +45,7 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
     setTimeout(() => {
       console.log("trying to reconnect...");
       setRendering(true);
-    }, 5000);
+    }, 2000);
   };
 
   useEffect(() => {

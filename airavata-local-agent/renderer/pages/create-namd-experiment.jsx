@@ -820,6 +820,7 @@ const Home = () => {
   return (
     <>
       <HeaderBox name={userName} email={email} />
+      <Footer />
 
       <Container maxW='container.md' p={4} mt={4}>
         <Stack direction='column' spacing={4}>
@@ -1171,8 +1172,6 @@ const Home = () => {
 
         </Stack>
       </Container>
-
-      <Footer />
     </>
   );
 };
