@@ -43,7 +43,7 @@ const Home = () => {
   const [computeResource, setComputeResource] = useState("expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32");
 
   const [nodeCount, setNodeCount] = useState(1);
-  const [coreCount, setCoreCount] = useState(128);
+  const [coreCount, setCoreCount] = useState(10);
   const [timeLimit, setTimeLimit] = useState(2);
   const [physMemory, setPhysMemory] = useState(null);
 
@@ -61,6 +61,7 @@ const Home = () => {
   const [replicasList, setReplicasList] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   // INPUT STATES
   const [projectObjArray, setProjectObjArray] = useState([]);
@@ -238,8 +239,7 @@ const Home = () => {
     }
   }, []);
 
-  const handleSaveAndLaunch = async () => {
-    setLoading(true);
+  const handleSave = async () => {
     let idx0 = {
       "name": "Execution_Type",
       "value": executionType,
@@ -783,11 +783,21 @@ const Home = () => {
       }
     });
 
-    const data = await resp.json();
+    if (resp.ok) {
+      const data = await resp.json();
+      return data.experimentId;
+    } else {
+      return null;
+    }
 
-    if (data.experimentId !== null) {
+  };
+
+  const handleSaveAndLaunch = async () => {
+    const experimentId = await handleSave();
+
+    if (experimentId !== null) {
       // launch the experiment
-      const resp1 = await fetch(`https://md.cybershuttle.org/api/experiments/${data.experimentId}/launch/`, {
+      const resp1 = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/launch/`, {
         method: "POST",
         boody: {},
         headers: {
@@ -809,12 +819,8 @@ const Home = () => {
         setTimeout(() => {
           window.location.href = '/tabs-view';
         }, 3000);
-
       }
     }
-
-    setLoading(false);
-
   };
 
   return (
@@ -1021,9 +1027,6 @@ const Home = () => {
                   );
                 })
               }
-              {/* <option value='default'>Default</option> */}
-              {/* <option value='personal'>Diego's Personal</option>
-              <option value='option3'>Fatemeh's Profile</option> */}
             </Select>
           </FormControl>
 
@@ -1092,10 +1095,6 @@ const Home = () => {
                         );
                       })
                     }
-                    {/* <option value='compute'>compute</option>
-                    <option value='gpu'>gpu</option>
-                    <option value='gpu-shared'>gpu-shared</option>
-                    <option value='shared'>shared</option>*/}
                   </Select>
                 </FormControl>
                 <FormControl>
@@ -1135,7 +1134,6 @@ const Home = () => {
                   </FormHelperText>
                 </FormControl>
               </Stack>
-
             )
           }
 
@@ -1151,9 +1149,41 @@ const Home = () => {
 
             <Spacer />
             <HStack>
+
+              <Button
+                colorScheme='blue'
+                onClick={async () => {
+                  setSaveLoading(true);
+                  const experimentId = await handleSave();
+
+                  if (experimentId) {
+                    showToast("Experiment saved.", "Redirecting you soon...", "success");
+                    setTimeout(() => {
+                      window.location.href = '/tabs-view';
+                    }, 3000);
+                  }
+
+                  setSaveLoading(false);
+                }}
+                isDisabled={
+                  executionType === "" ||
+                  (contPrev === true && prevJobId === "") ||
+                  mdInstructionsUri === "" ||
+                  (replicate === true && numReplicas === 0)
+                }>
+                {
+                  saveLoading ? "Saving..." : "Save"
+                }
+              </Button>
+
               <Button
                 colorScheme='green'
-                onClick={handleSaveAndLaunch}
+                onClick={async () => {
+                  setLoading(true);
+                  await handleSaveAndLaunch();
+                  setLoading(false);
+
+                }}
                 isDisabled={
                   executionType === "" ||
                   (contPrev === true && prevJobId === "") ||
@@ -1162,11 +1192,9 @@ const Home = () => {
 
                 }>
                 {
-                  loading && (
-                    <Spinner />
-                  )
+                  loading ? "Saving and Launching..." : "Save and Launch"
                 }
-                Save and Launch</Button>
+              </Button>
             </HStack>
           </Flex>
 

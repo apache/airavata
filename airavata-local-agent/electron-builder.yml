@@ -1,5 +1,5 @@
 appId: com.example.nextron
-productName: Airavata Local Agent
+productName: Cybershuttle MD Local Agent
 copyright: Copyright © 2024 Apache Airavata
 directories:
   output: dist
