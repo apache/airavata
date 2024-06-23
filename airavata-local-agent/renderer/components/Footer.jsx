@@ -7,29 +7,35 @@ export const Footer = () => {
 
   useEffect(() => {
     async function getData() {
-      const resp = await fetch("https://md.cybershuttle.org/api/group-resource-profiles/?format=json", {
+      const resp = await fetch("https://md.cybershuttle.org/api/applications/list_all/?format=json", {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
 
+      if (!resp.ok) {
+        setAccessToCreateExperiment(false);
+      }
+
       const data = await resp.json();
-      if (!data || data.length === 0) {
+      if (!data || !Array.isArray(data) || data.length === 0) {
         setAccessToCreateExperiment(false);
       } else {
-        setAccessToCreateExperiment(true);
+        data.forEach((obj) => {
+          if (obj.appModuleName === "NAMD") {
+            setAccessToCreateExperiment(obj.userHasWriteAccess);
+          }
+        });
       }
     }
 
     getData();
   }, []);
 
-
   return (
     <>
       <Divider />
       <Flex px={2} py={1} bg='gray.100' align='center'>
-        {/* <Text textAlign='center'>Developed by the Apache Airavata Team</Text> */}
 
         <Spacer />
 

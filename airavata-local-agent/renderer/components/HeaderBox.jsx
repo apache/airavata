@@ -1,8 +1,26 @@
-import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
+import { Box, Flex, Spacer, Text, Modal, ModalOverlay, ModalCloseButton, ModalHeader, ModalBody, ModalContent, useDisclosure, Tooltip } from "@chakra-ui/react";
+import { UserModal } from './UserModal';
 
 export const HeaderBox = ({ name, email }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box py={1} px={2} bg='gray.100'>
+
+      <Modal isOpen={isOpen} onClose={onClose} size='xl'>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>User Information</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={8}>
+            {
+              isOpen && (
+                <UserModal email={email} accessToken={localStorage.getItem("accessToken")} />
+              )
+            }
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
       <Flex>
         <Text>Cybershuttle MD Local Agent v1.0.0</Text>
@@ -15,16 +33,32 @@ export const HeaderBox = ({ name, email }) => {
               window.location.href = '/login';
             }}>Log In</Text>
           ) : (
-            <Text>{name} ({email}), <Text color='blue.400' _hover={{ textDecoration: "underline", cursor: "pointer" }} as='span' onClick={() => {
-              // delete the access token and refresh token
-              // console.log("Running this code...");
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('refreshToken');
+            <Text>
+              <Tooltip label="View user information">
+                <Text as='span'
+                  _hover={{
+                    textDecoration: "underline",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => {
+                    onOpen();
+                  }}
+                >
+                  {name} ({email}),
+                </Text>
+              </Tooltip>
+              {" "}
+              <Text color='blue.400' _hover={{ textDecoration: "underline", cursor: "pointer" }} as='span' onClick={() => {
+                // delete the access token and refresh token
+                // console.log("Running this code...");
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
 
-              window.auth.ciLogonLogout();
-              // redirect to login page
-              window.location.href = '/login';
-            }}>Log Out</Text></Text>
+                window.auth.ciLogonLogout();
+                // redirect to login page
+                window.location.href = '/login';
+              }}>Log Out</Text>
+            </Text>
           )
         }
       </Flex>
