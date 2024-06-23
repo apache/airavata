@@ -104,7 +104,3 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
     </>
   );
 };
-
-export default React.memo(JupyterLab, (props, nextProps) => {
-  return true;
-});
