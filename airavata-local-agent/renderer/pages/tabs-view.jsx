@@ -35,7 +35,7 @@ import { VNCViewer } from "../components/VNCViewer";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ExperimentModal from "../components/ExperimentModal";
-import JupyterLab from "../components/JupyterLab";
+import { JupyterLab } from "../components/JupyterLab";
 dayjs.extend(relativeTime);
 
 
