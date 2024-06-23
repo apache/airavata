@@ -107,8 +107,6 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
           }
         }
 
-        console.log(objToAdd);
-
         setExperimentInputList((prev) => {
           return [
             ...prev,
@@ -236,7 +234,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
             {
               experimentStatus === "CREATED" &&
               <Button
-                colorScheme='blue'
+                colorScheme='green'
                 size='sm'
                 onClick={() => controlExperiment("launch")}
                 isDisabled={loading}
@@ -335,6 +333,8 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
         <TextWithBoldKey keyName="Node Count" text={experimentData.userConfigurationData.computationalResourceScheduling.nodeCount} />
 
         <TextWithBoldKey keyName="CPU Count" text={experimentData.userConfigurationData.computationalResourceScheduling.totalCPUCount} />
+
+        <TextWithBoldKey keyName="Total Physical Memory" text={experimentData.userConfigurationData.computationalResourceScheduling.totalPhysicalMemory + " MB"} />
 
         <TextWithBoldKey keyName="Wall Time Limit" text={experimentData.userConfigurationData.computationalResourceScheduling.wallTimeLimit} />
 

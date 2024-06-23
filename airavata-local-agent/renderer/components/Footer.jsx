@@ -19,7 +19,6 @@ export const Footer = () => {
       } else {
         setAccessToCreateExperiment(true);
       }
-      console.log("the data is:", data);
     }
 
     getData();
