@@ -55,7 +55,6 @@ const getExperimentApplication = (executionId) => {
   } else if (executionId.startsWith("VMD")) {
     return "VMD";
   } else if (executionId.startsWith("JupyterLab")) {
-
     return "Jupyter Lab";
   }
 };
@@ -68,10 +67,6 @@ const isValidStatusVMD = (status) => {
   let invalidStatus = ["CANCELED"]; // TODO here
   return !invalidStatus.includes(status);
 };
-
-// jupyterlab CAN have VMD
-
-
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
@@ -418,13 +413,11 @@ const TabsView = () => {
 
   const startAutoUpdateExperiments = () => {
     timer.current = setInterval(() => {
-      let filterObj = getFilterObj();
       fetchExperiments(pageSize, offset, getFilterObj(), false)
         .catch((error) => {
           console.error("App =>", error);
           // window.location.href = "/login";
         });
-
     }, 5000);
   };
 
@@ -483,15 +476,11 @@ const TabsView = () => {
     setIsLoading(true);
     setCurrentPage(1);
 
-    stopAutoUpdateExperiments();
-
     fetchExperiments(pageSize, 0, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
         // window.location.href = "/login";
       });
-
-    startAutoUpdateExperiments();
   };
 
   const handlePageChange = (nextPage) => {
@@ -523,7 +512,7 @@ const TabsView = () => {
           <ModalBody pb={8}>
             {
               isOpen && (
-                <ExperimentModal activeExperiment={activeExperiment} onClose={onClose} onOpen={onOpen} />
+                <ExperimentModal activeExperiment={activeExperiment} onClose={onClose} onOpen={onOpen} accessToken={accessToken} />
               )
             }
           </ModalBody>
@@ -591,9 +580,7 @@ const TabsView = () => {
                     setFilterText("");
                     setFilterStatus("");
 
-                    stopAutoUpdateExperiments();
                     fetchExperiments(pageSize, 0, {});
-                    startAutoUpdateExperiments();
                   }}>Reset</Button>
 
                   <Button size='sm' w='full' onClick={handleFilterChange} _hover={{

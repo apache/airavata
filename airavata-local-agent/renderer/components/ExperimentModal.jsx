@@ -1,15 +1,16 @@
-import { Box, Divider, ListItem, Stack, Text, Button, VStack, Badge, UnorderedList, useToast, Link } from "@chakra-ui/react";
+import { Box, Divider, ListItem, Stack, Text, Button, Badge, UnorderedList, useToast, Link } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { TextWithBoldKey } from "./TextWithBoldKey";
 import { getColorScheme } from "../lib/utilityFuncs";
 
-const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
+const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => {
   const toast = useToast();
   const [experimentData, setExperimentData] = useState(null);
   const [loading, setLoading] = useState(false);
   const experimentId = activeExperiment.experimentId;
   const experimentStatus = activeExperiment.experimentStatus;
   const [experimentOutputs, setExperimentOutputs] = useState([]);
+  const [experimentInputList, setExperimentInputList] = useState([]);
 
   /*
   {
@@ -17,13 +18,105 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
     shouldDisplayText: true/false depending on metadata is null or not,
     output: the text to display // only present if shouldDisplay is true,
     uris
-
   }
   */
 
+  async function controlExperiment(action) {
+    if (!action || (action !== "launch" && action !== "cancel")) {
+      console.log("Invalid action");
+      return;
+    }
+
+    setLoading(true);
+    const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/${action}/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!resp.ok) {
+      toast({
+        title: `Error ${action + "ing"} experiment`,
+        status: "error",
+        duration: 3000,
+        isClosable: true
+      });
+      return;
+    }
+
+    const data = await resp.json();
+
+    if (data?.success) {
+      toast({
+        title: `Experiment ${action + "ed"} successfully`,
+        description: "It may take a few seconds for the status to update.",
+        status: "success",
+        duration: 3000,
+        isClosable: true
+      });
+      onClose();
+    }
+
+    setLoading(false);
+  }
+
   useEffect(() => {
-    // Fetch data here
-    let accessToken = localStorage.getItem("accessToken");
+    function isValueUri(value) {
+      return value && value.startsWith("airavata-dp://");
+    }
+
+    function findDelimiter(value) {
+      if (value.includes(",")) {
+        return ",";
+      } else if (value.includes(" ")) {
+        return " ";
+      }
+    }
+
+    async function fetchExperimentInputs(experimentInputs) {
+      if (!experimentInputs || experimentInputs.length === 0) {
+        return;
+      }
+
+      for (let i = 0; i < experimentInputs.length; i++) {
+        let objToAdd = {
+          inputName: "",
+          inputValue: "",
+          isList: false,
+          listItems: []
+        };
+
+        objToAdd.inputName = experimentInputs[i].name;
+        objToAdd.inputValue = experimentInputs[i].value;
+
+        if (isValueUri(experimentInputs[i].value)) {
+          const uris = experimentInputs[i].value;
+          const delimiter = findDelimiter(uris);
+          const uriList = uris.split(delimiter);
+          objToAdd.isList = true;
+
+          for (let j = 0; j < uriList.length; j++) {
+            const resp = await fetchDownloadFromUri(uriList[j]);
+            const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
+
+            objToAdd.listItems.push({
+              name: fileName,
+              uri: uriList[j]
+            });
+          }
+        }
+
+        console.log(objToAdd);
+
+        setExperimentInputList((prev) => {
+          return [
+            ...prev,
+            objToAdd
+          ];
+        });
+      }
+    }
 
     async function fetchExperimentData() {
       const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/?format=json`, {
@@ -39,6 +132,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
       const data = await resp.json();
       try {
         await fetchExperimentOutputFiles(data.experimentOutputs);
+        await fetchExperimentInputs(data.experimentInputs);
       } catch (e) {
         console.log(e);
       }
@@ -46,27 +140,34 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
       setExperimentData(data);
     }
 
+    async function fetchDownloadFromUri(uri) {
+      const resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${uri}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      return resp;
+    }
+
+    function getFileNameFromHeader(contentDisposition) {
+      return contentDisposition.split('filename=')[1].replaceAll('"', '');
+    }
+
     async function fetchExperimentOutputFiles(experimentOutputs) {
       for (let i = 0; i < experimentOutputs.length; i++) {
         try {
-          // console.log(experimentOutputs[i]);
           let outputTypeName = experimentOutputs[i].name;
-          // read experimentOutputs[i] as a comman separated string into a list
-
           let shouldDisplayText = experimentOutputs[i].metaData !== null;
 
           if (shouldDisplayText) {
-            console.log(experimentOutputs[i]);
-            // only need to grab the URI
             let dataUri = experimentOutputs[i].value;
+            if (!dataUri) {
+              continue;
+            }
 
-            let resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${dataUri}`, {
-              headers: {
-                Authorization: `Bearer ${accessToken}`
-              }
-            });
-
-            const fileName = await resp.headers.get('Content-Disposition').split('filename=')[1].replaceAll('"', '');
+            const resp = await fetchDownloadFromUri(dataUri);
+            const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
             const text = await resp.text();
 
             setExperimentOutputs((prev) => {
@@ -90,15 +191,9 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
               uris = experimentOutputs[i].value.split(',');
               // only need to grab filename from header
 
-
               for (let j = 0; j < uris.length; j++) {
-                let resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${uris[j]}`, {
-                  headers: {
-                    Authorization: `Bearer ${accessToken}`
-                  }
-                });
-
-                const fileName = await resp.headers.get('Content-Disposition').split('filename=')[1].replaceAll('"', '');
+                const resp = await fetchDownloadFromUri(uris[j]);
+                const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
                 fileNames.push(fileName);
               }
             }
@@ -130,7 +225,6 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
     return <Text>Loading (this may take a moment)...</Text>;
   }
 
-
   return (
     <Box>
       <Stack spacing={2} direction='column' divider={<Divider />}>
@@ -141,44 +235,12 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
 
             {
               experimentStatus === "CREATED" &&
-              <Button colorScheme='blue' size='sm' onClick={async () => {
-                setLoading(true);
-                let accessToken = localStorage.getItem("accessToken");
-                const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/launch/`, {
-                  method: 'POST',
-                  headers: {
-                    Authorization: `Bearer ${accessToken}`
-                  }
-                });
-                if (!resp.ok) {
-                  console.log("Error launching experiment");
-                  toast({
-                    title: "Error launching experiment",
-                    status: "error",
-                    duration: 3000,
-                    isClosable: true
-                  });
-                  return;
-                }
-                const data = await resp.json();
-
-                if (data?.success) {
-                  console.log("Experiment launched successfully");
-                  toast({
-                    title: "Experiment launched successfully",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true
-                  });
-
-                  setRefreshData(Math.random());
-                  onClose();
-                }
-
-                setLoading(false);
-              }} isDisabled={
-                loading
-              }>
+              <Button
+                colorScheme='blue'
+                size='sm'
+                onClick={() => controlExperiment("launch")}
+                isDisabled={loading}
+              >
                 {
                   loading ? "Launching..." : "Launch Experiment"
                 }
@@ -187,52 +249,22 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
 
             {
               experimentStatus === "EXECUTING" &&
-              <Button colorScheme='red'
-                onClick={async () => {
-                  setLoading(true);
-                  let accessToken = localStorage.getItem("accessToken");
-                  const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/cancel/`, {
-                    method: 'POST',
-                    headers: {
-                      Authorization: `Bearer ${accessToken}`
-                    }
-                  });
-                  if (!resp.ok) {
-                    console.log("Error canceling experiment");
-                    toast({
-                      title: "Error canceling experiment",
-                      status: "error",
-                      duration: 3000,
-                      isClosable: true
-                    });
-                    return;
-                  }
-                  const data = await resp.json();
-
-                  if (data?.success) {
-                    console.log("Experiment canceled successfully");
-                    toast({
-                      title: "Experiment canceled successfully",
-                      status: "success",
-                      duration: 3000,
-                      isClosable: true
-                    });
-                    onClose();
-                  }
-                }} isDisabled={
-                  loading
-                }
+              <Button
+                colorScheme='red'
+                onClick={() => controlExperiment("cancel")}
+                isDisabled={loading}
                 size='sm'
-              >{
+              >
+                {
                   loading ? "Canceling..." : "Cancel Experiment"
-                }</Button>
+                }
+              </Button>
             }
           </Box>
         }
 
         <Box>
           <Text fontWeight='bold'>Outputs</Text>
-
           {
             experimentOutputs.map((output, index) => {
               return (
@@ -280,9 +312,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
               );
             })
           }
-
         </Box>
-
 
         <TextWithBoldKey keyName="Name" text={experimentData.experimentName} />
 
@@ -293,7 +323,6 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
         <TextWithBoldKey keyName="ExperimentID" text={experimentData.experimentId} />
 
         <TextWithBoldKey keyName="GatewayID" text={experimentData.gatewayId} />
-
 
         <TextWithBoldKey keyName="Creation Time" text={new Date(experimentData.creationTime).toLocaleString()} />
 
@@ -311,9 +340,45 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
 
 
         <Box>
-          <Text fontWeight='bold'>Inputs ({experimentData.processes.length} total processes)</Text>
+          <Text fontWeight='bold'>Experiment Inputs</Text>
+          <UnorderedList>
+            {
+              experimentInputList.map((input, index) => {
+                return (
 
-          {
+                  <ListItem key={index}>
+                    <Text>{input.inputName}:</Text>
+                    {
+                      input.isList ? (
+                        <UnorderedList>
+                          {
+                            input.listItems.map((item, index) => {
+                              return (
+                                <ListItem key={index}>
+                                  <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${item.uri}`} target="_blank" color='blue.400'>
+                                    {item.name}
+                                  </Link>
+                                </ListItem>
+                              );
+                            })
+                          }
+                        </UnorderedList>
+                      ) : (
+                        <Text>{input.inputValue}</Text>
+                      )
+                    }
+
+                  </ListItem>
+                  // <Box key={index}>
+
+                  // </Box>
+                );
+              })
+            }
+          </UnorderedList>
+
+
+          {/* {
             experimentData.processes.map((process, index) => {
               return (
                 <Box key={index}>
@@ -333,7 +398,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose }) => {
 
               );
             })
-          }
+          } */}
         </Box>
 
         <Box>
