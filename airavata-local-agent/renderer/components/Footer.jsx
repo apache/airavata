@@ -7,7 +7,7 @@ export const Footer = () => {
 
   useEffect(() => {
     async function getData() {
-      const resp = await fetch("https://md.cybershuttle.org/api/applications/list_all/?format=json", {
+      const resp = await fetch("https://md.cybershuttle.org/api/applications/?format=json", {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -18,12 +18,13 @@ export const Footer = () => {
       }
 
       const data = await resp.json();
-      if (!data || !Array.isArray(data) || data.length === 0) {
+      if (!data || !Array.isArray(data)) {
         setAccessToCreateExperiment(false);
       } else {
         data.forEach((obj) => {
           if (obj.appModuleName === "NAMD") {
-            setAccessToCreateExperiment(obj.userHasWriteAccess);
+            setAccessToCreateExperiment(true);
+            return;
           }
         });
       }
