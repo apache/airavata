@@ -347,9 +347,15 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
                 return (
 
                   <ListItem key={index}>
-                    <Text>{input.inputName}:</Text>
+                    <Text>{input.inputName}:{" "}
+                      {
+                        !input.isList && (
+                          <Text as='span'>{input.inputValue}</Text>
+                        )
+                      }
+                    </Text>
                     {
-                      input.isList ? (
+                      input.isList && (
                         <UnorderedList>
                           {
                             input.listItems.map((item, index) => {
@@ -363,15 +369,10 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
                             })
                           }
                         </UnorderedList>
-                      ) : (
-                        <Text>{input.inputValue}</Text>
                       )
                     }
 
                   </ListItem>
-                  // <Box key={index}>
-
-                  // </Box>
                 );
               })
             }

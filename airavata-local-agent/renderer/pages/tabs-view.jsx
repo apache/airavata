@@ -346,7 +346,7 @@ const TabsView = () => {
                 window.location.href = "/login";
               }
             }
-          >clicking here</Button>. If you just made your account, please wait a few minutes and try again, as your account is still being set up. If you have been using the app for a while, please log out and log back in as your session may have expired.</Text>,
+          >clicking here</Button>. If you just made your account, please wait a few minutes and try again, as your account is still being set up. This may also happen if you recently signed in with a different account. If you have been using the app for a while, please log out and log back in as your session may have expired.</Text>,
           status: "error",
           duration: 5000,
           isClosable: true,
