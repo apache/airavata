@@ -1,4 +1,4 @@
-import { Box, Divider, ListItem, Stack, Text, Button, Badge, UnorderedList, useToast, Link } from "@chakra-ui/react";
+import { Box, Divider, ListItem, Stack, Text, Button, Badge, UnorderedList, useToast, Link, Accordion, AccordionItem, AccordionButton, AccordionPanel } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { TextWithBoldKey } from "./TextWithBoldKey";
 import { getColorScheme } from "../lib/utilityFuncs";
@@ -294,61 +294,71 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
           </Box>
         }
 
-        <Box>
-          <Text fontWeight='bold'>Outputs</Text>
-          {
-            experimentOutputs.map((output, index) => {
-              console.log(output);
-              return (
-                <Box key={index} mb={4}>
-                  {
-                    !output.shouldDisplayText && (
-                      <>
-                        <Text>
-                          {output.outputTypeName}:{" "}
-                        </Text>
-                        <UnorderedList>
-                          {
-                            output.name.map((name, index) => {
-                              return (
-                                <ListItem key={index}>
-                                  <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${output.dataUri[index]}`} target="_blank" color='blue.400'>
-                                    {name}
-                                  </Link>
-                                </ListItem>
-                              );
-                            })
-                          }
-                        </UnorderedList>
-                      </>
-                    )
-                  }
-                  {
-                    output.shouldDisplayText &&
-                    (
-                      <>
-                        <Text>
-                          {output.outputTypeName}:{" "}
-                          <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${output.dataUri}`} target="_blank" color='blue.400'>
-                            {output.name}
-                          </Link>
-                        </Text>
-
-                        <Box maxH='300px' overflow="scroll" bg='gray.100' p={4} rounded='md' mt={2}>
-                          <Text whiteSpace="pre">{output.output}</Text>
-                        </Box>
-                      </>)
-
-                  }
-                </Box>
-              );
-            })
-          }
-        </Box>
-
         <TextWithBoldKey keyName="Name" text={experimentData.experimentName} />
 
         <TextWithBoldKey keyName="Status" text={<Badge colorScheme={getColorScheme(experimentStatus)}>{experimentStatus}</Badge>} />
+
+        <Accordion allowMultiple>
+          <AccordionItem>
+            <AccordionButton>
+              <Text fontWeight='bold'>Outputs</Text>
+            </AccordionButton>
+
+
+            <AccordionPanel>
+              {
+                experimentOutputs.map((output, index) => {
+                  console.log(output);
+                  return (
+                    <Box key={index} mb={4}>
+                      {
+                        !output.shouldDisplayText && (
+                          <>
+                            <Text>
+                              {output.outputTypeName}:{" "}
+                            </Text>
+                            <UnorderedList>
+                              {
+                                output.name.map((name, index) => {
+                                  return (
+                                    <ListItem key={index}>
+                                      <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${output.dataUri[index]}`} target="_blank" color='blue.400'>
+                                        {name}
+                                      </Link>
+                                    </ListItem>
+                                  );
+                                })
+                              }
+                            </UnorderedList>
+                          </>
+                        )
+                      }
+                      {
+                        output.shouldDisplayText &&
+                        (
+                          <>
+                            <Text>
+                              {output.outputTypeName}:{" "}
+                              <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${output.dataUri}`} target="_blank" color='blue.400'>
+                                {output.name}
+                              </Link>
+                            </Text>
+
+                            <Box maxH='300px' overflow="scroll" bg='gray.100' p={4} rounded='md' mt={2}>
+                              <Text whiteSpace="pre">{output.output}</Text>
+                            </Box>
+                          </>)
+
+                      }
+                    </Box>
+                  );
+                })
+              }
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+
+
 
         <TextWithBoldKey keyName="Description" text={experimentData.description} />
 
@@ -358,7 +368,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="Owner" text={experimentData.userName} />
 
-        <TextWithBoldKey keyName="Application" text={experimentData.userConfigurationData.computationalResourceScheduling.resourceHostId} />
+        <TextWithBoldKey keyName="Compute Resource ID" text={experimentData.userConfigurationData.computationalResourceScheduling.resourceHostId} />
 
         <TextWithBoldKey keyName="Queue" text={experimentData.userConfigurationData.computationalResourceScheduling.queueName} />
 

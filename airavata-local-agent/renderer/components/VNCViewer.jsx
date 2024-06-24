@@ -39,16 +39,6 @@ export const VNCViewer = ({ headers, accessToken, applicationId, reqHost, reqPor
     setLoading(true);
     let interval;
 
-    let websocketPort = localStorage.getItem("websocketPort");
-    if (!websocketPort) {
-      websocketPort = 6080;
-    } else {
-      websocketPort = parseInt(websocketPort);
-      websocketPort += 1;
-    }
-
-    localStorage.setItem("websocketPort", websocketPort);
-
     if (!reqPort) {
       // create the interval
       interval = setInterval(async () => {
