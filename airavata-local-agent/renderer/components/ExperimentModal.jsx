@@ -153,60 +153,93 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
     }
 
     async function fetchExperimentOutputFiles(experimentOutputs) {
+
       for (let i = 0; i < experimentOutputs.length; i++) {
         try {
           let outputTypeName = experimentOutputs[i].name;
+          console.log(outputTypeName);
           let shouldDisplayText = experimentOutputs[i].metaData !== null;
+
 
           if (shouldDisplayText) {
             let dataUri = experimentOutputs[i].value;
-            if (!dataUri) {
-              continue;
-            }
+            let newObj;
 
-            const resp = await fetchDownloadFromUri(dataUri);
-            const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
-            const text = await resp.text();
+            if (!dataUri || !isValueUri(dataUri)) {
+              newObj = {
+                outputTypeName: outputTypeName,
+                name: null,
+                shouldDisplayText: true,
+                output: null,
+                dataUri: dataUri
+              };
+            } else {
+              const resp = await fetchDownloadFromUri(dataUri);
+              const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
+              const text = await resp.text();
+
+              if (outputTypeName === "Output_PDB_Files") {
+                console.log(resp, fileName, text);
+              }
+
+
+              newObj = {
+                outputTypeName: outputTypeName,
+                name: fileName,
+                shouldDisplayText: true,
+                output: text,
+                dataUri: dataUri
+              };
+            }
 
             setExperimentOutputs((prev) => {
               return [
                 ...prev,
-                {
-                  outputTypeName: outputTypeName,
-                  name: fileName,
-                  shouldDisplayText: true,
-                  output: text,
-                  dataUri: dataUri
-                }
+                newObj
               ];
             });
           } else {
             let fileNames = [];
             let uris = [];
-            if (!experimentOutputs[i].value.includes(",")) {
-              // continue;
+            let newObj;
+
+            if (experimentOutputs[i].value === null) {
+              newObj = {
+                outputTypeName: outputTypeName,
+                name: [],
+                shouldDisplayText: false,
+                output: null,
+                dataUri: null
+              };
             } else {
-              uris = experimentOutputs[i].value.split(',');
-              // only need to grab filename from header
+              let delimiter = findDelimiter(experimentOutputs[i].value);
+              uris = experimentOutputs[i].value.split(delimiter);
 
               for (let j = 0; j < uris.length; j++) {
+                if (!isValueUri(uris[j])) {
+                  continue;
+                }
                 const resp = await fetchDownloadFromUri(uris[j]);
                 const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
                 fileNames.push(fileName);
               }
+
+              newObj = {
+                outputTypeName: outputTypeName,
+                name: fileNames,
+                shouldDisplayText: false,
+                output: null,
+                dataUri: uris
+              };
             }
+
+            console.log(newObj);
 
 
             setExperimentOutputs((prev) => {
               return ([
                 ...prev,
-                {
-                  outputTypeName: outputTypeName,
-                  name: fileNames,
-                  shouldDisplayText: false,
-                  output: null,
-                  dataUri: uris
-                }
+                newObj
               ]);
             });
           }
@@ -265,6 +298,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
           <Text fontWeight='bold'>Outputs</Text>
           {
             experimentOutputs.map((output, index) => {
+              console.log(output);
               return (
                 <Box key={index} mb={4}>
                   {
@@ -320,8 +354,6 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="ExperimentID" text={experimentData.experimentId} />
 
-        <TextWithBoldKey keyName="GatewayID" text={experimentData.gatewayId} />
-
         <TextWithBoldKey keyName="Creation Time" text={new Date(experimentData.creationTime).toLocaleString()} />
 
         <TextWithBoldKey keyName="Owner" text={experimentData.userName} />
@@ -336,7 +368,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="Total Physical Memory" text={experimentData.userConfigurationData.computationalResourceScheduling.totalPhysicalMemory + " MB"} />
 
-        <TextWithBoldKey keyName="Wall Time Limit" text={experimentData.userConfigurationData.computationalResourceScheduling.wallTimeLimit} />
+        <TextWithBoldKey keyName="Wall Time Limit" text={experimentData.userConfigurationData.computationalResourceScheduling.wallTimeLimit + " minutes"} />
 
 
         <Box>
