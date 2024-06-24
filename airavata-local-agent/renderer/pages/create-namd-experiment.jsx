@@ -145,6 +145,7 @@ const Home = () => {
 
   const uploadMultipleFiles = (files, setHandler) => {
     if (!files || files.length === 0) {
+      setHandler([]);
       return;
     }
 
@@ -156,6 +157,7 @@ const Home = () => {
   const uploadFile = (file, setHandler) => {
     console.log("Uploading...", file);
     if (!file) {
+      setHandler("");
       return;
     }
 
@@ -933,7 +935,7 @@ const Home = () => {
               <Input type='file' placeholder='upload file' onChange={(e) => {
                 uploadFile(e.target.files[0], setMdInstructionsUri);
               }} />
-              <FormHelperText>NAMD conf file/QuickMD conf file. {mdInstructionsUri}</FormHelperText>
+              <FormHelperText>NAMD conf file/QuickMD conf file. {mdInstructionsUri && "File uploaded."}</FormHelperText>
             </FormControl>
 
             <FormControl>
@@ -941,7 +943,7 @@ const Home = () => {
               <Input type='file' placeholder='upload file' onChange={(e) => {
                 uploadFile(e.target.files[0], setCoordinatesUri);
               }} />
-              <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files. {coordinatesUri}</FormHelperText>
+              <FormHelperText>PDB coordinates files needed but could be uploaded using optional upload below together with other needed files. {coordinatesUri && "File uploaded."}</FormHelperText>
             </FormControl>
 
             <FormControl>
@@ -949,7 +951,7 @@ const Home = () => {
               <Input type='file' placeholder='upload file' onChange={(e) => {
                 uploadFile(e.target.files[0], setProteinPSFUri);
               }} />
-              <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files. {proteinPSFUri}
+              <FormHelperText>Protein structure file (psf) needed but could be uploaded using optional upload below together with other needed files. {proteinPSFUri && "File uploaded"}
               </FormHelperText>
             </FormControl>
 
@@ -959,7 +961,7 @@ const Home = () => {
               <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
                 uploadMultipleFiles(e.target.files, setFParamUri);
               }} />
-              <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",")}
+              <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",") && "Files uploaded."}
               </FormHelperText>
             </FormControl>
 
@@ -968,7 +970,7 @@ const Home = () => {
               <Input type='file' placeholder='upload file' onChange={(e) => {
                 uploadFile(e.target.files[0], setConstraintsUri);
               }} />
-              <FormHelperText>Constraints file in pdb. {constraintsUri}
+              <FormHelperText>Constraints file in pdb. {constraintsUri && "File uploaded."}
               </FormHelperText>
             </FormControl>
 
@@ -978,7 +980,7 @@ const Home = () => {
               <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
                 uploadMultipleFiles(e.target.files, setOptionalUri);
               }} />
-              <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",")}
+              <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",") && "Files uploaded."}
               </FormHelperText>
             </FormControl>
 

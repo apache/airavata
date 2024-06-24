@@ -19,8 +19,6 @@ const Home = () => {
           <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle MD Local Agent</Text>
         </Flex>
 
-        <Heading fontSize='2xl' mt={4} color='blue.500'>Overview</Heading>
-
         <Text mt={2}>Cybershuttle MD Local Agent, developed by the Cybershuttle project, empowers researchers by providing seamless access to a comprehensive range of computational resources. The agent bridges the gap between local, institutional, and national-scale computing resources, enhancing productivity and collaboration in scientific research. By integrating diverse computing environments into a unified interface, Apache Airavata eliminates traditional barriers, enabling researchers to focus on innovation and discovery.
         </Text>
 
