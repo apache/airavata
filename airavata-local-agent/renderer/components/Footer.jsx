@@ -1,4 +1,4 @@
-import { Divider, Flex, Link, Spacer, Stack, Text, useToast } from '@chakra-ui/react';
+import { Button, Divider, Flex, Link, Spacer, Stack, Text, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 
 export const Footer = () => {
@@ -41,12 +41,14 @@ export const Footer = () => {
         <Spacer />
 
         <Stack direction='row'>
-          <Link color='blue.400' href='/tabs-view'>List Experiments</Link>
+          {/* <Link color='blue.400' href='/tabs-view'>List Experiments</Link> */}
           {
             accessToCreateExperiment && <>
               <Text>•</Text>
 
-              <Link color='blue.400' href='/create-namd-experiment'>Create NAMD Experiment</Link>
+              <Button>
+                <Link color='blue.400' href='/create-namd-experiment'>Create NAMD Experiment</Link>
+              </Button>
             </>}
         </Stack>
       </Flex >
