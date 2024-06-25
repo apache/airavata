@@ -12,6 +12,14 @@ export function getRelativeTime(timestamp) {
   return dayjs(timestamp).fromNow();
 }
 
+function compareVersions(a, b) {
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+}
+
+export function isNewerVersion(a, b) {
+  return compareVersions(a, b) > 0;
+}
+
 export function getExperimentStatusFromNum(num) {
   let arr = ['CREATED',
     'VALIDATED',
