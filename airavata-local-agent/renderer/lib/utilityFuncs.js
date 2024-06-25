@@ -1,33 +1,39 @@
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+
+
 export function titleCase(str) {
   return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
 };
 
-export function dateToAgo(date) {
-  let seconds = Math.floor((new Date() - date) / 1000);
+export function getRelativeTime(timestamp) {
+  // not a Date() object
+  return dayjs(timestamp).fromNow();
+}
 
-  let interval = Math.floor(seconds / 31536000);
+export function getStatusFromNum(num) {
+  switch (num) {
+    case 2:
+      return 'CREATED';
+    case 3:
+      return 'CREATED';
+    case 4:
+      return 'EXECUTING';
+    case 2:
+      return 'COMPLETED';
+    case 5:
+      return 'CANCELING';
+    case 6:
+      return 'CANCELED';
+    case 4:
+      return 'FAILED';
+    default:
+      return 'UNKNOWN';
+  }
 
-  if (interval > 1) {
-    return interval + " years";
-  }
-  interval = Math.floor(seconds / 2592000);
-  if (interval > 1) {
-    return interval + " months";
-  }
-  interval = Math.floor(seconds / 86400);
-  if (interval > 1) {
-    return interval + " days";
-  }
-  interval = Math.floor(seconds / 3600);
-  if (interval > 1) {
-    return interval + " hours";
-  }
-  interval = Math.floor(seconds / 60);
-  if (interval > 1) {
-    return interval + " minutes";
-  }
-  return Math.floor(seconds) + " seconds";
-};
+}
+
 
 export const getColorScheme = (status) => {
   switch (status) {

@@ -1,7 +1,16 @@
-import { Box, Divider, ListItem, Stack, Text, Button, Badge, UnorderedList, useToast, Link, Accordion, AccordionItem, AccordionButton, AccordionPanel } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {
+  Box, Divider, ListItem, Stack, Text, Button, Badge, UnorderedList, useToast, Link, Accordion, AccordionItem, AccordionButton, AccordionPanel, Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  AccordionIcon,
+} from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import { TextWithBoldKey } from "./TextWithBoldKey";
-import { getColorScheme } from "../lib/utilityFuncs";
+import { getColorScheme, getRelativeTime } from "../lib/utilityFuncs";
 
 const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => {
   const toast = useToast();
@@ -11,7 +20,8 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
   const experimentStatus = activeExperiment.experimentStatus;
   const [experimentOutputs, setExperimentOutputs] = useState([]);
   const [experimentInputList, setExperimentInputList] = useState([]);
-
+  const [experimentJobs, setExperimentJobs] = useState([]);
+  const timer = useRef(null);
   /*
   {
     name: "Coordinate_Files",
@@ -20,6 +30,46 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
     uris
   }
   */
+
+  async function fetchExperimentJobs() {
+    const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/jobs/?format=json`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!resp.ok) {
+      console.log("Error fetching experiment jobs");
+      return;
+    }
+
+    const data = await resp.json();
+    setExperimentJobs(data);
+  }
+
+  async function fetchExperimentData() {
+    const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/?format=json`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    if (!resp.ok) {
+      console.log("Error fetching experiment data");
+      return;
+    }
+
+    const data = await resp.json();
+    try {
+      // await fetchExperimentOutputFiles(data.experimentOutputs);
+      // await fetchExperimentInputs(data.experimentInputs);
+      await fetchExperimentJobs();
+    } catch (e) {
+      console.log(e);
+    }
+
+    setExperimentData(data);
+  }
+
 
   async function controlExperiment(action) {
     if (!action || (action !== "launch" && action !== "cancel")) {
@@ -61,194 +111,186 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
     setLoading(false);
   }
 
-  useEffect(() => {
-    function isValueUri(value) {
-      return value && value.startsWith("airavata-dp://");
+  async function fetchExperimentInputs(experimentInputs) {
+    if (!experimentInputs || experimentInputs.length === 0) {
+      return;
     }
 
-    function findDelimiter(value) {
-      if (value.includes(",")) {
-        return ",";
-      } else if (value.includes(" ")) {
-        return " ";
-      }
-    }
+    for (let i = 0; i < experimentInputs.length; i++) {
+      let objToAdd = {
+        inputName: "",
+        inputValue: "",
+        isList: false,
+        listItems: []
+      };
 
-    async function fetchExperimentInputs(experimentInputs) {
-      if (!experimentInputs || experimentInputs.length === 0) {
-        return;
-      }
+      objToAdd.inputName = experimentInputs[i].name;
+      objToAdd.inputValue = experimentInputs[i].value;
 
-      for (let i = 0; i < experimentInputs.length; i++) {
-        let objToAdd = {
-          inputName: "",
-          inputValue: "",
-          isList: false,
-          listItems: []
-        };
+      if (isValueUri(experimentInputs[i].value)) {
+        const uris = experimentInputs[i].value;
+        const delimiter = findDelimiter(uris);
+        const uriList = uris.split(delimiter);
+        objToAdd.isList = true;
 
-        objToAdd.inputName = experimentInputs[i].name;
-        objToAdd.inputValue = experimentInputs[i].value;
+        for (let j = 0; j < uriList.length; j++) {
+          const resp = await fetchDownloadFromUri(uriList[j]);
+          const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
 
-        if (isValueUri(experimentInputs[i].value)) {
-          const uris = experimentInputs[i].value;
-          const delimiter = findDelimiter(uris);
-          const uriList = uris.split(delimiter);
-          objToAdd.isList = true;
-
-          for (let j = 0; j < uriList.length; j++) {
-            const resp = await fetchDownloadFromUri(uriList[j]);
-            const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
-
-            objToAdd.listItems.push({
-              name: fileName,
-              uri: uriList[j]
-            });
-          }
+          objToAdd.listItems.push({
+            name: fileName,
+            uri: uriList[j]
+          });
         }
-
-        setExperimentInputList((prev) => {
-          return [
-            ...prev,
-            objToAdd
-          ];
-        });
       }
-    }
 
-    async function fetchExperimentData() {
-      const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/?format=json`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+      setExperimentInputList((prev) => {
+        return [
+          ...prev,
+          objToAdd
+        ];
       });
-      if (!resp.ok) {
-        console.log("Error fetching experiment data");
-        return;
+    }
+  }
+  async function fetchDownloadFromUri(uri) {
+    const resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${uri}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
       }
+    });
 
-      const data = await resp.json();
+    return resp;
+  }
+
+  function isValueUri(value) {
+    return value && value.startsWith("airavata-dp://");
+  }
+
+  function findDelimiter(value) {
+    if (value.includes(",")) {
+      return ",";
+    } else if (value.includes(" ")) {
+      return " ";
+    }
+  }
+
+  function getFileNameFromHeader(contentDisposition) {
+    return contentDisposition.split('filename=')[1].replaceAll('"', '');
+  }
+
+  async function fetchExperimentOutputFiles(experimentOutputs) {
+
+    for (let i = 0; i < experimentOutputs.length; i++) {
       try {
-        await fetchExperimentOutputFiles(data.experimentOutputs);
-        await fetchExperimentInputs(data.experimentInputs);
+        let outputTypeName = experimentOutputs[i].name;
+        let shouldDisplayText = experimentOutputs[i].metaData !== null;
+
+
+        if (shouldDisplayText) {
+          let dataUri = experimentOutputs[i].value;
+          let newObj;
+
+          if (!dataUri || !isValueUri(dataUri)) {
+            newObj = {
+              outputTypeName: outputTypeName,
+              name: null,
+              shouldDisplayText: true,
+              output: null,
+              dataUri: dataUri
+            };
+          } else {
+            const resp = await fetchDownloadFromUri(dataUri);
+            const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
+            const text = await resp.text();
+
+
+            newObj = {
+              outputTypeName: outputTypeName,
+              name: fileName,
+              shouldDisplayText: true,
+              output: text,
+              dataUri: dataUri
+            };
+          }
+
+          setExperimentOutputs((prev) => {
+            return [
+              ...prev,
+              newObj
+            ];
+          });
+        } else {
+          let fileNames = [];
+          let uris = [];
+          let newObj;
+
+          if (experimentOutputs[i].value === null) {
+            newObj = {
+              outputTypeName: outputTypeName,
+              name: [],
+              shouldDisplayText: false,
+              output: null,
+              dataUri: null
+            };
+          } else {
+            let delimiter = findDelimiter(experimentOutputs[i].value);
+            uris = experimentOutputs[i].value.split(delimiter);
+
+            for (let j = 0; j < uris.length; j++) {
+              if (!isValueUri(uris[j])) {
+                continue;
+              }
+              const resp = await fetchDownloadFromUri(uris[j]);
+              const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
+              fileNames.push(fileName);
+            }
+
+            newObj = {
+              outputTypeName: outputTypeName,
+              name: fileNames,
+              shouldDisplayText: false,
+              output: null,
+              dataUri: uris
+            };
+          }
+
+
+          setExperimentOutputs((prev) => {
+            return ([
+              ...prev,
+              newObj
+            ]);
+          });
+        }
       } catch (e) {
         console.log(e);
       }
-
-      setExperimentData(data);
     }
+  }
 
-    async function fetchDownloadFromUri(uri) {
-      const resp = await fetch(`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${uri}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+  const startAutoUpdate = () => {
+    timer.current = setInterval(() => {
+      fetchExperimentData()
+        .catch((error) => {
+          console.error("App =>", error);
+          // window.location.href = "/login";
+        });
+    }, 3000);
+  };
 
-      return resp;
-    }
+  const stopAutoUpdate = () => {
+    clearInterval(timer.current);
+  };
 
-    function getFileNameFromHeader(contentDisposition) {
-      return contentDisposition.split('filename=')[1].replaceAll('"', '');
-    }
+  useEffect(() => {
+    startAutoUpdate();
 
-    async function fetchExperimentOutputFiles(experimentOutputs) {
+    return () => {
+      stopAutoUpdate();
+    };
+  });
 
-      for (let i = 0; i < experimentOutputs.length; i++) {
-        try {
-          let outputTypeName = experimentOutputs[i].name;
-          console.log(outputTypeName);
-          let shouldDisplayText = experimentOutputs[i].metaData !== null;
-
-
-          if (shouldDisplayText) {
-            let dataUri = experimentOutputs[i].value;
-            let newObj;
-
-            if (!dataUri || !isValueUri(dataUri)) {
-              newObj = {
-                outputTypeName: outputTypeName,
-                name: null,
-                shouldDisplayText: true,
-                output: null,
-                dataUri: dataUri
-              };
-            } else {
-              const resp = await fetchDownloadFromUri(dataUri);
-              const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
-              const text = await resp.text();
-
-              if (outputTypeName === "Output_PDB_Files") {
-                console.log(resp, fileName, text);
-              }
-
-
-              newObj = {
-                outputTypeName: outputTypeName,
-                name: fileName,
-                shouldDisplayText: true,
-                output: text,
-                dataUri: dataUri
-              };
-            }
-
-            setExperimentOutputs((prev) => {
-              return [
-                ...prev,
-                newObj
-              ];
-            });
-          } else {
-            let fileNames = [];
-            let uris = [];
-            let newObj;
-
-            if (experimentOutputs[i].value === null) {
-              newObj = {
-                outputTypeName: outputTypeName,
-                name: [],
-                shouldDisplayText: false,
-                output: null,
-                dataUri: null
-              };
-            } else {
-              let delimiter = findDelimiter(experimentOutputs[i].value);
-              uris = experimentOutputs[i].value.split(delimiter);
-
-              for (let j = 0; j < uris.length; j++) {
-                if (!isValueUri(uris[j])) {
-                  continue;
-                }
-                const resp = await fetchDownloadFromUri(uris[j]);
-                const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
-                fileNames.push(fileName);
-              }
-
-              newObj = {
-                outputTypeName: outputTypeName,
-                name: fileNames,
-                shouldDisplayText: false,
-                output: null,
-                dataUri: uris
-              };
-            }
-
-            console.log(newObj);
-
-
-            setExperimentOutputs((prev) => {
-              return ([
-                ...prev,
-                newObj
-              ]);
-            });
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    }
-
+  useEffect(() => {
     fetchExperimentData();
   }, []);
 
@@ -298,17 +340,36 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="Status" text={<Badge colorScheme={getColorScheme(experimentStatus)}>{experimentStatus}</Badge>} />
 
-        <Accordion allowMultiple>
-          <AccordionItem>
-            <AccordionButton>
-              <Text fontWeight='bold'>Outputs</Text>
+        <Accordion
+          onChange={(lst) => {
+            let index = lst[0];
+            if (index === 0) {
+              console.log("fetching experiment outputs");
+              setExperimentOutputs([]);
+              fetchExperimentOutputFiles(experimentData.experimentOutputs);
+            }
+          }}
+          allowMultiple
+        >
+          <AccordionItem border='none'>
+            <AccordionButton p={0}>
+              <AccordionIcon />
+              <Text fontWeight='bold'>Outputs{"  "}
+                {
+                  experimentData.experimentOutputs.length == 0 && (
+                    <Text as='span' color='gray.500'>(No outputs available)</Text>
+                  )
+                }
+              </Text>
             </AccordionButton>
 
 
+
             <AccordionPanel>
+
+              {/* TODO: experiment status does not update bc its passed as a prop */}
               {
                 experimentOutputs.map((output, index) => {
-                  console.log(output);
                   return (
                     <Box key={index} mb={4}>
                       {
@@ -358,6 +419,65 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
           </AccordionItem>
         </Accordion>
 
+        <Accordion
+          onChange={(lst) => {
+            let index = lst[0];
+            if (index === 0) {
+              console.log("fetching experiment inputs");
+              setExperimentInputList([]);
+              fetchExperimentInputs(
+                experimentData.experimentInputs);
+            }
+          }}
+          allowMultiple>
+          <AccordionItem border='none'>
+            <AccordionButton p={0}>
+              <AccordionIcon />
+              <Text fontWeight='bold'>Inputs</Text>
+
+            </AccordionButton>
+
+            <AccordionPanel>
+
+              <UnorderedList>
+                {
+                  experimentInputList.map((input, index) => {
+                    return (
+                      <ListItem key={index}>
+                        <Text>{input.inputName}:{" "}
+                          {
+                            !input.isList && (
+                              <Text as='span'>{input.inputValue}</Text>
+                            )
+                          }
+                        </Text>
+                        {
+                          input.isList && (
+                            <UnorderedList>
+                              {
+                                input.listItems.map((item, index) => {
+                                  return (
+                                    <ListItem key={index}>
+                                      <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${item.uri}`} target="_blank" color='blue.400'>
+                                        {item.name}
+                                      </Link>
+                                    </ListItem>
+                                  );
+                                })
+                              }
+                            </UnorderedList>
+                          )
+                        }
+
+                      </ListItem>
+                    );
+                  })
+                }
+              </UnorderedList>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+
 
 
         <TextWithBoldKey keyName="Description" text={experimentData.description} />
@@ -380,69 +500,41 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="Wall Time Limit" text={experimentData.userConfigurationData.computationalResourceScheduling.wallTimeLimit + " minutes"} />
 
-
         <Box>
-          <Text fontWeight='bold'>Experiment Inputs</Text>
-          <UnorderedList>
-            {
-              experimentInputList.map((input, index) => {
-                return (
+          <Text fontWeight='bold'>Jobs</Text>
 
-                  <ListItem key={index}>
-                    <Text>{input.inputName}:{" "}
-                      {
-                        !input.isList && (
-                          <Text as='span'>{input.inputValue}</Text>
-                        )
-                      }
-                    </Text>
-                    {
-                      input.isList && (
-                        <UnorderedList>
-                          {
-                            input.listItems.map((item, index) => {
-                              return (
-                                <ListItem key={index}>
-                                  <Link href={`https://md.cybershuttle.org/sdk/download-file/?data-product-uri=${item.uri}`} target="_blank" color='blue.400'>
-                                    {item.name}
-                                  </Link>
-                                </ListItem>
-                              );
-                            })
-                          }
-                        </UnorderedList>
-                      )
-                    }
-
-                  </ListItem>
-                );
-              })
-            }
-          </UnorderedList>
-
-
-          {/* {
-            experimentData.processes.map((process, index) => {
-              return (
-                <Box key={index}>
-                  <Text>{process.processId}</Text>
-                  <UnorderedList>
-                    {
-                      process.processInputs.map((input, index) => {
-                        return (
-                          <ListItem key={index}>
-                            <TextWithBoldKey keyName={input.name} text={input.value} />
-                          </ListItem>
-                        );
-                      })
-                    }
-                  </UnorderedList>
-                </Box>
-
-              );
-            })
-          } */}
+          <TableContainer>
+            <Table variant='simple'>
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>ID</Th>
+                  <Th>Status</Th>
+                  <Th>Creation Time</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {
+                  experimentJobs.map((job, index) => {
+                    return (
+                      <Tr key={index}>
+                        <Td>{job.jobName}</Td>
+                        <Td>{job.jobId}</Td>
+                        <Td>{
+                          job.jobStatuses && job.jobStatuses.length > 0 &&
+                          job.jobStatuses[job.jobStatuses.length - 1].reason
+                        }</Td>
+                        <Td>{getRelativeTime(job.creationTime)}</Td>
+                      </Tr>
+                    );
+                  })
+                }
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Box>
+
+
 
         <Box>
           <Text fontWeight='bold'>Errors</Text>
@@ -455,10 +547,10 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
           }
         </Box>
 
-      </Stack>
+      </Stack >
 
 
-    </Box>
+    </Box >
   );
 };
 

@@ -19,8 +19,11 @@ import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
 import tus from 'tus-js-client';
+import { useRouter } from 'next/router';
 
 const Home = () => {
+  const router = useRouter();
+
   const toast = useToast();
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -228,16 +231,16 @@ const Home = () => {
       }
 
       getProjects().catch((error) => {
-        showToast("Something went wrong (this may be because you just signed up and your account is new).", error.message);
+        window.location.href = "/login";
       });
 
       getGroupResourceProfileList().catch((error) => {
         console.error(error);
-        showToast("Something went wrong (this may be because you just signed up and your account is new).", error.message);
+        window.location.href = "/login";
       });
     } catch (error) {
       console.log(error);
-      showToast("Something went wrong (this may be because you just signed up and your account is new).", error.message);
+      window.location.href = "/login";
     }
   }, []);
 
@@ -828,9 +831,14 @@ const Home = () => {
   return (
     <>
       <HeaderBox name={userName} email={email} />
-      <Footer />
+      <Footer currentPage="create-namd-experiment" />
 
       <Container maxW='container.md' p={4} mt={4}>
+
+        <Button mb={4} colorScheme="blue" variant='link' onClick={() => {
+          confirm("You have not yet submitted your experiment, are you sure you want to go back?") && router.push('/tabs-view');
+        }}>Back to Experiments</Button>
+
         <Stack direction='column' spacing={4}>
 
           <Box>
