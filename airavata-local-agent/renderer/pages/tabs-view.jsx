@@ -490,7 +490,7 @@ const TabsView = () => {
   return (
     <>
       <HeaderBox name={name} email={email} />
-      <Footer />
+      <Footer currentPage='tabs-view' showWarning={arrOfTabsInfo.length !== 0} />
       {
         isLoadingSession && (
           <>
