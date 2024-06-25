@@ -33,6 +33,7 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem("ciLoginAuto") === "true") {
+      setLoading(true);
       localStorage.removeItem("ciLoginAuto");
       window.auth.ciLogonLogin();
     }
@@ -89,9 +90,11 @@ const Login = () => {
             <Heading size='md' textAlign="left" color='blue.500'>
 
               Log in with your existing organizational login</Heading>
-            <Button colorScheme='blue' w='full' mt={4} onClick={handleCiLogin}> {
-              loading && <Spinner mr={2} />
-            }Login with Existing Institution Credentials</Button>
+            <Button colorScheme='blue' w='full' mt={4} onClick={handleCiLogin}
+              isDisabled={loading}
+            > {
+                loading && <Spinner mr={2} />
+              }Login with CILogon</Button>
           </Box>
 
           {/* <Box shadow='md' rounded='md' p={4} mt={8}>

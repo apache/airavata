@@ -111,7 +111,6 @@ ipcMain.on('ci-logon-logout', (event) => {
 ipcMain.on('ci-logon-login', async (event) => {
 
   console.log("Logging in with CI logon");
-  log.warn('__dirname:', __dirname);
   log.warn("Logging in with CI logon");
   var authWindow = createWindow('authWindow', {
     width: 1200,
@@ -124,18 +123,52 @@ ipcMain.on('ci-logon-login', async (event) => {
   authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
 
   authWindow.show();
+  /*
+   setTimeout(async () => {
+        const tokens = await getToken(url);
+
+        if (tokens.length > 0) {
+          const [accessToken, refreshToken] = tokens;
+          console.log("Tokens", accessToken, refreshToken);
+          event.sender.send('ci-logon-success', accessToken, refreshToken);
+
+          // authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+
+        }
+      }, 5000);
+  */
+  // after we hit https://md.cybershuttle.org/auth/callback, once we get the next URL that starts with md.cybershuttle.org, we can send the info back to the user
+
+  let hitUrl = false;
   authWindow.webContents.on('will-redirect', async (e, url) => {
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
-      const tokens = await getToken(url);
+      // hitUrl = true;
 
-      if (tokens.length > 0) {
-        const [accessToken, refreshToken] = tokens;
-        console.log("Tokens", accessToken, refreshToken);
-        event.sender.send('ci-logon-success', accessToken, refreshToken);
-      }
-      authWindow.close();
-      authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+      setTimeout(async () => {
+        const tokens = await getToken(url);
+
+        if (tokens.length > 0) {
+          const [accessToken, refreshToken] = tokens;
+          console.log("Tokens", accessToken, refreshToken);
+          event.sender.send('ci-logon-success', accessToken, refreshToken);
+          authWindow.close();
+          // authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+
+        }
+      }, 5000);
+
+      authWindow.hide();
     }
+
+    // if (hitUrl && url.startsWith("https://md.cybershuttle.org/")) {
+    //   const tokens = await getToken(url);
+
+    //   if (tokens.length > 0) {
+    //     const [accessToken, refreshToken] = tokens;
+    //     event.sender.send('ci-logon-success', accessToken, refreshToken);
+    //     // authWindow.hide();
+    //   }
+    // }
   });
 });
 
