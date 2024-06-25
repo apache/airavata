@@ -89,9 +89,10 @@ export class VNCViewer extends Component {
 
   componentDidMount() {
     this.setState({ loading: true });
+    console.log("calling componentDidMount", this.props.reqPort);
     const { reqPort } = this.props;
-
     if (!reqPort) {
+      this.fetchServerStatus();
       this.interval = setInterval(() => this.fetchServerStatus(), 5000);
     }
   }

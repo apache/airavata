@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Link, Spacer, Stack, Text, useToast } from '@chakra-ui/react';
+import { Button, Divider, Flex, Link, Spacer, Stack, Text, Tooltip, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 
 export const Footer = ({ currentPage, showWarning }) => {
@@ -23,6 +23,7 @@ export const Footer = ({ currentPage, showWarning }) => {
       } else {
         data.forEach((obj) => {
           if (obj.appModuleName === "NAMD") {
+            console.log("Access to create experiment");
             setAccessToCreateExperiment(true);
             return;
           }
@@ -31,7 +32,17 @@ export const Footer = ({ currentPage, showWarning }) => {
     }
 
     getData();
-  }, []);
+
+    if (!accessToCreateExperiment) {
+      // poll every 5 seconds
+      const interval = setInterval(() => {
+        getData();
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+
+
+  }, [accessToCreateExperiment]);
 
   return (
     <>
@@ -41,22 +52,20 @@ export const Footer = ({ currentPage, showWarning }) => {
         <Spacer />
 
         <Stack direction='row'>
-          {/* <Link color='blue.400' href='/tabs-view'>List Experiments</Link> */}
-          {
-            accessToCreateExperiment && <>
-              {/* <Text>•</Text> */}
 
-              <Button colorScheme='blue' size='xs' isDisabled={'create-namd-experiment' === currentPage} onClick={() => {
-                if (showWarning) {
-                  confirm("Your VMD and Jupyter Notebook tabs will close if you go to the create experiment page. Are you sure?") && (window.location.href = '/create-namd-experiment');
-                } else {
-                  window.location.href = '/create-namd-experiment';
-                }
-
-              }}>
-                Create NAMD Experiment
-              </Button>
-            </>}
+          <Tooltip label={
+            !accessToCreateExperiment && "You do not have access to create NAMD experiments"
+          }>
+            <Button colorScheme='blue' size='xs' isDisabled={('create-namd-experiment' === currentPage) || !accessToCreateExperiment} onClick={() => {
+              if (showWarning) {
+                confirm("Your VMD and Jupyter Notebook tabs will close if you go to the create experiment page. Are you sure?") && (window.location.href = '/create-namd-experiment');
+              } else {
+                window.location.href = '/create-namd-experiment';
+              }
+            }}>
+              Create NAMD Experiment
+            </Button>
+          </Tooltip>
         </Stack>
       </Flex >
     </>

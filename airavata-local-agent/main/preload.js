@@ -16,6 +16,14 @@ const handler = {
 
 contextBridge.exposeInMainWorld('ipc', handler);
 
+
+contextBridge.exposeInMainWorld('config', {
+  getVersionNumber: () => ipcRenderer.send('get-version-number'),
+  versionNumber: (callback) => {
+    ipcRenderer.once('version-number', callback);
+  },
+});
+
 contextBridge.exposeInMainWorld('auth', {
   ciLogonLogin: () => ipcRenderer.send('ci-logon-login'),
   ciLogonSuccess: (callback) => {
