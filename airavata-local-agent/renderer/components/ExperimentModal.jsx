@@ -10,14 +10,14 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { TextWithBoldKey } from "./TextWithBoldKey";
-import { getColorScheme, getRelativeTime } from "../lib/utilityFuncs";
+import { getColorScheme, getExperimentStatusFromNum, getRelativeTime, getResourceFromId } from "../lib/utilityFuncs";
 
 const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => {
   const toast = useToast();
   const [experimentData, setExperimentData] = useState(null);
   const [loading, setLoading] = useState(false);
   const experimentId = activeExperiment.experimentId;
-  const experimentStatus = activeExperiment.experimentStatus;
+  const [experimentStatus, setExperimentStatus] = useState(activeExperiment.experimentStatus);
   const [experimentOutputs, setExperimentOutputs] = useState([]);
   const [experimentInputList, setExperimentInputList] = useState([]);
   const [experimentJobs, setExperimentJobs] = useState([]);
@@ -47,6 +47,15 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
     setExperimentJobs(data);
   }
 
+  function processExperimentStatus(status) {
+    // get last status in list
+    if (!status || status.length === 0) {
+      return;
+    }
+    const lastStatus = status[status.length - 1];
+    setExperimentStatus(getExperimentStatusFromNum(lastStatus.state));
+  }
+
   async function fetchExperimentData() {
     const resp = await fetch(`https://md.cybershuttle.org/api/experiments/${experimentId}/?format=json`, {
       headers: {
@@ -60,9 +69,9 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
     const data = await resp.json();
     try {
-      // await fetchExperimentOutputFiles(data.experimentOutputs);
-      // await fetchExperimentInputs(data.experimentInputs);
+      // don't load inputs and outputs here because it will be too slow
       await fetchExperimentJobs();
+      processExperimentStatus(data.experimentStatus);
     } catch (e) {
       console.log(e);
     }
@@ -488,7 +497,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="Owner" text={experimentData.userName} />
 
-        <TextWithBoldKey keyName="Compute Resource ID" text={experimentData.userConfigurationData.computationalResourceScheduling.resourceHostId} />
+        <TextWithBoldKey keyName="Compute Resource ID" text={getResourceFromId(experimentData.userConfigurationData.computationalResourceScheduling.resourceHostId)} />
 
         <TextWithBoldKey keyName="Queue" text={experimentData.userConfigurationData.computationalResourceScheduling.queueName} />
 
@@ -503,7 +512,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
         <Box>
           <Text fontWeight='bold'>Jobs</Text>
 
-          <TableContainer>
+          {experimentJobs && experimentJobs.length > 0 && <TableContainer>
             <Table variant='simple'>
               <Thead>
                 <Tr>
@@ -531,7 +540,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
                 }
               </Tbody>
             </Table>
-          </TableContainer>
+          </TableContainer>}
         </Box>
 
 

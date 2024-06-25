@@ -20,7 +20,7 @@ import {
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { getColorScheme, truncTextToN } from "../lib/utilityFuncs";
+import { getColorScheme, getResourceFromId, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import {
@@ -596,24 +596,25 @@ const TabsView = () => {
               onPageChange={handlePageChange}
             >
               <TableContainer>
-                <Table variant='simple'>
+                <Table variant='simple' >
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
                       <Th>User</Th>
-                      <Th>Type</Th>
+                      <Th>Application</Th>
+                      <Th>Resource</Th>
                       <Th>Created</Th>
                       <Th>Status</Th>
                       <Th>Actions</Th>
                     </Tr>
                   </Thead>
-                  <Tbody>
+                  <Tbody >
                     {
                       experiments?.results?.map((experiment) => {
                         return (
                           <Tr key={experiment.experimentId} fontSize='sm' alignItems='center'>
                             <Td>
-                              <Box>
+                              <Box >
                                 <Tooltip label={experiment.experimentId}>
                                   <Text whiteSpace='pre-wrap'
                                     _hover={{
@@ -636,6 +637,10 @@ const TabsView = () => {
 
                             <Td>
                               <Text>{getExperimentApplication(experiment.executionId)}</Text>
+                            </Td>
+
+                            <Td>
+                              <Text >{getResourceFromId(experiment.resourceHostId)}</Text>
                             </Td>
 
                             <Td>
