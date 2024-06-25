@@ -38,11 +38,7 @@ export const HeaderBox = ({ name, email }) => {
         <Spacer />
 
         {
-          !name || !email ? (
-            <Text color='blue.400' _hover={{ textDecoration: "underline", cursor: "pointer" }} as='span' onClick={() => {
-              window.location.href = '/login';
-            }}>Log In</Text>
-          ) : (
+          name && email && (
             <Text>
               <Tooltip label="View user information">
                 <Text as='span'
