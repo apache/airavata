@@ -152,8 +152,6 @@ ipcMain.on('ci-logon-login', async (event) => {
           console.log("Tokens", accessToken, refreshToken);
           event.sender.send('ci-logon-success', accessToken, refreshToken);
           authWindow.close();
-          // authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-
         }
       }, 5000);
 
