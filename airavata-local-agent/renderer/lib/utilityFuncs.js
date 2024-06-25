@@ -12,26 +12,23 @@ export function getRelativeTime(timestamp) {
   return dayjs(timestamp).fromNow();
 }
 
-export function getStatusFromNum(num) {
-  switch (num) {
-    case 2:
-      return 'CREATED';
-    case 3:
-      return 'CREATED';
-    case 4:
-      return 'EXECUTING';
-    case 2:
-      return 'COMPLETED';
-    case 5:
-      return 'CANCELING';
-    case 6:
-      return 'CANCELED';
-    case 4:
-      return 'FAILED';
-    default:
-      return 'UNKNOWN';
+export function getExperimentStatusFromNum(num) {
+  let arr = ['CREATED',
+    'VALIDATED',
+    'SCHEDULED',
+    'LAUNCHED',
+    'EXECUTING',
+    'CANCELING',
+    'CANCELED',
+    'COMPLETED',
+    'FAILED'
+  ];
+
+  if (num < 0 || num >= arr.length) {
+    return 'UNKNOWN';
   }
 
+  return arr[num];
 }
 
 
@@ -50,6 +47,11 @@ export const getColorScheme = (status) => {
     default:
       return 'red';
   }
+};
+
+export const getResourceFromId = (id) => {
+  if (!id) return '';
+  return id.split('_')[0];
 };
 
 export const truncTextToN = (str, n) => {

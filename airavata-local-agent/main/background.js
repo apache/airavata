@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain, dialog, session, net } from 'electron';
+import { app, ipcMain, dialog, session, BrowserWindow } from 'electron';
 const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
@@ -121,29 +121,11 @@ ipcMain.on('ci-logon-login', async (event) => {
   });
 
   authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-
   authWindow.show();
-  /*
-   setTimeout(async () => {
-        const tokens = await getToken(url);
 
-        if (tokens.length > 0) {
-          const [accessToken, refreshToken] = tokens;
-          console.log("Tokens", accessToken, refreshToken);
-          event.sender.send('ci-logon-success', accessToken, refreshToken);
-
-          // authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-
-        }
-      }, 5000);
-  */
-  // after we hit https://md.cybershuttle.org/auth/callback, once we get the next URL that starts with md.cybershuttle.org, we can send the info back to the user
-
-  let hitUrl = false;
   authWindow.webContents.on('will-redirect', async (e, url) => {
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
-      // hitUrl = true;
-
+      // hitUrl = true
       setTimeout(async () => {
         const tokens = await getToken(url);
 
@@ -157,16 +139,6 @@ ipcMain.on('ci-logon-login', async (event) => {
 
       authWindow.hide();
     }
-
-    // if (hitUrl && url.startsWith("https://md.cybershuttle.org/")) {
-    //   const tokens = await getToken(url);
-
-    //   if (tokens.length > 0) {
-    //     const [accessToken, refreshToken] = tokens;
-    //     event.sender.send('ci-logon-success', accessToken, refreshToken);
-    //     // authWindow.hide();
-    //   }
-    // }
   });
 });
 
@@ -175,12 +147,10 @@ ipcMain.on('show-window', (event, url) => {
   let window = createWindow(url, {
     width: 600,
     height: 500,
-    'node-integration': false,
+    'node-integration': true,
     'web-security': false
   });
 
   window.loadURL(url);
-
   window.show();
-
 });
