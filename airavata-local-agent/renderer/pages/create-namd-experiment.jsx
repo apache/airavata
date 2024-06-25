@@ -177,6 +177,7 @@ const Home = () => {
     });
   };
 
+
   useEffect((e) => {
     try {
       const theAccessToken = localStorage.getItem('accessToken');
@@ -828,6 +829,13 @@ const Home = () => {
     }
   };
 
+  const shouldBeDisabled = () => {
+    return executionType === "" ||
+      (contPrev === true && prevJobId === "") ||
+      mdInstructionsUri === "" ||
+      (replicate === true && (numReplicas === 0 || numReplicas === ""));
+  };
+
   return (
     <>
       <HeaderBox name={userName} email={email} />
@@ -1018,7 +1026,7 @@ const Home = () => {
               <FormControl>
                 <FormLabel>Restart replicas list</FormLabel>
                 <Input type='text' value={replicasList} onChange={(e) => setReplicasList(e.target.value)} />
-                <FormHelperText>Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.
+                <FormHelperText>Optionally specify a comma delimited list of replicas to restart (incomplete runs from a previous job), Make sure the resources requested are commensurate, such as as many nodes as replicas.
                 </FormHelperText>
               </FormControl>}
           </Stack>
@@ -1175,12 +1183,7 @@ const Home = () => {
 
                   setSaveLoading(false);
                 }}
-                isDisabled={
-                  executionType === "" ||
-                  (contPrev === true && prevJobId === "") ||
-                  mdInstructionsUri === "" ||
-                  (replicate === true && numReplicas === 0)
-                }>
+                isDisabled={shouldBeDisabled()}>
                 {
                   saveLoading ? "Saving..." : "Save"
                 }
@@ -1194,13 +1197,7 @@ const Home = () => {
                   setLoading(false);
 
                 }}
-                isDisabled={
-                  executionType === "" ||
-                  (contPrev === true && prevJobId === "") ||
-                  mdInstructionsUri === "" ||
-                  (replicate === true && numReplicas === 0)
-
-                }>
+                isDisabled={shouldBeDisabled()}>
                 {
                   loading ? "Saving and Launching..." : "Save and Launch"
                 }

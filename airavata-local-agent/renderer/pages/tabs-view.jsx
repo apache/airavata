@@ -63,10 +63,10 @@ const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
-// const isValidStatusVMD = (status) => {
-//   let invalidStatus = ["CANCELED"]; // TODO here
-//   return !invalidStatus.includes(status);
-// };
+const isValidStatus = (status) => {
+  let invalidStatus = ["CREATED"]; // TODO here
+  return !invalidStatus.includes(status);
+};
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
@@ -654,7 +654,7 @@ const TabsView = () => {
                             <Td>
                               <HStack>
                                 {
-                                  !experiment.executionId?.startsWith("VMD") && !experiment.executionId?.startsWith("JupyterLab") &&
+                                  !experiment.executionId?.startsWith("VMD") && !experiment.executionId?.startsWith("JupyterLab") && isValidStatus(experiment.experimentStatus) &&
                                   <Button colorScheme='orange' size='xs' onClick={() => {
                                     handleAddTab('JN', experiment.experimentId, experiment.name);
                                   }}>
@@ -666,7 +666,7 @@ const TabsView = () => {
                                   </Button>}
                                 {
                                   // only show jupyter button if executionId starts with "NAMD_*".
-                                  experiment.executionId?.startsWith('NAMD_') && (
+                                  experiment.executionId?.startsWith('NAMD_') && isValidStatus(experiment.experimentStatus) && (
                                     <Button colorScheme='blue' size='xs' onClick={() => {
                                       handleAddTab('VMD', experiment.experimentId, experiment.name);
                                     }}
@@ -695,7 +695,7 @@ const TabsView = () => {
                     }} _hover={{
                       bg: "blue.300",
                     }}
-                      bg="blue.100" size='sm'>
+                      bg="blue.100">
                       Back to first
                     </Button>
                   )
