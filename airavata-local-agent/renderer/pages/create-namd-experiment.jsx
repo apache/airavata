@@ -53,7 +53,7 @@ const Home = () => {
   const [emailNotif, setEmailNotif] = useState(false);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [queue, setQueue] = useState("compute");
+  const [queue, setQueue] = useState("gpu-shared");
   const [accessToken, setAccessToken] = useState("");
   const [mdInstructionsUri, setMdInstructionsUri] = useState("");
   const [proteinPSFUri, setProteinPSFUri] = useState("");
@@ -228,17 +228,27 @@ const Home = () => {
 
         setAllocationObjArray(items);
         setAllocation(items[0].allocationId);
-        setComputeResource(items[0].computePreferences[0].computeResourceId);
+        // setComputeResource(items[0].computePreferences[0].computeResourceId);
+        setComputeResource("expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32");
       }
 
-      getProjects().catch((error) => {
+      async function getData() {
+        await getProjects();
+
+        await getGroupResourceProfileList();
+      }
+
+      getData().then(() => {
+        setLoading(false);
+        setNodeCount(1);
+        setTimeLimit(30);
+        setExecutionType("GPU");
+      }).catch((error) => {
+        console.log(error);
         window.location.href = "/login";
       });
 
-      getGroupResourceProfileList().catch((error) => {
-        console.error(error);
-        window.location.href = "/login";
-      });
+
     } catch (error) {
       console.log(error);
       window.location.href = "/login";
@@ -1033,7 +1043,7 @@ const Home = () => {
 
 
           <FormControl>
-            <FormLabel>Allocation (only default is currently supported)</FormLabel>
+            <FormLabel>Allocation</FormLabel>
 
             <Select placeholder='Select an allocation' value={allocation} onChange={(e) => {
               setAllocation(e.target.value);

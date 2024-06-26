@@ -12,6 +12,9 @@ const handler = {
       ipcRenderer.removeListener(channel, subscription);
     };
   },
+  removeAllListeners(channel) {
+    ipcRenderer.removeAllListeners(channel);
+  }
 };
 
 contextBridge.exposeInMainWorld('ipc', handler);
@@ -34,7 +37,11 @@ contextBridge.exposeInMainWorld('auth', {
 });
 
 contextBridge.exposeInMainWorld('jn', {
-  showWindow: (url) => ipcRenderer.send('show-window', url),
+  showWindow: (url, associatedId) => ipcRenderer.send('show-window', url, associatedId),
+  closeTab: (callback) => {
+    ipcRenderer.once('close-tab', callback);
+  },
+  closeWindow: (associatedId) => ipcRenderer.send('close-window', associatedId),
 });
 
 contextBridge.exposeInMainWorld('vnc', {
