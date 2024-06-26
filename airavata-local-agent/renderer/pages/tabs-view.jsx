@@ -99,6 +99,7 @@ const TabsView = () => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const timer = useRef(null);
+  const [applicationsLst, setApplicationsLst] = useState([]);
 
   const {
     offset,
@@ -396,14 +397,63 @@ const TabsView = () => {
     }
   };
 
-  useEffect(() => {
-    accessToken = localStorage.getItem("accessToken");
+  const fetchApplications = async () => {
+    const resp = await fetch("https://md.cybershuttle.org/api/application-interfaces/?format=json", {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    });
 
-    fetchExperiments(pageSize, offset, getFilterObj())
+
+    const data = await resp.json();
+    console.log(data);
+
+    let hasNamd = false;
+    let namdId = "";
+    let wantLst = data.map((element) => {
+      if (element.applicationName === "NAMD") {
+        hasNamd = true;
+        namdId = element.applicationInterfaceId;
+      }
+      return {
+        applicationInterfaceId: element.applicationInterfaceId,
+        applicationName: element.applicationName
+      };
+    });
+
+
+    // set default value of NAMD 
+    if (hasNamd) {
+      setFilterAttribute("APPLICATION_ID");
+      setFilterText(namdId);
+    }
+
+    fetchExperiments(pageSize, offset, {
+      "STATUS": "ALL",
+      "APPLICATION_ID": namdId,
+    })
       .catch((error) => {
         console.error("App =>", error);
         // window.location.href = "/login";
       });
+    setApplicationsLst(wantLst);
+  };
+
+  useEffect(() => {
+    accessToken = localStorage.getItem("accessToken");
+
+    fetchApplications()
+      .catch((error) => {
+        console.error("App =>", error);
+        // window.location.href = "/login";
+      });
+
+
+
+
+
+
+
   }, [currentPage, pageSize, offset]);
 
   const getGatewayId = async (emailAddress) => {
@@ -517,7 +567,7 @@ const TabsView = () => {
 
   return (
     <>
-      <HeaderBox name={name} email={email} />
+      <HeaderBox name={name} email={email} appLst={applicationsLst} />
       <Footer currentPage='tabs-view' showWarning={arrOfTabsInfo.length !== 0} />
       {
         isLoadingSession && (
@@ -577,15 +627,34 @@ const TabsView = () => {
           <TabPanel>
             <Grid templateColumns='repeat(4, 1fr)' gap={2} mb={4}>
               <GridItem w='100%' h='10'>
-                <Input size='sm' placeholder="Search Text" value={filterText} onChange={(e) => setFilterText(e.target.value)} />
+                {
+                  (filterAttribute === "" || filterAttribute === "USER_NAME" || filterAttribute === "EXPERIMENT_NAME" || filterAttribute === "EXPERIMENT_DESC" || filterAttribute === "JOB_ID") &&
+                  <Input size='sm' placeholder="Search Text" value={filterText} onChange={(e) => setFilterText(e.target.value)} />}
+
+                {
+                  filterAttribute === "APPLICATION_ID" &&
+
+                  <Select size='sm' variant='outline' placeholder='Select Application' value={filterText} onChange={(e) => setFilterText(e.target.value)}>
+                    {
+                      applicationsLst.map((app) => {
+                        return (
+                          <option key={app.id} value={app.applicationInterfaceId}>{app.applicationName}</option>
+                        );
+                      })
+                    }
+                  </Select>
+                }
               </GridItem>
               <GridItem w='100%' h='10' >
-                <Select size='sm' variant='outline' placeholder='Search Attribute' value={filterAttribute} onChange={(e) => setFilterAttribute(e.target.value)}>
+                <Select size='sm' variant='outline' placeholder='Search Attribute' value={filterAttribute} onChange={(e) => {
+                  setFilterText("");
+                  setFilterAttribute(e.target.value);
+                }}>
                   <option value="USER_NAME">User Name</option>
                   <option value="EXPERIMENT_NAME">Experiment Name</option>
                   <option value="EXPERIMENT_DESC">Experiment Description</option>
-                  {/* <option value="APPLICATION_ID">Application ID</option>
-                  <option value="PROJECT_ID">Project ID</option> */}
+                  <option value="APPLICATION_ID">Application ID</option>
+                  {/*<option value="PROJECT_ID">Project ID</option> */}
                   <option value="JOB_ID">Job ID</option>
                 </Select>
 
