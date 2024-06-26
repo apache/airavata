@@ -7,6 +7,9 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
   const [rendering, setRendering] = useState(false);
   const [serverPort, setServerPort] = useState("loading");
   const [msg, setMsg] = useState("");
+  const associatedId = `JN_${experimentId}`;
+
+  console.log("the associated id is", associatedId);
 
   useEffect(() => {
 
@@ -17,19 +20,31 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
 
     const tryAndLaunchServer = async (port) => {
       console.log("polling the jupyter server...");
+
+      console.log("the associated id is", associatedId);
       try {
+        console.log("in the first try");
         const resp = await fetch(`http://18.217.79.150:${port}/lab?token=1234`);
+        setRendering(true);
+        console.log("the associated id is", associatedId);
+        window.jn.showWindow(`http://18.217.79.150:${port}/lab?token=1234`, associatedId);
+
+        console.log("trying to show the window...");
+        setMsg("JupyterLab is ready to use in a new window");
+
       } catch (e) {
+        console.log("in the first catch", e);
         interval2 = setInterval(async () => {
           try {
+            console.log("in the second try");
             const resp = await fetch(`http://18.217.79.150:${port}/lab?token=1234`);
             setRendering(true);
             clearInterval(interval2);
-            // setRandom(random + 1)
-            window.jn.showWindow(`http://18.217.79.150:${port}/lab?token=1234`);
+            window.jn.showWindow(`http://18.217.79.150:${port}/lab?token=1234`, associatedId);
             console.log("trying to show the window...");
             setMsg("JupyterLab is ready to use in a new window");
           } catch (ex) {
+            console.log("in the second catch", ex);
 
           }
         }, 5000);
@@ -60,9 +75,11 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
           let severPortFromData = data.allocatedPorts[0];
 
           setServerPort(severPortFromData);
+
+          console.log("Calling tryAndLaunchServer...");
           tryAndLaunchServer(severPortFromData);
 
-          console.log("trying to open up the server...");
+
           clearInterval(interval);
         }
 

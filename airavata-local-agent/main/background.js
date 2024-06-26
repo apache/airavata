@@ -27,8 +27,10 @@ if (isProd) {
     height: 1000,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      webSecurity: false
+      webSecurity: false,
     },
+    'node-integration': true,
+
   });
 
   log.warn("App is now ready");
@@ -185,7 +187,8 @@ ipcMain.on('ci-logon-login', async (event) => {
   });
 });
 
-ipcMain.on('show-window', (event, url) => {
+let associatedIDToWindow = {};
+ipcMain.on('show-window', (event, url, associatedId) => {
   console.log("Showing the window with " + url);
   let window = createWindow(url, {
     width: 1200,
@@ -194,6 +197,28 @@ ipcMain.on('show-window', (event, url) => {
     'web-security': false
   });
 
+  associatedIDToWindow[associatedId] = window;
   window.loadURL(url);
   window.show();
+
+  log.info("associatedIDToWindow", associatedIDToWindow);
+
+  window.on('close', () => {
+    delete associatedIDToWindow[associatedId];
+
+    log.info("deleted tab:", associatedIDToWindow);
+
+    event.sender.send('close-tab', associatedId);
+  });
+});
+
+ipcMain.on('close-window', (event, associatedId) => {
+  try {
+    console.log("Closing window with associatedId", associatedId);
+    associatedIDToWindow[associatedId].removeAllListeners('close');
+    associatedIDToWindow[associatedId].close();
+  } catch (e) {
+    console.error("Error closing window", e);
+  }
+
 });

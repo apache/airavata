@@ -39,6 +39,8 @@ import { JupyterLab } from "../components/JupyterLab";
 dayjs.extend(relativeTime);
 
 
+
+
 const getExperimentApplication = (executionId) => {
   if (!executionId) {
     return ("N/A");
@@ -134,7 +136,7 @@ const TabsView = () => {
   };
 
 
-  const handleRemoveTab = async (associatedID, applicationId, index) => {
+  const handleRemoveTab = async (associatedID) => {
     /*
     - when you close a tab
     - each tab needs to have an event listener that calls a deleteTab function with the associated experiment ID
@@ -143,21 +145,28 @@ const TabsView = () => {
         - go through the hashmap and decrement all indexes greater the one that was deleted
     */
 
+    let index = associatedIDToIndex[associatedID];
+    console.log("Index", index);
+    console.log(arrOfTabsInfo);
+    const applicationId = arrOfTabsInfo[index - 1].applicationId;
+
+    if (associatedID.startsWith("JN")) {
+      window.jn.closeWindow(associatedID);
+    }
+
     delete associatedIDToIndex[associatedID];
+
+
     setArrOfTabsInfo(oldArr => oldArr.filter((tabInfo, i) => tabInfo.associatedID !== associatedID));
 
-    setTabIndex(oldIndex => {
-      if (index == tabIndex) {
-        return 0;
-      }
-      return oldIndex;
-    });
 
     for (const [key, value] of Object.entries(associatedIDToIndex)) {
       if (value > index) {
         associatedIDToIndex[key] = value - 1;
       }
     }
+
+    setTabIndex(0);
 
     await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/terminate`, {
       method: "POST",
@@ -427,7 +436,26 @@ const TabsView = () => {
 
   useEffect(() => {
     setNameAndEmail();
-  }, []);
+    window.ipc.on('close-tab', (associatedId) => {
+      console.log("Closing tab with associated ID", associatedId);
+      console.log("in closeTabCallback", arrOfTabsInfo);
+      handleRemoveTab(associatedId);
+    });
+
+
+    // window.jn.closeTab((event, associatedId) => {
+    //   console.log("Closing tab with associated ID", associatedId);
+    //   console.log("in closeTabCallback", arrOfTabsInfo);
+    //   handleRemoveTab(associatedId);
+    // });
+    console.log('ipc', window.ipc);
+    return () => {
+      // ipcRenderer.removeAllListeners('close-tab');
+      console.log(window.ipc);
+      window.ipc.removeAllListeners('close-tab');
+      // window.ipc.removeAllListeners('close-tab');
+    };
+  }, [arrOfTabsInfo]);
 
   useEffect(() => {
     startAutoUpdateExperiments();
@@ -529,13 +557,16 @@ const TabsView = () => {
           {
             arrOfTabsInfo.map((tabInfo, index) => {
               return (
-                <Tab key={tabInfo.associatedID} _selected={tabSelectedStyles}>
-                  <Text whiteSpace='nowrap'>{truncTextToN(tabInfo.tabName, 20)}</Text>
+                <Tab _selected={tabSelectedStyles} key={tabInfo.associatedID}>
+                  <Text whiteSpace='nowrap' mr={2}>{truncTextToN(tabInfo.tabName, 20)}</Text>
+
                   <Icon as={IoClose} transition='all .2s' onClick={() => {
-                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && handleRemoveTab(tabInfo.associatedID, tabInfo.applicationId, index + 1);
+                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && handleRemoveTab(tabInfo.associatedID);
                   }} _hover={{
                     color: 'red.500',
+                    cursor: 'pointer',
                   }} />
+
                 </Tab>
               );
             })
