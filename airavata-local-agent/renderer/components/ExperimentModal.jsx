@@ -98,7 +98,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
       toast({
         title: `Error ${action + "ing"} experiment`,
         status: "error",
-        duration: 3000,
+        duration: 10000,
         isClosable: true
       });
       return;
@@ -111,10 +111,18 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
         title: `Experiment ${action + "ed"} successfully`,
         description: "It may take a few seconds for the status to update.",
         status: "success",
-        duration: 3000,
+        duration: 10000,
         isClosable: true
       });
       onClose();
+    } else {
+      toast({
+        title: `Error ${action + "ing"} experiment`,
+        description: "You may not have the necessary permissions to perform this action.",
+        status: "error",
+        duration: 10000,
+        isClosable: true
+      });
     }
 
     setLoading(false);
