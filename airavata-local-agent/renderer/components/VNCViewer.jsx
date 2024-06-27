@@ -46,7 +46,7 @@ export default class VNCViewer extends Component {
   async fetchServerStatus() {
     const { applicationId, headers } = this.props;
 
-    const resp = await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/connect`, {
+    const resp = await fetch(`https://api.cybershuttle.org/api/v1/application/${applicationId}/connect`, {
       method: "POST",
       headers: headers,
     });
@@ -138,10 +138,12 @@ export default class VNCViewer extends Component {
           )
         }
 
-        {rendering && (
+        {!rendering && (
           <>
             <Box textAlign='center'>
               <ForwardedRefComponent url={"ws://20.51.202.251" + ":" + serverPort} username={this.username} password={this.password} vncRef={this.myRef} handleOnDisconnect={this.handleOnDisconnect} />
+
+              <Text color='gray.700' maxW='700px' mx='auto' mt={4}>The VMD session will become inactive if it detects it is being unused for an extended period of time. Longer VMD sessions will be enabled in future updates.</Text>
             </Box>
           </>
         )}
@@ -210,7 +212,7 @@ export default class VNCViewer extends Component {
 //     if (!reqPort) {
 //       // create the interval
 //       interval = setInterval(async () => {
-//         const resp = await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/connect`, {
+//         const resp = await fetch(`https://api.cybershuttle.org/api/v1/application/${applicationId}/connect`, {
 //           method: "POST",
 //           headers: headers,
 //         });

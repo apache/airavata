@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain, dialog, session, autoUpdater, globalShortcut } from 'electron';
+import { app, ipcMain, dialog, session, Menu, globalShortcut } from 'electron';
 const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
@@ -25,6 +25,7 @@ if (isProd) {
   const mainWindow = createWindow('main', {
     width: 1900,
     height: 1000,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
@@ -40,6 +41,7 @@ if (isProd) {
   session.defaultSession.clearStorageData([], (data) => {
     console.log("Cleared storage data", data);
   });
+
 
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -69,6 +71,9 @@ if (isProd) {
     globalShortcut.register("F5", () => {
       console.log("F5 is pressed: Shortcut Disabled");
     });
+
+    mainWindow.removeMenu();
+    Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
   } else {
     const port = process.argv[2];

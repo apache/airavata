@@ -38,7 +38,7 @@ export default class JupyterLab extends Component {
 
     if (!reqPort) {
       this.interval = setInterval(async () => {
-        const resp = await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/connect`, {
+        const resp = await fetch(`https://api.cybershuttle.org/api/v1/application/${applicationId}/connect`, {
           method: "POST",
           headers: headers,
         });
@@ -208,7 +208,7 @@ export default class JupyterLab extends Component {
 //     if (!reqPort) {
 //       // create the interval
 //       interval = setInterval(async () => {
-//         const resp = await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/connect`, {
+//         const resp = await fetch(`https://api.cybershuttle.org/api/v1/application/${applicationId}/connect`, {
 //           method: "POST",
 //           headers: headers,
 //         });

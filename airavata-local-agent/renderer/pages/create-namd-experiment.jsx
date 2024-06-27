@@ -65,6 +65,7 @@ const Home = () => {
 
   const [loading, setLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [linkedCoreAndNode, setLinkedCoreAndNode] = useState(true); // TODO: fix this
 
   // INPUT STATES
   const [projectObjArray, setProjectObjArray] = useState([]);
@@ -126,6 +127,7 @@ const Home = () => {
               setHandler(uri);
             } else if (type === "multiple") {
               setHandler((prev) => {
+                // this will also keep the old one
                 return [...prev, uri];
               });
             }
@@ -151,6 +153,9 @@ const Home = () => {
       setHandler([]);
       return;
     }
+
+    // clear the previous files in setHandler
+    setHandler([]);
 
     Array.prototype.forEach.call(files, function (file) {
       tusAndFetchUpload(file, setHandler, "multiple");
@@ -492,7 +497,7 @@ const Home = () => {
     };
     let idx10 = {
       "name": "Number of Replicas",
-      "value": numReplicas,
+      "value": numReplicas === 0 ? "" : numReplicas,
       "type": 1,
       "applicationArgument": "-n",
       "standardInput": false,
@@ -865,7 +870,6 @@ const Home = () => {
 
           <Heading mt={-4} fontSize='3xl'>Create a New Experiment</Heading>
 
-
           <FormControl>
             <FormLabel>Experiment Name</FormLabel>
             <Input type='text' value={name} onChange={(e) => setName(e.target.value)} />
@@ -987,7 +991,7 @@ const Home = () => {
               <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
                 uploadMultipleFiles(e.target.files, setFParamUri);
               }} />
-              <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",") && "Files uploaded."}
+              <FormHelperText>Force field parameter and related files (e.g, *.prm and *.str files) needed but could be uploaded using optional upload below together with other needed files. {fParamUri.join(",") && `${fParamUri.length} files uploaded.`}
               </FormHelperText>
             </FormControl>
 
@@ -1006,7 +1010,7 @@ const Home = () => {
               <Input multiple={true} type='file' placeholder='upload file' onChange={(e) => {
                 uploadMultipleFiles(e.target.files, setOptionalUri);
               }} />
-              <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",") && "Files uploaded."}
+              <FormHelperText>Any other optional and all needed inputs to be uploaded, for a modified DCD out please upload your instructions for modification in a file named ModDCD.tcl. {optionalUri.join(",") && `${optionalUri.length} files uploaded.`}
               </FormHelperText>
             </FormControl>
 
@@ -1126,40 +1130,49 @@ const Home = () => {
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Node Count</FormLabel>
+                  <FormLabel><Text bg={linkedCoreAndNode ? "blue.100" : ""} px={2} rounded='md' display='inline-block'>Node Count
+
+                    (<Text as='span' color='blue.500' cursor='pointer' onClick={() => {
+                      setLinkedCoreAndNode(!linkedCoreAndNode);
+                    }
+                    }>{linkedCoreAndNode ? "Unlink" : "Link"} with core count</Text>)
+                  </Text></FormLabel>
                   <Input type='number' value={nodeCount} onChange={(e) => {
-                    setCoreCount(128 * e.target.value);
+                    if (linkedCoreAndNode) {
+                      setCoreCount(128 * e.target.value);
+                    }
                     setNodeCount(e.target.value);
                   }} />
-                  <FormHelperText> Max Allowed Nodes = 728
-                  </FormHelperText>
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Total Core Count</FormLabel>
-                  <Input type='number' value={coreCount} onChange={(e) => {
+                  <FormLabel><Text bg={linkedCoreAndNode ? "blue.100" : ""} px={2} rounded='md' display='inline-block'>Total Core Count
 
-                    setNodeCount(Math.ceil(e.target.value / 128));
+                    (<Text as='span' color='blue.500' cursor='pointer' onClick={() => {
+                      setLinkedCoreAndNode(!linkedCoreAndNode);
+                    }
+                    }>{linkedCoreAndNode ? "Unlink" : "Link"} with node count</Text>)
+
+                  </Text></FormLabel>
+                  <Input type='number' value={coreCount} onChange={(e) => {
+                    if (linkedCoreAndNode) {
+                      setNodeCount(Math.ceil(e.target.value / 128));
+                    }
                     setCoreCount(e.target.value);
                   }} />
-                  <FormHelperText> Max Allowed Cores = 93184. There are 128 cores per node.
-                  </FormHelperText>
                 </FormControl>
 
 
                 <FormControl>
                   <FormLabel>Wall Time Limit</FormLabel>
                   <Input type='number' value={timeLimit} onChange={(e) => setTimeLimit(e.target.value)} />
-                  <FormHelperText>Max Allowed Wall Time = 2880 minutes
-                  </FormHelperText>
+
                 </FormControl>
 
 
                 <FormControl>
                   <FormLabel>Physical Memory</FormLabel>
                   <Input type='number' value={physMemory} onChange={(e) => setPhysMemory(e.target.value)} />
-                  <FormHelperText>Max Allowed Physical Memory = 186368000 MB
-                  </FormHelperText>
                 </FormControl>
               </Stack>
             )
@@ -1172,8 +1185,11 @@ const Home = () => {
             }}>Receive email notification of experiment status</Checkbox>
           </FormControl>
 
-          <Flex>
-            <Box></Box>
+          <Flex alignItems='center'>
+            <Box>
+              <Button mb={4} colorScheme="blue" variant='link' onClick={() => {
+                confirm("You have not yet submitted your experiment, are you sure you want to go back?") && router.push('/tabs-view');
+              }}>Back to Experiments</Button></Box>
 
             <Spacer />
             <HStack>
