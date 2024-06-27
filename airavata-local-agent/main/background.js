@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain, dialog, session, autoUpdater } from 'electron';
+import { app, ipcMain, dialog, session, autoUpdater, globalShortcut } from 'electron';
 const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
@@ -60,41 +60,16 @@ if (isProd) {
     }
   });
 
-  try {
-    autoUpdater.setFeedURL({ url: updateUrl });
-    setInterval(() => {
-      autoUpdater.checkForUpdates();
-    }, 5000); // check every minute
-  } catch (e) {
-    console.error("Error setting up auto updater", e);
-    log.error("Error setting up auto updater", e);
-  }
-
-  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-      type: 'info',
-      buttons: ['Restart', 'Later'],
-      title: 'Application Update',
-      message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail:
-        'A new version has been downloaded. Restart the application to apply the updates.'
-    };
-
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      if (returnValue.response === 0) autoUpdater.quitAndInstall();
-    });
-  });
-
-  autoUpdater.on('error', (message) => {
-    console.error('There was a problem updating the application');
-    console.error(message);
-  });
-
-
-
 
   if (isProd) {
     await mainWindow.loadURL('app://./home');
+    globalShortcut.register("CommandOrControl+R", () => {
+      console.log("CommandOrControl+R is pressed: Shortcut Disabled");
+    });
+    globalShortcut.register("F5", () => {
+      console.log("F5 is pressed: Shortcut Disabled");
+    });
+
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
