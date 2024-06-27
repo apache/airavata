@@ -505,7 +505,7 @@ const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => 
 
         <TextWithBoldKey keyName="Owner" text={experimentData.userName} />
 
-        <TextWithBoldKey keyName="Compute Resource ID" text={getResourceFromId(experimentData.userConfigurationData.computationalResourceScheduling.resourceHostId)} />
+        <TextWithBoldKey keyName="Compute Resource" text={getResourceFromId(experimentData.userConfigurationData.computationalResourceScheduling.resourceHostId)} />
 
         <TextWithBoldKey keyName="Queue" text={experimentData.userConfigurationData.computationalResourceScheduling.queueName} />
 

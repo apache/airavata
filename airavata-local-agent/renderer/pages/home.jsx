@@ -20,7 +20,7 @@ const Home = () => {
 
     window.config.versionNumber(async (event, version) => {
       // make fetch here to check for updates
-      const resp = await fetch("http://20.51.202.251:9001/local-agent/version");
+      const resp = await fetch("https://api.cybershuttle.org/local-agent/version");
       let respVersion = await resp.text();
 
       // respVersion starts with v, so we remove it

@@ -166,7 +166,7 @@ const TabsView = () => {
 
     setTabIndex(0);
 
-    await fetch(`http://20.51.202.251:9001/api/v1/application/${applicationId}/terminate`, {
+    await fetch(`https://api.cybershuttle.org/api/v1/application/${applicationId}/terminate`, {
       method: "POST",
       headers: {
         "Authorization": "Bearer " + accessToken,
@@ -211,7 +211,7 @@ const TabsView = () => {
         "wallTimeLimit": 60, // TODO: get this from the user
       };
 
-      const url = "http://20.51.202.251:9001/api/v1/application/launch";
+      const url = "https://api.cybershuttle.org/api/v1/application/launch";
 
       let applicationId = "";
       if (type === 'VMD') {
@@ -693,7 +693,7 @@ before:
                   <option value="USER_NAME">User Name</option>
                   <option value="EXPERIMENT_NAME">Experiment Name</option>
                   <option value="EXPERIMENT_DESC">Experiment Description</option>
-                  <option value="APPLICATION_ID">Application ID</option>
+                  <option value="APPLICATION_ID">Application</option>
                   {/*<option value="PROJECT_ID">Project ID</option> */}
                   <option value="JOB_ID">Job ID</option>
                 </Select>
