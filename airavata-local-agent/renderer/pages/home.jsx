@@ -20,8 +20,13 @@ const Home = () => {
 
     window.config.versionNumber(async (event, version) => {
       // make fetch here to check for updates
+      const resp = await fetch("http://20.51.202.251:9001/local-agent/version");
+      let respVersion = await resp.text();
 
-      let respVersion = '1.0.1';
+      // respVersion starts with v, so we remove it
+      if (respVersion.startsWith('v')) {
+        respVersion = respVersion.substring(1);
+      }
 
 
       setShowUpdate(isNewerVersion(respVersion, version));

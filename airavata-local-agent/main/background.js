@@ -35,6 +35,8 @@ if (isProd) {
 
   log.warn("App is now ready");
 
+  app.commandLine.appendSwitch('ignore-certificate-errors');
+
   session.defaultSession.clearStorageData([], (data) => {
     console.log("Cleared storage data", data);
   });
@@ -114,8 +116,8 @@ app.on("before-quit", (event) => {
 });
 
 ipcMain.on('get-version-number', (event) => {
-  console.log("Getting version number");
-  console.log(app.getVersion());
+
+  log.info(`Cybershuttle MD Local Agent version: ${app.getVersion()}`);
 
   event.sender.send('version-number', app.getVersion());
 });
@@ -177,6 +179,13 @@ ipcMain.on('ci-logon-login', async (event) => {
         if (tokens.length > 0) {
           const [accessToken, refreshToken] = tokens;
           console.log("Tokens", accessToken, refreshToken);
+
+          if (!accessToken || !refreshToken) {
+            log.warn("Either access token or refresh token is missing");
+          } else {
+            log.info("Received access token and refresh token");
+          }
+
           event.sender.send('ci-logon-success', accessToken, refreshToken);
           authWindow.close();
         }
@@ -188,37 +197,64 @@ ipcMain.on('ci-logon-login', async (event) => {
 });
 
 let associatedIDToWindow = {};
+let counter = 0;
+
+function printKeys(obj) {
+  // only show the keys
+  console.log(Object.keys(obj));
+}
+
 ipcMain.on('show-window', (event, url, associatedId) => {
   console.log("Showing the window with " + url);
-  let window = createWindow(url, {
+
+  if (associatedIDToWindow[associatedId]) {
+    console.log("Window already exists, not creating a new one.");
+    return;
+  }
+
+  counter++;
+  let window = createWindow(`jnWindow-${counter}`, {
     width: 1200,
     height: 800,
-    'node-integration': true,
-    'web-security': false
+    show: false,
+    // 'web-security': false,
+    webPreferences: {
+      allowDisplayingInsecureContent: true,
+      allowRunningInsecureContent: true
+    }
   });
+
+  console.log("Window created with id: ", associatedId);
 
   associatedIDToWindow[associatedId] = window;
   window.loadURL(url);
   window.show();
 
-  log.info("associatedIDToWindow", associatedIDToWindow);
+  printKeys(associatedIDToWindow);
 
   window.on('close', () => {
+    console.log("Window's close button clicked: ", associatedId);
+
+
+    associatedIDToWindow[associatedId].removeAllListeners('close');
     delete associatedIDToWindow[associatedId];
 
-    log.info("deleted tab:", associatedIDToWindow);
-
-    event.sender.send('close-tab', associatedId);
+    printKeys(associatedIDToWindow);
+    event.sender.send('window-has-been-closed', associatedId);
   });
 });
 
 ipcMain.on('close-window', (event, associatedId) => {
   try {
-    console.log("Closing window with associatedId", associatedId);
+    console.log("Close tab button has been clicked: ", associatedId);
+
+
     associatedIDToWindow[associatedId].removeAllListeners('close');
     associatedIDToWindow[associatedId].close();
-  } catch (e) {
-    console.error("Error closing window", e);
-  }
+    delete associatedIDToWindow[associatedId];
 
+    printKeys(associatedIDToWindow);
+  } catch (e) {
+    console.log("Window " + associatedId + " does not exist.");
+  }
 });

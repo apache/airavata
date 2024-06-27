@@ -8,11 +8,11 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
   const [serverPort, setServerPort] = useState("loading");
   const [msg, setMsg] = useState("");
   const associatedId = `JN_${experimentId}`;
+  const [windowClosed, setWindowClosed] = useState(false);
 
   console.log("the associated id is", associatedId);
 
   useEffect(() => {
-
     setLoading(true);
 
     let interval;
@@ -52,6 +52,16 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
 
     };
 
+    window.ipc.on("window-has-been-closed", (windowAssociatedId) => {
+      console.log("firing...");
+      if (windowAssociatedId === associatedId) {
+        console.log("Matching associated Ids, closing window");
+        setWindowClosed(true);
+      }
+
+
+    });
+
     if (!reqPort) {
       // create the interval
       interval = setInterval(async () => {
@@ -86,6 +96,8 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
       }, 5000);
     }
 
+
+
     return () => {
       console.log("unmounting component...");
       clearInterval(interval);
@@ -100,6 +112,16 @@ export const JupyterLab = ({ headers, applicationId, reqPort, experimentId }) =>
         <Spinner mr={2} />
         <Text>
           We're currently starting the Jupyter Notebook, this may take a few minutes. Please wait...
+        </Text>
+      </Alert>
+    );
+  }
+
+  if (windowClosed) {
+    return (
+      <Alert status='error' rounded='md'>
+        <Text>
+          Please close this tab, your jupyter session is no longer active.
         </Text>
       </Alert>
     );

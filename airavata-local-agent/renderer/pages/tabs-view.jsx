@@ -498,10 +498,8 @@ const TabsView = () => {
     //   console.log("in closeTabCallback", arrOfTabsInfo);
     //   handleRemoveTab(associatedId);
     // });
-    console.log('ipc', window.ipc);
     return () => {
       // ipcRenderer.removeAllListeners('close-tab');
-      console.log(window.ipc);
       window.ipc.removeAllListeners('close-tab');
       // window.ipc.removeAllListeners('close-tab');
     };
@@ -605,7 +603,7 @@ const TabsView = () => {
             List Experiments</Tab>
 
           {
-            arrOfTabsInfo.map((tabInfo, index) => {
+            arrOfTabsInfo.map((tabInfo) => {
               return (
                 <Tab _selected={tabSelectedStyles} key={tabInfo.associatedID}>
                   <Text whiteSpace='nowrap' mr={2}>{truncTextToN(tabInfo.tabName, 20)}</Text>
@@ -638,7 +636,7 @@ const TabsView = () => {
                     {
                       applicationsLst.map((app) => {
                         return (
-                          <option key={app.id} value={app.applicationInterfaceId}>{app.applicationName}</option>
+                          <option key={app.applicationInterfaceId} value={app.applicationInterfaceId}>{app.applicationName}</option>
                         );
                       })
                     }
@@ -836,7 +834,7 @@ const TabsView = () => {
           </TabPanel>
 
           {
-            arrOfTabsInfo.map((tabInfo) => {
+            arrOfTabsInfo.map((tabInfo, index) => {
               return (
                 <TabPanel key={tabInfo.associatedID}>
                   {tabInfo.component}
