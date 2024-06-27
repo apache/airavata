@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Table,
   Thead,
@@ -31,14 +31,12 @@ import {
 } from "@ajna/pagination";
 import { HeaderBox } from "../components/HeaderBox";
 import { Footer } from "../components/Footer";
-import { VNCViewer } from "../components/VNCViewer";
+import VNCViewer from "../components/VNCViewer";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ExperimentModal from "../components/ExperimentModal";
-import { JupyterLab } from "../components/JupyterLab";
+import JupyterLab from "../components/JupyterLab";
 dayjs.extend(relativeTime);
-
-
 
 
 const getExperimentApplication = (executionId) => {
@@ -73,6 +71,7 @@ const isValidStatus = (status) => {
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
 let gatewayId = "";
+let email = "";
 
 const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -90,7 +89,6 @@ const TabsView = () => {
   const [experiments, setExperiments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -100,6 +98,7 @@ const TabsView = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const timer = useRef(null);
   const [applicationsLst, setApplicationsLst] = useState([]);
+  const [arrOfPanels, setArrOfPanels] = useState([]);
 
   const {
     offset,
@@ -137,7 +136,7 @@ const TabsView = () => {
   };
 
 
-  const handleRemoveTab = async (associatedID) => {
+  const handleRemoveTab = async (associatedID, applicationId) => {
     /*
     - when you close a tab
     - each tab needs to have an event listener that calls a deleteTab function with the associated experiment ID
@@ -147,9 +146,7 @@ const TabsView = () => {
     */
 
     let index = associatedIDToIndex[associatedID];
-    console.log("Index", index);
-    console.log(arrOfTabsInfo);
-    const applicationId = arrOfTabsInfo[index - 1].applicationId;
+    // const applicationId = arrOfTabsInfo[index - 1].applicationId;
 
     if (associatedID.startsWith("JN")) {
       window.jn.closeWindow(associatedID);
@@ -290,11 +287,30 @@ const TabsView = () => {
         applicationId: applicationId,
       }]);
 
+      /*
+before:
+          {
+            arrOfTabsInfo.map((tabInfo, index) => {
+              return (
+                <TabPanel key={tabInfo.associatedID}>
+                  {tabInfo.component}
+                </TabPanel>
+              );
+            })
+          }
+
+          */
+
+      // setArrOfPanels(oldArr => [...oldArr, <TabPanel key={associatedID}>{component}</TabPanel>]);
+
       setTabIndex(newTabIndex);
     }
 
     setIsLoadingSession(false);
   };
+
+
+  const memoizedHandleRemoveTab = useCallback(handleRemoveTab, []);
 
   const handleTabsChange = (index) => {
     setTabIndex(index);
@@ -390,7 +406,7 @@ const TabsView = () => {
       const obj = JSON.parse(atob(accessToken.split('.')[1]));
 
       setName(obj.name);
-      setEmail(obj.email);
+      email = obj.email;
       getGatewayId(obj.email);
     } catch (error) {
       console.error(error);
@@ -398,6 +414,7 @@ const TabsView = () => {
   };
 
   const fetchApplications = async () => {
+    setIsLoading(true);
     const resp = await fetch("https://md.cybershuttle.org/api/application-interfaces/?format=json", {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -406,7 +423,6 @@ const TabsView = () => {
 
 
     const data = await resp.json();
-    console.log(data);
 
     let hasNamd = false;
     let namdId = "";
@@ -422,38 +438,63 @@ const TabsView = () => {
     });
 
 
+
+
     // set default value of NAMD 
+    console.log();
     if (hasNamd) {
       setFilterAttribute("APPLICATION_ID");
       setFilterText(namdId);
     }
 
-    fetchExperiments(pageSize, offset, {
-      "STATUS": "ALL",
-      "APPLICATION_ID": namdId,
-    })
-      .catch((error) => {
-        console.error("App =>", error);
-        // window.location.href = "/login";
-      });
     setApplicationsLst(wantLst);
   };
 
   useEffect(() => {
-    accessToken = localStorage.getItem("accessToken");
+    // fetch experiments with namd filter if in the list
+    if (applicationsLst.length === 0) {
+      return;
+    }
+    // find the namdid in the list
+    let hasNamd = false;
+    let namdId = "";
+    let wantLst = applicationsLst.forEach((element) => {
+      if (element.applicationName === "NAMD") {
+        hasNamd = true;
+        namdId = element.applicationInterfaceId;
+      }
+    });
 
-    fetchApplications()
+
+
+    if (hasNamd) {
+      fetchExperiments(pageSize, offset, {
+        "STATUS": "ALL",
+        "APPLICATION_ID": namdId,
+      })
+
+        .catch((error) => {
+          console.error("App =>", error);
+          // window.location.href = "/login";
+        }
+        );
+    }
+
+  }, [applicationsLst]);
+
+  useEffect(() => {
+    accessToken = localStorage.getItem("accessToken");
+    fetchApplications();
+  }, []);
+
+
+  useEffect(() => {
+    accessToken = localStorage.getItem("accessToken");
+    fetchExperiments(pageSize, offset, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
         // window.location.href = "/login";
       });
-
-
-
-
-
-
-
   }, [currentPage, pageSize, offset]);
 
   const getGatewayId = async (emailAddress) => {
@@ -489,7 +530,8 @@ const TabsView = () => {
     window.ipc.on('close-tab', (associatedId) => {
       console.log("Closing tab with associated ID", associatedId);
       console.log("in closeTabCallback", arrOfTabsInfo);
-      handleRemoveTab(associatedId);
+      // handleRemoveTab(associatedId);
+      // memoizedHandleRemoveTab(associatedId);
     });
 
 
@@ -605,11 +647,11 @@ const TabsView = () => {
           {
             arrOfTabsInfo.map((tabInfo) => {
               return (
-                <Tab _selected={tabSelectedStyles} key={tabInfo.associatedID}>
+                <Tab _selected={tabSelectedStyles} key={tabInfo.applicationId}>
                   <Text whiteSpace='nowrap' mr={2}>{truncTextToN(tabInfo.tabName, 20)}</Text>
 
                   <Icon as={IoClose} transition='all .2s' onClick={() => {
-                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && handleRemoveTab(tabInfo.associatedID);
+                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && memoizedHandleRemoveTab(tabInfo.associatedID, tabInfo.applicationId);
                   }} _hover={{
                     color: 'red.500',
                     cursor: 'pointer',
@@ -836,7 +878,7 @@ const TabsView = () => {
           {
             arrOfTabsInfo.map((tabInfo, index) => {
               return (
-                <TabPanel key={tabInfo.associatedID}>
+                <TabPanel key={tabInfo.applicationId}>
                   {tabInfo.component}
                 </TabPanel>
               );

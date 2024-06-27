@@ -18,7 +18,7 @@ const ForwardedRefComponent = React.forwardRef((props, ref) => (
 ));
 
 
-export class VNCViewer extends Component {
+export default class VNCViewer extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -96,6 +96,7 @@ export class VNCViewer extends Component {
       this.interval = setInterval(() => this.fetchServerStatus(), 5000);
     }
   }
+
 
   componentWillUnmount() {
     console.log("unmounting component...");
