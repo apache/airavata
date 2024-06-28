@@ -36,6 +36,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ExperimentModal from "../components/ExperimentModal";
 import JupyterLab from "../components/JupyterLab";
+import PanelBody from "../components/PanelBody";
 dayjs.extend(relativeTime);
 
 
@@ -238,7 +239,6 @@ const TabsView = () => {
           return;
         }
         const data = await resp.json();
-        let hostURL = "18.217.79.150";
         applicationId = data?.applicationId;
         let port;
 
@@ -247,7 +247,7 @@ const TabsView = () => {
         }
 
 
-        component = <VNCViewer applicationId={applicationId} reqHost={hostURL} reqPort={port} experimentId={experimentID} headers={headers} />;
+        component = <PanelBody type="VMD" applicationId={applicationId} reqPort={port} experimentId={experimentID} headers={headers} />;
       } else if (type === 'JN') {
 
         body["application"] = "JUPYTER_LAB";
@@ -270,7 +270,6 @@ const TabsView = () => {
         }
 
         const data = await resp.json();
-        let hostURL = "18.217.79.150";
         applicationId = data?.applicationId;
         let port;
 
@@ -278,7 +277,7 @@ const TabsView = () => {
           port = data.allocatedPorts[0];
         }
 
-        component = <JupyterLab applicationId={applicationId} reqHost={hostURL} reqPort={port} experimentId={experimentID} headers={headers} />;
+        component = <PanelBody type="JUPYTER_LAB" applicationId={applicationId} reqPort={port} experimentId={experimentID} headers={headers} />;
       }
 
       const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index
@@ -652,7 +651,7 @@ before:
           {
             arrOfTabsInfo.map((tabInfo) => {
               return (
-                <Tab _selected={tabSelectedStyles} key={tabInfo.applicationId}>
+                <Tab _selected={tabSelectedStyles} key={tabInfo.associatedID}>
                   <Text whiteSpace='nowrap' mr={2}>{truncTextToN(tabInfo.tabName, 20)}</Text>
 
                   <Icon as={IoClose} transition='all .2s' onClick={() => {
@@ -879,11 +878,10 @@ before:
               </Flex>
             </Pagination>
           </TabPanel>
-
           {
             arrOfTabsInfo.map((tabInfo, index) => {
               return (
-                <TabPanel key={tabInfo.applicationId}>
+                <TabPanel key={tabInfo.associatedID}>
                   {tabInfo.component}
                 </TabPanel>
               );
