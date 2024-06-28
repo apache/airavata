@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Alert, Spinner, Text } from "@chakra-ui/react";
 
+const HOSTNAME = "https://api2.cybershuttle.org";
 export default class JupyterLab extends Component {
   constructor(props) {
     super(props);
@@ -77,10 +78,10 @@ export default class JupyterLab extends Component {
     console.log("the associated id is", this.associatedId);
     try {
       console.log("in the first try");
-      const resp = await fetch(`http://18.217.79.150:${port}/lab?token=1234`);
+      const resp = await fetch(`${HOSTNAME}/${port}/lab?token=1234`);
       this.setState({ rendering: true });
       console.log("the associated id is", this.associatedId);
-      window.jn.showWindow(`http://18.217.79.150:${port}/lab?token=1234`, this.associatedId);
+      window.jn.showWindow(`${HOSTNAME}/${port}/lab?token=1234`, this.associatedId);
 
       console.log("trying to show the window...");
       this.setState({ msg: "JupyterLab is ready to use in a new window" });
@@ -90,10 +91,10 @@ export default class JupyterLab extends Component {
       this.interval2 = setInterval(async () => {
         try {
           console.log("in the second try");
-          const resp = await fetch(`http://18.217.79.150:${port}/lab?token=1234`);
+          const resp = await fetch(`${HOSTNAME}/${port}/lab?token=1234`);
           this.setState({ rendering: true });
           clearInterval(this.interval2);
-          window.jn.showWindow(`http://18.217.79.150:${port}/lab?token=1234`, this.associatedId);
+          window.jn.showWindow(`${HOSTNAME}/${port}/lab?token=1234`, this.associatedId);
           console.log("trying to show the window...");
           this.setState({ msg: "JupyterLab is ready to use in a new window" });
         } catch (ex) {

@@ -72,8 +72,12 @@ const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
 let gatewayId = "";
 let email = "";
+let count = 0;
 
 const TabsView = () => {
+  count++;
+  console.log("component render number: ", count);
+
   const [tabIndex, setTabIndex] = useState(0);
   const [arrOfTabsInfo, setArrOfTabsInfo] = useState([]);
   /*
@@ -98,7 +102,6 @@ const TabsView = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const timer = useRef(null);
   const [applicationsLst, setApplicationsLst] = useState([]);
-  const [arrOfPanels, setArrOfPanels] = useState([]);
 
   const {
     offset,
@@ -155,7 +158,9 @@ const TabsView = () => {
     delete associatedIDToIndex[associatedID];
 
 
-    setArrOfTabsInfo(oldArr => oldArr.filter((tabInfo, i) => tabInfo.associatedID !== associatedID));
+    setArrOfTabsInfo(oldArr => oldArr.filter((tabInfo) => tabInfo.associatedID !== associatedID));
+
+
 
 
     for (const [key, value] of Object.entries(associatedIDToIndex)) {
