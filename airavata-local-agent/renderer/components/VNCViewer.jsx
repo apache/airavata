@@ -35,12 +35,19 @@ export default class VNCViewer extends Component {
     this.myRef = React.createRef();
   }
 
-  handleOnDisconnect = (rfb) => {
+  handleOnDisconnect = () => {
     this.setState({ rendering: false });
     setTimeout(() => {
       console.log("trying to reconnect...");
       this.setState({ rendering: true });
-    }, 2000);
+    }, 5000);
+  };
+
+  handleRefreshConnection = () => {
+    clearInterval(this.interval);
+    this.setState({ loading: true, rendering: false });
+    this.fetchServerStatus();
+    this.interval = setInterval(() => this.fetchServerStatus(), 5000);
   };
 
   async fetchServerStatus() {
@@ -76,20 +83,9 @@ export default class VNCViewer extends Component {
     }
   }
 
-  // startHeartBeat() {
-  //   this.interval = setInterval(() => {
-  //     let val = this.myRef.current;
-
-  //     console.log(this.myRef.current?.rfb);
-
-
-  //   }, 5000);
-
-  // }
-
   componentDidMount() {
     this.setState({ loading: true });
-    console.log("calling componentDidMount", this.props.reqPort);
+    console.log("calling componentDidMount");
     const { reqPort } = this.props;
     if (!reqPort) {
       this.fetchServerStatus();
@@ -138,12 +134,13 @@ export default class VNCViewer extends Component {
           )
         }
 
-        {!rendering && (
+        {rendering && (
           <>
             <Box textAlign='center'>
-              <ForwardedRefComponent url={"ws://20.51.202.251" + ":" + serverPort} username={this.username} password={this.password} vncRef={this.myRef} handleOnDisconnect={this.handleOnDisconnect} />
+              <ForwardedRefComponent url={"wss://api.cybershuttle.org" + "/proxy/" + serverPort} username={this.username} password={this.password} vncRef={this.myRef} handleOnDisconnect={this.handleOnDisconnect} />
 
-              <Text color='gray.700' maxW='700px' mx='auto' mt={4}>The VMD session will become inactive if it detects it is being unused for an extended period of time. Longer VMD sessions will be enabled in future updates.</Text>
+              <Text color='gray.700' maxW='700px' mx='auto' mt={4}>The VMD session will become inactive if it detects it is being unused for an extended period of time. Please click the refresh connection button below if it is inactive.</Text>
+              <Button colorScheme='blue' mx='auto' onClick={this.handleRefreshConnection} mt={4}>Refresh Connection</Button>
             </Box>
           </>
         )}
@@ -155,7 +152,7 @@ export default class VNCViewer extends Component {
         {
           showDevSettings && (
             <Box mt={4}>
-              <Text><Text as='span' fontWeight='bold'>Websocket URL: </Text>{"ws://20.51.202.251" + ":" + serverPort}</Text>
+              <Text><Text as='span' fontWeight='bold'>Websocket URL: </Text>{"wss://api.cybershuttle.org" + "/proxy/" + serverPort}</Text>
               <Text><Text as='span' fontWeight='bold'>Application ID: </Text>{applicationId}</Text>
               <Text><Text as='span' fontWeight='bold'>Experiment ID: </Text>{experimentId}</Text>
             </Box>
