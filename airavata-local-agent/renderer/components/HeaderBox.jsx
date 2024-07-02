@@ -33,7 +33,7 @@ export const HeaderBox = ({ name, email }) => {
       </Modal>
 
       <Flex>
-        <Text>Cybershuttle MD Local Agent {version}</Text>
+        <Text>Cybershuttle MD Local Agent v{version}</Text>
 
         <Spacer />
 

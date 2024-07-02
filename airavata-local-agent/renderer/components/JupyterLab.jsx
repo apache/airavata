@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Alert, Spinner, Text } from "@chakra-ui/react";
 
-const HOSTNAME = "https://api2.cybershuttle.org";
+const HOSTNAME = "https://api2.cybershuttle.org/proxy";
 export default class JupyterLab extends Component {
   constructor(props) {
     super(props);
@@ -72,19 +72,29 @@ export default class JupyterLab extends Component {
     this.setState({ rendering: false });
   }
 
+  doneWithGettingData = (port) => {
+    this.setState({ rendering: true });
+    console.log("the associated id is", this.associatedId);
+    window.jn.showWindow(`${HOSTNAME}/${port}/lab?token=1234`, this.associatedId);
+
+    console.log("trying to show the window...");
+    this.setState({ msg: "JupyterLab is ready to use in a new window. Please enter 1234 as the password box, if prompted." });
+
+
+  };
+
   tryAndLaunchServer = async (port) => {
     console.log("polling the jupyter server...");
 
-    console.log("the associated id is", this.associatedId);
+
     try {
       console.log("in the first try");
       const resp = await fetch(`${HOSTNAME}/${port}/lab?token=1234`);
-      this.setState({ rendering: true });
-      console.log("the associated id is", this.associatedId);
-      window.jn.showWindow(`${HOSTNAME}/${port}/lab?token=1234`, this.associatedId);
-
-      console.log("trying to show the window...");
-      this.setState({ msg: "JupyterLab is ready to use in a new window" });
+      if (resp.ok) {
+        this.doneWithGettingData(port);
+      } else {
+        throw new Error("Error fetching the application status");
+      }
 
     } catch (e) {
       console.log("in the first catch", e);
@@ -92,11 +102,11 @@ export default class JupyterLab extends Component {
         try {
           console.log("in the second try");
           const resp = await fetch(`${HOSTNAME}/${port}/lab?token=1234`);
-          this.setState({ rendering: true });
-          clearInterval(this.interval2);
-          window.jn.showWindow(`${HOSTNAME}/${port}/lab?token=1234`, this.associatedId);
-          console.log("trying to show the window...");
-          this.setState({ msg: "JupyterLab is ready to use in a new window" });
+
+          if (resp.ok) {
+            clearInterval(this.interval2);
+            this.doneWithGettingData(port);
+          }
         } catch (ex) {
           console.log("in the second catch", ex);
         }
@@ -139,6 +149,10 @@ export default class JupyterLab extends Component {
             </Alert>
           )
         }
+
+        {/* <iframe src={`${HOSTNAME}/${this.state.serverPort}/lab?token=1234`} width="100%" height="100%"></iframe> */}
+
+
 
         <h1>Note: If you close this tab, your jupyter session will no longer save any changes.</h1>
       </>

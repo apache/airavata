@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { TextWithBoldKey } from "./TextWithBoldKey";
 import { getColorScheme, getExperimentStatusFromNum, getRelativeTime, getResourceFromId } from "../lib/utilityFuncs";
 
-const ExperimentModal = ({ activeExperiment, onOpen, onClose, accessToken }) => {
+const ExperimentModal = ({ activeExperiment, onClose, accessToken }) => {
   const toast = useToast();
   const [experimentData, setExperimentData] = useState(null);
   const [loading, setLoading] = useState(false);

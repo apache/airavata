@@ -1,7 +1,19 @@
+import { useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
+export function showToast(title, description, type = 'info', duration = 5000, isClosable = true) {
+  const toast = useToast();
+
+  toast({
+    title: title,
+    description: description,
+    status: type,
+    duration: duration,
+    isClosable: isClosable,
+  });
+}
 
 export function titleCase(str) {
   return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
