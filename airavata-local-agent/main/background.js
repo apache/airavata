@@ -39,7 +39,7 @@ if (isProd) {
   app.commandLine.appendSwitch('ignore-certificate-errors');
 
   session.defaultSession.clearStorageData([], (data) => {
-    console.log("Cleared storage data", data);
+    log.info("Cleared storage data", data);
   });
 
 
@@ -66,10 +66,10 @@ if (isProd) {
   if (isProd) {
     await mainWindow.loadURL('app://./home');
     globalShortcut.register("CommandOrControl+R", () => {
-      console.log("CommandOrControl+R is pressed: Shortcut Disabled");
+      log.info("CommandOrControl+R is pressed: Shortcut Disabled");
     });
     globalShortcut.register("F5", () => {
-      console.log("F5 is pressed: Shortcut Disabled");
+      log.info("F5 is pressed: Shortcut Disabled");
     });
 
     mainWindow.removeMenu();
@@ -108,7 +108,6 @@ ipcMain.on('message', async (event, arg) => {
 });
 
 async function getToken(url) {
-  console.log(url);
   const rawCode = /code=([^&]*)/.exec(url) || null;
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
@@ -129,15 +128,12 @@ async function getToken(url) {
 
 ipcMain.on('ci-logon-logout', (event) => {
   log.warn('logging out');
-  console.log("Logging out with CI logon");
   session.defaultSession.clearStorageData([], (data) => {
-    console.log("Cleared storage data", data);
+    log.info("Cleared storage data", data);
   });
 });
 
 ipcMain.on('ci-logon-login', async (event) => {
-
-  console.log("Logging in with CI logon");
   log.warn("Logging in with CI logon");
   var authWindow = createWindow('authWindow', {
     width: 1200,
@@ -158,10 +154,8 @@ ipcMain.on('ci-logon-login', async (event) => {
 
         if (tokens.length > 0) {
           const [accessToken, refreshToken] = tokens;
-          console.log("Tokens", accessToken, refreshToken);
-
           if (!accessToken || !refreshToken) {
-            log.warn("Either access token or refresh token is missing");
+            log.error("Either access token or refresh token is missing");
           } else {
             log.info("Received access token and refresh token");
           }
@@ -181,14 +175,14 @@ let counter = 0;
 
 function printKeys(obj) {
   // only show the keys
-  console.log(Object.keys(obj));
+  log.info(Object.keys(obj));
 }
 
 ipcMain.on('show-window', (event, url, associatedId) => {
-  console.log("Showing the window with " + url);
+  log.info("Showing the window with url: ", url, " and associatedId: ", associatedId);
 
   if (associatedIDToWindow[associatedId]) {
-    console.log("Window already exists, not creating a new one.");
+    log.info("Window already exists with id: ", associatedId, " not creating a new one.");
     return;
   }
 
@@ -204,7 +198,7 @@ ipcMain.on('show-window', (event, url, associatedId) => {
     }
   });
 
-  console.log("Window created with id: ", associatedId);
+  log.info("Window created with id: ", associatedId, " and counter: ", counter);
 
   associatedIDToWindow[associatedId] = window;
   window.loadURL(url);
@@ -213,7 +207,7 @@ ipcMain.on('show-window', (event, url, associatedId) => {
   printKeys(associatedIDToWindow);
 
   window.on('close', () => {
-    console.log("Window's close button clicked: ", associatedId);
+    log.info("Window has been closed: ", associatedId);
 
 
     associatedIDToWindow[associatedId].removeAllListeners('close');
@@ -226,15 +220,11 @@ ipcMain.on('show-window', (event, url, associatedId) => {
 
 ipcMain.on('close-window', (event, associatedId) => {
   try {
-    console.log("Close tab button has been clicked: ", associatedId);
-
-
+    log.info("Closing the window with id: ", associatedId);
     associatedIDToWindow[associatedId].removeAllListeners('close');
     associatedIDToWindow[associatedId].close();
     delete associatedIDToWindow[associatedId];
-
-    printKeys(associatedIDToWindow);
   } catch (e) {
-    console.log("Window " + associatedId + " does not exist.");
+    log.error("Window doesn't exist with id: ", associatedId);
   }
 });

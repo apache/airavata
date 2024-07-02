@@ -20,7 +20,7 @@ import {
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { getColorScheme, getResourceFromId, truncTextToN } from "../lib/utilityFuncs";
+import { getColorScheme, getResourceFromId, showToast, truncTextToN } from "../lib/utilityFuncs";
 import { FaHome } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import {
@@ -73,12 +73,8 @@ const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
 let gatewayId = "";
 let email = "";
-let count = 0;
 
 const TabsView = () => {
-  count++;
-  console.log("component render number: ", count);
-
   const [tabIndex, setTabIndex] = useState(0);
   const [arrOfTabsInfo, setArrOfTabsInfo] = useState([]);
   /*
@@ -127,13 +123,7 @@ const TabsView = () => {
     });
 
     if (resp.status === 500) {
-      toast({
-        title: "Your account does not exist in the system yet. Please contact the administrator.",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-
+      window.location.href = "/login";
       setIsLoading(false);
     }
     return resp;
@@ -158,11 +148,7 @@ const TabsView = () => {
 
     delete associatedIDToIndex[associatedID];
 
-
     setArrOfTabsInfo(oldArr => oldArr.filter((tabInfo) => tabInfo.associatedID !== associatedID));
-
-
-
 
     for (const [key, value] of Object.entries(associatedIDToIndex)) {
       if (value > index) {
@@ -259,13 +245,7 @@ const TabsView = () => {
 
         if (!resp.ok) {
           setIsLoadingSession(false);
-          toast({
-            title: "Failed to launch Jupyter Lab",
-            description: "This is likely because the experiment is not ready to launch Jupyter Notebook. Please check the experiment status and current working directory.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
+          showToast("Failed to launch Jupyter Lab", "This is likely because the experiment is not ready to launch Jupyter Lab. Please check the experiment status and current working directory.", "error");
           return;
         }
 
@@ -366,22 +346,7 @@ before:
       // TODO: delete these
 
       if (!newAccessToken || !newRefreshToken) {
-        toast({
-          title: "Something went wrong.",
-          description: <Text>Please login again by <Button
-            variant="link"
-            color="white"
-            onClick={
-              () => {
-                window.location.href = "/login";
-              }
-            }
-          >clicking here</Button>. If you just made your account, please wait a few minutes and try again, as your account is still being set up. This may also happen if you recently signed in with a different account. If you have been using the app for a while, please log out and log back in as your session may have expired.</Text>,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-
+        window.location.href = "/login";
         if (loadingAnimation) { setIsLoading(false); }
         return;
 
@@ -462,14 +427,12 @@ before:
     // find the namdid in the list
     let hasNamd = false;
     let namdId = "";
-    let wantLst = applicationsLst.forEach((element) => {
+    applicationsLst.forEach((element) => {
       if (element.applicationName === "NAMD") {
         hasNamd = true;
         namdId = element.applicationInterfaceId;
       }
     });
-
-
 
     if (hasNamd) {
       fetchExperiments(pageSize, offset, {
