@@ -11,13 +11,6 @@ import {
   Input,
   useToast,
   Tooltip,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
 import { getColorScheme, getResourceFromId, showToast, truncTextToN } from "../lib/utilityFuncs";
@@ -37,37 +30,21 @@ import dayjs from "dayjs";
 import ExperimentModal from "../components/ExperimentModal";
 import JupyterLab from "../components/JupyterLab";
 import PanelBody from "../components/PanelBody";
+import { ExperimentsList } from "../components/ExperimentsList";
+import { API_BASE_URL, AUTH_BASE_URL } from "../lib/constants";
 dayjs.extend(relativeTime);
 
 
-const getExperimentApplication = (executionId) => {
-  if (!executionId) {
-    return ("N/A");
-  } else if (executionId.startsWith("AlphaFold2")) {
-    return "AlphaFold2";
-  } else if (executionId.startsWith("NAMD3_gpu")) {
-    return "NAMD3 GPU";
-  } else if (executionId.startsWith("NAMD_Diego")) {
-    return "NAMD3 Single Node";
-  } else if (executionId.startsWith("NAMD3")) {
-    return "NAMD3";
-  } else if (executionId.startsWith("NAMD")) {
-    return "NAMD";
-  } else if (executionId.startsWith("VMD")) {
-    return "VMD";
-  } else if (executionId.startsWith("JupyterLab")) {
-    return "Jupyter Lab";
-  }
-};
+
 
 const tabSelectedStyles = {
   bg: 'blue.100',
 };
 
-const isValidStatus = (status) => {
-  let invalidStatus = ["CREATED"]; // TODO here
-  return !invalidStatus.includes(status);
+const isOpenTab = (type, experimentID) => {
+  return (type + "_" + experimentID) in associatedIDToIndex;
 };
+
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
 let accessToken = "";
@@ -94,9 +71,9 @@ const TabsView = () => {
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterText, setFilterText] = useState("");
-  const [activeExperiment, setActiveExperiment] = useState("");
+
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const timer = useRef(null);
   const [applicationsLst, setApplicationsLst] = useState([]);
 
@@ -116,7 +93,7 @@ const TabsView = () => {
 
   const makeFetchForExperiments = async (pageSize, offset, token, filterString) => {
     let resp = await fetch(
-      `https://md.cybershuttle.org/api/experiment-search/?format=json&limit=${pageSize}&offset=${offset}&${filterString}`, {
+      `${API_BASE_URL}/experiment-search/?format=json&limit=${pageSize}&offset=${offset}&${filterString}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -300,12 +277,10 @@ before:
     setTabIndex(index);
   };
 
-  const isOpenTab = (type, experimentID) => {
-    return (type + "_" + experimentID) in associatedIDToIndex;
-  };
+
 
   const getAccessTokenFromRefreshToken = async (refreshToken) => {
-    const respForRefresh = await fetch(`https://md.cybershuttle.org/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+    const respForRefresh = await fetch(`${AUTH_BASE_URL}/get-token-from-refresh-token?refresh_token=${refreshToken}`);
 
     if (!respForRefresh.ok) {
       throw new Error("Failed to fetch new access token (refresh token)");
@@ -384,7 +359,7 @@ before:
 
   const fetchApplications = async () => {
     setIsLoading(true);
-    const resp = await fetch("https://md.cybershuttle.org/api/application-interfaces/?format=json", {
+    const resp = await fetch(`${API_BASE_URL}/application-interfaces/?format=json`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
       }
@@ -393,61 +368,15 @@ before:
 
     const data = await resp.json();
 
-    let hasNamd = false;
-    let namdId = "";
     let wantLst = data.map((element) => {
-      if (element.applicationName === "NAMD") {
-        hasNamd = true;
-        namdId = element.applicationInterfaceId;
-      }
       return {
         applicationInterfaceId: element.applicationInterfaceId,
         applicationName: element.applicationName
       };
     });
 
-
-
-
-    // set default value of NAMD 
-    console.log();
-    if (hasNamd) {
-      setFilterAttribute("APPLICATION_ID");
-      setFilterText(namdId);
-    }
-
     setApplicationsLst(wantLst);
   };
-
-  useEffect(() => {
-    // fetch experiments with namd filter if in the list
-    if (applicationsLst.length === 0) {
-      return;
-    }
-    // find the namdid in the list
-    let hasNamd = false;
-    let namdId = "";
-    applicationsLst.forEach((element) => {
-      if (element.applicationName === "NAMD") {
-        hasNamd = true;
-        namdId = element.applicationInterfaceId;
-      }
-    });
-
-    if (hasNamd) {
-      fetchExperiments(pageSize, offset, {
-        "STATUS": "ALL",
-        "APPLICATION_ID": namdId,
-      })
-
-        .catch((error) => {
-          console.error("App =>", error);
-          // window.location.href = "/login";
-        }
-        );
-    }
-
-  }, [applicationsLst]);
 
   useEffect(() => {
     accessToken = localStorage.getItem("accessToken");
@@ -468,7 +397,7 @@ before:
     if (!emailAddress) {
       return;
     }
-    const resp = await fetch(`https://md.cybershuttle.org/api/user-profiles/${emailAddress}/`, {
+    const resp = await fetch(`${API_BASE_URL}/user-profiles/${emailAddress}/`, {
       headers: {
         "Authorization": "Bearer " + accessToken
       }
@@ -589,20 +518,7 @@ before:
         )
       }
 
-      <Modal isOpen={isOpen} onClose={onClose} size='4xl'>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Experiment Details ({activeExperiment.name})</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={8}>
-            {
-              isOpen && (
-                <ExperimentModal activeExperiment={activeExperiment} onClose={onClose} onOpen={onOpen} accessToken={accessToken} />
-              )
-            }
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+
 
 
       <Tabs index={tabIndex} onChange={handleTabsChange}>
@@ -703,7 +619,7 @@ before:
               onPageChange={handlePageChange}
             >
               <TableContainer>
-                <Table variant='simple' >
+                <Table variant='simple'>
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
@@ -715,82 +631,14 @@ before:
                       <Th>Actions</Th>
                     </Tr>
                   </Thead>
-                  <Tbody >
-                    {
-                      experiments?.results?.map((experiment) => {
-                        return (
-                          <Tr key={experiment.experimentId} fontSize='sm' alignItems='center'>
-                            <Td>
-                              <Box >
-                                <Tooltip label={experiment.experimentId}>
-                                  <Text whiteSpace='pre-wrap'
-                                    _hover={{
-                                      cursor: "pointer",
-                                    }} transition='all .2s' onClick={() => {
-                                      setActiveExperiment(experiment);
-                                      onOpen();
-                                    }}
-                                  >{experiment.name}
-                                  </Text>
-                                </Tooltip>
-                              </Box>
-                            </Td>
-
-                            <Td>
-                              {
-                                experiment.userName === email ? <Badge colorScheme='green'>{experiment.userName}</Badge> : <Text>{experiment.userName}</Text>
-                              }
-                            </Td>
-
-                            <Td>
-                              <Text>{getExperimentApplication(experiment.executionId)}</Text>
-                            </Td>
-
-                            <Td>
-                              <Text >{getResourceFromId(experiment.resourceHostId)}</Text>
-                            </Td>
-
-                            <Td>
-                              <Tooltip label={new Date(experiment.creationTime).toLocaleString()}><Text>{dayjs(experiment.creationTime).fromNow(true)} ago</Text></Tooltip>
-                            </Td>
-
-                            <Td>
-                              <Badge colorScheme={getColorScheme(experiment.experimentStatus)}>{experiment.experimentStatus}</Badge>
-                            </Td>
-
-                            <Td>
-                              <HStack>
-                                {
-                                  !experiment.executionId?.startsWith("VMD") && !experiment.executionId?.startsWith("JupyterLab") && isValidStatus(experiment.experimentStatus) &&
-                                  <Button colorScheme='orange' size='xs' onClick={() => {
-                                    handleAddTab('JN', experiment.experimentId, experiment.name);
-                                  }}>
-                                    Jupyter
-                                    {
-                                      isOpenTab('JN', experiment.experimentId) &&
-                                      <Spinner ml={2} />
-                                    }
-                                  </Button>}
-                                {
-                                  // only show jupyter button if executionId starts with "NAMD_*".
-                                  experiment.executionId?.startsWith('NAMD_') && isValidStatus(experiment.experimentStatus) && (
-                                    <Button colorScheme='blue' size='xs' onClick={() => {
-                                      handleAddTab('VMD', experiment.experimentId, experiment.name);
-                                    }}
-                                    >
-                                      VMD
-                                      {
-                                        isOpenTab('VMD', experiment.experimentId) &&
-                                        <Spinner ml={2} />
-                                      }</Button>
-                                  )
-                                }
-                              </HStack>
-                            </Td>
-                          </Tr>
-                        );
-                      })
-                    }
+                  <Tbody>
+                    <ExperimentsList
+                      experiments={experiments}
+                      email={email}
+                      isOpenTab={isOpenTab}
+                      accessToken={accessToken}
+                      handleAddTab={handleAddTab}
+                    />
                   </Tbody>
                 </Table>
               </TableContainer>
