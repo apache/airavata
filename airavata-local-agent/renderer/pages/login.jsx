@@ -1,6 +1,8 @@
 import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
+import { AuthContext, useAuth } from "../lib/Contexts";
+import { useRouter } from "next/router";
 
 const SIGN_UP_URL = "https://md.cybershuttle.org/auth/create-account";
 
@@ -9,6 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authInfo, setAuthInfo] = useAuth();
+  const router = useRouter();
 
   const handleLogin = async () => {
     setError("Molecular Dynamics Gateway login is not yet implemented, please use the organizational login.");
@@ -37,7 +41,11 @@ const Login = () => {
       localStorage.removeItem("ciLoginAuto");
       window.auth.ciLogonLogin();
     }
-    window.auth.ciLogonSuccess((event, accessToken, refreshToken) => {
+
+    window.auth.ciLogonSuccess((event, data) => {
+      const accessToken = data.access_token;
+      const refreshToken = data.refresh_token;
+
       if (!accessToken || !refreshToken) {
         console.log("Error logging in with CI logon");
 
@@ -49,18 +57,26 @@ const Login = () => {
         } else {
           localStorage.setItem('numTries', 0);
           localStorage.setItem('ciLoginAuto', "false");
-          setError("Refresh the page and try logging in again, this may sometimes happen.");
+          setError("Refresh the page and try logging in again.");
+          setLoading(false);
           return;
         }
 
         localStorage.setItem("ciLoginAuto", "true");
         location.reload();
       } else {
-        window.localStorage.setItem("accessToken", accessToken);
-        window.localStorage.setItem("refreshToken", refreshToken);
+        window.localStorage.setItem("accessToken", data.access_token);
+        window.localStorage.setItem("refreshToken", data.refresh_token);
+
         localStorage.removeItem("ciLoginAuto");
         localStorage.setItem('numTries', 0);
-        window.location.href = "/tabs-view";
+        setLoading(false);
+        router.push('/tabs-view');
+
+
+
+        console.log("Setting auth info", data);
+        setAuthInfo(data);
       }
     });
   }, []);

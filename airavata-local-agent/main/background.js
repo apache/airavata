@@ -23,7 +23,7 @@ if (isProd) {
 ; (async () => {
   await app.whenReady();
   const mainWindow = createWindow('main', {
-    width: 1900,
+    width: 1700,
     height: 1000,
     autoHideMenuBar: true,
     webPreferences: {
@@ -77,7 +77,7 @@ if (isProd) {
 
   } else {
     const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/home`);
+    await mainWindow.loadURL(`http://localhost:${port}/docker-page`);
     mainWindow.webContents.openDevTools();
   }
 })();
@@ -115,22 +115,18 @@ async function getToken(url) {
     const resp = await fetch(`https://md.cybershuttle.org/auth/get-token-from-code/?code=${code}`);
 
     const data = await resp.json();
-
-    const accessToken = data.access_token;
-    const refreshToken = data.refresh_token;
-
-    return [accessToken, refreshToken];
+    return data;
 
   } else {
-    return [];
+    return null;
   }
 }
 
 ipcMain.on('ci-logon-logout', (event) => {
   log.warn('logging out');
-  session.defaultSession.clearStorageData([], (data) => {
-    log.info("Cleared storage data", data);
-  });
+  // session.defaultSession.clearStorageData([], (data) => {
+  //   log.info("Cleared storage data", data);
+  // });
 });
 
 ipcMain.on('ci-logon-login', async (event) => {
@@ -150,20 +146,11 @@ ipcMain.on('ci-logon-login', async (event) => {
     if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
       // hitUrl = true
       setTimeout(async () => {
-        const tokens = await getToken(url);
-
-        if (tokens.length > 0) {
-          const [accessToken, refreshToken] = tokens;
-          if (!accessToken || !refreshToken) {
-            log.error("Either access token or refresh token is missing");
-          } else {
-            log.info("Received access token and refresh token");
-          }
-
-          event.sender.send('ci-logon-success', accessToken, refreshToken);
-          authWindow.close();
-        }
-      }, 5000);
+        const data = await getToken(url);
+        log.info("Got the token: ", data);
+        event.sender.send('ci-logon-success', data);
+        authWindow.close();
+      }, 2000);
 
       authWindow.hide();
     }
@@ -227,4 +214,69 @@ ipcMain.on('close-window', (event, associatedId) => {
   } catch (e) {
     log.error("Window doesn't exist with id: ", associatedId);
   }
+});
+
+// ----------------- DOCKER -----------------
+
+var Docker = require('dockerode');
+var docker = new Docker(); //defaults to above if env variables are not used
+
+ipcMain.on('start-notebook', (event) => {
+  log.info("Starting the notebook");
+  try {
+    let createOptions = {
+      'Tty': false,
+      'ExposedPorts': {
+        '8888/tcp': {}
+      },
+      'HostConfig': {
+        'PortBindings': {
+          '8888/tcp': [
+            {
+              'HostPort': '6080'
+            }
+          ]
+        }
+      }
+    };
+
+    docker.run('jupyter/datascience-notebook:latest', [], null, createOptions, function (err, data, container) {
+      container.remove();
+    })
+      .on('container', function (container) {
+        console.log("Started the container with id: ", container.id);
+        event.sender.send('notebook-started', container.id);
+      });
+
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+const getRunningContainers = (event) => {
+  log.info("Getting running containers");
+  let runningContainers = [];
+  docker.listContainers(function (err, containers) {
+    containers.forEach(function (containerInfo) {
+      runningContainers.push({
+        id: containerInfo.Id,
+        name: containerInfo.Names[0]
+      });
+    });
+
+    event.sender.send('got-running-containers', runningContainers);
+  });
+};
+
+ipcMain.on("get-running-containers", getRunningContainers);
+
+
+ipcMain.on('stop-notebook', (event, containerId) => {
+  log.info("Stopping the notebook with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+  container.stop(function (err, data) {
+    console.log("Container stopped: ", containerId);
+    event.sender.send('notebook-stopped');
+  });
 });

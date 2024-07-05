@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 
 const VNCItem = dynamic(() => {
-  return import('../components/VNCItem').then((mod) => mod.VNCItem);
+  return import('../VNCItem').then((mod) => mod.VNCItem);
 }, { ssr: false });
 
 

@@ -38,15 +38,12 @@ export const UserModal = ({ email, accessToken }) => {
   }
 
   useEffect(() => {
-
     async function getUserInfo() {
-
       await fetch(`https://md.cybershuttle.org/auth/users/current/`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
       }).then(resp => resp.json()).then(data => {
-        console.log(data);
         setUser(data);
       });
     }
@@ -56,7 +53,6 @@ export const UserModal = ({ email, accessToken }) => {
 
   return (
     <Stack direction='column' spacing={4}>
-      <Text fontStyle='italic'>All fields are currently readonly.</Text>
       <FormControl>
         <FormLabel>Username</FormLabel>
         <Input value={user.username || ""} isDisabled />
@@ -89,6 +85,8 @@ export const UserModal = ({ email, accessToken }) => {
           }
         } />
 
+        <FormHelperText>Changing your email address will require you to verify the new email address.</FormHelperText>
+
         {
           user?.pending_email_change?.email_address && (
             <Text bg='blue.100' p={1} mt={4} rounded='md'>Once you verify your email address at {user.pending_email_change.email_address} your email address will be updated.</Text>
@@ -99,20 +97,7 @@ export const UserModal = ({ email, accessToken }) => {
       <Button colorScheme='blue' size='sm'
         onClick={handleSaveInfo}
         isLoading={loading}
-
       >Update</Button>
-
-      {/* <FormControl>
-        <FormLabel>Gateway Id</FormLabel>
-        <Input value={user.gatewayId || ""} isReadOnly />
-      </FormControl> */}
-
-      {/* <FormControl>
-        <FormLabel>Account Creation Time</FormLabel>
-        <Input value={new Date(user.creationTime).toLocaleString() || ""} isDisabled />
-      </FormControl> */}
-
-
     </Stack>
   );
 };
