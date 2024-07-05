@@ -221,30 +221,32 @@ ipcMain.on('close-window', (event, associatedId) => {
 var Docker = require('dockerode');
 var docker = new Docker(); //defaults to above if env variables are not used
 
-ipcMain.on('start-notebook', (event) => {
-  log.info("Starting the notebook");
-  try {
-    let createOptions = {
-      'Tty': false,
-      'ExposedPorts': {
-        '8888/tcp': {}
-      },
-      'HostConfig': {
-        'PortBindings': {
-          '8888/tcp': [
-            {
-              'HostPort': '6080'
-            }
-          ]
-        }
-      }
-    };
+ipcMain.on('start-notebook', (event, imageName) => {
+  log.info("Starting the notebook with imageName: ", imageName);
 
-    docker.run('jupyter/datascience-notebook:latest', [], null, createOptions, function (err, data, container) {
+  let createOptions = {
+    'Tty': false,
+    'ExposedPorts': {
+      '8888/tcp': {}
+    },
+    'HostConfig': {
+      'PortBindings': {
+        '8888/tcp': [
+          {
+            'HostPort': '6080'
+          }
+        ]
+      }
+    }
+  };
+
+  console.log("Create options: ", createOptions);
+
+  try {
+    docker.run(imageName, [], null, createOptions, function (err, data, container) {
       container.remove();
     })
       .on('container', function (container) {
-        console.log("Started the container with id: ", container.id);
         event.sender.send('notebook-started', container.id);
       });
 
