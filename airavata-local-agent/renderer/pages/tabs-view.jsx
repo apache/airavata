@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import {
   Tabs, TabList, TabPanels, Tab, TabPanel, Button, Box, Table,
   Thead,
@@ -32,6 +32,8 @@ import JupyterLab from "../components/JupyterLab";
 import PanelBody from "../components/PanelBody";
 import { ExperimentsList } from "../components/ExperimentsList";
 import { API_BASE_URL, AUTH_BASE_URL } from "../lib/constants";
+import { getLocalStgKey } from "../components/LocalFuncs";
+import { AuthContext, useAuth } from "../lib/Contexts";
 dayjs.extend(relativeTime);
 
 
@@ -47,9 +49,11 @@ const isOpenTab = (type, experimentID) => {
 
 
 const associatedIDToIndex = {}; // 'VMD_adfasdfsdf' => 1
-let accessToken = "";
 let gatewayId = "";
 let email = "";
+let accessToken = "";
+
+
 
 const TabsView = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -71,7 +75,11 @@ const TabsView = () => {
   const [filterAttribute, setFilterAttribute] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [authInfo, setAuthInfo] = useAuth();
 
+  useEffect(() => {
+    console.log(authInfo);
+  }, [authInfo]);
   const toast = useToast();
 
   const timer = useRef(null);
@@ -91,18 +99,44 @@ const TabsView = () => {
     },
   });
 
+
+  const makeProtectedFetch = async (url, options) => {
+    let resp = await fetch(url, options);
+
+    if (!resp.ok) {
+      let refreshToken = localStorage.getItem('refreshToken');
+
+      const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
+
+      if (!newAccessToken || !newRefreshToken) {
+        window.location.href = "/login";
+        return;
+      }
+      localStorage.setItem('accessToken', newAccessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
+      accessToken = newAccessToken;
+      setNameAndEmail();
+
+      options.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+      resp = await fetch(url, options); // done with the new accessToken
+      if (!resp.ok) {
+        throw new Error("Failed to fetch new experiments (new access token)");
+      }
+    };
+
+    return resp;
+  };
+
+
+
   const makeFetchForExperiments = async (pageSize, offset, token, filterString) => {
-    let resp = await fetch(
+    let resp = await makeProtectedFetch(
       `${API_BASE_URL}/experiment-search/?format=json&limit=${pageSize}&offset=${offset}&${filterString}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
     });
-
-    if (resp.status === 500) {
-      window.location.href = "/login";
-      setIsLoading(false);
-    }
     return resp;
   };
 
@@ -271,13 +305,11 @@ before:
   };
 
 
-  const memoizedHandleRemoveTab = useCallback(handleRemoveTab, []);
-
   const handleTabsChange = (index) => {
     setTabIndex(index);
   };
 
-
+  // getLocalStgKey('accessToken');
 
   const getAccessTokenFromRefreshToken = async (refreshToken) => {
     const respForRefresh = await fetch(`${AUTH_BASE_URL}/get-token-from-refresh-token?refresh_token=${refreshToken}`);
@@ -313,30 +345,29 @@ before:
 
     // TODO: remove this
     // if this fetch request fails, try again after getting a new access token
-    if (!resp.ok) {
-      let refreshToken = localStorage.getItem('refreshToken');
+    // if (!resp.ok) {
+    //   let refreshToken = localStorage.getItem('refreshToken');
 
-      const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
+    //   const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
 
-      // TODO: delete these
+    //   // TODO: delete these
 
-      if (!newAccessToken || !newRefreshToken) {
-        window.location.href = "/login";
-        if (loadingAnimation) { setIsLoading(false); }
-        return;
+    //   if (!newAccessToken || !newRefreshToken) {
+    //     window.location.href = "/login";
+    //     if (loadingAnimation) { setIsLoading(false); }
+    //     return;
 
-      }
-      localStorage.setItem('accessToken', newAccessToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
+    //   }
+    //   localStorage.setItem('accessToken', newAccessToken);
+    //   localStorage.setItem('refreshToken', newRefreshToken);
+    //   accessToken = newAccessToken;
 
-      accessToken = newAccessToken;
-
-      setNameAndEmail();
-      resp = await makeFetchForExperiments(pageSize, offset, accessToken, urlParams.toString()); // done with the new accessToken
-      if (!resp.ok) {
-        throw new Error("Failed to fetch new experiments (new access token)");
-      }
-    };
+    //   setNameAndEmail();
+    //   resp = await makeFetchForExperiments(pageSize, offset, accessToken, urlParams.toString()); // done with the new accessToken
+    //   if (!resp.ok) {
+    //     throw new Error("Failed to fetch new experiments (new access token)");
+    //   }
+    // };
 
     const data = await resp.json();
     setExperiments(data);
@@ -359,9 +390,9 @@ before:
 
   const fetchApplications = async () => {
     setIsLoading(true);
-    const resp = await fetch(`${API_BASE_URL}/application-interfaces/?format=json`, {
+    const resp = await makeProtectedFetch(`${API_BASE_URL}/application-interfaces/?format=json`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        'Authorization': `Bearer ${accessToken}`
       }
     });
 
@@ -385,7 +416,6 @@ before:
 
 
   useEffect(() => {
-    accessToken = localStorage.getItem("accessToken");
     fetchExperiments(pageSize, offset, getFilterObj())
       .catch((error) => {
         console.error("App =>", error);
@@ -427,7 +457,6 @@ before:
       console.log("Closing tab with associated ID", associatedId);
       console.log("in closeTabCallback", arrOfTabsInfo);
       // handleRemoveTab(associatedId);
-      // memoizedHandleRemoveTab(associatedId);
     });
 
 
@@ -534,7 +563,7 @@ before:
                   <Text whiteSpace='nowrap' mr={2}>{truncTextToN(tabInfo.tabName, 20)}</Text>
 
                   <Icon as={IoClose} transition='all .2s' onClick={() => {
-                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && memoizedHandleRemoveTab(tabInfo.associatedID, tabInfo.applicationId);
+                    confirm("Re-launching this tab may take more time later. Are you sure you want to close?") && handleRemoveTab(tabInfo.associatedID, tabInfo.applicationId);
                   }} _hover={{
                     color: 'red.500',
                     cursor: 'pointer',

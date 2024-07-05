@@ -69,6 +69,7 @@ const Home = () => {
 
         <HStack spacing={4} mt={2}>
           <Button as='a' href='/login' colorScheme='blue'>Login</Button>
+          <Button as='a' href='/docker-page' colorScheme='red'>v1.0.2</Button>
           {/* <Button as='a' target="_blank" href='https://github.com/apache/airavata/pull/435' bg='black' color='white' _hover={{
             'bg': "#404040"
           }}>Contribute on GitHub</Button> */}

@@ -220,7 +220,6 @@ const ExperimentModal = ({ activeExperiment, onClose, accessToken }) => {
             const fileName = getFileNameFromHeader(resp.headers.get('Content-Disposition'));
             const text = await resp.text();
 
-
             newObj = {
               outputTypeName: outputTypeName,
               name: fileName,

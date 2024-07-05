@@ -14,7 +14,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
-import { NavContainer } from '../components/NavContainer';
+import { NavContainer } from '../../components/NavContainer';
 import { useRouter } from "next/router";
 
 const VncClient = () => {

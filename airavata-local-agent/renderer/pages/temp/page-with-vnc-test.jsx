@@ -1,5 +1,5 @@
-import { VNCTest } from "../components/VNCTest";
-import { Footer } from "../components/Footer";
+import { VNCTest } from "../../components/temp/VNCTest";
+import { Footer } from "../../components/Footer";
 const VNCPageTest = () => {
     return (
 
