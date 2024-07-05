@@ -5,7 +5,25 @@ const DockerPage = () => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
 
   const handleStartNotebook = () => {
-    window.ipc.send("start-notebook");
+    let createOptions = {
+      'Tty': false,
+      'ExposedPorts': {
+        '8888/tcp': {}
+      },
+      'HostConfig': {
+        'PortBindings': {
+          '8888/tcp': [
+            {
+              'HostPort': '6080'
+            }
+          ]
+        }
+      }
+    };
+
+    let imageName = "jupyter/datascience-notebook:latest";
+
+    window.ipc.send("start-notebook", imageName, createOptions);
   };
 
   const handleStopNotebook = (containerId) => {
@@ -46,7 +64,7 @@ const DockerPage = () => {
 
     let interval = setInterval(() => {
       getRunningContainers();
-    }, 5000);
+    }, 1000);
 
     return () => {
       clearInterval(interval);
