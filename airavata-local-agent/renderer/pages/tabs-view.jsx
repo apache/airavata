@@ -247,28 +247,30 @@ const TabsView = () => {
         component = <PanelBody type="VMD" applicationId={applicationId} reqPort={port} experimentId={experimentID} headers={headers} />;
       } else if (type === 'JN') {
 
-        body["application"] = "JUPYTER_LAB";
-        const resp = await fetch(url, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(body)
-        });
+        // body["application"] = "JUPYTER_LAB";
+        // const resp = await fetch(url, {
+        //   method: "POST",
+        //   headers: headers,
+        //   body: JSON.stringify(body)
+        // });
 
-        if (!resp.ok) {
-          setIsLoadingSession(false);
-          showToast("Failed to launch Jupyter Lab", "This is likely because the experiment is not ready to launch Jupyter Lab. Please check the experiment status and current working directory.", "error");
-          return;
-        }
+        // if (!resp.ok) {
+        //   setIsLoadingSession(false);
+        //   showToast("Failed to launch Jupyter Lab", "This is likely because the experiment is not ready to launch Jupyter Lab. Please check the experiment status and current working directory.", "error");
+        //   return;
+        // }
 
-        const data = await resp.json();
-        applicationId = data?.applicationId;
-        let port;
+        // const data = await resp.json();
+        // applicationId = data?.applicationId;
+        // let port;
 
-        if (data?.allocatedPorts) {
-          port = data.allocatedPorts[0];
-        }
+        // if (data?.allocatedPorts) {
+        //   port = data.allocatedPorts[0];
+        // }
 
-        component = <PanelBody type="JUPYTER_LAB" applicationId={applicationId} reqPort={port} experimentId={experimentID} headers={headers} />;
+        myPrompt("Enter the port number for Jupyter Lab", "8888");
+
+        component = <PanelBody type="JUPYTER_DOCKER" applicationId={applicationId} reqPort={port} experimentId={experimentID} headers={headers} />;
       }
 
       const newTabIndex = arrOfTabsInfo.length + 1; // account for List Experiments being 0 index

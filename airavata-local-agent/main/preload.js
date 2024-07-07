@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const handler = {
-  send(channel, value) {
-    ipcRenderer.send(channel, value);
+  send(channel, ...args) {
+    ipcRenderer.send(channel, ...args);
   },
   on(channel, callback) {
     const subscription = (_event, ...args) => callback(...args);
@@ -16,6 +16,14 @@ const handler = {
     ipcRenderer.removeAllListeners(channel);
   }
 };
+
+// window.myPrompt = function (title, val) {
+//   return ipcRenderer.sendSync('prompt', { title, val });
+// };
+
+contextBridge.exposeInMainWorld('userActions', {
+  myPrompt: (title, val) => ipcRenderer.sendSync('prompt', { title, val }),
+});
 
 contextBridge.exposeInMainWorld('ipc', handler);
 
