@@ -6,6 +6,7 @@ import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
 import log from 'electron-log/main';
+import { frame } from 'framer-motion';
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
@@ -165,7 +166,18 @@ function printKeys(obj) {
   log.info(Object.keys(obj));
 }
 
-ipcMain.on('show-window', (event, url, associatedId) => {
+const removeExpWindow = (event, associatedId) => {
+  log.info("Removing the window with id: ", associatedId);
+  try {
+    associatedIDToWindow[associatedId].removeAllListeners('close');
+    associatedIDToWindow[associatedId].close();
+    delete associatedIDToWindow[associatedId];
+  } catch (e) {
+    log.error("Window doesn't exist with id: ", associatedId);
+  }
+};
+
+const createExpWindow = (event, url, associatedId) => {
   log.info("Showing the window with url: ", url, " and associatedId: ", associatedId);
 
   if (associatedIDToWindow[associatedId]) {
@@ -178,6 +190,7 @@ ipcMain.on('show-window', (event, url, associatedId) => {
     width: 1200,
     height: 800,
     show: false,
+    frame: false,
     // 'web-security': false,
     webPreferences: {
       allowDisplayingInsecureContent: true,
@@ -203,7 +216,9 @@ ipcMain.on('show-window', (event, url, associatedId) => {
     printKeys(associatedIDToWindow);
     event.sender.send('window-has-been-closed', associatedId);
   });
-});
+};
+
+ipcMain.on('show-window', createExpWindow);
 
 ipcMain.on('close-window', (event, associatedId) => {
   try {
@@ -217,29 +232,12 @@ ipcMain.on('close-window', (event, associatedId) => {
 });
 
 // ----------------- DOCKER -----------------
-
 var Docker = require('dockerode');
+
 var docker = new Docker(); //defaults to above if env variables are not used
 
-ipcMain.on('start-notebook', (event, imageName) => {
+ipcMain.on('start-notebook', (event, imageName, createOptions) => {
   log.info("Starting the notebook with imageName: ", imageName);
-
-  let createOptions = {
-    'Tty': false,
-    'ExposedPorts': {
-      '8888/tcp': {}
-    },
-    'HostConfig': {
-      'PortBindings': {
-        '8888/tcp': [
-          {
-            'HostPort': '6080'
-          }
-        ]
-      }
-    }
-  };
-
   console.log("Create options: ", createOptions);
 
   try {
@@ -248,7 +246,26 @@ ipcMain.on('start-notebook', (event, imageName) => {
     })
       .on('container', function (container) {
         event.sender.send('notebook-started', container.id);
+        console.log("Container started: ", container);
+
+        let url = `http://localhost:${createOptions.HostConfig.PortBindings['8888/tcp'][0].HostPort}/lab`;
+
+        let interval = setInterval(() => {
+          fetch(url)
+            .then((response) => {
+              if (response.status === 200) {
+                log.info("Got a 200 response from the notebook, showing the window");
+                createExpWindow(event, url, container.id);
+                clearInterval(interval);
+              }
+            })
+            .catch((error) => {
+              log.error("Error: ", error);
+            });
+        }, 5000);
       });
+
+
 
   } catch (e) {
     console.log(e);
@@ -257,16 +274,25 @@ ipcMain.on('start-notebook', (event, imageName) => {
 
 const getRunningContainers = (event) => {
   log.info("Getting running containers");
-  let runningContainers = [];
   docker.listContainers(function (err, containers) {
-    containers.forEach(function (containerInfo) {
-      runningContainers.push({
-        id: containerInfo.Id,
-        name: containerInfo.Names[0]
-      });
-    });
 
-    event.sender.send('got-running-containers', runningContainers);
+    // make sure everything in associatedIDToWindow is in containers; if not, remove it
+    for (let key in associatedIDToWindow) {
+      let exists = false;
+      for (let i = 0; i < containers.length; i++) {
+        if (containers[i].Id === key) {
+          exists = true;
+          break;
+        }
+      }
+
+      if (!exists) {
+        log.info("Removing the window with id: ", key);
+        removeExpWindow(event, key);
+      }
+    }
+
+    event.sender.send('got-running-containers', containers);
   });
 };
 
@@ -279,6 +305,7 @@ ipcMain.on('stop-notebook', (event, containerId) => {
   let container = docker.getContainer(containerId);
   container.stop(function (err, data) {
     console.log("Container stopped: ", containerId);
+    removeExpWindow(event, containerId);
     event.sender.send('notebook-stopped');
   });
 });

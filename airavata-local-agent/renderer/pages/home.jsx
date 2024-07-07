@@ -16,6 +16,7 @@ const Home = () => {
   const [showUpdate, setShowUpdate] = useState(false);
 
   useEffect(() => {
+
     window.config.getVersionNumber();
 
     window.config.versionNumber(async (event, version) => {

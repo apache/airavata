@@ -5,6 +5,7 @@ const DockerPage = () => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
 
   const handleStartNotebook = () => {
+
     let createOptions = {
       'Tty': false,
       'ExposedPorts': {
@@ -44,14 +45,11 @@ const DockerPage = () => {
     });
 
     window.ipc.on("got-running-containers", (runningContainers) => {
-      console.log("Got running containers: ", runningContainers);
-
       if (runningContainers) {
         setRunningContainers(runningContainers);
+        console.log("Running containers: ", runningContainers);
       }
     });
-
-
 
     return () => {
       window.ipc.removeAllListeners("notebook-started");
@@ -64,7 +62,7 @@ const DockerPage = () => {
 
     let interval = setInterval(() => {
       getRunningContainers();
-    }, 1000);
+    }, 3000);
 
     return () => {
       clearInterval(interval);
@@ -86,24 +84,22 @@ const DockerPage = () => {
             Start Notebook
           </Button>
 
-          {/* <Button
-            mt={2}
-            onClick={handleStopNotebook} colorScheme='red'
-          >
-            Stop Notebook
-          </Button> */}
+
         </HStack>
 
         <Box mt={4}>
+
+
+
           {
             runningContainers.map((container, index) => {
               return <Box key={index}>
                 <Button
                   mt={2}
-                  onClick={() => handleStopNotebook(container.id)}
+                  onClick={() => handleStopNotebook(container.Id)}
                   colorScheme='red'
                 >
-                  {container.name} - {container.id}
+                  {container.Names[0]} - {container.Id}
                 </Button>
               </Box>;
             })
