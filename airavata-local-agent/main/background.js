@@ -236,37 +236,87 @@ var Docker = require('dockerode');
 
 var docker = new Docker(); //defaults to above if env variables are not used
 
+const showWindowWhenReady = (event, id, port) => {
+  let url = `http://localhost:${port}/lab`;
+
+  let interval = setInterval(() => {
+    fetch(url)
+      .then((response) => {
+        if (response.status === 200) {
+          log.info("Got a 200 response from the notebook, showing the window");
+          createExpWindow(event, url, id);
+          clearInterval(interval);
+        }
+      })
+      .catch((error) => {
+        log.error("Error: ", error);
+      });
+  }, 5000);
+};
+
+ipcMain.on('start-container', (event, containerId) => {
+  log.info("Starting the container with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+
+
+  container.start(async function (err, data) {
+    log.info("Starting container: ", containerId);
+
+    if (err) {
+      event.sender.send('container-started', containerId, err.message);
+    } else {
+      let error = "";
+
+      try {
+        let cont = await container.inspect();
+        let port = cont.NetworkSettings.Ports['8888/tcp'][0].HostPort;
+        showWindowWhenReady(event, containerId, port);
+
+
+      } catch (e) {
+        log.error("Error: ", e);
+        err = e.message;
+      }
+
+      event.sender.send('container-started', containerId, error);
+    }
+  });
+
+
+});
+
+
+ipcMain.on('stop-container', (event, containerId) => {
+  log.info("Stopping the container with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+  container.stop(function (err, data) {
+    console.log("Container stopped: ", containerId);
+    event.sender.send('container-stopped', containerId);
+  });
+});
+
 ipcMain.on('start-notebook', (event, imageName, createOptions) => {
   log.info("Starting the notebook with imageName: ", imageName);
   console.log("Create options: ", createOptions);
 
   try {
-    docker.run(imageName, [], null, createOptions, function (err, data, container) {
-      container.remove();
-    })
+    docker.run(imageName, [], null, createOptions, function (err, data, container) { })
       .on('container', function (container) {
-        event.sender.send('notebook-started', container.id);
-        console.log("Container started: ", container);
+        log.info("Container created: ", container.id);
+        let err = "";
 
-        let url = `http://localhost:${createOptions.HostConfig.PortBindings['8888/tcp'][0].HostPort}/lab`;
+        try {
+          showWindowWhenReady(event, container.id, createOptions.HostConfig.PortBindings['8888/tcp'][0].HostPort);
+        } catch (e) {
+          console.log(e);
+          err = e;
+        }
 
-        let interval = setInterval(() => {
-          fetch(url)
-            .then((response) => {
-              if (response.status === 200) {
-                log.info("Got a 200 response from the notebook, showing the window");
-                createExpWindow(event, url, container.id);
-                clearInterval(interval);
-              }
-            })
-            .catch((error) => {
-              log.error("Error: ", error);
-            });
-        }, 5000);
+        event.sender.send('notebook-started', container.id, err);
+
       });
-
-
-
   } catch (e) {
     console.log(e);
   }
@@ -274,8 +324,9 @@ ipcMain.on('start-notebook', (event, imageName, createOptions) => {
 
 const getRunningContainers = (event) => {
   log.info("Getting running containers");
-  docker.listContainers(function (err, containers) {
-
+  docker.listContainers({
+    all: true
+  }, function (err, containers) {
     // make sure everything in associatedIDToWindow is in containers; if not, remove it
     for (let key in associatedIDToWindow) {
       let exists = false;
@@ -306,6 +357,6 @@ ipcMain.on('stop-notebook', (event, containerId) => {
   container.stop(function (err, data) {
     console.log("Container stopped: ", containerId);
     removeExpWindow(event, containerId);
-    event.sender.send('notebook-stopped');
+    event.sender.send('container-stopped', containerId);
   });
 });
