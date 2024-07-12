@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Text, IconButton } from "@chakra-ui/react";
+import { Box, Button, Stack, Text, IconButton, Flex, Input, Divider } from "@chakra-ui/react";
 import { DeleteIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from "react";
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -9,6 +9,8 @@ import { canPerformAction } from "../lib/utilityFuncs";
 export const DockerInspectModal = ({ containerId }) => {
   const [inspectContent, setInspectContent] = useState("");
   const [status, setStatus] = useState("");
+  const [rename, setRename] = useState(false);
+  const [newName, setNewName] = useState("");
 
   useEffect(() => {
     window.ipc.send("inspect-container", containerId);
@@ -42,7 +44,8 @@ export const DockerInspectModal = ({ containerId }) => {
   }
 
   return (
-    <Stack spacing={4} direction='column'>
+
+    <Stack spacing={2} direction='column' divider={<Divider />}>
 
       <Box>
         <TextWithBoldKey keyName="Container Actions" />
@@ -103,7 +106,33 @@ export const DockerInspectModal = ({ containerId }) => {
         </Stack>
       </Box>
 
-      <TextWithBoldKey keyName="Container ID" text={containerId} />
+      <Flex gap={2} align='center'>
+        <Text fontWeight='bold'>Name (<Text as='span'
+          onClick={() => {
+            setRename(true);
+          }}
+          color='blue.400'
+          _hover={{ cursor: 'pointer' }}
+        >rename</Text>):</Text>
+
+        {
+          rename ? (
+            <Stack direction='row' spacing={2} align='center'>
+              <Input type="text" placeholder={inspectContent?.Name?.slice(1)} onChange={(e) => setNewName(e.target.value)} />
+              <Button size='sm'
+                onClick={() => {
+                  window.ipc.send("rename-container", containerId, newName);
+                  setRename(false);
+                }}
+              >Save</Button>
+            </Stack>
+          ) : (
+            <Text>{inspectContent?.Name?.slice(1)}</Text>
+          )
+        }
+
+      </Flex>
+      <TextWithBoldKey keyName="ID" text={containerId} />
 
       <TextWithBoldKey keyName="Status" text={status} />
 
@@ -115,6 +144,6 @@ export const DockerInspectModal = ({ containerId }) => {
           </SyntaxHighlighter>
         </Box>
       </Box>
-    </Stack>
+    </Stack >
   );
 };

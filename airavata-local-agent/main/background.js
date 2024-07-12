@@ -396,6 +396,16 @@ ipcMain.on('remove-container', (event, containerId) => {
   });
 });
 
+ipcMain.on('rename-container', (event, containerId, newName) => {
+  log.info("Renaming the container with containerId: ", containerId, " to ", newName);
+
+  let container = docker.getContainer(containerId);
+  container.rename({ name: newName }, function (err, data) {
+    console.log("Container renamed: ", containerId);
+    event.sender.send('container-renamed', containerId, newName);
+  });
+});
+
 ipcMain.on("choose-filepath", async (event) => {
   const result = await dialog.showOpenDialog({
     properties: ['openDirectory']

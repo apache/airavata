@@ -212,16 +212,13 @@ const DockerPage = () => {
       <Modal isOpen={InspectModal.isOpen} onClose={InspectModal.onClose} size='4xl'>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{activeContainer.name}</ModalHeader>
+          <ModalHeader>Container Details</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <DockerInspectModal containerId={activeContainer.Id} />
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={InspectModal.onClose}>
-              Close
-            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
