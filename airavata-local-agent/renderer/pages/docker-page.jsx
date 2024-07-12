@@ -1,5 +1,5 @@
 import {
-  Heading, Button, Center, Box, HStack, Table,
+  Button, Tooltip, Box, HStack, Table,
   Thead,
   Tbody,
   Text,
@@ -20,13 +20,20 @@ import {
   FormLabel,
   Stack,
   IconButton,
+  FormHelperText,
 
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { DockerInspectModal } from "../components/DockerInspectModal";
 import { DeleteIcon } from '@chakra-ui/icons';
+import { canPerformAction } from "../lib/utilityFuncs";
 
 const DOCKER_ID_LENGTH = 12;
+const DEFAULT_CONFIG = {
+  port: "6080",
+  name: "",
+  mountLocation: ""
+};
 
 const DockerPage = () => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
@@ -37,11 +44,13 @@ const DockerPage = () => {
   const CreateModal = useDisclosure();
   const [activeContainer, setActiveContainer] = useState("");
   const [portEntered, setPortEntered] = useState("6080");
+
+  const [startContainerConfig, setStartContainerConfig] = useState(DEFAULT_CONFIG); // {port: 8888, name: "jupyter/datascience-notebook:latest"}
   const toast = useToast();
 
 
   const handleStartNotebook = () => {
-    if (portEntered === "") {
+    if (startContainerConfig.port === "") {
       toast({
         title: "Error",
         description: "Please enter a port number",
@@ -51,7 +60,9 @@ const DockerPage = () => {
       });
       return;
     }
+    // mount on host machine
     let createOptions = {
+      'name': startContainerConfig.name,
       'Tty': false,
       'ExposedPorts': {
         '8888/tcp': {}
@@ -60,22 +71,31 @@ const DockerPage = () => {
         'PortBindings': {
           '8888/tcp': [
             {
-              'HostPort': portEntered
+              'HostPort': startContainerConfig.port
             }
           ]
-        }
-      }
+        },
+      },
+    };
+
+    if (startContainerConfig.mountLocation !== "") {
+      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/testBind`];
+      createOptions.Volumes = {
+        '/testBind': {}
+      };
     };
 
     let imageName = "jupyter/datascience-notebook:latest";
     window.ipc.send("start-notebook", imageName, createOptions);
 
+    setStartContainerConfig(DEFAULT_CONFIG);
+
     CreateModal.onClose();
   };
 
-  const handleDeleteContainer = (containerId) => {
+  const handleRemoveContainer = (containerId) => {
     setIsLoadingDelete(true);
-    window.ipc.send("delete-container", containerId);
+    window.ipc.send("remove-container", containerId);
   };
 
   const handleStartContainer = (containerId) => {
@@ -129,11 +149,11 @@ const DockerPage = () => {
       setIsLoadingStop(false);
     });
 
-    window.ipc.on("container-deleted", (containerId) => {
-      console.log("Container deleted: ", containerId);
+    window.ipc.on("container-removed", (containerId) => {
+      console.log("container-removed: ", containerId);
       toast({
         title: "Success",
-        description: "Container deleted successfully",
+        description: "Container removed successfully",
         status: "success",
         duration: 9000,
         isClosable: true,
@@ -142,21 +162,37 @@ const DockerPage = () => {
     });
 
     window.ipc.on("got-running-containers", (runningContainers) => {
-      console.log(runningContainers);
+
+      if (runningContainers === null) {
+        toast({
+          title: "Error getting running containers",
+          description: "Please make sure docker is installed and running properly.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
       setRunningContainers(runningContainers);
+    });
+
+    window.ipc.on("filepath-chosen", (filepath) => {
+      setStartContainerConfig(prev => ({
+        ...prev,
+        mountLocation: filepath
+      }));
+
+      console.log("Filepath chosen: ", filepath);
     });
 
     return () => {
       window.ipc.removeAllListeners("container-started");
       window.ipc.removeAllListeners("container-stopped");
-      window.ipc.removeAllListeners("container-stopped");
-      window.ipc.removeAllListeners("container-deleted");
+      window.ipc.removeAllListeners("container-removed");
+      window.ipc.removeAllListeners("filepath-chosen");
       window.ipc.removeAllListeners("got-running-containers");
-
     };
   }, []);
-
-
 
   useEffect(() => {
 
@@ -176,7 +212,7 @@ const DockerPage = () => {
       <Modal isOpen={InspectModal.isOpen} onClose={InspectModal.onClose} size='4xl'>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Inspecting Container ({activeContainer.name})</ModalHeader>
+          <ModalHeader>{activeContainer.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <DockerInspectModal containerId={activeContainer.Id} />
@@ -198,12 +234,43 @@ const DockerPage = () => {
           <ModalBody>
 
             <FormControl>
+              <FormLabel>Container Name</FormLabel>
+              <Input value={startContainerConfig.name} onChange={(e) => {
+                setStartContainerConfig(prev => ({
+                  ...prev,
+                  name: e.target.value
+                }));
+              }}
+              />
+              <FormHelperText>If blank, one will automatically be generated for you.</FormHelperText>
+            </FormControl>
+
+            <FormControl mt={4}>
               <FormLabel>Port on Host Computer</FormLabel>
-              <Input value={portEntered} onChange={(e) => setPortEntered(e.target.value)} />
+              <Input value={startContainerConfig.port} onChange={(e) => {
+                setStartContainerConfig(prev => ({
+                  ...prev,
+                  port: e.target.value
+                }));
+              }}
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Mount Location</FormLabel>
+              <Stack direction='row'>
+                <Input value={startContainerConfig.mountLocation} readOnly />
+                <Button
+                  onClick={() => {
+                    window.ipc.send("choose-filepath");
+                  }}
+                >Choose</Button>
+              </Stack>
+              <FormHelperText>Mount location on host machine</FormHelperText>
             </FormControl>
 
             <Button
-              mt={2}
+              mt={4}
               onClick={() => {
                 handleStartNotebook();
               }}
@@ -257,21 +324,23 @@ const DockerPage = () => {
                         InspectModal.onOpen();
                       }}>{theName}</Td>
                       <Td>
-                        <Text
-                          _hover={{
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            navigator.clipboard.writeText(container.Id);
-                            toast({
-                              title: "Container ID copied to clipboard",
-                              description: container.Id,
-                              status: "success",
-                              duration: 9000,
-                              isClosable: true,
-                            });
-                          }}
-                        >{container.Id.slice(0, DOCKER_ID_LENGTH)}</Text>
+                        <Tooltip label={container.Id}>
+                          <Text
+                            _hover={{
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              navigator.clipboard.writeText(container.Id);
+                              toast({
+                                title: "Container ID copied to clipboard",
+                                description: container.Id,
+                                status: "success",
+                                duration: 9000,
+                                isClosable: true,
+                              });
+                            }}
+                          >{container.Id.slice(0, DOCKER_ID_LENGTH)}</Text>
+                        </Tooltip>
                       </Td>
                       <Td>{container.Image}</Td>
                       <Td>{container.Status}</Td>
@@ -279,7 +348,8 @@ const DockerPage = () => {
 
                         <Stack direction='row' spacing={2}>
                           {
-                            (container.State === "exited" || container.State === "created") && (
+                            canPerformAction("start", container.State)
+                            && (
                               <>
                                 <Button
                                   mt={2}
@@ -295,7 +365,7 @@ const DockerPage = () => {
                           }
 
                           {
-                            container.State === "running" && (
+                            canPerformAction("stop", container.State) && (
                               <>
                                 <Button
                                   mt={2}
@@ -312,10 +382,10 @@ const DockerPage = () => {
 
                           <IconButton
                             mt={2}
-                            onClick={() => handleDeleteContainer(container.Id)}
+                            onClick={() => handleRemoveContainer(container.Id)}
                             colorScheme='red'
                             variant='outline'
-                            isDisabled={container.State === "running"}
+                            isDisabled={!canPerformAction("remove", container.State) || isLoadingDelete}
                             size='xs'
                             icon={<DeleteIcon />}
                           />
