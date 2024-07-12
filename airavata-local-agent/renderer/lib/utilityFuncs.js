@@ -80,6 +80,20 @@ export const truncTextToN = (str, n) => {
   return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
 };
 
+export const canPerformAction = (action, status) => {
+  if (action === "remove") {
+    return (status !== "running" && status !== "paused");
+  } else if (action === "stop") {
+    return (status === "running") || (status === "paused");
+  } else if (action === "start") {
+    return (status === "created" || status === "exited");
+  } else if (action === "pause") {
+    return (status === "running");
+  } else if (action === "unpause") {
+    return (status === "paused");
+  }
+};
+
 export const SAMPLE_JSON_RESPONSE = {
   "next": "https://md.cybershuttle.org/api/experiment-search/?limit=10&offset=10",
   "previous": null,

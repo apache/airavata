@@ -366,12 +366,42 @@ ipcMain.on('inspect-container', (event, containerId) => {
   });
 });
 
-ipcMain.on('delete-container', (event, containerId) => {
-  log.info("Deleting the container with containerId: ", containerId);
+ipcMain.on('pause-container', (event, containerId) => {
+  log.info("Pausing the container with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+  container.pause(function (err, data) {
+    console.log("Container paused: ", containerId);
+    event.sender.send('container-paused', containerId);
+  });
+});
+
+ipcMain.on('unpause-container', (event, containerId) => {
+  log.info("Unpausing the container with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+  container.unpause(function (err, data) {
+    console.log("Container unpaused: ", containerId);
+    event.sender.send('container-unpaused', containerId);
+  });
+});
+
+ipcMain.on('remove-container', (event, containerId) => {
+  log.info("Removing the container with containerId: ", containerId);
 
   let container = docker.getContainer(containerId);
   container.remove(function (err, data) {
     console.log("Container removed: ", containerId);
-    event.sender.send('container-deleted', containerId);
+    event.sender.send('container-removed', containerId);
   });
+});
+
+ipcMain.on("choose-filepath", async (event) => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory']
+  });
+
+  if (!result.canceled) {
+    event.sender.send('filepath-chosen', result.filePaths[0]);
+  }
 });
