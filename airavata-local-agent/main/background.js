@@ -190,8 +190,6 @@ const createExpWindow = (event, url, associatedId) => {
     width: 1200,
     height: 800,
     show: false,
-    frame: false,
-    // 'web-security': false,
     webPreferences: {
       allowDisplayingInsecureContent: true,
       allowRunningInsecureContent: true
@@ -314,7 +312,7 @@ ipcMain.on('start-notebook', (event, imageName, createOptions) => {
           err = e;
         }
 
-        event.sender.send('notebook-started', container.id, err);
+        event.sender.send('container-started', container.id, err);
 
       });
   } catch (e) {
@@ -327,19 +325,17 @@ const getRunningContainers = (event) => {
   docker.listContainers({
     all: true
   }, function (err, containers) {
-    // make sure everything in associatedIDToWindow is in containers; if not, remove it
+    // make sure everything in associatedIDToWindow is a container that is running. if not, remove it
+
     for (let key in associatedIDToWindow) {
-      let exists = false;
       for (let i = 0; i < containers.length; i++) {
         if (containers[i].Id === key) {
-          exists = true;
-          break;
+          if (containers[i].State !== "running") {
+            log.info("Container is not running, removing the window with id: ", key);
+            removeExpWindow(event, key);
+            break;
+          }
         }
-      }
-
-      if (!exists) {
-        log.info("Removing the window with id: ", key);
-        removeExpWindow(event, key);
       }
     }
 
@@ -358,5 +354,24 @@ ipcMain.on('stop-notebook', (event, containerId) => {
     console.log("Container stopped: ", containerId);
     removeExpWindow(event, containerId);
     event.sender.send('container-stopped', containerId);
+  });
+});
+
+ipcMain.on('inspect-container', (event, containerId) => {
+  log.info("Inspecting the container with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+  container.inspect(function (err, data) {
+    event.sender.send('container-inspected', data);
+  });
+});
+
+ipcMain.on('delete-container', (event, containerId) => {
+  log.info("Deleting the container with containerId: ", containerId);
+
+  let container = docker.getContainer(containerId);
+  container.remove(function (err, data) {
+    console.log("Container removed: ", containerId);
+    event.sender.send('container-deleted', containerId);
   });
 });
