@@ -2,7 +2,7 @@ import {
   Heading, Button, Center, Box, HStack, Table,
   Thead,
   Tbody,
-  Tfoot,
+  Text,
   Tr,
   Th,
   Td,
@@ -26,6 +26,7 @@ import { useState, useEffect } from "react";
 import { DockerInspectModal } from "../components/DockerInspectModal";
 import { DeleteIcon } from '@chakra-ui/icons';
 
+const DOCKER_ID_LENGTH = 12;
 
 const DockerPage = () => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
@@ -233,6 +234,7 @@ const DockerPage = () => {
             <Thead>
               <Tr>
                 <Th>Name</Th>
+                <Th>ID</Th>
                 <Th>Image</Th>
                 <Th>Status</Th>
                 <Th>Actions</Th>
@@ -254,6 +256,23 @@ const DockerPage = () => {
                         });
                         InspectModal.onOpen();
                       }}>{theName}</Td>
+                      <Td>
+                        <Text
+                          _hover={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            navigator.clipboard.writeText(container.Id);
+                            toast({
+                              title: "Container ID copied to clipboard",
+                              description: container.Id,
+                              status: "success",
+                              duration: 9000,
+                              isClosable: true,
+                            });
+                          }}
+                        >{container.Id.slice(0, DOCKER_ID_LENGTH)}</Text>
+                      </Td>
                       <Td>{container.Image}</Td>
                       <Td>{container.Status}</Td>
                       <Td>
