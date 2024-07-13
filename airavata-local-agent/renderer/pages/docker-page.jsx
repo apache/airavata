@@ -21,12 +21,14 @@ import {
   Stack,
   IconButton,
   FormHelperText,
+  Heading,
 
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { DockerInspectModal } from "../components/DockerInspectModal";
 import { DeleteIcon } from '@chakra-ui/icons';
 import { canPerformAction } from "../lib/utilityFuncs";
+import { DockerImagesList } from "../components/DockerImagesList";
 
 const DOCKER_ID_LENGTH = 12;
 const DEFAULT_CONFIG = {
@@ -282,6 +284,7 @@ const DockerPage = () => {
 
 
       <Box>
+        <Heading size='xl'>Running Containers</Heading>
         <HStack justify='center'>
           <Button
             mt={2}
@@ -396,6 +399,11 @@ const DockerPage = () => {
             </Tbody>
           </Table>
         </TableContainer>
+      </Box>
+
+      <Box mt={8}>
+        <Heading size='xl'>Docker Images</Heading>
+        <DockerImagesList />
       </Box>
     </Box>
   );
