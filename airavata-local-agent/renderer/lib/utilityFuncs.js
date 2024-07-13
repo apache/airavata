@@ -94,6 +94,10 @@ export const canPerformAction = (action, status) => {
   }
 };
 
+export const bytesToSize = (size) => {
+  var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1000)); return +((size / Math.pow(1000, i)).toFixed(2)) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+};
+
 export const SAMPLE_JSON_RESPONSE = {
   "next": "https://md.cybershuttle.org/api/experiment-search/?limit=10&offset=10",
   "previous": null,

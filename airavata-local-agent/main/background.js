@@ -6,7 +6,6 @@ import { createWindow } from './helpers';
 const { exec, spawn } = require('child_process');
 const fs = require('fs');
 import log from 'electron-log/main';
-import { frame } from 'framer-motion';
 
 const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
@@ -415,3 +414,13 @@ ipcMain.on("choose-filepath", async (event) => {
     event.sender.send('filepath-chosen', result.filePaths[0]);
   }
 });
+
+// ----------------- IMAGES -----------------
+ipcMain.on('get-all-images', (event) => {
+  log.info("Getting all images");
+
+  docker.listImages(function (err, images) {
+    event.sender.send('got-all-images', images);
+  });
+});
+

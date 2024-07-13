@@ -121,7 +121,7 @@ export const DockerInspectModal = ({ containerId }) => {
               <Input type="text" placeholder={inspectContent?.Name?.slice(1)} onChange={(e) => setNewName(e.target.value)} />
               <Button size='sm'
                 onClick={() => {
-                  window.ipc.send("rename-container", containerId, newName);
+                  window.ipc.send("rename-container", containerId, newName.replaceAll(" ", "-"));
                   setRename(false);
                 }}
               >Save</Button>
@@ -130,8 +130,9 @@ export const DockerInspectModal = ({ containerId }) => {
             <Text>{inspectContent?.Name?.slice(1)}</Text>
           )
         }
-
       </Flex>
+
+
       <TextWithBoldKey keyName="ID" text={containerId} />
 
       <TextWithBoldKey keyName="Status" text={status} />
