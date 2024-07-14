@@ -3,8 +3,8 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from "react";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
-import { TextWithBoldKey } from "./TextWithBoldKey";
-import { canPerformAction } from "../lib/utilityFuncs";
+import { TextWithBoldKey } from "../TextWithBoldKey";
+import { canPerformAction } from "../../lib/utilityFuncs";
 
 export const DockerInspectModal = ({ containerId }) => {
   const [inspectContent, setInspectContent] = useState("");
