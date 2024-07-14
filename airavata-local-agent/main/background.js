@@ -429,6 +429,64 @@ ipcMain.on("choose-filepath", async (event) => {
   }
 });
 
+let portsCache = {};
+
+
+
+ipcMain.on('get-container-ports', async (event, containers) => {
+  log.info("Getting container ports");
+
+  let ports = {}; // array of objects with containerId and port
+
+  for (let i = 0; i < containers.length; i++) {
+    if (portsCache[containers[i].Id]) {
+      ports[containers[i].Id] = portsCache[containers[i].Id];
+    } else {
+      log.warn("Not in cache: ", containers[i].Id, " getting from docker");
+      const container = docker.getContainer(containers[i].Id);
+      const data = await container.inspect();
+      /*
+        "PortBindings": {
+          "8888/tcp": [
+            {
+              "HostIp": "",
+              "HostPort": "6080"
+            }
+          ]
+      },
+   
+      */
+
+      let containerPorts = Object.keys(data.HostConfig.PortBindings);
+      let tempMappings = [];
+      for (let j = 0; j < containerPorts.length; j++) {
+        let tempMapping = {};
+        let hostPort = data.HostConfig.PortBindings[containerPorts[j]][0].HostPort;
+        tempMapping.containerPort = containerPorts[j];
+        tempMapping.hostPort = hostPort;
+
+        tempMappings.push(tempMapping);
+      }
+
+      ports[containers[i].Id] = tempMappings;
+      portsCache[containers[i].Id] = tempMappings;
+    }
+  }
+  event.sender.send('got-container-ports', ports);
+
+  /*
+    Ports looks like:
+    {
+      "containerId": [
+        {
+          "containerPort": "8888/tcp",
+          "hostPort": "6080"
+        }
+      ]
+    }
+  */
+});
+
 // ----------------- IMAGES -----------------
 ipcMain.on('get-all-images', (event) => {
   log.info("Getting all images");

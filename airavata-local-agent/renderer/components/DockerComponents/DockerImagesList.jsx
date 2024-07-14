@@ -1,6 +1,6 @@
 import { TableContainer, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { bytesToSize } from "../lib/utilityFuncs";
+import { bytesToSize } from "../../lib/utilityFuncs";
 
 const stripPrefix = (str, prefix) => {
   if (str.startsWith(prefix)) {

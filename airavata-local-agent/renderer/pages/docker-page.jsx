@@ -28,17 +28,13 @@ import {
 
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { DockerInspectModal } from "../components/DockerInspectModal";
+import { DockerInspectModal } from "../components/DockerComponents/DockerInspectModal";
 import { DeleteIcon } from '@chakra-ui/icons';
 import { canPerformAction } from "../lib/utilityFuncs";
-import { DockerImagesList } from "../components/DockerImagesList";
+import { DockerImagesList } from "../components/DockerComponents/DockerImagesList";
+import { AvailablePrograms } from "../components/DockerComponents/AvaliablePrograms";
 
 const DOCKER_ID_LENGTH = 12;
-const DEFAULT_CONFIG = {
-  port: "6080",
-  name: "",
-  mountLocation: ""
-};
 
 const DockerPage = () => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
@@ -46,57 +42,10 @@ const DockerPage = () => {
   const [isLoadingStop, setIsLoadingStop] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const InspectModal = useDisclosure();
-  const CreateModal = useDisclosure();
   const [activeContainer, setActiveContainer] = useState("");
-  const [portEntered, setPortEntered] = useState("6080");
+  const [portMapping, setPortMapping] = useState({});
 
-  const [startContainerConfig, setStartContainerConfig] = useState(DEFAULT_CONFIG); // {port: 8888, name: "jupyter/datascience-notebook:latest"}
   const toast = useToast();
-
-
-  const handleStartNotebook = () => {
-    if (startContainerConfig.port === "") {
-      toast({
-        title: "Error",
-        description: "Please enter a port number",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-    // mount on host machine
-    let createOptions = {
-      'name': startContainerConfig.name,
-      'Tty': false,
-      'ExposedPorts': {
-        '8888/tcp': {}
-      },
-      'HostConfig': {
-        'PortBindings': {
-          '8888/tcp': [
-            {
-              'HostPort': startContainerConfig.port
-            }
-          ]
-        },
-      },
-    };
-
-    if (startContainerConfig.mountLocation !== "") {
-      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/home/jovyan/work`];
-      createOptions.Volumes = {
-        '/home/jovyan/work': {}
-      };
-    };
-
-    let imageName = "jupyter/datascience-notebook";
-    window.ipc.send("start-notebook", imageName, createOptions);
-
-    setStartContainerConfig(DEFAULT_CONFIG);
-
-    CreateModal.onClose();
-  };
 
   const handleRemoveContainer = (containerId) => {
     setIsLoadingDelete(true);
@@ -167,7 +116,6 @@ const DockerPage = () => {
     });
 
     window.ipc.on("got-running-containers", (runningContainers) => {
-
       if (runningContainers === null) {
         toast({
           title: "Error getting running containers",
@@ -178,29 +126,25 @@ const DockerPage = () => {
         });
         return;
       }
+
+      window.ipc.send("get-container-ports", runningContainers);
       setRunningContainers(runningContainers);
     });
 
-    window.ipc.on("filepath-chosen", (filepath) => {
-      setStartContainerConfig(prev => ({
-        ...prev,
-        mountLocation: filepath
-      }));
-
-      console.log("Filepath chosen: ", filepath);
+    window.ipc.on('got-container-ports', (ports) => {
+      setPortMapping(ports);
     });
 
     return () => {
       window.ipc.removeAllListeners("container-started");
       window.ipc.removeAllListeners("container-stopped");
       window.ipc.removeAllListeners("container-removed");
-      window.ipc.removeAllListeners("filepath-chosen");
       window.ipc.removeAllListeners("got-running-containers");
+      window.ipc.removeAllListeners("got-container-ports");
     };
   }, []);
 
   useEffect(() => {
-
     let interval = setInterval(() => {
       getRunningContainers();
     }, 3000);
@@ -208,7 +152,6 @@ const DockerPage = () => {
     return () => {
       clearInterval(interval);
     };
-
   });
 
   return (
@@ -228,85 +171,10 @@ const DockerPage = () => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={CreateModal.isOpen} onClose={CreateModal.onClose} size='4xl'>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create a Jupyter Notebook</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-
-            <FormControl>
-              <FormLabel>Container Name</FormLabel>
-              <Input value={startContainerConfig.name} onChange={(e) => {
-                setStartContainerConfig(prev => ({
-                  ...prev,
-                  name: e.target.value
-                }));
-              }}
-              />
-              <FormHelperText>If blank, one will automatically be generated for you.</FormHelperText>
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Port on Host Computer</FormLabel>
-              <Input value={startContainerConfig.port} onChange={(e) => {
-                setStartContainerConfig(prev => ({
-                  ...prev,
-                  port: e.target.value
-                }));
-              }}
-              />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Mount Location</FormLabel>
-              <Stack direction='row'>
-                <Input value={startContainerConfig.mountLocation} readOnly />
-                <Button
-                  onClick={() => {
-                    window.ipc.send("choose-filepath");
-                  }}
-                >Choose</Button>
-              </Stack>
-              <FormHelperText>Mount location on host machine</FormHelperText>
-            </FormControl>
-
-            <Button
-              mt={4}
-              onClick={() => {
-                handleStartNotebook();
-              }}
-              colorScheme='green'
-            >
-              Start Jupyter Notebook
-            </Button>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-
 
       <Box>
         <Heading size='xl' textAlign='center'>Available Programs</Heading>
-        <SimpleGrid columns={3} spacing={10} p={4}>
-          <Box shadow='md' rounded='md' p={4}
-            onClick={() => {
-              CreateModal.onOpen();
-            }}
-            _hover={{
-              cursor: "pointer",
-              background: "gray.100"
-            }}
-          >
-            <Stack spacing={2}>
-              <Flex align='center' gap={2}>
-                <Img src="/images/jupyter_logo.png" alt="Jupyter Logo" boxSize='30px' />
-                <Heading size='md'>Jupyter Notebook</Heading>
-
-              </Flex>
-              <Text>Create a new container with a dockerized Jupyter Notebook.</Text>
-            </Stack>
-          </Box>
-        </SimpleGrid>
+        <AvailablePrograms />
       </Box>
 
 
@@ -320,6 +188,7 @@ const DockerPage = () => {
                 <Th>ID</Th>
                 <Th>Image</Th>
                 <Th>Status</Th>
+                <Th>Ports</Th>
                 <Th>Actions</Th>
               </Tr>
             </Thead>
@@ -360,6 +229,15 @@ const DockerPage = () => {
                       </Td>
                       <Td>{container.Image}</Td>
                       <Td>{container.Status}</Td>
+                      <Td>
+                        {
+                          portMapping[container.Id] && portMapping[container.Id].map((port, index) => {
+                            return (
+                              <Text key={index}>{port.hostPort}:{port.containerPort}</Text>
+                            );
+                          })
+                        }
+                      </Td>
                       <Td>
 
                         <Stack direction='row' spacing={2}>
