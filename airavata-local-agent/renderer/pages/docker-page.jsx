@@ -81,13 +81,13 @@ const DockerPage = () => {
     };
 
     if (startContainerConfig.mountLocation !== "") {
-      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/testBind`];
+      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/home/jovyan/work`];
       createOptions.Volumes = {
-        '/testBind': {}
+        '/home/jovyan/work': {}
       };
     };
 
-    let imageName = "jupyter/datascience-notebook:latest";
+    let imageName = "jupyter/datascience-notebook";
     window.ipc.send("start-notebook", imageName, createOptions);
 
     setStartContainerConfig(DEFAULT_CONFIG);
