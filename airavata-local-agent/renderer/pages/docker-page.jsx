@@ -22,6 +22,9 @@ import {
   IconButton,
   FormHelperText,
   Heading,
+  SimpleGrid,
+  Flex,
+  Img,
 
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
@@ -209,7 +212,7 @@ const DockerPage = () => {
   });
 
   return (
-    <Box mt={16} textAlign='center'>
+    <Box p={4}>
 
       <Modal isOpen={InspectModal.isOpen} onClose={InspectModal.onClose} size='4xl'>
         <ModalOverlay />
@@ -282,20 +285,33 @@ const DockerPage = () => {
       </Modal>
 
 
-
       <Box>
-        <Heading size='xl'>Running Containers</Heading>
-        <HStack justify='center'>
-          <Button
-            mt={2}
+        <Heading size='xl' textAlign='center'>Available Programs</Heading>
+        <SimpleGrid columns={3} spacing={10} p={4}>
+          <Box shadow='md' rounded='md' p={4}
             onClick={() => {
               CreateModal.onOpen();
             }}
-            colorScheme='green'
+            _hover={{
+              cursor: "pointer",
+              background: "gray.100"
+            }}
           >
-            Start Jupyter Notebook
-          </Button>
-        </HStack>
+            <Stack spacing={2}>
+              <Flex align='center' gap={2}>
+                <Img src="/images/jupyter_logo.png" alt="Jupyter Logo" boxSize='30px' />
+                <Heading size='md'>Jupyter Notebook</Heading>
+
+              </Flex>
+              <Text>Create a new container with a dockerized Jupyter Notebook.</Text>
+            </Stack>
+          </Box>
+        </SimpleGrid>
+      </Box>
+
+
+      <Box mt={10}>
+        <Heading size='xl' textAlign='center'>Running Containers</Heading>
         <TableContainer>
           <Table variant='simple'>
             <Thead>
@@ -401,8 +417,11 @@ const DockerPage = () => {
         </TableContainer>
       </Box>
 
-      <Box mt={8}>
-        <Heading size='xl'>Docker Images</Heading>
+
+      {/* EVERYTHING BELOW IS TEMPORARY */}
+
+      <Box mt={72}>
+        <Heading size='xl' textAlign='center'>Docker Images</Heading>
         <DockerImagesList />
       </Box>
     </Box>
