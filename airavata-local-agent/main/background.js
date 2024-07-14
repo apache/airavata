@@ -236,18 +236,31 @@ var docker = new Docker(); //defaults to above if env variables are not used
 const showWindowWhenReady = (event, id, port) => {
   let url = `http://localhost:${port}/lab`;
 
-  let interval = setInterval(() => {
-    fetch(url)
-      .then((response) => {
-        if (response.status === 200) {
-          log.info("Got a 200 response from the notebook, showing the window");
-          createExpWindow(event, url, id);
-          clearInterval(interval);
-        }
-      })
-      .catch((error) => {
-        log.error("Error: ", error);
-      });
+  let interval = setInterval(async () => {
+
+    // check if the container is still running
+    let container = await docker.getContainer(id);
+    let inspected = await container.inspect();
+    if (inspected.State.Status !== "running") {
+      log.info("Container is not running, removing the window with id: ", id, " and clearing the interval");
+      removeExpWindow(event, id);
+      clearInterval(interval);
+      return;
+    } else {
+      fetch(url)
+        .then((response) => {
+          if (response.status === 200) {
+            log.info("Got a 200 response from the notebook, showing the window");
+            createExpWindow(event, url, id);
+            clearInterval(interval);
+          }
+        })
+        .catch((error) => {
+          log.error("Error: ", error);
+        });
+    }
+
+
   }, 5000);
 };
 
@@ -298,8 +311,9 @@ ipcMain.on('start-notebook', (event, imageName, createOptions) => {
   log.info("Starting the notebook with imageName: ", imageName);
   console.log("Create options: ", createOptions);
 
+  // idk if we need to add "--LabApp.default_url=\"/lab/work\"" in the list of commands (rn we open up the jupyter and they need to manually open work)
   try {
-    docker.run(imageName, [], null, createOptions, function (err, data, container) { })
+    docker.run(imageName, ["jupyter", "lab", "--NotebookApp.token=''"], null, createOptions, function (err, data, container) { })
       .on('container', function (container) {
         log.info("Container created: ", container.id);
         let err = "";
