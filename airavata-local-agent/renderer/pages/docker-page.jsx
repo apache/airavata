@@ -62,12 +62,12 @@ const DockerPage = () => {
     window.ipc.send("stop-notebook", containerId);
   };
 
-  const getRunningContainers = () => {
-    window.ipc.send("get-running-containers");
+  const getContainers = () => {
+    window.ipc.send("get-containers");
   };
 
   useEffect(() => {
-    getRunningContainers(); // so user's don't need to wait to see containers
+    getContainers(); // so user's don't need to wait to see containers
 
     window.ipc.on("container-started", (containerId, err) => {
       console.log("Container started: ", containerId);
@@ -115,7 +115,7 @@ const DockerPage = () => {
       setIsLoadingDelete(false);
     });
 
-    window.ipc.on("got-running-containers", (runningContainers) => {
+    window.ipc.on("got-containers", (runningContainers) => {
       if (runningContainers === null) {
         toast({
           title: "Error getting running containers",
@@ -146,7 +146,7 @@ const DockerPage = () => {
 
   useEffect(() => {
     let interval = setInterval(() => {
-      getRunningContainers();
+      getContainers();
     }, 3000);
 
     return () => {

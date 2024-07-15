@@ -333,7 +333,7 @@ ipcMain.on('start-notebook', (event, imageName, createOptions) => {
   }
 });
 
-const getRunningContainers = (event) => {
+const getContainers = (event) => {
   log.info("Getting running containers");
   docker.listContainers({
     all: true
@@ -352,23 +352,11 @@ const getRunningContainers = (event) => {
       }
     }
 
-    event.sender.send('got-running-containers', containers);
+    event.sender.send('got-containers', containers);
   });
 };
 
-ipcMain.on("get-running-containers", getRunningContainers);
-
-
-ipcMain.on('stop-notebook', (event, containerId) => {
-  log.info("Stopping the notebook with containerId: ", containerId);
-
-  let container = docker.getContainer(containerId);
-  container.stop(function (err, data) {
-    console.log("Container stopped: ", containerId);
-    removeExpWindow(event, containerId);
-    event.sender.send('container-stopped', containerId);
-  });
-});
+ipcMain.on("get-containers", getContainers);
 
 ipcMain.on('inspect-container', (event, containerId) => {
   log.info("Inspecting the container with containerId: ", containerId);
