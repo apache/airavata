@@ -12,8 +12,6 @@ const KILL_CMD = 'pkill -f websockify';
 const server = 'https://airavata-28o5suo4t-ganning127s-projects.vercel.app';
 const updateUrl = `${server}/update/${process.platform}/${app.getVersion()}`;
 
-
-
 if (isProd) {
   serve({ directory: 'app' });
 } else {
@@ -62,22 +60,21 @@ if (isProd) {
     }
   });
 
-
   if (isProd) {
     await mainWindow.loadURL('app://./home');
-    globalShortcut.register("CommandOrControl+R", () => {
-      log.info("CommandOrControl+R is pressed: Shortcut Disabled");
-    });
-    globalShortcut.register("F5", () => {
-      log.info("F5 is pressed: Shortcut Disabled");
-    });
+    // globalShortcut.register("CommandOrControl+R", () => {
+    //   log.info("CommandOrControl+R is pressed: Shortcut Disabled");
+    // });
+    // globalShortcut.register("F5", () => {
+    //   log.info("F5 is pressed: Shortcut Disabled");
+    // });
 
     mainWindow.removeMenu();
     Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
   } else {
     const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/docker-page`);
+    await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
 })();
@@ -230,8 +227,9 @@ ipcMain.on('close-window', (event, associatedId) => {
 
 // ----------------- DOCKER -----------------
 var Docker = require('dockerode');
-
 var docker = new Docker(); //defaults to above if env variables are not used
+
+let portsCache = {};
 
 const showWindowWhenReady = (event, id, port) => {
   let url = `http://localhost:${port}/lab`;
@@ -250,7 +248,7 @@ const showWindowWhenReady = (event, id, port) => {
       fetch(url)
         .then((response) => {
           if (response.status === 200) {
-            log.info("Got a 200 response from the notebook, showing the window");
+            log.info("Got a 200 response from the popup, showing the window");
             createExpWindow(event, url, id);
             clearInterval(interval);
           }
@@ -262,6 +260,63 @@ const showWindowWhenReady = (event, id, port) => {
 
 
   }, 5000);
+};
+
+const getContainers = (event) => {
+  log.info("Getting running containers");
+  docker.listContainers({
+    all: true
+  }, function (err, containers) {
+    // make sure everything in associatedIDToWindow is a container that is running. if not, remove it
+
+    for (let key in associatedIDToWindow) {
+      for (let i = 0; i < containers.length; i++) {
+        if (containers[i].Id === key) {
+          if (containers[i].State !== "running") {
+            log.info("Container is not running, removing the window with id: ", key);
+            removeExpWindow(event, key);
+            break;
+          }
+        }
+      }
+    }
+
+    event.sender.send('got-containers', containers);
+  });
+};
+
+const pullDockerImage = (event, imageName, callback) => {
+  log.info("Pulling docker image: ", imageName);
+
+  const onProgress = function (obj) {
+    event.sender.send('docker-pull-progress', obj);
+  };
+
+  const onFinished = function (err, output) {
+    log.info("Finished: ", output);
+    event.sender.send('docker-pull-finished', output);
+
+    if (callback) {
+      callback();
+    }
+  };
+
+  docker.pull(imageName, function (err, stream) {
+    docker.modem.followProgress(stream, onFinished, onProgress);
+  });
+};
+
+const doesImageExist = async (imageName) => {
+  const image = docker.getImage(imageName);
+  console.log(image);
+
+  try {
+    const data = await image.inspect(); // will throw an error if the image doesn't exist
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };
 
 ipcMain.on('start-container', (event, containerId) => {
@@ -307,12 +362,14 @@ ipcMain.on('stop-container', (event, containerId) => {
   });
 });
 
-ipcMain.on('start-notebook', (event, imageName, createOptions) => {
+
+ipcMain.on('start-notebook', async (event, createOptions) => {
+  const imageName = "jupyter/datascience-notebook";
   log.info("Starting the notebook with imageName: ", imageName);
   console.log("Create options: ", createOptions);
 
   // idk if we need to add "--LabApp.default_url=\"/lab/work\"" in the list of commands (rn we open up the jupyter and they need to manually open work)
-  try {
+  const startNotebook = () => {
     docker.run(imageName, ["jupyter", "lab", "--NotebookApp.token=''"], null, createOptions, function (err, data, container) { })
       .on('container', function (container) {
         log.info("Container created: ", container.id);
@@ -328,33 +385,30 @@ ipcMain.on('start-notebook', (event, imageName, createOptions) => {
         event.sender.send('container-started', container.id, err);
 
       });
+
+  };
+
+  try {
+    const existImage = await doesImageExist(imageName);
+    if (existImage) {
+      startNotebook();
+    } else {
+      pullDockerImage(event, imageName, startNotebook);
+    }
   } catch (e) {
     console.log(e);
   }
 });
 
-const getContainers = (event) => {
-  log.info("Getting running containers");
-  docker.listContainers({
-    all: true
-  }, function (err, containers) {
-    // make sure everything in associatedIDToWindow is a container that is running. if not, remove it
 
-    for (let key in associatedIDToWindow) {
-      for (let i = 0; i < containers.length; i++) {
-        if (containers[i].Id === key) {
-          if (containers[i].State !== "running") {
-            log.info("Container is not running, removing the window with id: ", key);
-            removeExpWindow(event, key);
-            break;
-          }
-        }
-      }
-    }
+/*
+  1. share binaries w/Eroma to test
+  - if docker is not running, show that message on the home page
 
-    event.sender.send('got-containers', containers);
-  });
-};
+  - do authentication before showing docker page
+    - make this auth in default browser, need create cs:// url for login? with token, parse token
+    - https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+*/
 
 ipcMain.on("get-containers", getContainers);
 
@@ -417,10 +471,6 @@ ipcMain.on("choose-filepath", async (event) => {
   }
 });
 
-let portsCache = {};
-
-
-
 ipcMain.on('get-container-ports', async (event, containers) => {
   log.info("Getting container ports");
 
@@ -433,17 +483,6 @@ ipcMain.on('get-container-ports', async (event, containers) => {
       log.warn("Not in cache: ", containers[i].Id, " getting from docker");
       const container = docker.getContainer(containers[i].Id);
       const data = await container.inspect();
-      /*
-        "PortBindings": {
-          "8888/tcp": [
-            {
-              "HostIp": "",
-              "HostPort": "6080"
-            }
-          ]
-      },
-   
-      */
 
       let containerPorts = Object.keys(data.HostConfig.PortBindings);
       let tempMappings = [];
@@ -474,6 +513,16 @@ ipcMain.on('get-container-ports', async (event, containers) => {
     }
   */
 });
+
+ipcMain.on('docker-ping', (event) => {
+  log.info("Pinging docker");
+
+  docker.ping(function (err, data) {
+    log.info("Docker pinged: ", data);
+    event.sender.send('docker-pinged', data);
+  });
+});
+
 
 // ----------------- IMAGES -----------------
 ipcMain.on('get-all-images', (event) => {

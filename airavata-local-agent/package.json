@@ -2,7 +2,7 @@
   "private": true,
   "name": "cybershuttle-md-local-agent",
   "description": "User interface for Apache Airavata.",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "author": "Ganning Xu",
   "main": "app/background.js",
   "scripts": {
@@ -36,7 +36,8 @@
     "react-vnc": "^1.0.0",
     "stream": "0.0.3",
     "tus-js-client": "^1.6.0",
-    "update-electron-app": "^3.0.0"
+    "update-electron-app": "^3.0.0",
+    "usehooks-ts": "^3.1.0"
   },
   "devDependencies": {
     "electron": "^29.3.0",
