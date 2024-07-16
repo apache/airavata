@@ -28,6 +28,7 @@ import {
   Progress,
   Switch,
   Link,
+  Icon,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { DockerInspectModal } from "./DockerInspectModal";
@@ -35,7 +36,7 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import { canPerformAction } from "../../lib/utilityFuncs";
 import { API_BASE_URL, AUTH_BASE_URL, DEBUG_DOCKER_MODE } from "../../lib/constants";
 import { useInterval } from 'usehooks-ts';
-
+import { MdContentCopy } from 'react-icons/md';
 const DOCKER_ID_LENGTH = 12;
 const CONTAINER_FETCH_INTERVAL = 3000;
 const ACCESS_FETCH_INTERVAL = 60000;
@@ -189,7 +190,6 @@ export const DockerContainersList = () => {
           <Thead>
             <Tr>
               <Th>Name</Th>
-              <Th>ID</Th>
               <Th>Image</Th>
               <Th>Status</Th>
               <Th>Ports</Th>
@@ -202,21 +202,32 @@ export const DockerContainersList = () => {
                 let theName = container.Names[0].slice(1);
                 return (
                   <Tr key={index}>
-                    <Td _hover={{
-                      background: "gray.100",
-                      cursor: "pointer"
-                    }} onClick={() => {
-                      setActiveContainer({
-                        Id: container.Id,
-                        name: theName
-                      });
-                      InspectModal.onOpen();
-                    }}>{theName}</Td>
                     <Td>
-                      <Tooltip label={container.Id}>
-                        <Text
+                      <Text
+                        _hover={{
+                          background: "gray.100",
+                          cursor: "pointer"
+                        }} onClick={() => {
+                          setActiveContainer({
+                            Id: container.Id,
+                            name: theName
+                          });
+                          InspectModal.onOpen();
+                        }}>
+                        {theName}
+                      </Text>
+
+
+                      <Flex align='center'
+                        color='gray.600'
+                        gap={1}
+                        mt={1}
+                      >
+
+                        <Icon as={MdContentCopy}
+
                           _hover={{
-                            cursor: "pointer",
+                            cursor: "pointer"
                           }}
                           onClick={() => {
                             navigator.clipboard.writeText(container.Id);
@@ -227,9 +238,13 @@ export const DockerContainersList = () => {
                               duration: 9000,
                               isClosable: true,
                             });
-                          }}
+                          }} />
+                        <Text
+                          fontSize='xs'
+
                         >{container.Id.slice(0, DOCKER_ID_LENGTH)}</Text>
-                      </Tooltip>
+                      </Flex>
+
                     </Td>
                     <Td>{container.Image}</Td>
                     <Td>{container.Status}</Td>
@@ -296,7 +311,7 @@ export const DockerContainersList = () => {
             }
           </Tbody>
         </Table>
-      </TableContainer>
+      </TableContainer >
 
 
       <Box mt={4}>

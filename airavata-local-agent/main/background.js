@@ -21,10 +21,10 @@ let mainWindow;
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('electron-fiddle', process.execPath, [path.resolve(process.argv[1])]);
+    app.setAsDefaultProtocolClient('csagent', process.execPath, [path.resolve(process.argv[1])]);
   }
 } else {
-  app.setAsDefaultProtocolClient('electron-fiddle');
+  app.setAsDefaultProtocolClient('csagent');
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -98,7 +98,7 @@ if (!gotTheLock) {
 
     } else {
       const port = process.argv[2];
-      await mainWindow.loadURL(`http://localhost:${port}/docker-page`);
+      await mainWindow.loadURL(`http://localhost:${port}/home`);
       mainWindow.webContents.openDevTools();
     }
 
@@ -175,7 +175,8 @@ ipcMain.on('ci-logon-login', async (event) => {
     'web-security': false
   });
 
-  authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+  // authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
+  authWindow.loadURL("https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=https%3A%2F%2Fmd.cybershuttle.org%2Fauth%2Fcallback%2F%3Fidp_alias%3Dcilogon&scope=openid&state=asdfasdfasdf&kc_idp_hint=cilogon");
   authWindow.show();
 
   authWindow.webContents.on('will-redirect', async (e, url) => {

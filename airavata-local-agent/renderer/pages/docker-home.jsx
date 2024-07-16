@@ -1,9 +1,12 @@
-import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, TabList, TabPanels, Tab, TabPanel, Stack, Heading } from "@chakra-ui/react";
+import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, TabList, TabPanels, Tab, TabPanel, Stack, Heading, IconButton, Icon } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { DockerImagesList } from "../components/DockerComponents/DockerImagesList";
 import { DockerContainersList } from "../components/DockerComponents/DockerContainersList";
 import { useEffect, useState } from "react";
 import { AvailablePrograms } from "../components/DockerComponents/AvaliablePrograms";
+import { LuContainer } from "react-icons/lu";
+import { SiPaperswithcode } from "react-icons/si";
+import { AiOutlineCode } from "react-icons/ai";
 
 const CustomTab = ({ icon, children }) => {
   return (
@@ -18,9 +21,10 @@ const CustomTab = ({ icon, children }) => {
         bg: 'gray.200',
         color: 'blue.500',
       }}
-
+      gap={2}
+      textAlign='left'
     >
-      {icon}
+      <Icon as={icon} />
       {children}
     </Tab>
   );
@@ -70,7 +74,7 @@ const DockerHome = () => {
   }, []);
 
   return (
-    <>
+    <Box h='100vh' overflow='hidden'>
       <HeaderBox />
 
       {
@@ -91,22 +95,17 @@ const DockerHome = () => {
         )
       }
 
-      <Tabs isLazy>
-        <Grid templateColumns='repeat(11, 1fr)'>
-          <GridItem colSpan={2} bg='gray.100' h='100vh' p={4}>
-            <Box textAlign='center'>
-              <Heading size='md'>Home</Heading>
-            </Box>
-
-            <Stack direction='column' spacing={4} mt={4}>
-              <CustomTab>Containers</CustomTab>
-              <CustomTab>Images</CustomTab>
-              <CustomTab>Programs</CustomTab>
+      <Tabs h='100%' isLazy>
+        <Grid templateColumns='repeat(11, 1fr)' h='inherit'>
+          <GridItem colSpan={2} bg='gray.100' h='inherit'>
+            <Stack direction='column' spacing={4}>
+              <CustomTab icon={LuContainer}>Containers</CustomTab>
+              <CustomTab icon={SiPaperswithcode}>Images</CustomTab>
+              <CustomTab icon={AiOutlineCode}>Programs</CustomTab>
 
             </Stack>
           </GridItem>
-          <GridItem colSpan={9} bg='white'>
-
+          <GridItem colSpan={9} bg='white' borderRadius={'md'}>
             <TabPanels>
               <TabPanel>
                 <DockerContainersList />
@@ -121,8 +120,8 @@ const DockerHome = () => {
           </GridItem>
         </Grid>
 
-      </Tabs>
-    </>
+      </Tabs >
+    </Box>
   );
 };
 
