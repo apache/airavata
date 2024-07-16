@@ -1,6 +1,9 @@
-import { Grid, GridItem, Tabs, Box, TabList, TabPanels, Tab, TabPanel, Stack, Heading } from "@chakra-ui/react";
+import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, TabList, TabPanels, Tab, TabPanel, Stack, Heading } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { DockerImagesList } from "../components/DockerComponents/DockerImagesList";
+import { DockerContainersList } from "../components/DockerComponents/DockerContainersList";
+import { useEffect, useState } from "react";
+import { AvailablePrograms } from "../components/DockerComponents/AvaliablePrograms";
 
 const CustomTab = ({ icon, children }) => {
   return (
@@ -24,12 +27,70 @@ const CustomTab = ({ icon, children }) => {
 };
 
 const DockerHome = () => {
+  const [pullLoading, setPullLoading] = useState(false);
+  const toast = useToast();
+
+  useEffect(() => {
+    window.ipc.on('docker-pull-progress', (progress) => {
+      setPullLoading(progress);
+    });
+
+    window.ipc.on('docker-pull-finished', (image) => {
+      console.log("Image pulled: ", image);
+      setPullLoading(null);
+    });
+
+    window.ipc.on("notebook-started", (containerId, err) => {
+      console.log("notebook started: ", containerId);
+      if (err) {
+        toast({
+          title: "Error",
+          description: err,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Notebook started successfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    });
 
 
+    return () => {
+      window.ipc.removeAllListeners("container-started");
+      window.ipc.removeAllListeners('docker-pull-progress');
+      window.ipc.removeAllListeners('docker-pull-finished');
+    };
+  }, []);
 
   return (
     <>
       <HeaderBox />
+
+      {
+        pullLoading && (
+          <>
+            {
+              pullLoading?.progressDetail?.current ? (
+                <>
+                  <Progress value={pullLoading.progressDetail.current} max={pullLoading.progressDetail.total} />
+                  <Text>{pullLoading.status}</Text>
+
+                </>
+              ) : (
+                <Progress isIndeterminate />
+              )
+            }
+          </>
+        )
+      }
+
       <Tabs isLazy>
         <Grid templateColumns='repeat(11, 1fr)'>
           <GridItem colSpan={2} bg='gray.100' h='100vh' p={4}>
@@ -48,13 +109,13 @@ const DockerHome = () => {
 
             <TabPanels>
               <TabPanel>
-                <p>one!</p>
+                <DockerContainersList />
               </TabPanel>
               <TabPanel>
                 <DockerImagesList />
               </TabPanel>
               <TabPanel>
-                <p>three!</p>
+                <AvailablePrograms />
               </TabPanel>
             </TabPanels>
           </GridItem>
