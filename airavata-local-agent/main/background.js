@@ -106,9 +106,6 @@ if (!gotTheLock) {
 
   app.on('open-url', async (event, url) => {
     // this is the handler we need to target when they came back
-    dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`);
-
-    // use regex to parse code= from the url
     const rawCode = /code=([^&]*)/.exec(url) || null;
     const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
