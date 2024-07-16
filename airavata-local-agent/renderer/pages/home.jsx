@@ -66,7 +66,7 @@ const Home = () => {
       <Container maxW='container.sm' p={4} mt={4}>
         <Flex alignItems='center' gap={2}>
           <Img src='/images/a-logo.png' maxH='50px' />
-          <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle MD Local Agent</Text>
+          <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle Local Agent</Text>
         </Flex>
 
         {
@@ -85,7 +85,7 @@ const Home = () => {
             <Alert status='success' rounded='md' mt={4}>
               <AlertIcon />
               <Text>
-                Docker is running properly. You can now login to the Cybershuttle MD Local Agent.
+                Docker is running properly. You can now login to the Cybershuttle Local Agent.
               </Text>
             </Alert>) : (
             <Alert status='error' rounded='md' mt={4}>
@@ -99,7 +99,7 @@ const Home = () => {
 
 
 
-        <Text mt={2}>Cybershuttle MD Local Agent, developed by the Cybershuttle project, empowers researchers by providing seamless access to a comprehensive range of computational resources. The agent bridges the gap between local, institutional, and national-scale computing resources, enhancing productivity and collaboration in scientific research. By integrating diverse computing environments into a unified interface, Apache Airavata eliminates traditional barriers, enabling researchers to focus on innovation and discovery.
+        <Text mt={2}>Cybershuttle Local Agent, developed by the Cybershuttle project, empowers researchers by providing seamless access to a comprehensive range of computational resources. The agent bridges the gap between local, institutional, and national-scale computing resources, enhancing productivity and collaboration in scientific research. By integrating diverse computing environments into a unified interface, Apache Airavata eliminates traditional barriers, enabling researchers to focus on innovation and discovery.
         </Text>
 
         <Heading fontSize='2xl' mt={4} color='blue.500'>Features</Heading>

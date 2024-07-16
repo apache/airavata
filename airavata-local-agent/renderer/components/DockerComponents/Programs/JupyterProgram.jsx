@@ -65,6 +65,15 @@ export const JupyterProgram = () => {
         isClosable: true,
       });
       return;
+    } else if (startContainerConfig.name.includes(" ")) {
+      toast({
+        title: "Error",
+        description: "Container name cannot contain spaces",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
     }
 
     // first pull the docker image
@@ -117,7 +126,7 @@ export const JupyterProgram = () => {
                 }));
               }}
               />
-              <FormHelperText>If blank, one will automatically be generated for you.</FormHelperText>
+              <FormHelperText>Container name cannot have spaces. If blank, one will automatically be generated for you.</FormHelperText>
             </FormControl>
 
             <FormControl mt={4}>
@@ -129,6 +138,7 @@ export const JupyterProgram = () => {
                 }));
               }}
               />
+              <FormHelperText>Usually, ports 6000 and up can be used. Two containers cannot run on the same port on the host machine.</FormHelperText>
             </FormControl>
 
             <FormControl mt={4}>
@@ -150,6 +160,7 @@ export const JupyterProgram = () => {
                 handleStartNotebook();
               }}
               colorScheme='green'
+              isDisabled={startContainerConfig.port === "" || startContainerConfig.name.includes(" ")}
             >
               Start Jupyter Notebook
             </Button>

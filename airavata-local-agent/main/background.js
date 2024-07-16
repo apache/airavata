@@ -133,7 +133,7 @@ app.on("before-quit", (event) => {
 
 ipcMain.on('get-version-number', (event) => {
 
-  log.info(`Cybershuttle MD Local Agent version: ${app.getVersion()}`);
+  log.info(`Cybershuttle Local Agent version: ${app.getVersion()}`);
 
   event.sender.send('version-number', app.getVersion());
 });

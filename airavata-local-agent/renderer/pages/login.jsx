@@ -88,7 +88,7 @@ const Login = () => {
         <Box>
           <Flex alignItems='center' gap={2}>
             <Img src='/images/a-logo.png' maxH='50px' />
-            <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle MD Local Agent</Text>
+            <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle Local Agent</Text>
           </Flex>
 
           {
