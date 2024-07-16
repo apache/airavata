@@ -82,6 +82,9 @@ export const JupyterProgram = () => {
     let createOptions = {
       'name': startContainerConfig.name,
       'Tty': false,
+      'Labels': {
+        'cybershuttle-local-agent': 'true'
+      },
       'ExposedPorts': {
         '8888/tcp': {}
       },

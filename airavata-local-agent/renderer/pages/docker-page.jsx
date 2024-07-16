@@ -26,6 +26,7 @@ import {
   Flex,
   Img,
   Progress,
+  Switch,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { DockerInspectModal } from "../components/DockerComponents/DockerInspectModal";
@@ -50,6 +51,7 @@ const DockerPage = () => {
   const [activeContainer, setActiveContainer] = useState("");
   const [portMapping, setPortMapping] = useState({});
   const [pullLoading, setPullLoading] = useState(false);
+  const [showOnlyCybershuttle, setShowOnlyCybershuttle] = useState(false);
 
   const toast = useToast();
 
@@ -196,7 +198,16 @@ const DockerPage = () => {
         return;
       }
 
+
       window.ipc.send("get-container-ports", runningContainers);
+
+      if (showOnlyCybershuttle) {
+        runningContainers = runningContainers.filter(container => {
+          return container.Labels['cybershuttle-local-agent'] === 'true';
+        });
+      };
+
+      console.log("Setting: ", runningContainers);
       setRunningContainers(runningContainers);
     });
 
@@ -222,18 +233,18 @@ const DockerPage = () => {
       window.ipc.removeAllListeners("docker-pull-progress");
       window.ipc.removeAllListeners("docker-pull-finished");
     };
-  }, []);
+  }, [showOnlyCybershuttle]);
 
 
   useInterval(() => {
     getContainers();
   }, CONTAINER_FETCH_INTERVAL);
 
-  useInterval(() => {
-    if (!DEBUG_DOCKER_MODE) {
-      ensureAccessToken();
-    }
-  }, ACCESS_FETCH_INTERVAL);
+  // useInterval(() => {
+  //   if (!DEBUG_DOCKER_MODE) {
+  //     ensureAccessToken();
+  //   }
+  // }, ACCESS_FETCH_INTERVAL);
 
   return (
     <>
@@ -280,6 +291,8 @@ const DockerPage = () => {
 
         <Box mt={10}>
           <Heading size='xl' textAlign='center'>Running Containers</Heading>
+
+
           <TableContainer>
             <Table variant='simple'>
               <Thead>
@@ -393,6 +406,17 @@ const DockerPage = () => {
               </Tbody>
             </Table>
           </TableContainer>
+
+
+          <Box mt={4}>
+            <Flex alignItems='center' gap={2}>
+              <Switch colorScheme='blue' size='md'
+                isChecked={showOnlyCybershuttle}
+                onChange={() => setShowOnlyCybershuttle(!showOnlyCybershuttle)}
+              />
+              <Text>Show only Cybershuttle Containers</Text>
+            </Flex>
+          </Box>
         </Box>
 
 

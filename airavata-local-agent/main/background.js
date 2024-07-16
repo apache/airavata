@@ -85,7 +85,7 @@ if (!gotTheLock) {
     });
 
     if (isProd) {
-      await mainWindow.loadURL('app://./home');
+      await mainWindow.loadURL('app://./docker-page');
       // globalShortcut.register("CommandOrControl+R", () => {
       //   log.info("CommandOrControl+R is pressed: Shortcut Disabled");
       // });
@@ -98,7 +98,7 @@ if (!gotTheLock) {
 
     } else {
       const port = process.argv[2];
-      await mainWindow.loadURL(`http://localhost:${port}/home`);
+      await mainWindow.loadURL(`http://localhost:${port}/docker-page`);
       mainWindow.webContents.openDevTools();
     }
 
