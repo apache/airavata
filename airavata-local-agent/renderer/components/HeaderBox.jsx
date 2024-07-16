@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 export const HeaderBox = ({ name, email }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [version, setVersion] = useState('');
+  const [userObj, setUserObj] = useState({
+    name: null,
+    email: null
+  });
 
   useEffect(() => {
     window.config.getVersionNumber();
@@ -12,7 +16,24 @@ export const HeaderBox = ({ name, email }) => {
     window.config.versionNumber((event, version) => {
       setVersion(version);
     });
+
+    if (!name) {
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (accessToken) {
+        const obj = JSON.parse(atob(accessToken.split('.')[1]));
+
+        setUserObj({
+          name: obj.name,
+          email: obj.email
+        });
+      }
+
+    }
   }, []);
+
+  email = email || userObj.email;
+  name = name || userObj.name;
 
   return (
     <Box py={1} px={2} bg='gray.100'>
@@ -38,7 +59,7 @@ export const HeaderBox = ({ name, email }) => {
         <Spacer />
 
         {
-          name && email && (
+          (name) && (email) && (
             <Text>
               <Tooltip label="View user information">
                 <Text as='span'

@@ -14,10 +14,29 @@ const Home = () => {
   const [version, setVersion] = useState('');
   const [serverVersion, setServerVersion] = useState('');
   const [showUpdate, setShowUpdate] = useState(false);
+  const [dockerRunning, setDockerRunning] = useState(false);
+
+  let dockerInterval;
 
   useEffect(() => {
-
     window.config.getVersionNumber();
+
+    window.ipc.send('docker-ping');
+
+    window.ipc.on('docker-pinged', (data) => {
+      if (!data) {
+        console.log('Docker is not running');
+        setDockerRunning(false);
+        clearInterval(dockerInterval);
+        dockerInterval = setInterval(() => {
+          window.ipc.send('docker-ping');
+        }, 5000);
+      } else {
+        console.log('Docker is running');
+        setDockerRunning(true);
+        clearInterval(dockerInterval);
+      }
+    });
 
     window.config.versionNumber(async (event, version) => {
       // make fetch here to check for updates
@@ -34,6 +53,11 @@ const Home = () => {
       setVersion(version);
       setServerVersion(respVersion);
     });
+
+    return () => {
+      clearInterval(dockerInterval);
+      window.ipc.removeAllListeners('docker-pinged');
+    };
   }, []);
   return (
     <>
@@ -56,6 +80,25 @@ const Home = () => {
           )
         }
 
+        {
+          dockerRunning ? (
+            <Alert status='success' rounded='md' mt={4}>
+              <AlertIcon />
+              <Text>
+                Docker is running properly. You can now login to the Cybershuttle MD Local Agent.
+              </Text>
+            </Alert>) : (
+            <Alert status='error' rounded='md' mt={4}>
+              <AlertIcon />
+              <Text>
+                Docker is not running. Please make sure Docker is installed, launched, and running properly. If you don't have Docker installed, <Link href='https://www.docker.com/products/docker-desktop' target="_blank" color='blue.500' fontWeight='bold'>you can download it from here</Link>.
+              </Text>
+            </Alert>
+          )
+        }
+
+
+
         <Text mt={2}>Cybershuttle MD Local Agent, developed by the Cybershuttle project, empowers researchers by providing seamless access to a comprehensive range of computational resources. The agent bridges the gap between local, institutional, and national-scale computing resources, enhancing productivity and collaboration in scientific research. By integrating diverse computing environments into a unified interface, Apache Airavata eliminates traditional barriers, enabling researchers to focus on innovation and discovery.
         </Text>
 
@@ -70,10 +113,6 @@ const Home = () => {
 
         <HStack spacing={4} mt={2}>
           <Button as='a' href='/login' colorScheme='blue'>Login</Button>
-          <Button as='a' href='/docker-page' colorScheme='red'>v1.0.2</Button>
-          {/* <Button as='a' target="_blank" href='https://github.com/apache/airavata/pull/435' bg='black' color='white' _hover={{
-            'bg': "#404040"
-          }}>Contribute on GitHub</Button> */}
         </HStack>
       </Container>
     </>
