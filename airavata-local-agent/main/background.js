@@ -421,7 +421,7 @@ ipcMain.on('start-notebook', async (event, createOptions) => {
           err = e;
         }
 
-        event.sender.send('container-started', container.id, err);
+        event.sender.send('notebook-started', container.id, err);
 
       });
 
