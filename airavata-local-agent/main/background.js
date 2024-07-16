@@ -93,8 +93,8 @@ if (!gotTheLock) {
       //   log.info("F5 is pressed: Shortcut Disabled");
       // });
 
-      mainWindow.removeMenu();
-      Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+      // mainWindow.removeMenu();
+      // Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
     } else {
       const port = process.argv[2];
@@ -104,13 +104,22 @@ if (!gotTheLock) {
 
   });
 
-  app.on('open-url', (event, url) => {
+  app.on('open-url', async (event, url) => {
+    // this is the handler we need to target when they came back
     dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`);
+
+    // use regex to parse code= from the url
+    const rawCode = /code=([^&]*)/.exec(url) || null;
+    const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
+
+    if (isProd) {
+      await mainWindow.loadURL(`app://./login-callback?code=${code}`);
+    } else {
+      const port = process.argv[2];
+      await mainWindow.loadURL(`http://localhost:${port}/login-callback?code=${code}`);
+    }
   });
 }
-
-
-
 
 app.on('window-all-closed', () => {
   app.quit();
