@@ -51,7 +51,7 @@ const DockerPage = () => {
   const [activeContainer, setActiveContainer] = useState("");
   const [portMapping, setPortMapping] = useState({});
   const [pullLoading, setPullLoading] = useState(false);
-  const [showOnlyCybershuttle, setShowOnlyCybershuttle] = useState(false);
+  const [showOnlyCybershuttle, setShowOnlyCybershuttle] = useState(true);
 
   const toast = useToast();
 
@@ -207,7 +207,6 @@ const DockerPage = () => {
         });
       };
 
-      console.log("Setting: ", runningContainers);
       setRunningContainers(runningContainers);
     });
 
@@ -409,7 +408,7 @@ const DockerPage = () => {
 
 
           <Box mt={4}>
-            <Flex alignItems='center' gap={2}>
+            <Flex alignItems='center' gap={2} justifyContent='center'>
               <Switch colorScheme='blue' size='md'
                 isChecked={showOnlyCybershuttle}
                 onChange={() => setShowOnlyCybershuttle(!showOnlyCybershuttle)}
