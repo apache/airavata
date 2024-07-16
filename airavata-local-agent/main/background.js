@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain, dialog, session, Menu, globalShortcut } from 'electron';
+import { app, ipcMain, dialog, session, Menu, shell } from 'electron';
 const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
@@ -17,67 +17,100 @@ if (isProd) {
 } else {
   app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
+let mainWindow;
 
-; (async () => {
-  await app.whenReady();
-  const mainWindow = createWindow('main', {
-    width: 1700,
-    height: 1000,
-    autoHideMenuBar: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      webSecurity: false,
-    },
-    'node-integration': true,
-
-  });
-
-  log.warn("App is now ready");
-
-  app.commandLine.appendSwitch('ignore-certificate-errors');
-
-  session.defaultSession.clearStorageData([], (data) => {
-    log.info("Cleared storage data", data);
-  });
-
-
-
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    require('electron').shell.openExternal(url);
-    return { action: 'deny' };
-  });
-
-  mainWindow.on('close', function (e) {
-    var choice = dialog.showMessageBoxSync(this,
-      {
-        type: 'question',
-        buttons: ['Yes', 'No'],
-        title: 'Confirm',
-        message: 'Are you sure you want to close the local agent?'
-      });
-    if (choice == 1) {
-      e.preventDefault();
-    }
-  });
-
-  if (isProd) {
-    await mainWindow.loadURL('app://./home');
-    // globalShortcut.register("CommandOrControl+R", () => {
-    //   log.info("CommandOrControl+R is pressed: Shortcut Disabled");
-    // });
-    // globalShortcut.register("F5", () => {
-    //   log.info("F5 is pressed: Shortcut Disabled");
-    // });
-
-    mainWindow.removeMenu();
-    Menu.setApplicationMenu(Menu.buildFromTemplate([]));
-
-  } else {
-    const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/home`);
-    mainWindow.webContents.openDevTools();
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('electron-fiddle', process.execPath, [path.resolve(process.argv[1])]);
   }
-})();
+} else {
+  app.setAsDefaultProtocolClient('electron-fiddle');
+}
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+
+    dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop().slice(0, -1)}`);
+  });
+
+  // Create mainWindow, load the rest of the app, etc...
+  app.whenReady().then(async () => {
+    mainWindow = createWindow('main', {
+      width: 1700,
+      height: 1000,
+      autoHideMenuBar: true,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        webSecurity: false,
+      },
+      'node-integration': true,
+
+    });
+
+    log.warn("App is now ready");
+
+    app.commandLine.appendSwitch('ignore-certificate-errors');
+
+    session.defaultSession.clearStorageData([], (data) => {
+      log.info("Cleared storage data", data);
+    });
+
+
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+      require('electron').shell.openExternal(url);
+      return { action: 'deny' };
+    });
+
+    mainWindow.on('close', function (e) {
+      var choice = dialog.showMessageBoxSync(this,
+        {
+          type: 'question',
+          buttons: ['Yes', 'No'],
+          title: 'Confirm',
+          message: 'Are you sure you want to close the local agent?'
+        });
+      if (choice == 1) {
+        e.preventDefault();
+      }
+    });
+
+    if (isProd) {
+      await mainWindow.loadURL('app://./home');
+      // globalShortcut.register("CommandOrControl+R", () => {
+      //   log.info("CommandOrControl+R is pressed: Shortcut Disabled");
+      // });
+      // globalShortcut.register("F5", () => {
+      //   log.info("F5 is pressed: Shortcut Disabled");
+      // });
+
+      mainWindow.removeMenu();
+      Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+
+    } else {
+      const port = process.argv[2];
+      await mainWindow.loadURL(`http://localhost:${port}/home`);
+      mainWindow.webContents.openDevTools();
+    }
+
+  });
+
+  app.on('open-url', (event, url) => {
+    dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`);
+  });
+}
+
+
+
 
 app.on('window-all-closed', () => {
   app.quit();
