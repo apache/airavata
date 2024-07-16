@@ -38,7 +38,7 @@ export const DockerImagesList = () => {
         </Thead>
         <Tbody>
           {
-            images.map((image) => (
+            images?.map((image) => (
               <Tr key={image.Id}>
                 <Td>{image.RepoTags[0]}</Td>
                 <Td>{stripPrefix(image.Id, "sha256:").slice(0, 12)}</Td>

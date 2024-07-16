@@ -27,6 +27,7 @@ import {
   Img,
   Progress,
   Switch,
+  Link,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { DockerInspectModal } from "../components/DockerComponents/DockerInspectModal";
@@ -249,7 +250,7 @@ const DockerPage = () => {
     <>
       <HeaderBox />
       <Box p={4}>
-
+        <Link href='/docker-home'>Docker Home</Link>
         <Modal isOpen={InspectModal.isOpen} onClose={InspectModal.onClose} size='4xl'>
           <ModalOverlay />
           <ModalContent>
