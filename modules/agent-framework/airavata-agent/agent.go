@@ -67,7 +67,15 @@ func main() {
 					log.Fatalf(err.Error())
 					return
 				}
-				log.Printf("Execution output is %s", string(stdout))
+
+				stdoutString := string(stdout)
+				log.Printf("Execution output is %s", stdoutString)
+				
+				if err := stream.Send(&protos.AgentMessage{Message: 
+					&protos.AgentMessage_CommandExecutionResponse{
+						CommandExecutionResponse: &protos.CommandExecutionResponse{ExecutionId: executionId, ResponseString: stdoutString}}}); err != nil {
+					log.Printf("Failed to send execution result to server: %v", err)
+				} 
 
 			case *protos.ServerMessage_TunnelCreationRequest:
 				log.Printf("Received a tunnel creation request")

@@ -44,4 +44,9 @@ public class AgentController {
         }
     }
 
+    @GetMapping("/execution/{executionId}")
+    public ResponseEntity<AgentCommandResponse> getExecutionResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentHandler.getAgentCommandResponse(executionId));
+    }
+
 }
