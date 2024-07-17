@@ -85,7 +85,7 @@ if (!gotTheLock) {
     });
 
     if (isProd) {
-      await mainWindow.loadURL('app://./docker-page');
+      await mainWindow.loadURL('app://./home');
       // globalShortcut.register("CommandOrControl+R", () => {
       //   log.info("CommandOrControl+R is pressed: Shortcut Disabled");
       // });

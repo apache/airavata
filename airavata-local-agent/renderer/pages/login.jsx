@@ -71,7 +71,7 @@ const Login = () => {
         localStorage.removeItem("ciLoginAuto");
         localStorage.setItem('numTries', 0);
         setLoading(false);
-        router.push('/docker-page');
+        router.push('/docker-home');
 
 
 
