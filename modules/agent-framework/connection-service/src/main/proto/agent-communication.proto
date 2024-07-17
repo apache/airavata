@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package org.apache.airavata.agent;
+
+option java_multiple_files = true;
+option java_package = "org.apache.airavata.agent";
+option java_outer_classname = "AgentCommunicationProto";
+option go_package = "protos/";
+
+service AgentCommunicationService {
+  rpc createMessageBus(stream AgentMessage) returns (stream ServerMessage);
+}
+
+message AgentPing {
+  string agentId = 1;
+}
+
+message CommandExecutionResponse {
+  string executionId = 1;
+  string responseString = 2;
+}
+
+message ContainerExecutionResponse {
+  string executionId = 1;
+  string responseString = 2;
+}
+
+message TerminateExecutionResponse {
+  string status = 1;
+  string description = 2;
+}
+
+message TunnelCreationResponse {
+  string status = 1;
+}
+
+message TunnelTerminationResponse {
+  string status = 1;
+}
+
+message AgentMessage {
+  oneof message {
+    AgentPing agentPing = 1;
+    CommandExecutionResponse commandExecutionResponse = 2;
+    ContainerExecutionResponse containerExecutionResponse = 3;
+    TerminateExecutionResponse terminateExecutionResponse = 4;
+  }
+}
+
+message ContainerExecutionRequest {
+  string executionId = 1;
+  string containerName = 2;
+  repeated string arguments = 3;
+  string mountPath = 4;
+}
+
+message TunnelCreationRequest {
+  string destinationHost = 1;
+  string destinationPort = 2;
+  string sshUserName = 3;
+  string sourcePort = 4;
+  string sshKeyPath = 5;
+  string password = 6;
+}
+
+message TunnelTerminationRequest {
+  string destinationHost = 1;
+  int32 destinationPort = 2;
+  string sourcePort = 3;
+}
+
+message CommandExecutionRequest {
+  string executionId = 1;
+  repeated string arguments = 2;
+  string workingDir = 3;
+}
+
+message TerminateExecutionRequest {
+  string executionId = 1;
+}
+
+message KillAgentRequest {
+  string reason = 1;
+}
+
+message ServerMessage {
+  oneof message {
+    ContainerExecutionRequest containerExecutionRequest = 1;
+    CommandExecutionRequest commandExecutionRequest = 2;
+    TerminateExecutionRequest terminateExecutionRequest = 3;
+    KillAgentRequest killAgentRequest = 4;
+    TunnelCreationRequest tunnelCreationRequest = 5;
+  }
+}

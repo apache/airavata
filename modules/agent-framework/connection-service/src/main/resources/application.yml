@@ -1,0 +1,6 @@
+grpc:
+  server:
+    port: 19900
+
+server:
+  port: 18880
