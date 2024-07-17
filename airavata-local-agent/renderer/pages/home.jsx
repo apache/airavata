@@ -1,4 +1,4 @@
-import { Button, Container, Img, Text, Flex, Heading, Link, HStack, UnorderedList, ListItem, Alert, AlertIcon } from "@chakra-ui/react";
+import { Button, Container, Img, Text, Flex, Heading, Link, HStack, UnorderedList, ListItem, Alert, AlertIcon, useInterval } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { useEffect, useState } from "react";
 import { isNewerVersion } from "../lib/utilityFuncs";
@@ -16,7 +16,9 @@ const Home = () => {
   const [showUpdate, setShowUpdate] = useState(false);
   const [dockerRunning, setDockerRunning] = useState(false);
 
-  let dockerInterval;
+  useInterval(() => {
+    window.ipc.send('docker-ping');
+  }, 5000);
 
   useEffect(() => {
     window.config.getVersionNumber();
@@ -27,14 +29,9 @@ const Home = () => {
       if (!data) {
         console.log('Docker is not running');
         setDockerRunning(false);
-        clearInterval(dockerInterval);
-        dockerInterval = setInterval(() => {
-          window.ipc.send('docker-ping');
-        }, 5000);
       } else {
         console.log('Docker is running');
         setDockerRunning(true);
-        clearInterval(dockerInterval);
       }
     });
 
@@ -48,14 +45,12 @@ const Home = () => {
         respVersion = respVersion.substring(1);
       }
 
-
       setShowUpdate(isNewerVersion(respVersion, version));
       setVersion(version);
       setServerVersion(respVersion);
     });
 
     return () => {
-      clearInterval(dockerInterval);
       window.ipc.removeAllListeners('docker-pinged');
     };
   }, []);
@@ -85,7 +80,7 @@ const Home = () => {
             <Alert status='success' rounded='md' mt={4}>
               <AlertIcon />
               <Text>
-                Docker is running properly. You can now login to the Cybershuttle Local Agent.
+                Docker is running properly. You can now login.
               </Text>
             </Alert>) : (
             <Alert status='error' rounded='md' mt={4}>
@@ -112,7 +107,9 @@ const Home = () => {
         </UnorderedList>
 
         <HStack spacing={4} mt={2}>
-          <Button as='a' href='/login' colorScheme='blue'>Login</Button>
+          <Button as='a' href='/login' colorScheme='blue'
+            isDisabled={!dockerRunning}
+          >Login</Button>
         </HStack>
       </Container>
     </>

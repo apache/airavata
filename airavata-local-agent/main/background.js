@@ -67,7 +67,7 @@ if (!gotTheLock) {
 
 
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      require('electron').shell.openExternal(url);
+      shell.openExternal(url);
       return { action: 'deny' };
     });
 
@@ -157,6 +157,10 @@ async function getToken(url) {
     return null;
   }
 }
+
+ipcMain.on('open-default-browser', (event, url) => {
+  shell.openExternal(url);
+});
 
 ipcMain.on('ci-logon-logout', (event) => {
   log.warn('logging out');
