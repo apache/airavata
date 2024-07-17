@@ -623,8 +623,7 @@
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugins</artifactId>
-                        <version>${openjpa.version}</version>
+                        <artifactId>maven-jar-plugin</artifactId>
                     </plugin>
 
                     <plugin>
@@ -664,8 +663,8 @@
                         </configuration>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.5</version>
                         <executions>
                             <execution>
                                 <id>copy-resources</id>
