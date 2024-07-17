@@ -577,3 +577,32 @@ ipcMain.on('get-all-images', (event) => {
   });
 });
 
+
+// ----------------- TOKEN AUTH -----------------
+ipcMain.on('read-file', (event, path) => {
+  log.info("Reading file: ", path);
+
+  fs.readFile(path, 'utf8', (err, data) => {
+    if (err) {
+      log.error("Error reading file: ", err);
+      event.sender.send('file-read', err);
+    } else {
+      log.info("File read: ", data);
+      event.sender.send('file-read', data);
+    }
+  });
+});
+
+ipcMain.on('write-file', (event, path, data) => {
+  log.info("Writing to file: ", path, " with data: ", data);
+
+  fs.writeFile(path, data, (err) => {
+    if (err) {
+      log.error("Error writing file: ", err);
+      event.sender.send('file-written', err);
+    } else {
+      log.info("File written");
+      event.sender.send('file-written', null);
+    }
+  });
+});
