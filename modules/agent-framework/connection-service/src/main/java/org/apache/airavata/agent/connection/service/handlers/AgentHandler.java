@@ -24,6 +24,8 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
     // <agentId, streamId>
     private final Map<String, String> AGENT_STREAM_MAPPING = new ConcurrentHashMap<>();
 
+    private final Map<String, CommandExecutionResponse> EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+
     public AgentInfoResponse isAgentUp(String agentId) {
 
         if (AGENT_STREAM_MAPPING.containsKey(agentId) &&
@@ -32,6 +34,18 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
         } else {
             return new AgentInfoResponse(agentId, false);
         }
+    }
+
+    public AgentCommandResponse getAgentCommandResponse(String executionId) {
+        AgentCommandResponse agentCommandResponse = new AgentCommandResponse();
+        if (EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
+            agentCommandResponse.setResponseString(EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+            agentCommandResponse.setExecutionId(executionId);
+            agentCommandResponse.setAvailable(true);
+        } else {
+            agentCommandResponse.setAvailable(false);
+        }
+        return agentCommandResponse;
     }
 
     public AgentTunnelAck runTunnelOnAgent(AgentTunnelCreationRequest tunnelRequest) {
@@ -101,7 +115,8 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
     }
 
     private void handleCommandExecutionResponse (CommandExecutionResponse commandExecutionResponse) {
-
+        logger.info("Received command execution response for execution id {}", commandExecutionResponse.getExecutionId());
+        EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
     }
 
     private void handleContainerExecutionResponse (ContainerExecutionResponse containerExecutionResponse) {
