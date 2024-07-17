@@ -17,6 +17,18 @@ const Login = () => {
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
 
+  // general a random string
+  const randomString = (length) => {
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    let result = '';
+    for (let i = length; i > 0; --i) {
+      result += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    return result;
+  };
+
   const handleLogin = async () => {
     setError("Molecular Dynamics Gateway login is not yet implemented, please use the organizational login.");
     return;
@@ -65,7 +77,6 @@ const Login = () => {
 
     window.ipc.send("open-default-browser", data.verification_uri_complete);
     setVerifyURL(data.verification_uri_complete);
-
     startPollForComplete(data.device_code);
   };
 
@@ -170,7 +181,9 @@ const Login = () => {
               Log in with your existing organizational login</Heading>
             <Button colorScheme='blue' w='full' mt={4}
               // onClick={handleCiLogin}
-              onClick={handleNewCiLogon}
+              as='a'
+              href={`https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon`}
+              target="_blank"
               isDisabled={loading}
             > {
                 loading && <Spinner mr={2} />
