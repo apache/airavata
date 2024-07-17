@@ -35,10 +35,13 @@ const DEFAULT_CONFIG = {
   mountLocation: ""
 };
 
-export const AvailablePrograms = () => {
+export const AvailablePrograms = ({ isDisabled }) => {
   return (
     <>
-      <SimpleGrid columns={3} spacing={10} p={4}>
+      <SimpleGrid columns={3} spacing={10} p={4}
+        pointerEvents={isDisabled ? "none" : "auto"}
+        opacity={isDisabled ? 0.4 : 1}
+      >
         <JupyterProgram />
       </SimpleGrid>
     </>

@@ -264,8 +264,6 @@ const DockerPage = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-
-
         {
           pullLoading && (
             <>

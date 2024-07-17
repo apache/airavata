@@ -1,6 +1,7 @@
 import { TableContainer, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { bytesToSize } from "../../lib/utilityFuncs";
+import { useInterval } from "usehooks-ts";
 
 const stripPrefix = (str, prefix) => {
   if (str.startsWith(prefix)) {
@@ -9,6 +10,7 @@ const stripPrefix = (str, prefix) => {
   return str;
 };
 
+const IMAGES_FETCH_INTERVAL = 5000;
 
 export const DockerImagesList = () => {
   const [images, setImages] = useState([]);
@@ -25,6 +27,10 @@ export const DockerImagesList = () => {
       window.ipc.removeAllListeners("got-all-images");
     };
   }, []);
+
+  useInterval(() => {
+    window.ipc.send("get-all-images");
+  }, IMAGES_FETCH_INTERVAL);
 
   return (
     <TableContainer>
