@@ -71,14 +71,9 @@ export const DockerContainersList = () => {
     window.ipc.send("get-containers");
   };
 
-  const pingDocker = () => {
-    window.ipc.send("docker-ping");
-  };
-
   useEffect(() => {
 
     getContainers(); // so user's don't need to wait to see containers
-    pingDocker();
 
     window.ipc.on("container-started", (containerId, err) => {
       console.log("Container started: ", containerId);
@@ -132,7 +127,7 @@ export const DockerContainersList = () => {
           title: "Error getting running containers",
           description: "Please make sure docker is installed and running properly.",
           status: "error",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
         return;
@@ -158,7 +153,7 @@ export const DockerContainersList = () => {
       window.ipc.removeAllListeners("container-started");
       window.ipc.removeAllListeners("container-stopped");
       window.ipc.removeAllListeners("container-removed");
-      window.ipc.removeAllListeners("got-running-containers");
+      window.ipc.removeAllListeners("got-containers");
       window.ipc.removeAllListeners("got-container-ports");
     };
   }, [showOnlyCybershuttle]);
@@ -167,6 +162,7 @@ export const DockerContainersList = () => {
   useInterval(() => {
     getContainers();
   }, CONTAINER_FETCH_INTERVAL);
+
 
   return (
     <>

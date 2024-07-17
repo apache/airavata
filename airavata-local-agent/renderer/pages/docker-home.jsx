@@ -1,4 +1,4 @@
-import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, TabList, TabPanels, Tab, TabPanel, Stack, Heading, IconButton, Icon } from "@chakra-ui/react";
+import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, keyframes, TabPanels, Tab, TabPanel, Stack, Heading, IconButton, Icon } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { DockerImagesList } from "../components/DockerComponents/DockerImagesList";
 import { DockerContainersList } from "../components/DockerComponents/DockerContainersList";
@@ -7,6 +7,22 @@ import { AvailablePrograms } from "../components/DockerComponents/AvaliableProgr
 import { LuContainer } from "react-icons/lu";
 import { SiPaperswithcode } from "react-icons/si";
 import { AiOutlineCode } from "react-icons/ai";
+import { useInterval } from "usehooks-ts";
+import { DEBUG_DOCKER_MODE, API_BASE_URL, AUTH_BASE_URL } from "../lib/constants";
+import { motion } from 'framer-motion';
+
+const ACCESS_FETCH_INTERVAL = 60000;
+const PING_DOCKER_INTERVAL = 5000;
+
+
+const animationKeyframes = keyframes`
+  0% { opacity: 1 }
+  25% { opacity: 0.5 }
+  50% { opacity: 0 }
+  75% { opacity: 0.5 }
+  100% { opacity: 1 }
+`;
+const animation = `${animationKeyframes} 2s linear infinite`;
 
 const CustomTab = ({ icon, children }) => {
   return (
@@ -18,23 +34,29 @@ const CustomTab = ({ icon, children }) => {
       }}
 
       _selected={{
-        bg: 'gray.200',
-        color: 'blue.500',
+        bg: 'blue.500',
+        color: 'white',
       }}
       gap={2}
-      textAlign='left'
+      justifyContent='flex-start'
+      alignItems={'center'}
     >
       <Icon as={icon} />
-      {children}
+      <Text>
+        {children}
+      </Text>
     </Tab>
   );
 };
 
 const DockerHome = () => {
-  const [pullLoading, setPullLoading] = useState(false);
+  const [pullLoading, setPullLoading] = useState(null);
+  const [dockerUp, setDockerUp] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
+    pingDocker();
+
     window.ipc.on('docker-pull-progress', (progress) => {
       setPullLoading(progress);
     });
@@ -42,6 +64,14 @@ const DockerHome = () => {
     window.ipc.on('docker-pull-finished', (image) => {
       console.log("Image pulled: ", image);
       setPullLoading(null);
+    });
+
+    window.ipc.on('docker-pinged', (data) => {
+      if (data) {
+        setDockerUp(true);
+      } else {
+        setDockerUp(false);
+      }
     });
 
     window.ipc.on("notebook-started", (containerId, err) => {
@@ -67,14 +97,85 @@ const DockerHome = () => {
 
 
     return () => {
-      window.ipc.removeAllListeners("container-started");
+      window.ipc.removeAllListeners("notebook-started");
       window.ipc.removeAllListeners('docker-pull-progress');
       window.ipc.removeAllListeners('docker-pull-finished');
     };
   }, []);
 
+  const pingDocker = () => {
+    window.ipc.send("docker-ping");
+  };
+
+  async function getAccessTokenFromRefreshToken(refreshToken) {
+    const respForRefresh = await fetch(`${AUTH_BASE_URL}/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+
+    if (!respForRefresh.ok) {
+      throw new Error("Failed to fetch new access token (refresh token)");
+    }
+
+    const data = await respForRefresh.json();
+    return [data.access_token, data.refresh_token];
+  };
+
+  async function checkAccessToken(url, options) {
+    let resp = await fetch(url, options);
+
+    if (!resp.ok) {
+      let refreshToken = localStorage.getItem('refreshToken');
+
+      const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
+
+      if (!newAccessToken || !newRefreshToken) {
+        throw new Error("Failed to fetch new access token (refresh token)");
+      }
+      localStorage.setItem('accessToken', newAccessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
+
+      options.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+      resp = await fetch(url, options); // make sure the new one works
+      if (!resp.ok) {
+        throw new Error("Failed to fetch new experiments (new access token)");
+      }
+    };
+
+    return resp;
+  }
+
+  function ensureAccessToken() {
+    const accessToken = localStorage.getItem('accessToken');
+    const url = `${API_BASE_URL}/`;
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    };
+
+    try {
+      console.log("Checking access token...");
+      checkAccessToken(url, options).catch(err => {
+        console.log(err);
+        window.location.href = "/login";
+      });
+    } catch (err) {
+
+    }
+  }
+
+  useInterval(() => {
+    if (!DEBUG_DOCKER_MODE) {
+      ensureAccessToken();
+    }
+  }, ACCESS_FETCH_INTERVAL);
+
+  useInterval(() => {
+    pingDocker();
+  }, PING_DOCKER_INTERVAL);
+
   return (
-    <Box h='100vh' overflow='hidden'>
+    <Box h='100vh' overflow='hidden' bg='gray.100'>
       <HeaderBox />
 
       {
@@ -84,8 +185,7 @@ const DockerHome = () => {
               pullLoading?.progressDetail?.current ? (
                 <>
                   <Progress value={pullLoading.progressDetail.current} max={pullLoading.progressDetail.total} />
-                  <Text>{pullLoading.status}</Text>
-
+                  <Text textAlign='center'>{pullLoading.status}</Text>
                 </>
               ) : (
                 <Progress isIndeterminate />
@@ -98,14 +198,31 @@ const DockerHome = () => {
       <Tabs h='100%' isLazy>
         <Grid templateColumns='repeat(11, 1fr)' h='inherit'>
           <GridItem colSpan={2} bg='gray.100' h='inherit'>
-            <Stack direction='column' spacing={4}>
+            <Stack direction='column' spacing={2} p={4}>
               <CustomTab icon={LuContainer}>Containers</CustomTab>
               <CustomTab icon={SiPaperswithcode}>Images</CustomTab>
               <CustomTab icon={AiOutlineCode}>Programs</CustomTab>
-
             </Stack>
+
+            <Stack direction='row' align='center' p={4}
+              position='fixed'
+              bottom='0'
+            >
+              <Box
+                w='10px'
+                h='10px'
+                bg={dockerUp ? 'green.500' : 'red.500'}
+                rounded='full'
+                key="asdfsfasdf"
+                as={motion.div}
+                animation={animation}
+
+              ></Box>
+              <Text>{dockerUp ? "Docker is running" : "Docker is down"}</Text>
+            </Stack>
+
           </GridItem>
-          <GridItem colSpan={9} bg='white' borderRadius={'md'}>
+          <GridItem colSpan={9} bg='white' roundedTopLeft='md'>
             <TabPanels>
               <TabPanel>
                 <DockerContainersList />
@@ -114,14 +231,16 @@ const DockerHome = () => {
                 <DockerImagesList />
               </TabPanel>
               <TabPanel>
-                <AvailablePrograms />
+                <AvailablePrograms
+                  isDisabled={pullLoading !== null}
+                />
               </TabPanel>
             </TabPanels>
           </GridItem>
         </Grid>
 
       </Tabs >
-    </Box>
+    </Box >
   );
 };
 
