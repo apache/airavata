@@ -5,12 +5,14 @@ import { AuthContext, useAuth } from "../lib/Contexts";
 import { useRouter } from "next/router";
 
 const SIGN_UP_URL = "https://md.cybershuttle.org/auth/create-account";
+const CLIENT_ID = "cilogon:/client_id/43195427592edc28170b9be6686fce3f";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [verifyURL, setVerifyURL] = useState("");
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
 
@@ -28,6 +30,35 @@ const Login = () => {
       // setError("Invalid username or password.");
       window.location.href = "/tabs-view";
     }
+  };
+
+  const startPollForComplete = (device_code) => {
+    const interval = setInterval(async () => {
+      const resp = await fetch(`https://cilogon.org/oauth2/token?client_id=${CLIENT_ID}&grant_type=urn:ietf:params:oauth:grant-type:device_code&device_code=${device_code}`);
+      const data = await resp.json();
+
+
+      if (data.access_token) {
+        clearInterval(interval);
+        window.localStorage.setItem("idToken", data.id_token);
+        setLoading(false);
+        setVerifyURL("");
+      }
+    }, 5000);
+  };
+
+
+  const handleNewCiLogon = async () => {
+    setLoading(true);
+    const resp = await fetch(`https://cilogon.org/oauth2/device_authorization?client_id=${CLIENT_ID}`);
+    const data = await resp.json();
+
+    console.log("Data from CI logon", data);
+
+    window.ipc.send("open-default-browser", data.verification_uri_complete);
+    setVerifyURL(data.verification_uri_complete);
+
+    startPollForComplete(data.device_code);
   };
 
   const handleCiLogin = async () => {
@@ -73,8 +104,6 @@ const Login = () => {
         setLoading(false);
         router.push('/docker-home');
 
-
-
         console.log("Setting auth info", data);
         setAuthInfo(data);
       }
@@ -102,11 +131,24 @@ const Login = () => {
             )
           }
 
+          {
+            verifyURL !== "" && (
+              <Alert status='info' rounded='md' mt={2}>
+                <AlertIcon />
+                <Text>
+                  <Text as='span' color='blue.800' fontWeight='bold'>Please verify your login</Text>. Open the following URL in your browser if it has not automatically opened: <Link color='blue.500' href={verifyURL} target="_blank">{verifyURL}</Link>
+                </Text>
+              </Alert>
+            )
+          }
+
           <Box shadow='md' rounded='md' p={4} mt={4}>
             <Heading size='md' textAlign="left" color='blue.500'>
 
               Log in with your existing organizational login</Heading>
-            <Button colorScheme='blue' w='full' mt={4} onClick={handleCiLogin}
+            <Button colorScheme='blue' w='full' mt={4}
+              // onClick={handleCiLogin}
+              onClick={handleNewCiLogon}
               isDisabled={loading}
             > {
                 loading && <Spinner mr={2} />

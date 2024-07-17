@@ -20,14 +20,19 @@ export const HeaderBox = ({ name, email }) => {
     if (!name) {
       const accessToken = localStorage.getItem("accessToken");
 
-      if (accessToken) {
-        const obj = JSON.parse(atob(accessToken.split('.')[1]));
+      try {
+        if (accessToken) {
+          const obj = JSON.parse(atob(accessToken.split('.')[1]));
 
-        setUserObj({
-          name: obj.name,
-          email: obj.email
-        });
+          setUserObj({
+            name: obj.name,
+            email: obj.email
+          });
+        }
+      } catch (e) {
+        console.log("Error parsing access token", e);
       }
+
 
     }
   }, []);
