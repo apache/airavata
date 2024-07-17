@@ -579,10 +579,21 @@ ipcMain.on('get-all-images', (event) => {
 
 
 // ----------------- TOKEN AUTH -----------------
-ipcMain.on('read-file', (event, path) => {
+function createIfNotExists(path) {
+  if (!fs.existsSync(path)) {
+    fs.writeFileSync(path, '', 'utf8');
+  }
+}
+
+ipcMain.on('read-file', (event, userPath) => {
   log.info("Reading file: ", path);
 
-  fs.readFile(path, 'utf8', (err, data) => {
+  if (userPath.startsWith("~")) {
+    const homedir = require('os').homedir();
+    userPath = path.join(homedir, userPath.substring(1));
+  }
+
+  fs.readFile(userPath, 'utf8', (err, data) => {
     if (err) {
       log.error("Error reading file: ", err);
       event.sender.send('file-read', err);
@@ -593,16 +604,32 @@ ipcMain.on('read-file', (event, path) => {
   });
 });
 
-ipcMain.on('write-file', (event, path, data) => {
-  log.info("Writing to file: ", path, " with data: ", data);
+ipcMain.on('write-file', async (event, userPath, data) => {
+  log.info("Writing to file: ", userPath, " with data: ", data);
 
-  fs.writeFile(path, data, (err) => {
-    if (err) {
-      log.error("Error writing file: ", err);
-      event.sender.send('file-written', err);
-    } else {
-      log.info("File written");
-      event.sender.send('file-written', null);
-    }
-  });
+  if (userPath.startsWith("~")) {
+    const homedir = require('os').homedir();
+    // substring until the file at the end to create mkdirs
+    const dirPath = userPath.substring(1, userPath.lastIndexOf('/'));
+    fs.mkdirSync(path.join(homedir, dirPath), { recursive: true });
+    fs.writeFileSync(path.join(homedir, userPath.substring(1)), data);
+
+    log.info("File written");
+    event.sender.send('file-written', data);
+  } else {
+    createIfNotExists(userPath);
+
+    fs.writeFile(userPath, data, (err) => {
+      if (err) {
+        log.error("Error writing file: ", err);
+        event.sender.send('file-written', err);
+      } else {
+        log.info("File written");
+        event.sender.send('file-written', data);
+      }
+    });
+  }
 });
+
+/*
+*/

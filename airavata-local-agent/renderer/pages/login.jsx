@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
 import { AuthContext, useAuth } from "../lib/Contexts";
 import { useRouter } from "next/router";
+import { TOKEN_FILE } from "../lib/constants";
 
 const SIGN_UP_URL = "https://md.cybershuttle.org/auth/create-account";
 const CLIENT_ID = "cilogon:/client_id/43195427592edc28170b9be6686fce3f";
@@ -41,6 +42,15 @@ const Login = () => {
       if (data.access_token) {
         clearInterval(interval);
         window.localStorage.setItem("idToken", data.id_token);
+
+        const obj = {
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+          id_token: data.id_token
+        };
+
+        window.ipc.send('write-file', '~/.csagent/token/keys.json', JSON.stringify(obj));
+
         setLoading(false);
         setVerifyURL("");
       }
@@ -52,8 +62,6 @@ const Login = () => {
     setLoading(true);
     const resp = await fetch(`https://cilogon.org/oauth2/device_authorization?client_id=${CLIENT_ID}`);
     const data = await resp.json();
-
-    console.log("Data from CI logon", data);
 
     window.ipc.send("open-default-browser", data.verification_uri_complete);
     setVerifyURL(data.verification_uri_complete);
@@ -72,6 +80,15 @@ const Login = () => {
       localStorage.removeItem("ciLoginAuto");
       window.auth.ciLogonLogin();
     }
+
+    window.ipc.on('file-written', (data) => {
+      console.log("File written", data);
+      window.ipc.send('read-file', TOKEN_FILE);
+    });
+
+    window.ipc.on('file-read', (data) => {
+      console.log("File read", data);
+    });
 
     window.auth.ciLogonSuccess((event, data) => {
       const accessToken = data.access_token;
@@ -108,6 +125,11 @@ const Login = () => {
         setAuthInfo(data);
       }
     });
+
+    return () => {
+      window.ipc.removeAllListeners('file-written');
+      window.ipc.removeAllListeners('file-read');
+    };
   }, []);
 
   return (
