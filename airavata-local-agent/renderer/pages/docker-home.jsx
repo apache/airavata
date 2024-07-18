@@ -14,7 +14,6 @@ import { motion } from 'framer-motion';
 const ACCESS_FETCH_INTERVAL = 60000;
 const PING_DOCKER_INTERVAL = 5000;
 
-
 const animationKeyframes = keyframes`
   0% { opacity: 1 }
   25% { opacity: 0.5 }
@@ -200,7 +199,7 @@ const DockerHome = () => {
           <GridItem colSpan={2} bg='gray.100' h='inherit'>
             <Stack direction='column' spacing={2} p={4}>
               <CustomTab icon={LuContainer}>Containers</CustomTab>
-              <CustomTab icon={SiPaperswithcode}>Images</CustomTab>
+              {/* <CustomTab icon={SiPaperswithcode}>Images</CustomTab> */}
               <CustomTab icon={AiOutlineCode}>Programs</CustomTab>
             </Stack>
 
@@ -227,9 +226,9 @@ const DockerHome = () => {
               <TabPanel>
                 <DockerContainersList />
               </TabPanel>
-              <TabPanel>
+              {/* <TabPanel>
                 <DockerImagesList />
-              </TabPanel>
+              </TabPanel> */}
               <TabPanel>
                 <AvailablePrograms
                   isDisabled={pullLoading !== null}

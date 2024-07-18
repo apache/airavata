@@ -29,6 +29,17 @@ if (process.defaultApp) {
 
 const gotTheLock = app.requestSingleInstanceLock();
 
+const openLoginCallback = async (url) => {
+  const rawCode = /code=([^&]*)/.exec(url) || null;
+  const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
+
+  if (isProd) {
+    await mainWindow.loadURL(`app://./login-callback?code=${code}`);
+  } else {
+    const port = process.argv[2];
+    await mainWindow.loadURL(`http://localhost:${port}/login-callback?code=${code}`);
+  }
+};
 if (!gotTheLock) {
   app.quit();
 } else {
@@ -39,7 +50,9 @@ if (!gotTheLock) {
       mainWindow.focus();
     }
 
-    dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop().slice(0, -1)}`);
+    // dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop().slice(0, -1)}`);
+    const url = commandLine.pop().slice(0, -1);
+    openLoginCallback(url);
   });
 
   // Create mainWindow, load the rest of the app, etc...
@@ -106,15 +119,7 @@ if (!gotTheLock) {
 
   app.on('open-url', async (event, url) => {
     // this is the handler we need to target when they came back
-    const rawCode = /code=([^&]*)/.exec(url) || null;
-    const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
-
-    if (isProd) {
-      await mainWindow.loadURL(`app://./login-callback?code=${code}`);
-    } else {
-      const port = process.argv[2];
-      await mainWindow.loadURL(`http://localhost:${port}/login-callback?code=${code}`);
-    }
+    openLoginCallback(url);
   });
 }
 
@@ -148,7 +153,7 @@ async function getToken(url) {
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
   if (code) {
-    const resp = await fetch(`https://md.cybershuttle.org/auth/get-token-from-code/?code=${code}`);
+    const resp = await fetch(`https://md.cybershuttle.org/auth/get-token-from-code/?code=${code}&isProd=${isProd}`);
 
     const data = await resp.json();
     return data;
@@ -267,6 +272,10 @@ ipcMain.on('close-window', (event, associatedId) => {
   } catch (e) {
     log.error("Window doesn't exist with id: ", associatedId);
   }
+});
+
+ipcMain.on('is-prod', (event) => {
+  event.sender.send('is-prod-reply', isProd);
 });
 
 // ----------------- DOCKER -----------------
@@ -577,6 +586,16 @@ ipcMain.on('get-all-images', (event) => {
   });
 });
 
+
+ipcMain.on('inspect-image', (event, imageId) => {
+  log.info("Inspecting the image with imageId: ", imageId);
+
+  let image = docker.getImage(imageId);
+  image.inspect(function (err, data) {
+    console.log(data);
+    event.sender.send('image-inspected', data);
+  });
+});
 
 // ----------------- TOKEN AUTH -----------------
 function createIfNotExists(path) {

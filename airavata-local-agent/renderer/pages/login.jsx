@@ -14,6 +14,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [verifyURL, setVerifyURL] = useState("");
+  const [isProd, setIsProd] = useState(false);
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
 
@@ -45,47 +46,15 @@ const Login = () => {
     }
   };
 
-  const startPollForComplete = (device_code) => {
-    const interval = setInterval(async () => {
-      const resp = await fetch(`https://cilogon.org/oauth2/token?client_id=${CLIENT_ID}&grant_type=urn:ietf:params:oauth:grant-type:device_code&device_code=${device_code}`);
-      const data = await resp.json();
-
-
-      if (data.access_token) {
-        clearInterval(interval);
-        window.localStorage.setItem("idToken", data.id_token);
-
-        const obj = {
-          access_token: data.access_token,
-          refresh_token: data.refresh_token,
-          id_token: data.id_token
-        };
-
-        window.ipc.send('write-file', '~/.csagent/token/keys.json', JSON.stringify(obj));
-
-        setLoading(false);
-        setVerifyURL("");
-      }
-    }, 5000);
-  };
-
-
-  const handleNewCiLogon = async () => {
-    setLoading(true);
-    const resp = await fetch(`https://cilogon.org/oauth2/device_authorization?client_id=${CLIENT_ID}`);
-    const data = await resp.json();
-
-    window.ipc.send("open-default-browser", data.verification_uri_complete);
-    setVerifyURL(data.verification_uri_complete);
-    startPollForComplete(data.device_code);
-  };
-
   const handleCiLogin = async () => {
     setLoading(true);
     window.auth.ciLogonLogin();
   };
 
   useEffect(() => {
+
+    window.ipc.send('is-prod');
+
     if (localStorage.getItem("ciLoginAuto") === "true") {
       setLoading(true);
       localStorage.removeItem("ciLoginAuto");
@@ -130,16 +99,19 @@ const Login = () => {
         localStorage.removeItem("ciLoginAuto");
         localStorage.setItem('numTries', 0);
         setLoading(false);
+        window.ipc.send('write-file', TOKEN_FILE, JSON.stringify(data));
         router.push('/docker-home');
-
-        console.log("Setting auth info", data);
-        setAuthInfo(data);
       }
+    });
+
+    window.ipc.on('is-prod-reply', (isProdResult) => {
+      setIsProd(isProdResult);
     });
 
     return () => {
       window.ipc.removeAllListeners('file-written');
       window.ipc.removeAllListeners('file-read');
+      window.ipc.removeAllListeners('is-prod-reply');
     };
   }, []);
 
@@ -179,15 +151,26 @@ const Login = () => {
             <Heading size='md' textAlign="left" color='blue.500'>
 
               Log in with your existing organizational login</Heading>
-            <Button colorScheme='blue' w='full' mt={4}
-              // onClick={handleCiLogin}
-              as='a'
-              href={`https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`}
-              target="_blank"
-              isDisabled={loading}
-            > {
-                loading && <Spinner mr={2} />
-              }Login with CILogon</Button>
+
+            {
+              isProd ? (
+                <Button colorScheme='blue' w='full' mt={4}
+                  as='a'
+                  href={`https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`}
+                  target="_blank"
+                  isDisabled={loading}
+                > {
+                    loading && <Spinner mr={2} />
+                  }Login with CILogon</Button>
+              ) : (
+                <Button colorScheme='blue' w='full' mt={4}
+                  onClick={handleCiLogin}
+                  isDisabled={loading}
+                > {
+                    loading && <Spinner mr={2} />
+                  }Login with CILogon</Button>
+              )
+            }
           </Box>
 
           {/* <Box shadow='md' rounded='md' p={4} mt={8}>
