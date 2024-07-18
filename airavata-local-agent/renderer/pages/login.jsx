@@ -182,7 +182,7 @@ const Login = () => {
             <Button colorScheme='blue' w='full' mt={4}
               // onClick={handleCiLogin}
               as='a'
-              href={`https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon`}
+              href={`https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`}
               target="_blank"
               isDisabled={loading}
             > {
