@@ -4,3 +4,10 @@ grpc:
 
 server:
   port: 18880
+
+airavata:
+  server:
+    url: scigap02.sciencegateways.iu.edu
+    port: 9930
+    truststore:
+      path: CHANGE_ME
