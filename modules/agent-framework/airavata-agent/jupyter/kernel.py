@@ -40,18 +40,28 @@ def execute():
     kc.execute(code)
 
     # Wait for the result and display it
+
+    execution_noticed = False
+    content_text = ""
     while True:
         try:
             msg = kc.get_iopub_msg(timeout=1)
-            #print(msg)
             content = msg["content"]
+            parent_header = msg["parent_header"]
 
             # When a message with the text stream comes and it's the result of our execution
+            if msg["msg_type"] == "execute_input":
+                execution_noticed = True
             if msg["msg_type"] == "stream" and content["name"] == "stdout":
                 print(content["text"])
-                return jsonify({'result': content["text"]}), 200
+                content_text = content_text + content["text"]
             if msg["msg_type"] == "error":
                 return jsonify({'error': content}), 200
+            if msg["msg_type"] == "status" and execution_noticed:
+                if content["execution_state"] and content["execution_state"] == "idle":
+                    if parent_header and parent_header["msg_type"]:
+                        if parent_header["msg_type"] == "execute_request": ## This is a result without stdout like a = 12
+                            return jsonify({'result': content_text}), 200
         except KeyboardInterrupt:
             print("Interrupted by user.")
             return jsonify({'error': "Intterrupted by user"}), 500
