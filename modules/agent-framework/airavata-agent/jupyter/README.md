@@ -16,3 +16,29 @@ curl -X GET  http://127.0.0.1:15000/start
 curl -X POST http://127.0.0.1:15000/execute -H "Content-Type: application/json" -d '{"code": "print(4)"}'
 curl -X GET  http://127.0.0.1:15000/stop
 ```
+
+
+### Build and upload the magic extension
+
+* Make sure you have `setuptools` and `wheel` installed:
+
+```
+pip install setuptools wheel
+```
+
+* Build the extension
+```
+cd jupyter/extension/airavata_jupyter_magic
+python setup.py sdist bdist_wheel
+```
+
+* Upload the distribution to pypi
+```
+pip install twine
+twine upload dist/*
+```
+
+* Extension is available at https://pypi.org/project/airavata-jupyter-magic
+
+
+
