@@ -10,11 +10,17 @@ app = Flask(__name__)
 km = None
 kc = None
 
+kernel_running = False
+
 @app.route('/start', methods=['GET'])
 def start_kernel():
 
     global km
     global kc
+    global kernel_running
+
+    if kernel_running:
+        return
     # Create a new kernel manager
     km = KernelManager(kernel_name='python3')
     km.start_kernel()
@@ -25,6 +31,7 @@ def start_kernel():
 
     # Ensure the client is connected before executing code
     kc.wait_for_ready()
+    kernel_running = True
     return "Kernel started"
 
 @app.route('/execute', methods=['POST'])
@@ -73,9 +80,14 @@ def stop():
 
     global km
     global kc
+    global kernel_running
 
+    if not kernel_running:
+        return
+    
     kc.stop_channels()
     km.shutdown_kernel()
+    kernel_running = False
     return 'Kernel shutting down...'
 
 

@@ -31,7 +31,8 @@ public class AgentController {
     public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelCreationRequest tunnelRequest) {
         return ResponseEntity.accepted().body(agentHandler.runTunnelOnAgent(tunnelRequest));
     }
-    @PostMapping("/execute")
+
+    @PostMapping("/executecommandrequest")
     public ResponseEntity<AgentCommandAck> runCommandOnAgent(@Valid @RequestBody AgentCommandRequest commandRequest) {
         logger.info("Received command request to run on agent {}", commandRequest.getAgentId());
         if (agentHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
@@ -44,9 +45,27 @@ public class AgentController {
         }
     }
 
-    @GetMapping("/execution/{executionId}")
+    @GetMapping("/executecommandresponse/{executionId}")
     public ResponseEntity<AgentCommandResponse> getExecutionResponse(@PathVariable("executionId") String executionId) {
         return ResponseEntity.accepted().body(agentHandler.getAgentCommandResponse(executionId));
+    }
+
+    @PostMapping("/executejupyterrequest")
+    public ResponseEntity<JupyterExecutionAck> runJupyterOnAgent(@Valid @RequestBody JupyterExecutionRequest executionRequest) {
+        logger.info("Received jupyter execution request to run on agent {}", executionRequest.getAgentId());
+        if (agentHandler.isAgentUp(executionRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentHandler.runJupyterOnAgent(executionRequest));
+        } else {
+            logger.warn("No agent is available to run on agent {}", executionRequest.getAgentId());
+            JupyterExecutionAck ack = new JupyterExecutionAck();
+            ack.setError("Agent not found");
+            return ResponseEntity.accepted().body(ack);
+        }
+    }
+
+    @GetMapping("/executejupyterresponse/{executionId}")
+    public ResponseEntity<JupyterExecutionResponse> getJupyterResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentHandler.getJupyterExecutionResponse(executionId));
     }
 
 }

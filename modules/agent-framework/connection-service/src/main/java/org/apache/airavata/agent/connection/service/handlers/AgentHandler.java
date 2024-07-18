@@ -3,7 +3,9 @@ package org.apache.airavata.agent.connection.service.handlers;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.agent.*;
+import org.apache.airavata.agent.JupyterExecutionResponse;
 import org.apache.airavata.agent.connection.service.models.*;
+import org.apache.airavata.agent.connection.service.models.JupyterExecutionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,8 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
     // <agentId, streamId>
     private final Map<String, String> AGENT_STREAM_MAPPING = new ConcurrentHashMap<>();
 
-    private final Map<String, CommandExecutionResponse> EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, CommandExecutionResponse> COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
     public AgentInfoResponse isAgentUp(String agentId) {
 
@@ -38,14 +41,28 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
 
     public AgentCommandResponse getAgentCommandResponse(String executionId) {
         AgentCommandResponse agentCommandResponse = new AgentCommandResponse();
-        if (EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
-            agentCommandResponse.setResponseString(EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+        if (COMMAND_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
+            agentCommandResponse.setResponseString(COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
             agentCommandResponse.setExecutionId(executionId);
             agentCommandResponse.setAvailable(true);
+            COMMAND_EXECUTION_RESPONSE_CACHE.remove(executionId);
         } else {
             agentCommandResponse.setAvailable(false);
         }
         return agentCommandResponse;
+    }
+
+    public org.apache.airavata.agent.connection.service.models.JupyterExecutionResponse getJupyterExecutionResponse(String executionId) {
+        org.apache.airavata.agent.connection.service.models.JupyterExecutionResponse executionResponse = new org.apache.airavata.agent.connection.service.models.JupyterExecutionResponse();
+        if (JUPYTER_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
+            executionResponse.setResponseString(JUPYTER_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+            executionResponse.setExecutionId(executionId);
+            executionResponse.setAvailable(true);
+            JUPYTER_EXECUTION_RESPONSE_CACHE.remove(executionId);
+        } else {
+            executionResponse.setAvailable(false);
+        }
+        return executionResponse;
     }
 
     public AgentTunnelAck runTunnelOnAgent(AgentTunnelCreationRequest tunnelRequest) {
@@ -77,6 +94,38 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
 
         return ack;
     }
+
+    public JupyterExecutionAck runJupyterOnAgent(JupyterExecutionRequest jupyterExecutionRequest) {
+        String executionId = UUID.randomUUID().toString();
+        JupyterExecutionAck ack = new JupyterExecutionAck();
+        ack.setExecutionId(executionId);
+
+        if (AGENT_STREAM_MAPPING.containsKey(jupyterExecutionRequest.getAgentId()) &&
+                ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(jupyterExecutionRequest.getAgentId()))) {
+            String streamId = AGENT_STREAM_MAPPING.get(jupyterExecutionRequest.getAgentId());
+            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+
+            try {
+                logger.info("Running a jupyter on agent {}", jupyterExecutionRequest.getAgentId());
+                streamObserver.onNext(ServerMessage.newBuilder().setJupyterExecutionRequest(
+                        org.apache.airavata.agent.JupyterExecutionRequest.newBuilder().build().newBuilder()
+                                .setExecutionId(executionId)
+                                .setSessionId(jupyterExecutionRequest.getSessionId())
+                                .setCode(jupyterExecutionRequest.getCode())
+                                .setKeepAlive(jupyterExecutionRequest.isKeepAlive()).build()).build());
+
+            } catch (Exception e) {
+                logger.error("Failed to submit jupyter execution request {} on agent {}",
+                        executionId, jupyterExecutionRequest.getAgentId(), e);
+                ack.setError(e.getMessage());
+            }
+        } else {
+            logger.warn("No agent found to run jupyter execution on agent {}", jupyterExecutionRequest.getAgentId());
+            ack.setError("No agent found to run jupyter execution on agent " + jupyterExecutionRequest.getAgentId());
+        }
+        return ack;
+    }
+
     public AgentCommandAck runCommandOnAgent(AgentCommandRequest commandRequest) {
 
         String executionId = UUID.randomUUID().toString();
@@ -116,7 +165,7 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
 
     private void handleCommandExecutionResponse (CommandExecutionResponse commandExecutionResponse) {
         logger.info("Received command execution response for execution id {}", commandExecutionResponse.getExecutionId());
-        EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
+        COMMAND_EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
     }
 
     private void handleContainerExecutionResponse (ContainerExecutionResponse containerExecutionResponse) {
@@ -125,6 +174,11 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
 
     private void handleAgentTerminationResponse (TerminateExecutionResponse terminateExecutionResponse) {
 
+    }
+
+    private void handleJupyterExecutionResponse (JupyterExecutionResponse executionResponse) {
+        logger.info("Received jupyter execution response for execution id {}", executionResponse.getExecutionId());
+        JUPYTER_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
     }
 
     private String generateStreamId() {
@@ -153,6 +207,9 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
                     }
                     case TERMINATEEXECUTIONRESPONSE -> {
                         handleAgentTerminationResponse(request.getTerminateExecutionResponse());
+                    }
+                    case JUPYTEREXECUTIONRESPONSE -> {
+                        handleJupyterExecutionResponse(request.getJupyterExecutionResponse());
                     }
                 }
             }
