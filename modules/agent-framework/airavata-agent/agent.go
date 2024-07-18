@@ -144,9 +144,9 @@ func main() {
 						log.Printf("Failed to read response for run jupyter kernel: %v", err)
 					}
 
-					log.Println("Jupyter execution response")
+					
 					jupyterResponse := string(body)
-
+					log.Println("Jupyter execution response: " + jupyterResponse)
 
 					if err := stream.Send(&protos.AgentMessage{Message: 
 						&protos.AgentMessage_JupyterExecutionResponse{
