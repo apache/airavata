@@ -30,13 +30,13 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { DockerInspectModal } from "../components/DockerComponents/DockerInspectModal";
+import { DockerInspectModal } from "../../components/DockerComponents/DockerInspectModal";
 import { DeleteIcon } from '@chakra-ui/icons';
-import { canPerformAction } from "../lib/utilityFuncs";
-import { DockerImagesList } from "../components/DockerComponents/DockerImagesList";
-import { AvailablePrograms } from "../components/DockerComponents/AvaliablePrograms";
-import { HeaderBox } from "../components/HeaderBox";
-import { API_BASE_URL, AUTH_BASE_URL, DEBUG_DOCKER_MODE } from "../lib/constants";
+import { canPerformAction } from "../../lib/utilityFuncs";
+import { DockerImagesList } from "../../components/DockerComponents/DockerImagesList";
+import { AvailablePrograms } from "../../components/DockerComponents/AvaliablePrograms";
+import { HeaderBox } from "../../components/HeaderBox";
+import { API_BASE_URL, AUTH_BASE_URL, DEBUG_DOCKER_MODE } from "../../lib/constants";
 import { useInterval } from 'usehooks-ts';
 
 const DOCKER_ID_LENGTH = 12;

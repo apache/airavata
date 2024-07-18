@@ -19,7 +19,6 @@ export const DockerImagesList = () => {
     window.ipc.send("get-all-images");
 
     window.ipc.on("got-all-images", (images) => {
-      console.log(images);
       setImages(images);
     });
 
@@ -46,7 +45,15 @@ export const DockerImagesList = () => {
           {
             images?.map((image) => (
               <Tr key={image.Id}>
-                <Td>{image.RepoTags[0]}</Td>
+                <Td
+                  _hover={{
+                    cursor: "pointer",
+                    color: "blue.500",
+                  }}
+                  onClick={() => {
+                    window.ipc.send("inspect-image", image.Id);
+                  }}
+                >{image.RepoTags[0]}</Td>
                 <Td>{stripPrefix(image.Id, "sha256:").slice(0, 12)}</Td>
                 <Td>{bytesToSize(image.Size)}</Td>
               </Tr>
