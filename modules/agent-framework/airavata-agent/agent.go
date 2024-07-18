@@ -21,6 +21,7 @@ func main() {
 	serverUrl := args[0]
 	agentId := args[1]
 	grpcStreamChannel := make(chan struct{})
+	kernelChannel := make(chan struct{})
 
 	conn, err := grpc.Dial(serverUrl, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -43,6 +44,17 @@ func main() {
 	} else {
 		log.Printf("Connected to the server...")
 	}
+
+	go func() {
+		log.Printf("Starting jupyter kernel")
+		cmd := exec.Command("./jupyter/venv/bin/python", "jupyter/kernel.py")
+		_, err := cmd.Output()
+		if err != nil {
+			log.Printf(err.Error())
+			close(kernelChannel)
+			return
+		}
+	}()
 
 	go func() {
 		for {
@@ -91,6 +103,7 @@ func main() {
 	}()
 
 	<-grpcStreamChannel
+	<-kernelChannel
 
 	if err := stream.CloseSend(); err != nil {
 		log.Fatalf("failed to close the stream: %v", err)
