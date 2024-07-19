@@ -60,7 +60,7 @@ const Home = () => {
 
       <Container maxW='container.sm' p={4} mt={4}>
         <Flex alignItems='center' gap={2}>
-          <Img src='/images/a-logo.png' maxH='50px' />
+          <Img src='/images/cs-logo.png' maxH='50px' />
           <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle Local Agent</Text>
         </Flex>
 

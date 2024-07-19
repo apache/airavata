@@ -88,9 +88,9 @@ export const JupyterProgram = () => {
     };
 
     if (startContainerConfig.mountLocation !== "") {
-      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/home/jovyan/work`];
+      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/home`];
       createOptions.Volumes = {
-        '/home/jovyan/work': {}
+        '/home': {}
       };
     };
 

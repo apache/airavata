@@ -58,7 +58,7 @@ export const HeaderBox = ({ name, email }) => {
 
       <Flex>
         <Flex align='center' gap={1}>
-          <Img src='/images/a-logo.png' maxH='20px' />
+          <Img src='/images/cs-logo.png' maxH='20px' />
           <Text>Cybershuttle Local Agent v{version}</Text>
         </Flex>
 
