@@ -9,11 +9,9 @@ const LoginCallback = () => {
     async function getToken() {
       const code = router.query.code;
 
-      console.log("Code", code);
-
       if (code) {
         // exchange code for token
-        const resp = await fetch(`https://md.cybershuttle.org/auth/get-token-from-code/?code=${code}`);
+        const resp = await fetch(`https://testdrive.cybershuttle.org/auth/get-token-from-code/?code=${code}`);
         const data = await resp.json();
 
         localStorage.setItem("accessToken", data.access_token);
@@ -24,7 +22,6 @@ const LoginCallback = () => {
         router.push('/docker-home');
       }
     }
-
 
     getToken();
   });

@@ -1,4 +1,4 @@
-import { Box, Flex, Spacer, Text, Modal, ModalOverlay, ModalCloseButton, ModalHeader, ModalBody, ModalContent, useDisclosure, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, Spacer, Text, Modal, ModalOverlay, ModalCloseButton, ModalHeader, ModalBody, ModalContent, useDisclosure, Tooltip, Img } from "@chakra-ui/react";
 import { UserModal } from './UserModal';
 import { useEffect, useState } from "react";
 
@@ -32,8 +32,6 @@ export const HeaderBox = ({ name, email }) => {
       } catch (e) {
         console.log("Error parsing access token", e);
       }
-
-
     }
   }, []);
 
@@ -59,7 +57,10 @@ export const HeaderBox = ({ name, email }) => {
       </Modal>
 
       <Flex>
-        <Text>Cybershuttle Local Agent v{version}</Text>
+        <Flex align='center' gap={1}>
+          <Img src='/images/a-logo.png' maxH='20px' />
+          <Text>Cybershuttle Local Agent v{version}</Text>
+        </Flex>
 
         <Spacer />
 

@@ -65,22 +65,10 @@ export const JupyterProgram = () => {
         isClosable: true,
       });
       return;
-    } else if (startContainerConfig.name.includes(" ")) {
-      toast({
-        title: "Error",
-        description: "Container name cannot contain spaces",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
     }
-
-    // first pull the docker image
-
     // mount on host machine
     let createOptions = {
-      'name': startContainerConfig.name,
+      'name': startContainerConfig.name.trim().replaceAll(" ", "-"),
       'Tty': false,
       'Labels': {
         'cybershuttle-local-agent': 'true'
@@ -163,7 +151,7 @@ export const JupyterProgram = () => {
                 handleStartNotebook();
               }}
               colorScheme='green'
-              isDisabled={startContainerConfig.port === "" || startContainerConfig.name.includes(" ")}
+              isDisabled={startContainerConfig.port === ""}
             >
               Start Jupyter Notebook
             </Button>

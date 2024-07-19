@@ -46,10 +46,12 @@ export const DockerContainersList = () => {
   const [isLoadingStart, setIsLoadingStart] = useState(false);
   const [isLoadingStop, setIsLoadingStop] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
-  const InspectModal = useDisclosure();
   const [activeContainer, setActiveContainer] = useState("");
   const [portMapping, setPortMapping] = useState({});
   const [showOnlyCybershuttle, setShowOnlyCybershuttle] = useState(true);
+  const [deleteContainer, setDeleteContainer] = useState({});
+  const InspectModal = useDisclosure();
+  const DeleteModal = useDisclosure();
   const toast = useToast();
 
   const handleRemoveContainer = (containerId) => {
@@ -181,6 +183,51 @@ export const DockerContainersList = () => {
         </ModalContent>
       </Modal>
 
+      <Modal isOpen={DeleteModal.isOpen} onClose={DeleteModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Remove Container</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to remove this container?</Text>
+            <Text mt={2} fontWeight='bold'>{deleteContainer.Names && deleteContainer?.Names[0]?.slice(1)}</Text>
+
+            <Button
+              mt={4}
+              colorScheme='red'
+              onClick={() => {
+                handleRemoveContainer(deleteContainer.Id);
+                DeleteModal.onClose();
+              }}
+              isLoading={isLoadingDelete}
+            >
+              Remove
+            </Button>
+
+            <Button
+              mt={4}
+              ml={4}
+              onClick={DeleteModal.onClose}
+            >
+              Cancel
+            </Button>
+
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+
+
+      <Box>
+        <Flex alignItems='center' gap={2} justifyContent='flex-end' mb={4}>
+          <Switch colorScheme='blue' size='md'
+            isChecked={showOnlyCybershuttle}
+            onChange={() => setShowOnlyCybershuttle(!showOnlyCybershuttle)}
+          />
+          <Text>Show only Cybershuttle Containers</Text>
+        </Flex>
+      </Box>
+
       <TableContainer>
         <Table variant='simple'>
           <Thead>
@@ -201,7 +248,7 @@ export const DockerContainersList = () => {
                     <Td>
                       <Text
                         _hover={{
-                          background: "gray.100",
+                          background: "blue.50",
                           cursor: "pointer"
                         }} onClick={() => {
                           setActiveContainer({
@@ -209,7 +256,10 @@ export const DockerContainersList = () => {
                             name: theName
                           });
                           InspectModal.onOpen();
-                        }}>
+                        }}
+                        rounded='md'
+                        color='blue.500'
+                      >
                         {theName}
                       </Text>
 
@@ -219,7 +269,6 @@ export const DockerContainersList = () => {
                         gap={1}
                         mt={1}
                       >
-
                         <Icon as={MdContentCopy}
 
                           _hover={{
@@ -291,7 +340,11 @@ export const DockerContainersList = () => {
 
                         <IconButton
                           mt={2}
-                          onClick={() => handleRemoveContainer(container.Id)}
+                          onClick={() => {
+                            setDeleteContainer(container);
+                            DeleteModal.onOpen();
+                          }}
+                          //handleRemoveContainer(container.Id)
                           colorScheme='red'
                           variant='outline'
                           isDisabled={!canPerformAction("remove", container.State) || isLoadingDelete}
@@ -307,18 +360,22 @@ export const DockerContainersList = () => {
             }
           </Tbody>
         </Table>
-      </TableContainer >
+      </TableContainer>
 
+      {
+        runningContainers.length === 0 && (
+          <Box maxW='400px' mx='auto' textAlign='center' color='gray.500' mt={4}>
+            <Text>No {
+              showOnlyCybershuttle ? "cybershuttle" : ""
+            } containers running.
+            </Text>
 
-      <Box mt={4}>
-        <Flex alignItems='center' gap={2} justifyContent='center'>
-          <Switch colorScheme='blue' size='md'
-            isChecked={showOnlyCybershuttle}
-            onChange={() => setShowOnlyCybershuttle(!showOnlyCybershuttle)}
-          />
-          <Text>Show only Cybershuttle Containers</Text>
-        </Flex>
-      </Box>
+            <Text mt={2} fontSize='sm'>
+              Containers are essentially running programs. You'll see them here once you start a program.
+            </Text>
+          </Box >
+        )
+      }
     </>
   );
 };
