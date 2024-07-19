@@ -14,7 +14,7 @@ export const NavBar = () => {
             <Flex bg='gray.100' alignItems='center' px={4} py={4}>
                 <Box>
                     <Flex alignItems='center' gap={3}>
-                        <Img src="/images/a-logo.png" maxH='35px' />
+                        <Img src="/images/cs-logo.png" maxH='35px' />
                         <Text fontWeight='black' fontSize='2xl' color='blue.600'>Airavata UI</Text>
                     </Flex>
                 </Box>

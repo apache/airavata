@@ -366,7 +366,7 @@ export const DockerContainersList = () => {
         runningContainers.length === 0 && (
           <Box maxW='400px' mx='auto' textAlign='center' color='gray.500' mt={4}>
             <Text>No {
-              showOnlyCybershuttle ? "cybershuttle" : ""
+              showOnlyCybershuttle ? "Cybershuttle" : ""
             } containers running.
             </Text>
 

@@ -48,10 +48,8 @@ const getToken = async (url) => {
 
   if (code) {
     const resp = await fetch(`https://testdrive.cybershuttle.org/auth/get-token-from-code/?code=${code}&isProd=${isProd}`);
-    console.log(resp);
     const data = await resp.json();
     return data;
-
   } else {
     return null;
   }
@@ -136,7 +134,7 @@ if (!gotTheLock) {
 
     } else {
       const port = process.argv[2];
-      await mainWindow.loadURL(`http://localhost:${port}/docker-home`);
+      await mainWindow.loadURL(`http://localhost:${port}/home`);
       mainWindow.webContents.openDevTools();
     }
   });
@@ -189,8 +187,10 @@ ipcMain.on('ci-logon-login', async (event) => {
       // hitUrl = true
       setTimeout(async () => {
         const data = await getToken(url);
+
         log.info("Got the token: ", data);
         event.sender.send('ci-logon-success', data);
+        writeFile(event, TOKEN_FILE, JSON.stringify(data));
         authWindow.close();
       }, 2000);
 
@@ -413,12 +413,11 @@ ipcMain.on('stop-container', (event, containerId) => {
 
 
 ipcMain.on('start-notebook', async (event, createOptions) => {
-  const imageName = "jupyter/datascience-notebook";
+  const imageName = "dimuthuupe/airavata-jupyter-lab";
   log.info("Starting the notebook with imageName: ", imageName);
-  // idk if we need to add "--LabApp.default_url=\"/lab/work\"" in the list of commands (rn we open up the jupyter and they need to manually open work)
   const startNotebook = () => {
     log.info("Starting the notebook");
-    docker.run(imageName, ["jupyter", "lab", "--NotebookApp.token=''"], null, createOptions, function (err, data, container) {
+    docker.run(imageName, [], null, createOptions, function (err, data, container) {
       if (err) {
         console.error("Error starting the notebook: ", err);
       }
@@ -598,6 +597,7 @@ ipcMain.on('inspect-image', (event, imageId) => {
   });
 });
 
+
 // ----------------- TOKEN AUTH -----------------
 function createIfNotExists(path) {
   if (!fs.existsSync(path)) {
@@ -624,7 +624,7 @@ ipcMain.on('read-file', (event, userPath) => {
   });
 });
 
-ipcMain.on('write-file', async (event, userPath, data) => {
+const writeFile = async (event, userPath, data) => {
   log.info("Writing to file: ", userPath, " with data: ", data);
 
   if (userPath.startsWith("~")) {
@@ -649,7 +649,9 @@ ipcMain.on('write-file', async (event, userPath, data) => {
       }
     });
   }
-});
+};
+
+ipcMain.on('write-file', writeFile);
 
 /*
 */

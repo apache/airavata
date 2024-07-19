@@ -6,7 +6,7 @@ import { AvailablePrograms } from "../components/DockerComponents/AvaliableProgr
 import { LuContainer } from "react-icons/lu";
 import { AiOutlineCode } from "react-icons/ai";
 import { useInterval } from "usehooks-ts";
-import { DEBUG_DOCKER_MODE, API_BASE_URL, AUTH_BASE_URL } from "../lib/constants";
+import { DEBUG_DOCKER_MODE, API_BASE_URL, AUTH_BASE_URL, TOKEN_FILE } from "../lib/constants";
 import { motion } from 'framer-motion';
 
 const ACCESS_FETCH_INTERVAL = 60000;
@@ -113,7 +113,7 @@ const DockerHome = () => {
     }
 
     const data = await respForRefresh.json();
-    return [data.access_token, data.refresh_token];
+    return data;
   };
 
   async function checkAccessToken(url, options) {
@@ -122,15 +122,18 @@ const DockerHome = () => {
     if (!resp.ok) {
       let refreshToken = localStorage.getItem('refreshToken');
 
-      const [newAccessToken, newRefreshToken] = await getAccessTokenFromRefreshToken(refreshToken);
+      const data = await getAccessTokenFromRefreshToken(refreshToken);
 
-      if (!newAccessToken || !newRefreshToken) {
+      if (!data.access_token || !data.refresh_token) {
         throw new Error("Failed to fetch new access token (refresh token)");
       }
-      localStorage.setItem('accessToken', newAccessToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
 
-      options.headers['Authorization'] = `Bearer ${newAccessToken}`;
+      window.ipc.send('write-file', TOKEN_FILE, JSON.stringify(data));
+
+      localStorage.setItem('accessToken', data.access_token);
+      localStorage.setItem('refreshToken', data.refresh_token);
+
+      options.headers['Authorization'] = `Bearer ${data.access_token}`;
 
       resp = await fetch(url, options); // make sure the new one works
       if (!resp.ok) {
@@ -152,10 +155,9 @@ const DockerHome = () => {
     };
 
     try {
-      console.log("Checking access token...");
       checkAccessToken(url, options).catch(err => {
         console.log(err);
-        window.location.href = "/login";
+        // window.location.href = "/login";
       });
     } catch (err) {
 

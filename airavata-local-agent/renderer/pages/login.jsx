@@ -118,7 +118,7 @@ const Login = () => {
       <Center mt={16} maxW='500px' mx='auto'>
         <Box>
           <Flex alignItems='center' gap={2}>
-            <Img src='/images/a-logo.png' maxH='50px' />
+            <Img src='/images/cs-logo.png' maxH='50px' />
             <Text color='blue.600' fontWeight='bold' fontSize='3xl'>Cybershuttle Local Agent</Text>
           </Flex>
 
@@ -153,7 +153,7 @@ const Login = () => {
               isProd ? (
                 <Button colorScheme='blue' w='full' mt={4}
                   as='a'
-                  href={`https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`}
+                  href={`https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`}
                   target="_blank"
                   isDisabled={loading}
                 > {
