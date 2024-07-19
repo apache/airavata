@@ -50,7 +50,7 @@ func main() {
 
 	go func() {
 		log.Printf("Starting jupyter kernel")
-		cmd := exec.Command("./jupyter/venv/bin/python", "jupyter/kernel.py")
+		cmd := exec.Command("python", "/opt/jupyter/kernel.py")
 		_, err := cmd.Output()
 		if err != nil {
 			log.Printf(err.Error())

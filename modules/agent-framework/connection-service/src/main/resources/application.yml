@@ -4,6 +4,7 @@ grpc:
 
 server:
   port: 18880
+  address: 0.0.0.0
 
 airavata:
   server:
