@@ -5,9 +5,6 @@ import { AuthContext, useAuth } from "../lib/Contexts";
 import { useRouter } from "next/router";
 import { TOKEN_FILE } from "../lib/constants";
 
-const SIGN_UP_URL = "https://md.cybershuttle.org/auth/create-account";
-const CLIENT_ID = "cilogon:/client_id/43195427592edc28170b9be6686fce3f";
-
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

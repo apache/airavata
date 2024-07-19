@@ -1,5 +1,5 @@
-import { Box, Button, Stack, Text, IconButton, Flex, Input, Divider } from "@chakra-ui/react";
-import { DeleteIcon } from '@chakra-ui/icons';
+import { Box, Button, Stack, Text, IconButton, Flex, Input, Divider, Icon } from "@chakra-ui/react";
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from "react";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
@@ -47,10 +47,45 @@ export const DockerInspectModal = ({ containerId }) => {
 
     <Stack spacing={2} direction='column' divider={<Divider />}>
 
-      <Box>
+
+      <Flex gap={2} align='center'>
+        <Text fontWeight='bold'>Name:</Text>
+
+        {
+          rename ? (
+            <Stack direction='row' spacing={2} align='center'>
+              <Input type="text" placeholder={inspectContent?.Name?.slice(1)} onChange={(e) => setNewName(e.target.value)} />
+              <Button size='sm'
+                onClick={() => {
+                  window.ipc.send("rename-container", containerId, newName.replaceAll(" ", "-"));
+                  setRename(false);
+                }}
+              >Save</Button>
+            </Stack>
+          ) : (
+            <Flex align='center' gap={2}>
+              <Text>{inspectContent?.Name?.slice(1)}</Text>
+              <Icon as={EditIcon}
+                onClick={() => {
+                  setRename(true);
+                }}
+                color='blue.400'
+                _hover={{ cursor: 'pointer' }}
+              >rename</Icon>
+            </Flex>
+          )
+        }
+      </Flex>
+
+
+      <TextWithBoldKey keyName="ID" text={containerId} />
+
+      <TextWithBoldKey keyName="Status" text={status} />
+
+      <Flex align='center' gap={2}>
         <TextWithBoldKey keyName="Container Actions" />
 
-        <Stack direction='row' spacing={2} mt={2}>
+        <Stack direction='row' spacing={2}>
           {
             (canPerformAction("pause", status)) && (
               <Button
@@ -104,38 +139,7 @@ export const DockerInspectModal = ({ containerId }) => {
             icon={<DeleteIcon />}
           />
         </Stack>
-      </Box>
-
-      <Flex gap={2} align='center'>
-        <Text fontWeight='bold'>Name (<Text as='span'
-          onClick={() => {
-            setRename(true);
-          }}
-          color='blue.400'
-          _hover={{ cursor: 'pointer' }}
-        >rename</Text>):</Text>
-
-        {
-          rename ? (
-            <Stack direction='row' spacing={2} align='center'>
-              <Input type="text" placeholder={inspectContent?.Name?.slice(1)} onChange={(e) => setNewName(e.target.value)} />
-              <Button size='sm'
-                onClick={() => {
-                  window.ipc.send("rename-container", containerId, newName.replaceAll(" ", "-"));
-                  setRename(false);
-                }}
-              >Save</Button>
-            </Stack>
-          ) : (
-            <Text>{inspectContent?.Name?.slice(1)}</Text>
-          )
-        }
       </Flex>
-
-
-      <TextWithBoldKey keyName="ID" text={containerId} />
-
-      <TextWithBoldKey keyName="Status" text={status} />
 
       <Box>
         <TextWithBoldKey keyName="Inspect" />

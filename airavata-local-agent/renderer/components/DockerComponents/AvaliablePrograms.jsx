@@ -1,49 +1,73 @@
 import {
-  Button, Tooltip, Box, HStack, Table,
-  Thead,
-  Tbody,
+  Button,
+  Box,
   Text,
-  Tr,
-  Th,
-  Td,
-  useDisclosure,
-  TableContainer,
-  useToast, Modal,
+  Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  Input,
-  FormControl,
-  FormLabel,
-  Stack,
-  IconButton,
-  FormHelperText,
-  Heading,
   SimpleGrid,
   Flex,
-  Img,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { JupyterProgram } from "./Programs/JupyterProgram";
+import ReactLoading from "react-loading";
+import { useState } from "react";
 
-const DEFAULT_CONFIG = {
-  port: "6080",
-  name: "",
-  mountLocation: ""
-};
+export const AvailablePrograms = ({ isDisabled, loadingText, progress }) => {
+  const [showProgress, setShowProgress] = useState(false);
 
-export const AvailablePrograms = ({ isDisabled }) => {
+
   return (
-    <>
-      <SimpleGrid columns={3} spacing={10} p={4}
+    <Box p={4}>
+
+      {/* the modal should show only when isDisabled is true */}
+
+      <Modal isOpen={isDisabled}>
+        <ModalOverlay />
+        <ModalContent>
+          {/* <ModalHeader>Loading...</ModalHeader> */}
+          <ModalBody>
+            <Flex justifyContent='center'>
+              <ReactLoading type='bubbles' color="black" />
+            </Flex>
+            <Text textAlign='center'>Opening Jupyter Notebook</Text>
+
+            <Box mx='auto' textAlign='center' mt={4}>
+              <Button
+                size='xs'
+                onClick={() => {
+                  setShowProgress(!showProgress);
+                }}>
+                {
+                  showProgress ? "Hide Progress" : "Show Progress"
+                }
+              </Button>
+
+              {
+                showProgress && (
+                  <>
+                    <Text>{loadingText}</Text>
+                    <Text>{progress}</Text>
+                  </>
+                )
+              }
+            </Box>
+
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Text>
+        Select the program you want to run.
+      </Text>
+
+      <SimpleGrid columns={3} spacing={10}
+        mt={4}
         pointerEvents={isDisabled ? "none" : "auto"}
         opacity={isDisabled ? 0.4 : 1}
       >
         <JupyterProgram />
       </SimpleGrid>
-    </>
+    </Box>
   );
 };

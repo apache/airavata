@@ -1,11 +1,9 @@
 import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, keyframes, TabPanels, Tab, TabPanel, Stack, Heading, IconButton, Icon } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
-import { DockerImagesList } from "../components/DockerComponents/DockerImagesList";
 import { DockerContainersList } from "../components/DockerComponents/DockerContainersList";
 import { useEffect, useState } from "react";
 import { AvailablePrograms } from "../components/DockerComponents/AvaliablePrograms";
 import { LuContainer } from "react-icons/lu";
-import { SiPaperswithcode } from "react-icons/si";
 import { AiOutlineCode } from "react-icons/ai";
 import { useInterval } from "usehooks-ts";
 import { DEBUG_DOCKER_MODE, API_BASE_URL, AUTH_BASE_URL } from "../lib/constants";
@@ -35,6 +33,7 @@ const CustomTab = ({ icon, children }) => {
       _selected={{
         bg: 'blue.500',
         color: 'white',
+        fontWeight: 'semibold',
       }}
       gap={2}
       justifyContent='flex-start'
@@ -177,7 +176,7 @@ const DockerHome = () => {
     <Box h='100vh' overflow='hidden' bg='gray.100'>
       <HeaderBox />
 
-      {
+      {/* {
         pullLoading && (
           <>
             {
@@ -192,7 +191,7 @@ const DockerHome = () => {
             }
           </>
         )
-      }
+      } */}
 
       <Tabs h='100%' isLazy>
         <Grid templateColumns='repeat(11, 1fr)' h='inherit'>
@@ -212,10 +211,8 @@ const DockerHome = () => {
                 h='10px'
                 bg={dockerUp ? 'green.500' : 'red.500'}
                 rounded='full'
-                key="asdfsfasdf"
                 as={motion.div}
                 animation={animation}
-
               ></Box>
               <Text>{dockerUp ? "Docker is running" : "Docker is down"}</Text>
             </Stack>
@@ -226,18 +223,16 @@ const DockerHome = () => {
               <TabPanel>
                 <DockerContainersList />
               </TabPanel>
-              {/* <TabPanel>
-                <DockerImagesList />
-              </TabPanel> */}
               <TabPanel>
                 <AvailablePrograms
                   isDisabled={pullLoading !== null}
+                  loadingText={pullLoading?.progressDetail?.current ? `${pullLoading?.status}` : "Pulling..."}
+                  progress={pullLoading?.progressDetail?.current ? pullLoading?.progress : 'Unknown progress...'}
                 />
               </TabPanel>
             </TabPanels>
           </GridItem>
         </Grid>
-
       </Tabs >
     </Box >
   );

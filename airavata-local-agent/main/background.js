@@ -17,8 +17,10 @@ if (isProd) {
 } else {
   app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
+
 let mainWindow;
 
+// ----- OUR CUSTOM FUNCTIONS -----
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient('csagent', process.execPath, [path.resolve(process.argv[1])]);
@@ -27,9 +29,8 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient('csagent');
 }
 
-const gotTheLock = app.requestSingleInstanceLock();
-
 const openLoginCallback = async (url) => {
+  log.info("Opening login callback");
   const rawCode = /code=([^&]*)/.exec(url) || null;
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
@@ -40,18 +41,43 @@ const openLoginCallback = async (url) => {
     await mainWindow.loadURL(`http://localhost:${port}/login-callback?code=${code}`);
   }
 };
+
+const getToken = async (url) => {
+  const rawCode = /code=([^&]*)/.exec(url) || null;
+  const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
+
+  if (code) {
+    const resp = await fetch(`https://testdrive.cybershuttle.org/auth/get-token-from-code/?code=${code}&isProd=${isProd}`);
+    console.log(resp);
+    const data = await resp.json();
+    return data;
+
+  } else {
+    return null;
+  }
+};
+
+// ----- END OF OUR CUSTOM FUNCTIONS -----
+
+
+const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
+    // catches windows and linux
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
     }
 
-    // dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop().slice(0, -1)}`);
     const url = commandLine.pop().slice(0, -1);
+    openLoginCallback(url);
+  });
+
+  app.on('open-url', async (event, url) => {
+    // catches mac
+    log.info("In open-url");
     openLoginCallback(url);
   });
 
@@ -69,7 +95,7 @@ if (!gotTheLock) {
 
     });
 
-    log.warn("App is now ready");
+    log.info("App is now ready");
 
     app.commandLine.appendSwitch('ignore-certificate-errors');
 
@@ -77,9 +103,8 @@ if (!gotTheLock) {
       log.info("Cleared storage data", data);
     });
 
-
-
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+      // open external URLs in browser, not in the app
       shell.openExternal(url);
       return { action: 'deny' };
     });
@@ -111,29 +136,16 @@ if (!gotTheLock) {
 
     } else {
       const port = process.argv[2];
-      await mainWindow.loadURL(`http://localhost:${port}/home`);
+      await mainWindow.loadURL(`http://localhost:${port}/docker-home`);
       mainWindow.webContents.openDevTools();
     }
-
-  });
-
-  app.on('open-url', async (event, url) => {
-    // this is the handler we need to target when they came back
-    openLoginCallback(url);
   });
 }
 
 app.on('window-all-closed', () => {
-  app.quit();
-});
-
-app.on("before-quit", (event) => {
-  // stop the proxy so it's not constantly running in the bkg
-  exec(KILL_CMD,
-    (error, stdout, stderr) => {
-      event.sender.send('proxy-stopped', restart);
-    });
-  process.exit(); // really let the app exit now
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
 ipcMain.on('get-version-number', (event) => {
@@ -148,30 +160,15 @@ ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`);
 });
 
-async function getToken(url) {
-  const rawCode = /code=([^&]*)/.exec(url) || null;
-  const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
-
-  if (code) {
-    const resp = await fetch(`https://md.cybershuttle.org/auth/get-token-from-code/?code=${code}&isProd=${isProd}`);
-
-    const data = await resp.json();
-    return data;
-
-  } else {
-    return null;
-  }
-}
-
 ipcMain.on('open-default-browser', (event, url) => {
   shell.openExternal(url);
 });
 
 ipcMain.on('ci-logon-logout', (event) => {
   log.warn('logging out');
-  // session.defaultSession.clearStorageData([], (data) => {
-  //   log.info("Cleared storage data", data);
-  // });
+  session.defaultSession.clearStorageData([], (data) => {
+    log.info("Cleared storage data", data);
+  });
 });
 
 ipcMain.on('ci-logon-login', async (event) => {
@@ -184,12 +181,11 @@ ipcMain.on('ci-logon-login', async (event) => {
     'web-security': false
   });
 
-  // authWindow.loadURL('https://md.cybershuttle.org/auth/redirect_login/cilogon/');
-  authWindow.loadURL("https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=https%3A%2F%2Fmd.cybershuttle.org%2Fauth%2Fcallback%2F%3Fidp_alias%3Dcilogon&scope=openid&state=asdfasdfasdf&kc_idp_hint=cilogon");
+  authWindow.loadURL('https://testdrive.cybershuttle.org/auth/redirect_login/cilogon/');
   authWindow.show();
 
   authWindow.webContents.on('will-redirect', async (e, url) => {
-    if (url.startsWith("https://md.cybershuttle.org/auth/callback/")) {
+    if (url.startsWith("https://testdrive.cybershuttle.org/auth/callback/")) {
       // hitUrl = true
       setTimeout(async () => {
         const data = await getToken(url);
@@ -251,7 +247,6 @@ const createExpWindow = (event, url, associatedId) => {
 
   window.on('close', () => {
     log.info("Window has been closed: ", associatedId);
-
 
     associatedIDToWindow[associatedId].removeAllListeners('close');
     delete associatedIDToWindow[associatedId];
@@ -342,6 +337,7 @@ const pullDockerImage = (event, imageName, callback) => {
   log.info("Pulling docker image: ", imageName);
 
   const onProgress = function (obj) {
+    log.info("Progress: ", obj);
     event.sender.send('docker-pull-progress', obj);
   };
 
@@ -419,11 +415,14 @@ ipcMain.on('stop-container', (event, containerId) => {
 ipcMain.on('start-notebook', async (event, createOptions) => {
   const imageName = "jupyter/datascience-notebook";
   log.info("Starting the notebook with imageName: ", imageName);
-  console.log("Create options: ", createOptions);
-
   // idk if we need to add "--LabApp.default_url=\"/lab/work\"" in the list of commands (rn we open up the jupyter and they need to manually open work)
   const startNotebook = () => {
-    docker.run(imageName, ["jupyter", "lab", "--NotebookApp.token=''"], null, createOptions, function (err, data, container) { })
+    log.info("Starting the notebook");
+    docker.run(imageName, ["jupyter", "lab", "--NotebookApp.token=''"], null, createOptions, function (err, data, container) {
+      if (err) {
+        console.error("Error starting the notebook: ", err);
+      }
+    })
       .on('container', function (container) {
         log.info("Container created: ", container.id);
         let err = "";
@@ -444,8 +443,10 @@ ipcMain.on('start-notebook', async (event, createOptions) => {
   try {
     const existImage = await doesImageExist(imageName);
     if (existImage) {
+      log.info("Image exists, starting the notebook");
       startNotebook();
     } else {
+      log.info("Image doesn't exist, pulling the image");
       pullDockerImage(event, imageName, startNotebook);
     }
   } catch (e) {
