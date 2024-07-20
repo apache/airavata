@@ -33,4 +33,8 @@ public class AiravataService {
             throw new RuntimeException("Error while creating Airavata client", e);
         }
     }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
 }

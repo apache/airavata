@@ -1,8 +1,8 @@
 package org.apache.airavata.agent.connection.service.controllers;
 
 import org.apache.airavata.agent.connection.service.handlers.ExperimentHandler;
+import org.apache.airavata.agent.connection.service.models.LaunchAgentRequest;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.tools.load.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,10 +32,10 @@ public class ExperimentController {
     }
 
     @PostMapping(value = "/launch", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createAndLaunchExperiment(@Valid @RequestBody Configuration experimentConfig) {
-        String experimentId = experimentHandler.createAndLaunchExperiment(experimentConfig);
+    public ResponseEntity<?> createAndLaunchExperiment(@Valid @RequestBody LaunchAgentRequest request) {
+        String experimentId = experimentHandler.createAndLaunchExperiment(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
+                .replacePath("/api/v1/exp/{id}")
                 .buildAndExpand(experimentId)
                 .encode()
                 .toUri();
