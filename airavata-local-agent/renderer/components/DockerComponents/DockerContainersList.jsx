@@ -34,12 +34,10 @@ import { useState, useEffect } from "react";
 import { DockerInspectModal } from "./DockerInspectModal";
 import { DeleteIcon } from '@chakra-ui/icons';
 import { canPerformAction } from "../../lib/utilityFuncs";
-import { API_BASE_URL, AUTH_BASE_URL, DEBUG_DOCKER_MODE } from "../../lib/constants";
 import { useInterval } from 'usehooks-ts';
 import { MdContentCopy } from 'react-icons/md';
 const DOCKER_ID_LENGTH = 12;
 const CONTAINER_FETCH_INTERVAL = 3000;
-const ACCESS_FETCH_INTERVAL = 60000;
 
 export const DockerContainersList = () => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
@@ -90,7 +88,7 @@ export const DockerContainersList = () => {
       } else {
         toast({
           title: "Success",
-          description: "Container started successfully",
+          description: "Container started successfully. The program may take a few seconds to open.",
           status: "success",
           duration: 9000,
           isClosable: true,
