@@ -20,7 +20,7 @@ def start_kernel():
     global kernel_running
 
     if kernel_running:
-        return
+        return "Kernel already running"
     # Create a new kernel manager
     km = KernelManager(kernel_name='python3')
     km.start_kernel()
@@ -53,6 +53,9 @@ def execute():
     while True:
         try:
             msg = kc.get_iopub_msg(timeout=1)
+            print("------------------")
+            print(msg)
+            print("-================-")
             content = msg["content"]
             parent_header = msg["parent_header"]
 
@@ -62,6 +65,8 @@ def execute():
             if msg["msg_type"] == "stream" and content["name"] == "stdout":
                 print(content["text"])
                 content_text = content_text + content["text"]
+            if msg["msg_type"] == "display_data":
+                return jsonify({'display': content}), 200
             if msg["msg_type"] == "error":
                 return jsonify({'error': content}), 200
             if msg["msg_type"] == "status" and execution_noticed:
@@ -83,7 +88,7 @@ def stop():
     global kernel_running
 
     if not kernel_running:
-        return
+        return "Kernel is not running to shut down"
     
     kc.stop_channels()
     km.shutdown_kernel()
