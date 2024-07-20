@@ -85,7 +85,7 @@ const DockerHome = () => {
       } else {
         toast({
           title: "Success",
-          description: "Notebook started successfully",
+          description: "Notebook started successfully. It may take a few seconds for the program to show up.",
           status: "success",
           duration: 9000,
           isClosable: true,
