@@ -13,4 +13,12 @@ public class UserContext {
     public static void setAuthzToken(AuthzToken token) {
         AUTHZ_TOKEN.set(token);
     }
+
+    public static String username() {
+        return AUTHZ_TOKEN.get().getClaimsMap().get("username");
+    }
+
+    public static String gatewayId() {
+        return AUTHZ_TOKEN.get().getClaimsMap().get("gatewayId");
+    }
 }
