@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"bytes"
+	"bufio"
 	protos "airavata-agent/protos"
 
 	"golang.org/x/crypto/ssh"
@@ -51,12 +52,52 @@ func main() {
 	go func() {
 		log.Printf("Starting jupyter kernel")
 		cmd := exec.Command("python", "/opt/jupyter/kernel.py")
-		_, err := cmd.Output()
+		//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
+		stdout, err := cmd.StdoutPipe()
+
 		if err != nil {
-			log.Printf(err.Error())
-			close(kernelChannel)
+			fmt.Println("Error creating StdoutPipe:", err)
 			return
 		}
+
+		// Get stderr pipe
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			fmt.Println("Error creating StderrPipe:", err)
+			return
+		}
+
+		// Start the command
+		if err := cmd.Start(); err != nil {
+			fmt.Println("Error starting command:", err)
+			return
+		}
+
+		// Create channels to read from stdout and stderr
+		stdoutScanner := bufio.NewScanner(stdout)
+		stderrScanner := bufio.NewScanner(stderr)
+
+		// Stream stdout
+		go func() {
+			for stdoutScanner.Scan() {
+				fmt.Printf("stdout: %s\n", stdoutScanner.Text())
+			}
+		}()
+
+		// Stream stderr
+		go func() {
+			for stderrScanner.Scan() {
+				fmt.Printf("stderr: %s\n", stderrScanner.Text())
+			}
+		}()
+
+		// Wait for the command to finish
+		if err := cmd.Wait(); err != nil {
+			fmt.Println("Error waiting for command:", err)
+			return
+		}
+
+		fmt.Println("Command finished")
 	}()
 
 	go func() {
