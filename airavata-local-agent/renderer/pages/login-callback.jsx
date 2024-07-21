@@ -17,7 +17,7 @@ const LoginCallback = () => {
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refreshToken", data.refresh_token);
 
-        window.ipc.send('write-file', '~/.csagent/token/keys.json', JSON.stringify(data));
+        window.ipc.send('write-file', '~/csagent/token/keys.json', JSON.stringify(data));
 
         router.push('/docker-home');
       }
