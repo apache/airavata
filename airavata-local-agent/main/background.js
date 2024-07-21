@@ -11,7 +11,7 @@ const isProd = process.env.NODE_ENV === 'production';
 const KILL_CMD = 'pkill -f websockify';
 const server = 'https://airavata-28o5suo4t-ganning127s-projects.vercel.app';
 const updateUrl = `${server}/update/${process.platform}/${app.getVersion()}`;
-
+let hasQuit = false;
 if (isProd) {
   serve({ directory: 'app' });
 } else {
@@ -117,6 +117,8 @@ if (!gotTheLock) {
         });
       if (choice == 1) {
         e.preventDefault();
+      } else {
+        hasQuit = true;
       }
     });
 
@@ -269,6 +271,12 @@ ipcMain.on('close-window', (event, associatedId) => {
 
 ipcMain.on('is-prod', (event) => {
   event.sender.send('is-prod-reply', isProd);
+});
+
+ipcMain.on('get-csagent-path', (event) => {
+  const homedir = require('os').homedir();
+  const userPath = path.join(homedir, 'csagent');
+  event.sender.send('got-csagent-path', userPath);
 });
 
 // ----------------- DOCKER -----------------
@@ -570,7 +578,10 @@ ipcMain.on('docker-ping', (event) => {
 
   docker.ping(function (err, data) {
     log.info("Docker pinged: ", data);
-    event.sender.send('docker-pinged', data);
+    if (!hasQuit) {
+      event.sender.send('docker-pinged', data);
+    }
+
   });
 });
 

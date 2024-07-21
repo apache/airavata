@@ -40,6 +40,8 @@ export const JupyterProgram = () => {
   const toast = useToast();
 
   useEffect(() => {
+    window.ipc.send('get-csagent-path');
+
     window.ipc.on("filepath-chosen", (filepath) => {
       setStartContainerConfig(prev => ({
         ...prev,
@@ -47,6 +49,13 @@ export const JupyterProgram = () => {
       }));
 
       console.log("Filepath chosen: ", filepath);
+    });
+
+    window.ipc.on('got-csagent-path', (path) => {
+      setStartContainerConfig(prev => ({
+        ...prev,
+        mountLocation: path
+      }));
     });
 
     return () => {
@@ -87,11 +96,9 @@ export const JupyterProgram = () => {
       },
     };
 
-    if (startContainerConfig.mountLocation !== "") {
-      createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/home`];
-      createOptions.Volumes = {
-        '/home': {}
-      };
+    createOptions.HostConfig.Binds = [`${startContainerConfig.mountLocation}:/root/csagent`];
+    createOptions.Volumes = {
+      'root/csagent': {}
     };
 
     window.ipc.send("start-notebook", createOptions);
@@ -136,13 +143,13 @@ export const JupyterProgram = () => {
               <FormLabel>Mount Location</FormLabel>
               <Stack direction='row'>
                 <Input value={startContainerConfig.mountLocation} readOnly />
-                <Button
+                {/* <Button
                   onClick={() => {
                     window.ipc.send("choose-filepath");
                   }}
-                >Choose</Button>
+                >Choose</Button> */}
               </Stack>
-              <FormHelperText>Mount location on host machine. Leave blank to not mount container on host machine.</FormHelperText>
+              <FormHelperText>Please do not edit this value, it will allow you to access remote servers.</FormHelperText>
             </FormControl>
 
             <Button
