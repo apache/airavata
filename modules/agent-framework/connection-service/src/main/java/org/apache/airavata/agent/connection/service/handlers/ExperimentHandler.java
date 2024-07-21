@@ -3,6 +3,8 @@ package org.apache.airavata.agent.connection.service.handlers;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.config.ClusterApplicationConfig;
 import org.apache.airavata.agent.connection.service.models.LaunchAgentRequest;
+import org.apache.airavata.agent.connection.service.models.LaunchAgentResponse;
+import org.apache.airavata.agent.connection.service.models.TerminateAgentResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
@@ -40,6 +42,18 @@ public class ExperimentHandler {
         this.clusterApplicationConfig = clusterApplicationConfig;
     }
 
+    public TerminateAgentResponse terminateExperiment(String experimentId) {
+        try {
+            Airavata.Client airavata = airavataService.airavata();
+            ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
+            airavata.terminateExperiment(UserContext.authzToken(), experiment.getExperimentId(), experiment.getGatewayId());
+            return new TerminateAgentResponse(experimentId, true);
+        } catch (Exception e) {
+            LOGGER.error("Error terminating experiment {}", experimentId, e);
+            throw new RuntimeException("Error terminating experiment with the id: " + experimentId, e);
+        }
+    }
+
     public ExperimentModel getExperiment(String experimentId) {
         try {
             Airavata.Client airavata = airavataService.airavata();
@@ -61,15 +75,16 @@ public class ExperimentHandler {
         }
     }
 
-    public String createAndLaunchExperiment(LaunchAgentRequest req) {
+    public LaunchAgentResponse createAndLaunchExperiment(LaunchAgentRequest req) {
         try {
-            LOGGER.info("Creating an Airavata Experiment for {}", req.getExperimentName());
-            ExperimentModel experiment = generateExperiment(req);
+            String agentId = "agent_" + UUID.randomUUID().toString();
+            LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
+            ExperimentModel experiment = generateExperiment(req, agentId);
 
             String experimentId = airavataService.airavata().createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
             airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
-            return experimentId;
+            return new LaunchAgentResponse(agentId, experimentId);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName());
             throw new RuntimeException("Error while creating the experiment with the name: " + req.getExperimentName(), e);
@@ -86,7 +101,7 @@ public class ExperimentHandler {
         }
     }
 
-    private ExperimentModel generateExperiment(LaunchAgentRequest req) throws TException {
+    private ExperimentModel generateExperiment(LaunchAgentRequest req, String agentId) throws TException {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
@@ -125,7 +140,7 @@ public class ExperimentHandler {
         List<InputDataObjectType> experimentInputs = applicationInputs.stream()
                 .peek(input -> {
                     if ("agent_id".equals(input.getName())) {
-                        input.setValue("agent_" + UUID.randomUUID());
+                        input.setValue(agentId);
 
                     } else if ("server_url".equals(input.getName())) {
                         input.setValue(airavataService.getServerUrl());

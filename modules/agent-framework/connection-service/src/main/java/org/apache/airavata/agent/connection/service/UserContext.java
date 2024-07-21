@@ -15,10 +15,10 @@ public class UserContext {
     }
 
     public static String username() {
-        return AUTHZ_TOKEN.get().getClaimsMap().get("username");
+        return AUTHZ_TOKEN.get().getClaimsMap().get("userName");
     }
 
     public static String gatewayId() {
-        return AUTHZ_TOKEN.get().getClaimsMap().get("gatewayId");
+        return AUTHZ_TOKEN.get().getClaimsMap().get("gatewayID");
     }
 }
