@@ -188,7 +188,7 @@ ipcMain.on('ci-logon-login', async (event) => {
 
         log.info("Got the token: ", data);
         event.sender.send('ci-logon-success', data);
-        writeFile(event, TOKEN_FILE, JSON.stringify(data));
+        writeFile(event, '~/csagent/token/keys.json', JSON.stringify(data));
         authWindow.close();
       }, 2000);
 
@@ -590,7 +590,6 @@ ipcMain.on('inspect-image', (event, imageId) => {
 
   let image = docker.getImage(imageId);
   image.inspect(function (err, data) {
-    console.log(data);
     event.sender.send('image-inspected', data);
   });
 });
