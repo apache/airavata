@@ -1,4 +1,14 @@
+import sys
+sys.path.append('/')
+
 c = get_config()
+
+c.InteractiveShellApp.exec_lines = [
+    "import sys"
+    "sys.path.append('/')"
+    "import airavata_magics",
+    "airavata_magics.load_ipython_extension(get_ipython())"
+]
 
 # Set the IP address Jupyter Lab will listen on
 c.ServerApp.ip = '0.0.0.0'

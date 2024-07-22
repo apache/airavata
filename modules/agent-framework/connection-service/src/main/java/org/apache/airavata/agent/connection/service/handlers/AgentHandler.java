@@ -224,7 +224,7 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
                     case JUPYTEREXECUTIONRESPONSE -> {
                         handleJupyterExecutionResponse(request.getJupyterExecutionResponse());
                     }
-                    case FILEINFOREQ -> {
+                    case READDIRREQ -> {
                         handleReadDirRequest(request.getReadDirReq(), responseObserver);
                     }
                 }

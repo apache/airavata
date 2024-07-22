@@ -17,7 +17,7 @@
 
 syntax = "proto3";
 
-package pb;
+package org.apache.airavata.fuse;
 
 import "google/protobuf/timestamp.proto";
 

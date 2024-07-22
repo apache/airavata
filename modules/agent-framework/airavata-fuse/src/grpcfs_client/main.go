@@ -57,7 +57,7 @@ func main() {
 	mountPoint, err := filepath.Abs(mountPoint)
 	handleErrIfAny(err, "Invalid mount point")
 
-	server, err := grpcfs.FuseServer("127.0.0.1:50000", servePath, logger)
+	server, err := grpcfs.FuseServer("127.0.0.1:19900", servePath, logger)
 	handleErrIfAny(err, "Error starting fuse server")
 
 	cfg := &fuse.MountConfig{
