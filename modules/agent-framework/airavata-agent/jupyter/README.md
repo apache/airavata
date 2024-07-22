@@ -42,3 +42,11 @@ twine upload dist/*
 
 
 
+### Jupyter container setup
+
+#### Build
+docker build --platform linux/x86_64 -t dimuthuupe/airavata-jupyter-lab .
+
+#### Run
+docker run --privileged --device /dev/fuse  --platform linux/x86_64 --security-opt apparmor:unconfined -p 18888:8888 dimuthuupe/airavata-jupyter-lab 
+
