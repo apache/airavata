@@ -1,14 +1,5 @@
 import {
-  Button, Tooltip, Box, HStack, Table,
-  Thead,
-  Tbody,
-  Text,
-  Tr,
-  Th,
-  Td,
-  useDisclosure,
-  TableContainer,
-  useToast, Modal,
+  Button, Box, Text, useDisclosure, useToast, Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -18,13 +9,9 @@ import {
   Input,
   FormControl,
   FormLabel,
-  Stack,
-  IconButton,
-  FormHelperText,
-  Heading,
-  SimpleGrid,
-  Flex,
-  Img,
+  Stack, FormHelperText,
+  Heading, Flex,
+  Img
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
@@ -60,6 +47,7 @@ export const JupyterProgram = () => {
 
     return () => {
       window.ipc.removeAllListeners("filepath-chosen");
+      window.ipc.removeAllListeners("got-csagent-path");
     };
   }, []);
 
@@ -114,7 +102,6 @@ export const JupyterProgram = () => {
           <ModalHeader>Create a Jupyter Notebook</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-
             <FormControl>
               <FormLabel>Container Name</FormLabel>
               <Input value={startContainerConfig.name} onChange={(e) => {
@@ -142,12 +129,7 @@ export const JupyterProgram = () => {
             <FormControl mt={4}>
               <FormLabel>Mount Location</FormLabel>
               <Stack direction='row'>
-                <Input value={startContainerConfig.mountLocation} readOnly />
-                {/* <Button
-                  onClick={() => {
-                    window.ipc.send("choose-filepath");
-                  }}
-                >Choose</Button> */}
+                <Input value={startContainerConfig.mountLocation} readOnly isDisabled />
               </Stack>
               <FormHelperText>Please do not edit this value, it will allow you to access remote servers.</FormHelperText>
             </FormControl>

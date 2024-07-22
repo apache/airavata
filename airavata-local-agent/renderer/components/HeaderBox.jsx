@@ -41,6 +41,8 @@ export const HeaderBox = ({ name, email }) => {
   return (
     <Box py={1} px={2} bg='gray.100'>
 
+      <title>Cybershuttle Local Agent</title>
+
       <Modal isOpen={isOpen} onClose={onClose} size='xl'>
         <ModalOverlay />
         <ModalContent>

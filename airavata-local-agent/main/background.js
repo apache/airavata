@@ -61,14 +61,22 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (event, commandLine, workingDirectory, additionalData) => {
     // catches windows and linux
+    log.error("In second-instance");
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
     }
 
-    const url = commandLine.pop().slice(0, -1);
+    log.info("Command line: ", commandLine);
+
+    log.info('Additional data: ', additionalData);
+
+    const url = commandLine.pop();
+
+    log.info("URL: ", url);
+
     openLoginCallback(url);
   });
 
@@ -342,7 +350,7 @@ ipcMain.on('ensure-token', (event) => {
       log.error("Token doesn't exist, not checking");
       return;
     }
-  }, 60000 * 5); // every 5 minutes
+  }, 60000); // every minute
 });
 
 // ----------------- DOCKER -----------------
@@ -400,8 +408,9 @@ const getContainers = (event) => {
         }
       }
     }
-
-    event.sender.send('got-containers', containers);
+    if (!event.sender.isDestroyed()) {
+      event.sender.send('got-containers', containers);
+    }
   });
 };
 
@@ -638,7 +647,11 @@ ipcMain.on('get-container-ports', async (event, containers) => {
       portsCache[containers[i].Id] = tempMappings;
     }
   }
-  event.sender.send('got-container-ports', ports);
+
+  if (!event.sender.isDestroyed()) {
+    event.sender.send('got-container-ports', ports);
+  }
+
 
   /*
     Ports looks like:
@@ -655,13 +668,13 @@ ipcMain.on('get-container-ports', async (event, containers) => {
 
 ipcMain.on('docker-ping', (event) => {
   log.info("Pinging docker");
-
   docker.ping(function (err, data) {
     log.info("Docker pinged: ", data);
-    if (!hasQuit) {
+    if (!event.sender.isDestroyed()) {
       event.sender.send('docker-pinged', data);
+    } else {
+      log.error("Sender is destroyed");
     }
-
   });
 });
 
@@ -678,7 +691,9 @@ ipcMain.on('get-should-show-runs', (event, allContainers) => {
     }
   }
 
-  event.sender.send('got-should-show-runs', shouldShowRuns);
+  if (!event.sender.isDestroyed()) {
+    event.sender.send('got-should-show-runs', shouldShowRuns);
+  }
 });
 
 

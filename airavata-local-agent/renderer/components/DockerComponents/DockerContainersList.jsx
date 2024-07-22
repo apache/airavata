@@ -1,5 +1,7 @@
 import {
-  Button, Tooltip, Box, HStack, Table,
+  Button,
+  Box,
+  Table,
   Thead,
   Tbody,
   Text,
@@ -15,17 +17,9 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Input,
-  FormControl,
-  FormLabel,
   Stack,
   IconButton,
-  FormHelperText,
-  Heading,
-  SimpleGrid,
   Flex,
-  Img,
-  Progress,
   Switch,
   Link,
   Icon,
@@ -164,15 +158,12 @@ export const DockerContainersList = ({ setTabIndex }) => {
     };
   }, [showOnlyCybershuttle]);
 
-
   useInterval(() => {
     getContainers();
   }, CONTAINER_FETCH_INTERVAL);
 
-
   return (
     <>
-
       <Modal isOpen={InspectModal.isOpen} onClose={InspectModal.onClose} size='4xl'>
         <ModalOverlay />
         <ModalContent>
@@ -181,7 +172,6 @@ export const DockerContainersList = ({ setTabIndex }) => {
           <ModalBody>
             <DockerInspectModal containerId={activeContainer.Id} />
           </ModalBody>
-
           <ModalFooter>
           </ModalFooter>
         </ModalContent>
@@ -215,12 +205,9 @@ export const DockerContainersList = ({ setTabIndex }) => {
             >
               Cancel
             </Button>
-
           </ModalBody>
         </ModalContent>
       </Modal>
-
-
 
       <Box>
         <Flex alignItems='center' gap={2} justifyContent='flex-end' mb={4}>
@@ -363,7 +350,6 @@ export const DockerContainersList = ({ setTabIndex }) => {
                             setDeleteContainer(container);
                             DeleteModal.onOpen();
                           }}
-                          //handleRemoveContainer(container.Id)
                           colorScheme='red'
                           variant='outline'
                           isDisabled={!canPerformAction("remove", container.State) || isLoadingDelete}
