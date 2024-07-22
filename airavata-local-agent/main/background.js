@@ -515,7 +515,7 @@ ipcMain.on('stop-container', (event, containerId) => {
 
 
 ipcMain.on('start-notebook', async (event, createOptions) => {
-  const imageName = "dimuthuupe/airavata-jupyter-lab";
+  const imageName = "airavata/airavata-jupyter-lab";
   log.info("Starting the notebook with imageName: ", imageName);
   const startNotebook = () => {
     log.info("Starting the notebook");
