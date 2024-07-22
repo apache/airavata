@@ -92,9 +92,9 @@ message InodeAtt {
 	uint64 Size = 1;
 	uint32 Nlink = 2;
 	uint32 FileMode = 3;
-	google.protobuf.Timestamp Atime = 5;
-	google.protobuf.Timestamp Mtime = 6;
-	google.protobuf.Timestamp Ctime = 7;
+	google.protobuf.Timestamp Atime = 4;
+	google.protobuf.Timestamp Mtime = 5;
+	google.protobuf.Timestamp Ctime = 6;
 }
 
 // Request Bodies

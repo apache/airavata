@@ -6,6 +6,8 @@ import org.apache.airavata.agent.*;
 import org.apache.airavata.agent.JupyterExecutionResponse;
 import org.apache.airavata.agent.connection.service.models.*;
 import org.apache.airavata.agent.connection.service.models.JupyterExecutionRequest;
+import org.apache.airavata.agent.connection.service.services.AiravataFileService;
+import org.apache.airavata.fuse.ReadDirReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,12 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
 
     private final Map<String, CommandExecutionResponse> COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+
+    private final AiravataFileService airavataFileService;
+
+    public AgentHandler(AiravataFileService airavataFileService) {
+        this.airavataFileService = airavataFileService;
+    }
 
     public AgentInfoResponse isAgentUp(String agentId) {
 
@@ -181,10 +189,15 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
         JUPYTER_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
     }
 
+    private void handleReadDirRequest(ReadDirReq readDirReq, StreamObserver<ServerMessage> responseObserver) {
+        airavataFileService.handleReadDirRequest(readDirReq, responseObserver);
+    }
+
     private String generateStreamId() {
         // Generate a unique ID for each stream
         return java.util.UUID.randomUUID().toString();
     }
+
     @Override
     public StreamObserver<AgentMessage> createMessageBus(StreamObserver<ServerMessage> responseObserver) {
 
@@ -210,6 +223,9 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
                     }
                     case JUPYTEREXECUTIONRESPONSE -> {
                         handleJupyterExecutionResponse(request.getJupyterExecutionResponse());
+                    }
+                    case FILEINFOREQ -> {
+                        handleReadDirRequest(request.getReadDirReq(), responseObserver);
                     }
                 }
             }
