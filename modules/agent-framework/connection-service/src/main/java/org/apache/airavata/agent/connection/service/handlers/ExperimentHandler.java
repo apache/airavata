@@ -7,14 +7,12 @@ import org.apache.airavata.agent.connection.service.models.LaunchAgentResponse;
 import org.apache.airavata.agent.connection.service.models.TerminateAgentResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -105,7 +102,7 @@ public class ExperimentHandler {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
-        String projectId = extractDefaultProjectId(airavataClient);
+        String projectId = airavataService.extractDefaultProjectId(airavataClient);
         String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getRemoteCluster());
 
         ExperimentModel experimentModel = new ExperimentModel();
@@ -121,7 +118,7 @@ public class ExperimentHandler {
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
         computationalResourceSchedulingModel.setWallTimeLimit(req.getWallTime());
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
-        computationalResourceSchedulingModel.setResourceHostId(extractComputeResourceId(airavataClient, req.getRemoteCluster()));
+        computationalResourceSchedulingModel.setResourceHostId(airavataService.extractComputeResourceId(airavataClient, req.getRemoteCluster()));
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
@@ -154,42 +151,6 @@ public class ExperimentHandler {
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());
 
         return experimentModel;
-    }
-
-    private String extractDefaultProjectId(Airavata.Client airavataClient) throws TException {
-        int limit = 10;
-        int offset = 0;
-
-        while (true) {
-            List<Project> userProjects = airavataClient.getUserProjects(UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
-
-            // Check for the "Default Project"
-            Optional<Project> defaultProject = userProjects.stream()
-                    .filter(project -> "Default Project".equals(project.getName()))
-                    .findFirst();
-
-            if (defaultProject.isPresent()) {
-                return defaultProject.get().getProjectID();
-            }
-            if (userProjects.size() < limit) {
-                break;
-            }
-            offset += limit;
-        }
-
-        throw new RuntimeException("Could not find a Default project for the user: " + UserContext.username());
-    }
-
-    private String extractComputeResourceId(Airavata.Client airavataClient, String remoteCluster) throws TException {
-        List<GroupResourceProfile> groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
-
-        return groupResourceList.stream()
-                .filter(profile -> "Default".equals(profile.getGroupResourceProfileName()))
-                .flatMap(profile -> profile.getComputePreferences().stream())
-                .map(GroupComputeResourcePreference::getComputeResourceId)
-                .filter(computeResourceId -> computeResourceId.startsWith(remoteCluster))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find a Compute Resource in the Default group resource profile for the user: " + UserContext.username()));
     }
 
 }
