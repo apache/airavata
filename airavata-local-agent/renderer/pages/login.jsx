@@ -152,9 +152,11 @@ const Login = () => {
             {
               isProd ? (
                 <Button colorScheme='blue' w='full' mt={4}
-                  as='a'
-                  href={`https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`}
-                  target="_blank"
+
+                  onClick={() => {
+                    setLoading(true);
+                    window.open(`https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`, '_blank');
+                  }}
                   isDisabled={loading}
                 > {
                     loading && <Spinner mr={2} />

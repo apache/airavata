@@ -27,10 +27,8 @@ const Home = () => {
 
     window.ipc.on('docker-pinged', (data) => {
       if (!data) {
-        console.log('Docker is not running');
         setDockerRunning(false);
       } else {
-        console.log('Docker is running');
         setDockerRunning(true);
       }
     });
@@ -91,8 +89,6 @@ const Home = () => {
             </Alert>
           )
         }
-
-
 
         <Text mt={2}>Cybershuttle Local Agent, developed by the Cybershuttle project, empowers researchers by providing seamless access to a comprehensive range of computational resources. The agent bridges the gap between local, institutional, and national-scale computing resources, enhancing productivity and collaboration in scientific research. By integrating diverse computing environments into a unified interface, Apache Airavata eliminates traditional barriers, enabling researchers to focus on innovation and discovery.
         </Text>

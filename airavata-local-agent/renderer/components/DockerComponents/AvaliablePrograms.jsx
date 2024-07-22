@@ -16,16 +16,12 @@ import { useState } from "react";
 export const AvailablePrograms = ({ isDisabled, loadingText, progress }) => {
   const [showProgress, setShowProgress] = useState(false);
 
-
   return (
     <Box p={4}>
-
-      {/* the modal should show only when isDisabled is true */}
 
       <Modal isOpen={isDisabled}>
         <ModalOverlay />
         <ModalContent>
-          {/* <ModalHeader>Loading...</ModalHeader> */}
           <ModalBody>
             <Flex justifyContent='center'>
               <ReactLoading type='bubbles' color="black" />
@@ -47,7 +43,7 @@ export const AvailablePrograms = ({ isDisabled, loadingText, progress }) => {
                 showProgress && (
                   <>
                     <Text>{loadingText}</Text>
-                    <Text>{progress}</Text>
+                    <Text mt={2}>{progress}</Text>
                   </>
                 )
               }

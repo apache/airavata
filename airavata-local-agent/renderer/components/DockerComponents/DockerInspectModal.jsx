@@ -44,9 +44,7 @@ export const DockerInspectModal = ({ containerId }) => {
   }
 
   return (
-
     <Stack spacing={2} direction='column' divider={<Divider />}>
-
 
       <Flex gap={2} align='center'>
         <Text fontWeight='bold'>Name:</Text>

@@ -123,23 +123,6 @@ const DockerHome = () => {
     <Box h='100vh' overflow='hidden' bg='gray.100'>
       <HeaderBox />
 
-      {/* {
-        pullLoading && (
-          <>
-            {
-              pullLoading?.progressDetail?.current ? (
-                <>
-                  <Progress value={pullLoading.progressDetail.current} max={pullLoading.progressDetail.total} />
-                  <Text textAlign='center'>{pullLoading.status}</Text>
-                </>
-              ) : (
-                <Progress isIndeterminate />
-              )
-            }
-          </>
-        )
-      } */}
-
       <Tabs h='100%' index={tabIndex} onChange={(index) => setTabIndex(index)} isLazy>
         <Grid templateColumns='repeat(20, 1fr)' h='inherit'>
           <GridItem colSpan={4} bg='gray.100' h='inherit'>
