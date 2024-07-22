@@ -3,14 +3,11 @@ import { app, ipcMain, dialog, session, Menu, shell } from 'electron';
 const url = require('node:url');
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
-const { exec, spawn } = require('child_process');
 const fs = require('fs');
 import log from 'electron-log/main';
 
 const isProd = process.env.NODE_ENV === 'production';
-const KILL_CMD = 'pkill -f websockify';
-const server = 'https://airavata-28o5suo4t-ganning127s-projects.vercel.app';
-const updateUrl = `${server}/update/${process.platform}/${app.getVersion()}`;
+
 let hasQuit = false;
 if (isProd) {
   serve({ directory: 'app' });
@@ -19,6 +16,8 @@ if (isProd) {
 }
 
 let mainWindow;
+const TOKEN_FILE = '~/csagent/token/keys.json';
+const BASE_URL = 'https://testdrive.cybershuttle.org';
 
 // ----- OUR CUSTOM FUNCTIONS -----
 if (process.defaultApp) {
@@ -47,7 +46,7 @@ const getToken = async (url) => {
   const code = (rawCode && rawCode.length > 1) ? rawCode[1] : null;
 
   if (code) {
-    const resp = await fetch(`https://testdrive.cybershuttle.org/auth/get-token-from-code/?code=${code}&isProd=${isProd}`);
+    const resp = await fetch(`${BASE_URL}/auth/get-token-from-code/?code=${code}&isProd=${isProd}`);
     const data = await resp.json();
     return data;
   } else {
@@ -179,18 +178,18 @@ ipcMain.on('ci-logon-login', async (event) => {
     'web-security': false
   });
 
-  authWindow.loadURL('https://testdrive.cybershuttle.org/auth/redirect_login/cilogon/');
+  authWindow.loadURL(`${BASE_URL}/auth/redirect_login/cilogon/`);
   authWindow.show();
 
   authWindow.webContents.on('will-redirect', async (e, url) => {
-    if (url.startsWith("https://testdrive.cybershuttle.org/auth/callback/")) {
+    if (url.startsWith(`${BASE_URL}/auth/callback/`)) {
       // hitUrl = true
       setTimeout(async () => {
         const data = await getToken(url);
 
         log.info("Got the token: ", data);
         event.sender.send('ci-logon-success', data);
-        writeFile(event, '~/csagent/token/keys.json', JSON.stringify(data));
+        writeFile(event, TOKEN_FILE, JSON.stringify(data));
         authWindow.close();
       }, 2000);
 
@@ -277,6 +276,73 @@ ipcMain.on('get-csagent-path', (event) => {
   const homedir = require('os').homedir();
   const userPath = path.join(homedir, 'csagent');
   event.sender.send('got-csagent-path', userPath);
+});
+
+async function getAccessTokenFromRefreshToken(refreshToken) {
+  const respForRefresh = await fetch(`${BASE_URL}/auth/get-token-from-refresh-token?refresh_token=${refreshToken}`);
+
+  if (!respForRefresh.ok) {
+    // throw new Error("Failed to fetch new access token (refresh token)");
+    return null;
+  }
+
+  const data = await respForRefresh.json();
+  return data;
+};
+
+async function checkAccessToken(event, url, options, refreshToken) {
+  log.info("Checking if token exists");
+  let resp = await fetch(url, options);
+
+  if (!resp.ok) {
+    log.warn("Access token is invalid, trying to get a new one");
+    const data = await getAccessTokenFromRefreshToken(refreshToken);
+
+    if (!data.access_token || !data.refresh_token) {
+      return null;
+    }
+
+    writeFile(event, TOKEN_FILE, JSON.stringify(data));
+  };
+
+  log.info("Access token is valid");
+  return resp;
+}
+
+ipcMain.on('ensure-token', (event) => {
+  // create an interval to check if the token in TOKEN_FILE exists
+  log.info("Starting loop to ensure token exists");
+  const interval = setInterval(async () => {
+    const data = readFile(TOKEN_FILE);
+    if (data) {
+      const json = JSON.parse(data);
+      const accessToken = json.access_token;
+      const refreshToken = json.refresh_token;
+      const url = `${BASE_URL}/api/`;
+      const options = {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      };
+
+      try {
+        const resp = await checkAccessToken(event, url, options, refreshToken);
+        if (resp) {
+          event.sender.send('ensure-token-result', true);
+        } else {
+          log.error("Could not get access token from refresh token, stopping loop.");
+          clearInterval(interval);
+          event.sender.send('ensure-token-result', false);
+        }
+      } catch (err) {
+        log.error("Error: ", err);
+      }
+    } else {
+      log.error("Token doesn't exist, not checking");
+      return;
+    }
+  }, 60000 * 5); // every 5 minutes
 });
 
 // ----------------- DOCKER -----------------
@@ -379,7 +445,6 @@ ipcMain.on('start-container', (event, containerId) => {
 
   let container = docker.getContainer(containerId);
 
-
   container.start(async function (err, data) {
     log.info("Starting container: ", containerId);
 
@@ -392,8 +457,6 @@ ipcMain.on('start-container', (event, containerId) => {
         let cont = await container.inspect();
         let port = cont.NetworkSettings.Ports['8888/tcp'][0].HostPort;
         showWindowWhenReady(event, containerId, port);
-
-
       } catch (e) {
         log.error("Error: ", e);
         err = e.message;
@@ -402,8 +465,32 @@ ipcMain.on('start-container', (event, containerId) => {
       event.sender.send('container-started', containerId, error);
     }
   });
+});
 
+ipcMain.on('show-window-from-id', (event, containerId) => {
+  log.info("Showing the window with containerId: ", containerId);
 
+  let container = docker.getContainer(containerId);
+  container.inspect(async function (err, data) {
+    if (err) {
+      log.error("Error inspecting container: ", err);
+    } else {
+      let port = data.NetworkSettings.Ports['8888/tcp'][0].HostPort;
+      let url = `http://localhost:${port}/lab`;
+
+      // ping the URL first, if it's not up, don't show the window
+      fetch(url)
+        .then((response) => {
+          if (response.status === 200) {
+            log.info("Got a 200 response from the popup, showing the window");
+            createExpWindow(event, url, containerId);
+          }
+        })
+        .catch((error) => {
+          log.error("Error: ", error);
+        });
+    }
+  });
 });
 
 
@@ -585,6 +672,22 @@ ipcMain.on('docker-ping', (event) => {
   });
 });
 
+ipcMain.on('get-should-show-runs', (event, allContainers) => {
+  // return a list same length as runningContainers with true or false, 
+  // true if container is running and is not in associatedIdToWindow
+
+  let shouldShowRuns = {};
+  for (let i = 0; i < allContainers.length; i++) {
+    if (allContainers[i].State === "running" && !associatedIDToWindow[allContainers[i].Id]) {
+      shouldShowRuns[allContainers[i].Id] = true;
+    } else {
+      shouldShowRuns[allContainers[i].Id] = false;
+    }
+  }
+
+  event.sender.send('got-should-show-runs', shouldShowRuns);
+});
+
 
 // ----------------- IMAGES -----------------
 ipcMain.on('get-all-images', (event) => {
@@ -613,24 +716,25 @@ function createIfNotExists(path) {
   }
 }
 
-ipcMain.on('read-file', (event, userPath) => {
-  log.info("Reading file: ", path);
-
-  if (userPath.startsWith("~")) {
-    const homedir = require('os').homedir();
-    userPath = path.join(homedir, userPath.substring(1));
-  }
-
-  fs.readFile(userPath, 'utf8', (err, data) => {
-    if (err) {
-      log.error("Error reading file: ", err);
-      event.sender.send('file-read', err);
-    } else {
-      log.info("File read: ", data);
-      event.sender.send('file-read', data);
+const readFile = (userPath) => {
+  log.info("Reading file: ", userPath);
+  try {
+    if (userPath.startsWith("~")) {
+      const homedir = require('os').homedir();
+      userPath = path.join(homedir, userPath.substring(1));
     }
-  });
+    const data = fs.readFileSync(userPath, 'utf8');
+    return data;
+  } catch (e) {
+    return null;
+  }
+};
+
+ipcMain.on('read-file', (event) => {
+  const data = readFile(TOKEN_FILE);
+  event.sender.send('file-read', data);
 });
+
 
 const writeFile = async (event, userPath, data) => {
   log.info("Writing to file: ", userPath, " with data: ", data);
