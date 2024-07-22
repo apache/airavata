@@ -2,15 +2,12 @@ package org.apache.airavata.agent.connection.service.controllers;
 
 import org.apache.airavata.agent.connection.service.handlers.ExperimentHandler;
 import org.apache.airavata.agent.connection.service.models.LaunchAgentRequest;
+import org.apache.airavata.agent.connection.service.models.LaunchAgentResponse;
+import org.apache.airavata.agent.connection.service.models.TerminateAgentResponse;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -32,14 +29,13 @@ public class ExperimentController {
     }
 
     @PostMapping(value = "/launch", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createAndLaunchExperiment(@Valid @RequestBody LaunchAgentRequest request) {
-        String experimentId = experimentHandler.createAndLaunchExperiment(request);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .replacePath("/api/v1/exp/{id}")
-                .buildAndExpand(experimentId)
-                .encode()
-                .toUri();
+    public ResponseEntity<LaunchAgentResponse> createAndLaunchExperiment(@Valid @RequestBody LaunchAgentRequest request) {
+        LaunchAgentResponse agentResponse = experimentHandler.createAndLaunchExperiment(request);
+        return ResponseEntity.ok(agentResponse);
+    }
 
-        return ResponseEntity.created(location).build();
+    @GetMapping(value = "/terminate/{expId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TerminateAgentResponse> terminateExperiment(@PathVariable("expId") String expId) {
+        return ResponseEntity.ok(experimentHandler.terminateExperiment(expId));
     }
 }
