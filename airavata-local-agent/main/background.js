@@ -533,14 +533,7 @@ ipcMain.on('start-notebook', async (event, createOptions) => {
   };
 
   try {
-    const existImage = await doesImageExist(imageName);
-    if (existImage) {
-      log.info("Image exists, starting the notebook");
-      startNotebook();
-    } else {
-      log.info("Image doesn't exist, pulling the image");
-      pullDockerImage(event, imageName, startNotebook);
-    }
+    pullDockerImage(event, imageName, startNotebook);
   } catch (e) {
     console.log(e);
   }
