@@ -2,7 +2,7 @@
   "private": true,
   "name": "cybershuttle-local-agent",
   "description": "User interface for Apache Airavata.",
-  "version": "2.1.0",
+  "version": "2.0.6",
   "author": "Ganning Xu",
   "main": "app/background.js",
   "scripts": {
