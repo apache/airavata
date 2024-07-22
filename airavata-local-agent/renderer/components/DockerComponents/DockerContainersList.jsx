@@ -39,7 +39,7 @@ import { MdContentCopy } from 'react-icons/md';
 const DOCKER_ID_LENGTH = 12;
 const CONTAINER_FETCH_INTERVAL = 3000;
 
-export const DockerContainersList = () => {
+export const DockerContainersList = ({ setTabIndex }) => {
   const [runningContainers, setRunningContainers] = useState([]); // [container1, container2, ...
   const [isLoadingStart, setIsLoadingStart] = useState(false);
   const [isLoadingStop, setIsLoadingStop] = useState(false);
@@ -48,6 +48,7 @@ export const DockerContainersList = () => {
   const [portMapping, setPortMapping] = useState({});
   const [showOnlyCybershuttle, setShowOnlyCybershuttle] = useState(true);
   const [deleteContainer, setDeleteContainer] = useState({});
+  const [shouldShowMapping, setShouldShowMapping] = useState({});
   const InspectModal = useDisclosure();
   const DeleteModal = useDisclosure();
   const toast = useToast();
@@ -121,8 +122,8 @@ export const DockerContainersList = () => {
       setIsLoadingDelete(false);
     });
 
-    window.ipc.on("got-containers", (runningContainers) => {
-      if (runningContainers === null) {
+    window.ipc.on("got-containers", (allContainers) => {
+      if (allContainers === null) {
         toast({
           title: "Error getting running containers",
           description: "Please make sure docker is installed and running properly.",
@@ -133,20 +134,24 @@ export const DockerContainersList = () => {
         return;
       }
 
-
-      window.ipc.send("get-container-ports", runningContainers);
+      window.ipc.send("get-container-ports", allContainers);
+      window.ipc.send("get-should-show-runs", allContainers);
 
       if (showOnlyCybershuttle) {
-        runningContainers = runningContainers.filter(container => {
+        allContainers = allContainers.filter(container => {
           return container.Labels['cybershuttle-local-agent'] === 'true';
         });
       };
 
-      setRunningContainers(runningContainers);
+      setRunningContainers(allContainers);
     });
 
     window.ipc.on('got-container-ports', (ports) => {
       setPortMapping(ports);
+    });
+
+    window.ipc.on('got-should-show-runs', (shouldShows) => {
+      setShouldShowMapping(shouldShows);
     });
 
     return () => {
@@ -155,6 +160,7 @@ export const DockerContainersList = () => {
       window.ipc.removeAllListeners("container-removed");
       window.ipc.removeAllListeners("got-containers");
       window.ipc.removeAllListeners("got-container-ports");
+      window.ipc.removeAllListeners("got-should-show-runs");
     };
   }, [showOnlyCybershuttle]);
 
@@ -321,6 +327,21 @@ export const DockerContainersList = () => {
                         }
 
                         {
+                          shouldShowMapping[container.Id] && (
+                            <Button
+                              mt={2}
+                              onClick={() => {
+                                window.ipc.send("show-window-from-id", container.Id);
+                              }}
+                              colorScheme='blue'
+                              size='xs'
+                            >
+                              Show
+                            </Button>
+                          )
+                        }
+
+                        {
                           canPerformAction("stop", container.State) && (
                             <>
                               <Button
@@ -362,14 +383,14 @@ export const DockerContainersList = () => {
 
       {
         runningContainers.length === 0 && (
-          <Box maxW='400px' mx='auto' textAlign='center' color='gray.500' mt={4}>
+          <Box mx='auto' textAlign='center' color='gray.500' mt={4}>
             <Text>No {
-              showOnlyCybershuttle ? "Cybershuttle" : ""
-            } containers running.
+              showOnlyCybershuttle ? "application" : ""
+            } containers are currently running.
             </Text>
 
             <Text mt={2} fontSize='sm'>
-              Containers are essentially running programs. You'll see them here once you start a program.
+              <Text as={Link} bg='blue.100' px={2} pb={1} rounded='md' color='blue.800' onClick={() => setTabIndex(0)}>Launch a local app</Text> to start using Cybershuttle!
             </Text>
           </Box >
         )

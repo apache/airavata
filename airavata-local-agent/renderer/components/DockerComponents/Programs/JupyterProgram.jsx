@@ -180,10 +180,10 @@ export const JupyterProgram = () => {
         <Stack spacing={2}>
           <Flex align='center' gap={2}>
             <Img src="/images/jupyter_logo.png" alt="Jupyter Logo" boxSize='30px' />
-            <Heading size='md'>Jupyter Notebook</Heading>
+            <Heading size='md'>Airavata Jupyter Lab</Heading>
 
           </Flex>
-          <Text>Create a new container with a dockerized Jupyter Notebook.</Text>
+          <Text>Allows for both remote and local execution.</Text>
         </Stack>
       </Box>
     </>

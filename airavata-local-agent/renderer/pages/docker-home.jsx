@@ -1,4 +1,4 @@
-import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, keyframes, TabPanels, Tab, TabPanel, Stack, Heading, IconButton, Icon } from "@chakra-ui/react";
+import { Grid, GridItem, Tabs, useToast, Box, Progress, Text, keyframes, TabPanels, Tab, TabPanel, Stack, Heading, IconButton, Icon, Alert, AlertIcon } from "@chakra-ui/react";
 import { HeaderBox } from "../components/HeaderBox";
 import { DockerContainersList } from "../components/DockerComponents/DockerContainersList";
 import { useEffect, useState } from "react";
@@ -9,8 +9,7 @@ import { useInterval } from "usehooks-ts";
 import { DEBUG_DOCKER_MODE, API_BASE_URL, AUTH_BASE_URL, TOKEN_FILE } from "../lib/constants";
 import { motion } from 'framer-motion';
 
-const ACCESS_FETCH_INTERVAL = 60000;
-const PING_DOCKER_INTERVAL = 5000;
+const PING_DOCKER_INTERVAL = 10000;
 
 const animationKeyframes = keyframes`
   0% { opacity: 1 }
@@ -50,10 +49,14 @@ const CustomTab = ({ icon, children }) => {
 const DockerHome = () => {
   const [pullLoading, setPullLoading] = useState(null);
   const [dockerUp, setDockerUp] = useState(false);
+  const [error, setError] = useState(null);
+  const [tabIndex, setTabIndex] = useState(1);
   const toast = useToast();
 
   useEffect(() => {
     pingDocker();
+
+    window.ipc.send('ensure-token');
 
     window.ipc.on('docker-pull-progress', (progress) => {
       setPullLoading(progress);
@@ -93,82 +96,24 @@ const DockerHome = () => {
       }
     });
 
+    window.ipc.on('ensure-token-result', (isValid) => {
+      if (!isValid) {
+        setError("You may have been logged out or inactive for too long. Please login again.");
+      }
+    });
 
     return () => {
       window.ipc.removeAllListeners("notebook-started");
+      window.ipc.removeAllListeners("docker-pinged");
       window.ipc.removeAllListeners('docker-pull-progress');
       window.ipc.removeAllListeners('docker-pull-finished');
+      window.ipc.removeAllListeners('ensure-token-result');
     };
   }, []);
 
   const pingDocker = () => {
     window.ipc.send("docker-ping");
   };
-
-  async function getAccessTokenFromRefreshToken(refreshToken) {
-    const respForRefresh = await fetch(`${AUTH_BASE_URL}/get-token-from-refresh-token?refresh_token=${refreshToken}`);
-
-    if (!respForRefresh.ok) {
-      throw new Error("Failed to fetch new access token (refresh token)");
-    }
-
-    const data = await respForRefresh.json();
-    return data;
-  };
-
-  async function checkAccessToken(url, options) {
-    let resp = await fetch(url, options);
-
-    if (!resp.ok) {
-      let refreshToken = localStorage.getItem('refreshToken');
-
-      const data = await getAccessTokenFromRefreshToken(refreshToken);
-
-      if (!data.access_token || !data.refresh_token) {
-        throw new Error("Failed to fetch new access token (refresh token)");
-      }
-
-      window.ipc.send('write-file', TOKEN_FILE, JSON.stringify(data));
-
-      localStorage.setItem('accessToken', data.access_token);
-      localStorage.setItem('refreshToken', data.refresh_token);
-
-      options.headers['Authorization'] = `Bearer ${data.access_token}`;
-
-      resp = await fetch(url, options); // make sure the new one works
-      if (!resp.ok) {
-        throw new Error("Failed to fetch new experiments (new access token)");
-      }
-    };
-
-    return resp;
-  }
-
-  function ensureAccessToken() {
-    const accessToken = localStorage.getItem('accessToken');
-    const url = `${API_BASE_URL}/`;
-    const options = {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    };
-
-    try {
-      checkAccessToken(url, options).catch(err => {
-        console.log(err);
-        // window.location.href = "/login";
-      });
-    } catch (err) {
-
-    }
-  }
-
-  useInterval(() => {
-    if (!DEBUG_DOCKER_MODE) {
-      ensureAccessToken();
-    }
-  }, ACCESS_FETCH_INTERVAL);
 
   useInterval(() => {
     pingDocker();
@@ -195,13 +140,12 @@ const DockerHome = () => {
         )
       } */}
 
-      <Tabs h='100%' isLazy>
-        <Grid templateColumns='repeat(11, 1fr)' h='inherit'>
-          <GridItem colSpan={2} bg='gray.100' h='inherit'>
+      <Tabs h='100%' index={tabIndex} onChange={(index) => setTabIndex(index)} isLazy>
+        <Grid templateColumns='repeat(20, 1fr)' h='inherit'>
+          <GridItem colSpan={4} bg='gray.100' h='inherit'>
             <Stack direction='column' spacing={2} p={4}>
-              <CustomTab icon={LuContainer}>Containers</CustomTab>
-              {/* <CustomTab icon={SiPaperswithcode}>Images</CustomTab> */}
-              <CustomTab icon={AiOutlineCode}>Programs</CustomTab>
+              <CustomTab icon={AiOutlineCode}>Launch Local Apps</CustomTab>
+              <CustomTab icon={LuContainer}>Local App Containers</CustomTab>
             </Stack>
 
             <Stack direction='row' align='center' p={4}
@@ -219,17 +163,29 @@ const DockerHome = () => {
               <Text>{dockerUp ? "Docker is running" : "Docker is down"}</Text>
             </Stack>
 
+            {
+              error && (
+                <Alert status='error'>
+                  <AlertIcon />
+                  {error}
+                </Alert>
+              )
+            }
+
           </GridItem>
-          <GridItem colSpan={9} bg='white' roundedTopLeft='md'>
+          <GridItem colSpan={16} bg='white' roundedTopLeft='md'>
             <TabPanels>
-              <TabPanel>
-                <DockerContainersList />
-              </TabPanel>
               <TabPanel>
                 <AvailablePrograms
                   isDisabled={pullLoading !== null}
                   loadingText={pullLoading?.progressDetail?.current ? `${pullLoading?.status}` : "Pulling..."}
                   progress={pullLoading?.progressDetail?.current ? pullLoading?.progress : 'Unknown progress...'}
+                />
+              </TabPanel>
+
+              <TabPanel>
+                <DockerContainersList
+                  setTabIndex={setTabIndex}
                 />
               </TabPanel>
             </TabPanels>
