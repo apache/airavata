@@ -23,11 +23,11 @@
 # NOTE: Delta gateway is deployed to a Jetstream VM
 real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
 user_data_dir: "/var/www/portals/gateway-user-data"
-gateway_data_store_hostname: "delta-topology.org"
+gateway_data_store_hostname: "delta.js2.scigap.org"
 gateway_data_store_resource_id: "delta-topology.jetstream-cloud.org_61fe21d4-07ea-41fc-9f2e-104bc3061318"
 # tus isn't setup yet
 tusd_vhost_servername:
-airavata_django_git_branch: "delta-topology-workshop"
+#airavata_django_git_branch: "delta-topology-workshop"
 
 vhost_servername: "delta-topology.scigap.org"
 vhost_ssl: True
@@ -35,12 +35,12 @@ ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-vhost_server_redirect: "delta-topology.org"
-vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/cert.pem"
-vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/fullchain.pem"
-vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/privkey.pem"
+#vhost_server_redirect: "delta-topology.org"
+#vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/cert.pem"
+#vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/fullchain.pem"
+#vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/privkey.pem"
 
-django_file_upload_max_file_size_mb: 10000
+django_file_upload_max_file_size_mb: 3000
 
 ## Keycloak related variables
 tenant_domain: "delta"
@@ -59,14 +59,15 @@ auth_options:
 
 gateway_id: "delta"
 experiment_data_dir: "{{ user_data_dir }}/delta"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLjM9LkUfp7WEBCAOKn4+2JmOHqCNnOt8ZKa5LZYi6DerREMH1oaiDBwrOd8LEL6bC1Ac6X7aA7tz6Z3F8rM6czVKUVeGcfUglPFj7fNqetIY4R5hkidLBkXrOiR9fPFDyiBJnG+/WIlJm4HJN3dM2jzlcGcx5O0syXdgDY5lM2mgKCmhG/Q6qt3/GxZ/DtG2QV5tV3cLTaufncFoyNtBthnVzVagnJ+4tnWsEEv/S2RZDA09LHALH/51zrcLIyRRMD/qNSTf6hPMOAM2+90naVALy84qbTfdcEsATQU9eOyUZ/qb8kc78CM0tmz37e9xlH30W/E2a8lr+qRBxSLPD"
+#gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLjM9LkUfp7WEBCAOKn4+2JmOHqCNnOt8ZKa5LZYi6DerREMH1oaiDBwrOd8LEL6bC1Ac6X7aA7tz6Z3F8rM6czVKUVeGcfUglPFj7fNqetIY4R5hkidLBkXrOiR9fPFDyiBJnG+/WIlJm4HJN3dM2jzlcGcx5O0syXdgDY5lM2mgKCmhG/Q6qt3/GxZ/DtG2QV5tV3cLTaufncFoyNtBthnVzVagnJ+4tnWsEEv/S2RZDA09LHALH/51zrcLIyRRMD/qNSTf6hPMOAM2+90naVALy84qbTfdcEsATQU9eOyUZ/qb8kc78CM0tmz37e9xlH30W/E2a8lr+qRBxSLPD"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZPtb93iKEr3udILpDWrnIiaAaJdaguzCjJKrSEt2c6nvb8ODPorpJzzaMAtq9GRljFu5F0Oue+JkmLIv7P8y61Q8PPsjdNL9+ioKncNDbzF9YBQJbUIhwMtdBtu3hYWVR10kUgY+CQA9wQ9/KuCfr8G3cZ3PQIC2XaEmXuF4Zhn7Gu8JKs9cFTDa2xBFBBpCkzK8+zY+OCcLE+M0O8jhJ0c4gaqIMExrKS7nnvRuWhO8XHhFFExD7MxyHAiIrR5AGJ/aR49bgqpZAuqS8qZDnH5YHMkcBMr27PDqBxU9IQxGzSTppxjQX4CAC6lRZZ+MXrd6SXskiloXw2Kaaw/SB"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Aurora Clark','auclark@wsu.edu'),('Sudhakar Pamidighantam','pamidigs@iu.edu')]"
+admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu')]"
 portal_title: "DELTA Gateway"
 
-django_google_analytics_tracking_id: "UA-178024455-1"
+#django_google_analytics_tracking_id: "UA-178024455-1"
 
-django_extra_settings:
-  ACCESS_TOKEN_REDIRECT_ALLOWED_URIS:
-    - URI: "https://jupyterhub.delta-topology.scigap.org/hub/login?next=/hub/spawn"
+#django_extra_settings:
+#  ACCESS_TOKEN_REDIRECT_ALLOWED_URIS:
+#    - URI: "https://jupyterhub.delta-topology.scigap.org/hub/login?next=/hub/spawn"
 ...
