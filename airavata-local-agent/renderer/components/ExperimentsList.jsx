@@ -16,11 +16,12 @@ dayjs.extend(relativeTime);
 
 
 const isValidStatus = (status) => {
-  let invalidStatus = ["CREATED"]; // TODO here
+  let invalidStatus = ["CREATED"];
   return !invalidStatus.includes(status);
 };
 
 const getExperimentApplication = (executionId) => {
+  // these are the executionIds that are used in the backend.
   if (!executionId) {
     return ("N/A");
   } else if (executionId.startsWith("AlphaFold2")) {
