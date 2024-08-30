@@ -35,7 +35,6 @@
         <module>modules/computer-resource-monitoring-service</module>
         <module>modules/airavata-metascheduler/metadata-analyzer</module>
         <module>modules/agent-framework</module>
-        <module>modules/agent-framework/connection-service</module>
     </modules>
 
     <parent>
