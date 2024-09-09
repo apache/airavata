@@ -29,6 +29,11 @@ ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
+vhost_server_redirect: "testdrive.cybershuttle.org"
+vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/{{vhost_server_redirect}}/cert.pem"
+vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{vhost_server_redirect}}/fullchain.pem"
+vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/{{vhost_server_redirect}}/privkey.pem"
+
 # Increase max upload size to 200MB
 #django_file_upload_max_file_size_mb: 200
 
@@ -46,7 +51,7 @@ auth_options:
       logo: "images/cilogon-logo-24x24-b.png"
 
 
-  gateway_id: "testdrive"
+gateway_id: "testdrive"
 experiment_data_dir: "{{ user_data_dir }}/testdrive-cs"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC56m6qPepsDF1Pcimaj7olXPFgJB+fhEa9k9pXYBcNR/X2xUV6OPxvUvBf2TUjJiPJlZH0XX+or98XvyL3TCuR9C1fAygia9uDM7fEi2V85MTMCzPLLI2qOhw30/HH9EeXSjpJRCB3fxhAhtyUkiaXYuZIR4lmk+v5oHX0CrmqCBnkoUQiZKi5A+sYU9AhYvXtmwJgo87PUzDqJ8+aUnM9rXVTf6dvZWZCiS0gCgqXedcbzcQqIl3fJ6RVI/Nz/61IAMeNwu8aCDkgV98BTblNv+dPRb53LpwV5+Gw66cppOGZJVA+sBTjwZI/Zamkgh5g9pf09nsX51l4YUupLKcB"
 #django_user_data_archive_max_age_days: 180
