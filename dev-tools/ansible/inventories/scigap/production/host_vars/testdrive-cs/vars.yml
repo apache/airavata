@@ -30,9 +30,9 @@ ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullch
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 vhost_server_redirect: "testdrive.cybershuttle.org"
-vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/{{vhost_server_redirect}}/cert.pem"
-vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{vhost_server_redirect}}/fullchain.pem"
-vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/{{vhost_server_redirect}}/privkey.pem"
+vhost_server_redirect_ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/cert.pem"
+vhost_server_redirect_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/fullchain.pem"
+vhost_server_redirect_ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_server_redirect }}/privkey.pem"
 
 # Increase max upload size to 200MB
 #django_file_upload_max_file_size_mb: 200
@@ -44,7 +44,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 
 auth_options:
   password:
-    name: "Cybershuttle Testdrive Gateway"
+    name: "Cybershuttle Gateway"
   external:
     - name: "Existing Institution Credentials"
       idp_alias: "cilogon"
@@ -57,7 +57,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC56m6q
 #django_user_data_archive_max_age_days: 180
 
 admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu'),('Eroma Abeysinghe','eroma@gatech.edu'),('Suresh Marru','smarru@gatech.edu'),('ARTISAN','ARTISAN@groups.gatech.edu')]"
-portal_title: "Cybershuttle Testdrive Gateway"
+portal_title: "Cybershuttle Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
 ...
