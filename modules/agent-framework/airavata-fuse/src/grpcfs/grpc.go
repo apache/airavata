@@ -29,7 +29,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var ctxt = &pb.RPCContext{}
+var ctxt = &pb.RPCContext{
+	GatewayId: "GATEWAY_ID",
+	AccessToken: "TOKEN",
+	AgentId: "AGENT_ID",
+}
 
 func getStatFs(fsClient pb.FuseServiceClient, ctx context.Context, root string) (*pb.StatFs, error) {
 	req := &pb.StatFsReq{
@@ -60,6 +64,12 @@ func getStat(fsClient pb.FuseServiceClient, ctx context.Context, path string) (f
 		return nil, err
 	}
 	raw := res.Result
+	if raw.Mode == 0 {
+		raw.Mode = 2147484141
+	}
+
+	log.Print("grpc.getStat - received fsClient.FileInfo for ", raw)
+
 	if raw == nil {
 		return nil, ctx.Err()
 	}

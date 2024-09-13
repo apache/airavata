@@ -67,6 +67,8 @@ func (s *server) StatFs(ctx context.Context, req *pb.StatFsReq) (*pb.StatFsRes, 
 			Inodes:          stat.Files,
 		},
 	}
+	logger.Print("responded valid statFs. ", res.Result)
+
 	return res, nil
 }
 
@@ -148,6 +150,8 @@ func (s *server) ReadDir(ctx context.Context, req *pb.ReadDirReq) (*pb.ReadDirRe
 		Result: resEntries,
 	}
 
+	logger.Print("responded valid ReadDir. ", res.Result)
+
 	return res, nil
 }
 
@@ -221,7 +225,7 @@ func (s *server) SetInodeAtt(ctx context.Context, req *pb.SetInodeAttReq) (*pb.S
 
 func main() {
 
-	listener, err := net.Listen("tcp", "127.0.0.1:50000")
+	listener, err := net.Listen("tcp", "127.0.0.1:19900")
 	if handleErr(err, "Could not start GRPC server") != nil {
 		os.Exit(1)
 	}
