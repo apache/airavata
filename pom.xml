@@ -150,6 +150,8 @@
         <commons.lang.version>2.6</commons.lang.version>
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
         <helix.version>0.9.7</helix.version>
+        <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>
+        <rest.easy.client.version>6.2.8.Final</rest.easy.client.version>
     </properties>
 
     <dependencies>
