@@ -1,0 +1,7 @@
+airavata-fuse/bin
+airavata-fuse/data
+connection-service/target
+airavata-agent/jupyter/.ipynb_checkpoints
+airavata-agent/jupyter/venv
+airavata-agent/airavata-agent-linux
+airavata-agent/jupyter/extension/airavata_jupyter_magic/build

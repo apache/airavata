@@ -144,16 +144,59 @@ func main() {
 					req, err := http.NewRequest("GET", url, nil)
 					if err != nil {
 						log.Printf("Failed to create the request start jupyter kernel: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+
 					}
 					resp, err := client.Do(req)
 					if err != nil {
 						log.Printf("Failed to send the request start jupyter kernel: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+
 					}
-					defer resp.Body.Close()
+
+
+					defer func() {
+						err := resp.Body.Close()
+						if err != nil {
+							log.Printf("Failed to close the response body for kernel start: %v", err)
+
+							jupyterResponse := "Failed while running the cell in remote. Please retry"
+							if err := stream.Send(&protos.AgentMessage{Message: 
+								&protos.AgentMessage_JupyterExecutionResponse{
+									JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+								log.Printf("Failed to send jupyter execution result to server: %v", err)
+							}
+							return
+
+						}
+					} ()
 
 					body, err := ioutil.ReadAll(resp.Body)
 					if err != nil {
 						log.Printf("Failed to read response for start jupyter kernel: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+
 					}
 
 					url = "http://127.0.0.1:15000/execute"
@@ -164,11 +207,29 @@ func main() {
 
 					if err != nil {
 						log.Fatalf("Failed to marshal JSON: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+
 					}
 
 					req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 					if err != nil {
 						log.Printf("Failed to create the request run jupyter kernel: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+
 					}
 					req.Header.Set("Content-Type", "application/json")
 
@@ -177,12 +238,45 @@ func main() {
 					resp, err = client.Do(req)
 					if err != nil {
 						log.Printf("Failed to send the request run jupyter kernel: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+
 					}
-					defer resp.Body.Close()
+
+					defer func() {
+						err := resp.Body.Close()
+						if err != nil {
+							log.Printf("Failed to close the response body for kernel execution: %v", err)
+
+							jupyterResponse := "Failed while running the cell in remote. Please retry"
+							if err := stream.Send(&protos.AgentMessage{Message: 
+								&protos.AgentMessage_JupyterExecutionResponse{
+									JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+								log.Printf("Failed to send jupyter execution result to server: %v", err)
+							}
+							return
+
+						}
+					} ()
 
 					body, err = ioutil.ReadAll(resp.Body)
 					if err != nil {
 						log.Printf("Failed to read response for run jupyter kernel: %v", err)
+
+						jupyterResponse := "Failed while running the cell in remote. Please retry"
+						if err := stream.Send(&protos.AgentMessage{Message: 
+							&protos.AgentMessage_JupyterExecutionResponse{
+								JupyterExecutionResponse: &protos.JupyterExecutionResponse{ExecutionId: executionId, ResponseString: jupyterResponse, SessionId: sessionId}}}); err != nil {
+							log.Printf("Failed to send jupyter execution result to server: %v", err)
+						}
+						return
+						
 					}
 
 					
