@@ -6,7 +6,7 @@ RUN pip install notebook
 RUN apt install kmod -y
 RUN apt install git -y
 RUN pip install PyJWT
-RUN pip install --upgrade cybershuttle-tune
+RUN pip install cybershuttle-tune==0.1.19
 RUN pip install scipy
 RUN pip install numpy
 RUN pip install matplotlib
