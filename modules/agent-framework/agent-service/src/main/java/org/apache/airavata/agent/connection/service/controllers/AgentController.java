@@ -1,6 +1,6 @@
 package org.apache.airavata.agent.connection.service.controllers;
 
-import org.apache.airavata.agent.connection.service.handlers.AgentHandler;
+import org.apache.airavata.agent.connection.service.handlers.AgentConnectionHandler;
 import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,27 +16,27 @@ public class AgentController {
 
     private final static Logger logger = LoggerFactory.getLogger(AgentController.class);
 
-    private AgentHandler agentHandler;
+    private AgentConnectionHandler agentConnectionHandler;
 
-    public AgentController(AgentHandler agentHandler) {
-        this.agentHandler = agentHandler;
+    public AgentController(AgentConnectionHandler agentConnectionHandler) {
+        this.agentConnectionHandler = agentConnectionHandler;
     }
 
     @GetMapping("/{agentId}")
     public ResponseEntity<AgentInfoResponse> getAgentInfo(@PathVariable("agentId") String agentId) {
-        return ResponseEntity.accepted().body(agentHandler.isAgentUp(agentId));
+        return ResponseEntity.accepted().body(agentConnectionHandler.isAgentUp(agentId));
     }
 
     @PostMapping("/tunnel")
     public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelCreationRequest tunnelRequest) {
-        return ResponseEntity.accepted().body(agentHandler.runTunnelOnAgent(tunnelRequest));
+        return ResponseEntity.accepted().body(agentConnectionHandler.runTunnelOnAgent(tunnelRequest));
     }
 
     @PostMapping("/executecommandrequest")
     public ResponseEntity<AgentCommandAck> runCommandOnAgent(@Valid @RequestBody AgentCommandRequest commandRequest) {
         logger.info("Received command request to run on agent {}", commandRequest.getAgentId());
-        if (agentHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
-            return ResponseEntity.accepted().body(agentHandler.runCommandOnAgent(commandRequest));
+        if (agentConnectionHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runCommandOnAgent(commandRequest));
         } else {
             logger.warn("No agent is available to run on agent {}", commandRequest.getAgentId());
             AgentCommandAck ack = new AgentCommandAck();
@@ -47,14 +47,14 @@ public class AgentController {
 
     @GetMapping("/executecommandresponse/{executionId}")
     public ResponseEntity<AgentCommandResponse> getExecutionResponse(@PathVariable("executionId") String executionId) {
-        return ResponseEntity.accepted().body(agentHandler.getAgentCommandResponse(executionId));
+        return ResponseEntity.accepted().body(agentConnectionHandler.getAgentCommandResponse(executionId));
     }
 
     @PostMapping("/executejupyterrequest")
     public ResponseEntity<JupyterExecutionAck> runJupyterOnAgent(@Valid @RequestBody JupyterExecutionRequest executionRequest) {
         logger.info("Received jupyter execution request to run on agent {}", executionRequest.getAgentId());
-        if (agentHandler.isAgentUp(executionRequest.getAgentId()).isAgentUp()) {
-            return ResponseEntity.accepted().body(agentHandler.runJupyterOnAgent(executionRequest));
+        if (agentConnectionHandler.isAgentUp(executionRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runJupyterOnAgent(executionRequest));
         } else {
             logger.warn("No agent is available to run on agent {}", executionRequest.getAgentId());
             JupyterExecutionAck ack = new JupyterExecutionAck();
@@ -65,7 +65,7 @@ public class AgentController {
 
     @GetMapping("/executejupyterresponse/{executionId}")
     public ResponseEntity<JupyterExecutionResponse> getJupyterResponse(@PathVariable("executionId") String executionId) {
-        return ResponseEntity.accepted().body(agentHandler.getJupyterExecutionResponse(executionId));
+        return ResponseEntity.accepted().body(agentConnectionHandler.getJupyterExecutionResponse(executionId));
     }
 
 }

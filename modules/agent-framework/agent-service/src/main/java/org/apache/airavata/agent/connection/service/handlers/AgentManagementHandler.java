@@ -25,16 +25,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class ExperimentHandler {
+public class AgentManagementHandler {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ExperimentHandler.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
 
     @Value("${airavata.storageResourceId}")
     private String storageResourceId;
 
-    public ExperimentHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
+    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
     }

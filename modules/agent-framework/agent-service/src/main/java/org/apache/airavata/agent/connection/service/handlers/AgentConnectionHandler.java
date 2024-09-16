@@ -18,9 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @GrpcService
-public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
+public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
 
-    private final static Logger logger = LoggerFactory.getLogger(AgentHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(AgentConnectionHandler.class);
 
     // <streamId, StreamObserver>
     private final Map<String, StreamObserver<ServerMessage>> ACTIVE_STREAMS = new ConcurrentHashMap<>();
@@ -33,7 +33,7 @@ public class AgentHandler extends AgentCommunicationServiceGrpc.AgentCommunicati
 
     private final AiravataFileService airavataFileService;
 
-    public AgentHandler(AiravataFileService airavataFileService) {
+    public AgentConnectionHandler(AiravataFileService airavataFileService) {
         this.airavataFileService = airavataFileService;
     }
 

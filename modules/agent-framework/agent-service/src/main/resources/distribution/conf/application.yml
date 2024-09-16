@@ -11,7 +11,7 @@ airavata:
     url: scigap02.sciencegateways.iu.edu
     port: 9930
     truststore:
-      path: /Users/lahiruj/Projects/airavata/lahiruj/modules/agent-framework/connection-service/src/main/resources/trustore.jks
+      path: /Users/lahiruj/Projects/airavata/lahiruj/modules/agent-framework/agent-service/src/main/resources/trustore.jks
   storageResourceId: gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6
   cluster:
     applicationInterfaceId:
