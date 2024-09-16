@@ -9,7 +9,7 @@
         <version>0.21-SNAPSHOT</version>
     </parent>
 
-    <artifactId>connection-service</artifactId>
+    <artifactId>agent-service</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -24,7 +24,7 @@
         <protobuf.version>3.23.4</protobuf.version>
         <protobuf-plugin.version>0.6.1</protobuf-plugin.version>
         <grpc.version>1.63.0</grpc.version>
-        <connection.service.dist.name>Connection-Service-0.01</connection.service.dist.name>
+        <agent.service.dist.name>Agent-Service-0.01</agent.service.dist.name>
     </properties>
 
     <dependencyManagement>
@@ -41,8 +41,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-to-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -105,9 +120,9 @@
                         </goals>
                         <configuration>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${connection.service.dist.name}</finalName>
+                            <finalName>${agent.service.dist.name}</finalName>
                             <descriptors>
-                                <descriptor>src/main/assembly/connection-service-bin-assembly.xml</descriptor>
+                                <descriptor>src/main/assembly/agent-service-bin-assembly.xml</descriptor>
                             </descriptors>
                             <attach>false</attach>
                         </configuration>
