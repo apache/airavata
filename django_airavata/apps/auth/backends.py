@@ -103,8 +103,8 @@ class KeycloakBackend(object):
             token_url = settings.KEYCLOAK_TOKEN_URL
             userinfo_url = settings.KEYCLOAK_USERINFO_URL
             verify_ssl = settings.KEYCLOAK_VERIFY_SSL
-            oauth2_session = OAuth2Session(client=LegacyApplicationClient(
-                client_id=client_id))
+            scope = ['openid', 'profile', 'email']
+            oauth2_session = OAuth2Session(client=LegacyApplicationClient(client_id=client_id), scope=scope)
             verify = verify_ssl
             if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
                 verify = settings.KEYCLOAK_CA_CERTFILE
@@ -113,7 +113,8 @@ class KeycloakBackend(object):
                                                password=password,
                                                client_id=client_id,
                                                client_secret=client_secret,
-                                               verify=verify)
+                                               verify=verify,
+                                               scope=scope)
             userinfo = oauth2_session.get(userinfo_url).json()
             return token, userinfo
         except InvalidGrantError as e:
@@ -133,7 +134,7 @@ class KeycloakBackend(object):
         redirect_uri = request.session['OAUTH2_REDIRECT_URI']
         logger.debug("state={}".format(state))
         oauth2_session = OAuth2Session(client_id,
-                                       scope='openid',
+                                       scope='openid profile email',
                                        redirect_uri=redirect_uri,
                                        state=state)
         verify = verify_ssl

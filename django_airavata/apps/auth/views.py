@@ -78,7 +78,7 @@ def redirect_login(request, idp_alias):
         if passthrough_query_param in request.GET:
             redirect_uri += f"&{passthrough_query_param}={quote(request.GET[passthrough_query_param])}"
     oauth2_session = OAuth2Session(
-        client_id, scope='openid', redirect_uri=redirect_uri)
+        client_id, scope='openid profile email', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
         base_authorize_url)
     authorization_url += '&kc_idp_hint=' + quote(idp_alias)
