@@ -46,17 +46,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0.1</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.0.14.Final</version>
+            <version>${rest.easy.client.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jackson2-provider -->
         <dependency>
@@ -74,7 +68,7 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
-            <version>2.5.5.Final</version>
+            <version>${keycloak.admin.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
