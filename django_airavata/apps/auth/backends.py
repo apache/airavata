@@ -160,7 +160,7 @@ class KeycloakBackend(object):
         token_url = settings.KEYCLOAK_TOKEN_URL
         userinfo_url = settings.KEYCLOAK_USERINFO_URL
         verify_ssl = settings.KEYCLOAK_VERIFY_SSL
-        oauth2_session = OAuth2Session(client_id, scope='openid')
+        oauth2_session = OAuth2Session(client_id, scope='openid profile email')
         verify = verify_ssl
         if verify_ssl and hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
             verify = settings.KEYCLOAK_CA_CERTFILE
