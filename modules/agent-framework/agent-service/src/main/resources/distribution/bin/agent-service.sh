@@ -67,4 +67,4 @@ do
 done
 
 java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.agent.connection.service.ConnectionServiceApplication ${AIRAVATA_COMMAND} $*
+    org.apache.airavata.agent.connection.service.AgentServiceApplication ${AIRAVATA_COMMAND} $*

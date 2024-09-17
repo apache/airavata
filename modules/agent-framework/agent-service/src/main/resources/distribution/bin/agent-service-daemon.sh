@@ -41,7 +41,7 @@ case $1 in
         echo "Starting $SERVICE_NAME ..."
         if [ ! -f $PID_PATH_NAME ]; then
             nohup java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-            org.apache.airavata.agent.connection.service.ConnectionServiceApplication ${AIRAVATA_COMMAND} $* > $LOG_FILE 2>&1 &
+            org.apache.airavata.agent.connection.service.AgentServiceApplication ${AIRAVATA_COMMAND} $* > $LOG_FILE 2>&1 &
             echo $! > $PID_PATH_NAME
             echo "$SERVICE_NAME started ..."
         else
@@ -90,7 +90,7 @@ case $1 in
             rm $PID_PATH_NAME
             echo "$SERVICE_NAME starting ..."
             nohup java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-            org.apache.airavata.agent.connection.service.ConnectionServiceApplication ${AIRAVATA_COMMAND} $* > $LOG_FILE 2>&1 &
+            org.apache.airavata.agent.connection.service.AgentServiceApplication ${AIRAVATA_COMMAND} $* > $LOG_FILE 2>&1 &
             echo $! > $PID_PATH_NAME
             echo "$SERVICE_NAME started ..."
         else
@@ -98,7 +98,7 @@ case $1 in
         fi
     ;;
     -h)
-        echo "Usage: connection-service-daemon.sh"
+        echo "Usage: agent-service-daemon.sh"
 
         echo "command options:"
         echo "  start               Start server in daemon mode"
