@@ -10,7 +10,8 @@ import time
 from pathlib import Path
 import os
 
-current_agent_info = None
+current_agent_info = {}
+current_agent_info["agentId"] = "agent2"
 
 EXPLICIT_TOKEN_FILE = (
         Path(os.path.expanduser("~")) / "csagent" / "token" / "keys.json"
