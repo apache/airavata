@@ -160,6 +160,9 @@
                 <include>org.ogce:xpp5:jar</include>
                 <include>com.101tec:zkclient:jar</include>
                 <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>org.apache.zookeeper:zookeeper-jute:jar</include>
+                <include>io.netty:netty-handler:jar</include>
+                <include>org.apache.logging.log4j:log4j-slf4j18-impl:jar</include>
                 <include>org.apache.airavata:profile-service-stubs:jar</include>
                 <include>org.apache.airavata:services-security:jar</include>
                 <include>org.apache.airavata:airavata-sharing-registry-stubs:jar</include>
