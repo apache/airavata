@@ -1,7 +1,7 @@
 from IPython.core.magic import register_cell_magic
 from IPython.core.magic import register_line_magic
 
-from IPython.display import display, Image
+from IPython.display import display, Image, HTML
 import base64
 import requests
 import json
@@ -139,6 +139,7 @@ def run_remote(line, cell):
     global current_agent_info
     if not current_agent_info:
         print("No agent was scheduled yet. Please run %init_remote cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes>")
+        return
 
     url = 'https://api.gateway.cybershuttle.org/api/v1/agent/executejupyterrequest'
 
@@ -152,8 +153,8 @@ def run_remote(line, cell):
     json_data = json.dumps(data)
     response = requests.post(url, headers={'Content-Type': 'application/json'}, data=json_data)
     execution_resp = response.json()
-    execution_id = execution_resp["executionId"]
-    error = execution_resp["error"]
+    execution_id = execution_resp.get("executionId")
+    error = execution_resp.get("error")
     if error:
         print("Cell execution failed. Error: " + error)
     if execution_id:
@@ -161,23 +162,74 @@ def run_remote(line, cell):
             url = "https://api.gateway.cybershuttle.org/api/v1/agent/executejupyterresponse/" + execution_id
             response = requests.get(url, headers={'Accept': 'application/json'})
             json_response = response.json()
-            #print(json_response)
-            if json_response['available']:
-                result_str = json_response['responseString']
-                result = json.loads(result_str)
-                if 'result' in result:
-                    print(result['result'])
-                elif 'error' in result:
-                    print(result['error']['ename'])
-                    print(result['error']['evalue'])
-                    print(result['error']['traceback'])
-                elif 'display' in result:
-                    display_obj = result['display']
-                    if 'data' in display_obj:
-                        data_obj = display_obj['data']
+            if json_response.get('available'):
+                result_str = json_response.get('responseString')
+                try:
+                    result = json.loads(result_str)
+                except json.JSONDecodeError as e:
+                    print(f"Failed to decode JSON response: {e}")
+                    break
+
+                if 'outputs' in result:
+                    for output in result['outputs']:
+                        output_type = output.get('output_type')
+                        if output_type == 'display_data':
+                            data_obj = output.get('data', {})
+                            if 'image/png' in data_obj:
+                                image_data = data_obj['image/png']
+                                try:
+                                    image_bytes = base64.b64decode(image_data)
+                                    display(Image(data=image_bytes, format='png'))
+                                except base64.binascii.Error as e:
+                                    print(f"Failed to decode image data: {e}")
+                            # Ignoring any texts in the display data
+                            # if 'text/plain' in data_obj:
+                            #     print(data_obj['text/plain'])
+
+                        elif output_type == 'stream':
+                            print(output.get('text', ''))
+
+                        elif output_type == 'error':
+                            ename = output.get('ename', 'Error')
+                            evalue = output.get('evalue', '')
+                            traceback = output.get('traceback', [])
+
+                            error_html = f"""
+                            <div style="
+                                color: #a71d5d;
+                                background-color: #fdd;
+                                border: 1px solid #a71d5d;
+                                padding: 10px;
+                                border-radius: 5px;
+                                font-family: Consolas, 'Courier New', monospace;
+                            ">
+                                <pre><strong>{ename}: {evalue}</strong>
+                            """
+                            for line in traceback:
+                                error_html += f"{line}\n"
+                            error_html += "</pre></div>"
+                            display(HTML(error_html))
+
+                        elif output_type == 'execute_result':
+                            data_obj = output.get('data', {})
+                            if 'text/plain' in data_obj:
+                                print(data_obj['text/plain'])
+                else:
+                    if 'result' in result:
+                        print(result['result'])
+                    elif 'error' in result:
+                        print(result['error']['ename'])
+                        print(result['error']['evalue'])
+                        print(result['error']['traceback'])
+                    elif 'display' in result:
+                        data_obj = result['display'].get('data', {})
                         if 'image/png' in data_obj:
                             image_data = data_obj['image/png']
-                            display(Image(data=base64.b64decode(image_data), format='png'))
+                            try:
+                                image_bytes = base64.b64decode(image_data)
+                                display(Image(data=image_bytes, format='png'))
+                            except base64.binascii.Error as e:
+                                print(f"Failed to decode image data: {e}")
                 break
             time.sleep(1)
 
