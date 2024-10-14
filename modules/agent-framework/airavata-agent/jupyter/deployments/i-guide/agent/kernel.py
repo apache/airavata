@@ -3,6 +3,7 @@ from jupyter_client import KernelManager
 from flask import Flask, request, jsonify
 import os
 import json
+import re
 
 
 app = Flask(__name__)
@@ -11,6 +12,8 @@ km = None
 kc = None
 
 kernel_running = False
+
+ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
 @app.route('/start', methods=['GET'])
 def start_kernel():
@@ -34,6 +37,9 @@ def start_kernel():
     kernel_running = True
     return "Kernel started"
 
+def strip_ansi_codes(text):
+    return ansi_escape.sub('', text)
+
 @app.route('/execute', methods=['POST'])
 def execute():
 
@@ -46,39 +52,73 @@ def execute():
  
     kc.execute(code)
 
-    # Wait for the result and display it
-
+    outputs = []
     execution_noticed = False
-    content_text = ""
+
     while True:
         try:
             msg = kc.get_iopub_msg(timeout=1)
             print("------------------")
             print(msg)
             print("-================-")
-            content = msg["content"]
-            parent_header = msg["parent_header"]
+            content = msg.get("content", {})
+            msg_type = msg.get("msg_type", "")
 
             # When a message with the text stream comes and it's the result of our execution
-            if msg["msg_type"] == "execute_input":
+            if msg_type == "execute_input":
                 execution_noticed = True
-            if msg["msg_type"] == "stream" and content["name"] == "stdout":
-                print(content["text"])
-                content_text = content_text + content["text"]
-            if msg["msg_type"] == "display_data":
-                return jsonify({'display': content}), 200
-            if msg["msg_type"] == "error":
-                return jsonify({'error': content}), 200
-            if msg["msg_type"] == "status" and execution_noticed:
-                if content["execution_state"] and content["execution_state"] == "idle":
-                    if parent_header and parent_header["msg_type"]:
-                        if parent_header["msg_type"] == "execute_request": ## This is a result without stdout like a = 12
-                            return jsonify({'result': content_text}), 200
+
+            # Handle stdout text stream
+            if msg_type == "stream" and content.get("name") == "stdout":
+                outputs.append({
+                    "output_type": "stream",
+                    "name": "stdout",
+                    "text": content.get("text", "")
+                })
+
+            # Capture display data (e.g. plot)
+            if msg_type == "display_data":
+                outputs.append({
+                    "output_type": "display_data",
+                    "data": content.get("data", {}),
+                    "metadata": content.get("metadata", {})
+                })
+
+            # Handle execution results (e.g. return values)
+            if msg_type == "execute_result":
+                outputs.append({
+                    "output_type": "execute_result",
+                    "data": content.get("data", {}),
+                    "metadata": content.get("metadata", {}),
+                    "execution_count": content.get("execution_count", None)
+                })
+
+            # Handle errors
+            if msg_type == "error":
+                # Strip ANSI codes from traceback
+                clean_traceback = [strip_ansi_codes(line) for line in content.get("traceback", [])]
+                outputs.append({
+                    "output_type": "error",
+                    "ename": content.get("ename", ""),
+                    "evalue": content.get("evalue", ""),
+                    "traceback": clean_traceback
+                })
+
+            # Check for end of execution
+            if msg_type == "status" and content.get("execution_state") == "idle" and execution_noticed:
+                break
+
         except KeyboardInterrupt:
-            print("Interrupted by user.")
-            return jsonify({'error': "Intterrupted by user"}), 500
-        except:
+            return jsonify({'error': "Execution interrupted by user"}), 500
+        except Exception as e:
+            print(f"Error while getting Jupyter message: {str(e)}")
             pass
+
+    response = {
+        "outputs": outputs
+    }
+
+    return jsonify(response), 200
 
 @app.route('/stop', methods=['GET'])
 def stop():
