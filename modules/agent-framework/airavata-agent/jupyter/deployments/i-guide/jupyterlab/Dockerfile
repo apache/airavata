@@ -16,6 +16,7 @@ RUN pip3 install contextily
 COPY labconfig/jupyter_lab_config.py /jupyter_lab_config.py
 COPY labconfig/airavata_magics.py /airavata_magics.py
 COPY labconfig/__init__.py /__init__.py
+COPY labconfig/device_auth.py /device_auth.py
 COPY labconfig/bootstrap.sh /bootstrap.sh
 RUN chmod +x /bootstrap.sh
 

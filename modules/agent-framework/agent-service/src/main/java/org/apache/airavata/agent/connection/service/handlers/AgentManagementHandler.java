@@ -83,7 +83,7 @@ public class AgentManagementHandler {
             airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
             return new LaunchAgentResponse(agentId, experimentId);
         } catch (TException e) {
-            LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName());
+            LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
             throw new RuntimeException("Error while creating the experiment with the name: " + req.getExperimentName(), e);
         }
     }
