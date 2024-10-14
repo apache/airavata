@@ -208,7 +208,7 @@ def init_remote(line):
         if pair.startswith("walltime="):
             walltime_value = pair.split("=")[1]
 
-    submit_agent_job('CS Agent', cluster_value, queue_value, cpu_value, memory_value, walltime_value, access_token)
+    submit_agent_job('CS_Agent', cluster_value, queue_value, cpu_value, memory_value, walltime_value, access_token)
 
 @register_line_magic
 def status_remote(line):

@@ -9,9 +9,10 @@ import jwt
 import time
 from pathlib import Path
 import os
+from device_auth import DeviceFlowAuthenticator
 
-current_agent_info = {}
-current_agent_info["agentId"] = "agent2"
+
+current_agent_info = None
 
 EXPLICIT_TOKEN_FILE = (
         Path(os.path.expanduser("~")) / "csagent" / "token" / "keys.json"
@@ -25,6 +26,11 @@ def read_explicit_token_file():
             return json.load(f)
 
 def get_access_token():
+
+    token_from_env = os.getenv('CS_ACCESS_TOKEN')
+    if token_from_env:
+        return token_from_env
+
     expl_token_data = read_explicit_token_file()
     if expl_token_data:
         return expl_token_data["access_token"]
@@ -39,12 +45,14 @@ def get_agent_status():
     url = 'https://api.gateway.cybershuttle.org/api/v1/agent/' + current_agent_info['agentId']
     response = requests.get(url)
     if response.status_code == 202:
+        print("Got response for agent")
+        print(response.json())
         return response.json()
     else:
         print('Invalid response reveived. Status code:', response.status_code)
         print('Response:', response.text)
 
-def submit_agent_job(experiment_name, cluster, queue, cpus, memory, wallTime, access_token, gateway_id='testdrive'):
+def submit_agent_job(experiment_name, cluster, queue, cpus, memory, wallTime, access_token, gateway_id='default'):
 
     global current_agent_info
     # URL to which the POST request will be sent
@@ -91,7 +99,7 @@ def submit_agent_job(experiment_name, cluster, queue, cpus, memory, wallTime, ac
         print('Failed to send POST request. Status code:', response.status_code)
         print('Response:', response.text)
 
-def terminate_agent(access_token, gateway_id='testdrive'):
+def terminate_agent(access_token, gateway_id='default'):
 
     global current_agent_info
 
@@ -174,6 +182,14 @@ def run_remote(line, cell):
             time.sleep(1)
 
 @register_line_magic
+def cs_login(line):
+    try:
+        authenticator = DeviceFlowAuthenticator()
+        authenticator.login()
+    except ValueError as e:
+        print(f"Configuration error: {e}")
+
+@register_line_magic
 def init_remote(line):
 
     if current_agent_info:
@@ -209,7 +225,7 @@ def init_remote(line):
         if pair.startswith("walltime="):
             walltime_value = pair.split("=")[1]
 
-    submit_agent_job('CS Agent', cluster_value, queue_value, cpu_value, memory_value, walltime_value, access_token)
+    submit_agent_job('CS_Agent', cluster_value, queue_value, cpu_value, memory_value, walltime_value, access_token)
 
 @register_line_magic
 def status_remote(line):
