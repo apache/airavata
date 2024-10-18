@@ -57,10 +57,8 @@ def execute():
 
     while True:
         try:
-            msg = kc.get_iopub_msg(timeout=1)
-            print("------------------")
-            print(msg)
-            print("-================-")
+            msg = kc.get_iopub_msg(timeout=5)
+
             content = msg.get("content", {})
             msg_type = msg.get("msg_type", "")
 
@@ -68,7 +66,7 @@ def execute():
             if msg_type == "execute_input":
                 execution_noticed = True
 
-            # Handle stdout text stream
+            # Handle stdout streams
             if msg_type == "stream" and content.get("name") == "stdout":
                 outputs.append({
                     "output_type": "stream",
@@ -76,7 +74,15 @@ def execute():
                     "text": content.get("text", "")
                 })
 
-            # Capture display data (e.g. plot)
+            # Handle stderr streams
+            if msg_type == "stream" and content.get("name") == "stderr":
+                outputs.append({
+                    "output_type": "stream",
+                    "name": "stderr",
+                    "text": content.get("text", "")
+                })
+
+            # Handle display data (e.g. plots)
             if msg_type == "display_data":
                 outputs.append({
                     "output_type": "display_data",
@@ -112,7 +118,6 @@ def execute():
             return jsonify({'error': "Execution interrupted by user"}), 500
         except Exception as e:
             print(f"Error while getting Jupyter message: {str(e)}")
-            pass
 
     response = {
         "outputs": outputs
