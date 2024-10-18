@@ -179,7 +179,25 @@ def run_remote(line, cell):
                             #     print(data_obj['text/plain'])
 
                         elif output_type == 'stream':
-                            print(output.get('text', ''))
+                            stream_name = output.get('name', 'stdout')
+                            stream_text = output.get('text', '')
+                            if stream_name == 'stderr':
+                                error_html = f"""
+                                <div style="
+                                    color: #a71d5d;
+                                    background-color: #fdd;
+                                    border: 1px solid #a71d5d;
+                                    padding: 10px;
+                                    border-radius: 5px;
+                                    font-family: Consolas, 'Courier New', monospace;
+                                    white-space: pre-wrap;
+                                ">
+                                    {stream_text}
+                                </div>
+                                """
+                                display(HTML(error_html))
+                            else:
+                                print(stream_text)
 
                         elif output_type == 'error':
                             ename = output.get('ename', 'Error')
