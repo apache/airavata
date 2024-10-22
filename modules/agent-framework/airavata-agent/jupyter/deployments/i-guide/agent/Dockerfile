@@ -2,6 +2,10 @@ FROM rkalyana/iguide-singleuser-cvmfs:nbfetch
 
 USER root
 
+RUN mkdir -p /data
+COPY dam_list.csv /data/dam_list.csv
+COPY sample_data /data/sample_data
+
 RUN pip install pandas
 RUN pip install geopandas
 RUN pip install pygeos
