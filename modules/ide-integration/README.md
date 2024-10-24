@@ -67,6 +67,9 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 
 ### Starting API Server
 
+#### Note: For JDK 11+
+you have to add ``--add-opens java.base/java.lang=ALL-UNNAMED`` as a JVM argument
+
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
 
 ### Starting Job Execution Engine

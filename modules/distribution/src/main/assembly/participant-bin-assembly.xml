@@ -178,7 +178,6 @@
                 <include>javax.annotation:javax.annotation-api:jar</include>
                 <include>org.glassfish.jersey.bundles.repackaged:jersey-guava:jar</include>
                 <include>org.glassfish.hk2:osgi-resource-locator:jar</include>
-                <include>javax.ws.rs:javax.ws.rs-api:jar</include>
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>org.glassfish.jersey.core:jersey-client:jar</include>
                 <include>org.glassfish.hk2:hk2-api:jar</include>
