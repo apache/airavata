@@ -90,10 +90,7 @@ export const BackendUrlProvider = ({ children }) => {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-
   const ourGateway = allGateways?.find(g => g.id === gateway);
-  console.log('our gateway', ourGateway);
 
   return (
     <BackendUrlContext.Provider value={{

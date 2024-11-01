@@ -39,9 +39,6 @@ const Login = () => {
   const router = useRouter();
   const { apiUrl, authUrl, loginUrl, setGatewayId } = useBackendUrls();
 
-  console.log('urls:', apiUrl, authUrl, loginUrl);
-  console.log('loginUrl', loginUrl);
-
   // general a random string
   const randomString = (length) => {
     const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
