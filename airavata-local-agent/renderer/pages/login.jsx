@@ -19,10 +19,10 @@
 *                                                              
 *
 *****************************************************************/
-import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { Box, Center, Flex, Select, Img, Text, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
-import { AuthContext, useAuth } from "../lib/Contexts";
+import { useAuth } from "../lib/Contexts";
 import { useRouter } from "next/router";
 import { TOKEN_FILE } from "../lib/constants";
 
@@ -33,6 +33,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [verifyURL, setVerifyURL] = useState("");
   const [isProd, setIsProd] = useState(false);
+  const [gatewayOptions, setGatewayOptions] = useState([]);
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
 
@@ -72,6 +73,7 @@ const Login = () => {
   useEffect(() => {
 
     window.ipc.send('is-prod');
+    window.ipc.send('get-all-gateways');
 
     if (localStorage.getItem("ciLoginAuto") === "true") {
       setLoading(true);
@@ -126,10 +128,19 @@ const Login = () => {
       setIsProd(isProdResult);
     });
 
+
+    window.ipc.on('got-gateways', (data) => {
+      console.log("gateways:", data);
+      setGatewayOptions(data);
+    });
+
+    // TODO: ask background process for what gateway we are currently configured on
+
     return () => {
       window.ipc.removeAllListeners('file-written');
       window.ipc.removeAllListeners('file-read');
       window.ipc.removeAllListeners('is-prod-reply');
+      window.ipc.removeAllListeners('got-gateways');
     };
   }, []);
 
@@ -164,6 +175,23 @@ const Login = () => {
               </Alert>
             )
           }
+
+          <Box shadow='md' rounded='md' p={4} mt={4}>
+            <Heading size='sm' textAlign="left" color='blue.500'>
+              Current Gateway
+            </Heading>
+            <Select placeholder='Choose gateway' mt={4}>
+              {
+                gatewayOptions.map((item) => {
+                  return (
+                    <option key={item.gateway}>
+                      {item.name} ({item.gateway})
+                    </option>
+                  );
+                })
+              }
+            </Select>
+          </Box>
 
           <Box shadow='md' rounded='md' p={4} mt={4}>
             <Heading size='md' textAlign="left" color='blue.500'>

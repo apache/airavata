@@ -795,4 +795,36 @@ const writeFile = async (event, userPath, data) => {
 ipcMain.on('write-file', writeFile);
 
 /*
+GATEWAY PINGING LOGIC
 */
+
+const gateways = [
+  {
+    "name": "MD Cybershuttle",
+    "gateway": "https://cybershuttle.org"
+  },
+  {
+    "name": "AI Cybershuttle",
+    "gateway": "https://ai.cybershuttle.org"
+  }
+];
+
+let CURRENT_GATEWAY = gateways[0].gateway;
+
+ipcMain.on('get-all-gateways', (event) => {
+  event.sender.send('got-gateways', gateways);
+});
+
+ipcMain.on('get-gateway', (event) => {
+  event.sender.send('gateway-got', CURRENT_GATEWAY);
+});
+
+ipcMain.on('set-gateway', (event, gateway) => {
+  CURRENT_GATEWAY = gateway;
+  event.sender.send('gateway-set', gateway);
+});
+
+
+
+// TODO: create health 
+
