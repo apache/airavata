@@ -22,13 +22,15 @@
 // pages/_app.jsx
 import { useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { AuthContext, AuthProvider } from '../lib/Contexts';
+import { AuthContext, AuthProvider, BackendUrlProvider } from '../lib/Contexts';
 
 function MyApp({ Component, pageProps }) {
   return (
     <ChakraProvider>
       <AuthProvider>
-        <Component {...pageProps} />
+        <BackendUrlProvider>
+          <Component {...pageProps} />
+        </BackendUrlProvider>
       </AuthProvider>
     </ChakraProvider>
   );

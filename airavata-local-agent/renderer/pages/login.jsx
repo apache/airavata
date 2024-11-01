@@ -184,10 +184,10 @@ const Login = () => {
           }
 
           <Box shadow='md' rounded='md' p={4} mt={4}>
-            <Heading size='sm' textAlign="left" color='blue.500'>
-              Current Gateway
+            <Heading size='md' textAlign="left" color='blue.500'>
+              Gateway
             </Heading>
-            <Select placeholder='Choose gateway' mt={4}
+            <Select mt={4}
               onChange={(e) => {
                 const gateway = e.target.value;
 

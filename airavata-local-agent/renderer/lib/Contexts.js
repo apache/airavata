@@ -49,53 +49,53 @@ export const useAuth = () => {
   return state;
 };
 
+// Create context
+const BackendUrlContext = createContext();
 
-// import { useContext, createContext } from "react";
+export const BackendUrlProvider = ({ children }) => {
+  const [gateway, setGateway] = useState('mdcyber');
+  const [allGateways, setAllGateways] = useState([]);
 
-// const TemplateContext = createContext({});
+  useEffect(() => {
+    // Get the gateway from local storage
+    window.ipc.send('get-all-gateways');
+    window.ipc.send('get-gateway');
 
-// // Template Provider
-// const TemplateProvider = ({ children }) => {
-//   const [accessToken, setAccessToken] = React.useState('');
 
-//   // Context values passed to consumer
-//   const value = {
-//     accessToken,    // <------ Expose Value to Consumer
-//     setAccessToken  // <------ Expose Setter to Consumer
-//   };
+    window.ipc.on('got-gateways', (all) => {
+      console.log('all gateways: ', all);
+      setAllGateways(all);
+    });
 
-//   return (
-//     <TemplateContext.Provider value={value}>
-//       {children}
-//     </TemplateContext.Provider>
-//   );
-// };
+    window.ipc.on('gateway-got', (gateway) => {
+      console.log('gateway-got', gateway);
+      setGateway(gateway);
+    });
 
-// // Template Consumer
-// const TemplateConsumer = ({ children }) => {
-//   return (
-//     <TemplateContext.Consumer>
-//       {(context) => {
-//         if (context === undefined) {
-//           throw new Error('TemplateConsumer must be used within TemplateProvider');
-//         }
-//         return children(context);
-//       }}
-//     </TemplateContext.Consumer>
-//   );
-// };
+    return () => {
+      window.ipc.removeAllListeners('got-gateways');
+      window.ipc.removeAllListeners('gateway-got');
+    };
+  }, []);
 
-// // useTemplate Hook
-// const useAuth = () => {
-//   const context = useContext(AuthContext);
-//   if (context === undefined) {
-//     throw new Error('useTemplate must be used within TemplateProvider');
-//   }
-//   return context;
-// };
 
-// export {
-//   TemplateProvider,
-//   TemplateConsumer,
-//   useAuth
-// };
+  // the user might want to change their gateway in the app too
+  const setGatewayUrl = (gateway) => {
+    setGateway(gateway);
+    window.ipc.send('set-gateway', gateway);
+  };
+
+  return (
+    <BackendUrlContext.Provider value={{
+      apiUrl: gateway?.gateway + '/api',
+      authUrl: gateway?.gateway + '/auth',
+      gateway,
+      allGateways,
+      setGatewayUrl
+    }}>
+      {children}
+    </BackendUrlContext.Provider>
+  );
+};
+
+export const useBackendUrls = () => useContext(BackendUrlContext);
