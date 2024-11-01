@@ -34,6 +34,7 @@ const Login = () => {
   const [verifyURL, setVerifyURL] = useState("");
   const [isProd, setIsProd] = useState(false);
   const [gatewayOptions, setGatewayOptions] = useState([]);
+  const [selectedGateway, setSelectedGateway] = useState("");
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
 
@@ -74,6 +75,7 @@ const Login = () => {
 
     window.ipc.send('is-prod');
     window.ipc.send('get-all-gateways');
+    window.ipc.send('get-gateway');
 
     if (localStorage.getItem("ciLoginAuto") === "true") {
       setLoading(true);
@@ -134,6 +136,10 @@ const Login = () => {
       setGatewayOptions(data);
     });
 
+    window.ipc.on('gateway-got', (gateway) => {
+      setSelectedGateway(gateway);
+    });
+
     // TODO: ask background process for what gateway we are currently configured on
 
     return () => {
@@ -141,6 +147,7 @@ const Login = () => {
       window.ipc.removeAllListeners('file-read');
       window.ipc.removeAllListeners('is-prod-reply');
       window.ipc.removeAllListeners('got-gateways');
+      window.ipc.removeAllListeners('gateway-got');
     };
   }, []);
 
@@ -180,11 +187,22 @@ const Login = () => {
             <Heading size='sm' textAlign="left" color='blue.500'>
               Current Gateway
             </Heading>
-            <Select placeholder='Choose gateway' mt={4}>
+            <Select placeholder='Choose gateway' mt={4}
+              onChange={(e) => {
+                const gateway = e.target.value;
+
+                if (gateway) {
+                  window.ipc.send('set-gateway', gateway);
+                  console.log("setting gateway to...", gateway);
+                  setSelectedGateway(gateway);
+                }
+              }}
+              value={selectedGateway}
+            >
               {
                 gatewayOptions.map((item) => {
                   return (
-                    <option key={item.gateway}>
+                    <option key={item.gateway} value={item.id}>
                       {item.name} ({item.gateway})
                     </option>
                   );

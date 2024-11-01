@@ -26,6 +26,8 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const fs = require('fs');
 import log from 'electron-log/main';
+import Store from 'electron-store';
+
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -798,18 +800,22 @@ ipcMain.on('write-file', writeFile);
 GATEWAY PINGING LOGIC
 */
 
+const store = new Store();
+
 const gateways = [
   {
+    "id": "mdcyber",
     "name": "MD Cybershuttle",
     "gateway": "https://cybershuttle.org"
   },
   {
+    "id": "aicyber",
     "name": "AI Cybershuttle",
     "gateway": "https://ai.cybershuttle.org"
   }
 ];
 
-let CURRENT_GATEWAY = gateways[0].gateway;
+let CURRENT_GATEWAY = store.get('stored-gateway') ?? gateways[0].gateway;
 
 ipcMain.on('get-all-gateways', (event) => {
   event.sender.send('got-gateways', gateways);
@@ -821,6 +827,7 @@ ipcMain.on('get-gateway', (event) => {
 
 ipcMain.on('set-gateway', (event, gateway) => {
   CURRENT_GATEWAY = gateway;
+  store.set('stored-gateway', gateway);
   event.sender.send('gateway-set', gateway);
 });
 
