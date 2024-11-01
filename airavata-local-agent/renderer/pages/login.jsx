@@ -22,7 +22,7 @@
 import { Box, Center, Flex, Select, Img, Text, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
-import { useAuth } from "../lib/Contexts";
+import { useAuth, useBackendUrls } from "../lib/Contexts";
 import { useRouter } from "next/router";
 import { TOKEN_FILE } from "../lib/constants";
 
@@ -37,6 +37,10 @@ const Login = () => {
   const [selectedGateway, setSelectedGateway] = useState("");
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
+  const { apiUrl, authUrl, loginUrl, setGatewayId } = useBackendUrls();
+
+  console.log('urls:', apiUrl, authUrl, loginUrl);
+  console.log('loginUrl', loginUrl);
 
   // general a random string
   const randomString = (length) => {
@@ -132,7 +136,6 @@ const Login = () => {
 
 
     window.ipc.on('got-gateways', (data) => {
-      console.log("gateways:", data);
       setGatewayOptions(data);
     });
 
@@ -193,8 +196,8 @@ const Login = () => {
 
                 if (gateway) {
                   window.ipc.send('set-gateway', gateway);
-                  console.log("setting gateway to...", gateway);
                   setSelectedGateway(gateway);
+                  setGatewayId(gateway);
                 }
               }}
               value={selectedGateway}
@@ -219,10 +222,9 @@ const Login = () => {
             {
               isProd ? (
                 <Button colorScheme='blue' w='full' mt={4}
-
                   onClick={() => {
                     setLoading(true);
-                    window.open(`https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`, '_blank');
+                    window.open(loginUrl, '_blank');
                   }}
                   isDisabled={loading}
                 > {

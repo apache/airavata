@@ -80,18 +80,26 @@ export const BackendUrlProvider = ({ children }) => {
 
 
   // the user might want to change their gateway in the app too
-  const setGatewayUrl = (gateway) => {
+  const setGatewayId = (gateway) => {
     setGateway(gateway);
     window.ipc.send('set-gateway', gateway);
   };
 
+  if (!allGateways || !gateway) {
+    return <div>Loading...</div>;
+  }
+
+  const ourGateway = allGateways.find(g => g.id === gateway);
+  console.log('our gateway', ourGateway);
+
   return (
     <BackendUrlContext.Provider value={{
-      apiUrl: gateway?.gateway + '/api',
-      authUrl: gateway?.gateway + '/auth',
+      apiUrl: ourGateway?.gateway + '/api',
+      authUrl: ourGateway?.gateway + '/auth',
+      loginUrl: ourGateway?.loginUrl,
       gateway,
       allGateways,
-      setGatewayUrl
+      setGatewayId
     }}>
       {children}
     </BackendUrlContext.Provider>

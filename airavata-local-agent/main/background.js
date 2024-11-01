@@ -40,7 +40,7 @@ if (isProd) {
 
 let mainWindow;
 const TOKEN_FILE = '~/csagent/token/keys.json';
-const BASE_URL = 'https://cybershuttle.org';
+let BASE_URL = 'this value will be replaced';
 
 // ----- OUR CUSTOM FUNCTIONS -----
 if (process.defaultApp) {
@@ -802,20 +802,35 @@ GATEWAY PINGING LOGIC
 
 const store = new Store();
 
+const randomString = (length) => {
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  let result = '';
+  for (let i = length; i > 0; --i) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return result;
+};
+
 const gateways = [
   {
     "id": "mdcyber",
     "name": "MD Cybershuttle",
-    "gateway": "https://cybershuttle.org"
+    "gateway": "https://cybershuttle.org",
+    "loginUrl": `https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`
   },
   {
     "id": "aicyber",
     "name": "AI Cybershuttle",
-    "gateway": "https://ai.cybershuttle.org"
+    "gateway": "https://ai.cybershuttleadfasfd.org",
+    "loginUrl": `https://google.com`
   }
 ];
 
 let CURRENT_GATEWAY = store.get('stored-gateway') ?? gateways[0].gateway;
+
+BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY).gateway;
 
 ipcMain.on('get-all-gateways', (event) => {
   event.sender.send('got-gateways', gateways);
@@ -827,11 +842,8 @@ ipcMain.on('get-gateway', (event) => {
 
 ipcMain.on('set-gateway', (event, gateway) => {
   CURRENT_GATEWAY = gateway;
+  BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY).gateway;
   store.set('stored-gateway', gateway);
   event.sender.send('gateway-set', gateway);
 });
-
-
-
-// TODO: create health 
 
