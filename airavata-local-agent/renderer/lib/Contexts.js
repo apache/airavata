@@ -56,20 +56,20 @@ export const BackendUrlProvider = ({ children }) => {
   const [gateway, setGateway] = useState('mdcyber');
   const [allGateways, setAllGateways] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // Get the gateway from local storage
+    // Fetch gateways
     window.ipc.send('get-all-gateways');
     window.ipc.send('get-gateway');
 
-
     window.ipc.on('got-gateways', (all) => {
-      console.log('all gateways: ', all);
       setAllGateways(all);
     });
 
     window.ipc.on('gateway-got', (gateway) => {
-      console.log('gateway-got', gateway);
       setGateway(gateway);
+      setLoading(false);
     });
 
     return () => {
@@ -79,17 +79,20 @@ export const BackendUrlProvider = ({ children }) => {
   }, []);
 
 
+
   // the user might want to change their gateway in the app too
   const setGatewayId = (gateway) => {
     setGateway(gateway);
     window.ipc.send('set-gateway', gateway);
   };
 
-  if (!allGateways || !gateway) {
+
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  const ourGateway = allGateways.find(g => g.id === gateway);
+
+  const ourGateway = allGateways?.find(g => g.id === gateway);
   console.log('our gateway', ourGateway);
 
   return (
@@ -97,6 +100,7 @@ export const BackendUrlProvider = ({ children }) => {
       apiUrl: ourGateway?.gateway + '/api',
       authUrl: ourGateway?.gateway + '/auth',
       loginUrl: ourGateway?.loginUrl,
+      gatewayName: ourGateway?.name,
       gateway,
       allGateways,
       setGatewayId

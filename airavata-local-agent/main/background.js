@@ -828,19 +828,35 @@ const gateways = [
   }
 ];
 
-let CURRENT_GATEWAY = store.get('stored-gateway') ?? gateways[0].gateway;
+log.info("Gateways: ", gateways);
 
-BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY).gateway;
+let CURRENT_GATEWAY = store.get('stored-gateway');
+
+log.info("CURRENT_GATEWAY (before): ", CURRENT_GATEWAY);
+
+if (typeof CURRENT_GATEWAY === "undefined" || CURRENT_GATEWAY === null) {
+  CURRENT_GATEWAY = "mdcyber";
+}
+
+log.info("CURRENT_GATEWAY (after): ", CURRENT_GATEWAY);
+
+
+BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY)?.gateway;
+
+log.info("BASE_URL: ", BASE_URL);
 
 ipcMain.on('get-all-gateways', (event) => {
+  log.info("Getting all gateways");
   event.sender.send('got-gateways', gateways);
 });
 
 ipcMain.on('get-gateway', (event) => {
+  log.info("Getting the gateway");
   event.sender.send('gateway-got', CURRENT_GATEWAY);
 });
 
 ipcMain.on('set-gateway', (event, gateway) => {
+  log.info("Setting the gateway: ", gateway);
   CURRENT_GATEWAY = gateway;
   BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY).gateway;
   store.set('stored-gateway', gateway);
