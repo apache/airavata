@@ -36,7 +36,7 @@
         <derby.version>10.11.1.1</derby.version>
         <surefire.version>2.18.1</surefire.version>
         <skipTests>true</skipTests>
-        <mysql.connector.version>5.1.34</mysql.connector.version>
+        <mysql.connector.version>8.0.28</mysql.connector.version>
     </properties>
 
     <dependencies>
