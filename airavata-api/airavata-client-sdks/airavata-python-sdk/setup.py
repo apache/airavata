@@ -18,5 +18,5 @@ setup(
     author='Airavata Developers',
     author_email='dev@airavata.apache.org',
     description='Apache Airavata Python  SDK',
-    requires=read("requirements.txt").splitlines()
+    install_requires=read("requirements.txt").splitlines()
 )
