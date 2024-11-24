@@ -17,5 +17,6 @@ setup(
     license='Apache License 2.0',
     author='Airavata Developers',
     author_email='dev@airavata.apache.org',
-    description='Apache Airavata Python  SDK'
+    description='Apache Airavata Python  SDK',
+    requires=read("requirements.txt").splitlines()
 )
