@@ -3,13 +3,13 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "airavata-python-sdk"
-version = "1.1.6"
+name = "airavata-python-sdk-test"
+version = "0.0.3"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
 license = { text = "Apache License 2.0" }
 authors = [{ name = "Airavata Developers", email = "dev@airavata.apache.org" }]
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 dependencies = [
   "oauthlib",
   "requests",
@@ -21,12 +21,16 @@ dependencies = [
   "pysftp",
   "configparser",
   "urllib3",
-  "pyjwt"
+  "pyjwt",
+  "pydantic",
+  "rich",
+  "ipywidgets",
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["airavata*"]
+exclude = ["*.egg-info"]
 
 [tool.setuptools.package-data]
 "airavata_sdk.transport" = ["*.ini"]
