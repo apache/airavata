@@ -113,6 +113,7 @@ class GatewaySettings(object):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
+        self.GATEWAY_URL = config.get('Gateway', 'GATEWAY_URL')
         self.GATEWAY_DATA_STORE_RESOURCE_ID = config.get('Gateway', 'GATEWAY_DATA_STORE_RESOURCE_ID')
         self.GATEWAY_DATA_STORE_DIR = config.get('Gateway', 'GATEWAY_DATA_STORE_DIR')
         self.GATEWAY_DATA_STORE_HOSTNAME = config.get('Gateway', 'GATEWAY_DATA_STORE_HOSTNAME')
