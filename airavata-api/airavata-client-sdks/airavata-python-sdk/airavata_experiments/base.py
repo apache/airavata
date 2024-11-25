@@ -65,7 +65,7 @@ class Experiment(Generic[T], abc.ABC):
   name: str
   application: T
   inputs: dict[str, Any]
-  input_mapping: dict[str, tuple[Any, str]]
+  input_mapping: dict[str, str]
   resource: Runtime = Runtime.default()
   tasks: list[Task] = []
 
@@ -85,22 +85,24 @@ class Experiment(Generic[T], abc.ABC):
     self.resource = resource
     return self
 
-  def create_task(self, *allowed_runtimes: Runtime, name: str | None = None) -> None:
+  def add_replica(self, *allowed_runtimes: Runtime) -> None:
     """
-    Create a task to run the experiment on a given runtime.
+    Add a replica to the experiment.
+    This will create a copy of the application with the given inputs.
+
     """
     runtime = random.choice(allowed_runtimes) if len(allowed_runtimes) > 0 else self.resource
     uuid_str = str(uuid.uuid4())[:4].upper()
 
     self.tasks.append(
         Task(
-            name=name or f"{self.name}_{uuid_str}",
+            name=f"{self.name}_{uuid_str}",
             app_id=self.application.app_id,
             inputs={**self.inputs},
             runtime=runtime,
         )
     )
-    print(f"Task created. ({len(self.tasks)} tasks in total)")
+    print(f"Added replica. ({len(self.tasks)} tasks in total)")
 
   def add_sweep(self, *allowed_runtimes: Runtime, **space: list) -> None:
     """
@@ -113,7 +115,7 @@ class Experiment(Generic[T], abc.ABC):
 
       task_specific_params = dict(zip(space.keys(), values))
       agg_inputs = {**self.inputs, **task_specific_params}
-      task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
+      task_inputs = {k: agg_inputs[v] for k, v in self.input_mapping.items()}
 
       self.tasks.append(Task(
           name=f"{self.name}_{uuid_str}",
@@ -124,10 +126,10 @@ class Experiment(Generic[T], abc.ABC):
 
   def plan(self, **kwargs) -> Plan:
     if len(self.tasks) == 0:
-      self.create_task(self.resource)
+      self.add_replica(self.resource)
     tasks = []
     for t in self.tasks:
       agg_inputs = {**self.inputs, **t.inputs}
-      task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
+      task_inputs = {k: agg_inputs[v] for k, v in self.input_mapping.items()}
       tasks.append(Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime))
     return Plan(tasks=tasks)

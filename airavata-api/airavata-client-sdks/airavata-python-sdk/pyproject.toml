@@ -3,18 +3,18 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "airavata-python-sdk"
-version = "2.1.4.post4"
+name = "airavata-python-sdk-test"
+version = "0.0.3"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
-license = "Apache-2.0"
+license = { text = "Apache License 2.0" }
 authors = [{ name = "Airavata Developers", email = "dev@airavata.apache.org" }]
 requires-python = ">=3.10"
 dependencies = [
   "oauthlib",
   "requests",
   "requests-oauthlib",
-  "thrift",
+  "thrift~=0.16.0",
   "thrift_connector",
   "paramiko",
   "scp",
@@ -24,14 +24,7 @@ dependencies = [
   "pyjwt",
   "pydantic",
   "rich",
-  "pandas",
-  "pyyaml",
-]
-
-[project.optional-dependencies]
-notebook = [
   "ipywidgets",
-  "ipython"
 ]
 
 [tool.setuptools.packages.find]

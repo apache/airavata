@@ -13,16 +13,21 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-from __future__ import annotations
+
 from .auth import context
 import abc
 from typing import Any
-from pathlib import Path
 
 import pydantic
+import requests
+import uuid
+import time
 
-# from .task import Task
 Task = Any
+
+
+conn_svc_url = "api.gateway.cybershuttle.org"
+
 
 class Runtime(abc.ABC, pydantic.BaseModel):
 
@@ -33,10 +38,7 @@ class Runtime(abc.ABC, pydantic.BaseModel):
   def execute(self, task: Task) -> None: ...
 
   @abc.abstractmethod
-  def execute_py(self, libraries: list[str], code: str, task: Task) -> None: ...
-
-  @abc.abstractmethod
-  def status(self, task: Task) -> tuple[str, str]: ...
+  def status(self, task: Task) -> str: ...
 
   @abc.abstractmethod
   def signal(self, signal: str, task: Task) -> None: ...
@@ -45,23 +47,18 @@ class Runtime(abc.ABC, pydantic.BaseModel):
   def ls(self, task: Task) -> list[str]: ...
 
   @abc.abstractmethod
-  def upload(self, file: Path, task: Task) -> str: ...
-
-  @abc.abstractmethod
-  def download(self, file: str, local_dir: str, task: Task) -> str: ...
-
-  @abc.abstractmethod
-  def cat(self, file: str, task: Task) -> bytes: ...
+  def download(self, file: str, task: Task) -> str: ...
 
   def __str__(self) -> str:
     return f"{self.__class__.__name__}(args={self.args})"
 
   @staticmethod
   def default():
+    # return Mock()
     return Remote.default()
 
   @staticmethod
-  def create(id: str, args: dict[str, Any]) -> Runtime:
+  def create(id: str, args: dict[str, Any]) -> "Runtime":
     if id == "mock":
       return Mock(**args)
     elif id == "remote":
@@ -90,31 +87,22 @@ class Mock(Runtime):
     task.agent_ref = str(uuid.uuid4())
     task.ref = str(uuid.uuid4())
 
-  def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
-    pass
-
-  def status(self, task: Task) -> tuple[str, str]:
+  def status(self, task: Task) -> str:
     import random
 
     self._state += random.randint(0, 5)
     if self._state > 10:
-      return "N/A", "COMPLETED"
-    return "N/A", "RUNNING"
+      return "COMPLETED"
+    return "RUNNING"
 
   def signal(self, signal: str, task: Task) -> None:
     pass
 
   def ls(self, task: Task) -> list[str]:
-    return [""]
+    return []
 
-  def upload(self, file: Path, task: Task) -> str:
+  def download(self, file: str, task: Task) -> str:
     return ""
-
-  def download(self, file: str, local_dir: str, task: Task) -> str:
-    return ""
-  
-  def cat(self, file: str, task: Task) -> bytes:
-    return b""
 
   @staticmethod
   def default():
@@ -123,152 +111,105 @@ class Mock(Runtime):
 
 class Remote(Runtime):
 
-  def __init__(self, cluster: str, category: str, queue_name: str, node_count: int, cpu_count: int, walltime: int, gpu_count: int = 0, group: str = "Default") -> None:
-    super().__init__(id="remote", args=dict(
-        cluster=cluster,
-        category=category,
-        queue_name=queue_name,
-        node_count=node_count,
-        cpu_count=cpu_count,
-        gpu_count=gpu_count,
-        walltime=walltime,
-        group=group,
-    ))
+  def __init__(self, **kwargs) -> None:
+    super().__init__(id="remote", args=kwargs)
 
   def execute(self, task: Task) -> None:
+    assert context.access_token is not None
     assert task.ref is None
     assert task.agent_ref is None
-    assert {"cluster", "group", "queue_name", "node_count", "cpu_count", "gpu_count", "walltime"}.issubset(self.args.keys())
-    print(f"[Remote] Creating Experiment: name={task.name}")
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    try:
-      launch_state = av.launch_experiment(
-          experiment_name=task.name,
-          app_name=task.app_id,
-          project=task.project,
-          inputs=task.inputs,
-          computation_resource_name=str(self.args["cluster"]),
-          queue_name=str(self.args["queue_name"]),
-          node_count=int(self.args["node_count"]),
-          cpu_count=int(self.args["cpu_count"]),
-          walltime=int(self.args["walltime"]),
-          group=str(self.args["group"]),
-      )
-      task.agent_ref = launch_state.agent_ref
-      task.pid = launch_state.process_id
-      task.ref = launch_state.experiment_id
-      task.workdir = launch_state.experiment_dir
-      task.sr_host = launch_state.sr_host
-      print(f"[Remote] Experiment Launched: id={task.ref}")
-    except Exception as e:
-      print(f"[Remote] Failed to launch experiment: {e}")
-      raise e
+    print(f"[Remote] Experiment Created: name={task.name}")
+    assert "cluster" in self.args
+    task.agent_ref = str(uuid.uuid4())
+    task.ref = av.launch_experiment(
+        experiment_name=task.name,
+        app_name=task.app_id,
+        computation_resource_name=str(self.args["cluster"]),
+        inputs={**task.inputs, "agent_id": task.agent_ref, "server_url": conn_svc_url}
+    )
+    print(f"[Remote] Experiment Launched: id={task.ref}")
 
-  def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
-    assert task.ref is not None
-    assert task.agent_ref is not None
-    assert task.pid is not None
-
-    from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
-    result = av.execute_py(task.project, libraries, code, task.agent_ref, task.pid, task.runtime.args)
-    print(result)
-
-  def status(self, task: Task) -> tuple[str, str]:
+  def status(self, task: Task):
+    assert context.access_token is not None
     assert task.ref is not None
     assert task.agent_ref is not None
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    # prioritize job state, fallback to experiment state
-    job_id, job_state = av.get_task_status(task.ref)
-    if not job_state or job_state == "UN_SUBMITTED":
-      return job_id, av.get_experiment_status(task.ref)
-    else:
-      return job_id, job_state
+    status = av.get_experiment_status(task.ref)
+    return status
 
   def signal(self, signal: str, task: Task) -> None:
+    assert context.access_token is not None
     assert task.ref is not None
     assert task.agent_ref is not None
-    
+
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    av.stop_experiment(task.ref)
+    status = av.stop_experiment(task.ref)
 
   def ls(self, task: Task) -> list[str]:
+    assert context.access_token is not None
     assert task.ref is not None
-    assert task.pid is not None
     assert task.agent_ref is not None
-    assert task.sr_host is not None
-    assert task.workdir is not None
 
-    from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
-    files = av.list_files(task.pid, task.agent_ref, task.sr_host, task.workdir)
-    return files
+    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+        "agentId": task.agent_ref,
+        "workingDir": ".",
+        "arguments": ["ls", "/data"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        print("Experiment is initializing...")
+        return []
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          files = data["responseString"].split("\n")
+          return files
+        time.sleep(1)
 
-  def upload(self, file: Path, task: Task) -> str:
+  def download(self, file: str, task: Task) -> str:
+    assert context.access_token is not None
     assert task.ref is not None
-    assert task.pid is not None
     assert task.agent_ref is not None
-    assert task.sr_host is not None
-    assert task.workdir is not None
 
-    from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
-    result = av.upload_files(task.pid, task.agent_ref, task.sr_host, [file], task.workdir).pop()
-    return result
+    import os
 
-  def download(self, file: str, local_dir: str, task: Task) -> str:
-    assert task.ref is not None
-    assert task.pid is not None
-    assert task.agent_ref is not None
-    assert task.sr_host is not None
-    assert task.workdir is not None
-
-    from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
-    result = av.download_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir, local_dir)
-    return result
-
-  def cat(self, file: str, task: Task) -> bytes:
-    assert task.ref is not None
-    assert task.pid is not None
-    assert task.agent_ref is not None
-    assert task.sr_host is not None
-    assert task.workdir is not None
-
-    from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
-    content = av.cat_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir)
-    return content
+    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+        "agentId": task.agent_ref,
+        "workingDir": ".",
+        "arguments": ["cat", os.path.join("/data", file)]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          files = data["responseString"]
+          return files
+        time.sleep(1)
 
   @staticmethod
   def default():
-    return list_runtimes(cluster="login.expanse.sdsc.edu", category="gpu").pop()
+    return Remote(
+        cluster="login.expanse.sdsc.edu",
+    )
 
 
-def list_runtimes(
-    cluster: str | None = None,
-    category: str | None = None,
-    group: str | None = None,
-    node_count: int | None = None,
-    cpu_count: int | None = None,
-    walltime: int | None = None,
-) -> list[Runtime]:
-  from .airavata import AiravataOperator
-  av = AiravataOperator(context.access_token)
-  all_runtimes = av.get_available_runtimes()
-  out_runtimes = []
-  for r in all_runtimes:
-    if (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]) and (group in [None, r.args["group"]]):
-      r.args["node_count"] = node_count or r.args["node_count"]
-      r.args["cpu_count"] = cpu_count or r.args["cpu_count"]
-      r.args["walltime"] = walltime or r.args["walltime"]
-      out_runtimes.append(r)
-  return out_runtimes
-
-def is_terminal_state(x):
-  return x in ["CANCELED", "COMPLETED", "FAILED"]
+def list_runtimes(**kwargs) -> list[Runtime]:
+  # TODO get list using token
+  return [Remote(cluster="login.expanse.sdsc.edu"), Remote(cluster="anvil.rcac.purdue.edu")]

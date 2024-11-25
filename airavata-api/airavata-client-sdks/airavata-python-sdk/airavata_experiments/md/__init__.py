@@ -14,13 +14,6 @@
 #  limitations under the License.
 #
 
-from .applications import AlphaFold2, AMBER, Gaussian, GROMACS, NAMD, VMD
+from .applications import NAMD, VMD
 
-__all__ = [
-    "AlphaFold2",
-    "AMBER",
-    "Gaussian",
-    "GROMACS",
-    "NAMD",
-    "VMD",
-]
+__all__ = ["NAMD", "VMD"]
