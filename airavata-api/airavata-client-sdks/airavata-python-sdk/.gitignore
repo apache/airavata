@@ -8,7 +8,7 @@ __pycache__/
 .DS_Store
 .ipynb_checkpoints
 *.egg-info/
-results*/
+data/
 plan.json
 settings*.ini
 auth.state
