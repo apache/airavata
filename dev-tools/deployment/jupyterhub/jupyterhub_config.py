@@ -1,5 +1,6 @@
 from oauthenticator.generic import GenericOAuthenticator
 import os
+import sys
 
 # Authenticator Configuration
 c.JupyterHub.authenticator_class = GenericOAuthenticator
@@ -39,3 +40,25 @@ c.JupyterHub.hub_connect_ip = 'jupyterhub'
 
 # Logging
 c.JupyterHub.log_level = 'DEBUG'
+
+# Terminate idle notebook containers
+c.JupyterHub.services = [
+    {
+        "name": "jupyterhub-idle-culler-service",
+        "admin": True,
+        "command": [sys.executable, "-m", "jupyterhub_idle_culler", "--timeout=3600"],
+    }
+]
+
+c.JupyterHub.load_roles = [
+    {
+        "name": "jupyterhub-idle-culler-role",
+        "scopes": [
+            "list:users",
+            "read:users:activity",
+            "read:servers",
+            "delete:servers",
+        ],
+        "services": ["jupyterhub-idle-culler-service"],
+    }
+]
