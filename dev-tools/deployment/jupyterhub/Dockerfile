@@ -1,6 +1,6 @@
 FROM jupyterhub/jupyterhub:3.0
 
-RUN pip install oauthenticator requests pyjwt dockerspawner
+RUN pip install oauthenticator requests pyjwt dockerspawner jupyterhub-idle-culler
 
 COPY jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
 
