@@ -1,0 +1,30 @@
+[build-system]
+requires      = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name         = "airavata-experiment-sdk"
+version      = "0.1.0"
+description  = "A SDK for airavata experiments"
+authors      = [{ name = "Your Name", email = "your.email@example.com" }]
+readme       = "README.md"
+license      = { file = "LICENSE" }
+dependencies = [
+  "requests",
+  "pydantic",
+  "rich",
+  "paramiko",
+  "scp",
+  "git+https://github.com/yasithdev/airavata.git@experiment-sdk#subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk",
+]
+
+[tool.isort]
+profile                = "autopep8"
+line_length            = 200
+multi_line_output      = 10
+include_trailing_comma = false
+force_single_line      = true
+
+[tool.autopep8]
+indent_size     = 2
+max-line-length = 200
