@@ -15,7 +15,7 @@ dependencies = [
   "rich",
   "paramiko",
   "scp",
-  "git+https://github.com/yasithdev/airavata.git@experiment-sdk#subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk",
+  "airavata-python-sdk @ git+https://github.com/yasithdev/airavata.git@experiment-sdk#subdirectory=airavata-api/airavata-client-sdks/airavata-python-sdk",
 ]
 
 [tool.isort]
