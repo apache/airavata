@@ -162,6 +162,7 @@ class Remote(Runtime):
     })
     data = res.json()
     if data["error"] is not None:
+      print(data)
       return []
     else:
       exc_id = data["executionId"]
