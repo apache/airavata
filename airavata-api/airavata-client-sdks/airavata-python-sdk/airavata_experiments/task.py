@@ -52,6 +52,10 @@ class Task(pydantic.BaseModel):
   def files(self) -> list[str]:
     assert self.ref is not None
     return self.runtime.ls(self)
+  
+  def cat(self, file: str) -> str:
+    assert self.ref is not None
+    return self.runtime.download(file, self)
 
   def stop(self) -> None:
     assert self.ref is not None

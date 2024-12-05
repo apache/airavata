@@ -183,10 +183,12 @@ class Remote(Runtime):
     assert task.ref is not None
     assert task.agent_ref is not None
 
+    import os
+
     res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
-        "arguments": ["cat", file]
+        "arguments": ["cat", os.path.join("/data", file)]
     })
     data = res.json()
     if data["error"] is not None:
@@ -197,7 +199,7 @@ class Remote(Runtime):
         res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
-          files = data["responseString"].split("\n")
+          files = data["responseString"]
           return files
         time.sleep(1)
 
