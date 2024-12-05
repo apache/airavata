@@ -113,6 +113,35 @@ func main() {
 			}
 			log.Printf("[agent.go] Received message %s", in.Message)
 			switch x := in.GetMessage().(type) {
+			case *protos.ServerMessage_PythonExecutionRequest:
+				log.Printf("[agent.go] Recived a python execution request")
+				executionId := x.PythonExecutionRequest.ExecutionId
+				sessionId := x.PythonExecutionRequest.SessionId
+				code := x.PythonExecutionRequest.Code
+				workingDir := x.PythonExecutionRequest.WorkingDir
+
+				log.Printf("[agent.go] Execution id %s", executionId)
+				log.Printf("[agent.go] Session id %s", sessionId)
+				log.Printf("[agent.go] Code %s", code)
+				log.Printf("[agent.go] Working Dir %s", workingDir)
+
+				cmd := exec.Command("python3", "-c", code) //TODO: Load python runtime from a config
+
+				output, err := cmd.Output()
+				if err != nil {
+					fmt.Println("[agent.go] Failed to run python command:", err)
+					return
+				}
+
+				stdoutString := string(output)
+				if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
+					PythonExecutionResponse: &protos.PythonExecutionResponse{
+						SessionId: sessionId, 
+						ExecutionId: executionId, 
+						ResponseString: stdoutString}}}); err != nil {
+					log.Printf("[agent.go] Failed to send execution result to server: %v", err)
+				}
+
 			case *protos.ServerMessage_CommandExecutionRequest:
 				log.Printf("[agent.go] Recived a command execution request")
 				executionId := x.CommandExecutionRequest.ExecutionId

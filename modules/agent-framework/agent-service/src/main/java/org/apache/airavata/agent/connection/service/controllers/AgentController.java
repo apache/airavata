@@ -68,4 +68,23 @@ public class AgentController {
         return ResponseEntity.accepted().body(agentConnectionHandler.getJupyterExecutionResponse(executionId));
     }
 
+
+    @PostMapping("/executepythonrequest")
+    public ResponseEntity<AgentPythonRunAck> runPythonOnAgent(@Valid @RequestBody AgentPythonRunRequest pythonRunRequest) {
+        logger.info("Received python execution request to run on agent {}", pythonRunRequest.getAgentId());
+        if (agentConnectionHandler.isAgentUp(pythonRunRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runPythonOnAgent(pythonRunRequest));
+        } else {
+            logger.warn("No agent is available to run on agent {}", pythonRunRequest.getAgentId());
+            AgentPythonRunAck ack = new AgentPythonRunAck();
+            ack.setError("Agent not found");
+            return ResponseEntity.accepted().body(ack);
+        }
+    }
+
+    @GetMapping("/executepythonresponse/{executionId}")
+    public ResponseEntity<AgentPythonRunResponse> getPythonResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.getPythonExecutionResponse(executionId));
+    }
+
 }
