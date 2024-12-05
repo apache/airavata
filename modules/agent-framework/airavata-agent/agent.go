@@ -119,12 +119,15 @@ func main() {
 				sessionId := x.PythonExecutionRequest.SessionId
 				code := x.PythonExecutionRequest.Code
 				workingDir := x.PythonExecutionRequest.WorkingDir
+				libraries := x.PythonExecutionRequest.Libraries
 
 				log.Printf("[agent.go] Execution id %s", executionId)
 				log.Printf("[agent.go] Session id %s", sessionId)
 				log.Printf("[agent.go] Code %s", code)
 				log.Printf("[agent.go] Working Dir %s", workingDir)
+				log.Printf("[agent.go] Libraries %s", libraries)
 
+				// TODO: cd into working dir, create the virtual environment with provided libraries
 				cmd := exec.Command("python3", "-c", code) //TODO: Load python runtime from a config
 
 				output, err := cmd.Output()
