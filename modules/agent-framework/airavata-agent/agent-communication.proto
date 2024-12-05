@@ -31,6 +31,12 @@ message JupyterExecutionResponse {
   string responseString = 3;
 }
 
+message PythonExecutionResponse {
+  string executionId = 1;
+  string sessionId = 2;
+  string responseString = 3;
+}
+
 message TerminateExecutionResponse {
   string status = 1;
   string description = 2;
@@ -51,6 +57,7 @@ message AgentMessage {
     ContainerExecutionResponse containerExecutionResponse = 3;
     TerminateExecutionResponse terminateExecutionResponse = 4;
     JupyterExecutionResponse jupyterExecutionResponse = 5;
+    PythonExecutionResponse pythonExecutionResponse = 6;
   }
 }
 
@@ -89,6 +96,16 @@ message JupyterExecutionRequest {
   string code = 4;
 }
 
+message PythonExecutionRequest {
+  string executionId = 1;
+  string sessionId = 2;
+  bool keepAlive = 3;
+  repeated string libraries = 4;
+  string code = 5;
+  string pythonVersion = 6;
+  string workingDir = 7;
+}
+
 message TerminateExecutionRequest {
   string executionId = 1;
 }
@@ -105,5 +122,6 @@ message ServerMessage {
     KillAgentRequest killAgentRequest = 4;
     TunnelCreationRequest tunnelCreationRequest = 5;
     JupyterExecutionRequest jupyterExecutionRequest = 6;
+    PythonExecutionRequest pythonExecutionRequest = 7;
   }
 }

@@ -30,6 +30,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
     private final Map<String, CommandExecutionResponse> COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
     private final AiravataFileService airavataFileService;
 
@@ -103,19 +104,69 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         return ack;
     }
 
+    public AgentPythonRunResponse getPythonExecutionResponse(String executionId) {
+        AgentPythonRunResponse runResponse = new AgentPythonRunResponse();
+        if (PYTHON_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
+            runResponse.setResponseString(PYTHON_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+            runResponse.setExecutionId(executionId);
+            runResponse.setAvailable(true);
+            PYTHON_EXECUTION_RESPONSE_CACHE.remove(executionId);
+        } else {
+            runResponse.setAvailable(false);
+        }
+        return runResponse;
+    }
+
+    public AgentPythonRunAck runPythonOnAgent(AgentPythonRunRequest pythonRunRequest) {
+        String executionId = UUID.randomUUID().toString();
+        AgentPythonRunAck ack = new AgentPythonRunAck();
+        ack.setExecutionId(executionId);
+
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(pythonRunRequest.getAgentId());
+        if (agentStreamObserver.isPresent()) {
+            try {
+                logger.info("Running a python on agent {}", pythonRunRequest.getAgentId());
+                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setPythonExecutionRequest(
+                        PythonExecutionRequest.newBuilder()
+                                .setExecutionId(executionId)
+                                .setKeepAlive(pythonRunRequest.isKeepAlive())
+                                .setCode(pythonRunRequest.getCode())
+                                .addAllLibraries(pythonRunRequest.getLibraries())
+                                .setWorkingDir(pythonRunRequest.getParentExperimentId())).build());
+
+            } catch (Exception e) {
+                logger.error("Failed to submit python execution request {} on agent {}",
+                        executionId, pythonRunRequest.getAgentId(), e);
+                ack.setError(e.getMessage());
+            }
+        } else {
+            logger.warn("No agent found to run python execution on agent {}", pythonRunRequest.getAgentId());
+            ack.setError("No agent found to run python execution on agent " + pythonRunRequest.getAgentId());
+        }
+
+        return ack;
+    }
+
+    private Optional<StreamObserver<ServerMessage>> getAgentStreamObserver(String agentId) {
+        if (AGENT_STREAM_MAPPING.containsKey(agentId) &&
+                ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(agentId))) {
+            String streamId = AGENT_STREAM_MAPPING.get(agentId);
+            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            return Optional.ofNullable(streamObserver);
+        } else {
+            return Optional.empty();
+        }
+    }
     public JupyterExecutionAck runJupyterOnAgent(JupyterExecutionRequest jupyterExecutionRequest) {
         String executionId = UUID.randomUUID().toString();
         JupyterExecutionAck ack = new JupyterExecutionAck();
         ack.setExecutionId(executionId);
 
-        if (AGENT_STREAM_MAPPING.containsKey(jupyterExecutionRequest.getAgentId()) &&
-                ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(jupyterExecutionRequest.getAgentId()))) {
-            String streamId = AGENT_STREAM_MAPPING.get(jupyterExecutionRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
-
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(jupyterExecutionRequest.getAgentId());
+        if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running a jupyter on agent {}", jupyterExecutionRequest.getAgentId());
-                streamObserver.onNext(ServerMessage.newBuilder().setJupyterExecutionRequest(
+                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setJupyterExecutionRequest(
                         org.apache.airavata.agent.JupyterExecutionRequest.newBuilder().build().newBuilder()
                                 .setExecutionId(executionId)
                                 .setSessionId(jupyterExecutionRequest.getSessionId())
@@ -189,6 +240,12 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         JUPYTER_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
     }
 
+    private void handlePythonExecutionResponse (PythonExecutionResponse executionResponse) {
+        logger.info("Received python execution response for execution id {}", executionResponse.getExecutionId());
+        PYTHON_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
+    }
+
+
     private void handleReadDirRequest(ReadDirReq readDirReq, StreamObserver<ServerMessage> responseObserver) {
         airavataFileService.handleReadDirRequest(readDirReq, responseObserver);
     }
@@ -223,6 +280,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                     }
                     case JUPYTEREXECUTIONRESPONSE -> {
                         handleJupyterExecutionResponse(request.getJupyterExecutionResponse());
+                    }
+                    case PYTHONEXECUTIONRESPONSE -> {
+                        handlePythonExecutionResponse(request.getPythonExecutionResponse());
                     }
                     case READDIRREQ -> {
                         handleReadDirRequest(request.getReadDirReq(), responseObserver);
