@@ -6,7 +6,7 @@ import sys
 c.JupyterHub.authenticator_class = GenericOAuthenticator
 c.GenericOAuthenticator.client_id = os.getenv('OAUTH_CLIENT_ID')
 c.GenericOAuthenticator.client_secret = os.getenv('OAUTH_CLIENT_SECRET')
-c.GenericOAuthenticator.oauth_callback_url = 'http://3.147.153.73:8000/hub/oauth_callback'
+c.GenericOAuthenticator.oauth_callback_url = 'https://hub.cybershuttle.org/hub/oauth_callback'
 c.GenericOAuthenticator.authorize_url = 'https://auth.cybershuttle.org/realms/10000000/protocol/openid-connect/auth'
 c.GenericOAuthenticator.token_url = 'https://auth.cybershuttle.org/realms/10000000/protocol/openid-connect/token'
 c.GenericOAuthenticator.userdata_url = 'https://auth.cybershuttle.org/realms/10000000/protocol/openid-connect/userinfo'
@@ -62,3 +62,7 @@ c.JupyterHub.load_roles = [
         "services": ["jupyterhub-idle-culler-service"],
     }
 ]
+
+# SSL Termination
+c.JupyterHub.bind_url = 'http://:8000'
+c.JupyterHub.external_ssl = True
