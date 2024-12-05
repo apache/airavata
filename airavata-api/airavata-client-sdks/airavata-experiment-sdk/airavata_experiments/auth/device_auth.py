@@ -21,9 +21,9 @@ import requests
 
 class DeviceFlowAuthenticator:
 
-    client_id: str
+    idp_url: str
     realm: str
-    auth_server_url: str
+    client_id: str
     device_code: str | None
     interval: int
     access_token: str | None
@@ -35,15 +35,15 @@ class DeviceFlowAuthenticator:
 
     def __init__(
         self,
-        client_id: str,
+        idp_url: str,
         realm: str,
-        auth_server_url: str,
+        client_id: str,
     ):
-        self.client_id = client_id
+        self.idp_url = idp_url
         self.realm = realm
-        self.auth_server_url = auth_server_url
+        self.client_id = client_id
 
-        if not self.client_id or not self.realm or not self.auth_server_url:
+        if not self.client_id or not self.realm or not self.idp_url:
             raise ValueError(
                 "Missing required environment variables for client ID, realm, or auth server URL")
 
@@ -59,7 +59,7 @@ class DeviceFlowAuthenticator:
 
         # Step 1: Request device and user code
         auth_device_url = f"{
-            self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
+            self.idp_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
         response = requests.post(auth_device_url, data={
                                  "client_id": self.client_id, "scope": "openid"})
 
@@ -90,7 +90,7 @@ class DeviceFlowAuthenticator:
 
     def __poll_for_token__(self):
         token_url = f"{
-            self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
+            self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
         print("Waiting for authorization...")
         while True:
             response = requests.post(
@@ -124,12 +124,16 @@ class DeviceFlowAuthenticator:
     def __load_saved_token__(self):
         import json
         import jwt
+        import datetime
         try:
             with open("auth.state", "r") as f:
                 data = json.load(f)
                 self.refresh_token = str(data["refresh_token"])
                 self.access_token = str(data["access_token"])
-            jwt.decode(self.access_token, options={"verify_signature": False, "verify_exp": True})
-            return True
-        except (FileNotFoundError, jwt.ExpiredSignatureError, KeyError):
+            decoded = jwt.decode(self.access_token, options={"verify_signature": False})
+            tA = datetime.datetime.now(datetime.timezone.utc).timestamp()
+            tB = int(decoded.get("exp", 0))
+            return tA < tB
+        except (FileNotFoundError, KeyError, ValueError, StopIteration) as e:
+            print(e)
             return False

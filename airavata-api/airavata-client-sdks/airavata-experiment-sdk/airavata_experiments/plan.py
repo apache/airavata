@@ -99,22 +99,25 @@ class Plan(pydantic.BaseModel):
     n = len(self.tasks)
     states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
     def is_terminal_state(x): return x in ["CANCELED", "COMPLETED", "FAILED"]
-    with Progress() as progress:
-      pbars = [progress.add_task(f"{task.name} ({i+1}/{n})", total=None) for i, task in enumerate(self.tasks)]
-      completed = [False] * n
-      while not all(completed):
-        statuses = self.__stage_status__()
-        for i, (task, status) in enumerate(zip(self.tasks, statuses)):
-          state = status.state
-          state_text = states[state]
-          pbar = pbars[i]
-          progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {state_text}")
-          if is_terminal_state(state_text):
-            completed[i] = True
-            progress.update(pbar, completed=True)
-        sleep_time = check_every_n_mins * 60
-        time.sleep(sleep_time)
-    print("Task(s) complete.")
+    try:
+      with Progress() as progress:
+        pbars = [progress.add_task(f"{task.name} ({i+1}/{n})", total=None) for i, task in enumerate(self.tasks)]
+        completed = [False] * n
+        while not all(completed):
+          statuses = self.__stage_status__()
+          for i, (task, status) in enumerate(zip(self.tasks, statuses)):
+            state = status.state
+            state_text = states[state]
+            pbar = pbars[i]
+            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {state_text}")
+            if is_terminal_state(state_text):
+              completed[i] = True
+              progress.update(pbar, completed=True)
+          sleep_time = check_every_n_mins * 60
+          time.sleep(sleep_time)
+        print("Task(s) complete.")
+    except KeyboardInterrupt:
+      print("Interrupted by user.")
 
   def stop(self) -> None:
     self.__stage_stop__()

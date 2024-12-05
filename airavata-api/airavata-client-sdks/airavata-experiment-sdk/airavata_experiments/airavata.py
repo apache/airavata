@@ -339,3 +339,8 @@ class AiravataOperator:
     status = self.api_server_client.get_experiment_status(
         self.airavata_token, experiment_id)
     return status
+  
+  def stop_experiment(self, experiment_id):
+    status = self.api_server_client.terminate_experiment(
+        self.airavata_token, experiment_id, self.gateway_conf.GATEWAY_ID)
+    return status

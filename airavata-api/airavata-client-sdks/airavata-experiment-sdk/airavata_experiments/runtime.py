@@ -147,8 +147,9 @@ class Remote(Runtime):
     assert task.ref is not None
     assert task.agent_ref is not None
 
-    # raise NotImplementedError(signal, task)
-    pass
+    from .airavata import AiravataOperator
+    av = AiravataOperator(context.access_token)
+    status = av.stop_experiment(task.ref)
 
   def ls(self, task: Task) -> list[str]:
     assert context.access_token is not None
@@ -158,7 +159,7 @@ class Remote(Runtime):
     res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
-        "arguments": ["ls"]
+        "arguments": ["find", "/data", "-type f"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -178,8 +179,23 @@ class Remote(Runtime):
     assert task.ref is not None
     assert task.agent_ref is not None
 
-    # raise NotImplementedError(file, task)
-    return ""
+    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+        "agentId": task.agent_ref,
+        "workingDir": ".",
+        "arguments": ["cat", file]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          files = data["responseString"].split("\n")
+          return files
+        time.sleep(1)
 
   @staticmethod
   def default():
