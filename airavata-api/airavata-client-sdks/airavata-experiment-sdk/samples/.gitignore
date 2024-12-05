@@ -5,5 +5,3 @@ __pycache__/
 data/
 plan.json
 settings*.ini
-dist/
-samples/auth.state

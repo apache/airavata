@@ -16,7 +16,13 @@
 
 from __future__ import annotations
 
-from . import auth, base, md, plan, runtime
+from . import base, md, plan
+from .runtime import list_runtimes
+from .auth import login, logout
+
+
+def load_plan(path: str) -> plan.Plan:
+    return plan.Plan.load_json(path)
 
 
 def task_context(task: base.Task):
@@ -30,4 +36,4 @@ def task_context(task: base.Task):
     return inner
 
 
-__all__ = ["auth", "base", "md", "plan", "runtime", "task_context"]
+__all__ = ["login", "logout", "list_runtimes", "md", "task_context"]

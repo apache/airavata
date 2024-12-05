@@ -27,6 +27,7 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["airavata*"]
+exclude = ["*.egg-info"]
 
 [tool.setuptools.package-data]
 "airavata_sdk.transport" = ["*.ini"]

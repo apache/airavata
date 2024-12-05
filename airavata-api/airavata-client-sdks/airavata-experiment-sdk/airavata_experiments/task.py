@@ -38,7 +38,7 @@ class Task(pydantic.BaseModel):
     return v
 
   def __str__(self) -> str:
-    return f"Task(name={self.name}, app_id={self.app_id}, inputs={self.inputs}, runtime={self.runtime})"
+    return f"Task(\nname={self.name}\napp_id={self.app_id}\ninputs={self.inputs}\nruntime={self.runtime}\n)"
 
   def launch(self) -> None:
     assert self.ref is None

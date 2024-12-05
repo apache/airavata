@@ -44,19 +44,28 @@ class DeviceFlowAuthenticator:
         self.auth_server_url = auth_server_url
 
         if not self.client_id or not self.realm or not self.auth_server_url:
-            raise ValueError("Missing required environment variables for client ID, realm, or auth server URL")
+            raise ValueError(
+                "Missing required environment variables for client ID, realm, or auth server URL")
 
         self.device_code = None
         self.interval = -1
         self.access_token = None
 
     def login(self, interactive: bool = True):
+        # Step 0: Check if we have a saved token
+        if self.__load_saved_token__():
+            print("Using saved token")
+            return
+
         # Step 1: Request device and user code
-        auth_device_url = f"{self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
-        response = requests.post(auth_device_url, data={"client_id": self.client_id, "scope": "openid"})
+        auth_device_url = f"{
+            self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
+        response = requests.post(auth_device_url, data={
+                                 "client_id": self.client_id, "scope": "openid"})
 
         if response.status_code != 200:
-            print(f"Error in device authorization request: {response.status_code} - {response.text}")
+            print(f"Error in device authorization request: {
+                  response.status_code} - {response.text}")
             return
 
         data = response.json()
@@ -64,7 +73,8 @@ class DeviceFlowAuthenticator:
         self.interval = data.get("interval", 5)
 
         print(f"User code: {data.get('user_code')}")
-        print(f"Please authenticate by visiting: {data.get('verification_uri_complete')}")
+        print(f"Please authenticate by visiting: {
+              data.get('verification_uri_complete')}")
 
         if interactive:
             import webbrowser
@@ -79,7 +89,8 @@ class DeviceFlowAuthenticator:
         self.refresh_token = None
 
     def __poll_for_token__(self):
-        token_url = f"{self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
+        token_url = f"{
+            self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
         print("Waiting for authorization...")
         while True:
             response = requests.post(
@@ -95,9 +106,30 @@ class DeviceFlowAuthenticator:
                 self.refresh_token = data.get("refresh_token")
                 self.access_token = data.get("access_token")
                 print("Authorization successful!")
+                self.__persist_token__()
                 return
             elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
                 time.sleep(self.interval)
             else:
-                print(f"Authorization error: {response.status_code} - {response.text}")
+                print(f"Authorization error: {
+                      response.status_code} - {response.text}")
                 break
+
+    def __persist_token__(self):
+        import json
+        with open("auth.state", "w") as f:
+            json.dump({"refresh_token": self.refresh_token,
+                      "access_token": self.access_token}, f)
+
+    def __load_saved_token__(self):
+        import json
+        import jwt
+        try:
+            with open("auth.state", "r") as f:
+                data = json.load(f)
+                self.refresh_token = str(data["refresh_token"])
+                self.access_token = str(data["access_token"])
+            jwt.decode(self.access_token, options={"verify_signature": False, "verify_exp": True})
+            return True
+        except (FileNotFoundError, jwt.ExpiredSignatureError, KeyError):
+            return False

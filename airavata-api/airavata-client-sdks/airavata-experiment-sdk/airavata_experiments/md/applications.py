@@ -57,7 +57,7 @@ class NAMD(ExperimentApp):
         other_files=other_files,
         num_replicas=num_replicas,
     )
-    obj.input_mapping.update({
+    obj.input_mapping = {
         "MD-Instructions-Input": "config_file",  # uri? [REQUIRED]
         "Coordinates-PDB-File": "pdb_file",  # uri? [OPTIONAL]
         "Protein-Structure-File_PSF": "psf_file",  # uri? [REQUIRED]
@@ -71,7 +71,8 @@ class NAMD(ExperimentApp):
         # "Previous_JobID": None,  # string? [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
         # "GPU Resource Warning": None,  # string? [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
         # "Restart_Replicas_List": None,  # string [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
-    })
+    }
+    obj.tasks = []
     return obj
 
 

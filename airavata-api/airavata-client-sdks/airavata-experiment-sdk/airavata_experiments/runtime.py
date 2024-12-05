@@ -80,7 +80,7 @@ class Mock(Runtime):
   _state: int = 0
 
   def __init__(self) -> None:
-    super(Runtime, self).__init__(id="mock")
+    super().__init__(id="mock")
 
   def execute(self, task: Task) -> None:
     import uuid
@@ -112,7 +112,7 @@ class Mock(Runtime):
 class Remote(Runtime):
 
   def __init__(self, **kwargs) -> None:
-    super(Runtime, self).__init__(id="remote", args=kwargs)
+    super().__init__(id="remote", args=kwargs)
 
   def execute(self, task: Task) -> None:
     assert context.access_token is not None
@@ -162,13 +162,12 @@ class Remote(Runtime):
     })
     data = res.json()
     if data["error"] is not None:
-      print(data)
-      return []
+      raise Exception(data["error"])
     else:
       exc_id = data["executionId"]
       while True:
         res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
-        print(data)
+        data = res.json()
         if data["available"]:
           files = data["responseString"].split("\n")
           return files
@@ -189,6 +188,6 @@ class Remote(Runtime):
     )
 
 
-def query(**kwargs) -> list[Runtime]:
-  return [Mock.default(), Remote.default()]
+def list_runtimes(**kwargs) -> list[Runtime]:
   # TODO get list using token
+  return [Remote(cluster="login.expanse.sdsc.edu"), Remote(cluster="anvil.rcac.purdue.edu")]

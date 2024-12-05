@@ -102,6 +102,7 @@ class Experiment(Generic[T], abc.ABC):
             runtime=runtime,
         )
     )
+    print(f"Added replica. ({len(self.tasks)} tasks in total)")
 
   def add_sweep(self, *allowed_runtimes: Runtime, **space: list) -> None:
     """
