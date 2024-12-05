@@ -3,8 +3,8 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "airavata-python-sdk"
-version = "1.1.6"
+name = "airavata-python-sdk-test"
+version = "0.0.1.post1"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
 license = { text = "Apache License 2.0" }
@@ -21,7 +21,10 @@ dependencies = [
   "pysftp",
   "configparser",
   "urllib3",
-  "pyjwt"
+  "pyjwt",
+  "pydantic",
+  "rich",
+  "ipywidgets",
 ]
 
 [tool.setuptools.packages.find]

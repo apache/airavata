@@ -1,9 +1,0 @@
-__pycache__/
-.DS_Store
-.ipynb_checkpoints
-*.egg-info/
-data/
-plan.json
-settings*.ini
-dist/
-samples/auth.state

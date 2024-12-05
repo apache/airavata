@@ -58,10 +58,9 @@ class DeviceFlowAuthenticator:
             return
 
         # Step 1: Request device and user code
-        auth_device_url = f"{
-            self.idp_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
+        auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
         response = requests.post(auth_device_url, data={
-                                 "client_id": self.client_id, "scope": "openid"})
+            "client_id": self.client_id, "scope": "openid"})
 
         if response.status_code != 200:
             print(f"Error in device authorization request: {

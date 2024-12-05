@@ -4,3 +4,11 @@ airavata_python_sdk.egg-info
 .tox
 dist
 build
+__pycache__/
+.DS_Store
+.ipynb_checkpoints
+*.egg-info/
+data/
+plan.json
+settings*.ini
+auth.state
