@@ -15,12 +15,12 @@ c.GenericOAuthenticator.username_claim = 'email'
 
 # User Permissions
 c.Authenticator.enable_auth_state = True
-c.Authenticator.allowed_users = set()
+c.GenericOAuthenticator.allow_all = True
 # c.Authenticator.admin_users = {'user@airavata'} TODO Add admin users
 
 # Spawner Configuration
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
-c.DockerSpawner.container_image = 'jupyter/base-notebook:latest'
+c.DockerSpawner.image = os.environ.get('DOCKER_NOTEBOOK_IMAGE', 'jupyter/base-notebook:latest')
 c.DockerSpawner.notebook_dir = '/home/jovyan/work'
 c.DockerSpawner.volumes = {
     'jupyterhub-user-{username}': '/home/jovyan/work',
@@ -37,6 +37,9 @@ c.DockerSpawner.network_name = os.getenv('DOCKER_NETWORK_NAME', 'jupyterhub_netw
 c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.hub_port = 8081
 c.JupyterHub.hub_connect_ip = 'jupyterhub'
+
+# External URL
+c.JupyterHub.external_url = 'https://hub.cybershuttle.org'
 
 # Logging
 c.JupyterHub.log_level = 'DEBUG'
