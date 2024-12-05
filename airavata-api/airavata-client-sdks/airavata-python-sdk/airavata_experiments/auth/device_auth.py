@@ -63,8 +63,7 @@ class DeviceFlowAuthenticator:
             "client_id": self.client_id, "scope": "openid"})
 
         if response.status_code != 200:
-            print(f"Error in device authorization request: {
-                  response.status_code} - {response.text}")
+            print(f"Error in device authorization request: {response.status_code} - {response.text}")
             return
 
         data = response.json()
@@ -72,8 +71,7 @@ class DeviceFlowAuthenticator:
         self.interval = data.get("interval", 5)
 
         print(f"User code: {data.get('user_code')}")
-        print(f"Please authenticate by visiting: {
-              data.get('verification_uri_complete')}")
+        print(f"Please authenticate by visiting: {data.get('verification_uri_complete')}")
 
         if interactive:
             import webbrowser
@@ -88,8 +86,7 @@ class DeviceFlowAuthenticator:
         self.refresh_token = None
 
     def __poll_for_token__(self):
-        token_url = f"{
-            self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
+        token_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
         print("Waiting for authorization...")
         while True:
             response = requests.post(
@@ -110,8 +107,7 @@ class DeviceFlowAuthenticator:
             elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
                 time.sleep(self.interval)
             else:
-                print(f"Authorization error: {
-                      response.status_code} - {response.text}")
+                print(f"Authorization error: {response.status_code} - {response.text}")
                 break
 
     def __persist_token__(self):

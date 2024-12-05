@@ -159,11 +159,15 @@ class Remote(Runtime):
     res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
-        "arguments": ["find", "/data", "-type f"]
+        "arguments": ["ls", "/data"]
     })
     data = res.json()
     if data["error"] is not None:
-      raise Exception(data["error"])
+      if str(data["error"]) == "Agent not found":
+        print("Experiment is initializing...")
+        return []
+      else:
+        raise Exception(data["error"])
     else:
       exc_id = data["executionId"]
       while True:
