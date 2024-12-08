@@ -29,9 +29,12 @@ logger.setLevel(logging.DEBUG)
 
 class APIServerClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.api_server_settings = APIServerClientSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self, configuration_file_location=None, api_server_settings=None):
+        if configuration_file_location is not None:
+            self.api_server_settings = APIServerClientSettings(configuration_file_location)
+            self._load_settings(configuration_file_location)
+        elif api_server_settings is not None:
+            self.api_server_settings = api_server_settings
         self.api_server_client_pool = utils.initialize_api_client_pool(self.api_server_settings.API_SERVER_HOST,
                                                                        self.api_server_settings.API_SERVER_PORT,
                                                                        self.api_server_settings.API_SERVER_SECURE)
