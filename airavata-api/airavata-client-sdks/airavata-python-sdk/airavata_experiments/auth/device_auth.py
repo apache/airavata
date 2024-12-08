@@ -14,8 +14,13 @@
 #  limitations under the License.
 #
 
+import datetime
+import json
+import os
 import time
+import webbrowser
 
+import jwt
 import requests
 
 
@@ -24,14 +29,40 @@ class DeviceFlowAuthenticator:
     idp_url: str
     realm: str
     client_id: str
-    device_code: str | None
     interval: int
-    access_token: str | None
-    refresh_token: str | None
+    device_code: str | None
+    _access_token: str | None
+    _refresh_token: str | None
+
+    def __has_expired__(self, token: str) -> bool:
+      try:
+          decoded = jwt.decode(token, options={"verify_signature": False})
+          tA = datetime.datetime.now(datetime.timezone.utc).timestamp()
+          tB = int(decoded.get("exp", 0))
+          return tA >= tB
+      except:
+          return True
 
     @property
-    def logged_in(self) -> bool:
-        return self.access_token is not None
+    def access_token(self) -> str:
+      if self._access_token and not self.__has_expired__(self._access_token):
+        return self._access_token
+      elif self._refresh_token and not self.__has_expired__(self._refresh_token):
+        self.refresh()
+      else:
+         self.login()
+      assert self._access_token
+      return self._access_token
+    
+    @property
+    def refresh_token(self) -> str:
+      if self._refresh_token and not self.__has_expired__(self._refresh_token):
+        return self._refresh_token
+      else:
+        self.login()
+      assert self._refresh_token
+      return self._refresh_token
+       
 
     def __init__(
         self,
@@ -47,88 +78,109 @@ class DeviceFlowAuthenticator:
             raise ValueError(
                 "Missing required environment variables for client ID, realm, or auth server URL")
 
+        self.interval = 5
         self.device_code = None
-        self.interval = -1
-        self.access_token = None
+        self._access_token = None
+        self._refresh_token = None
 
-    def login(self, interactive: bool = True):
-        # Step 0: Check if we have a saved token
-        if self.__load_saved_token__():
-            print("Using saved token")
-            return
-
-        # Step 1: Request device and user code
-        auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
+    def refresh(self) -> None:
+        auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
         response = requests.post(auth_device_url, data={
-            "client_id": self.client_id, "scope": "openid"})
-
+            "client_id": self.client_id,
+            "grant_type": "refresh_token",
+            "scope": "openid",
+            "refresh_token": self._refresh_token
+        })
         if response.status_code != 200:
-            print(f"Error in device authorization request: {response.status_code} - {response.text}")
-            return
-
+            raise Exception(f"Error in token refresh request: {response.status_code} - {response.text}")
         data = response.json()
-        self.device_code = data.get("device_code")
-        self.interval = data.get("interval", 5)
+        self._refresh_token = data["refresh_token"]
+        self._access_token = data["access_token"]
+        assert self._access_token is not None
+        assert self._refresh_token is not None
+        self.__persist_token__(self._refresh_token, self._access_token)
 
-        print(f"User code: {data.get('user_code')}")
-        print(f"Please authenticate by visiting: {data.get('verification_uri_complete')}")
-
-        if interactive:
-            import webbrowser
-
-            webbrowser.open(data.get("verification_uri_complete"))
-
-        # Step 2: Poll for the token
-        self.__poll_for_token__()
-
-    def logout(self):
-        self.access_token = None
-        self.refresh_token = None
-
-    def __poll_for_token__(self):
-        token_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
-        print("Waiting for authorization...")
-        while True:
-            response = requests.post(
-                token_url,
-                data={
-                    "client_id": self.client_id,
-                    "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
-                    "device_code": self.device_code,
-                },
-            )
-            if response.status_code == 200:
-                data = response.json()
-                self.refresh_token = data.get("refresh_token")
-                self.access_token = data.get("access_token")
-                print("Authorization successful!")
-                self.__persist_token__()
-                return
-            elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
-                time.sleep(self.interval)
+    def login(self, interactive: bool = True) -> None:
+        
+        try:
+          # [Flow A] Reuse saved token
+          if os.path.exists("auth.state"):
+            try:
+              # [A1] Load token from file
+              with open("auth.state", "r") as f:
+                  data = json.load(f)
+              self._refresh_token = str(data["refresh_token"])
+              self._access_token = str(data["access_token"])
+            except:
+              print("Failed to load auth.state file!")
             else:
-                print(f"Authorization error: {response.status_code} - {response.text}")
-                break
+              # [A2] Check if access token is valid, if so, return
+              if not self.__has_expired__(self._access_token):
+                print("Authenticated via saved access token!")
+                return None
+              else:
+                print("Access token is invalid!")
+              # [A3] Check if refresh token is valid. if so, refresh
+              try:
+                if not self.__has_expired__(self._refresh_token):
+                  self.refresh()
+                  print("Authenticated via saved refresh token!")
+                  return None
+                else:
+                  print("Refresh token is invalid!")
+              except Exception as e:
+                print(*e.args)
+            
+          # [Flow B] Request device and user code
 
-    def __persist_token__(self):
+          # [B1] Initiate device auth flow
+          auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
+          response = requests.post(auth_device_url, data={
+              "client_id": self.client_id,
+              "scope": "openid",
+          })
+          if response.status_code != 200:
+              raise Exception(f"Error in device authorization request: {response.status_code} - {response.text}")
+          data = response.json()
+          self.device_code = data.get("device_code", self.device_code)
+          self.interval = data.get("interval", self.interval)
+          url = data['verification_uri_complete']
+          print(f"Please authenticate by visiting: {url}")
+          if interactive:
+              webbrowser.open(url)
+          
+          # [B2] Poll until token is received
+          token_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
+          print("Waiting for authorization...")
+          while True:
+              response = requests.post(
+                  token_url,
+                  data={
+                      "client_id": self.client_id,
+                      "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+                      "device_code": self.device_code,
+                  },
+              )
+              if response.status_code == 200:
+                  data = response.json()
+                  self.__persist_token__(data["refresh_token"], data["access_token"])
+                  print("Authenticated via device auth!")
+                  return
+              elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
+                  time.sleep(self.interval)
+              else:
+                  raise Exception(f"Authorization error: {response.status_code} - {response.text}")
+        
+        except Exception as e:
+          print("login() failed!", e)
+
+    def logout(self) -> None:
+        self._access_token = None
+        self._refresh_token = None
+
+    def __persist_token__(self, refresh_token: str, access_token: str) -> None:
+        self._access_token = access_token
+        self._refresh_token = refresh_token
         import json
         with open("auth.state", "w") as f:
-            json.dump({"refresh_token": self.refresh_token,
-                      "access_token": self.access_token}, f)
-
-    def __load_saved_token__(self):
-        import json
-        import jwt
-        import datetime
-        try:
-            with open("auth.state", "r") as f:
-                data = json.load(f)
-                self.refresh_token = str(data["refresh_token"])
-                self.access_token = str(data["access_token"])
-            decoded = jwt.decode(self.access_token, options={"verify_signature": False})
-            tA = datetime.datetime.now(datetime.timezone.utc).timestamp()
-            tB = int(decoded.get("exp", 0))
-            return tA < tB
-        except (FileNotFoundError, KeyError, ValueError, StopIteration) as e:
-            print(e)
-            return False
+            json.dump({"refresh_token": self._refresh_token, "access_token": self._access_token}, f)

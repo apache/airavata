@@ -17,23 +17,7 @@
 from __future__ import annotations
 
 from . import base, md, plan
-from .runtime import list_runtimes
 from .auth import login, logout
+from .runtime import list_runtimes
 
-
-def load_plan(path: str) -> plan.Plan:
-    return plan.Plan.load_json(path)
-
-
-def task_context(task: base.Task):
-    def inner(func):
-        # take the function into the task's location
-        # and execute it there. then fetch the result
-        result = func(**task.inputs)
-        # and return it to the caller.
-        return result
-
-    return inner
-
-
-__all__ = ["login", "logout", "list_runtimes", "md", "task_context"]
+__all__ = ["login", "logout", "list_runtimes", "base", "md", "plan"]
