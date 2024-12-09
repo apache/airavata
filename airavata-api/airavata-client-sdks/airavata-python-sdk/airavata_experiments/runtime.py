@@ -17,6 +17,7 @@
 from .auth import context
 import abc
 from typing import Any
+from pathlib import Path
 
 import pydantic
 import requests
@@ -49,7 +50,7 @@ class Runtime(abc.ABC, pydantic.BaseModel):
   def ls(self, task: Task) -> list[str]: ...
 
   @abc.abstractmethod
-  def upload(self, file: str, task: Task) -> None: ...
+  def upload(self, file: Path, task: Task) -> str: ...
 
   @abc.abstractmethod
   def download(self, file: str, task: Task) -> str: ...
@@ -104,10 +105,10 @@ class Mock(Runtime):
     pass
 
   def ls(self, task: Task) -> list[str]:
-    return []
+    return [""]
 
-  def upload(self, file: str, task: Task) -> None:
-    return None
+  def upload(self, file: Path, task: Task) -> str:
+    return ""
 
   def download(self, file: str, task: Task) -> str:
     return ""
@@ -140,6 +141,7 @@ class Remote(Runtime):
     )
     task.ref = launch_state.experiment_id
     task.workdir = launch_state.experiment_dir
+    task.sr_host = launch_state.sr_host
     print(f"[Remote] Experiment Launched: id={task.ref}")
 
   def status(self, task: Task):
@@ -192,7 +194,7 @@ class Remote(Runtime):
           return files
         time.sleep(1)
 
-  def upload(self, file: str, task: Task) -> str:
+  def upload(self, file: Path, task: Task) -> str:
     assert context.access_token is not None
     assert task.ref is not None
     assert task.agent_ref is not None
@@ -211,7 +213,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.download_file(task.sr_host, file, task.workdir)
+        return av.upload_files(task.sr_host, [file], task.workdir).pop()
       else:
         raise Exception(data["error"])
     else:

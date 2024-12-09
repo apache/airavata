@@ -23,10 +23,14 @@ import pydantic
 from rich.progress import Progress
 from .runtime import Runtime, is_terminal_state
 from .task import Task
+import uuid
 
+from .airavata import AiravataOperator
+from .auth import context
 
 class Plan(pydantic.BaseModel):
 
+  id: str = pydantic.Field(default_factory=lambda: str(uuid.uuid4()))
   tasks: list[Task] = []
 
   @pydantic.field_validator("tasks", mode="before")
@@ -80,7 +84,7 @@ class Plan(pydantic.BaseModel):
       ref = task.ref
       fps_task = list[str]()
       assert ref is not None
-      for remote_fp in task.files():
+      for remote_fp in task.ls():
         fp = runtime.download(remote_fp, task)
         fps_task.append(fp)
       fps.append(fps_task)
@@ -121,6 +125,50 @@ class Plan(pydantic.BaseModel):
   def save_json(self, filename: str) -> None:
     with open(filename, "w") as f:
       json.dump(self.model_dump(), f, indent=2)
+
+  def save_remote(self) -> None:
+    assert context.access_token is not None
+    av = AiravataOperator(context.access_token)
+    az = av.__airavata_token__(av.access_token, av.default_gateway_id())
+    assert az.accessToken is not None
+    assert az.claimsMap is not None
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + az.accessToken,
+        'X-Claims': json.dumps(az.claimsMap)
+    }
+    import requests
+    response = requests.post("https://api.gateway.cybershuttle.org/api/v1/plan", headers=headers, json=self.model_dump())
+
+    if response.status_code == 200:
+      body = response.json()
+      print(body)
+      plan = json.loads(body["data"])
+      assert plan["id"] == self.id
+    else:
+      raise Exception(response)
+    
+  def update_remote(self) -> None:
+    assert context.access_token is not None
+    av = AiravataOperator(context.access_token)
+    az = av.__airavata_token__(av.access_token, av.default_gateway_id())
+    assert az.accessToken is not None
+    assert az.claimsMap is not None
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + az.accessToken,
+        'X-Claims': json.dumps(az.claimsMap)
+    }
+    import requests
+    response = requests.put(f"https://api.gateway.cybershuttle.org/api/v1/plan/{self.id}", headers=headers, json=self.model_dump())
+
+    if response.status_code == 200:
+      body = response.json()
+      print(body)
+      plan = json.loads(body["data"])
+      assert plan["id"] == self.id
+    else:
+      raise Exception(response)
 
   @staticmethod
   def load_json(filename: str) -> Plan:

@@ -40,7 +40,7 @@ class Task(pydantic.BaseModel):
     return v
 
   def __str__(self) -> str:
-    return f"Task(\nname={self.name}\napp_id={self.app_id}\ninputs={self.inputs}\nruntime={self.runtime}\n)"
+    return f"Task(\nname={self.name}\napp_id={self.app_id}\ninputs={self.inputs}\nruntime={self.runtime}\nref={self.ref}\nagent_ref={self.agent_ref}\nfile_path={self.sr_host}:{self.workdir}\n)"
 
   def launch(self) -> None:
     assert self.ref is None
@@ -51,9 +51,11 @@ class Task(pydantic.BaseModel):
     assert self.ref is not None
     return self.runtime.status(self)
 
-  def files(self) -> list[str]:
+  def ls(self) -> list[str]:
     assert self.ref is not None
     return self.runtime.ls(self)
+  
+
   
   def cat(self, file: str) -> str:
     assert self.ref is not None

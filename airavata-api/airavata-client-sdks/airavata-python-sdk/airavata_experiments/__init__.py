@@ -18,11 +18,56 @@ from __future__ import annotations
 
 from . import base, md, plan
 from .runtime import list_runtimes
-from .auth import login, logout
+from .auth import login, logout, context
+from .airavata import AiravataOperator
+from .plan import Plan
+import json
 
 
-def load_plan(path: str) -> plan.Plan:
+def load_plan_from_file(path: str) -> plan.Plan:
     return plan.Plan.load_json(path)
+
+def load_plan_by_id(id: str) -> Plan:
+    assert context.access_token is not None
+    av = AiravataOperator(context.access_token)
+    az = av.__airavata_token__(av.access_token, av.default_gateway_id())
+    assert az.accessToken is not None
+    assert az.claimsMap is not None
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + az.accessToken,
+        'X-Claims': json.dumps(az.claimsMap)
+    }
+    import requests
+    response = requests.get(f"https://api.gateway.cybershuttle.org/api/v1/plan/{id}", headers=headers)
+
+    if response.status_code == 200:
+      body = response.json()
+      plan = json.loads(body["data"])
+      return Plan(**plan)
+    else:
+      raise Exception(response)
+    
+def list_all_plans() -> list[Plan]:
+    assert context.access_token is not None
+    av = AiravataOperator(context.access_token)
+    az = av.__airavata_token__(av.access_token, av.default_gateway_id())
+    assert az.accessToken is not None
+    assert az.claimsMap is not None
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + az.accessToken,
+        'X-Claims': json.dumps(az.claimsMap)
+    }
+    import requests
+    response = requests.get(f"https://api.gateway.cybershuttle.org/api/v1/plan/user", headers=headers)
+
+    if response.status_code == 200:
+      items: list = response.json()
+      plans = [json.loads(item["data"]) for item in items]
+      return [Plan(**plan) for plan in plans]
+    else:
+      raise Exception(response)
 
 
 def task_context(task: base.Task):

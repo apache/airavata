@@ -31,7 +31,12 @@ from airavata_sdk.transport.settings import ExperimentSettings, GatewaySettings,
 logger = logging.getLogger("airavata_sdk.clients")
 logger.setLevel(logging.INFO)
 
-LaunchState = NamedTuple("LaunchState", [("experiment_id", str), ("mount_point", Path), ("experiment_dir", str)])
+LaunchState = NamedTuple("LaunchState", [
+  ("experiment_id", str),
+  ("mount_point", Path),
+  ("experiment_dir", str),
+  ("sr_host", str),
+])
 
 class AiravataOperator:
 
@@ -162,7 +167,7 @@ class AiravataOperator:
   def default_walltime(self):
     return self.experiment_settings.WALL_TIME_LIMIT
 
-  def __airavata_token__(self, access_token, gateway_id):
+  def __airavata_token__(self, access_token: str, gateway_id: str):
     """
     Decode access token (string) and create AuthzToken (object)
 
@@ -472,7 +477,7 @@ class AiravataOperator:
         data_inputs[key] = value
 
     # configure file inputs for experiment
-    print("[AV] Uploading file inputs for experiment...")
+    print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
     self.upload_files(storage.hostName, files_to_upload, exp_dir)
 
     # configure experiment inputs
@@ -506,6 +511,7 @@ class AiravataOperator:
       experiment_id=str(ex_id),
       mount_point=mount_point,
       experiment_dir=exp_dir,
+      sr_host=str(storage.hostName),
     )
 
 
