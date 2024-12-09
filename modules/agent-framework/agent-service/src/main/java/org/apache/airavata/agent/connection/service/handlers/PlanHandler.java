@@ -25,8 +25,8 @@ public class PlanHandler {
         return savedPlan;
     }
 
-    public List<Plan> getAllPlansByUserId(String userId) {
-        return planRepo.findByUserId(userId);
+    public List<Plan> getAllPlansByUserId(String userId, String gatewayId) {
+        return planRepo.findAllByUserIdAndGatewayId(userId, gatewayId);
     }
 
     public Plan getPlanById(String planId) {
