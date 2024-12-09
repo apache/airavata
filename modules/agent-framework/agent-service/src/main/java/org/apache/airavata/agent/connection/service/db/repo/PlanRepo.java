@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface PlanRepo extends JpaRepository<Plan, String> {
 
-    List<Plan> findByUserId(String userId);
+    List<Plan> findAllByUserIdAndGatewayId(String userId, String gatewayId);
 }

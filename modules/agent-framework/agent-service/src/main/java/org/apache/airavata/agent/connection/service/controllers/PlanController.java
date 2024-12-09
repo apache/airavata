@@ -57,13 +57,12 @@ public class PlanController {
 
     @GetMapping("/user")
     public ResponseEntity<List<Plan>> getPlansByUserId() {
-        String userId = UserContext.username();
-        List<Plan> plans = planHandler.getAllPlansByUserId(userId);
+        List<Plan> plans = planHandler.getAllPlansByUserId(UserContext.username(), UserContext.gatewayId());
         return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{planId}")
-    public ResponseEntity<Plan> getPlanById(@PathVariable String planId) {
+    public ResponseEntity<Plan> getPlanById(@PathVariable("planId") String planId) {
         Plan plan = planHandler.getPlanById(planId);
         return ResponseEntity.ok(plan);
     }
