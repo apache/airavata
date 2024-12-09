@@ -349,6 +349,20 @@ class AiravataOperator:
     path = sftp_connector.get(remote_file, local_dir)
     logger.info("Remote files downlaoded to local dir: %s", local_dir)
     return path
+  
+  def cat_file(self, sr_host: str, remote_file: str) -> bytes:
+    """
+    Download files from a remote directory of a storage resource to a local directory
+
+    Return Path: /{project_name}/{experiment_name}
+
+    """
+    host = sr_host
+    port = self.default_sftp_port()
+    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
+    data = sftp_connector.cat(remote_file)
+    logger.info("Remote files downlaoded to local dir: %s bytes", len(data))
+    return data
 
   def launch_experiment(
       self,

@@ -110,4 +110,13 @@ class SFTPConnector(object):
     with SCPClient(transport) as conn:
       conn.get(remote_path, local_path, recursive=True)
     self.ssh.close()
-    return (Path(local_path) / remote_path).as_posix()
+    return (Path(local_path) / Path(remote_path).name).as_posix()
+  
+  def cat(self, remote_path: str) -> bytes:
+    transport = paramiko.Transport(sock=(self.host, int(self.port)))
+    transport.connect(username=self.username, password=self.password)
+    sftp = paramiko.SFTPClient.from_transport(transport)
+    assert sftp is not None
+    with sftp.open(remote_path, "r") as f:
+      content = f.read()
+    return content

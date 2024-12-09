@@ -31,12 +31,38 @@ class DeviceFlowAuthenticator:
     client_id: str
     interval: int
     device_code: str | None
-    access_token: str | None
-    refresh_token: str | None
+    _access_token: str | None
+    _refresh_token: str | None
+
+    def __has_expired__(self, token: str) -> bool:
+      try:
+          decoded = jwt.decode(token, options={"verify_signature": False})
+          tA = datetime.datetime.now(datetime.timezone.utc).timestamp()
+          tB = int(decoded.get("exp", 0))
+          return tA >= tB
+      except:
+          return True
 
     @property
-    def logged_in(self) -> bool:
-        return self.access_token is not None
+    def access_token(self) -> str:
+      if self._access_token and not self.__has_expired__(self._access_token):
+        return self._access_token
+      elif self._refresh_token and not self.__has_expired__(self._refresh_token):
+        self.refresh()
+      else:
+         self.login()
+      assert self._access_token
+      return self._access_token
+    
+    @property
+    def refresh_token(self) -> str:
+      if self._refresh_token and not self.__has_expired__(self._refresh_token):
+        return self._refresh_token
+      else:
+        self.login()
+      assert self._refresh_token
+      return self._refresh_token
+       
 
     def __init__(
         self,
@@ -54,61 +80,59 @@ class DeviceFlowAuthenticator:
 
         self.interval = 5
         self.device_code = None
-        self.access_token = None
-        self.refresh_token = None
+        self._access_token = None
+        self._refresh_token = None
+
+    def refresh(self) -> None:
+        auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
+        response = requests.post(auth_device_url, data={
+            "client_id": self.client_id,
+            "grant_type": "refresh_token",
+            "scope": "openid",
+            "refresh_token": self._refresh_token
+        })
+        if response.status_code != 200:
+            raise Exception(f"Error in token refresh request: {response.status_code} - {response.text}")
+        data = response.json()
+        self._refresh_token = data["refresh_token"]
+        self._access_token = data["access_token"]
+        assert self._access_token is not None
+        assert self._refresh_token is not None
+        self.__persist_token__(self._refresh_token, self._access_token)
 
     def login(self, interactive: bool = True) -> None:
+        
         try:
-          
           # [Flow A] Reuse saved token
           if os.path.exists("auth.state"):
-
             try:
               # [A1] Load token from file
               with open("auth.state", "r") as f:
                   data = json.load(f)
-              self.refresh_token = str(data["refresh_token"])
-              self.access_token = str(data["access_token"])
+              self._refresh_token = str(data["refresh_token"])
+              self._access_token = str(data["access_token"])
             except:
               print("Failed to load auth.state file!")
-            
             else:
               # [A2] Check if access token is valid, if so, return
-              try:
-                decoded = jwt.decode(self.access_token, options={"verify_signature": False})
-                tA = datetime.datetime.now(datetime.timezone.utc).timestamp()
-                tB = int(decoded.get("exp", 0))
-                if tA < tB:
-                    print("Authenticated via saved access token!")
-                    return None
-              except:
+              if not self.__has_expired__(self._access_token):
+                print("Authenticated via saved access token!")
+                return None
+              else:
                 print("Access token is invalid!")
-              
               # [A3] Check if refresh token is valid. if so, refresh
               try:
-                decoded = jwt.decode(self.refresh_token, options={"verify_signature": False})
-                tA = datetime.datetime.now(datetime.timezone.utc).timestamp()
-                tB = int(decoded.get("exp", 0))
-                if tA < tB:
-                  auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/token"
-                  response = requests.post(auth_device_url, data={
-                      "client_id": self.client_id,
-                      "grant_type" : "refresh_token",
-                      "scope": "openid",
-                      "refresh_token": self.refresh_token
-                  })
-                  if response.status_code != 200:
-                      raise Exception(f"Error in token refresh request: {response.status_code} - {response.text}")
-                  data = response.json()
-                  self.__persist_token__(data["refresh_token"], data["access_token"])
+                if not self.__has_expired__(self._refresh_token):
+                  self.refresh()
                   print("Authenticated via saved refresh token!")
                   return None
-              except:
-                print("Refresh token is invalid!")
+                else:
+                  print("Refresh token is invalid!")
+              except Exception as e:
+                print(*e.args)
             
-
           # [Flow B] Request device and user code
-          
+
           # [B1] Initiate device auth flow
           auth_device_url = f"{self.idp_url}/realms/{self.realm}/protocol/openid-connect/auth/device"
           response = requests.post(auth_device_url, data={
@@ -151,12 +175,12 @@ class DeviceFlowAuthenticator:
           print("login() failed!", e)
 
     def logout(self) -> None:
-        self.access_token = None
-        self.refresh_token = None
+        self._access_token = None
+        self._refresh_token = None
 
     def __persist_token__(self, refresh_token: str, access_token: str) -> None:
-        self.access_token = access_token
-        self.refresh_token = refresh_token
+        self._access_token = access_token
+        self._refresh_token = refresh_token
         import json
         with open("auth.state", "w") as f:
-            json.dump({"refresh_token": self.refresh_token, "access_token": self.access_token}, f)
+            json.dump({"refresh_token": self._refresh_token, "access_token": self._access_token}, f)

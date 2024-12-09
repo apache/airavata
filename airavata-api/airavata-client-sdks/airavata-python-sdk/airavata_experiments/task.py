@@ -13,11 +13,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+from __future__ import annotations
 from typing import Any
-
 import pydantic
-
 from .runtime import Runtime
 
 class Task(pydantic.BaseModel):
@@ -55,12 +53,30 @@ class Task(pydantic.BaseModel):
     assert self.ref is not None
     return self.runtime.ls(self)
   
-
-  
-  def cat(self, file: str) -> str:
+  def upload(self, file: str) -> str:
     assert self.ref is not None
-    return self.runtime.download(file, self)
+    from pathlib import Path
+    return self.runtime.upload(Path(file), self)
+  
+  def download(self, file: str, local_dir: str) -> str:
+    assert self.ref is not None
+    from pathlib import Path
+    Path(local_dir).mkdir(parents=True, exist_ok=True)
+    return self.runtime.download(file, local_dir, self)
+  
+  def cat(self, file: str) -> bytes:
+    assert self.ref is not None
+    return self.runtime.cat(file, self)
 
   def stop(self) -> None:
     assert self.ref is not None
     return self.runtime.signal("SIGTERM", self)
+  
+  def context(self, packages: list[str]) -> Any:
+    def decorator(func):
+      def wrapper(*args, **kwargs):
+        from .scripter import scriptize
+        make_script = scriptize(func)
+        return self.runtime.execute_py(packages, make_script(*args, **kwargs), self)
+      return wrapper
+    return decorator

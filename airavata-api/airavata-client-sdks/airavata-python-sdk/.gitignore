@@ -9,6 +9,7 @@ __pycache__/
 .ipynb_checkpoints
 *.egg-info/
 data/
+results/
 plan.json
 settings*.ini
 auth.state
