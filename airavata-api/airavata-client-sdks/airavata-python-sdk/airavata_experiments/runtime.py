@@ -22,8 +22,10 @@ import pydantic
 import requests
 import uuid
 import time
-
+# from .task import Task
 Task = Any
+
+def is_terminal_state(x): return x in ["CANCELED", "COMPLETED", "FAILED"]
 
 
 conn_svc_url = "api.gateway.cybershuttle.org"
@@ -45,6 +47,9 @@ class Runtime(abc.ABC, pydantic.BaseModel):
 
   @abc.abstractmethod
   def ls(self, task: Task) -> list[str]: ...
+
+  @abc.abstractmethod
+  def upload(self, file: str, task: Task) -> None: ...
 
   @abc.abstractmethod
   def download(self, file: str, task: Task) -> str: ...
@@ -101,6 +106,9 @@ class Mock(Runtime):
   def ls(self, task: Task) -> list[str]:
     return []
 
+  def upload(self, file: str, task: Task) -> None:
+    return None
+
   def download(self, file: str, task: Task) -> str:
     return ""
 
@@ -124,12 +132,14 @@ class Remote(Runtime):
     print(f"[Remote] Experiment Created: name={task.name}")
     assert "cluster" in self.args
     task.agent_ref = str(uuid.uuid4())
-    task.ref = av.launch_experiment(
+    launch_state = av.launch_experiment(
         experiment_name=task.name,
         app_name=task.app_id,
         computation_resource_name=str(self.args["cluster"]),
         inputs={**task.inputs, "agent_id": task.agent_ref, "server_url": conn_svc_url}
     )
+    task.ref = launch_state.experiment_id
+    task.workdir = launch_state.experiment_dir
     print(f"[Remote] Experiment Launched: id={task.ref}")
 
   def status(self, task: Task):
@@ -149,12 +159,17 @@ class Remote(Runtime):
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    status = av.stop_experiment(task.ref)
+    av.stop_experiment(task.ref)
 
   def ls(self, task: Task) -> list[str]:
     assert context.access_token is not None
     assert task.ref is not None
     assert task.agent_ref is not None
+    assert task.sr_host is not None
+    assert task.workdir is not None
+
+    from .airavata import AiravataOperator
+    av = AiravataOperator(context.access_token)
 
     res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
@@ -164,8 +179,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        print("Experiment is initializing...")
-        return []
+        return av.list_files(task.sr_host, task.workdir)
       else:
         raise Exception(data["error"])
     else:
@@ -178,12 +192,16 @@ class Remote(Runtime):
           return files
         time.sleep(1)
 
-  def download(self, file: str, task: Task) -> str:
+  def upload(self, file: str, task: Task) -> str:
     assert context.access_token is not None
     assert task.ref is not None
     assert task.agent_ref is not None
+    assert task.sr_host is not None
+    assert task.workdir is not None
 
     import os
+    from .airavata import AiravataOperator
+    av = AiravataOperator(context.access_token)
 
     res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
@@ -192,7 +210,42 @@ class Remote(Runtime):
     })
     data = res.json()
     if data["error"] is not None:
-      raise Exception(data["error"])
+      if str(data["error"]) == "Agent not found":
+        return av.download_file(task.sr_host, file, task.workdir)
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          files = data["responseString"]
+          return files
+        time.sleep(1)
+
+  def download(self, file: str, task: Task) -> str:
+    assert context.access_token is not None
+    assert task.ref is not None
+    assert task.agent_ref is not None
+    assert task.sr_host is not None
+    assert task.workdir is not None
+
+    import os
+    from .airavata import AiravataOperator
+    av = AiravataOperator(context.access_token)
+
+    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+        "agentId": task.agent_ref,
+        "workingDir": ".",
+        "arguments": ["cat", os.path.join("/data", file)]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        return av.download_file(task.sr_host, file, task.workdir)
+      else:
+        raise Exception(data["error"])
     else:
       exc_id = data["executionId"]
       while True:

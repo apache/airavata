@@ -21,7 +21,7 @@ import time
 
 import pydantic
 from rich.progress import Progress
-from .runtime import Runtime
+from .runtime import Runtime, is_terminal_state
 from .task import Task
 
 
@@ -81,7 +81,7 @@ class Plan(pydantic.BaseModel):
       fps_task = list[str]()
       assert ref is not None
       for remote_fp in task.files():
-        fp = runtime.download(ref, remote_fp)
+        fp = runtime.download(remote_fp, task)
         fps_task.append(fp)
       fps.append(fps_task)
     print("Results fetched.")
@@ -97,8 +97,6 @@ class Plan(pydantic.BaseModel):
 
   def join(self, check_every_n_mins: float = 0.1) -> None:
     n = len(self.tasks)
-    states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
-    def is_terminal_state(x): return x in ["CANCELED", "COMPLETED", "FAILED"]
     try:
       with Progress() as progress:
         pbars = [progress.add_task(f"{task.name} ({i+1}/{n})", total=None) for i, task in enumerate(self.tasks)]
@@ -106,11 +104,9 @@ class Plan(pydantic.BaseModel):
         while not all(completed):
           statuses = self.__stage_status__()
           for i, (task, status) in enumerate(zip(self.tasks, statuses)):
-            state = status.state
-            state_text = states[state]
             pbar = pbars[i]
-            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {state_text}")
-            if is_terminal_state(state_text):
+            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {status}")
+            if is_terminal_state(status):
               completed[i] = True
               progress.update(pbar, completed=True)
           sleep_time = check_every_n_mins * 60
