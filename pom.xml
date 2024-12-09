@@ -114,7 +114,7 @@
         <surefire.version>3.0.0-M4</surefire.version>
         <junit.version>4.12</junit.version>
         <curator.version>5.7.0</curator.version>
-        <groovy.version>2.4.7</groovy.version>
+        <groovy.version>3.0.23</groovy.version>
         <xpp3.version>1.1.6</xpp3.version>
         <xpp5.version>1.2.8</xpp5.version>
         <xsul.version>2.10.7</xsul.version>
