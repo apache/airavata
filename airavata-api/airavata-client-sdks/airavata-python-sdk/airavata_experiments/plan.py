@@ -167,7 +167,8 @@ def load_json(filename: str) -> Plan:
     model = json.load(f)
     return Plan(**model)
 
-def load(id: str) -> Plan:
+def load(id: str | None) -> Plan:
+    assert id is not None
     av = AiravataOperator(context.access_token)
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
