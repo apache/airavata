@@ -40,14 +40,8 @@ class Plan(pydantic.BaseModel):
       return [Task(**task) if isinstance(task, dict) else task for task in v]
     return v
 
-  def describe(self) -> None:
-    print(f"Plan(id={self.id}): {len(self.tasks)} tasks")
-    for task in self.tasks:
-      print(task)
-
   def __stage_prepare__(self) -> None:
     print("Preparing execution plan...")
-    self.describe()
 
   def __stage_confirm__(self, silent: bool) -> None:
     print("Confirming execution plan...")
@@ -173,7 +167,8 @@ def load_json(filename: str) -> Plan:
     model = json.load(f)
     return Plan(**model)
 
-def load(id: str) -> Plan:
+def load(id: str | None) -> Plan:
+    assert id is not None
     av = AiravataOperator(context.access_token)
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
