@@ -163,9 +163,9 @@ class Remote(Runtime):
       res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executepythonrequest", json={
           "libraries": libraries,
           "code": code,
-          "pythonVersion": "3.11", # TODO verify
+          "pythonVersion": "3.10", # TODO verify
           "keepAlive": False, # TODO verify
-          "parentExperimentId": task.ref,
+          "parentExperimentId": "/data", # the working directory
           "agentId": task.agent_ref,
       })
       data = res.json()
@@ -177,8 +177,8 @@ class Remote(Runtime):
           res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executepythonresponse/{exc_id}")
           data = res.json()
           if data["available"]:
-            files = data["responseString"].split("\n")
-            return files
+            response = data["responseString"]
+            return print(response)
           time.sleep(1)
     except Exception as e:
       print(f"\nRemote execution failed! {e}")
@@ -332,7 +332,5 @@ class Remote(Runtime):
         cluster="login.expanse.sdsc.edu",
     )
 
-
 def list_runtimes(**kwargs) -> list[Runtime]:
-  # TODO get list using token
   return [Remote(cluster="login.expanse.sdsc.edu"), Remote(cluster="anvil.rcac.purdue.edu")]
