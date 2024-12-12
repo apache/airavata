@@ -332,7 +332,5 @@ class Remote(Runtime):
         cluster="login.expanse.sdsc.edu",
     )
 
-
 def list_runtimes(**kwargs) -> list[Runtime]:
-  # TODO get list using token
   return [Remote(cluster="login.expanse.sdsc.edu"), Remote(cluster="anvil.rcac.purdue.edu")]

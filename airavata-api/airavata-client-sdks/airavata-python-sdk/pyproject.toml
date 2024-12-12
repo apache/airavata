@@ -25,6 +25,7 @@ dependencies = [
   "pydantic",
   "rich",
   "ipywidgets",
+  "pandas",
 ]
 
 [tool.setuptools.packages.find]
