@@ -163,7 +163,7 @@ class Remote(Runtime):
       res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executepythonrequest", json={
           "libraries": libraries,
           "code": code,
-          "pythonVersion": "3.11", # TODO verify
+          "pythonVersion": "3.10", # TODO verify
           "keepAlive": False, # TODO verify
           "parentExperimentId": "/data", # the working directory
           "agentId": task.agent_ref,

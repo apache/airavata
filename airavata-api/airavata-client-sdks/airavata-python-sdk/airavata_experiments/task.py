@@ -40,8 +40,14 @@ class Task(pydantic.BaseModel):
   def __str__(self) -> str:
     return f"Task(\nname={self.name}\napp_id={self.app_id}\ninputs={self.inputs}\nruntime={self.runtime}\nref={self.ref}\nagent_ref={self.agent_ref}\nfile_path={self.sr_host}:{self.workdir}\n)"
 
-  def launch(self) -> None:
-    assert self.ref is None
+  def launch(self, force=True) -> None:
+    if not force and self.ref is not None:
+      print(f"[Task] Task {self.name} has already launched: ref={self.ref}")
+      return
+    if self.ref is not None:
+      input("[NOTE] Past runs will be overwritten! Hit Enter to continue...")
+    self.ref = None
+    self.agent_ref = None
     print(f"[Task] Executing {self.name} on {self.runtime}")
     self.runtime.execute(self)
 
