@@ -144,7 +144,12 @@ func main() {
         python -c "%s"
         `
 
-				runCmd := fmt.Sprintf(bashScript, workingDir, strings.Join(libraries, " "), code)
+				runCmd := fmt.Sprintf(
+					bashScript,
+					workingDir,
+					strings.Join(libraries, " "),
+					strings.ReplaceAll(code, `"`, `\"`),
+				)
 				log.Printf("[agent.go] Running bash script:\n%s", runCmd)
 				cmd := exec.Command("bash", "-c", runCmd)
 
