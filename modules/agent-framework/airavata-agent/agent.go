@@ -153,23 +153,22 @@ func main() {
 				log.Printf("[agent.go] Running bash script:\n%s", runCmd)
 				cmd := exec.Command("bash", "-c", runCmd)
 
-				// TODO: cd into working dir, create the virtual environment with provided libraries
-				// cmd := exec.Command("python3", "-c", code) //TODO: Load python runtime from a config
-
-				output, err := cmd.Output()
-				if err != nil {
-					fmt.Println("[agent.go] Failed to run python command:", err)
-					return
-				}
-
-				stdoutString := string(output)
-				if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
-					PythonExecutionResponse: &protos.PythonExecutionResponse{
-						SessionId:      sessionId,
-						ExecutionId:    executionId,
-						ResponseString: stdoutString}}}); err != nil {
-					log.Printf("[agent.go] Failed to send execution result to server: %v", err)
-				}
+				go func() {
+					output, err := cmd.Output()
+					if err != nil {
+						fmt.Println("[agent.go] Failed to run python command:", err)
+						return
+					}
+					stdoutString := string(output)
+					log.Printf("[agent.go] Execution output is %s", stdoutString)
+					if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
+						PythonExecutionResponse: &protos.PythonExecutionResponse{
+							SessionId:      sessionId,
+							ExecutionId:    executionId,
+							ResponseString: stdoutString}}}); err != nil {
+						log.Printf("[agent.go] Failed to send execution result to server: %v", err)
+					}
+				}()
 
 			case *protos.ServerMessage_CommandExecutionRequest:
 				log.Printf("[agent.go] Recived a command execution request")

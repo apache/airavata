@@ -177,8 +177,8 @@ class Remote(Runtime):
           res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executepythonresponse/{exc_id}")
           data = res.json()
           if data["available"]:
-            files = data["responseString"].split("\n")
-            return files
+            response = data["responseString"]
+            return print(response)
           time.sleep(1)
     except Exception as e:
       print(f"\nRemote execution failed! {e}")
