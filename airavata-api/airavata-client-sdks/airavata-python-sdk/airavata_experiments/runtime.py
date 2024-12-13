@@ -165,7 +165,7 @@ class Remote(Runtime):
           "code": code,
           "pythonVersion": "3.11", # TODO verify
           "keepAlive": False, # TODO verify
-          "parentExperimentId": task.ref,
+          "parentExperimentId": "/data", # the working directory
           "agentId": task.agent_ref,
       })
       data = res.json()
