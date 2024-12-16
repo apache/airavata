@@ -18,20 +18,29 @@ import logging
 from pathlib import Path
 from typing import Literal, NamedTuple
 from .sftp import SFTPConnector
+import time
+import warnings
+import requests
+from urllib.parse import urlparse
+import uuid
+import os
+import base64
 
 import jwt
 from airavata.model.security.ttypes import AuthzToken
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-
 from airavata_sdk.clients.api_server_client import APIServerClient
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
 logger.setLevel(logging.INFO)
 
 LaunchState = NamedTuple("LaunchState", [
   ("experiment_id", str),
+  ("agent_ref", str),
+  ("process_id", str),
   ("mount_point", Path),
   ("experiment_dir", str),
   ("sr_host", str),
@@ -49,6 +58,8 @@ class Settings:
     self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
     self.API_SERVER_PORT = config.getint('APIServer', 'API_PORT')
     self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
+    self.CONNECTION_SVC_URL = config.get('APIServer', 'CONNECTION_SVC_URL')
+    self.FILEMGR_SVC_URL = config.get('APIServer', 'FILEMGR_SVC_URL')
     
     # gateway settings
     self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
@@ -176,6 +187,12 @@ class AiravataOperator:
   
   def default_project_name(self):
     return self.settings.PROJECT_NAME
+  
+  def connection_svc_url(self):
+    return self.settings.CONNECTION_SVC_URL
+  
+  def filemgr_svc_url(self):
+    return self.settings.FILEMGR_SVC_URL
 
   def __airavata_token__(self, access_token: str, gateway_id: str):
     """
@@ -187,14 +204,22 @@ class AiravataOperator:
     claimsMap = {"userName": self.user_id, "gatewayID": gateway_id}
     return AuthzToken(accessToken=self.access_token, claimsMap=claimsMap)
 
-
   def get_experiment(self, experiment_id: str):
     """
     Get experiment by id
 
     """
     return self.api_server_client.get_experiment(self.airavata_token, experiment_id)
+  
+  def get_process_id(self, experiment_id: str) -> str:
+    """
+    Get process id by experiment id
 
+    """
+    tree: any = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
+    processModels: list = tree.processes
+    assert len(processModels) == 1, f"Expected 1 process model, got {len(processModels)}"
+    return processModels[0].processId
 
   def get_accessible_apps(self, gateway_id: str | None = None):
     """
@@ -206,7 +231,6 @@ class AiravataOperator:
     # logic
     app_interfaces = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id)
     return app_interfaces
-
 
   def get_preferred_storage(self, gateway_id: str | None = None, sr_hostname: str | None = None):
     """
@@ -221,7 +245,6 @@ class AiravataOperator:
     sr_id = next((str(k) for k, v in sr_names.items() if v == sr_hostname))
     return self.api_server_client.get_gateway_storage_preference(self.airavata_token, gateway_id, sr_id)
 
-
   def get_storage(self, storage_name: str | None = None) -> any:  # type: ignore
     """
     Get storage resource by name
@@ -234,9 +257,6 @@ class AiravataOperator:
     sr_id = next((str(k) for k, v in sr_names.items() if v == storage_name))
     storage = self.api_server_client.get_storage_resource(self.airavata_token, sr_id)
     return storage
-  
-
-
 
   def get_group_resource_profile_id(self, grp_name: str | None = None) -> str:
     """
@@ -254,7 +274,6 @@ class AiravataOperator:
     grp: any = self.api_server_client.get_group_resource_profile(self.airavata_token, grp_id) # type: ignore
     return grp
 
-
   def get_compatible_deployments(self, app_interface_id: str, grp_name: str | None = None):
     """
     Get compatible deployments for an application interface and group resource profile
@@ -268,7 +287,6 @@ class AiravataOperator:
     deployments = self.api_server_client.get_application_deployments_for_app_module_and_group_resource_profile(self.airavata_token, app_interface_id, grp_id)
     return deployments
 
-
   def get_app_interface_id(self, app_name: str, gateway_id: str | None = None):
     """
     Get application interface id by name
@@ -278,14 +296,12 @@ class AiravataOperator:
     apps: list = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id) # type: ignore
     app_id = next((app.applicationInterfaceId for app in apps if app.applicationName == app_name))
     return str(app_id)
-  
 
   def get_project_id(self, project_name: str, gateway_id: str | None = None):
     gateway_id = str(gateway_id or self.default_gateway_id())
     projects: list = self.api_server_client.get_user_projects(self.airavata_token, gateway_id, self.user_id, 10, 0) # type: ignore
     project_id = next((p.projectID for p in projects if p.name == project_name and p.owner == self.user_id))
     return str(project_id)
-
 
   def get_application_inputs(self, app_interface_id: str) -> list:
     """
@@ -294,14 +310,12 @@ class AiravataOperator:
     """
     return list(self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id))  # type: ignore
 
-
   def get_compute_resources_by_ids(self, resource_ids: list[str]):
     """
     Get compute resources by ids
 
     """
     return [self.api_server_client.get_compute_resource(self.airavata_token, resource_id) for resource_id in resource_ids]
-
 
   def make_experiment_dir(self, sr_host: str, project_name: str, experiment_name: str) -> str:
     """
@@ -317,68 +331,191 @@ class AiravataOperator:
     logger.info("Experiment directory created at %s", remote_path)
     return remote_path
 
-
-  def upload_files(self, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
+  def upload_files(self, process_id: str | None, agent_ref: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
     """
     Upload local files to a remote directory of a storage resource
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    paths = sftp_connector.put(local_files, remote_dir)
-    logger.info(f"{len(paths)} Local files uploaded to remote dir: %s", remote_dir)
-    return paths
 
+    # step = experiment staging
+    if process_id is None and agent_ref is None:
+      host = sr_host
+      port = self.default_sftp_port()
+      sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
+      paths = sftp_connector.put(local_files, remote_dir)
+      logger.info(f"{len(paths)} Local files uploaded to remote dir: %s", remote_dir)
+      return paths
+    
+    # step = post-staging file upload
+    elif process_id is not None and agent_ref is not None:
+      assert len(local_files) == 1, f"Expected 1 file, got {len(local_files)}"
+      file = local_files[0]
+      fp = os.path.join("/data", file.name)
+      rawdata = file.read_bytes()
+      b64data = base64.b64encode(rawdata).decode()
+      res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+          "agentId": agent_ref,
+          "workingDir": ".",
+          "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
+      })
+      data = res.json()
+      if data["error"] is not None:
+        if str(data["error"]) == "Agent not found":
+          port = self.default_sftp_port()
+          sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+          paths = sftp_connector.put(local_files, remote_dir)
+          return paths
+        else:
+          raise Exception(data["error"])
+      else:
+        exc_id = data["executionId"]
+        while True:
+          res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+          data = res.json()
+          if data["available"]:
+            return [fp]
+          time.sleep(1)
 
-  def list_files(self, sr_host: str, remote_dir: str) -> list[str]:
+    # step = unknown
+    else:
+      raise ValueError("Invalid arguments for upload_files")
+    
+    # file manager service fallback
+    assert process_id is not None, f"Expected process_id, got {process_id}"
+    file = local_files[0]
+    url_path = os.path.join(process_id, file.name)
+    filemgr_svc_upload_url = f"{self.filemgr_svc_url()}/upload/live/{url_path}"
+
+  def list_files(self, process_id: str, agent_ref: str, sr_host: str, remote_dir: str) -> list[str]:
     """
     List files in a remote directory of a storage resource
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    return sftp_connector.ls(remote_dir)
+    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+        "agentId": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", "cd /data && find . -type f -printf '%P\n'"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        port = self.default_sftp_port()
+        sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+        return sftp_connector.ls(remote_dir)
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          files = data["responseString"].split("\n")
+          return files
+        time.sleep(1)
 
+    # file manager service fallback
+    assert process_id is not None, f"Expected process_id, got {process_id}"
+    filemgr_svc_ls_url = f"{self.filemgr_svc_url()}/list/live/{process_id}"
 
-  def download_file(self, sr_host: str, remote_file: str, local_dir: str) -> str:
+  def download_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str, local_dir: str) -> str:
     """
     Download files from a remote directory of a storage resource to a local directory
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    path = sftp_connector.get(remote_file, local_dir)
-    logger.info("Remote files downlaoded to local dir: %s", local_dir)
-    return path
+    import os
+    fp = os.path.join("/data", remote_file)
+    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+        "agentId": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        port = self.default_sftp_port()
+        fp = os.path.join(remote_dir, remote_file)
+        sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+        path = sftp_connector.get(fp, local_dir)
+        return path
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
+          path =  Path(local_dir) / remote_file
+          with open(path, "wb") as f:
+            f.write(content)
+          return path.as_posix()
+        time.sleep(1)
+    
+    # file manager service fallback
+    assert process_id is not None, f"Expected process_id, got {process_id}"
+    url_path = os.path.join(process_id, remote_file)
+    filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
   
-  def cat_file(self, sr_host: str, remote_file: str) -> bytes:
+  def cat_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str) -> bytes:
     """
     Download files from a remote directory of a storage resource to a local directory
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    data = sftp_connector.cat(remote_file)
-    logger.info("Remote files downlaoded to local dir: %s bytes", len(data))
-    return data
+    import os
+    fp = os.path.join("/data", remote_file)
+    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+        "agentId": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        port = self.default_sftp_port()
+        fp = os.path.join(remote_dir, remote_file)
+        sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+        data = sftp_connector.cat(fp)
+        return data
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
+          return content
+        time.sleep(1)
+
+    # file manager service fallback
+    assert process_id is not None, f"Expected process_id, got {process_id}"
+    url_path = os.path.join(process_id, remote_file)
+    filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
 
   def launch_experiment(
       self,
       experiment_name: str,
       app_name: str,
-      inputs: dict[str, str | int | float | list[str]],
+      inputs: dict[str, dict[str, str | int | float | list[str]]],
       computation_resource_name: str,
       queue_name: str,
       node_count: int,
@@ -402,24 +539,43 @@ class AiravataOperator:
     sr_host = str(sr_host or self.default_sr_hostname())
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
     project_name = str(project_name or self.default_project_name())
+    agent_ref = str(uuid.uuid4())
+    server_url = urlparse(self.connection_svc_url()).netloc
 
     # validate args (str)
     print("[AV] Validating args...")
-    assert len(experiment_name) > 0
-    assert len(app_name) > 0
-    assert len(computation_resource_name) > 0
-    assert len(inputs) > 0
-    assert len(gateway_id) > 0
-    assert len(queue_name) > 0
-    assert len(grp_name) > 0
-    assert len(sr_host) > 0
-    assert len(project_name) > 0
-    assert len(mount_point.as_posix()) > 0
+    assert len(experiment_name) > 0, f"Invalid experiment_name: {experiment_name}"
+    assert len(app_name) > 0, f"Invalid app_name: {app_name}"
+    assert len(computation_resource_name) > 0, f"Invalid computation_resource_name: {computation_resource_name}"
+    assert len(inputs) > 0, f"Invalid inputs: {inputs}"
+    assert len(gateway_id) > 0, f"Invalid gateway_id: {gateway_id}"
+    assert len(queue_name) > 0, f"Invalid queue_name: {queue_name}"
+    assert len(grp_name) > 0, f"Invalid grp_name: {grp_name}"
+    assert len(sr_host) > 0, f"Invalid sr_host: {sr_host}"
+    assert len(project_name) > 0, f"Invalid project_name: {project_name}"
+    assert len(mount_point.as_posix()) > 0, f"Invalid mount_point: {mount_point}"
 
     # validate args (int)
-    assert node_count > 0
-    assert cpu_count > 0
-    assert walltime > 0
+    assert node_count > 0, f"Invalid node_count: {node_count}"
+    assert cpu_count > 0, f"Invalid cpu_count: {cpu_count}"
+    assert walltime > 0, f"Invalid walltime: {walltime}"
+
+    # parse and validate inputs
+    file_inputs = dict[str, Path | list[Path]]()
+    data_inputs = dict[str, str | int | float]()
+    for input_name, input_spec in inputs.items():
+      input_type = input_spec["type"]
+      input_value = input_spec["value"]
+      if input_type == "uri":
+        assert isinstance(input_value, str) and os.path.isfile(str(input_value)), f"Invalid {input_name}: {input_value}"
+        file_inputs[input_name] = Path(input_value)
+      elif input_type == "uri[]":
+        assert isinstance(input_value, list) and all([os.path.isfile(str(v)) for v in input_value]), f"Invalid {input_name}: {input_value}"
+        file_inputs[input_name] = [Path(v) for v in input_value]
+      else:
+        assert isinstance(input_value, (int, float, str)), f"Invalid {input_name}: {input_value}"
+        data_inputs[input_name] = input_value
+    data_inputs.update({"agent_id": agent_ref, "server_url": server_url})
 
     # setup runtime params
     print("[AV] Setting up runtime params...")
@@ -429,7 +585,7 @@ class AiravataOperator:
     # setup application interface
     print("[AV] Setting up application interface...")
     app_interface_id = self.get_app_interface_id(app_name)
-    assert app_interface_id is not None
+    assert app_interface_id is not None, f"Invalid app_interface_id: {app_interface_id}"
 
     # setup experiment
     print("[AV] Setting up experiment...")
@@ -464,45 +620,37 @@ class AiravataOperator:
         auto_schedule=auto_schedule,
     )
 
-    # set up file inputs
-    print("[AV] Setting up file inputs...")
-
     def register_input_file(file: Path) -> str:
       return str(self.register_input_file(file.name, sr_host, sr_id, gateway_id, file.name, abs_path))
-
-    # setup experiment inputs
+    
+    # set up file inputs
+    print("[AV] Setting up file inputs...")
     files_to_upload = list[Path]()
-    file_inputs = dict[str, str | list[str]]()
-    data_inputs = dict[str, str | list[str] | int | float]()
-    for key, value in inputs.items():
-
-      if isinstance(value, str) and Path(value).is_file():
-        file = Path(value)
-        files_to_upload.append(file)
-        file_inputs[key] = register_input_file(file)
-
-      elif isinstance(value, list) and all([isinstance(v, str) and Path(v).is_file() for v in value]):
-        files = [*map(Path, value)]
-        files_to_upload.extend(files)
-        file_inputs[key] = [*map(register_input_file, files)]
-
+    file_refs = dict[str, str | list[str]]()
+    for key, value in file_inputs.items():
+      if isinstance(value, Path):
+        files_to_upload.append(value)
+        file_refs[key] = register_input_file(value)
+      elif isinstance(value, list):
+        assert all([isinstance(v, Path) for v in value]), f"Invalid file input value: {value}"
+        files_to_upload.extend(value)
+        file_refs[key] = [*map(register_input_file, value)]
       else:
-        data_inputs[key] = value
-
-    # configure file inputs for experiment
-    print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(storage.hostName, files_to_upload, exp_dir)
+        raise ValueError("Invalid file input type")
 
     # configure experiment inputs
     experiment_inputs = []
     for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
-        exp_input.value = repr(value)
-      elif exp_input.type == 3 and exp_input.name in file_inputs:
-        exp_input.value = file_inputs[exp_input.name]
-      elif exp_input.type == 4 and exp_input.name in file_inputs:
-        exp_input.value = ','.join(file_inputs[exp_input.name])
+        if exp_input.type == 0:
+          exp_input.value = str(value)
+        else:
+          exp_input.value = repr(value)
+      elif exp_input.type == 3 and exp_input.name in file_refs:
+        exp_input.value = file_refs[exp_input.name]
+      elif exp_input.type == 4 and exp_input.name in file_refs:
+        exp_input.value = ','.join(file_refs[exp_input.name])
       experiment_inputs.append(exp_input)
     experiment.experimentInputs = experiment_inputs
 
@@ -510,31 +658,81 @@ class AiravataOperator:
     outputs = self.api_server_client.get_application_outputs(self.airavata_token, app_interface_id)
     experiment.experimentOutputs = outputs
 
+    # upload file inputs for experiment
+    print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
+    self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
+
     # create experiment
     ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
-
-    # TODO agent_id generate and send as input parameter
-    # connect to connection service after this point, and route all file-related requests through it
-    # later build a ssh adapter for ls type tasks
+    ex_id = str(ex_id)
+    print(f"[AV] Experiment {experiment_name} CREATED with id: {ex_id}")
 
     # launch experiment
     self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
+    print(f"[AV] Experiment {experiment_name} STARTED with id: {ex_id}")
+
+    # get process id
+    print(f"[AV] Experiment {experiment_name} WAITING until experiment begins...")
+    process_id = None
+    while process_id is None:
+      try:
+        process_id = self.get_process_id(ex_id)
+      except:
+        time.sleep(2)
+      else:
+        time.sleep(2)
+    print(f"[AV] Experiment {experiment_name} EXECUTING with pid: {process_id}")
 
     return LaunchState(
-      experiment_id=str(ex_id),
+      experiment_id=ex_id,
+      agent_ref=agent_ref,
+      process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
-      sr_host=str(storage.hostName),
+      sr_host=storage.hostName,
     )
 
-
-  def get_experiment_status(self, experiment_id) -> Literal["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]:
+  def get_experiment_status(self, experiment_id: str) -> Literal["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]:
     states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
     status: any = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id) # type: ignore
     return states[status.state]
-  
 
-  def stop_experiment(self, experiment_id):
+  def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
         self.airavata_token, experiment_id, self.default_gateway_id())
     return status
+  
+  def execute_py(self, libraries: list[str], code: str, agent_ref: str) -> str | None:
+    print(f"[av] Executing Python Code...")
+    try:
+      res = requests.post(f"{self.connection_svc_url()}/agent/executepythonrequest", json={
+          "libraries": libraries,
+          "code": code,
+          "pythonVersion": "3.10", # TODO verify
+          "keepAlive": False, # TODO verify
+          "parentExperimentId": "/data", # the working directory
+          "agentId": agent_ref,
+      })
+      data = res.json()
+      if data["error"] is not None:
+        raise Exception(data["error"])
+      else:
+        exc_id = data["executionId"]
+        while True:
+          res = requests.get(f"{self.connection_svc_url()}/agent/executepythonresponse/{exc_id}")
+          data = res.json()
+          if data["available"]:
+            response = str(data["responseString"])
+            return response
+          time.sleep(1)
+    except Exception as e:
+      print("[av] Remote execution failed! {e}")
+      return None
+    
+  def get_available_runtimes(self):
+    from .runtime import Remote
+    return [
+      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, walltime=30),
+      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, walltime=30),
+      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, walltime=30),
+    ]

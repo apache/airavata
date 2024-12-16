@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 import pydantic
 from .runtime import Runtime
+from rich.progress import Progress
 
 class Task(pydantic.BaseModel):
 
@@ -25,6 +26,7 @@ class Task(pydantic.BaseModel):
   inputs: dict[str, Any]
   runtime: Runtime
   ref: str | None = pydantic.Field(default=None)
+  pid: str | None = pydantic.Field(default=None)
   agent_ref: str | None = pydantic.Field(default=None)
   workdir: str | None = pydantic.Field(default=None)
   sr_host: str | None = pydantic.Field(default=None)
@@ -69,6 +71,21 @@ class Task(pydantic.BaseModel):
     from pathlib import Path
     Path(local_dir).mkdir(parents=True, exist_ok=True)
     return self.runtime.download(file, local_dir, self)
+  
+  def download_all(self, local_dir: str) -> list[str]:
+    assert self.ref is not None
+    import os
+    os.makedirs(local_dir, exist_ok=True)
+    fps_task = list[str]()
+    files = self.ls()
+    with Progress() as progress:
+      pbar = progress.add_task(f"Downloading: ...", total=len(files))
+      for remote_fp in self.ls():
+        fp = self.runtime.download(remote_fp, local_dir, self)
+        progress.update(pbar, description=f"Downloading: {remote_fp}", advance=1)
+        fps_task.append(fp)
+      progress.update(pbar, description=f"Downloading: DONE", refresh=True)
+    return fps_task
   
   def cat(self, file: str) -> bytes:
     assert self.ref is not None
