@@ -16,11 +16,11 @@
 
 from __future__ import annotations
 
-from . import base, md, plan
+from . import base, plan
 from .auth import login, logout
 from .runtime import list_runtimes, Runtime
 
-__all__ = ["login", "logout", "list_runtimes", "base", "md", "plan"]
+__all__ = ["login", "logout", "list_runtimes", "base", "plan"]
 
 def display_runtimes(runtimes: list[Runtime]):
   """

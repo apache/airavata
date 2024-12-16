@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airavata-python-sdk-test"
-version = "0.0.6.post3"
+version = "0.0.10.post1"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
 license = { text = "Apache License 2.0" }
@@ -14,7 +14,7 @@ dependencies = [
   "oauthlib",
   "requests",
   "requests-oauthlib",
-  "thrift~=0.21.0",
+  "thrift",
   "thrift_connector",
   "paramiko",
   "scp",
