@@ -498,7 +498,10 @@ class AiravataOperator:
     for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
-        exp_input.value = repr(value)
+        if exp_input.type == 0:
+          exp_input.value = str(value)
+        else:
+          exp_input.value = repr(value)
       elif exp_input.type == 3 and exp_input.name in file_inputs:
         exp_input.value = file_inputs[exp_input.name]
       elif exp_input.type == 4 and exp_input.name in file_inputs:
