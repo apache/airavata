@@ -58,19 +58,19 @@ class NAMD(ExperimentApp):
         num_replicas=num_replicas,
     )
     obj.input_mapping = {
-        "MD-Instructions-Input": "config_file",  # uri? [REQUIRED]
-        "Coordinates-PDB-File": "pdb_file",  # uri? [OPTIONAL]
-        "Protein-Structure-File_PSF": "psf_file",  # uri? [REQUIRED]
-        "FF-Parameter-Files": "ffp_files",  # uri[]? [REQUIRED]
-        "Execution_Type": "parallelism",  # "CPU" | "GPU" [REQUIRED]
-        "Optional_Inputs": "other_files",  # uri[]? [OPTIONAL]
-        "Number of Replicas": "num_replicas",  # integer [REQUIRED]
-        # "Constraints-PDB": "pdb_file",  # uri? [OPTIONAL]
-        # "Replicate": None,  # "yes"? [OPTIONAL]
-        # "Continue_from_Previous_Run?": None,  # "yes"? [OPTIONAL]
-        # "Previous_JobID": None,  # string? [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
-        # "GPU Resource Warning": None,  # string? [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
-        # "Restart_Replicas_List": None,  # string [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
+        "MD-Instructions-Input": ("config_file", "uri"),  # uri? [REQUIRED]
+        "Coordinates-PDB-File": ("pdb_file", "uri"),  # uri? [OPTIONAL]
+        "Protein-Structure-File_PSF": ("psf_file", "uri"),  # uri? [REQUIRED]
+        "FF-Parameter-Files": ("ffp_files", "uri[]"),  # uri[]? [REQUIRED]
+        "Execution_Type": ("parallelism", "str"),  # "CPU" | "GPU" [REQUIRED]
+        "Optional_Inputs": ("other_files", "uri[]"),  # uri[]? [OPTIONAL]
+        "Number of Replicas": ("num_replicas", "str"),  # integer [REQUIRED]
+        # "Constraints-PDB": ("pdb_file", "uri"),  # uri? [OPTIONAL]
+        # "Replicate": (None, "str"),  # "yes"? [OPTIONAL]
+        # "Continue_from_Previous_Run?": (None, "str"),  # "yes"? [OPTIONAL]
+        # "Previous_JobID": (None, "str"),  # string? [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
+        # "GPU Resource Warning": (None, "str"),  # string? [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
+        # "Restart_Replicas_List": (None, "str[]"),  # string [OPTIONAL] [show if "Continue_from_Previous_Run?" == "yes"]
     }
     obj.tasks = []
     return obj
