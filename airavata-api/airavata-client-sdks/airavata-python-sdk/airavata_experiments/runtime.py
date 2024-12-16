@@ -67,11 +67,10 @@ class Runtime(abc.ABC, pydantic.BaseModel):
 
   @staticmethod
   def default():
-    # return Mock()
     return Remote.default()
 
   @staticmethod
-  def create(id: str, args: dict[str, Any]) -> "Runtime":
+  def create(id: str, args: dict[str, Any]) -> Runtime:
     if id == "mock":
       return Mock(**args)
     elif id == "remote":
@@ -133,8 +132,15 @@ class Mock(Runtime):
 
 class Remote(Runtime):
 
-  def __init__(self, **kwargs) -> None:
-    super().__init__(id="remote", args=kwargs)
+  def __init__(self, cluster: str, category: str, queue_name: str, node_count: int, cpu_count: int, walltime: int) -> None:
+    super().__init__(id="remote", args=dict(
+        cluster=cluster,
+        category=category,
+        queue_name=queue_name,
+        node_count=node_count,
+        cpu_count=cpu_count,
+        walltime=walltime,
+    ))
 
   def execute(self, task: Task) -> None:
     assert task.ref is None
@@ -148,8 +154,12 @@ class Remote(Runtime):
     launch_state = av.launch_experiment(
         experiment_name=task.name,
         app_name=task.app_id,
+        inputs={**task.inputs, "agent_id": task.agent_ref, "server_url": conn_svc_url},
         computation_resource_name=str(self.args["cluster"]),
-        inputs={**task.inputs, "agent_id": task.agent_ref, "server_url": conn_svc_url}
+        queue_name=str(self.args["queue_name"]),
+        node_count=int(self.args["node_count"]),
+        cpu_count=int(self.args["cpu_count"]),
+        walltime=int(self.args["walltime"]),
     )
     task.ref = launch_state.experiment_id
     task.workdir = launch_state.experiment_dir
@@ -328,9 +338,16 @@ class Remote(Runtime):
 
   @staticmethod
   def default():
-    return Remote(
-        cluster="login.expanse.sdsc.edu",
-    )
+    return Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=24, walltime=30)
+    
 
-def list_runtimes(**kwargs) -> list[Runtime]:
-  return [Remote(cluster="login.expanse.sdsc.edu"), Remote(cluster="anvil.rcac.purdue.edu")]
+def list_runtimes(
+    cluster: str | None = None,
+    category: str | None = None,
+) -> list[Runtime]:
+  all_runtimes = list[Runtime]([
+    Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, walltime=30),
+    Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, walltime=30),
+    Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, walltime=30),
+  ])
+  return [*filter(lambda r: (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]), all_runtimes)]
