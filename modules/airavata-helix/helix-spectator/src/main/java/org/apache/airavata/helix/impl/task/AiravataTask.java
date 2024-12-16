@@ -496,7 +496,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    private void loadContext() throws TaskOnFailException {
+    protected void loadContext() throws TaskOnFailException {
         try {
             logger.info("Loading context for task " + getTaskId());
             processModel = getRegistryServiceClient().getProcess(processId);
