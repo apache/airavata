@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -50,9 +49,9 @@ public class FileController {
         }
     }
 
-    @GetMapping("/download/{isLive}/{processId}/{subPath}")
+    @GetMapping("/download/{live}/{processId}/{subPath}")
     @ResponseBody
-    public ResponseEntity downloadFile(@PathVariable String isLive,
+    public ResponseEntity downloadFile(@PathVariable String live,
                                                  @PathVariable String processId,
                                                  @PathVariable String subPath) {
 
@@ -64,24 +63,27 @@ public class FileController {
                             "attachment; filename=\"" + new File(subPath).getName() + "\"")
                     .body(resource);
         } catch (Exception e) {
+            logger.error("Failed to download file {} from process {}", subPath, processId, e);
             return ResponseEntity.internalServerError()
                     .body("An internal server error occurred: " + e.getMessage());
         }
     }
 
-
-    @PostMapping("/upload-file")
+    @PostMapping("/upload/{live}/{processId}/{subPath}")
     @ResponseBody
-    public FileUploadResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        String name = "";
+    public ResponseEntity uploadFile(@PathVariable String live,
+                                         @PathVariable String processId,
+                                         @PathVariable String subPath,
+                                         @RequestParam("file") MultipartFile file) {
+        try {
+            String name = file.getName();
+            fileService.uploadFile(processId, subPath, file);
+            return ResponseEntity.ok(new FileUploadResponse(name, subPath, file.getContentType(), file.getSize()));
 
-        String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(name)
-                .toUriString();
-
-        return new FileUploadResponse(name, uri, file.getContentType(), file.getSize());
+        } catch (Exception e) {
+            logger.error("Failed to upload file {} to process {}", subPath, processId, e);
+            return ResponseEntity.internalServerError()
+                    .body("An internal server error occurred: " + e.getMessage());
+        }
     }
-
-
 }
