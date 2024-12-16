@@ -65,7 +65,7 @@ class Experiment(Generic[T], abc.ABC):
   name: str
   application: T
   inputs: dict[str, Any]
-  input_mapping: dict[str, str]
+  input_mapping: dict[str, tuple[Any, str]]
   resource: Runtime = Runtime.default()
   tasks: list[Task] = []
 
@@ -115,7 +115,7 @@ class Experiment(Generic[T], abc.ABC):
 
       task_specific_params = dict(zip(space.keys(), values))
       agg_inputs = {**self.inputs, **task_specific_params}
-      task_inputs = {k: agg_inputs[v] for k, v in self.input_mapping.items()}
+      task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
 
       self.tasks.append(Task(
           name=f"{self.name}_{uuid_str}",
@@ -130,6 +130,6 @@ class Experiment(Generic[T], abc.ABC):
     tasks = []
     for t in self.tasks:
       agg_inputs = {**self.inputs, **t.inputs}
-      task_inputs = {k: agg_inputs[v] for k, v in self.input_mapping.items()}
+      task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
       tasks.append(Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime))
     return Plan(tasks=tasks)
