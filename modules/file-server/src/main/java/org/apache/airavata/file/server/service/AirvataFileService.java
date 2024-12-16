@@ -11,11 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Service
@@ -57,6 +57,31 @@ public class AirvataFileService {
         }
 
         return airavataDirectory;
+    }
+
+    public void uploadFile(String processId, String subPath, MultipartFile file) throws Exception {
+
+        Path tempFile = Files.createTempFile("tempfile_", ".data");
+        tempFile.toFile().deleteOnExit();
+        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+
+        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        subPath = dataManager.getBaseDir() + (subPath.isEmpty()? "" : "/" + subPath);
+
+        try {
+            agentAdaptor.uploadFile(tempFile.toFile().getAbsolutePath(), subPath);
+        } catch (Exception e) {
+            logger.error("Failed to upload file {} from local path to process path {}",
+                    tempFile.toFile().getAbsolutePath(), subPath);
+            try {
+                tempFile.toFile().delete();
+            } catch (Exception ignore) {
+                // Ignore
+            }
+            throw e;
+        }
     }
     public Path downloadFile(String processId, String subPath) throws Exception {
 
