@@ -102,6 +102,7 @@
         <module>modules/agent-framework</module>
         <module>tools</module>
         <module>modules/ide-integration</module>
+        <module>modules/file-server</module>
     </modules>
 
     <properties>
@@ -151,6 +152,7 @@
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
         <helix.version>0.9.7</helix.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <spring.boot.version>3.2.4</spring.boot.version>
     </properties>
 
     <dependencies>

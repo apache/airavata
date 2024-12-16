@@ -15,7 +15,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>3.2.4</spring.boot.version>
         <jul-to-slf4j.version>1.7.0</jul-to-slf4j.version>
         <json.version>20240303</json.version>
         <javax.version>2.0.1.Final</javax.version>
