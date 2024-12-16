@@ -107,8 +107,10 @@
                 <include>org.apache.curator:curator-client:jar</include>
                 <include>com.google.guava:guava:jar</include>
                 <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>org.apache.zookeeper:zookeeper-jute:jar</include>
                 <include>jline:jline:jar</include>
                 <include>org.jboss.netty:netty:jar</include>
+                <include>io.netty:netty-handler:jar</include>
 
                 <include>com.google.code.gson:gson:jar</include>
 
