@@ -70,6 +70,16 @@ class Task(pydantic.BaseModel):
     Path(local_dir).mkdir(parents=True, exist_ok=True)
     return self.runtime.download(file, local_dir, self)
   
+  def download_all(self, local_dir: str) -> list[str]:
+    assert self.ref is not None
+    import os
+    os.makedirs(local_dir, exist_ok=True)
+    fps_task = list[str]()
+    for remote_fp in self.ls():
+      fp = self.runtime.download(remote_fp, local_dir, self)
+      fps_task.append(fp)
+    return fps_task
+  
   def cat(self, file: str) -> bytes:
     assert self.ref is not None
     return self.runtime.cat(file, self)

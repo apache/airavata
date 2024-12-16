@@ -76,16 +76,7 @@ class Plan(pydantic.BaseModel):
     print("Fetching results...")
     fps = list[list[str]]()
     for task in self.tasks:
-      runtime = task.runtime
-      ref = task.ref
-      task_dir = os.path.join(local_dir, task.name)
-      os.makedirs(task_dir, exist_ok=True)
-      fps_task = list[str]()
-      assert ref is not None
-      for remote_fp in task.ls():
-        fp = runtime.download(remote_fp, task_dir, task)
-        fps_task.append(fp)
-      fps.append(fps_task)
+      fps.append(task.download_all(local_dir))
     print("Results fetched.")
     self.save_json(os.path.join(local_dir, "plan.json"))
     return fps
@@ -101,10 +92,11 @@ class Plan(pydantic.BaseModel):
 
   def status(self) -> None:
     statuses = self.__stage_status__()
+    print(f"Plan {self.id} ({len(self.tasks)} tasks):")
     for task, status in zip(self.tasks, statuses):
-      print(f"{task.name}: {status}")
+      print(f"* {task.name}: {status}")
 
-  def join(self, check_every_n_mins: float = 0.1) -> None:
+  def wait_for_completion(self, check_every_n_mins: float = 0.1) -> None:
     n = len(self.tasks)
     try:
       with Progress() as progress:

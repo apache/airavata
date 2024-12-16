@@ -18,6 +18,7 @@ import logging
 from pathlib import Path
 from typing import Literal, NamedTuple
 from .sftp import SFTPConnector
+import warnings
 
 import jwt
 from airavata.model.security.ttypes import AuthzToken
@@ -27,6 +28,7 @@ from airavata.model.data.replica.ttypes import DataProductModel, DataProductType
 
 from airavata_sdk.clients.api_server_client import APIServerClient
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
 logger.setLevel(logging.INFO)
 
