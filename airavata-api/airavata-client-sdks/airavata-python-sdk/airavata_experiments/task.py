@@ -25,6 +25,7 @@ class Task(pydantic.BaseModel):
   inputs: dict[str, Any]
   runtime: Runtime
   ref: str | None = pydantic.Field(default=None)
+  pid: str | None = pydantic.Field(default=None)
   agent_ref: str | None = pydantic.Field(default=None)
   workdir: str | None = pydantic.Field(default=None)
   sr_host: str | None = pydantic.Field(default=None)

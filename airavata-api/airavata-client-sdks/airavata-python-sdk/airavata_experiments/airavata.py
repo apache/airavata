@@ -18,6 +18,7 @@ import logging
 from pathlib import Path
 from typing import Literal, NamedTuple
 from .sftp import SFTPConnector
+import time
 import warnings
 
 import jwt
@@ -34,6 +35,7 @@ logger.setLevel(logging.INFO)
 
 LaunchState = NamedTuple("LaunchState", [
   ("experiment_id", str),
+  ("process_id", str),
   ("mount_point", Path),
   ("experiment_dir", str),
   ("sr_host", str),
@@ -197,15 +199,15 @@ class AiravataOperator:
     """
     return self.api_server_client.get_experiment(self.airavata_token, experiment_id)
   
-  def get_process_id(self, experiment_id: str | None):
+  def get_process_id(self, experiment_id: str) -> str:
     """
     Get process id by experiment id
 
     """
-    assert experiment_id is not None
     tree: any = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
-    print(tree)
-    return tree.processes[0].processId
+    processModels: list = tree.processes
+    assert len(processModels) == 1 # verify if this check is necessary
+    return processModels[0].processId
 
 
   def get_accessible_apps(self, gateway_id: str | None = None):
@@ -330,13 +332,15 @@ class AiravataOperator:
     return remote_path
 
 
-  def upload_files(self, exp_id: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
+  def upload_files(self, process_id: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
     """
     Upload local files to a remote directory of a storage resource
 
     Return Path: /{project_name}/{experiment_name}
 
     """
+    if process_id is not None:
+      print("process_id:", process_id)
     host = sr_host
     port = self.default_sftp_port()
     sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
@@ -345,27 +349,28 @@ class AiravataOperator:
     return paths
 
 
-  def list_files(self, exp_id: str | None, sr_host: str, remote_dir: str) -> list[str]:
+  def list_files(self, process_id: str, sr_host: str, remote_dir: str) -> list[str]:
     """
     List files in a remote directory of a storage resource
 
     Return Path: /{project_name}/{experiment_name}
 
     """
+    print("process_id:", process_id)
     host = sr_host
     port = self.default_sftp_port()
     sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
     return sftp_connector.ls(remote_dir)
 
 
-  def download_file(self, exp_id: str | None, sr_host: str, remote_file: str, local_dir: str) -> str:
+  def download_file(self, process_id: str, sr_host: str, remote_file: str, local_dir: str) -> str:
     """
     Download files from a remote directory of a storage resource to a local directory
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    self.get_process_id(exp_id)
+    print("process_id:", process_id)
     host = sr_host
     port = self.default_sftp_port()
     sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
@@ -373,13 +378,14 @@ class AiravataOperator:
     logger.info("Remote files downlaoded to local dir: %s", local_dir)
     return path
   
-  def cat_file(self, exp_id: str | None, sr_host: str, remote_file: str) -> bytes:
+  def cat_file(self, process_id: str, sr_host: str, remote_file: str) -> bytes:
     """
     Download files from a remote directory of a storage resource to a local directory
 
     Return Path: /{project_name}/{experiment_name}
 
     """
+    print("process_id:", process_id)
     host = sr_host
     port = self.default_sftp_port()
     sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
@@ -528,6 +534,8 @@ class AiravataOperator:
 
     # create experiment
     ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
+    ex_id = str(ex_id)
+    print(f"[AV] Experiment {experiment_name} CREATED with id: {ex_id}")
 
     # TODO agent_id generate and send as input parameter
     # connect to connection service after this point, and route all file-related requests through it
@@ -535,12 +543,26 @@ class AiravataOperator:
 
     # launch experiment
     self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
+    print(f"[AV] Experiment {experiment_name} STARTED with id: {ex_id}")
+
+    # get process id
+    print(f"[AV] Experiment {experiment_name} WAITING until experiment begins...")
+    process_id = None
+    while process_id is None:
+      try:
+        process_id = self.get_process_id(ex_id)
+      except:
+        time.sleep(2)
+      else:
+        time.sleep(2)
+    print(f"[AV] Experiment {experiment_name} EXECUTING with pid: {process_id}")
 
     return LaunchState(
-      experiment_id=str(ex_id),
+      experiment_id=ex_id,
+      process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
-      sr_host=str(storage.hostName),
+      sr_host=storage.hostName,
     )
 
 

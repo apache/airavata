@@ -168,6 +168,7 @@ class Remote(Runtime):
         cpu_count=int(self.args["cpu_count"]),
         walltime=int(self.args["walltime"]),
     )
+    task.pid = launch_state.process_id
     task.ref = launch_state.experiment_id
     task.workdir = launch_state.experiment_dir
     task.sr_host = launch_state.sr_host
@@ -219,6 +220,7 @@ class Remote(Runtime):
 
   def ls(self, task: Task) -> list[str]:
     assert task.ref is not None
+    assert task.pid is not None
     assert task.agent_ref is not None
     assert task.sr_host is not None
     assert task.workdir is not None
@@ -234,7 +236,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.list_files(task.ref, task.sr_host, task.workdir)
+        return av.list_files(task.pid, task.sr_host, task.workdir)
       else:
         raise Exception(data["error"])
     else:
@@ -249,6 +251,7 @@ class Remote(Runtime):
 
   def upload(self, file: Path, task: Task) -> str:
     assert task.ref is not None
+    assert task.pid is not None
     assert task.agent_ref is not None
     assert task.sr_host is not None
     assert task.workdir is not None
@@ -256,15 +259,19 @@ class Remote(Runtime):
     import os
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
+    fp = os.path.join("/data", file.name)
+    import base64
+    rawdata = file.read_bytes()
+    b64data = base64.b64encode(rawdata).decode()
     res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
-        "arguments": ["cat", os.path.join("/data", file)]
+        "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
     })
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.upload_files(task.ref, task.sr_host, [file], task.workdir).pop()
+        return av.upload_files(task.pid, task.sr_host, [file], task.workdir).pop()
       else:
         raise Exception(data["error"])
     else:
@@ -273,12 +280,12 @@ class Remote(Runtime):
         res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
-          files = data["responseString"]
-          return files
+          return fp
         time.sleep(1)
 
   def download(self, file: str, local_dir: str, task: Task) -> str:
     assert task.ref is not None
+    assert task.pid is not None
     assert task.agent_ref is not None
     assert task.sr_host is not None
     assert task.workdir is not None
@@ -286,16 +293,16 @@ class Remote(Runtime):
     import os
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-
+    fp = os.path.join("/data", file)
     res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
-        "arguments": ["cat", os.path.join("/data", file)]
+        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.download_file(task.ref, task.sr_host, os.path.join(task.workdir, file), local_dir)
+        return av.download_file(task.pid, task.sr_host, os.path.join(task.workdir, file), local_dir)
       else:
         raise Exception(data["error"])
     else:
@@ -305,14 +312,17 @@ class Remote(Runtime):
         data = res.json()
         if data["available"]:
           content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
           path = Path(local_dir) / Path(file).name
-          with open(path, "w") as f:
+          with open(path, "wb") as f:
             f.write(content)
           return path.as_posix()
         time.sleep(1)
 
   def cat(self, file: str, task: Task) -> bytes:
     assert task.ref is not None
+    assert task.pid is not None
     assert task.agent_ref is not None
     assert task.sr_host is not None
     assert task.workdir is not None
@@ -320,16 +330,16 @@ class Remote(Runtime):
     import os
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-
+    fp = os.path.join("/data", file)
     res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
-        "arguments": ["cat", os.path.join("/data", file)]
+        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.cat_file(task.ref, task.sr_host, os.path.join(task.workdir, file))
+        return av.cat_file(task.pid, task.sr_host, os.path.join(task.workdir, file))
       else:
         raise Exception(data["error"])
     else:
@@ -338,7 +348,9 @@ class Remote(Runtime):
         res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
-          content = str(data["responseString"]).encode()
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
           return content
         time.sleep(1)
 
