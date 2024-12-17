@@ -20,6 +20,11 @@ from typing import Literal, NamedTuple
 from .sftp import SFTPConnector
 import time
 import warnings
+import requests
+from urllib.parse import urlparse
+import uuid
+import os
+import base64
 
 import jwt
 from airavata.model.security.ttypes import AuthzToken
@@ -33,8 +38,17 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
 logger.setLevel(logging.INFO)
 
+# TODO get these from settings
+conn_svc_url = f"https://api.gateway.cybershuttle.org/api/v1"
+data_svc_url = f"http://3.142.234.94:8050"
+
+data_svc_ls = lambda pid: f"{data_svc_url}/list/live/{pid}"
+data_svc_download = lambda pid, fp: f"{data_svc_url}/download/live/{pid}/{fp}"
+data_svc_upload = lambda pid, fp: f"{data_svc_url}/upload/live/{pid}/{fp}"
+
 LaunchState = NamedTuple("LaunchState", [
   ("experiment_id", str),
+  ("agent_ref", str),
   ("process_id", str),
   ("mount_point", Path),
   ("experiment_dir", str),
@@ -332,66 +346,167 @@ class AiravataOperator:
     return remote_path
 
 
-  def upload_files(self, process_id: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
+  def upload_files(self, process_id: str | None, agent_ref: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
     """
     Upload local files to a remote directory of a storage resource
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    if process_id is not None:
-      print("process_id:", process_id)
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    paths = sftp_connector.put(local_files, remote_dir)
-    logger.info(f"{len(paths)} Local files uploaded to remote dir: %s", remote_dir)
-    return paths
+
+    # step = experiment staging
+    if process_id is None and agent_ref is None:
+      host = sr_host
+      port = self.default_sftp_port()
+      sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
+      paths = sftp_connector.put(local_files, remote_dir)
+      logger.info(f"{len(paths)} Local files uploaded to remote dir: %s", remote_dir)
+      return paths
+    
+    # step = post-staging file upload
+    elif process_id is not None and agent_ref is not None:
+      assert len(local_files) == 1
+      file = local_files[0]
+      fp = os.path.join("/data", file.name)
+      rawdata = file.read_bytes()
+      b64data = base64.b64encode(rawdata).decode()
+      res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+          "agentId": agent_ref,
+          "workingDir": ".",
+          "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
+      })
+      data = res.json()
+      if data["error"] is not None:
+        if str(data["error"]) == "Agent not found":
+          port = self.default_sftp_port()
+          sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+          paths = sftp_connector.put(local_files, remote_dir)
+          return paths
+        else:
+          raise Exception(data["error"])
+      else:
+        exc_id = data["executionId"]
+        while True:
+          res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+          data = res.json()
+          if data["available"]:
+            return [fp]
+          time.sleep(1)
+
+    # step = unknown
+    else:
+      raise ValueError("Invalid arguments for upload_files")
 
 
-  def list_files(self, process_id: str, sr_host: str, remote_dir: str) -> list[str]:
+  def list_files(self, process_id: str, agent_ref: str, sr_host: str, remote_dir: str) -> list[str]:
     """
     List files in a remote directory of a storage resource
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    print("process_id:", process_id)
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    return sftp_connector.ls(remote_dir)
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+        "agentId": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", "cd /data && find . -type f -printf '%P\n'"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        port = self.default_sftp_port()
+        sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+        return sftp_connector.ls(remote_dir)
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          files = data["responseString"].split("\n")
+          return files
+        time.sleep(1)
+    
 
-
-  def download_file(self, process_id: str, sr_host: str, remote_file: str, local_dir: str) -> str:
+  def download_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str, local_dir: str) -> str:
     """
     Download files from a remote directory of a storage resource to a local directory
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    print("process_id:", process_id)
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    path = sftp_connector.get(remote_file, local_dir)
-    logger.info("Remote files downlaoded to local dir: %s", local_dir)
-    return path
+    import os
+    fp = os.path.join("/data", remote_file)
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+        "agentId": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        port = self.default_sftp_port()
+        fp = os.path.join(remote_dir, remote_file)
+        sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+        path = sftp_connector.get(fp, local_dir)
+        return path
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
+          path = Path(local_dir) / Path(remote_file).name
+          with open(path, "wb") as f:
+            f.write(content)
+          return path.as_posix()
+        time.sleep(1)
   
-  def cat_file(self, process_id: str, sr_host: str, remote_file: str) -> bytes:
+  def cat_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str) -> bytes:
     """
     Download files from a remote directory of a storage resource to a local directory
+    TODO add data_svc fallback
 
     Return Path: /{project_name}/{experiment_name}
 
     """
-    print("process_id:", process_id)
-    host = sr_host
-    port = self.default_sftp_port()
-    sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
-    data = sftp_connector.cat(remote_file)
-    logger.info("Remote files downlaoded to local dir: %s bytes", len(data))
-    return data
+    import os
+    fp = os.path.join("/data", remote_file)
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+        "agentId": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      if str(data["error"]) == "Agent not found":
+        port = self.default_sftp_port()
+        fp = os.path.join(remote_dir, remote_file)
+        sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
+        data = sftp_connector.cat(remote_file)
+        return data
+      else:
+        raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
+          return content
+        time.sleep(1)
 
   def launch_experiment(
       self,
@@ -421,6 +536,9 @@ class AiravataOperator:
     sr_host = str(sr_host or self.default_sr_hostname())
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
     project_name = str(project_name or self.default_project_name())
+    agent_ref = str(uuid.uuid4())
+    server_url = urlparse(conn_svc_url).netloc
+    inputs = {**inputs, "agent_ref": agent_ref, "server_url": server_url}
 
     # validate args (str)
     print("[AV] Validating args...")
@@ -510,7 +628,7 @@ class AiravataOperator:
 
     # configure file inputs for experiment
     print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(None, storage.hostName, files_to_upload, exp_dir)
+    self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
 
     # configure experiment inputs
     experiment_inputs = []
@@ -559,6 +677,7 @@ class AiravataOperator:
 
     return LaunchState(
       experiment_id=ex_id,
+      agent_ref=agent_ref,
       process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
@@ -566,13 +685,48 @@ class AiravataOperator:
     )
 
 
-  def get_experiment_status(self, experiment_id) -> Literal["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]:
+  def get_experiment_status(self, experiment_id: str) -> Literal["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]:
     states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
     status: any = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id) # type: ignore
     return states[status.state]
   
 
-  def stop_experiment(self, experiment_id):
+  def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
         self.airavata_token, experiment_id, self.default_gateway_id())
     return status
+  
+  def execute_py(self, libraries: list[str], code: str, agent_ref: str) -> str | None:
+    print(f"[av] Executing Python Code...")
+    try:
+      res = requests.post(f"{conn_svc_url}/agent/executepythonrequest", json={
+          "libraries": libraries,
+          "code": code,
+          "pythonVersion": "3.10", # TODO verify
+          "keepAlive": False, # TODO verify
+          "parentExperimentId": "/data", # the working directory
+          "agentId": agent_ref,
+      })
+      data = res.json()
+      if data["error"] is not None:
+        raise Exception(data["error"])
+      else:
+        exc_id = data["executionId"]
+        while True:
+          res = requests.get(f"{conn_svc_url}/agent/executepythonresponse/{exc_id}")
+          data = res.json()
+          if data["available"]:
+            response = str(data["responseString"])
+            return response
+          time.sleep(1)
+    except Exception as e:
+      print("[av] Remote execution failed! {e}")
+      return None
+    
+  def get_available_runtimes(self):
+    from .runtime import Remote
+    return [
+      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, walltime=30),
+      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, walltime=30),
+      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, walltime=30),
+    ]
