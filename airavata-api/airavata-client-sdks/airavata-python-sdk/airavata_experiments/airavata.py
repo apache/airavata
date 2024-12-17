@@ -31,20 +31,11 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-
 from airavata_sdk.clients.api_server_client import APIServerClient
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
 logger.setLevel(logging.INFO)
-
-# TODO get these from settings
-conn_svc_url = f"https://api.gateway.cybershuttle.org/api/v1"
-data_svc_url = f"http://3.142.234.94:8050"
-
-data_svc_ls = lambda pid: f"{data_svc_url}/list/live/{pid}"
-data_svc_download = lambda pid, fp: f"{data_svc_url}/download/live/{pid}/{fp}"
-data_svc_upload = lambda pid, fp: f"{data_svc_url}/upload/live/{pid}/{fp}"
 
 LaunchState = NamedTuple("LaunchState", [
   ("experiment_id", str),
@@ -67,6 +58,8 @@ class Settings:
     self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
     self.API_SERVER_PORT = config.getint('APIServer', 'API_PORT')
     self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
+    self.CONNECTION_SVC_URL = config.get('APIServer', 'CONNECTION_SVC_URL')
+    self.FILEMGR_SVC_URL = config.get('APIServer', 'FILEMGR_SVC_URL')
     
     # gateway settings
     self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
@@ -194,6 +187,12 @@ class AiravataOperator:
   
   def default_project_name(self):
     return self.settings.PROJECT_NAME
+  
+  def connection_svc_url(self):
+    return self.settings.CONNECTION_SVC_URL
+  
+  def filemgr_svc_url(self):
+    return self.settings.FILEMGR_SVC_URL
 
   def __airavata_token__(self, access_token: str, gateway_id: str):
     """
@@ -204,7 +203,6 @@ class AiravataOperator:
     self.user_id = str(decode["preferred_username"])
     claimsMap = {"userName": self.user_id, "gatewayID": gateway_id}
     return AuthzToken(accessToken=self.access_token, claimsMap=claimsMap)
-
 
   def get_experiment(self, experiment_id: str):
     """
@@ -223,7 +221,6 @@ class AiravataOperator:
     assert len(processModels) == 1 # verify if this check is necessary
     return processModels[0].processId
 
-
   def get_accessible_apps(self, gateway_id: str | None = None):
     """
     Get all applications available in the gateway
@@ -234,7 +231,6 @@ class AiravataOperator:
     # logic
     app_interfaces = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id)
     return app_interfaces
-
 
   def get_preferred_storage(self, gateway_id: str | None = None, sr_hostname: str | None = None):
     """
@@ -249,7 +245,6 @@ class AiravataOperator:
     sr_id = next((str(k) for k, v in sr_names.items() if v == sr_hostname))
     return self.api_server_client.get_gateway_storage_preference(self.airavata_token, gateway_id, sr_id)
 
-
   def get_storage(self, storage_name: str | None = None) -> any:  # type: ignore
     """
     Get storage resource by name
@@ -262,9 +257,6 @@ class AiravataOperator:
     sr_id = next((str(k) for k, v in sr_names.items() if v == storage_name))
     storage = self.api_server_client.get_storage_resource(self.airavata_token, sr_id)
     return storage
-  
-
-
 
   def get_group_resource_profile_id(self, grp_name: str | None = None) -> str:
     """
@@ -282,7 +274,6 @@ class AiravataOperator:
     grp: any = self.api_server_client.get_group_resource_profile(self.airavata_token, grp_id) # type: ignore
     return grp
 
-
   def get_compatible_deployments(self, app_interface_id: str, grp_name: str | None = None):
     """
     Get compatible deployments for an application interface and group resource profile
@@ -296,7 +287,6 @@ class AiravataOperator:
     deployments = self.api_server_client.get_application_deployments_for_app_module_and_group_resource_profile(self.airavata_token, app_interface_id, grp_id)
     return deployments
 
-
   def get_app_interface_id(self, app_name: str, gateway_id: str | None = None):
     """
     Get application interface id by name
@@ -306,14 +296,12 @@ class AiravataOperator:
     apps: list = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id) # type: ignore
     app_id = next((app.applicationInterfaceId for app in apps if app.applicationName == app_name))
     return str(app_id)
-  
 
   def get_project_id(self, project_name: str, gateway_id: str | None = None):
     gateway_id = str(gateway_id or self.default_gateway_id())
     projects: list = self.api_server_client.get_user_projects(self.airavata_token, gateway_id, self.user_id, 10, 0) # type: ignore
     project_id = next((p.projectID for p in projects if p.name == project_name and p.owner == self.user_id))
     return str(project_id)
-
 
   def get_application_inputs(self, app_interface_id: str) -> list:
     """
@@ -322,14 +310,12 @@ class AiravataOperator:
     """
     return list(self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id))  # type: ignore
 
-
   def get_compute_resources_by_ids(self, resource_ids: list[str]):
     """
     Get compute resources by ids
 
     """
     return [self.api_server_client.get_compute_resource(self.airavata_token, resource_id) for resource_id in resource_ids]
-
 
   def make_experiment_dir(self, sr_host: str, project_name: str, experiment_name: str) -> str:
     """
@@ -344,7 +330,6 @@ class AiravataOperator:
     remote_path = sftp_connector.mkdir(project_name, experiment_name)
     logger.info("Experiment directory created at %s", remote_path)
     return remote_path
-
 
   def upload_files(self, process_id: str | None, agent_ref: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
     """
@@ -371,7 +356,7 @@ class AiravataOperator:
       fp = os.path.join("/data", file.name)
       rawdata = file.read_bytes()
       b64data = base64.b64encode(rawdata).decode()
-      res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+      res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
           "agentId": agent_ref,
           "workingDir": ".",
           "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
@@ -388,7 +373,7 @@ class AiravataOperator:
       else:
         exc_id = data["executionId"]
         while True:
-          res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+          res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
           data = res.json()
           if data["available"]:
             return [fp]
@@ -397,7 +382,12 @@ class AiravataOperator:
     # step = unknown
     else:
       raise ValueError("Invalid arguments for upload_files")
-
+    
+    # file manager service fallback
+    assert process_id is not None
+    file = local_files[0]
+    url_path = os.path.join(process_id, file.name)
+    filemgr_svc_upload_url = f"{self.filemgr_svc_url()}/upload/live/{url_path}"
 
   def list_files(self, process_id: str, agent_ref: str, sr_host: str, remote_dir: str) -> list[str]:
     """
@@ -407,7 +397,7 @@ class AiravataOperator:
     Return Path: /{project_name}/{experiment_name}
 
     """
-    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
         "agentId": agent_ref,
         "workingDir": ".",
         "arguments": ["sh", "-c", "cd /data && find . -type f -printf '%P\n'"]
@@ -423,13 +413,16 @@ class AiravataOperator:
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           files = data["responseString"].split("\n")
           return files
         time.sleep(1)
-    
+
+    # file manager service fallback
+    assert process_id is not None
+    filemgr_svc_ls_url = f"{self.filemgr_svc_url()}/list/live/{process_id}"
 
   def download_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str, local_dir: str) -> str:
     """
@@ -441,7 +434,7 @@ class AiravataOperator:
     """
     import os
     fp = os.path.join("/data", remote_file)
-    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
         "agentId": agent_ref,
         "workingDir": ".",
         "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
@@ -459,17 +452,22 @@ class AiravataOperator:
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           content = data["responseString"]
           import base64
           content = base64.b64decode(content)
-          path = Path(local_dir) / Path(remote_file).name
+          path =  Path(local_dir) / remote_file
           with open(path, "wb") as f:
             f.write(content)
           return path.as_posix()
         time.sleep(1)
+    
+    # file manager service fallback
+    assert process_id is not None
+    url_path = os.path.join(process_id, remote_file)
+    filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
   
   def cat_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str) -> bytes:
     """
@@ -481,7 +479,7 @@ class AiravataOperator:
     """
     import os
     fp = os.path.join("/data", remote_file)
-    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
+    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
         "agentId": agent_ref,
         "workingDir": ".",
         "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
@@ -492,14 +490,14 @@ class AiravataOperator:
         port = self.default_sftp_port()
         fp = os.path.join(remote_dir, remote_file)
         sftp_connector = SFTPConnector(host=sr_host, port=int(port), username=self.user_id, password=self.access_token)
-        data = sftp_connector.cat(remote_file)
+        data = sftp_connector.cat(fp)
         return data
       else:
         raise Exception(data["error"])
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           content = data["responseString"]
@@ -507,6 +505,11 @@ class AiravataOperator:
           content = base64.b64decode(content)
           return content
         time.sleep(1)
+
+    # file manager service fallback
+    assert process_id is not None
+    url_path = os.path.join(process_id, remote_file)
+    filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
 
   def launch_experiment(
       self,
@@ -537,7 +540,7 @@ class AiravataOperator:
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
     project_name = str(project_name or self.default_project_name())
     agent_ref = str(uuid.uuid4())
-    server_url = urlparse(conn_svc_url).netloc
+    server_url = urlparse(self.connection_svc_url()).netloc
     inputs = {**inputs, "agent_ref": agent_ref, "server_url": server_url}
 
     # validate args (str)
@@ -684,12 +687,10 @@ class AiravataOperator:
       sr_host=storage.hostName,
     )
 
-
   def get_experiment_status(self, experiment_id: str) -> Literal["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]:
     states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
     status: any = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id) # type: ignore
     return states[status.state]
-  
 
   def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
@@ -699,7 +700,7 @@ class AiravataOperator:
   def execute_py(self, libraries: list[str], code: str, agent_ref: str) -> str | None:
     print(f"[av] Executing Python Code...")
     try:
-      res = requests.post(f"{conn_svc_url}/agent/executepythonrequest", json={
+      res = requests.post(f"{self.connection_svc_url()}/agent/executepythonrequest", json={
           "libraries": libraries,
           "code": code,
           "pythonVersion": "3.10", # TODO verify
@@ -713,7 +714,7 @@ class AiravataOperator:
       else:
         exc_id = data["executionId"]
         while True:
-          res = requests.get(f"{conn_svc_url}/agent/executepythonresponse/{exc_id}")
+          res = requests.get(f"{self.connection_svc_url()}/agent/executepythonresponse/{exc_id}")
           data = res.json()
           if data["available"]:
             response = str(data["responseString"])

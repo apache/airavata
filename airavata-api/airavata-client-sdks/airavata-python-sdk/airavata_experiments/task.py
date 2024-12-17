@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 import pydantic
 from .runtime import Runtime
+from rich.progress import Progress
 
 class Task(pydantic.BaseModel):
 
@@ -76,9 +77,14 @@ class Task(pydantic.BaseModel):
     import os
     os.makedirs(local_dir, exist_ok=True)
     fps_task = list[str]()
-    for remote_fp in self.ls():
-      fp = self.runtime.download(remote_fp, local_dir, self)
-      fps_task.append(fp)
+    files = self.ls()
+    with Progress() as progress:
+      pbar = progress.add_task(f"Downloading: ...", total=len(files))
+      for remote_fp in self.ls():
+        fp = self.runtime.download(remote_fp, local_dir, self)
+        progress.update(pbar, description=f"Downloading: {remote_fp}", advance=1)
+        fps_task.append(fp)
+      progress.update(pbar, description=f"Downloading: DONE", refresh=True)
     return fps_task
   
   def cat(self, file: str) -> bytes:
