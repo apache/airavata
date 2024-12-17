@@ -18,6 +18,7 @@ from .auth import context
 import abc
 from typing import Any
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pydantic
 import requests
@@ -30,8 +31,13 @@ Task = Any
 def is_terminal_state(x): return x in ["CANCELED", "COMPLETED", "FAILED"]
 
 
-conn_svc_url = "api.gateway.cybershuttle.org"
+# TODO get these from settings
+conn_svc_url = f"https://api.gateway.cybershuttle.org/api/v1"
+data_svc_url = f"http://3.142.234.94:8050"
 
+data_svc_ls = lambda pid: f"{data_svc_url}/list/live/{pid}"
+data_svc_download = lambda pid, fp: f"{data_svc_url}/download/live/{pid}/{fp}"
+data_svc_upload = lambda pid, fp: f"{data_svc_url}/upload/live/{pid}/{fp}"
 
 class Runtime(abc.ABC, pydantic.BaseModel):
 
@@ -151,10 +157,11 @@ class Remote(Runtime):
     print(f"[Remote] Experiment Created: name={task.name}")
     assert "cluster" in self.args
     task.agent_ref = str(uuid.uuid4())
+    conn_svc_host = urlparse(conn_svc_url).netloc
     launch_state = av.launch_experiment(
         experiment_name=task.name,
         app_name=task.app_id,
-        inputs={**task.inputs, "agent_id": task.agent_ref, "server_url": conn_svc_url},
+        inputs={**task.inputs, "agent_id": task.agent_ref, "server_url": conn_svc_host},
         computation_resource_name=str(self.args["cluster"]),
         queue_name=str(self.args["queue_name"]),
         node_count=int(self.args["node_count"]),
@@ -170,7 +177,7 @@ class Remote(Runtime):
     print(f"* Packages: {libraries}")
     print(f"* Code:\n{code}")
     try:
-      res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executepythonrequest", json={
+      res = requests.post(f"{conn_svc_url}/agent/executepythonrequest", json={
           "libraries": libraries,
           "code": code,
           "pythonVersion": "3.10", # TODO verify
@@ -184,7 +191,7 @@ class Remote(Runtime):
       else:
         exc_id = data["executionId"]
         while True:
-          res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executepythonresponse/{exc_id}")
+          res = requests.get(f"{conn_svc_url}/agent/executepythonresponse/{exc_id}")
           data = res.json()
           if data["available"]:
             response = data["responseString"]
@@ -219,7 +226,7 @@ class Remote(Runtime):
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
 
-    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
         "arguments": ["ls", "/data"]
@@ -233,7 +240,7 @@ class Remote(Runtime):
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           files = data["responseString"].split("\n")
@@ -250,7 +257,7 @@ class Remote(Runtime):
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
 
-    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
         "arguments": ["cat", os.path.join("/data", file)]
@@ -264,7 +271,7 @@ class Remote(Runtime):
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           files = data["responseString"]
@@ -281,7 +288,7 @@ class Remote(Runtime):
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
 
-    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
         "arguments": ["cat", os.path.join("/data", file)]
@@ -295,7 +302,7 @@ class Remote(Runtime):
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           content = data["responseString"]
@@ -315,7 +322,7 @@ class Remote(Runtime):
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
 
-    res = requests.post(f"https://{conn_svc_url}/api/v1/agent/executecommandrequest", json={
+    res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
         "arguments": ["cat", os.path.join("/data", file)]
@@ -329,7 +336,7 @@ class Remote(Runtime):
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"https://{conn_svc_url}/api/v1/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{conn_svc_url}/agent/executecommandresponse/{exc_id}")
         data = res.json()
         if data["available"]:
           content = str(data["responseString"]).encode()

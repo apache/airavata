@@ -100,19 +100,18 @@ class Plan(pydantic.BaseModel):
     n = len(self.tasks)
     try:
       with Progress() as progress:
-        pbars = [progress.add_task(f"{task.name} ({i+1}/{n})", total=None) for i, task in enumerate(self.tasks)]
-        completed = [False] * n
-        while not all(completed):
+        pbars = [progress.add_task(f"{task.name} ({i+1}/{n}): CHECKING", total=None) for i, task in enumerate(self.tasks)]
+        while True:
+          completed = [False] * n
           statuses = self.__stage_status__()
-          for i, (task, status) in enumerate(zip(self.tasks, statuses)):
-            pbar = pbars[i]
-            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {status}")
-            if is_terminal_state(status):
-              completed[i] = True
-              progress.update(pbar, completed=True)
+          for i, (task, status, pbar) in enumerate(zip(self.tasks, statuses, pbars)):
+            completed[i] = is_terminal_state(status)
+            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {status}", completed=completed[i], refresh=True)
+          if all(completed):
+            break
           sleep_time = check_every_n_mins * 60
           time.sleep(sleep_time)
-        print("Task(s) complete.")
+        print("All tasks completed.")
     except KeyboardInterrupt:
       print("Interrupted by user.")
 
