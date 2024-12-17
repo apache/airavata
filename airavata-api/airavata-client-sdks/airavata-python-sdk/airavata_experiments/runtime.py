@@ -141,22 +141,26 @@ class Remote(Runtime):
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    launch_state = av.launch_experiment(
-        experiment_name=task.name,
-        app_name=task.app_id,
-        inputs=task.inputs,
-        computation_resource_name=str(self.args["cluster"]),
-        queue_name=str(self.args["queue_name"]),
-        node_count=int(self.args["node_count"]),
-        cpu_count=int(self.args["cpu_count"]),
-        walltime=int(self.args["walltime"]),
-    )
-    task.agent_ref = launch_state.agent_ref
-    task.pid = launch_state.process_id
-    task.ref = launch_state.experiment_id
-    task.workdir = launch_state.experiment_dir
-    task.sr_host = launch_state.sr_host
-    print(f"[Remote] Experiment Launched: id={task.ref}")
+    try:
+      launch_state = av.launch_experiment(
+          experiment_name=task.name,
+          app_name=task.app_id,
+          inputs=task.inputs,
+          computation_resource_name=str(self.args["cluster"]),
+          queue_name=str(self.args["queue_name"]),
+          node_count=int(self.args["node_count"]),
+          cpu_count=int(self.args["cpu_count"]),
+          walltime=int(self.args["walltime"]),
+      )
+      task.agent_ref = launch_state.agent_ref
+      task.pid = launch_state.process_id
+      task.ref = launch_state.experiment_id
+      task.workdir = launch_state.experiment_dir
+      task.sr_host = launch_state.sr_host
+      print(f"[Remote] Experiment Launched: id={task.ref}")
+    except Exception as e:
+      print(f"[Remote] Failed to launch experiment: {e}")
+      raise e
 
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     assert task.ref is not None

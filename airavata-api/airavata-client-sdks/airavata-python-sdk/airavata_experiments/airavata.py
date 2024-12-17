@@ -218,7 +218,7 @@ class AiravataOperator:
     """
     tree: any = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
     processModels: list = tree.processes
-    assert len(processModels) == 1 # verify if this check is necessary
+    assert len(processModels) == 1, f"Expected 1 process model, got {len(processModels)}"
     return processModels[0].processId
 
   def get_accessible_apps(self, gateway_id: str | None = None):
@@ -351,7 +351,7 @@ class AiravataOperator:
     
     # step = post-staging file upload
     elif process_id is not None and agent_ref is not None:
-      assert len(local_files) == 1
+      assert len(local_files) == 1, f"Expected 1 file, got {len(local_files)}"
       file = local_files[0]
       fp = os.path.join("/data", file.name)
       rawdata = file.read_bytes()
@@ -384,7 +384,7 @@ class AiravataOperator:
       raise ValueError("Invalid arguments for upload_files")
     
     # file manager service fallback
-    assert process_id is not None
+    assert process_id is not None, f"Expected process_id, got {process_id}"
     file = local_files[0]
     url_path = os.path.join(process_id, file.name)
     filemgr_svc_upload_url = f"{self.filemgr_svc_url()}/upload/live/{url_path}"
@@ -421,7 +421,7 @@ class AiravataOperator:
         time.sleep(1)
 
     # file manager service fallback
-    assert process_id is not None
+    assert process_id is not None, f"Expected process_id, got {process_id}"
     filemgr_svc_ls_url = f"{self.filemgr_svc_url()}/list/live/{process_id}"
 
   def download_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str, local_dir: str) -> str:
@@ -465,7 +465,7 @@ class AiravataOperator:
         time.sleep(1)
     
     # file manager service fallback
-    assert process_id is not None
+    assert process_id is not None, f"Expected process_id, got {process_id}"
     url_path = os.path.join(process_id, remote_file)
     filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
   
@@ -507,7 +507,7 @@ class AiravataOperator:
         time.sleep(1)
 
     # file manager service fallback
-    assert process_id is not None
+    assert process_id is not None, f"Expected process_id, got {process_id}"
     url_path = os.path.join(process_id, remote_file)
     filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
 
@@ -515,7 +515,7 @@ class AiravataOperator:
       self,
       experiment_name: str,
       app_name: str,
-      inputs: dict[str, str | int | float | list[str]],
+      inputs: dict[str, dict[str, str | int | float | list[str]]],
       computation_resource_name: str,
       queue_name: str,
       node_count: int,
@@ -541,25 +541,41 @@ class AiravataOperator:
     project_name = str(project_name or self.default_project_name())
     agent_ref = str(uuid.uuid4())
     server_url = urlparse(self.connection_svc_url()).netloc
-    inputs = {**inputs, "agent_ref": agent_ref, "server_url": server_url}
 
     # validate args (str)
     print("[AV] Validating args...")
-    assert len(experiment_name) > 0
-    assert len(app_name) > 0
-    assert len(computation_resource_name) > 0
-    assert len(inputs) > 0
-    assert len(gateway_id) > 0
-    assert len(queue_name) > 0
-    assert len(grp_name) > 0
-    assert len(sr_host) > 0
-    assert len(project_name) > 0
-    assert len(mount_point.as_posix()) > 0
+    assert len(experiment_name) > 0, f"Invalid experiment_name: {experiment_name}"
+    assert len(app_name) > 0, f"Invalid app_name: {app_name}"
+    assert len(computation_resource_name) > 0, f"Invalid computation_resource_name: {computation_resource_name}"
+    assert len(inputs) > 0, f"Invalid inputs: {inputs}"
+    assert len(gateway_id) > 0, f"Invalid gateway_id: {gateway_id}"
+    assert len(queue_name) > 0, f"Invalid queue_name: {queue_name}"
+    assert len(grp_name) > 0, f"Invalid grp_name: {grp_name}"
+    assert len(sr_host) > 0, f"Invalid sr_host: {sr_host}"
+    assert len(project_name) > 0, f"Invalid project_name: {project_name}"
+    assert len(mount_point.as_posix()) > 0, f"Invalid mount_point: {mount_point}"
 
     # validate args (int)
-    assert node_count > 0
-    assert cpu_count > 0
-    assert walltime > 0
+    assert node_count > 0, f"Invalid node_count: {node_count}"
+    assert cpu_count > 0, f"Invalid cpu_count: {cpu_count}"
+    assert walltime > 0, f"Invalid walltime: {walltime}"
+
+    # parse and validate inputs
+    file_inputs = dict[str, Path | list[Path]]()
+    data_inputs = dict[str, str | int | float]()
+    for input_name, input_spec in inputs.items():
+      input_type = input_spec["type"]
+      input_value = input_spec["value"]
+      if input_type == "uri":
+        assert isinstance(input_value, str) and os.path.isfile(str(input_value)), f"Invalid {input_name}: {input_value}"
+        file_inputs[input_name] = Path(input_value)
+      elif input_type == "uri[]":
+        assert isinstance(input_value, list) and all([os.path.isfile(str(v)) for v in input_value]), f"Invalid {input_name}: {input_value}"
+        file_inputs[input_name] = [Path(v) for v in input_value]
+      else:
+        assert isinstance(input_value, (int, float, str)), f"Invalid {input_name}: {input_value}"
+        data_inputs[input_name] = input_value
+    data_inputs.update({"agent_ref": agent_ref, "server_url": server_url})
 
     # setup runtime params
     print("[AV] Setting up runtime params...")
@@ -569,7 +585,7 @@ class AiravataOperator:
     # setup application interface
     print("[AV] Setting up application interface...")
     app_interface_id = self.get_app_interface_id(app_name)
-    assert app_interface_id is not None
+    assert app_interface_id is not None, f"Invalid app_interface_id: {app_interface_id}"
 
     # setup experiment
     print("[AV] Setting up experiment...")
@@ -604,63 +620,55 @@ class AiravataOperator:
         auto_schedule=auto_schedule,
     )
 
-    # set up file inputs
-    print("[AV] Setting up file inputs...")
-
     def register_input_file(file: Path) -> str:
       return str(self.register_input_file(file.name, sr_host, sr_id, gateway_id, file.name, abs_path))
-
-    # setup experiment inputs
+    
+    # set up file inputs
+    print("[AV] Setting up file inputs...")
     files_to_upload = list[Path]()
-    file_inputs = dict[str, str | list[str]]()
-    data_inputs = dict[str, str | list[str] | int | float]()
-    for key, value in inputs.items():
-
-      if isinstance(value, str) and Path(value).is_file():
-        file = Path(value)
-        files_to_upload.append(file)
-        file_inputs[key] = register_input_file(file)
-
-      elif isinstance(value, list) and all([isinstance(v, str) and Path(v).is_file() for v in value]):
-        files = [*map(Path, value)]
-        files_to_upload.extend(files)
-        file_inputs[key] = [*map(register_input_file, files)]
-
+    file_refs = dict[str, str | list[str]]()
+    for key, value in file_inputs.items():
+      if isinstance(value, Path):
+        files_to_upload.append(value)
+        file_refs[key] = register_input_file(value)
+      elif isinstance(value, list):
+        assert all([isinstance(v, Path) for v in value]), f"Invalid file input value: {value}"
+        files_to_upload.extend(value)
+        file_refs[key] = [*map(register_input_file, value)]
       else:
-        data_inputs[key] = value
-
-    # configure file inputs for experiment
-    print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
+        raise ValueError("Invalid file input type")
 
     # configure experiment inputs
     experiment_inputs = []
     for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
+      print(exp_input)
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
         if exp_input.type == 0:
           exp_input.value = str(value)
         else:
           exp_input.value = repr(value)
-      elif exp_input.type == 3 and exp_input.name in file_inputs:
-        exp_input.value = file_inputs[exp_input.name]
-      elif exp_input.type == 4 and exp_input.name in file_inputs:
-        exp_input.value = ','.join(file_inputs[exp_input.name])
+      elif exp_input.type == 3 and exp_input.name in file_refs:
+        exp_input.value = file_refs[exp_input.name]
+      elif exp_input.type == 4 and exp_input.name in file_refs:
+        exp_input.value = ','.join(file_refs[exp_input.name])
       experiment_inputs.append(exp_input)
     experiment.experimentInputs = experiment_inputs
+    print(experiment.experimentInputs)
 
     # configure experiment outputs
     outputs = self.api_server_client.get_application_outputs(self.airavata_token, app_interface_id)
     experiment.experimentOutputs = outputs
+    print(experiment.experimentOutputs)
+
+    # upload file inputs for experiment
+    print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
+    self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
 
     # create experiment
     ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
     ex_id = str(ex_id)
     print(f"[AV] Experiment {experiment_name} CREATED with id: {ex_id}")
-
-    # TODO agent_id generate and send as input parameter
-    # connect to connection service after this point, and route all file-related requests through it
-    # later build a ssh adapter for ls type tasks
 
     # launch experiment
     self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
