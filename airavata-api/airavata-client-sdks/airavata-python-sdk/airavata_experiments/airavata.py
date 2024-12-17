@@ -575,7 +575,7 @@ class AiravataOperator:
       else:
         assert isinstance(input_value, (int, float, str)), f"Invalid {input_name}: {input_value}"
         data_inputs[input_name] = input_value
-    data_inputs.update({"agent_ref": agent_ref, "server_url": server_url})
+    data_inputs.update({"agent_id": agent_ref, "server_url": server_url})
 
     # setup runtime params
     print("[AV] Setting up runtime params...")
@@ -641,7 +641,6 @@ class AiravataOperator:
     # configure experiment inputs
     experiment_inputs = []
     for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
-      print(exp_input)
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
         if exp_input.type == 0:
@@ -654,12 +653,10 @@ class AiravataOperator:
         exp_input.value = ','.join(file_refs[exp_input.name])
       experiment_inputs.append(exp_input)
     experiment.experimentInputs = experiment_inputs
-    print(experiment.experimentInputs)
 
     # configure experiment outputs
     outputs = self.api_server_client.get_application_outputs(self.airavata_token, app_interface_id)
     experiment.experimentOutputs = outputs
-    print(experiment.experimentOutputs)
 
     # upload file inputs for experiment
     print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
