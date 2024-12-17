@@ -196,6 +196,16 @@ class AiravataOperator:
 
     """
     return self.api_server_client.get_experiment(self.airavata_token, experiment_id)
+  
+  def get_process_id(self, experiment_id: str | None):
+    """
+    Get process id by experiment id
+
+    """
+    assert experiment_id is not None
+    tree: any = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
+    print(tree)
+    return tree.processes[0].processId
 
 
   def get_accessible_apps(self, gateway_id: str | None = None):
@@ -320,7 +330,7 @@ class AiravataOperator:
     return remote_path
 
 
-  def upload_files(self, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
+  def upload_files(self, exp_id: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
     """
     Upload local files to a remote directory of a storage resource
 
@@ -335,7 +345,7 @@ class AiravataOperator:
     return paths
 
 
-  def list_files(self, sr_host: str, remote_dir: str) -> list[str]:
+  def list_files(self, exp_id: str | None, sr_host: str, remote_dir: str) -> list[str]:
     """
     List files in a remote directory of a storage resource
 
@@ -348,13 +358,14 @@ class AiravataOperator:
     return sftp_connector.ls(remote_dir)
 
 
-  def download_file(self, sr_host: str, remote_file: str, local_dir: str) -> str:
+  def download_file(self, exp_id: str | None, sr_host: str, remote_file: str, local_dir: str) -> str:
     """
     Download files from a remote directory of a storage resource to a local directory
 
     Return Path: /{project_name}/{experiment_name}
 
     """
+    self.get_process_id(exp_id)
     host = sr_host
     port = self.default_sftp_port()
     sftp_connector = SFTPConnector(host=host, port=int(port), username=self.user_id, password=self.access_token)
@@ -362,7 +373,7 @@ class AiravataOperator:
     logger.info("Remote files downlaoded to local dir: %s", local_dir)
     return path
   
-  def cat_file(self, sr_host: str, remote_file: str) -> bytes:
+  def cat_file(self, exp_id: str | None, sr_host: str, remote_file: str) -> bytes:
     """
     Download files from a remote directory of a storage resource to a local directory
 
@@ -493,7 +504,7 @@ class AiravataOperator:
 
     # configure file inputs for experiment
     print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(storage.hostName, files_to_upload, exp_dir)
+    self.upload_files(None, storage.hostName, files_to_upload, exp_dir)
 
     # configure experiment inputs
     experiment_inputs = []

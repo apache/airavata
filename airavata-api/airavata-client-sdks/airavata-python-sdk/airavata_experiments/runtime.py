@@ -234,7 +234,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.list_files(task.sr_host, task.workdir)
+        return av.list_files(task.ref, task.sr_host, task.workdir)
       else:
         raise Exception(data["error"])
     else:
@@ -256,7 +256,6 @@ class Remote(Runtime):
     import os
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-
     res = requests.post(f"{conn_svc_url}/agent/executecommandrequest", json={
         "agentId": task.agent_ref,
         "workingDir": ".",
@@ -265,7 +264,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.upload_files(task.sr_host, [file], task.workdir).pop()
+        return av.upload_files(task.ref, task.sr_host, [file], task.workdir).pop()
       else:
         raise Exception(data["error"])
     else:
@@ -296,7 +295,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.download_file(task.sr_host, os.path.join(task.workdir, file), local_dir)
+        return av.download_file(task.ref, task.sr_host, os.path.join(task.workdir, file), local_dir)
       else:
         raise Exception(data["error"])
     else:
@@ -330,7 +329,7 @@ class Remote(Runtime):
     data = res.json()
     if data["error"] is not None:
       if str(data["error"]) == "Agent not found":
-        return av.cat_file(task.sr_host, os.path.join(task.workdir, file))
+        return av.cat_file(task.ref, task.sr_host, os.path.join(task.workdir, file))
       else:
         raise Exception(data["error"])
     else:
