@@ -400,7 +400,7 @@ class AiravataOperator:
     res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
         "agentId": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", "cd /data && find . -type f -printf '%P\n'"]
+        "arguments": ["sh", "-c", r"find /data -type d -name 'venv' -prune -o -type f -printf '%P\n' | sort"]
     })
     data = res.json()
     if data["error"] is not None:

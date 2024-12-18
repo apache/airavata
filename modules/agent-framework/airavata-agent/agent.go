@@ -135,7 +135,7 @@ func main() {
 				bashScript := `
         workingDir="%s";
         cd $workingDir;
-        if [ ! -f "$workingDir/venv/pyenv.cfg" ]; then
+        if [ ! -f "$workingDir/venv/pyvenv.cfg" ]; then
           rm -rf $workingDir/venv;
           python3 -m venv $workingDir/venv;
         fi
