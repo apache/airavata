@@ -128,45 +128,59 @@ func main() {
 				log.Printf("[agent.go] Working Dir %s", workingDir)
 				log.Printf("[agent.go] Libraries %s", libraries)
 
-				// bash script to
-				// (a) create the virtual environment,
-				// (b) source it, and
-				// (c) run a python code
-				bashScript := `
-        workingDir="%s";
-        cd $workingDir;
-        if [ ! -f "$workingDir/venv/pyvenv.cfg" ]; then
-          rm -rf $workingDir/venv;
-          python3 -m venv $workingDir/venv;
-        fi
-        source $workingDir/venv/bin/activate
-        pip install %s > /dev/null
-        python -c "%s"
-        `
-
-				runCmd := fmt.Sprintf(
-					bashScript,
-					workingDir,
-					strings.Join(libraries, " "),
-					strings.ReplaceAll(code, `"`, `\"`),
-				)
-				log.Printf("[agent.go] Running bash script:\n%s", runCmd)
-				cmd := exec.Command("bash", "-c", runCmd)
-
 				go func() {
-					output, err := cmd.Output()
-					if err != nil {
-						fmt.Println("[agent.go] Failed to run python command:", err)
+
+					// setup the venv
+					venvCmd := fmt.Sprintf(`
+					agentId="%s"
+					pkgs="%s"
+
+					if [ ! -f "/tmp/$agentId/venv" ]; then
+						mkdir -p /tmp/$agentId
+						python3 -m venv /tmp/$agentId/venv
+					fi
+
+					source /tmp/$agentId/venv/bin/activate
+					python3 -m pip install $pkgs
+					
+					`, agentId, strings.Join(libraries, " "))
+					log.Println("[agent.go] venv setup:", venvCmd)
+					venvExc := exec.Command("bash", "-c", venvCmd)
+					venvOut, venvErr := venvExc.CombinedOutput()
+					if venvErr != nil {
+						fmt.Println("[agent.go] venv setup: ERR", venvErr)
 						return
 					}
-					stdoutString := string(output)
-					log.Printf("[agent.go] Execution output is %s", stdoutString)
+					venvStdout := string(venvOut)
+					fmt.Println("[agent.go] venv setup:", venvStdout)
+
+					// execute the python code
+					pyCmd := fmt.Sprintf(`
+					workingDir="%s";
+					agentId="%s";
+
+					cd $workingDir;
+					source /tmp/$agentId/venv/bin/activate;
+					python3 <<EOF
+%s
+EOF`, workingDir, agentId, code)
+					log.Println("[agent.go] python code:", pyCmd)
+					pyExc := exec.Command("bash", "-c", pyCmd)
+					pyOut, pyErr := pyExc.CombinedOutput()
+					if pyErr != nil {
+						fmt.Println("[agent.go] python code: ERR", pyErr)
+					}
+
+					// send the result back to the server
+					pyStdout := string(pyOut)
 					if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
 						PythonExecutionResponse: &protos.PythonExecutionResponse{
 							SessionId:      sessionId,
 							ExecutionId:    executionId,
-							ResponseString: stdoutString}}}); err != nil {
+							ResponseString: pyStdout}}}); err != nil {
 						log.Printf("[agent.go] Failed to send execution result to server: %v", err)
+					} else {
+						log.Printf("[agent.go] Sent execution result to the server: %v", pyStdout)
 					}
 				}()
 
@@ -177,17 +191,16 @@ func main() {
 				log.Printf("[agent.go] Execution id %s", executionId)
 				cmd := exec.Command(execArgs[0], execArgs[1:]...)
 				log.Printf("[agent.go] Completed execution with the id %s", executionId)
-				stdout, err := cmd.Output()
+				output, err := cmd.CombinedOutput() // combined output of stdout and stderr
 				if err != nil {
-					log.Fatalf(err.Error())
-					return
+					log.Printf("[agent.go] command execution failed: %s", err)
 				}
 
-				stdoutString := string(stdout)
-				log.Printf("[agent.go] Execution output is %s", stdoutString)
+				outputString := string(output)
+				log.Printf("[agent.go] Execution output is %s", outputString)
 
 				if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_CommandExecutionResponse{
-					CommandExecutionResponse: &protos.CommandExecutionResponse{ExecutionId: executionId, ResponseString: stdoutString}}}); err != nil {
+					CommandExecutionResponse: &protos.CommandExecutionResponse{ExecutionId: executionId, ResponseString: outputString}}}); err != nil {
 					log.Printf("[agent.go] Failed to send execution result to server: %v", err)
 				}
 

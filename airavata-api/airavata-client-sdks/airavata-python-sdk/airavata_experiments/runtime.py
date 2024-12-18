@@ -246,11 +246,21 @@ class Remote(Runtime):
 def list_runtimes(
     cluster: str | None = None,
     category: str | None = None,
+    node_count: int | None = None,
+    cpu_count: int | None = None,
+    walltime: int | None = None,
 ) -> list[Runtime]:
   from .airavata import AiravataOperator
   av = AiravataOperator(context.access_token)
   all_runtimes = av.get_available_runtimes()
-  return [*filter(lambda r: (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]), all_runtimes)]
+  out_runtimes = []
+  for r in all_runtimes:
+    if (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]):
+      r.args["node_count"] = node_count or r.args["node_count"]
+      r.args["cpu_count"] = cpu_count or r.args["cpu_count"]
+      r.args["walltime"] = walltime or r.args["walltime"]
+      out_runtimes.append(r)
+  return out_runtimes
 
 def is_terminal_state(x):
   return x in ["CANCELED", "COMPLETED", "FAILED"]
