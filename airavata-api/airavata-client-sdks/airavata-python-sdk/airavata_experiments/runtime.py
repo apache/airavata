@@ -165,8 +165,6 @@ class Remote(Runtime):
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     assert task.ref is not None
     assert task.agent_ref is not None
-    print(f"* Packages: {libraries}")
-    print(f"* Code:\n{code}")
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)

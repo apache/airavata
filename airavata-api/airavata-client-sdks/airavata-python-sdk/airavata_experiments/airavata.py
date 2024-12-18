@@ -726,7 +726,7 @@ class AiravataOperator:
             return response
           time.sleep(1)
     except Exception as e:
-      print("[av] Remote execution failed! {e}")
+      print(f"[av] Remote execution failed! {e}")
       return None
     
   def get_available_runtimes(self):
