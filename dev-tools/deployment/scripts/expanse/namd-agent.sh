@@ -150,7 +150,7 @@ if [ $ExeTyp == "CPU" ]; then
   export NAMDPATH="$APP_PATH/NAMD_3.1alpha2_Linux-x86_64-multicore"
 fi
 if [ $ExeTyp == "GPU" ]; then
-  export NAMDPATH="$APP_PATH/NAMD_3.1alpha2_Linux-x86_64-multicore-CUDA"
+  export NAMDPATH="$APP_PATH/NAMD_3.0.1_Linux-x86_64-multicore-CUDA"
 fi
 
 #-----------------------------------------------------------------------
@@ -214,7 +214,6 @@ cd ${subdir}
 ########################################################################
 # Part 3 - Output Flattening
 ########################################################################
-num_rep=3
 for replica in $(seq 1 ${num_rep}); do
   for file in $(ls ${replica}/*.*); do
     mv ${file} ${replica}"_"$(basename $file)

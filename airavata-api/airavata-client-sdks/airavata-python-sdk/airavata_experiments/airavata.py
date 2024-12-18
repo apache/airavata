@@ -400,7 +400,7 @@ class AiravataOperator:
     res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
         "agentId": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", "cd /data && find . -type f -printf '%P\n'"]
+        "arguments": ["sh", "-c", r"find /data -type d -name 'venv' -prune -o -type f -printf '%P\n' | sort"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -539,7 +539,6 @@ class AiravataOperator:
     sr_host = str(sr_host or self.default_sr_hostname())
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
     project_name = str(project_name or self.default_project_name())
-    agent_ref = str(uuid.uuid4())
     server_url = urlparse(self.connection_svc_url()).netloc
 
     # validate args (str)
@@ -575,7 +574,8 @@ class AiravataOperator:
       else:
         assert isinstance(input_value, (int, float, str)), f"Invalid {input_name}: {input_value}"
         data_inputs[input_name] = input_value
-    data_inputs.update({"agent_id": agent_ref, "server_url": server_url})
+    data_inputs.update({"agent_id": data_inputs.get("agent_id", str(uuid.uuid4()))})
+    data_inputs.update({"server_url": server_url})
 
     # setup runtime params
     print("[AV] Setting up runtime params...")
@@ -685,7 +685,7 @@ class AiravataOperator:
 
     return LaunchState(
       experiment_id=ex_id,
-      agent_ref=agent_ref,
+      agent_ref=str(data_inputs["agent_id"]),
       process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
@@ -702,31 +702,73 @@ class AiravataOperator:
         self.airavata_token, experiment_id, self.default_gateway_id())
     return status
   
-  def execute_py(self, libraries: list[str], code: str, agent_ref: str) -> str | None:
-    print(f"[av] Executing Python Code...")
+  def execute_py(self, libraries: list[str], code: str, agent_id: str, pid: str, runtime_args: dict, cold_start: bool = True) -> str | None:
+    # lambda to send request
+    print(f"[av] Attempting to submit to agent {agent_id}...")
+    make_request = lambda: requests.post(f"{self.connection_svc_url()}/agent/executepythonrequest", json={
+      "libraries": libraries,
+      "code": code,
+      "pythonVersion": "3.10", # TODO verify
+      "keepAlive": False, # TODO verify
+      "parentExperimentId": "/data", # the working directory
+      "agentId": agent_id,
+    })
     try:
-      res = requests.post(f"{self.connection_svc_url()}/agent/executepythonrequest", json={
-          "libraries": libraries,
-          "code": code,
-          "pythonVersion": "3.10", # TODO verify
-          "keepAlive": False, # TODO verify
-          "parentExperimentId": "/data", # the working directory
-          "agentId": agent_ref,
-      })
-      data = res.json()
-      if data["error"] is not None:
-        raise Exception(data["error"])
+      if cold_start:
+        res = make_request()
+        data = res.json()
+        if data["error"] == "Agent not found":
+          # waiting for agent to be available
+          print(f"[av] Agent {agent_id} not found! Relaunching...")
+          self.launch_experiment(
+            experiment_name="Agent",
+            app_name="AiravataAgent",
+            inputs={
+              "agent_id": {"type": "str", "value": agent_id},
+              "server_url": {"type": "str", "value": urlparse(self.connection_svc_url()).netloc},
+              "process_id": {"type": "str", "value": pid},
+            },
+            computation_resource_name=runtime_args["cluster"],
+            queue_name=runtime_args["queue_name"],
+            node_count=1,
+            cpu_count=runtime_args["cpu_count"],
+            walltime=runtime_args["walltime"],
+          )
+          return self.execute_py(libraries, code, agent_id, pid, runtime_args, cold_start=False)
+        elif data["executionId"] is not None:
+          print(f"[av] Submitted to Python Interpreter")
+          # agent response
+          exc_id = data["executionId"]
+        else:
+          # unrecoverable error
+          raise Exception(data["error"])
       else:
-        exc_id = data["executionId"]
+        # poll until agent is available
         while True:
-          res = requests.get(f"{self.connection_svc_url()}/agent/executepythonresponse/{exc_id}")
+          res = make_request()
           data = res.json()
-          if data["available"]:
-            response = str(data["responseString"])
-            return response
-          time.sleep(1)
+          if data["error"] == "Agent not found":
+            # print(f"[av] Waiting for Agent {agent_id}...")
+            time.sleep(2)
+            continue
+          elif data["executionId"] is not None:
+            print(f"[av] Submitted to Python Interpreter")
+            exc_id = data["executionId"]
+            break
+          else:
+            raise Exception(data["error"])
+      assert exc_id is not None, f"Invalid execution id: {exc_id}"
+      
+      # wait for the execution response to be available
+      while True:
+        res = requests.get(f"{self.connection_svc_url()}/agent/executepythonresponse/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          response = str(data["responseString"])
+          return response
+        time.sleep(1)
     except Exception as e:
-      print("[av] Remote execution failed! {e}")
+      print(f"[av] Remote execution failed! {e}")
       return None
     
   def get_available_runtimes(self):
