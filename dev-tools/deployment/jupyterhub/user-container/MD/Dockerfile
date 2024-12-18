@@ -1,6 +1,14 @@
 FROM jupyter/base-notebook:latest
 
-COPY data /home/jovyan/data/
-COPY poc.ipynb settings.ini /home/jovyan/
+COPY data /tmp/default_data/
+COPY poc.ipynb settings.ini /tmp/default_configs/
 
-RUN chown -R jovyan:users /home/jovyan/data /home/jovyan/settings.ini
+COPY init.sh /usr/local/bin/init.sh
+
+USER root
+RUN chmod +x /usr/local/bin/init.sh
+
+USER $NB_USER
+
+ENTRYPOINT ["/usr/local/bin/init.sh"]
+CMD ["start-notebook.sh"]

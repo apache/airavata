@@ -68,7 +68,7 @@ public class PlanController {
     }
 
     @PutMapping("/{planId}")
-    public ResponseEntity<Plan> updatePlan(@PathVariable String planId, @RequestBody JsonNode incomingData) {
+    public ResponseEntity<Plan> updatePlan(@PathVariable("planId") String planId, @RequestBody JsonNode incomingData) {
         try {
             Plan existingPlan = planHandler.getPlanById(planId);
 
