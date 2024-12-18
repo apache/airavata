@@ -165,10 +165,11 @@ class Remote(Runtime):
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     assert task.ref is not None
     assert task.agent_ref is not None
+    assert task.pid is not None
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    result = av.execute_py(libraries, code, task.agent_ref)
+    result = av.execute_py(libraries, code, task.agent_ref, task.pid, task.runtime.args)
     print(result)
 
   def status(self, task: Task):
