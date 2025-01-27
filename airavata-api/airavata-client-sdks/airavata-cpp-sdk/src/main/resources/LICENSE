@@ -212,8 +212,8 @@ The following components come under Apache Software License 2.0
 
 apache axiom, apache axis2, apache commons, apache derby, apache geronimo,
 apache httpcore components, apache log4j, apache xmlbeans, apache xmlschema,
-aws-java-sdk-1.1.8.jar, bcel-5.1.jar, Codehaus Jackson (jackson-core-asl-1.9.2.jar,
-jackson-jaxrs-1.9.2.jar, jackson-mapper-asl-1.9.2.jar, jackson-xc-1.9.2.jar, 
+aws-java-sdk-1.1.8.jar, bcel-5.1.jar, Codehaus Jackson (jackson-core-2.15.4.jar,
+jackson-jaxrs-json-provider-2.15.4.jar, jackson-databind-2.15.4.jar, jackson-module-jaxb-annotations-2.15.4.jar,
 jets3t-0.8.0.jar, jettison-1.0-RC2.jar, neethi-2.0.4.jar, PDFBox libraries 
 (pdfbox, jempbox, fontbox), wstx-asl-3.2.4.jar
 

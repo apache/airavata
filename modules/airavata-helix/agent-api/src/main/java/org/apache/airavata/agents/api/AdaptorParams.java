@@ -19,14 +19,13 @@
  */
 package org.apache.airavata.agents.api;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 /**
- * TODO: Class level comments please
+ * This class provides methods to serialize and deserialize its instances to and from JSON files using Jackson's ObjectMapper
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

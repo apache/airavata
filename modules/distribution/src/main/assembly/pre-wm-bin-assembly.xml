@@ -119,9 +119,7 @@
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>com.fasterxml.jackson.core:jackson-annotations:jar</include>
                 <include>com.fasterxml.jackson.core:jackson-core:jar</include>
-                <include>org.codehaus.jackson:jackson-core-asl:jar</include>
                 <include>com.fasterxml.jackson.core:jackson-databind:jar</include>
-                <include>org.codehaus.jackson:jackson-mapper-asl:jar</include>
                 <include>jakarta-regexp:jakarta-regexp:jar</include>
                 <include>jline:jline:jar</include>
                 <include>org.apache.airavata:job-monitor-api:jar</include>
