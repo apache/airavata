@@ -195,6 +195,10 @@ FILE_UPLOAD_HANDLERS = [
     'django_airavata.uploadhandler.MaxFileSizeTemporaryFileUploadHandler',
 ]
 
+# Django max file size
+DATA_UPLOAD_MAX_MEMORY_SIZE =  64 * 1024 * 1024  # 64 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE =  64 * 1024 * 1024  # 64 MB
+
 # Tus upload
 # Override and set to a valid tus endpoint, for example
 # "http://localhost:1080/files/"
