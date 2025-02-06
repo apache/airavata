@@ -13,8 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @GrpcService
@@ -117,6 +119,74 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         return runResponse;
     }
 
+    private String loadCode = "import time\n" +
+            "\n" +
+            "print(\"Waiting for 30 seconds...\")\n" +
+            "time.sleep(30)\n" +
+            "print(\"Done waiting!\")";
+
+    private Map<String, String> BUSY_AGENTS_WITH_EXECUTION = new ConcurrentHashMap<>();
+    private Map<String, String> COMPLETED_AGENTS_WITH_EXECUTION = new ConcurrentHashMap<>();
+    private int loadSize = 20;
+    private AtomicInteger jobsTobeSubmitted = new AtomicInteger(0);
+    private AtomicInteger jobsCompleted = new AtomicInteger(0);
+
+    long startTime = 0;
+    public void runLoad() {
+        startTime = System.currentTimeMillis();
+        logger.info("Running load on agents");
+        jobsCompleted.set(0);
+        jobsTobeSubmitted.set(loadSize);
+        runLoadScheduling();
+    }
+
+    private synchronized void runLoadScheduling() {
+
+        for (String execId : COMPLETED_AGENTS_WITH_EXECUTION.keySet()) {
+            String agentId = COMPLETED_AGENTS_WITH_EXECUTION.get(execId);
+            String streamId = AGENT_STREAM_MAPPING.get(agentId);
+            if (ACTIVE_STREAMS.containsKey(streamId)) {
+                logger.info("Sending kill message to agent {}", agentId);
+                StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+                streamObserver.onNext(ServerMessage.newBuilder().setPythonExecutionRequest(
+                        PythonExecutionRequest.newBuilder()
+                                .setExecutionId(UUID.randomUUID().toString())
+                                .setKeepAlive(true)
+                                .setCode("kill")
+                                .setWorkingDir("")).build());
+                COMPLETED_AGENTS_WITH_EXECUTION.remove(execId);
+            }
+        }
+
+        if (jobsTobeSubmitted.get() <= 0) {
+            logger.info("Loading agents completed");
+            return;
+        }
+        for (String agentId : AGENT_STREAM_MAPPING.keySet()) {
+
+            if (BUSY_AGENTS_WITH_EXECUTION.containsValue(agentId)) {
+                logger.info("Busy agent {}", agentId);
+                continue;
+            }
+
+            String streamId = AGENT_STREAM_MAPPING.get(agentId);
+            if (ACTIVE_STREAMS.containsKey(streamId)) {
+                String executionId = UUID.randomUUID().toString();
+                logger.info("Running load on agent {} for execution {}", agentId, executionId);
+                StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+                BUSY_AGENTS_WITH_EXECUTION.put(executionId, agentId);
+                streamObserver.onNext(ServerMessage.newBuilder().setPythonExecutionRequest(
+                        PythonExecutionRequest.newBuilder()
+                                .setExecutionId(executionId)
+                                .setKeepAlive(true)
+                                .setCode(loadCode)
+                                .setWorkingDir("")).build());
+                jobsTobeSubmitted.decrementAndGet();
+            }
+        }
+    }
+
+
     public AgentPythonRunAck runPythonOnAgent(AgentPythonRunRequest pythonRunRequest) {
         String executionId = UUID.randomUUID().toString();
         AgentPythonRunAck ack = new AgentPythonRunAck();
@@ -218,8 +288,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     private void handleAgentPing(AgentPing agentPing, String streamId) {
-        logger.info("Received agent ping for agent id {}", agentPing.getAgentId());
+        logger.info("Received agent ping for agent id {} with stram {}", agentPing.getAgentId(), streamId);
         AGENT_STREAM_MAPPING.put(agentPing.getAgentId(), streamId);
+        runLoadScheduling();
     }
 
     private void handleCommandExecutionResponse (CommandExecutionResponse commandExecutionResponse) {
@@ -243,6 +314,14 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private void handlePythonExecutionResponse (PythonExecutionResponse executionResponse) {
         logger.info("Received python execution response for execution id {}", executionResponse.getExecutionId());
         PYTHON_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
+        //BUSY_AGENTS_WITH_EXECUTION.remove(executionResponse.getExecutionId());
+        COMPLETED_AGENTS_WITH_EXECUTION.put(executionResponse.getExecutionId(),
+                BUSY_AGENTS_WITH_EXECUTION.get(executionResponse.getExecutionId()));
+        int completed = jobsCompleted.incrementAndGet();
+        if (completed == loadSize) {
+            logger.info("ALL JOBS " + loadSize +"  COMPLETED time " + (System.currentTimeMillis() - startTime)/1000 + "s");
+        }
+        runLoadScheduling();
     }
 
 

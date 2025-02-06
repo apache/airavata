@@ -82,6 +82,11 @@ public class AgentController {
         }
     }
 
+    @GetMapping("/runLoad")
+    public void runLoad() {
+        agentConnectionHandler.runLoad();
+    }
+
     @GetMapping("/executepythonresponse/{executionId}")
     public ResponseEntity<AgentPythonRunResponse> getPythonResponse(@PathVariable("executionId") String executionId) {
         return ResponseEntity.accepted().body(agentConnectionHandler.getPythonExecutionResponse(executionId));

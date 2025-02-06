@@ -2,7 +2,6 @@ package main
 
 import (
 	protos "airavata-agent/protos"
-	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -50,58 +49,6 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Starting jupyter kernel")
-		cmd := exec.Command("python", "/opt/jupyter/kernel.py")
-		//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
-		stdout, err := cmd.StdoutPipe()
-
-		if err != nil {
-			fmt.Println("[agent.go] Error creating StdoutPipe:", err)
-			return
-		}
-
-		// Get stderr pipe
-		stderr, err := cmd.StderrPipe()
-		if err != nil {
-			fmt.Println("[agent.go] Error creating StderrPipe:", err)
-			return
-		}
-
-		log.Printf("[agent.go] Starting command for execution")
-		// Start the command
-		if err := cmd.Start(); err != nil {
-			fmt.Println("[agent.go] Error starting command:", err)
-			return
-		}
-
-		// Create channels to read from stdout and stderr
-		stdoutScanner := bufio.NewScanner(stdout)
-		stderrScanner := bufio.NewScanner(stderr)
-
-		// Stream stdout
-		go func() {
-			for stdoutScanner.Scan() {
-				fmt.Printf("[agent.go] stdout: %s\n", stdoutScanner.Text())
-			}
-		}()
-
-		// Stream stderr
-		go func() {
-			for stderrScanner.Scan() {
-				fmt.Printf("[agent.go] stderr: %s\n", stderrScanner.Text())
-			}
-		}()
-
-		// Wait for the command to finish
-		if err := cmd.Wait(); err != nil {
-			fmt.Println("[agent.go] Error waiting for command:", err)
-			return
-		}
-
-		fmt.Println("[agent.go] Command finished")
-	}()
-
-	go func() {
 		for {
 			in, err := stream.Recv()
 			if err == io.EOF {
@@ -127,6 +74,9 @@ func main() {
 				log.Printf("[agent.go] Working Dir %s", workingDir)
 				log.Printf("[agent.go] Libraries %s", libraries)
 
+				if code == "kill" {
+					log.Fatalf("Killing the agent " + agentId + "  as instructed by server")
+				}
 				// TODO: cd into working dir, create the virtual environment with provided libraries
 				cmd := exec.Command("python3", "-c", code) //TODO: Load python runtime from a config
 
@@ -139,8 +89,8 @@ func main() {
 				stdoutString := string(output)
 				if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
 					PythonExecutionResponse: &protos.PythonExecutionResponse{
-						SessionId: sessionId, 
-						ExecutionId: executionId, 
+						SessionId:      sessionId,
+						ExecutionId:    executionId,
 						ResponseString: stdoutString}}}); err != nil {
 					log.Printf("[agent.go] Failed to send execution result to server: %v", err)
 				}
