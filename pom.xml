@@ -153,6 +153,7 @@
         <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>
         <rest.easy.client.version>6.2.8.Final</rest.easy.client.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
     </properties>
 
     <dependencies>
