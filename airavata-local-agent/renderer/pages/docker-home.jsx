@@ -29,6 +29,7 @@ import { AiOutlineCode } from "react-icons/ai";
 import { useInterval } from "usehooks-ts";
 import { DEBUG_DOCKER_MODE, API_BASE_URL, AUTH_BASE_URL, TOKEN_FILE } from "../lib/constants";
 import { motion } from 'framer-motion';
+import { useBackendUrls } from "../lib/Contexts";
 
 const PING_DOCKER_INTERVAL = 10000;
 
@@ -73,6 +74,7 @@ const DockerHome = () => {
   const [error, setError] = useState(null);
   const [tabIndex, setTabIndex] = useState(1);
   const toast = useToast();
+  const { gatewayName } = useBackendUrls();
 
   useEffect(() => {
     pingDocker();
@@ -142,7 +144,7 @@ const DockerHome = () => {
 
   return (
     <Box h='100vh' overflow='hidden' bg='gray.100'>
-      <HeaderBox />
+      <HeaderBox gatewayName={gatewayName} />
 
       <Tabs h='100%' index={tabIndex} onChange={(index) => setTabIndex(index)} isLazy>
         <Grid templateColumns='repeat(20, 1fr)' h='inherit'>
