@@ -1,1 +1,1 @@
-docker run -p 18888:8888 -it lahiruj/cerebrum-jupyter-lab
+docker run -p 18888:8888 -it cybershuttle/cerebrum-jupyter-lab

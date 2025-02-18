@@ -6,7 +6,7 @@ import os
 class DeviceFlowAuthenticator:
     def __init__(self):
         self.client_id = "cybershuttle-agent"
-        self.realm = "10000000"
+        self.realm = "default"
         self.auth_server_url = "https://auth.cybershuttle.org"
 
         if not self.client_id or not self.realm or not self.auth_server_url:

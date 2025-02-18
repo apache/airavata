@@ -75,7 +75,7 @@ public class AiravataService {
         List<GroupResourceProfile> groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
 
         return groupResourceList.stream()
-                .filter(profile -> "Default".equals(profile.getGroupResourceProfileName()))
+                .filter(profile -> "Default".equals(profile.getGroupResourceProfileName())) // TODO parameterized the group resource profile
                 .flatMap(profile -> profile.getComputePreferences().stream())
                 .map(GroupComputeResourcePreference::getComputeResourceId)
                 .filter(computeResourceId -> computeResourceId.startsWith(remoteCluster))

@@ -1,1 +1,1 @@
-docker build --platform linux/x86_64 -t lahiruj/cerebrum-jupyter-lab .
+docker build --platform linux/x86_64 -t cybershuttle/cerebrum-jupyter-lab .
