@@ -8,7 +8,7 @@ Build the Agent
 
 Execute the following command to run an agent locally.
 ```shell
-docker run --rm -v $(pwd):/workspace -w /workspace dimuthuupe/airavata-iguide-agent bash -c "./docker-agent.sh"
+docker run --rm -v $(pwd):/workspace -w /workspace cybershuttle/airavata-iguide-agent bash -c "./docker-agent.sh"
 ```
 
 

@@ -1,4 +1,4 @@
-FROM dimuthuupe/airavata-agent:latest
+FROM cybershuttle/airavata-agent:latest
 
 USER root
 

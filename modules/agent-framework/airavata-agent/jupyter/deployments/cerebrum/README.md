@@ -9,7 +9,7 @@ cd v1l4
 
 Execute the following command to run an agent locally.
 ```shell
-docker run --rm -v $(pwd):/workspace -w /workspace lahiruj/airavata-cerebrum-agent bash -c "./docker-agent.sh"
+docker run --rm -v $(pwd):/workspace -w /workspace cybershuttle/airavata-cerebrum-agent bash -c "./docker-agent.sh"
 ```
 
 ### Jupyter lab

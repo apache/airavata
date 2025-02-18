@@ -1,1 +1,1 @@
-docker build --platform linux/x86_64 -t dimuthuupe/airavata-jupyter-lab .
+docker build --platform linux/x86_64 -t cybershuttle/airavata-jupyter-lab .
