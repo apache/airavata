@@ -12,6 +12,7 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -95,6 +96,22 @@ public class AgentManagementHandler {
         } catch (Exception e) {
             LOGGER.error("Error while terminating the application with the experiment Id: {}", experimentId);
             throw new RuntimeException("Error while terminating the application with the experiment Id: " + experimentId, e);
+        }
+    }
+
+    public ProcessModel getEnvProcessModel(String expId) {
+        try {
+            LOGGER.info("Extracting the process model for experiment id: {}", expId);
+            ExperimentModel expModel = airavataService.airavata().getDetailedExperimentTree(UserContext.authzToken(), expId);
+            if (expModel.getProcesses() != null && !expModel.getProcesses().isEmpty()) {
+                return expModel.getProcesses().get(0);
+            } else {
+                LOGGER.error("No process found for experiment id: {}", expId);
+                return null;
+            }
+        } catch (TException e) {
+            LOGGER.error("Error while extracting the process model for experiment id: {}", expId, e);
+            throw new RuntimeException(e);
         }
     }
 

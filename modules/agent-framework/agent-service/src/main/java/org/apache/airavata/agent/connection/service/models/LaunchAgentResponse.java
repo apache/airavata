@@ -3,6 +3,7 @@ package org.apache.airavata.agent.connection.service.models;
 public class LaunchAgentResponse {
     private String agentId;
     private String experimentId;
+    private String processId;
 
     public LaunchAgentResponse(String agentId, String experimentId) {
         this.agentId = agentId;
@@ -23,5 +24,13 @@ public class LaunchAgentResponse {
 
     public void setExperimentId(String experimentId) {
         this.experimentId = experimentId;
+    }
+
+    public String getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 }
