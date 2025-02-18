@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.12-slim
 
 RUN apt update
 RUN apt install fuse -y
@@ -15,9 +15,10 @@ RUN git clone https://github.com/cyber-shuttle/jupyter-notebook-examples /home/j
 COPY labconfig/jupyter_lab_config.py /jupyter_lab_config.py
 COPY labconfig/airavata_magics.py /airavata_magics.py
 COPY labconfig/__init__.py /__init__.py
+COPY labconfig/device_auth.py /device_auth.py
 COPY labconfig/bootstrap.sh /bootstrap.sh
 RUN chmod +x /bootstrap.sh
-# COPY fuse/client /client
+
 EXPOSE 8888
 WORKDIR /home
 
