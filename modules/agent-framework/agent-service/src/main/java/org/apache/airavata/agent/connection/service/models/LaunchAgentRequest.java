@@ -1,9 +1,12 @@
 package org.apache.airavata.agent.connection.service.models;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class LaunchAgentRequest {
 
     private String experimentName;
     private String remoteCluster;
+    private String group;
 
     private String queue = "shared";
     private int wallTime = 30;
@@ -65,5 +68,17 @@ public class LaunchAgentRequest {
 
     public void setMemory(int memory) {
         this.memory = memory;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getApplicationInterfaceName() {
+        return remoteCluster + (StringUtils.isNotBlank(group) ? ("_" + group) : "");
     }
 }

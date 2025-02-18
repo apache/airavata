@@ -1,5 +1,6 @@
 package org.apache.airavata.agent.connection.service.services;
 
+import io.micrometer.common.util.StringUtils;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
@@ -71,14 +72,15 @@ public class AiravataService {
         throw new RuntimeException("Could not find a Default project for the user: " + UserContext.username());
     }
 
-    public String extractComputeResourceId(Airavata.Client airavataClient, String remoteCluster) throws TException {
+    public String extractComputeResourceId(Airavata.Client airavataClient, String group, String applicationInterfaceName) throws TException {
         List<GroupResourceProfile> groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
+        String groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
 
         return groupResourceList.stream()
-                .filter(profile -> "Default".equals(profile.getGroupResourceProfileName())) // TODO parameterized the group resource profile
+                .filter(profile -> groupProfileName.equalsIgnoreCase(profile.getGroupResourceProfileName()))
                 .flatMap(profile -> profile.getComputePreferences().stream())
                 .map(GroupComputeResourcePreference::getComputeResourceId)
-                .filter(computeResourceId -> computeResourceId.startsWith(remoteCluster))
+                .filter(computeResourceId -> computeResourceId.startsWith(applicationInterfaceName))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Could not find a Compute Resource in the Default group resource profile for the user: " + UserContext.username()));
     }
