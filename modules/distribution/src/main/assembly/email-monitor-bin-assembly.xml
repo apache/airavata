@@ -120,7 +120,7 @@
                 <include>org.apache.logging.log4j:log4j-api</include>
                 <include>org.apache.logging.log4j:log4j-core</include>
                 <include>org.apache.logging.log4j:log4j-1.2-api</include>
-                <include>org.apache.logging.log4j:log4j-slf4j18-impl:jar</include>
+                <include>org.apache.logging.log4j:log4j-slf4j2-impl:jar</include>
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>
