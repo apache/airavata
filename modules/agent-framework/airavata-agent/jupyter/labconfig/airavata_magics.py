@@ -66,7 +66,7 @@ def get_process_id(experiment_id: str, headers) -> str:
     return process_id
 
 
-def submit_agent_job(experiment_name, cluster, queue, cpus, memory, walltime, access_token, gateway_id='default', group='Default'):
+def submit_agent_job(experiment_name, cluster, queue, cpus, memory, walltime, access_token, group, gateway_id='default'):
     global current_agent
 
     # URL to which the POST request will be sent
@@ -80,7 +80,8 @@ def submit_agent_job(experiment_name, cluster, queue, cpus, memory, walltime, ac
         'nodeCount': 1,
         'memory': memory,
         'wallTime': walltime,
-        'queue': queue
+        'queue': queue,
+        'group': group,
     }
 
     # Convert the data to JSON format
@@ -307,6 +308,7 @@ def init_remote(line):
     cpu_value = None
     queue_value = None
     walltime_value = None
+    group_value = ""
 
     # Iterate through the pairs to find the cluster value
     for pair in pairs:
@@ -320,8 +322,10 @@ def init_remote(line):
             queue_value = pair.split("=")[1]
         if pair.startswith("walltime="):
             walltime_value = pair.split("=")[1]
+        if pair.startswith("group="):
+            group_value = pair.split("=")[1]
 
-    submit_agent_job('CS_Agent', cluster_value, queue_value, cpu_value, memory_value, walltime_value, access_token)
+    submit_agent_job('CS_Agent', cluster_value, queue_value, cpu_value, memory_value, walltime_value, access_token, group_value)
 
 
 @register_line_magic
