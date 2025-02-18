@@ -103,7 +103,7 @@ public class AgentManagementHandler {
 
         String experimentName = req.getExperimentName();
         String projectId = airavataService.extractDefaultProjectId(airavataClient);
-        String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getRemoteCluster());
+        String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setExperimentName(experimentName);
@@ -118,7 +118,7 @@ public class AgentManagementHandler {
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
         computationalResourceSchedulingModel.setWallTimeLimit(req.getWallTime());
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
-        computationalResourceSchedulingModel.setResourceHostId(airavataService.extractComputeResourceId(airavataClient, req.getRemoteCluster()));
+        computationalResourceSchedulingModel.setResourceHostId(airavataService.extractComputeResourceId(airavataClient, req.getGroup(), req.getApplicationInterfaceName()));
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
