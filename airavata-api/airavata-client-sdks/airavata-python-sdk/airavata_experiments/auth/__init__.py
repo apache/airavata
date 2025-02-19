@@ -18,7 +18,7 @@ from .device_auth import DeviceFlowAuthenticator
 
 context = DeviceFlowAuthenticator(
     idp_url="https://auth.cybershuttle.org",
-    realm="10000000",
+    realm="default",
     client_id="cybershuttle-agent",
 )
 
