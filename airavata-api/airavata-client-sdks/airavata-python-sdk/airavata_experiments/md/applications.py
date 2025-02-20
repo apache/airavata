@@ -112,6 +112,49 @@ class GROMACS(ExperimentApp):
     return obj
 
 
+class AlphaFold2(ExperimentApp):
+  """
+  AlphaFold is a deep learning-based protein structure prediction method developed by
+  DeepMind. It was the first protein structure prediction method to achieve competitive
+  accuracy with experimental methods, and has been widely adopted by the scientific
+  community for various applications. AlphaFold2 is the second version of the method,
+  which was released in 2021. It builds on the success of the original AlphaFold
+  by incorporating new deep learning architectures and training procedures to further
+  improve accuracy and speed.
+
+  """
+
+  def __init__(
+      self,
+  ) -> None:
+    super().__init__(app_id="AlphaFold2")
+
+  @classmethod
+  def initialize(
+      cls,
+      name: str,
+      input_seq: str,
+      max_template_date: str,
+      model_preset: str = "monomer",
+      multimers_per_model: int = 1,
+  ) -> Experiment[ExperimentApp]:
+    app = cls()
+    obj = Experiment[ExperimentApp](name, app).with_inputs(
+        input_seq=input_seq,
+        max_template_date=max_template_date,
+        model_preset=model_preset,
+        multimers_per_model=multimers_per_model,
+    )
+    obj.input_mapping = {
+        "Input Sequence(s) File": ("input_seq", "uri"),
+        "Maximum Template Date": ("max_template_date", "str"),
+        "MODEL_PRESET": ("model_preset", "str"),
+        "Number_Of_Multimers_Per_Model": ("multimers_per_model", "str"),
+    }
+    obj.tasks = []
+    return obj
+
+
 class AMBER(ExperimentApp):
   """
   Assisted Model Building with Energy Refinement (AMBER) is a family of force fields for
@@ -155,6 +198,41 @@ class AMBER(ExperimentApp):
     return obj
 
 
+class Gaussian(ExperimentApp):
+  """
+  Gaussian is a computational chemistry software package used for calculating molecular
+  electronic structure and properties. It is widely used in the field of computational
+  chemistry and is known for its accuracy and efficiency in modeling chemical systems.
+  Gaussian is developed by Gaussian, Inc., and is available for various operating systems
+  including Windows, macOS, and Linux.
+
+  """
+
+  def __init__(
+      self,
+  ) -> None:
+    super().__init__(app_id="Gaussian16")
+
+  @classmethod
+  def initialize(
+      cls,
+      name: str,
+      input_file: str,
+      gpu_version: str,
+  ) -> Experiment[ExperimentApp]:
+    app = cls()
+    obj = Experiment[ExperimentApp](name, app).with_inputs(
+        input_file=input_file,
+        gpu_version=gpu_version,
+    )
+    obj.input_mapping = {
+        "Input_File": ("input_file", "uri"),
+        "GPU_Version?": ("gpu_version", "str"),
+    }
+    obj.tasks = []
+    return obj
+
+
 class VMD(GUIApp):
   """
   Visual Molecular Dynamics (VMD) is a molecular visualization and analysis program
@@ -178,4 +256,3 @@ class VMD(GUIApp):
   ) -> GUIApp:
     app = cls()
     return app
-  
