@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 # #####################################################################
-# Standalone Airavata Agent
+# Standalone Airavata Agent for Expanse
 # #####################################################################
 #
 # ----------------------------------------------------------------------
@@ -23,7 +23,7 @@ while getopts a:s:p: option; do
   \?) cat <<ENDCAT ;;
 >! Usage: $0  [-a AGENT_ID ]    !<
 >!            [-s SERVER_URL]   !<
->!            [-p PROCESS_ID]   !<
+>!            [-w PROCESS_ID]     !<
 ENDCAT
   esac
 done
@@ -35,7 +35,6 @@ echo "PROCESS_ID=$PROCESS_ID"
 # ----------------------------------------------------------------------
 # STEP 2 - RUN AGENT
 # ----------------------------------------------------------------------
-SCRATCH_DIR="/home/x-scigap/scratch/cs_workdirs"
-SIF_PATH="/home/x-scigap/agent-framework/container/airavata-agent.sif"
-singularity exec --bind $SCRATCH_DIR:/scratch $SIF_PATH \
-  /opt/airavata-agent "$SERVER_URL":19900 "$AGENT_ID"
+SIF_PATH=/home/scigap/agent-framework/airavata-agent.sif
+module load singularitypro
+singularity exec --bind /expanse/lustre/scratch/scigap/temp_project/neuro-workdirs/$PROCESS_ID:/data $SIF_PATH bash -c "/opt/airavata-agent $SERVER_URL:19900 $AGENT_ID"

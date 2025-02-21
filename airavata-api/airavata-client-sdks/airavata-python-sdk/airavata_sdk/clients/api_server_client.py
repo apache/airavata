@@ -29,9 +29,12 @@ logger.setLevel(logging.DEBUG)
 
 class APIServerClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.api_server_settings = APIServerClientSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self, configuration_file_location=None, api_server_settings=None):
+        if configuration_file_location is not None:
+            self.api_server_settings = APIServerClientSettings(configuration_file_location)
+            self._load_settings(configuration_file_location)
+        elif api_server_settings is not None:
+            self.api_server_settings = api_server_settings
         self.api_server_client_pool = utils.initialize_api_client_pool(self.api_server_settings.API_SERVER_HOST,
                                                                        self.api_server_settings.API_SERVER_PORT,
                                                                        self.api_server_settings.API_SERVER_SECURE)
@@ -1750,19 +1753,19 @@ class APIServerClient(object):
             return self.api_server_client_pool.cloneExperiment(authz_token, existing_experiment_id, new_experiment_name,
                                                                new_experiment_projectId)
         except InvalidRequestException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid parameters ",
+            logger.exception("Error occurred in clone_experiment, probably due to invalid parameters ",
                              )
             raise
         except AiravataClientException:
-            logger.exception("Error occurred in get_job_details, probably due to  client misconfiguration ",
+            logger.exception("Error occurred in clone_experiment, probably due to  client misconfiguration ",
                              )
             raise
         except AiravataSystemException:
-            logger.exception("Error occurred in get_job_details, probably due to server side error ",
+            logger.exception("Error occurred in clone_experiment, probably due to server side error ",
                             )
             raise
         except AuthorizationException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid authz token ",
+            logger.exception("Error occurred in clone_experiment, probably due to invalid authz token ",
                              )
             raise
 
@@ -1823,19 +1826,19 @@ class APIServerClient(object):
                                                                       new_experiment_name,
                                                                       new_experiment_projectId)
         except InvalidRequestException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid parameters ",
+            logger.exception("Error occurred in clone_experiment_by_admin, probably due to invalid parameters ",
                              )
             raise
         except AiravataClientException:
-            logger.exception("Error occurred in get_job_details, probably due to  client misconfiguration ",
+            logger.exception("Error occurred in clone_experiment_by_admin, probably due to  client misconfiguration ",
                              )
             raise
         except AiravataSystemException:
-            logger.exception("Error occurred in get_job_details, probably due to server side error ",
+            logger.exception("Error occurred in clone_experiment_by_admin, probably due to server side error ",
                             )
             raise
         except AuthorizationException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid authz token ",
+            logger.exception("Error occurred in clone_experiment_by_admin, probably due to invalid authz token ",
                              )
             raise
 
@@ -1886,19 +1889,19 @@ class APIServerClient(object):
             return self.api_server_client_pool.terminateExperiment(authz_token, airavata_experiment_id,
                                                                    gateway_id)
         except InvalidRequestException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid parameters ",
+            logger.exception("Error occurred in terminate_experiment, probably due to invalid parameters ",
                              )
             raise
         except AiravataClientException:
-            logger.exception("Error occurred in get_job_details, probably due to  client misconfiguration ",
+            logger.exception("Error occurred in terminate_experiment, probably due to  client misconfiguration ",
                              )
             raise
         except AiravataSystemException:
-            logger.exception("Error occurred in get_job_details, probably due to server side error ",
+            logger.exception("Error occurred in terminate_experiment, probably due to server side error ",
                             )
             raise
         except AuthorizationException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid authz token ",
+            logger.exception("Error occurred in terminate_experiment, probably due to invalid authz token ",
                              )
             raise
 
@@ -1926,19 +1929,19 @@ class APIServerClient(object):
             return self.api_server_client_pool.registerApplicationModule(authz_token, gateway_id,
                                                                          application_module)
         except InvalidRequestException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid parameters ",
+            logger.exception("Error occurred in register_application_module, probably due to invalid parameters ",
                              )
             raise
         except AiravataClientException:
-            logger.exception("Error occurred in get_job_details, probably due to  client misconfiguration ",
+            logger.exception("Error occurred in register_application_module, probably due to  client misconfiguration ",
                              )
             raise
         except AiravataSystemException:
-            logger.exception("Error occurred in get_job_details, probably due to server side error ",
+            logger.exception("Error occurred in register_application_module, probably due to server side error ",
                             )
             raise
         except AuthorizationException:
-            logger.exception("Error occurred in get_job_details, probably due to invalid authz token ",
+            logger.exception("Error occurred in register_application_module, probably due to invalid authz token ",
                              )
             raise
 
