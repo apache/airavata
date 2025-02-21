@@ -3,8 +3,8 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "airavata-python-sdk-test"
-version = "0.0.16"
+name = "airavata-python-sdk"
+version = "2.0.0"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
 license = { text = "Apache License 2.0" }
