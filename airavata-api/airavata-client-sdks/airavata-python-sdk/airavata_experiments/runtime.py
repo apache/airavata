@@ -36,7 +36,7 @@ class Runtime(abc.ABC, pydantic.BaseModel):
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None: ...
 
   @abc.abstractmethod
-  def status(self, task: Task) -> str: ...
+  def status(self, task: Task) -> tuple[str, str]: ...
 
   @abc.abstractmethod
   def signal(self, signal: str, task: Task) -> None: ...
@@ -93,13 +93,13 @@ class Mock(Runtime):
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     pass
 
-  def status(self, task: Task) -> str:
+  def status(self, task: Task) -> tuple[str, str]:
     import random
 
     self._state += random.randint(0, 5)
     if self._state > 10:
-      return "COMPLETED"
-    return "RUNNING"
+      return "N/A", "COMPLETED"
+    return "N/A", "RUNNING"
 
   def signal(self, signal: str, task: Task) -> None:
     pass
@@ -172,14 +172,18 @@ class Remote(Runtime):
     result = av.execute_py(libraries, code, task.agent_ref, task.pid, task.runtime.args)
     print(result)
 
-  def status(self, task: Task):
+  def status(self, task: Task) -> tuple[str, str]:
     assert task.ref is not None
     assert task.agent_ref is not None
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    status = av.get_experiment_status(task.ref)
-    return status
+    # prioritize job state, fallback to experiment state
+    job_id, job_state = av.get_task_status(task.ref)
+    if not job_state or job_state == "UN_SUBMITTED":
+      return job_id, av.get_experiment_status(task.ref)
+    else:
+      return job_id, job_state
 
   def signal(self, signal: str, task: Task) -> None:
     assert task.ref is not None

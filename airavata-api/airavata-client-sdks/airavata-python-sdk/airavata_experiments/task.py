@@ -53,7 +53,7 @@ class Task(pydantic.BaseModel):
     print(f"[Task] Executing {self.name} on {self.runtime}")
     self.runtime.execute(self)
 
-  def status(self) -> str:
+  def status(self) -> tuple[str, str]:
     assert self.ref is not None
     return self.runtime.status(self)
 

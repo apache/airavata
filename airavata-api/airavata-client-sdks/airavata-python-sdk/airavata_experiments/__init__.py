@@ -22,6 +22,7 @@ from .runtime import list_runtimes, Runtime
 
 __all__ = ["login", "logout", "list_runtimes", "base", "plan"]
 
+
 def display_runtimes(runtimes: list[Runtime]):
   """
   Display runtimes in a tabular format
@@ -34,6 +35,7 @@ def display_runtimes(runtimes: list[Runtime]):
     records.append(record)
   
   return pd.DataFrame(records).set_index("id")
+
 
 def display_experiments(experiments: list[base.Experiment]):
   """
@@ -50,6 +52,7 @@ def display_experiments(experiments: list[base.Experiment]):
   
   return pd.DataFrame(records).set_index("name")
 
+
 def display_plans(plans: list[plan.Plan]):
   """
   Display plans in a tabular format
@@ -60,8 +63,9 @@ def display_plans(plans: list[plan.Plan]):
   html = """
   <table border='1'>
       <tr>
-        <th><b>Plan ID</b></th>
-        <th><b>Status</b></th>
+        <th><b>Plan Id</b></th>
+        <th><b>Task Id</b></th>
+        <th><b>State</b></th>
         <th><b>Name</b></th>
         <th><b>App</b></th>
         <th><b>Inputs</b></th>
@@ -94,47 +98,19 @@ def display_plans(plans: list[plan.Plan]):
 
   return HTML(html + script)
 
-def display(arg):
-  
-  if isinstance(arg, list):
-    if all(isinstance(x, Runtime) for x in arg):
-      return display_runtimes(arg)
-    if all(isinstance(x, base.Experiment) for x in arg):
-      return display_experiments(arg)
-    if all(isinstance(x, plan.Plan) for x in arg):
-      return display_plans(arg)
-  else:
-    if isinstance(arg, Runtime):
-      return display_runtimes([arg])
-    if isinstance(arg, base.Experiment):
-      return display_experiments([arg])
-    if isinstance(arg, plan.Plan):
-      return display_plans([arg])
-  
-  raise NotImplementedError(f"Cannot display object of type {type(arg)}")
-
-
-def generate_inputs_table(inputs: dict):
-
-  html = """
-  <table border='1'>
-    <tr><th><b>Input</b></th><th><b>Type</b></th><th><b>Value</b></th></tr>
-  """
-  for k, v in inputs.items():
-    html += f"""<tr><th>{k}</th><th>{v.get("type")}</th><th>{v.get("value")}</th></tr>"""
-  html += "</table>"
-  return html
-
 
 def generate_task_row(plan_id: str, task: plan.Task):
   """
   Generate a row for the task
   """
 
+  task_id, task_state = task.status() if task.ref else ("N/A", "N/A")
+
   return f"""
   <tr>
       <td>{plan_id[:8]}...</td>
-      <td>{task.status()}</td>
+      <td>{task_id}</td>
+      <td>{task_state}</td>
       <td>{task.name}</td>
       <td>{task.app_id}</td>
       <td>
@@ -155,3 +131,34 @@ def generate_task_row(plan_id: str, task: plan.Task):
       <td>{task.runtime.args.get("walltime", "N/A")}</td>
   </tr>
   """
+
+
+def generate_inputs_table(inputs: dict):
+
+  html = """
+  <table border='1'>
+    <tr><th><b>Input</b></th><th><b>Type</b></th><th><b>Value</b></th></tr>
+  """
+  for k, v in inputs.items():
+    html += f"""<tr><th>{k}</th><th>{v.get("type")}</th><th>{v.get("value")}</th></tr>"""
+  html += "</table>"
+  return html
+
+def display(arg):
+  
+  if isinstance(arg, list):
+    if all(isinstance(x, Runtime) for x in arg):
+      return display_runtimes(arg)
+    if all(isinstance(x, base.Experiment) for x in arg):
+      return display_experiments(arg)
+    if all(isinstance(x, plan.Plan) for x in arg):
+      return display_plans(arg)
+  else:
+    if isinstance(arg, Runtime):
+      return display_runtimes([arg])
+    if isinstance(arg, base.Experiment):
+      return display_experiments([arg])
+    if isinstance(arg, plan.Plan):
+      return display_plans([arg])
+  
+  raise NotImplementedError(f"Cannot display object of type {type(arg)}")

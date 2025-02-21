@@ -671,7 +671,7 @@ class AiravataOperator:
     self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
     print(f"[AV] Experiment {experiment_name} STARTED with id: {ex_id}")
 
-    # get process id
+    # wait until experiment begins, then get process id
     print(f"[AV] Experiment {experiment_name} WAITING until experiment begins...")
     process_id = None
     while process_id is None:
@@ -682,6 +682,18 @@ class AiravataOperator:
       else:
         time.sleep(2)
     print(f"[AV] Experiment {experiment_name} EXECUTING with pid: {process_id}")
+
+    # wait until task begins, then get job id
+    print(f"[AV] Experiment {experiment_name} WAITING until task begins...")
+    job_id = job_state = None
+    while job_state is None:
+      try:
+        job_id, job_state = self.get_task_status(ex_id)
+      except:
+        time.sleep(2)
+      else:
+        time.sleep(2)
+    print(f"[AV] Experiment {experiment_name} - Task {job_state} with id: {job_id}")
 
     return LaunchState(
       experiment_id=ex_id,
@@ -779,5 +791,15 @@ class AiravataOperator:
       Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, walltime=30),
     ]
   
-  def get_experiment_details(self, experiment_id: str):
-    job_details = self.api_server_client.get_job_details(self.airavata_token, experiment_id)
+  def get_task_status(self, experiment_id: str) -> tuple[str, Literal["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"] | None]:
+    states = ["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"]
+    job_details: dict = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
+    job_id = job_state = None
+    # get the most recent job id and state
+    for job_id, v in job_details.items():
+      if v.reason in states:
+        job_state = v.reason
+      else:
+        job_state = states[int(v.jobState)]
+    return job_id or "N/A", job_state # type: ignore
+
