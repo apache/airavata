@@ -41,15 +41,14 @@ class Plan(pydantic.BaseModel):
     return v
 
   def __stage_prepare__(self) -> None:
-    print("Preparing execution plan...")
+    print("Preparing to launch...")
 
   def __stage_confirm__(self, silent: bool) -> None:
-    print("Confirming execution plan...")
     if not silent:
       while True:
-        res = input("Here is the execution plan. continue? (Y/n) ")
+        res = input("Ready to launch. Continue? (Y/n) ")
         if res.upper() in ["N"]:
-          raise Exception("Execution was aborted by user.")
+          raise Exception("Launch aborted by user.")
         elif res.upper() in ["Y", ""]:
           break
         else:
@@ -81,7 +80,7 @@ class Plan(pydantic.BaseModel):
     self.save_json(os.path.join(local_dir, "plan.json"))
     return fps
 
-  def launch(self, silent: bool = False) -> None:
+  def launch(self, silent: bool = True) -> None:
     try:
       self.__stage_prepare__()
       self.__stage_confirm__(silent)
@@ -93,8 +92,8 @@ class Plan(pydantic.BaseModel):
   def status(self) -> None:
     statuses = self.__stage_status__()
     print(f"Plan {self.id} ({len(self.tasks)} tasks):")
-    for task, status in zip(self.tasks, statuses):
-      print(f"* {task.name}: {status}")
+    for task, (task_id, status) in zip(self.tasks, statuses):
+      print(f"* {task.name}: {task_id}: {status}")
 
   def wait_for_completion(self, check_every_n_mins: float = 0.1) -> None:
     n = len(self.tasks)
@@ -104,9 +103,9 @@ class Plan(pydantic.BaseModel):
         while True:
           completed = [False] * n
           statuses = self.__stage_status__()
-          for i, (task, status, pbar) in enumerate(zip(self.tasks, statuses, pbars)):
+          for i, (task, (task_id, status), pbar) in enumerate(zip(self.tasks, statuses, pbars)):
             completed[i] = is_terminal_state(status)
-            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {status}", completed=completed[i], refresh=True)
+            progress.update(pbar, description=f"{task.name} ({i+1}/{n}): {task_id}: {status}", completed=completed[i], refresh=True)
           if all(completed):
             break
           sleep_time = check_every_n_mins * 60

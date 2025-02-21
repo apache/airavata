@@ -36,7 +36,7 @@ class Runtime(abc.ABC, pydantic.BaseModel):
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None: ...
 
   @abc.abstractmethod
-  def status(self, task: Task) -> str: ...
+  def status(self, task: Task) -> tuple[str, str]: ...
 
   @abc.abstractmethod
   def signal(self, signal: str, task: Task) -> None: ...
@@ -93,13 +93,13 @@ class Mock(Runtime):
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     pass
 
-  def status(self, task: Task) -> str:
+  def status(self, task: Task) -> tuple[str, str]:
     import random
 
     self._state += random.randint(0, 5)
     if self._state > 10:
-      return "COMPLETED"
-    return "RUNNING"
+      return "N/A", "COMPLETED"
+    return "N/A", "RUNNING"
 
   def signal(self, signal: str, task: Task) -> None:
     pass
@@ -123,20 +123,22 @@ class Mock(Runtime):
 
 class Remote(Runtime):
 
-  def __init__(self, cluster: str, category: str, queue_name: str, node_count: int, cpu_count: int, walltime: int) -> None:
+  def __init__(self, cluster: str, category: str, queue_name: str, node_count: int, cpu_count: int, walltime: int, gpu_count: int = 0, group: str = "Default") -> None:
     super().__init__(id="remote", args=dict(
         cluster=cluster,
         category=category,
         queue_name=queue_name,
         node_count=node_count,
         cpu_count=cpu_count,
+        gpu_count=gpu_count,
         walltime=walltime,
+        group=group,
     ))
 
   def execute(self, task: Task) -> None:
     assert task.ref is None
     assert task.agent_ref is None
-    assert {"cluster", "queue_name", "node_count", "cpu_count", "walltime"}.issubset(self.args.keys())
+    assert {"cluster", "group", "queue_name", "node_count", "cpu_count", "gpu_count", "walltime"}.issubset(self.args.keys())
     print(f"[Remote] Creating Experiment: name={task.name}")
 
     from .airavata import AiravataOperator
@@ -145,12 +147,14 @@ class Remote(Runtime):
       launch_state = av.launch_experiment(
           experiment_name=task.name,
           app_name=task.app_id,
+          project=task.project,
           inputs=task.inputs,
           computation_resource_name=str(self.args["cluster"]),
           queue_name=str(self.args["queue_name"]),
           node_count=int(self.args["node_count"]),
           cpu_count=int(self.args["cpu_count"]),
           walltime=int(self.args["walltime"]),
+          group=str(self.args["group"]),
       )
       task.agent_ref = launch_state.agent_ref
       task.pid = launch_state.process_id
@@ -169,17 +173,21 @@ class Remote(Runtime):
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    result = av.execute_py(libraries, code, task.agent_ref, task.pid, task.runtime.args)
+    result = av.execute_py(task.project, libraries, code, task.agent_ref, task.pid, task.runtime.args)
     print(result)
 
-  def status(self, task: Task):
+  def status(self, task: Task) -> tuple[str, str]:
     assert task.ref is not None
     assert task.agent_ref is not None
 
     from .airavata import AiravataOperator
     av = AiravataOperator(context.access_token)
-    status = av.get_experiment_status(task.ref)
-    return status
+    # prioritize job state, fallback to experiment state
+    job_id, job_state = av.get_task_status(task.ref)
+    if not job_state or job_state == "UN_SUBMITTED":
+      return job_id, av.get_experiment_status(task.ref)
+    else:
+      return job_id, job_state
 
   def signal(self, signal: str, task: Task) -> None:
     assert task.ref is not None
@@ -245,6 +253,7 @@ class Remote(Runtime):
 def list_runtimes(
     cluster: str | None = None,
     category: str | None = None,
+    group: str | None = None,
     node_count: int | None = None,
     cpu_count: int | None = None,
     walltime: int | None = None,
@@ -254,7 +263,7 @@ def list_runtimes(
   all_runtimes = av.get_available_runtimes()
   out_runtimes = []
   for r in all_runtimes:
-    if (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]):
+    if (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]) and (group in [None, r.args["group"]]):
       r.args["node_count"] = node_count or r.args["node_count"]
       r.args["cpu_count"] = cpu_count or r.args["cpu_count"]
       r.args["walltime"] = walltime or r.args["walltime"]
