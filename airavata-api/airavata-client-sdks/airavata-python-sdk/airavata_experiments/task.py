@@ -23,6 +23,7 @@ class Task(pydantic.BaseModel):
 
   name: str
   app_id: str
+  project: str = pydantic.Field(default="Default Project")
   inputs: dict[str, Any]
   runtime: Runtime
   ref: str | None = pydantic.Field(default=None)
