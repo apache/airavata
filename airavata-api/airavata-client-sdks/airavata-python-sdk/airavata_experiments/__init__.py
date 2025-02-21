@@ -19,11 +19,12 @@ from __future__ import annotations
 from . import base, plan
 from .auth import login, logout
 from .runtime import list_runtimes, Runtime
+from typing import Any
 
 __all__ = ["login", "logout", "list_runtimes", "base", "plan"]
 
 
-def display_runtimes(runtimes: list[Runtime]):
+def display_runtimes(runtimes: list[Runtime]) -> None:
   """
   Display runtimes in a tabular format
   """
@@ -34,10 +35,11 @@ def display_runtimes(runtimes: list[Runtime]):
     record = dict(id=runtime.id, **runtime.args)
     records.append(record)
   
-  return pd.DataFrame(records).set_index("id")
+  d = get_display_fn()
+  d(pd.DataFrame(records).set_index("id"))
 
 
-def display_experiments(experiments: list[base.Experiment]):
+def display_experiments(experiments: list[base.Experiment]) -> None:
   """
   Display experiments in a tabular format
   """
@@ -50,10 +52,11 @@ def display_experiments(experiments: list[base.Experiment]):
       record[k] = ", ".join(v) if isinstance(v, list) else str(v)
     records.append(record)
   
-  return pd.DataFrame(records).set_index("name")
+  d = get_display_fn()
+  d(pd.DataFrame(records).set_index("name"))
 
 
-def display_plans(plans: list[plan.Plan]):
+def display_plans(plans: list[plan.Plan]) -> None:
   """
   Display plans in a tabular format
   """
@@ -96,7 +99,8 @@ def display_plans(plans: list[plan.Plan]):
   </script>
   """
 
-  return HTML(html + script)
+  d = get_display_fn()
+  d(HTML(html + script))
 
 
 def generate_task_row(plan_id: str, task: plan.Task):
@@ -143,6 +147,18 @@ def generate_inputs_table(inputs: dict):
     html += f"""<tr><th>{k}</th><th>{v.get("type")}</th><th>{v.get("value")}</th></tr>"""
   html += "</table>"
   return html
+
+def get_display_fn() -> Any:
+  try:
+    from IPython.core.getipython import get_ipython
+    from IPython.display import display as d
+    if get_ipython() is not None and d is not None:
+      return d
+    else:
+      raise Exception("Not in IPython environment")
+  except:
+    return print
+
 
 def display(arg):
   
