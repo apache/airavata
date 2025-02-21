@@ -68,10 +68,6 @@ class Settings:
     self.STORAGE_RESOURCE_HOST = config.get('Gateway', 'STORAGE_RESOURCE_HOST')
     self.SFTP_PORT = config.get('Gateway', 'SFTP_PORT')
     
-    # runtime-specific settings
-    self.PROJECT_NAME = config.get('User', 'PROJECT_NAME')
-    self.GROUP_RESOURCE_PROFILE_NAME = config.get('User', 'GROUP_RESOURCE_PROFILE_NAME')
-    
 
 class AiravataOperator:
 
@@ -130,7 +126,7 @@ class AiravataOperator:
       self,
       experiment_model: ExperimentModel,
       computation_resource_name: str,
-      group_resource_profile_name: str,
+      group: str,
       storageId: str,
       node_count: int,
       total_cpu_count: int,
@@ -140,7 +136,7 @@ class AiravataOperator:
       auto_schedule=False,
   ) -> ExperimentModel:
         resource_host_id = self.get_resource_host_id(computation_resource_name)
-        groupResourceProfileId = self.get_group_resource_profile_id(group_resource_profile_name)
+        groupResourceProfileId = self.get_group_resource_profile_id(group)
         computRes = ComputationalResourceSchedulingModel()
         computRes.resourceHostId = resource_host_id
         computRes.nodeCount = node_count
@@ -173,9 +169,6 @@ class AiravataOperator:
   def default_gateway_id(self):
     return self.settings.GATEWAY_ID
   
-  def default_gateway_grp_name(self):
-    return self.settings.GROUP_RESOURCE_PROFILE_NAME
-  
   def default_gateway_data_store_dir(self):
     return self.settings.GATEWAY_DATA_STORE_DIR
   
@@ -184,9 +177,6 @@ class AiravataOperator:
   
   def default_sr_hostname(self):
     return self.settings.STORAGE_RESOURCE_HOST
-  
-  def default_project_name(self):
-    return self.settings.PROJECT_NAME
   
   def connection_svc_url(self):
     return self.settings.CONNECTION_SVC_URL
@@ -258,32 +248,28 @@ class AiravataOperator:
     storage = self.api_server_client.get_storage_resource(self.airavata_token, sr_id)
     return storage
 
-  def get_group_resource_profile_id(self, grp_name: str | None = None) -> str:
+  def get_group_resource_profile_id(self, group: str) -> str:
     """
     Get group resource profile id by name
 
     """
-    # use defaults for missing values
-    grp_name = grp_name or self.default_gateway_grp_name()
     # logic
     grps: list = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == grp_name))
+    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group))
     return str(grp_id)
   
-  def get_group_resource_profile(self, grp_id: str):
-    grp: any = self.api_server_client.get_group_resource_profile(self.airavata_token, grp_id) # type: ignore
+  def get_group_resource_profile(self, group_id: str):
+    grp: any = self.api_server_client.get_group_resource_profile(self.airavata_token, group_id) # type: ignore
     return grp
 
-  def get_compatible_deployments(self, app_interface_id: str, grp_name: str | None = None):
+  def get_compatible_deployments(self, app_interface_id: str, group: str):
     """
     Get compatible deployments for an application interface and group resource profile
 
     """
-    # use defaults for missing values
-    grp_name = grp_name or self.default_gateway_grp_name()
     # logic
     grps: list = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == grp_name))
+    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group))
     deployments = self.api_server_client.get_application_deployments_for_app_module_and_group_resource_profile(self.airavata_token, app_interface_id, grp_id)
     return deployments
 
@@ -514,6 +500,7 @@ class AiravataOperator:
   def launch_experiment(
       self,
       experiment_name: str,
+      project: str,
       app_name: str,
       inputs: dict[str, dict[str, str | int | float | list[str]]],
       computation_resource_name: str,
@@ -521,11 +508,10 @@ class AiravataOperator:
       node_count: int,
       cpu_count: int,
       walltime: int,
+      group: str = "Default",
       *,
       gateway_id: str | None = None,
-      grp_name: str | None = None,
       sr_host: str | None = None,
-      project_name: str | None = None,
       auto_schedule: bool = False,
   ) -> LaunchState:
     """
@@ -535,10 +521,8 @@ class AiravataOperator:
     # preprocess args (str)
     print("[AV] Preprocessing args...")
     gateway_id = str(gateway_id or self.default_gateway_id())
-    grp_name = str(grp_name or self.default_gateway_grp_name())
     sr_host = str(sr_host or self.default_sr_hostname())
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
-    project_name = str(project_name or self.default_project_name())
     server_url = urlparse(self.connection_svc_url()).netloc
 
     # validate args (str)
@@ -549,9 +533,9 @@ class AiravataOperator:
     assert len(inputs) > 0, f"Invalid inputs: {inputs}"
     assert len(gateway_id) > 0, f"Invalid gateway_id: {gateway_id}"
     assert len(queue_name) > 0, f"Invalid queue_name: {queue_name}"
-    assert len(grp_name) > 0, f"Invalid grp_name: {grp_name}"
+    assert len(group) > 0, f"Invalid group name: {group}"
     assert len(sr_host) > 0, f"Invalid sr_host: {sr_host}"
-    assert len(project_name) > 0, f"Invalid project_name: {project_name}"
+    assert len(project) > 0, f"Invalid project_name: {project}"
     assert len(mount_point.as_posix()) > 0, f"Invalid mount_point: {mount_point}"
 
     # validate args (int)
@@ -592,7 +576,7 @@ class AiravataOperator:
     experiment = self.create_experiment_model(
         experiment_name=experiment_name,
         application_name=app_name,
-        project_name=project_name,
+        project_name=project,
         description=experiment_name,
         gateway_id=gateway_id,
     )
@@ -600,7 +584,7 @@ class AiravataOperator:
     print("[AV] Setting up experiment directory...")
     exp_dir = self.make_experiment_dir(
         sr_host=storage.hostName,
-        project_name=project_name,
+        project_name=project,
         experiment_name=experiment_name,
     )
     abs_path = (mount_point / exp_dir.lstrip("/")).as_posix().rstrip("/") + "/"
@@ -610,7 +594,7 @@ class AiravataOperator:
     experiment = self.configure_computation_resource_scheduling(
         experiment_model=experiment,
         computation_resource_name=computation_resource_name,
-        group_resource_profile_name=grp_name,
+        group=group,
         storageId=sr_id,
         node_count=node_count,
         total_cpu_count=cpu_count,
@@ -671,7 +655,7 @@ class AiravataOperator:
     self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
     print(f"[AV] Experiment {experiment_name} STARTED with id: {ex_id}")
 
-    # get process id
+    # wait until experiment begins, then get process id
     print(f"[AV] Experiment {experiment_name} WAITING until experiment begins...")
     process_id = None
     while process_id is None:
@@ -682,6 +666,18 @@ class AiravataOperator:
       else:
         time.sleep(2)
     print(f"[AV] Experiment {experiment_name} EXECUTING with pid: {process_id}")
+
+    # wait until task begins, then get job id
+    print(f"[AV] Experiment {experiment_name} WAITING until task begins...")
+    job_id = job_state = None
+    while job_state is None:
+      try:
+        job_id, job_state = self.get_task_status(ex_id)
+      except:
+        time.sleep(2)
+      else:
+        time.sleep(2)
+    print(f"[AV] Experiment {experiment_name} - Task {job_state} with id: {job_id}")
 
     return LaunchState(
       experiment_id=ex_id,
@@ -702,7 +698,7 @@ class AiravataOperator:
         self.airavata_token, experiment_id, self.default_gateway_id())
     return status
   
-  def execute_py(self, libraries: list[str], code: str, agent_id: str, pid: str, runtime_args: dict, cold_start: bool = True) -> str | None:
+  def execute_py(self, project: str, libraries: list[str], code: str, agent_id: str, pid: str, runtime_args: dict, cold_start: bool = True) -> str | None:
     # lambda to send request
     print(f"[av] Attempting to submit to agent {agent_id}...")
     make_request = lambda: requests.post(f"{self.connection_svc_url()}/agent/executepythonrequest", json={
@@ -723,6 +719,7 @@ class AiravataOperator:
           self.launch_experiment(
             experiment_name="Agent",
             app_name="AiravataAgent",
+            project=project,
             inputs={
               "agent_id": {"type": "str", "value": agent_id},
               "server_url": {"type": "str", "value": urlparse(self.connection_svc_url()).netloc},
@@ -733,8 +730,9 @@ class AiravataOperator:
             node_count=1,
             cpu_count=runtime_args["cpu_count"],
             walltime=runtime_args["walltime"],
+            group=runtime_args["group"],
           )
-          return self.execute_py(libraries, code, agent_id, pid, runtime_args, cold_start=False)
+          return self.execute_py(project, libraries, code, agent_id, pid, runtime_args, cold_start=False)
         elif data["executionId"] is not None:
           print(f"[av] Submitted to Python Interpreter")
           # agent response
@@ -774,7 +772,23 @@ class AiravataOperator:
   def get_available_runtimes(self):
     from .runtime import Remote
     return [
-      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, walltime=30),
-      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, walltime=30),
-      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, walltime=30),
+      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="Default"),
+      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, gpu_count=0, walltime=30, group="Default"),
+      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="Default"),
+      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="GaussianGroup"),
+      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, gpu_count=0, walltime=30, group="GaussianGroup"),
+      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="GaussianGroup"),
     ]
+  
+  def get_task_status(self, experiment_id: str) -> tuple[str, Literal["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"] | None]:
+    states = ["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"]
+    job_details: dict = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
+    job_id = job_state = None
+    # get the most recent job id and state
+    for job_id, v in job_details.items():
+      if v.reason in states:
+        job_state = v.reason
+      else:
+        job_state = states[int(v.jobState)]
+    return job_id or "N/A", job_state # type: ignore
+

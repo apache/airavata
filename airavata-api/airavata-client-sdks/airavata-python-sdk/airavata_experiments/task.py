@@ -23,6 +23,7 @@ class Task(pydantic.BaseModel):
 
   name: str
   app_id: str
+  project: str = pydantic.Field(default="Default Project")
   inputs: dict[str, Any]
   runtime: Runtime
   ref: str | None = pydantic.Field(default=None)
@@ -53,7 +54,7 @@ class Task(pydantic.BaseModel):
     print(f"[Task] Executing {self.name} on {self.runtime}")
     self.runtime.execute(self)
 
-  def status(self) -> str:
+  def status(self) -> tuple[str, str]:
     assert self.ref is not None
     return self.runtime.status(self)
 
