@@ -41,15 +41,14 @@ class Plan(pydantic.BaseModel):
     return v
 
   def __stage_prepare__(self) -> None:
-    print("Preparing execution plan...")
+    print("Preparing to launch...")
 
   def __stage_confirm__(self, silent: bool) -> None:
-    print("Confirming execution plan...")
     if not silent:
       while True:
-        res = input("Here is the execution plan. continue? (Y/n) ")
+        res = input("Ready to launch. Continue? (Y/n) ")
         if res.upper() in ["N"]:
-          raise Exception("Execution was aborted by user.")
+          raise Exception("Launch aborted by user.")
         elif res.upper() in ["Y", ""]:
           break
         else:
@@ -81,7 +80,7 @@ class Plan(pydantic.BaseModel):
     self.save_json(os.path.join(local_dir, "plan.json"))
     return fps
 
-  def launch(self, silent: bool = False) -> None:
+  def launch(self, silent: bool = True) -> None:
     try:
       self.__stage_prepare__()
       self.__stage_confirm__(silent)

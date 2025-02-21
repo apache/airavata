@@ -778,3 +778,6 @@ class AiravataOperator:
       Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, walltime=30),
       Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, walltime=30),
     ]
+  
+  def get_experiment_details(self, experiment_id: str):
+    job_details = self.api_server_client.get_job_details(self.airavata_token, experiment_id)

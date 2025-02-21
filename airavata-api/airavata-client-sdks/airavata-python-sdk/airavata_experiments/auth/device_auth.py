@@ -101,7 +101,7 @@ class DeviceFlowAuthenticator:
         self.__persist_token__(self._refresh_token, self._access_token)
 
     def login(self, interactive: bool = True) -> None:
-        
+        auth_warning = None
         try:
           # [Flow A] Reuse saved token
           if os.path.exists("auth.state"):
@@ -112,24 +112,24 @@ class DeviceFlowAuthenticator:
               self._refresh_token = str(data["refresh_token"])
               self._access_token = str(data["access_token"])
             except:
-              print("Failed to load auth.state file!")
+              auth_warning = "Failed to load auth.state file!"
             else:
               # [A2] Check if access token is valid, if so, return
               if not self.__has_expired__(self._access_token):
-                print("Authenticated via saved access token!")
-                return None
+                return print("Authenticated via saved access token!")
               else:
-                print("Access token is invalid!")
+                auth_warning = "Access token is invalid!"
               # [A3] Check if refresh token is valid. if so, refresh
               try:
                 if not self.__has_expired__(self._refresh_token):
                   self.refresh()
-                  print("Authenticated via saved refresh token!")
-                  return None
+                  return print("Authenticated via saved refresh token!")
                 else:
-                  print("Refresh token is invalid!")
+                  auth_warning = "Refresh token is invalid!"
               except Exception as e:
                 print(*e.args)
+          if auth_warning:
+             print(auth_warning)
             
           # [Flow B] Request device and user code
 

@@ -85,24 +85,22 @@ class Experiment(Generic[T], abc.ABC):
     self.resource = resource
     return self
 
-  def add_replica(self, *allowed_runtimes: Runtime) -> None:
+  def create_task(self, *allowed_runtimes: Runtime, name: str | None = None) -> None:
     """
-    Add a replica to the experiment.
-    This will create a copy of the application with the given inputs.
-
+    Create a task to run the experiment on a given runtime.
     """
     runtime = random.choice(allowed_runtimes) if len(allowed_runtimes) > 0 else self.resource
     uuid_str = str(uuid.uuid4())[:4].upper()
 
     self.tasks.append(
         Task(
-            name=f"{self.name}_{uuid_str}",
+            name=name or f"{self.name}_{uuid_str}",
             app_id=self.application.app_id,
             inputs={**self.inputs},
             runtime=runtime,
         )
     )
-    print(f"Added replica. ({len(self.tasks)} tasks in total)")
+    print(f"Task created. ({len(self.tasks)} tasks in total)")
 
   def add_sweep(self, *allowed_runtimes: Runtime, **space: list) -> None:
     """
@@ -126,7 +124,7 @@ class Experiment(Generic[T], abc.ABC):
 
   def plan(self, **kwargs) -> Plan:
     if len(self.tasks) == 0:
-      self.add_replica(self.resource)
+      self.create_task(self.resource)
     tasks = []
     for t in self.tasks:
       agg_inputs = {**self.inputs, **t.inputs}
