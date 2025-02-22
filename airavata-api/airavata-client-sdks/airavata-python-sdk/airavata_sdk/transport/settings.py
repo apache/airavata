@@ -24,8 +24,7 @@ defaultSettings = os.path.join(BASE_DIR, "transport", "settings.ini")
 config.read(defaultSettings)
 
 
-class APIServerClientSettings(object):
-
+class APIServerSettings(object):
     def __init__(self, configFileLocation=None):
         if configFileLocation is not None:
             config.read(configFileLocation)
@@ -34,7 +33,7 @@ class APIServerClientSettings(object):
         self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
 
 
-class IAMAdminClientSettings(object):
+class ProfileServerSettings(object):
     def __init__(self, configFileLocation=None):
         if configFileLocation is not None:
             config.read(configFileLocation)
@@ -43,25 +42,7 @@ class IAMAdminClientSettings(object):
         self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
-class TenantProfileServerClientSettings(object):
-    def __init__(self, configFileLocation=None):
-        if configFileLocation is not None:
-            config.read(configFileLocation)
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
-
-
-class GroupManagerClientSettings(object):
-    def __init__(self, configFileLocation=None):
-        if configFileLocation is not None:
-            config.read(configFileLocation)
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
-
-
-class SharingAPIClientSettings(object):
+class SharingServerSettings(object):
     def __init__(self, configFileLocation=None):
         if configFileLocation is not None:
             config.read(configFileLocation)
@@ -70,22 +51,13 @@ class SharingAPIClientSettings(object):
         self.SHARING_API_SECURE = config.getboolean('SharingServer', 'SHARING_API_SECURE')
 
 
-class CredentialStoreAPIClientSettings(object):
+class CredentialStoreServerSettings(object):
     def __init__(self, configFileLocation=None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer', 'CREDENTIAL_STORE_API_HOST')
         self.CREDENTIAL_STORE_API_PORT = config.getint('CredentialStoreServer', 'CREDENTIAL_STORE_API_PORT')
         self.CREDENTIAL_STORE_API_SECURE = config.getboolean('CredentialStoreServer', 'CREDENTIAL_STORE_API_SECURE')
-
-
-class UserProfileClientSettings(object):
-    def __init__(self, configFileLocation=None):
-        if configFileLocation is not None:
-            config.read(configFileLocation)
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
 class ThriftSettings(object):
@@ -95,7 +67,7 @@ class ThriftSettings(object):
         self.THRIFT_CLIENT_POOL_KEEPALIVE = config.getfloat('Thrift', 'THRIFT_CLIENT_POOL_KEEPALIVE')
 
 
-class KeycloakConfiguration(object):
+class KeycloakServerSettings(object):
     def __init__(self, configFileLocation=None):
         if configFileLocation is not None:
             config.read(configFileLocation)

@@ -17,7 +17,7 @@
 import logging
 import configparser
 
-from airavata_sdk.transport.settings import IAMAdminClientSettings
+from airavata_sdk.transport.settings import ProfileServerSettings
 from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import TException
@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class IAMAdminClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.iam_admin_settings = IAMAdminClientSettings(configuration_file_location)
+        self.iam_admin_settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.iam_admin_client_pool = utils.initialize_iam_admin_client(
             self.iam_admin_settings.PROFILE_SERVICE_HOST,

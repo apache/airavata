@@ -17,7 +17,7 @@
 import logging
 import configparser
 
-from airavata_sdk.transport.settings import CredentialStoreAPIClientSettings
+from airavata_sdk.transport.settings import CredentialStoreServerSettings
 from airavata_sdk.transport import utils
 from airavata.api.credential.store.error.ttypes import CredentialStoreException
 
@@ -28,7 +28,7 @@ logger.setLevel(logging.DEBUG)
 class CredentialStoreClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.credential_store_server_settings = CredentialStoreAPIClientSettings(configuration_file_location)
+        self.credential_store_server_settings = CredentialStoreServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.credential_store_client_pool = utils.initialize_credential_store_client(
             self.credential_store_server_settings.CREDENTIAL_STORE_API_HOST,
