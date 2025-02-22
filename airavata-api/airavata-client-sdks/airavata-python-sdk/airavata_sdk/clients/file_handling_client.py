@@ -15,6 +15,7 @@
 #
 
 import logging
+
 import paramiko
 from paramiko import SSHClient
 from scp import SCPClient
@@ -47,7 +48,9 @@ class FileHandler(object):
     def upload_file(self, files, remote_path, recursive, preserve_item):
         try:
             ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
-            with SCPClient(ssh.get_transport()) as scp:
+            transport = ssh.get_transport()
+            assert transport is not None
+            with SCPClient(transport) as scp:
                 scp.put(files, remote_path, recursive, preserve_item)
         finally:
             scp.close()
@@ -55,7 +58,9 @@ class FileHandler(object):
     def download_file(self, remote_path, local_path, recursive, preserve_item):
         try:
             ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
-            with SCPClient(ssh.get_transport()) as scp:
+            transport = ssh.get_transport()
+            assert transport is not None
+            with SCPClient(transport) as scp:
                 scp.get(remote_path, local_path, recursive, preserve_item)
         finally:
             scp.close()

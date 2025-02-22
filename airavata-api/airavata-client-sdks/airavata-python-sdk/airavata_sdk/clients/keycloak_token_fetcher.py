@@ -15,22 +15,15 @@
 #
 
 import configparser
-
-from requests_oauthlib import OAuth2Session
-from oauthlib.oauth2 import LegacyApplicationClient
-from airavata.model.security.ttypes import AuthzToken
-
-from airavata_sdk.transport.settings import KeycloakServerSettings
 import os
 
-# since we are using requests 2.13 (< 2.16.0)
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from oauthlib.oauth2 import LegacyApplicationClient
+from requests_oauthlib import OAuth2Session
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from airavata.model.security.ttypes import AuthzToken
+from airavata_sdk.transport.settings import KeycloakServerSettings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 class Authenticator(object):
 
@@ -51,7 +44,7 @@ class Authenticator(object):
                                            password=password,
                                            client_id=client_id,
                                            client_secret=client_secret,
-                                           verify=self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE if verify_ssl else False)
+                                           verify=verify_ssl)
 
         claimsMap = {
             "userName": username,
@@ -79,7 +72,7 @@ class Authenticator(object):
                                            password=password,
                                            client_id=client_id,
                                            client_secret=client_secret,
-                                           verify=self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE if verify_ssl else False)
+                                           verify=verify_ssl)
 
         claimsMap = {
             "userName": username,
@@ -95,7 +88,7 @@ class Authenticator(object):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE = config.get("KeycloakServer", 'CERTIFICATE_FILE_PATH')
+            # self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE = config.get("KeycloakServer", 'CERTIFICATE_FILE_PATH')
             self.keycloak_settings.CLIENT_ID = config.get('KeycloakServer', 'CLIENT_ID')
             self.keycloak_settings.CLIENT_SECRET = config.get('KeycloakServer', 'CLIENT_SECRET')
             self.keycloak_settings.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
