@@ -14,13 +14,13 @@
 #  limitations under the License.
 #
 
-import logging
 import configparser
+import logging
 
-from airavata_sdk.transport.settings import ProfileServerSettings
-from airavata_sdk.transport import utils
-
+from airavata.service.profile.user.cpi.UserProfileService import Client
 from airavata.api.error.ttypes import TException
+from airavata_sdk.transport import utils
+from airavata_sdk.transport.settings import ProfileServerSettings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -39,107 +39,20 @@ class UserProfileClient(object):
     def __init__(self, configuration_file_location=None):
         self.user_profile_client_settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.user_profile_client_pool = utils.initialize_user_profile_client(
+        self.client = utils.initialize_user_profile_client(
             self.user_profile_client_settings.PROFILE_SERVICE_HOST,
             self.user_profile_client_settings.PROFILE_SERVICE_PORT,
             self.user_profile_client_settings.PROFILE_SERVICE_SECURE)
+        # expose the needed functions
+        self.get_api_version = self.client.getAPIVersion
+        self.initialize_user_profile = self.client.initializeUserProfile
+        self.add_user_profile = self.client.addUserProfile
+        self.update_user_profile = self.client.updateUserProfile
+        self.get_user_profile_by_id = self.client.getUserProfileById
+        self.delete_user_profile = self.client.deleteUserProfile
+        self.get_all_user_profiles_in_gateway = self.client.getAllUserProfilesInGateway
+        self.does_user_exist = self.client.doesUserExist
 
-    def get_api_version(self):
-        try:
-            return self.user_profile_client_pool.getAPIVersion()
-        except TException:
-            logger.exception("Error occurred in get_api_version, ", TException)
-            raise
-
-    def initialize_user_profile(self, authz_token):
-        """
-        Create an initial UserProfile based on information in the IAM service for this user.
-
-        Parameters:
-         - authzToken
-        """
-        try:
-            return self.user_profile_client_pool.initializeUserProfile(authz_token)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def add_user_profile(self, authz_token, user_profile):
-        """
-        Parameters:
-         - authzToken
-         - userProfile
-        """
-        try:
-            return self.user_profile_client_pool.addUserProfile(authz_token, user_profile)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def update_user_profile(self, authz_token, user_profile):
-        """
-        Parameters:
-         - authzToken
-         - userProfile
-        """
-        try:
-            return self.user_profile_client_pool.updateUserProfile(authz_token, user_profile)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def get_user_profile_by_id(self, authz_token, user_id, gateway_id):
-        """
-        Parameters:
-         - authzToken
-         - userId
-         - gatewayId
-        """
-        try:
-            return self.user_profile_client_pool.getUserProfileById(authz_token, user_id, gateway_id)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def delete_user_profile(self, authz_token, user_id, gateway_id):
-        """
-        Parameters:
-         - authzToken
-         - userId
-         - gatewayId
-        """
-        try:
-            return self.user_profile_client_pool.deleteUserProfile(authz_token, user_id, gateway_id)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def get_all_user_profiles_in_gateway(self, authz_token, gateway_id, offset, limit):
-        """
-        Parameters:
-         - authzToken
-         - gatewayId
-         - offset
-         - limit
-        """
-        try:
-            return self.user_profile_client_pool.getAllUserProfilesInGateway(authz_token, gateway_id, offset, limit)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def does_user_exist(self, authz_token, user_id, gateway_id):
-        """
-        Parameters:
-         - authzToken
-         - userId
-         - gatewayId
-        """
-        try:
-            return self.user_profile_client_pool.doesUserExist(authz_token, user_id, gateway_id)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
 
     def _load_settings(self, configuration_file_location):
         if configuration_file_location is not None:
