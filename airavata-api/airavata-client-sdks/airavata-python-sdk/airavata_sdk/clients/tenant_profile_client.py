@@ -14,13 +14,12 @@
 #  limitations under the License.
 #
 
-import logging
 import configparser
+import logging
 
-from airavata_sdk.transport.settings import ProfileServerSettings
+from airavata.service.profile.tenant.cpi.TenantProfileService import Client
 from airavata_sdk.transport import utils
-
-from airavata.api.error.ttypes import TException
+from airavata_sdk.transport.settings import ProfileServerSettings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -39,96 +38,20 @@ class TenantProfileClient(object):
     def __init__(self, configuration_file_location=None):
         self.tenant_profile_settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.tenant_profile_client_pool = utils.initialize_tenant_profile_client(
+        self.client: Client = utils.initialize_tenant_profile_client(
             self.tenant_profile_settings.PROFILE_SERVICE_HOST,
             self.tenant_profile_settings.PROFILE_SERVICE_PORT,
-            self.tenant_profile_settings.PROFILE_SERVICE_SECURE)
+            self.tenant_profile_settings.PROFILE_SERVICE_SECURE,
+        )
+        # expose the needed functions
+        self.add_gateway = self.client.addGateway
+        self.update_gateway = self.client.updateGateway
+        self.get_gateway = self.client.getGateway
+        self.delete_gateway = self.client.deleteGateway
+        self.get_all_gateways = self.client.getAllGateways
+        self.is_gateway_exist = self.client.isGatewayExist
+        self.get_all_gateways_for_user = self.client.getAllGatewaysForUser
 
-    def add_gateway(self, authz_token, gateway):
-        """
-        Return the airavataInternalGatewayId assigned to given gateway.
-
-        Parameters:
-         - authz_token
-         - gateway
-        """
-        try:
-            return self.tenant_profile_client_pool.addGateway(authz_token, gateway)
-        except TException:
-            logger.exception("Error occurred in add_gateway, ", TException)
-            raise
-
-    def update_gateway(self, authz_token, updated_gateway):
-        """
-        Parameters:
-         - authz_token
-         - updated_gateway
-        """
-        try:
-            return self.tenant_profile_client_pool.updateGateway(authz_token, updated_gateway)
-        except TException:
-            logger.exception("Error occurred in update_gateway, ", TException)
-            raise
-
-    def get_gateway(self, authz_token, airavata_internal_gateway_id):
-        """
-        Parameters:
-         - authz_token
-         - airavata_internal_gateway_id
-        """
-        try:
-            return self.tenant_profile_client_pool.getGateway(authz_token, airavata_internal_gateway_id)
-        except TException:
-            logger.exception("Error occurred in get_gateway, ", TException)
-            raise
-
-    def delete_gateway(self, authz_token, airavata_internal_gateway_id, gateway_id):
-        """
-        Parameters:
-         - authz_token
-         - airavata_internal_gateway_id
-         - gateway_id
-        """
-        try:
-            return self.tenant_profile_client_pool.deleteGateway(authz_token, airavata_internal_gateway_id, gateway_id)
-        except TException:
-            logger.exception("Error occurred in delete_gateway, ", TException)
-            raise
-
-    def get_all_gateways(self, authz_token):
-        """
-        Parameters:
-         - authz_token
-        """
-        try:
-            return self.tenant_profile_client_pool.getAllGateways(authz_token)
-        except TException:
-            logger.exception("Error occurred in get_all_gateways, ", TException)
-            raise
-
-    def is_gateway_exist(self, authz_token, gateway_id):
-        """
-        Parameters:
-         - authz_token
-         - gateway_id
-        """
-        try:
-            return self.tenant_profile_client_pool.isGatewayExist(authz_token, gateway_id)
-        except TException:
-            logger.exception("Error occurred in is_gateway_exist, ", TException)
-            raise
-
-    def get_all_gateways_for_user(self, authz_token, requester_username):
-        """
-        Parameters:
-         - authz_token
-         - requester_username
-        """
-        try:
-            return self.tenant_profile_client_pool.getAllGatewaysForUser(authz_token, requester_username)
-        except TException:
-            logger.exception("Error occurred in get_all_gateways_for_user, ", TException)
-            raise
 
     def _load_settings(self, configuration_file_location):
         if configuration_file_location is not None:

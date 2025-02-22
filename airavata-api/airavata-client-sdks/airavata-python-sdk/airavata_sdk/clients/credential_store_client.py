@@ -14,12 +14,12 @@
 #  limitations under the License.
 #
 
-import logging
 import configparser
+import logging
 
-from airavata_sdk.transport.settings import CredentialStoreServerSettings
+from airavata.api.credential.store.CredentialStoreService import Client
 from airavata_sdk.transport import utils
-from airavata.api.credential.store.error.ttypes import CredentialStoreException
+from airavata_sdk.transport.settings import CredentialStoreServerSettings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -30,22 +30,13 @@ class CredentialStoreClient(object):
     def __init__(self, configuration_file_location=None):
         self.credential_store_server_settings = CredentialStoreServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.credential_store_client_pool = utils.initialize_credential_store_client(
+        self.client: Client = utils.initialize_credential_store_client(
             self.credential_store_server_settings.CREDENTIAL_STORE_API_HOST,
             self.credential_store_server_settings.CREDENTIAL_STORE_API_PORT,
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_SECURE)
-
-    def get_SSH_credential(self, token_id, gateway_id):
-        """
-        :param token_id:
-        :param gateway_id
-        :return: credential
-        """
-        try:
-            return self.credential_store_client_pool.getSSHCredential(token_id, gateway_id)
-        except CredentialStoreException:
-            logger.exception("Error occurred in get_SSH_credential, probably due to invalid parameters ")
-            raise
+            self.credential_store_server_settings.CREDENTIAL_STORE_API_SECURE
+        )
+        # expose the needed functions
+        self.get_SSH_credential = self.client.getSSHCredential
 
     def _load_settings(self, configuration_file_location):
         if configuration_file_location is not None:
