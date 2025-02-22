@@ -45,7 +45,7 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.18.1'
+REQUIRED_THRIFT_VERSION='0.21.0'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PARENT_DIR=`dirname "$SCRIPT_DIR"`
 

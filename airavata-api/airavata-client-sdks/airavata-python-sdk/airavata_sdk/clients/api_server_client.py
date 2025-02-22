@@ -17,7 +17,7 @@
 import logging
 import configparser
 
-from airavata_sdk.transport.settings import APIServerClientSettings
+from airavata_sdk.transport.settings import APIServerSettings
 from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import InvalidRequestException, AiravataClientException, AiravataSystemException, \
@@ -31,7 +31,7 @@ class APIServerClient(object):
 
     def __init__(self, configuration_file_location=None, api_server_settings=None):
         if configuration_file_location is not None:
-            self.api_server_settings = APIServerClientSettings(configuration_file_location)
+            self.api_server_settings = APIServerSettings(configuration_file_location)
             self._load_settings(configuration_file_location)
         elif api_server_settings is not None:
             self.api_server_settings = api_server_settings
