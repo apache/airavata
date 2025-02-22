@@ -15,7 +15,7 @@
 #
 
 import logging
-from typing import Generic, Optional, TypeVar
+from typing import Generic, TypeVar, Optional, cast
 
 from thrift.protocol import TBinaryProtocol
 from thrift.protocol.TMultiplexedProtocol import TMultiplexedProtocol
@@ -25,14 +25,15 @@ from airavata.api import Airavata
 from airavata.api.credential.store import CredentialStoreService
 from airavata.api.sharing import SharingRegistryService
 from airavata.service.profile.groupmanager.cpi import GroupManagerService
-from airavata.service.profile.groupmanager.cpi.constants import GROUP_MANAGER_CPI_NAME
 from airavata.service.profile.iam.admin.services.cpi import IamAdminServices
-from airavata.service.profile.iam.admin.services.cpi.constants import IAM_ADMIN_SERVICES_CPI_NAME
 from airavata.service.profile.tenant.cpi import TenantProfileService
-from airavata.service.profile.tenant.cpi.constants import TENANT_PROFILE_CPI_NAME
 from airavata.service.profile.user.cpi import UserProfileService
-from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
 from airavata_sdk.transport import settings
+
+from airavata.service.profile.groupmanager.cpi.constants import GROUP_MANAGER_CPI_NAME
+from airavata.service.profile.iam.admin.services.cpi.constants import IAM_ADMIN_SERVICES_CPI_NAME
+from airavata.service.profile.tenant.cpi.constants import TENANT_PROFILE_CPI_NAME
+from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
 
 log = logging.getLogger(__name__)
 
@@ -53,12 +54,13 @@ T = TypeVar(
   CredentialStoreService.Client,
 )
 
-class ThriftClient:
+class ThriftClient(Generic[T]):
   host: str
   port: int
   secure: bool
   service_name: Optional[str]
   transport: TTransport.TTransportBase
+  client: T
 
   def __init__(self, klass, host: str, port: int, secure: bool = False, service_name: Optional[str] = None):
     self.host = host
@@ -97,53 +99,53 @@ def initialize_api_client_pool(
     host=default_api_server_settings.API_SERVER_HOST,
     port=default_api_server_settings.API_SERVER_PORT,
     secure=default_api_server_settings.API_SERVER_SECURE,
-) -> Airavata.Client:
-  return ThriftClient(Airavata.Client, host, port, secure).client
+):
+  return ThriftClient[Airavata.Client](Airavata.Client, host, port, secure).client
 
 
 def initialize_group_manager_client(
     host=default_profile_server_settings.PROFILE_SERVICE_HOST,
     port=default_profile_server_settings.PROFILE_SERVICE_PORT,
     secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
-) -> GroupManagerService.Client:
-  return ThriftClient(GroupManagerService.Client, host, port, secure, GROUP_MANAGER_CPI_NAME).client
+):
+  return ThriftClient[GroupManagerService.Client](GroupManagerService.Client, host, port, secure, GROUP_MANAGER_CPI_NAME).client
 
 
 def initialize_iam_admin_client(
     host=default_profile_server_settings.PROFILE_SERVICE_HOST,
     port=default_profile_server_settings.PROFILE_SERVICE_PORT,
     secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
-) -> IamAdminServices.Client:
-  return ThriftClient(IamAdminServices.Client, host, port, secure, IAM_ADMIN_SERVICES_CPI_NAME).client
+):
+  return ThriftClient[IamAdminServices.Client](IamAdminServices.Client, host, port, secure, IAM_ADMIN_SERVICES_CPI_NAME).client
 
 
 def initialize_tenant_profile_client(
     host=default_profile_server_settings.PROFILE_SERVICE_HOST,
     port=default_profile_server_settings.PROFILE_SERVICE_PORT,
     secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
-) -> TenantProfileService.Client:
-  return ThriftClient(TenantProfileService.Client, host, port, secure, TENANT_PROFILE_CPI_NAME).client
+):
+  return ThriftClient[TenantProfileService.Client](TenantProfileService.Client, host, port, secure, TENANT_PROFILE_CPI_NAME).client
 
 
 def initialize_user_profile_client(
     host=default_profile_server_settings.PROFILE_SERVICE_HOST,
     port=default_profile_server_settings.PROFILE_SERVICE_PORT,
     secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
-) -> UserProfileService.Client:
-  return ThriftClient(UserProfileService.Client, host, port, secure, USER_PROFILE_CPI_NAME).client
+):
+  return ThriftClient[UserProfileService.Client](UserProfileService.Client, host, port, secure, USER_PROFILE_CPI_NAME).client
 
 
 def initialize_sharing_registry_client(
     host=default_sharing_server_settings.SHARING_API_HOST,
     port=default_sharing_server_settings.SHARING_API_PORT,
     secure=default_sharing_server_settings.SHARING_API_SECURE,
-) -> SharingRegistryService.Client:
-  return ThriftClient(SharingRegistryService.Client, host, port, secure).client
+):
+  return ThriftClient[SharingRegistryService.Client](SharingRegistryService.Client, host, port, secure).client
 
 
 def initialize_credential_store_client(
     host=default_credential_store_server_settings.CREDENTIAL_STORE_API_HOST,
     port=default_credential_store_server_settings.CREDENTIAL_STORE_API_PORT,
     secure=default_credential_store_server_settings.CREDENTIAL_STORE_API_SECURE,
-) -> CredentialStoreService.Client:
-  return ThriftClient(CredentialStoreService.Client, host, port, secure).client
+):
+  return ThriftClient[CredentialStoreService.Client](CredentialStoreService.Client, host, port, secure).client
