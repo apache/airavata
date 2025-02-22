@@ -15,21 +15,14 @@
 #
 
 import logging
-import time
-import logging
-import airavata_sdk.samples.file_utils as fb
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
-
-from airavata_sdk.clients.api_server_client import APIServerClient
-from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
-
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
-from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
-from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, \
-    ReplicaLocationCategory, ReplicaPersistentType
 
 from airavata.model.application.io.ttypes import InputDataObjectType
+from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
+from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
+from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
+from airavata_sdk.clients.api_server_client import APIServerClient
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -58,6 +51,7 @@ class DataModelCreationUtil(object):
                                                          description):
         execution_id = self.airavata_util.get_execution_id(application_name)
         project_id = self.airavata_util.get_project_id(project_name)
+        assert project_id is not None
         experiment = ExperimentModel()
         experiment.experimentName = experiment_name
         experiment.gatewayId = self.gateway_id

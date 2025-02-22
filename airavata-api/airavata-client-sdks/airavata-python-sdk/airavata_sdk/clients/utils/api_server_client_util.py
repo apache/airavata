@@ -15,13 +15,10 @@
 #
 
 import logging
-import time
-import logging
-import airavata_sdk.samples.file_utils as fb
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+from typing import Optional
 
 from airavata_sdk.clients.api_server_client import APIServerClient
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -43,7 +40,7 @@ class APIServerClientUtil(object):
         self.username = username
         self.api_server_client = APIServerClient(configuration_file_location)
 
-    def get_project_id(self, project_name):
+    def get_project_id(self, project_name) -> Optional[str]:
         response = self.api_server_client.get_user_projects(self.token, self.gateway_id, self.username, 10, 0)
         for project in response:
             if project.name == project_name and project.owner == self.username:
