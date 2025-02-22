@@ -17,7 +17,7 @@
 import logging
 import configparser
 
-from airavata_sdk.transport.settings import TenantProfileServerClientSettings
+from airavata_sdk.transport.settings import ProfileServerSettings
 from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import TException
@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class TenantProfileClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.tenant_profile_settings = TenantProfileServerClientSettings(configuration_file_location)
+        self.tenant_profile_settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.tenant_profile_client_pool = utils.initialize_tenant_profile_client(
             self.tenant_profile_settings.PROFILE_SERVICE_HOST,

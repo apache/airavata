@@ -20,7 +20,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient
 from airavata.model.security.ttypes import AuthzToken
 
-from airavata_sdk.transport.settings import KeycloakConfiguration
+from airavata_sdk.transport.settings import KeycloakServerSettings
 import os
 
 # since we are using requests 2.13 (< 2.16.0)
@@ -35,7 +35,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Authenticator(object):
 
     def __init__(self, configuration_file_location=None):
-        self.keycloak_settings = KeycloakConfiguration(configuration_file_location)
+        self.keycloak_settings = KeycloakServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
 
     def get_token_and_user_info_password_flow(self, username, password, gateway_id):
