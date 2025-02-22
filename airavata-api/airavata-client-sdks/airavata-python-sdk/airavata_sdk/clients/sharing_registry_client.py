@@ -17,7 +17,7 @@
 import logging
 import configparser
 
-from airavata_sdk.transport.settings import SharingAPIClientSettings
+from airavata_sdk.transport.settings import SharingServerSettings
 from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import TException
@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class SharingRegistryClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.sharing_registry_client_settings = SharingAPIClientSettings(configuration_file_location)
+        self.sharing_registry_client_settings = SharingServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.sharing_registry_client_pool = utils.initialize_sharing_registry_client(
             self.sharing_registry_client_settings.SHARING_API_HOST,

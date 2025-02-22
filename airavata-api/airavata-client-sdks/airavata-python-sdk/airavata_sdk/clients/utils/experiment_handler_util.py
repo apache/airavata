@@ -29,7 +29,7 @@ from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUti
 
 from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
 
-from airavata_sdk.transport.settings import GatewaySettings, ExperimentSettings, KeycloakConfiguration
+from airavata_sdk.transport.settings import GatewaySettings, ExperimentSettings, KeycloakServerSettings
 
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
 
