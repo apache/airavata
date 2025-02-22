@@ -17,7 +17,7 @@
 import logging
 import configparser
 
-from airavata_sdk.transport.settings import GroupManagerClientSettings
+from airavata_sdk.transport.settings import ProfileServerSettings
 from airavata_sdk.transport import utils
 
 from airavata.api.error.ttypes import TException
@@ -37,7 +37,7 @@ logger.addHandler(handler)
 class GroupManagerClient(object):
 
     def __init__(self, configuration_file_location=None):
-        self.group_manager_settings = GroupManagerClientSettings(configuration_file_location)
+        self.group_manager_settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.group_manager_client_pool = utils.initialize_group_manager_client(
             self.group_manager_settings.PROFILE_SERVICE_HOST,
