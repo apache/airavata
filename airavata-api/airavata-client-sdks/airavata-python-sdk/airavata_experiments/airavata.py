@@ -625,6 +625,7 @@ class AiravataOperator:
     # configure experiment inputs
     experiment_inputs = []
     for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
+      assert exp_input.type is not None
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
         if exp_input.type == 0:
@@ -632,7 +633,9 @@ class AiravataOperator:
         else:
           exp_input.value = repr(value)
       elif exp_input.type == 3 and exp_input.name in file_refs:
-        exp_input.value = file_refs[exp_input.name]
+        ref = file_refs[exp_input.name]
+        assert isinstance(ref, str)
+        exp_input.value = ref
       elif exp_input.type == 4 and exp_input.name in file_refs:
         exp_input.value = ','.join(file_refs[exp_input.name])
       experiment_inputs.append(exp_input)
