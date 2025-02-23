@@ -14,16 +14,13 @@
 #  limitations under the License.
 #
 import logging
-from airavata_sdk.clients.api_server_client import APIServerClient
 
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
-
-from airavata.model.workspace.ttypes import Gateway, Notification, Project
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
+from airavata.api.error.ttypes import AiravataClientException, AiravataSystemException, AuthorizationException, InvalidRequestException
 from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
-
-from airavata.api.error.ttypes import TException, InvalidRequestException, AiravataSystemException, \
-    AiravataClientException, AuthorizationException
+from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, ProjectSearchFields, UserConfigurationDataModel
+from airavata.model.workspace.ttypes import Gateway, GatewayApprovalStatus, Notification, Project
+from airavata_sdk.clients.api_server_client import APIServerClient
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +69,7 @@ def add_gateway():
         gateway.gatewayAdminFirstName = "isuru"
         gateway.gatewayAdminLastName = "ranawaka"
         gateway.gatewayName = "test-gw"
-        gateway.gatewayApprovalStatus = 0
+        gateway.gatewayApprovalStatus = GatewayApprovalStatus.REQUESTED
         gateway_id = client.add_gateway(token, gateway)
         print("Gateway Id :" + gateway_id)
     except (InvalidRequestException, AiravataClientException, AuthorizationException, AiravataSystemException):
@@ -134,7 +131,7 @@ def create_project():
 
 def search_projects():
     try:
-        filter = {1: 'defaultProject'}
+        filter = {ProjectSearchFields.PROJECT_DESCRIPTION: 'defaultProject'}
         projects = client.search_projects(token, "default-gateway", "default-admin", filter, limit=0, offset=10)
         print(projects)
     except (InvalidRequestException, AiravataClientException, AuthorizationException, AiravataSystemException):

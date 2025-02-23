@@ -15,6 +15,7 @@
 #
 
 import logging
+from typing import Optional
 
 from airavata.model.application.io.ttypes import InputDataObjectType
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
@@ -30,25 +31,34 @@ logger.setLevel(logging.DEBUG)
 
 class DataModelCreationUtil(object):
 
-    def __init__(self, configuration_file_location, username, password, gateway_id, access_token):
+    def __init__(self, configuration_file_location: Optional[str], gateway_id: str, username: str, password: Optional[str], access_token: Optional[str] = None):
         self.authenticator = Authenticator(configuration_file_location)
         if access_token:
-            self.token = self.authenticator.get_airavata_authz_token(username=username,
-                                                                     token=access_token,
-                                                                     gateway_id=gateway_id)
+            self.token = self.authenticator.get_airavata_authz_token(
+                gateway_id=gateway_id,
+                username=username,
+                token=access_token,
+            )
         else:
-            self.token = self.authenticator.get_token_and_user_info_password_flow(username=username,
-                                                                                  password=password,
-                                                                                  gateway_id=gateway_id)
+            assert password is not None
+            self.token = self.authenticator.get_token_and_user_info_password_flow(
+                gateway_id=gateway_id,
+                username=username,
+                password=password,
+            )
         self.gateway_id = gateway_id
         self.username = username
         self.password = password
         self.api_server_client = APIServerClient(configuration_file_location)
-        self.airavata_util = APIServerClientUtil(configuration_file_location, self.username, self.password,
-                                                 self.gateway_id, access_token)
+        self.airavata_util = APIServerClientUtil(
+            configuration_file_location,
+            self.gateway_id,
+            self.username,
+            self.password,
+            access_token,
+        )
 
-    def get_experiment_data_model_for_single_application(self, project_name, application_name, experiment_name,
-                                                         description):
+    def get_experiment_data_model_for_single_application(self, project_name: str, application_name: str, experiment_name: str, description: str):
         execution_id = self.airavata_util.get_execution_id(application_name)
         project_id = self.airavata_util.get_project_id(project_name)
         assert project_id is not None
@@ -62,12 +72,19 @@ class DataModelCreationUtil(object):
         experiment.executionId = execution_id
         return experiment
 
-    def configure_computation_resource_scheduling(self,
-                                                  experiment_model, computation_resource_name,
-                                                  group_resource_profile_name,
-                                                  storageId,
-                                                  node_count, total_cpu_count, queue_name, wall_time_limit,
-                                                  experiment_dir_path, auto_schedule=False):
+    def configure_computation_resource_scheduling(
+            self,
+            experiment_model: ExperimentModel,
+            computation_resource_name: str,
+            group_resource_profile_name: str,
+            storageId: str,
+            node_count: int,
+            total_cpu_count: int,
+            queue_name: str,
+            wall_time_limit: int,
+            experiment_dir_path: str,
+            auto_schedule: bool = False,
+    ):
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
         groupResourceProfileId = self.airavata_util.get_group_resource_profile_id(group_resource_profile_name)
         computRes = ComputationalResourceSchedulingModel()
@@ -89,7 +106,14 @@ class DataModelCreationUtil(object):
 
         return experiment_model
 
-    def register_input_file(self, file_identifier, storage_name, storageId, input_file_name, uploaded_storage_path):
+    def register_input_file(
+            self,
+            file_identifier: str,
+            storage_name: str,
+            storageId: str,
+            input_file_name: str,
+            uploaded_storage_path: str,
+    ):
         dataProductModel = DataProductModel()
         dataProductModel.gatewayId = self.gateway_id
         dataProductModel.ownerName = self.username
@@ -100,15 +124,20 @@ class DataModelCreationUtil(object):
         replicaLocation.storageResourceId = storageId
         replicaLocation.replicaName = "{} gateway data store copy".format(input_file_name)
         replicaLocation.replicaLocationCategory = ReplicaLocationCategory.GATEWAY_DATA_STORE
-        replicaLocation.filePath = "file://{}:{}".format(storage_name,
-                                                         uploaded_storage_path + input_file_name)
+        replicaLocation.filePath = "file://{}:{}".format(storage_name, uploaded_storage_path + input_file_name)
         dataProductModel.replicaLocations = [replicaLocation]
 
         return self.api_server_client.register_data_product(self.token, dataProductModel)
 
-    def configure_input_and_outputs(self, experiment_model, input_files, application_name, file_mapping={}):
+    def configure_input_and_outputs(
+        self,
+        experiment_model: ExperimentModel,
+        input_files: list[str],
+        application_name: str,
+        file_mapping: dict[str, str]={},
+    ):
         execution_id = self.airavata_util.get_execution_id(application_name)
-
+        assert execution_id is not None
         inputs = self.api_server_client.get_application_inputs(self.token, execution_id)
 
         configured_inputs = []

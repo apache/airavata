@@ -16,8 +16,8 @@
 
 import configparser
 import logging
+from typing import Optional
 
-from airavata.service.profile.groupmanager.cpi.GroupManagerService import Client
 from airavata_sdk.transport import utils
 from airavata_sdk.transport.settings import ProfileServerSettings
 
@@ -35,13 +35,13 @@ logger.addHandler(handler)
 
 class GroupManagerClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.group_manager_settings = ProfileServerSettings(configuration_file_location)
+    def __init__(self, configuration_file_location: Optional[str] = None):
+        self.settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.client: Client = utils.initialize_group_manager_client(
-            self.group_manager_settings.PROFILE_SERVICE_HOST,
-            self.group_manager_settings.PROFILE_SERVICE_PORT,
-            self.group_manager_settings.PROFILE_SERVICE_SECURE
+        self.client = utils.initialize_group_manager_client(
+            self.settings.PROFILE_SERVICE_HOST,
+            self.settings.PROFILE_SERVICE_PORT,
+            self.settings.PROFILE_SERVICE_SECURE,
         )
         # expose the needed functions
         self.get_api_version = self.client.getAPIVersion
@@ -59,11 +59,10 @@ class GroupManagerClient(object):
         self.has_admin_access = self.client.hasAdminAccess
         self.has_owner_access = self.client.hasOwnerAccess
 
-    def _load_settings(self, configuration_file_location):
+    def _load_settings(self, configuration_file_location: Optional[str]):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.group_manager_settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-            self.group_manager_settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-            self.group_manager_settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer',
-                                                                                   'PROFILE_SERVICE_SECURE')
+            self.settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+            self.settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+            self.settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')

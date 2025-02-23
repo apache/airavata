@@ -16,6 +16,7 @@
 
 import configparser
 import os
+from typing import Optional
 
 config = configparser.ConfigParser()
 
@@ -25,7 +26,7 @@ config.read(defaultSettings)
 
 
 class APIServerSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
@@ -34,7 +35,7 @@ class APIServerSettings(object):
 
 
 class ProfileServerSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
@@ -43,7 +44,7 @@ class ProfileServerSettings(object):
 
 
 class SharingServerSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
@@ -52,7 +53,7 @@ class SharingServerSettings(object):
 
 
 class CredentialStoreServerSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer', 'CREDENTIAL_STORE_API_HOST')
@@ -61,14 +62,14 @@ class CredentialStoreServerSettings(object):
 
 
 class ThriftSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.THRIFT_CLIENT_POOL_KEEPALIVE = config.getfloat('Thrift', 'THRIFT_CLIENT_POOL_KEEPALIVE')
 
 
 class KeycloakServerSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         # self.KEYCLOAK_CA_CERTIFICATE = os.path.join(BASE_DIR, "samples", "resources", "incommon_rsa_server_ca.pem")
@@ -81,7 +82,7 @@ class KeycloakServerSettings(object):
 
 
 class GatewaySettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
@@ -93,7 +94,7 @@ class GatewaySettings(object):
 
 
 class ExperimentSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.APPLICATION_NAME = config.get('ExperimentConf', 'APPLICATION_NAME')

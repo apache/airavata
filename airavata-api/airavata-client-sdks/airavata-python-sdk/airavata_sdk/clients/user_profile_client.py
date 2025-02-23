@@ -16,9 +16,8 @@
 
 import configparser
 import logging
+from typing import Optional
 
-from airavata.service.profile.user.cpi.UserProfileService import Client
-from airavata.api.error.ttypes import TException
 from airavata_sdk.transport import utils
 from airavata_sdk.transport.settings import ProfileServerSettings
 
@@ -36,13 +35,14 @@ logger.addHandler(handler)
 
 class UserProfileClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.user_profile_client_settings = ProfileServerSettings(configuration_file_location)
+    def __init__(self, configuration_file_location: Optional[str] = None):
+        self.settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
         self.client = utils.initialize_user_profile_client(
-            self.user_profile_client_settings.PROFILE_SERVICE_HOST,
-            self.user_profile_client_settings.PROFILE_SERVICE_PORT,
-            self.user_profile_client_settings.PROFILE_SERVICE_SECURE)
+            self.settings.PROFILE_SERVICE_HOST,
+            self.settings.PROFILE_SERVICE_PORT,
+            self.settings.PROFILE_SERVICE_SECURE,
+        )
         # expose the needed functions
         self.get_api_version = self.client.getAPIVersion
         self.initialize_user_profile = self.client.initializeUserProfile
@@ -54,10 +54,10 @@ class UserProfileClient(object):
         self.does_user_exist = self.client.doesUserExist
 
 
-    def _load_settings(self, configuration_file_location):
+    def _load_settings(self, configuration_file_location: Optional[str]):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.user_profile_client_settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-            self.user_profile_client_settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-            self.user_profile_client_settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
+            self.settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+            self.settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+            self.settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')

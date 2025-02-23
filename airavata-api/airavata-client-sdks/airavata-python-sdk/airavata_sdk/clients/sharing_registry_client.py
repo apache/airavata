@@ -16,8 +16,8 @@
 
 import configparser
 import logging
+from typing import Optional
 
-from airavata.api.sharing.SharingRegistryService import Client
 from airavata_sdk.transport import utils
 from airavata_sdk.transport.settings import SharingServerSettings
 
@@ -35,13 +35,13 @@ logger.addHandler(handler)
 
 class SharingRegistryClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.sharing_registry_client_settings = SharingServerSettings(configuration_file_location)
+    def __init__(self, configuration_file_location: Optional[str] = None):
+        self.settings = SharingServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.client: Client = utils.initialize_sharing_registry_client(
-            self.sharing_registry_client_settings.SHARING_API_HOST,
-            self.sharing_registry_client_settings.SHARING_API_PORT,
-            self.sharing_registry_client_settings.SHARING_API_SECURE,
+        self.client = utils.initialize_sharing_registry_client(
+            self.settings.SHARING_API_HOST,
+            self.settings.SHARING_API_PORT,
+            self.settings.SHARING_API_SECURE,
         )
         # expose the needed functions
         self.create_domain = self.client.createDomain
@@ -103,11 +103,10 @@ class SharingRegistryClient(object):
         self.user_has_access = self.client.userHasAccess
 
 
-    def _load_settings(self, configuration_file_location):
+    def _load_settings(self, configuration_file_location: Optional[str]):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.sharing_registry_client_settings.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
-            self.sharing_registry_client_settings.SHARING_API_PORT = config.getint('SharingServer', 'SHARING_API_PORT')
-            self.sharing_registry_client_settings.SHARING_API_SECURE = config.getboolean('SharingServer',
-                                                                                         'SHARING_API_SECURE')
+            self.settings.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
+            self.settings.SHARING_API_PORT = config.getint('SharingServer', 'SHARING_API_PORT')
+            self.settings.SHARING_API_SECURE = config.getboolean('SharingServer', 'SHARING_API_SECURE')
