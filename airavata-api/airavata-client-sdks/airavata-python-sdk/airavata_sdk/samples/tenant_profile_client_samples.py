@@ -15,11 +15,10 @@
 #
 
 import logging
-from airavata_sdk.clients.tenant_profile_client import TenantProfileClient
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.tenant_profile_client import TenantProfileClient
 
 logger = logging.getLogger(__name__)
 
