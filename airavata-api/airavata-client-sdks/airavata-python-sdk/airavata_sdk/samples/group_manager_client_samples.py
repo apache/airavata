@@ -15,13 +15,11 @@
 #
 
 import logging
-from airavata_sdk.clients.group_manager_client import GroupManagerClient
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
-
 from airavata.model.group.ttypes import GroupModel
+from airavata_sdk.clients.group_manager_client import GroupManagerClient
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +68,7 @@ def get_groups():
 
 def add_group_admin():
     try:
-        created_group = client.add_group_admins(token, "testing_group", "default-admin")
+        created_group = client.add_group_admins(token, "testing_group", ["default-admin"])
         print("Groups :", created_group)
     except TException:
         logger.exception("Exception occurred")

@@ -16,13 +16,11 @@
 
 
 import logging
-from airavata_sdk.clients.sharing_registry_client import SharingRegistryClient
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
-
 from airavata.model.sharing.ttypes import Domain, Entity, EntityType
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.sharing_registry_client import SharingRegistryClient
 
 logger = logging.getLogger(__name__)
 
