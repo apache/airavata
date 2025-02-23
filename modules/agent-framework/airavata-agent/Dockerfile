@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.12-slim
 
 RUN pip install flask jupyter jupyter-client
 RUN mkdir -p /opt/jupyter

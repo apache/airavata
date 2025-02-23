@@ -2,21 +2,21 @@ package main
 
 import (
 	protos "airavata-agent/protos"
-	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	grpcStreamChannel := make(chan struct{})
 	kernelChannel := make(chan struct{})
 
-	conn, err := grpc.Dial(serverUrl, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.NewClient(serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -49,57 +49,57 @@ func main() {
 		log.Printf("Connected to the server...")
 	}
 
-	go func() {
-		log.Printf("Starting jupyter kernel")
-		cmd := exec.Command("python", "/opt/jupyter/kernel.py")
-		//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
-		stdout, err := cmd.StdoutPipe()
+	// go func() {
+	// 	log.Printf("Starting jupyter kernel")
+	// 	cmd := exec.Command("python", "/opt/jupyter/kernel.py")
+	// 	//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
+	// 	stdout, err := cmd.StdoutPipe()
 
-		if err != nil {
-			fmt.Println("[agent.go] Error creating StdoutPipe:", err)
-			return
-		}
+	// 	if err != nil {
+	// 		fmt.Println("[agent.go] Error creating StdoutPipe:", err)
+	// 		return
+	// 	}
 
-		// Get stderr pipe
-		stderr, err := cmd.StderrPipe()
-		if err != nil {
-			fmt.Println("[agent.go] Error creating StderrPipe:", err)
-			return
-		}
+	// 	// Get stderr pipe
+	// 	stderr, err := cmd.StderrPipe()
+	// 	if err != nil {
+	// 		fmt.Println("[agent.go] Error creating StderrPipe:", err)
+	// 		return
+	// 	}
 
-		log.Printf("[agent.go] Starting command for execution")
-		// Start the command
-		if err := cmd.Start(); err != nil {
-			fmt.Println("[agent.go] Error starting command:", err)
-			return
-		}
+	// 	log.Printf("[agent.go] Starting command for execution")
+	// 	// Start the command
+	// 	if err := cmd.Start(); err != nil {
+	// 		fmt.Println("[agent.go] Error starting command:", err)
+	// 		return
+	// 	}
 
-		// Create channels to read from stdout and stderr
-		stdoutScanner := bufio.NewScanner(stdout)
-		stderrScanner := bufio.NewScanner(stderr)
+	// 	// Create channels to read from stdout and stderr
+	// 	stdoutScanner := bufio.NewScanner(stdout)
+	// 	stderrScanner := bufio.NewScanner(stderr)
 
-		// Stream stdout
-		go func() {
-			for stdoutScanner.Scan() {
-				fmt.Printf("[agent.go] stdout: %s\n", stdoutScanner.Text())
-			}
-		}()
+	// 	// Stream stdout
+	// 	go func() {
+	// 		for stdoutScanner.Scan() {
+	// 			fmt.Printf("[agent.go] stdout: %s\n", stdoutScanner.Text())
+	// 		}
+	// 	}()
 
-		// Stream stderr
-		go func() {
-			for stderrScanner.Scan() {
-				fmt.Printf("[agent.go] stderr: %s\n", stderrScanner.Text())
-			}
-		}()
+	// 	// Stream stderr
+	// 	go func() {
+	// 		for stderrScanner.Scan() {
+	// 			fmt.Printf("[agent.go] stderr: %s\n", stderrScanner.Text())
+	// 		}
+	// 	}()
 
-		// Wait for the command to finish
-		if err := cmd.Wait(); err != nil {
-			fmt.Println("[agent.go] Error waiting for command:", err)
-			return
-		}
+	// 	// Wait for the command to finish
+	// 	if err := cmd.Wait(); err != nil {
+	// 		fmt.Println("[agent.go] Error waiting for command:", err)
+	// 		return
+	// 	}
 
-		fmt.Println("[agent.go] Command finished")
-	}()
+	// 	fmt.Println("[agent.go] Command finished")
+	// }()
 
 	go func() {
 		for {
@@ -127,23 +127,61 @@ func main() {
 				log.Printf("[agent.go] Working Dir %s", workingDir)
 				log.Printf("[agent.go] Libraries %s", libraries)
 
-				// TODO: cd into working dir, create the virtual environment with provided libraries
-				cmd := exec.Command("python3", "-c", code) //TODO: Load python runtime from a config
+				go func() {
 
-				output, err := cmd.Output()
-				if err != nil {
-					fmt.Println("[agent.go] Failed to run python command:", err)
-					return
-				}
+					// setup the venv
+					venvCmd := fmt.Sprintf(`
+					agentId="%s"
+					pkgs="%s"
 
-				stdoutString := string(output)
-				if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
-					PythonExecutionResponse: &protos.PythonExecutionResponse{
-						SessionId: sessionId, 
-						ExecutionId: executionId, 
-						ResponseString: stdoutString}}}); err != nil {
-					log.Printf("[agent.go] Failed to send execution result to server: %v", err)
-				}
+					if [ ! -f "/tmp/$agentId/venv" ]; then
+						mkdir -p /tmp/$agentId
+						python3 -m venv /tmp/$agentId/venv
+					fi
+
+					source /tmp/$agentId/venv/bin/activate
+					python3 -m pip install $pkgs
+					
+					`, agentId, strings.Join(libraries, " "))
+					log.Println("[agent.go] venv setup:", venvCmd)
+					venvExc := exec.Command("bash", "-c", venvCmd)
+					venvOut, venvErr := venvExc.CombinedOutput()
+					if venvErr != nil {
+						fmt.Println("[agent.go] venv setup: ERR", venvErr)
+						return
+					}
+					venvStdout := string(venvOut)
+					fmt.Println("[agent.go] venv setup:", venvStdout)
+
+					// execute the python code
+					pyCmd := fmt.Sprintf(`
+					workingDir="%s";
+					agentId="%s";
+
+					cd $workingDir;
+					source /tmp/$agentId/venv/bin/activate;
+					python3 <<EOF
+%s
+EOF`, workingDir, agentId, code)
+					log.Println("[agent.go] python code:", pyCmd)
+					pyExc := exec.Command("bash", "-c", pyCmd)
+					pyOut, pyErr := pyExc.CombinedOutput()
+					if pyErr != nil {
+						fmt.Println("[agent.go] python code: ERR", pyErr)
+					}
+
+					// send the result back to the server
+					pyStdout := string(pyOut)
+					if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_PythonExecutionResponse{
+						PythonExecutionResponse: &protos.PythonExecutionResponse{
+							SessionId:      sessionId,
+							ExecutionId:    executionId,
+							ResponseString: pyStdout}}}); err != nil {
+						log.Printf("[agent.go] Failed to send execution result to server: %v", err)
+					} else {
+						log.Printf("[agent.go] Sent execution result to the server: %v", pyStdout)
+					}
+				}()
 
 			case *protos.ServerMessage_CommandExecutionRequest:
 				log.Printf("[agent.go] Recived a command execution request")
@@ -152,17 +190,16 @@ func main() {
 				log.Printf("[agent.go] Execution id %s", executionId)
 				cmd := exec.Command(execArgs[0], execArgs[1:]...)
 				log.Printf("[agent.go] Completed execution with the id %s", executionId)
-				stdout, err := cmd.Output()
+				output, err := cmd.CombinedOutput() // combined output of stdout and stderr
 				if err != nil {
-					log.Fatalf(err.Error())
-					return
+					log.Printf("[agent.go] command execution failed: %s", err)
 				}
 
-				stdoutString := string(stdout)
-				log.Printf("[agent.go] Execution output is %s", stdoutString)
+				outputString := string(output)
+				log.Printf("[agent.go] Execution output is %s", outputString)
 
 				if err := stream.Send(&protos.AgentMessage{Message: &protos.AgentMessage_CommandExecutionResponse{
-					CommandExecutionResponse: &protos.CommandExecutionResponse{ExecutionId: executionId, ResponseString: stdoutString}}}); err != nil {
+					CommandExecutionResponse: &protos.CommandExecutionResponse{ExecutionId: executionId, ResponseString: outputString}}}); err != nil {
 					log.Printf("[agent.go] Failed to send execution result to server: %v", err)
 				}
 
@@ -219,7 +256,7 @@ func main() {
 					}
 				}()
 
-				body, err := ioutil.ReadAll(resp.Body)
+				body, err := io.ReadAll(resp.Body)
 				if err != nil {
 					log.Printf("[agent.go] Failed to read response for start jupyter kernel: %v", err)
 
@@ -299,7 +336,7 @@ func main() {
 				}()
 
 				log.Printf("[agent.go] Sending the jupyter execution " + executionId + "result to server...")
-				body, err = ioutil.ReadAll(resp.Body)
+				body, err = io.ReadAll(resp.Body)
 				if err != nil {
 					log.Printf("[agent.go] Failed to read response for run jupyter kernel: %v", err)
 

@@ -1,4 +1,5 @@
 airavata-agent
+airavata-agent-linux
 go.sum
 jupyter/extension/airavata_jupyter_magic/dist
 jupyter/extension/airavata_jupyter_magic/lib

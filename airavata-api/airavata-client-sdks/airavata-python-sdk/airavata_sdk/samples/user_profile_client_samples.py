@@ -15,13 +15,11 @@
 #
 
 import logging
-from airavata_sdk.clients.user_profile_client import UserProfileClient
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata.api.error.ttypes import TException
-
-from airavata.model.user.ttypes import UserProfile, Status
+from airavata.model.user.ttypes import Status, UserProfile
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.user_profile_client import UserProfileClient
 
 logger = logging.getLogger(__name__)
 
