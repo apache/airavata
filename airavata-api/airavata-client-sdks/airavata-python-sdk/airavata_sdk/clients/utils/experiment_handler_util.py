@@ -13,32 +13,27 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import getpass
 import logging
-import time
-import logging
-import airavata_sdk.samples.file_utils as fb
 import os
+import time
+from typing import Optional
+
 import jwt
 
-import getpass
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
-
 from airavata_sdk.clients.api_server_client import APIServerClient
-from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
-
-from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
-
-from airavata_sdk.transport.settings import GatewaySettings, ExperimentSettings, KeycloakServerSettings
-
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
+from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
+from airavata_sdk.transport.settings import ExperimentSettings, GatewaySettings
 
 logger = logging.getLogger('airavata_sdk.clients')
 logger.setLevel(logging.INFO)
 
 
 class ExperimentHandlerUtil(object):
-    def __init__(self, configuration_file_location=None, access_token=None):
+    def __init__(self, configuration_file_location: Optional[str] = None, access_token: Optional[str] = None):
         self.configuration_file = configuration_file_location
         self.gateway_conf = GatewaySettings(configuration_file_location)
         self.experiment_conf = ExperimentSettings(configuration_file_location)
@@ -49,10 +44,18 @@ class ExperimentHandlerUtil(object):
         self.access_token = access_token
         decode = jwt.decode(access_token, options={"verify_signature": False})
         self.user_id = decode['preferred_username']
-        self.airavata_token = self.authenticator.get_airavata_authz_token(self.user_id, access_token,
-                                                                          self.gateway_conf.GATEWAY_ID)
-        self.airavata_util = APIServerClientUtil(self.configuration_file, username=self.user_id, password=None,
-                                                 gateway_id=self.gateway_conf.GATEWAY_ID, access_token=access_token)
+        self.airavata_token = self.authenticator.get_airavata_authz_token(
+            gateway_id=self.gateway_conf.GATEWAY_ID,
+            username=self.user_id,
+            token=access_token,
+        )
+        self.airavata_util = APIServerClientUtil(
+            self.configuration_file,
+            gateway_id=self.gateway_conf.GATEWAY_ID,
+            username=self.user_id,
+            password=None,
+            access_token=access_token,
+        )
 
         self.data_model_client = DataModelCreationUtil(self.configuration_file,
                                                        username=self.user_id,
@@ -62,32 +65,45 @@ class ExperimentHandlerUtil(object):
 
         self.api_server_client = APIServerClient(self.configuration_file)
 
-    def queue_names(self, computation_resource_name):
+    def queue_names(self, computation_resource_name: str):
         resource_id = self.airavata_util.get_resource_host_id(computation_resource_name)
+        assert resource_id is not None
         return self.airavata_util.get_queue_names(resource_id)
 
-    def launch_experiment(self, experiment_name="default_exp", description="this is default exp",
-                          local_input_path="/tmp", input_file_mapping={}, computation_resource_name=None,
-                          queue_name=None, node_count=1, cpu_count=1, walltime=30, auto_schedule=False, output_path='.'):
+    def launch_experiment(
+        self,
+        experiment_name: str = "default_exp",
+        description: str = "this is default exp",
+        local_input_path: str = "/tmp",
+        input_file_mapping: dict[str, str] = {},
+        computation_resource_name: Optional[str] = None,
+        queue_name: Optional[str] = None,
+        node_count: int = 1,
+        cpu_count: int = 1,
+        walltime: int = 30,
+        auto_schedule: bool = False,
+        output_path: str = '.',
+    ):
         execution_id = self.airavata_util.get_execution_id(self.experiment_conf.APPLICATION_NAME)
+        assert execution_id is not None
         project_id = self.airavata_util.get_project_id(self.experiment_conf.PROJECT_NAME)
         hosts = self.experiment_conf.COMPUTE_HOST_DOMAIN.split(",")
 
         computation_resource_name = computation_resource_name if computation_resource_name is not None else hosts[0]
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
-        group_resource_profile_id = self.airavata_util.get_group_resource_profile_id(
-            self.experiment_conf.GROUP_RESOURCE_PROFILE_NAME)
+        group_resource_profile_id = self.airavata_util.get_group_resource_profile_id(self.experiment_conf.GROUP_RESOURCE_PROFILE_NAME)
         storage_id = self.airavata_util.get_storage_resource_id(self.experiment_conf.STORAGE_RESOURCE_HOST)
+        assert storage_id is not None
 
         logger.info("creating experiment %s", experiment_name)
         experiment = self.data_model_client.get_experiment_data_model_for_single_application(
             project_name=self.experiment_conf.PROJECT_NAME,
             application_name=self.experiment_conf.APPLICATION_NAME,
             experiment_name=experiment_name,
-            description=description)
+            description=description,
+        )
 
-        logger.info("connnecting to file upload endpoint %s : %s", self.experiment_conf.STORAGE_RESOURCE_HOST,
-                    self.experiment_conf.SFTP_PORT)
+        logger.info("connnecting to file upload endpoint %s : %s", self.experiment_conf.STORAGE_RESOURCE_HOST, self.experiment_conf.SFTP_PORT)
         sftp_connector = SFTPConnector(host=self.experiment_conf.STORAGE_RESOURCE_HOST,
                                        port=self.experiment_conf.SFTP_PORT,
                                        username=self.user_id,
@@ -142,7 +158,7 @@ class ExperimentHandlerUtil(object):
                                                                           input_file_name=x,
                                                                           uploaded_storage_path=path)
                     new_file_mapping[key] = data_uri
-            experiment = self.data_model_client.configure_input_and_outputs(experiment, input_files=None,
+            experiment = self.data_model_client.configure_input_and_outputs(experiment, input_files=[],
                                                                             application_name=self.experiment_conf.APPLICATION_NAME,
                                                                             file_mapping=new_file_mapping)
         else:
