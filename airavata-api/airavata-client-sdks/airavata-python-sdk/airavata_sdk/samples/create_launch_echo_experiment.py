@@ -1,52 +1,45 @@
 import logging
 import time
-import json
-import airavata_sdk.samples.file_utils as fb
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 from airavata_sdk.clients.api_server_client import APIServerClient
-
 from airavata_sdk.clients.credential_store_client import CredentialStoreClient
-
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
-from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
-
-from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
-
-from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
-
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
-
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
+from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
 from airavata_sdk.transport.settings import GatewaySettings
 
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-configFile = "/Users/isururanawaka/Documents/Airavata_Repository/airavata/airavata-api/airavata-client-sdks/airavata-python-sdk/airavata_sdk/transport/settings.ini"
+configFile: str = "/Users/isururanawaka/Documents/Airavata_Repository/airavata/airavata-api/airavata-client-sdks/airavata-python-sdk/airavata_sdk/transport/settings.ini"
 
 authenticator = Authenticator(configFile)
-username = "username"
-password = "password"
-gateway_id = "cyberwater"
+username: str = "username"
+password: str = "password"
+gateway_id: str = "cyberwater"
 token = authenticator.get_token_and_user_info_password_flow(username=username, password=password, gateway_id=gateway_id)
 
 api_server_client = APIServerClient(configFile)
 
 data_model_client = DataModelCreationUtil(configFile,
+                                          gateway_id=gateway_id,
                                           username=username,
                                           password=password,
-                                          gateway_id=gateway_id)
+                                          access_token=token.accessToken)
 
 credential_store_client = CredentialStoreClient(configFile)
 
-airavata_util = APIServerClientUtil(configFile,
-                                    username=username,
-                                    password=password,
-                                    gateway_id=gateway_id)
+airavata_util = APIServerClientUtil(
+    configFile,
+    gateway_id=gateway_id,
+    username=username,
+    password=password,
+)
 
 executionId = airavata_util.get_execution_id("Echo")
+assert executionId is not None
 
 projectId = airavata_util.get_project_id("Default Project")
 
@@ -82,7 +75,7 @@ path = gateway_settings.GATEWAY_DATA_STORE_DIR + path_suffix
 experiment = data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,
                                                                          computation_resource_name="karst.uits.iu.edu",
                                                                          group_resource_profile_name="Default Gateway Profile",
-                                                                         storage_name="pgadev.scigap.org",
+                                                                         storageId="pgadev.scigap.org",
                                                                          node_count=1,
                                                                          total_cpu_count=16,
                                                                          wall_time_limit=15,
@@ -116,4 +109,4 @@ while status.state <= 6:
 
 print("Completed")
 
-sftp_connector.download_files(".", "Default_Project", experiment.experimentName)
+sftp_connector.download_files(".", f"Default_Project/{experiment.experimentName}")
