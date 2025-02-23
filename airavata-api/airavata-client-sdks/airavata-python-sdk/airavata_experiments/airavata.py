@@ -17,6 +17,8 @@
 import logging
 from pathlib import Path
 from typing import Literal, NamedTuple
+
+from airavata_sdk.transport.settings import APIServerSettings
 from .sftp import SFTPConnector
 import time
 import warnings
@@ -161,7 +163,8 @@ class AiravataOperator:
     self.access_token = access_token
     self.settings = Settings(config_file)
     # load api server settings and create client
-    self.api_server_client = APIServerClient(api_server_settings=self.settings)
+    api_server_settings = APIServerSettings(config_file)
+    self.api_server_client = APIServerClient(api_server_settings=api_server_settings)
     # load gateway settings
     gateway_id = self.default_gateway_id()
     self.airavata_token = self.__airavata_token__(self.access_token, gateway_id)

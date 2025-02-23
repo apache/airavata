@@ -16,8 +16,8 @@
 
 import configparser
 import logging
+from typing import Optional
 
-from airavata.service.profile.iam.admin.services.cpi.IamAdminServices import Client
 from airavata_sdk.transport import utils
 from airavata_sdk.transport.settings import ProfileServerSettings
 
@@ -35,13 +35,14 @@ logger.addHandler(handler)
 
 class IAMAdminClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.iam_admin_settings = ProfileServerSettings(configuration_file_location)
+    def __init__(self, configuration_file_location: Optional[str] = None):
+        self.settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.client: Client = utils.initialize_iam_admin_client(
-            self.iam_admin_settings.PROFILE_SERVICE_HOST,
-            self.iam_admin_settings.PROFILE_SERVICE_PORT,
-            self.iam_admin_settings.PROFILE_SERVICE_SECURE)
+        self.client = utils.initialize_iam_admin_client(
+            self.settings.PROFILE_SERVICE_HOST,
+            self.settings.PROFILE_SERVICE_PORT,
+            self.settings.PROFILE_SERVICE_SECURE,
+        )
         # expose the needed functions
         self.set_up_gateway = self.client.setUpGateway
         self.is_username_available = self.client.isUsernameAvailable
@@ -59,12 +60,10 @@ class IAMAdminClient(object):
         self.remove_role_from_user = self.client.removeRoleFromUser
         self.get_users_with_role = self.client.getUsersWithRole
 
-    def _load_settings(self, configuration_file_location):
+    def _load_settings(self, configuration_file_location: Optional[str]):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.iam_admin_settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-            self.iam_admin_settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-            self.iam_admin_settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer',
-                                                                                   'PROFILE_SERVICE_SECURE')
-
+            self.settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+            self.settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+            self.settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
