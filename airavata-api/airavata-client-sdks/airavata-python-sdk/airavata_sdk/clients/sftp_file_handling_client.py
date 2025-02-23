@@ -43,7 +43,7 @@ class SFTPConnector(object):
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 
-    def upload_files(self, local_path, project_name, exprement_id):
+    def upload_files(self, local_path: str, project_name: str, exprement_id: str):
         project_name = project_name.replace(" ", "_")
         time = datetime.now().strftime('%Y-%m-%d %H:%M:%S').replace(" ", "_")
         time = time.replace(":", "_")
@@ -72,8 +72,7 @@ class SFTPConnector(object):
                     transport.close()
         return pathsuffix
 
-    def download_files(self, local_path, remote_path):
-
+    def download_files(self, local_path: str, remote_path: str):
         self.ssh.connect(self.host, self.port, self.username, password = self.password)
         transport = self.ssh.get_transport()
         assert transport is not None
@@ -82,6 +81,5 @@ class SFTPConnector(object):
         self.ssh.close()
 
     @staticmethod
-    def uploading_info(uploaded_file_size, total_file_size):
-        logging.info('uploaded_file_size : {} total_file_size : {}'.
-                     format(uploaded_file_size, total_file_size))
+    def uploading_info(uploaded_file_size: str, total_file_size: str):
+        logging.info('uploaded_file_size : {} total_file_size : {}'.format(uploaded_file_size, total_file_size))
