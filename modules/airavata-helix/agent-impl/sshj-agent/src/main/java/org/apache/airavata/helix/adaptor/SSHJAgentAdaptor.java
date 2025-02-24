@@ -19,7 +19,6 @@
  */
 package org.apache.airavata.helix.adaptor;
 
-import com.google.common.collect.Lists;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.ConnectionException;
@@ -387,7 +386,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 }
 
                 @Override
-                public OutputStream getOutputStream(boolean append) throws IOException {
+                public OutputStream getOutputStream(boolean append) {
                     return localOutStream;
                 }
 
