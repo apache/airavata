@@ -133,6 +133,7 @@
                 <include>org.slf4j:log4j-over-slf4j:jar</include>
                 <include>org.apache.logging.log4j:log4j-api</include>
                 <include>org.apache.logging.log4j:log4j-core</include>
+                <include>org.apache.logging.log4j:log4j-slf4j2-impl</include>
                 <include>org.apache.logging.log4j:log4j-1.2-api</include>
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>

@@ -23,7 +23,7 @@
 # TODO: tus not setup yet
 tusd_vhost_servername:
 
-vhost_servername: "cybershuttle.org"
+vhost_servername: "dev.gateway.cybershuttle.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
@@ -55,6 +55,12 @@ gateway_id: "testdrive"
 experiment_data_dir: "{{ user_data_dir }}/testdrive-cs"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC56m6qPepsDF1Pcimaj7olXPFgJB+fhEa9k9pXYBcNR/X2xUV6OPxvUvBf2TUjJiPJlZH0XX+or98XvyL3TCuR9C1fAygia9uDM7fEi2V85MTMCzPLLI2qOhw30/HH9EeXSjpJRCB3fxhAhtyUkiaXYuZIR4lmk+v5oHX0CrmqCBnkoUQiZKi5A+sYU9AhYvXtmwJgo87PUzDqJ8+aUnM9rXVTf6dvZWZCiS0gCgqXedcbzcQqIl3fJ6RVI/Nz/61IAMeNwu8aCDkgV98BTblNv+dPRb53LpwV5+Gw66cppOGZJVA+sBTjwZI/Zamkgh5g9pf09nsX51l4YUupLKcB"
 #django_user_data_archive_max_age_days: 180
+
+django_extra_settings:
+  GATEWAY_DATA_SHARED_DIRECTORIES:
+    Shared:
+      path: /var/www/portals/gateway-user-data/testdrive-cs/Shared
+
 
 admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu'),('Eroma Abeysinghe','eroma@gatech.edu'),('Suresh Marru','smarru@gatech.edu'),('ARTISAN','ARTISAN@groups.gatech.edu')]"
 portal_title: "Cybershuttle Gateway"

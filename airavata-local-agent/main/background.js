@@ -38,7 +38,7 @@ if (isProd) {
 
 let mainWindow;
 const TOKEN_FILE = '~/csagent/token/keys.json';
-const BASE_URL = 'https://testdrive.cybershuttle.org';
+const BASE_URL = 'https://cybershuttle.org';
 
 // ----- OUR CUSTOM FUNCTIONS -----
 if (process.defaultApp) {

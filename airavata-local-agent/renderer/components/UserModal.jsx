@@ -29,7 +29,7 @@ export const UserModal = ({ email, accessToken }) => {
 
   async function handleSaveInfo() {
     setLoading(true);
-    await fetch(`https://testdrive.cybershuttle.org/auth/users/${user.id}/`, {
+    await fetch(`https://cybershuttle.org/auth/users/${user.id}/`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -60,7 +60,7 @@ export const UserModal = ({ email, accessToken }) => {
 
   useEffect(() => {
     async function getUserInfo() {
-      await fetch(`https://testdrive.cybershuttle.org/auth/users/current/`, {
+      await fetch(`https://cybershuttle.org/auth/users/current/`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
