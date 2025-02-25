@@ -1,0 +1,1 @@
+docker build --platform linux/x86_64 -t cybershuttle/cyberfaces-jupyter-lab .
