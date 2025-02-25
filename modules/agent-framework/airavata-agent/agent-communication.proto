@@ -7,8 +7,6 @@ option java_package = "org.apache.airavata.agent";
 option java_outer_classname = "AgentCommunicationProto";
 option go_package = "protos/";
 
-import "airavata-fuse.proto";
-
 service AgentCommunicationService {
   rpc createMessageBus(stream AgentMessage) returns (stream ServerMessage);
 }
@@ -28,6 +26,12 @@ message ContainerExecutionResponse {
 }
 
 message JupyterExecutionResponse {
+  string executionId = 1;
+  string sessionId = 2;
+  string responseString = 3;
+}
+
+message PythonExecutionResponse {
   string executionId = 1;
   string sessionId = 2;
   string responseString = 3;
@@ -53,15 +57,7 @@ message AgentMessage {
     ContainerExecutionResponse containerExecutionResponse = 3;
     TerminateExecutionResponse terminateExecutionResponse = 4;
     JupyterExecutionResponse jupyterExecutionResponse = 5;
-
-    org.apache.airavata.fuse.StatFsReq statFsReq = 6;
-    org.apache.airavata.fuse.FileInfoReq fileInfoReq = 7;
-    org.apache.airavata.fuse.OpenDirReq openDirReq = 8;
-    org.apache.airavata.fuse.OpenFileReq openFileReq = 9;
-    org.apache.airavata.fuse.ReadDirReq readDirReq = 10;
-    org.apache.airavata.fuse.ReadFileReq readFileReq = 11;
-    org.apache.airavata.fuse.WriteFileReq writeFileReq = 12;
-    org.apache.airavata.fuse.SetInodeAttReq setInodeAttReq = 13;
+    PythonExecutionResponse pythonExecutionResponse = 6;
   }
 }
 
@@ -100,6 +96,16 @@ message JupyterExecutionRequest {
   string code = 4;
 }
 
+message PythonExecutionRequest {
+  string executionId = 1;
+  string sessionId = 2;
+  bool keepAlive = 3;
+  repeated string libraries = 4;
+  string code = 5;
+  string pythonVersion = 6;
+  string workingDir = 7;
+}
+
 message TerminateExecutionRequest {
   string executionId = 1;
 }
@@ -116,14 +122,6 @@ message ServerMessage {
     KillAgentRequest killAgentRequest = 4;
     TunnelCreationRequest tunnelCreationRequest = 5;
     JupyterExecutionRequest jupyterExecutionRequest = 6;
-
-    org.apache.airavata.fuse.StatFsRes statFsRes = 7;
-    org.apache.airavata.fuse.FileInfoRes fileInfoRes = 8;
-    org.apache.airavata.fuse.OpenDirRes openDirRes = 9;
-    org.apache.airavata.fuse.OpenFileRes openFileRes = 10;
-    org.apache.airavata.fuse.ReadDirRes readDirRes = 11;
-    org.apache.airavata.fuse.ReadFileRes readFileRes = 12;
-    org.apache.airavata.fuse.WriteFileRes writeFileRes = 13;
-    org.apache.airavata.fuse.SetInodeAttRes setInodeAttRes = 14;
+    PythonExecutionRequest pythonExecutionRequest = 7;
   }
 }
