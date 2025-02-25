@@ -20,8 +20,8 @@ COPY labconfig/device_auth.py /device_auth.py
 COPY labconfig/bootstrap.sh /bootstrap.sh
 RUN chmod +x /bootstrap.sh
 
-COPY data.tar.gz /home/jovyan/data.tar.gz
-COPY analysis.ipynb /home/jovyan/analysis.ipynb
+COPY deployments/cyberfaces/data.tar.gz /home/jovyan/data.tar.gz
+COPY deployments/cyberfaces/analysis.ipynb /home/jovyan/analysis.ipynb
 
 USER ${NB_UID}
 
