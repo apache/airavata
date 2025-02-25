@@ -35,6 +35,7 @@ class DeviceFlowAuthenticator:
         self.poll_for_token()
 
     def poll_for_token(self):
+        assert self.interval is not None
         token_url = f"{self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
         while True:
             response = requests.post(token_url, data={
