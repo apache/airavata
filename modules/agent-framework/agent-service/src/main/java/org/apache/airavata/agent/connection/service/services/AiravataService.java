@@ -72,17 +72,17 @@ public class AiravataService {
         throw new RuntimeException("Could not find a Default project for the user: " + UserContext.username());
     }
 
-    public String extractComputeResourceId(Airavata.Client airavataClient, String group, String applicationInterfaceName) throws TException {
+    public GroupComputeResourcePreference extractGroupComputeResourcePreference(Airavata.Client airavataClient, String group, String remoteCluster) throws TException {
         List<GroupResourceProfile> groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
         String groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
 
         return groupResourceList.stream()
                 .filter(profile -> groupProfileName.equalsIgnoreCase(profile.getGroupResourceProfileName()))
-                .flatMap(profile -> profile.getComputePreferences().stream())
-                .map(GroupComputeResourcePreference::getComputeResourceId)
-                .filter(computeResourceId -> computeResourceId.startsWith(applicationInterfaceName))
+                .flatMap(profile -> profile.getComputePreferences()
+                        .stream()
+                        .filter(preference -> preference.getComputeResourceId().startsWith(remoteCluster)))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find a Compute Resource in the Default group resource profile for the user: " + UserContext.username()));
+                .orElseThrow(() -> new RuntimeException("Could not find a matching Compute Resource Preference in the " + groupProfileName + " group resource profile for the user: " + UserContext.username()));
     }
 
     public List<String> getUserExperimentIDs(Airavata.Client airavataClient) throws TException {

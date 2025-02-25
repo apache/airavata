@@ -7,6 +7,7 @@ import org.apache.airavata.agent.connection.service.models.LaunchAgentResponse;
 import org.apache.airavata.agent.connection.service.models.TerminateAgentResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -119,7 +120,7 @@ public class AgentManagementHandler {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
-        String projectId = airavataService.extractDefaultProjectId(airavataClient);
+        String projectId = airavataService.extractDefaultProjectId(airavataClient); // TODO should be configurable
         String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
 
         ExperimentModel experimentModel = new ExperimentModel();
@@ -130,12 +131,16 @@ public class AgentManagementHandler {
         experimentModel.setExecutionId(appInterfaceId);
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
+        GroupComputeResourcePreference groupCompResourcePref = airavataService.extractGroupComputeResourcePreference(airavataClient, req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
         computationalResourceSchedulingModel.setWallTimeLimit(req.getWallTime());
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
-        computationalResourceSchedulingModel.setResourceHostId(airavataService.extractComputeResourceId(airavataClient, req.getGroup(), req.getApplicationInterfaceName()));
+        computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
+        computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(groupCompResourcePref.getAllocationProjectNumber());
+        computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
@@ -147,6 +152,7 @@ public class AgentManagementHandler {
                 .concat(projectId)
                 .concat(File.separator)
                 .concat(experimentName));
+        userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
