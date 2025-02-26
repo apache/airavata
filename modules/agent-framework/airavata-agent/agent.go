@@ -49,57 +49,57 @@ func main() {
 		log.Printf("Connected to the server...")
 	}
 
-	// go func() {
-	// 	log.Printf("Starting jupyter kernel")
-	// 	cmd := exec.Command("python", "/opt/jupyter/kernel.py")
-	// 	//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
-	// 	stdout, err := cmd.StdoutPipe()
+	go func() {
+		log.Printf("Starting jupyter kernel")
+		cmd := exec.Command("python", "/opt/jupyter/kernel.py")
+		//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
+		stdout, err := cmd.StdoutPipe()
 
-	// 	if err != nil {
-	// 		fmt.Println("[agent.go] Error creating StdoutPipe:", err)
-	// 		return
-	// 	}
+		if err != nil {
+			fmt.Println("[agent.go] Error creating StdoutPipe:", err)
+			return
+		}
 
-	// 	// Get stderr pipe
-	// 	stderr, err := cmd.StderrPipe()
-	// 	if err != nil {
-	// 		fmt.Println("[agent.go] Error creating StderrPipe:", err)
-	// 		return
-	// 	}
+		// Get stderr pipe
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			fmt.Println("[agent.go] Error creating StderrPipe:", err)
+			return
+		}
 
-	// 	log.Printf("[agent.go] Starting command for execution")
-	// 	// Start the command
-	// 	if err := cmd.Start(); err != nil {
-	// 		fmt.Println("[agent.go] Error starting command:", err)
-	// 		return
-	// 	}
+		log.Printf("[agent.go] Starting command for execution")
+		// Start the command
+		if err := cmd.Start(); err != nil {
+			fmt.Println("[agent.go] Error starting command:", err)
+			return
+		}
 
-	// 	// Create channels to read from stdout and stderr
-	// 	stdoutScanner := bufio.NewScanner(stdout)
-	// 	stderrScanner := bufio.NewScanner(stderr)
+		// Create channels to read from stdout and stderr
+		stdoutScanner := bufio.NewScanner(stdout)
+		stderrScanner := bufio.NewScanner(stderr)
 
-	// 	// Stream stdout
-	// 	go func() {
-	// 		for stdoutScanner.Scan() {
-	// 			fmt.Printf("[agent.go] stdout: %s\n", stdoutScanner.Text())
-	// 		}
-	// 	}()
+		// Stream stdout
+		go func() {
+			for stdoutScanner.Scan() {
+				fmt.Printf("[agent.go] stdout: %s\n", stdoutScanner.Text())
+			}
+		}()
 
-	// 	// Stream stderr
-	// 	go func() {
-	// 		for stderrScanner.Scan() {
-	// 			fmt.Printf("[agent.go] stderr: %s\n", stderrScanner.Text())
-	// 		}
-	// 	}()
+		// Stream stderr
+		go func() {
+			for stderrScanner.Scan() {
+				fmt.Printf("[agent.go] stderr: %s\n", stderrScanner.Text())
+			}
+		}()
 
-	// 	// Wait for the command to finish
-	// 	if err := cmd.Wait(); err != nil {
-	// 		fmt.Println("[agent.go] Error waiting for command:", err)
-	// 		return
-	// 	}
+		// Wait for the command to finish
+		if err := cmd.Wait(); err != nil {
+			fmt.Println("[agent.go] Error waiting for command:", err)
+			return
+		}
 
-	// 	fmt.Println("[agent.go] Command finished")
-	// }()
+		fmt.Println("[agent.go] Command finished")
+	}()
 
 	go func() {
 		for {
