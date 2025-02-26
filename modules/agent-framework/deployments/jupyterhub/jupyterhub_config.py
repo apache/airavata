@@ -20,7 +20,7 @@ c.GenericOAuthenticator.allow_all = True
 
 # Spawner Configuration
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
-c.DockerSpawner.image = os.environ.get('DOCKER_NOTEBOOK_IMAGE', 'jupyter/base-notebook:latest')
+c.DockerSpawner.image = os.environ.get('DOCKER_NOTEBOOK_IMAGE', 'cybershuttle/jupyterlab-base:latest')
 c.DockerSpawner.notebook_dir = '/home/jovyan'
 c.DockerSpawner.volumes = {
     'jupyterhub-user-{username}': '/home/jovyan',
