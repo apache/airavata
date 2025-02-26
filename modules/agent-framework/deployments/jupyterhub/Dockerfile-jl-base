@@ -1,0 +1,28 @@
+FROM mambaorg/micromamba:latest
+
+USER root
+WORKDIR /home/jovyan
+
+RUN micromamba install -y -n base -c conda-forge \
+    python=3.11 \
+    pip \
+    git \
+    && micromamba clean --all -y
+
+RUN micromamba run -n base pip install --no-cache-dir \
+    jupyterlab \
+    airavata-jupyter-magic
+
+COPY data/ ./
+
+RUN micromamba run -n base \
+    git clone https://github.com/cyber-shuttle/jupyter-notebook-examples ./examples
+
+EXPOSE 8888
+CMD micromamba run -n base jupyter lab \
+    --ip=0.0.0.0 \
+    --port=8888 \
+    --no-browser \
+    --allow-root \
+    --NotebookApp.exec_lines='import airavata_magics' \
+    --NotebookApp.token=''
