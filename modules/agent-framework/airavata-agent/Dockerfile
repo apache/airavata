@@ -1,7 +1,14 @@
-FROM python:3.12-slim
+FROM mambaorg/micromamba:latest
 
-RUN pip install flask jupyter jupyter-client
-RUN mkdir -p /opt/jupyter
-RUN python -m venv /opt/jupyter/venv
-ADD airavata-agent /opt/airavata-agent
-ADD jupyter/kernel.py /opt/jupyter/kernel.py
+USER root
+
+RUN micromamba install -y -n base -c conda-forge \
+    python=3.11 \
+    pip \
+    git \
+    flask \
+    jupyter_client \
+    && micromamba clean --all -y
+
+COPY airavata-agent /opt/airavata-agent
+COPY kernel.py /opt/jupyter/kernel.py
