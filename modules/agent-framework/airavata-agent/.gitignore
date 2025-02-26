@@ -1,6 +1,5 @@
-airavata-agent
+/airavata-agent*
+/jupyter/
 go.sum
-jupyter/extension/airavata_jupyter_magic/dist
-jupyter/extension/airavata_jupyter_magic/lib
 *.egg-info
 *.ipynb_checkpoints
