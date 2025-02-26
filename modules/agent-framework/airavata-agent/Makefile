@@ -26,8 +26,8 @@ build-multiarch:
 	GOOS=darwin GOARCH=arm64 go build -o airavata-agent-osx-arm64
 
 build-container:
-	GOOS=linux GOARCH=amd64 go build -o airavata-agent && \
-	docker build --platform linux/amd64 -t $(IMAGE_NAME) . && \
+	GOOS=linux GOARCH=amd64 go build -o airavata-agent; \
+	docker build --platform linux/x86_64 -t $(IMAGE_NAME) .; \
 	docker push $(IMAGE_NAME)
 
 run-container:

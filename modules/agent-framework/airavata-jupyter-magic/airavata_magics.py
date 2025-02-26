@@ -393,12 +393,11 @@ def pull_remote(line):
         file.write(response.content)
     print(f"[{response.status_code}] Downloaded remote:{remot_path} to local:{local_path}")
 
-
-def load_ipython_extension(ipython):
-    ipython.register_magic_function(cs_login)
-    ipython.register_magic_function(init_remote)
-    ipython.register_magic_function(status_remote)
-    ipython.register_magic_function(terminate_remote)
-    ipython.register_magic_function(run_remote)
-    ipython.register_magic_function(push_remote)
-    ipython.register_magic_function(pull_remote)
+# autorun when imported
+ipython.register_magic_function(cs_login)
+ipython.register_magic_function(init_remote)
+ipython.register_magic_function(status_remote)
+ipython.register_magic_function(terminate_remote)
+ipython.register_magic_function(run_remote)
+ipython.register_magic_function(push_remote)
+ipython.register_magic_function(pull_remote)
