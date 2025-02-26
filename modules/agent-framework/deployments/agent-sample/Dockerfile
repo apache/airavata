@@ -7,5 +7,3 @@ RUN micromamba install -y -c conda-forge \
     numpy \
     pandas \
     && micromamba clean --all -y
-
-COPY data /opt/data
