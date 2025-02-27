@@ -1,16 +1,22 @@
 import base64
 import binascii
 import json
+import os
 import time
 from pathlib import Path
 from typing import NamedTuple
+
 import jwt
-import os
 import requests
+from device_auth import DeviceFlowAuthenticator
+from IPython.core.getipython import get_ipython
 from IPython.core.magic import register_cell_magic, register_line_magic
 from IPython.display import HTML, Image, display
-from device_auth import DeviceFlowAuthenticator
 
+# autorun when imported
+ipython = get_ipython()
+if ipython is None:
+    raise RuntimeError("airavata_magics requires an interactive ipython session")
 
 AgentInfo = NamedTuple('AgentInfo', [
     ('agentId', str),
@@ -393,11 +399,13 @@ def pull_remote(line):
         file.write(response.content)
     print(f"[{response.status_code}] Downloaded remote:{remot_path} to local:{local_path}")
 
-# autorun when imported
-ipython.register_magic_function(cs_login)
-ipython.register_magic_function(init_remote)
-ipython.register_magic_function(status_remote)
-ipython.register_magic_function(terminate_remote)
-ipython.register_magic_function(run_remote)
-ipython.register_magic_function(push_remote)
-ipython.register_magic_function(pull_remote)
+print(r"""
+Loaded airavata magics:
+  %cs_login
+  %init_remote
+  %%run_remote
+  %status_remote
+  %terminate_remote
+  %push_remote
+  %pull_remote
+""")
