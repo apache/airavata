@@ -4,10 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airavata-jupyter-magic"
-version = "0.1.0"
+version = "1.0.3"
 description = "Jupyter magics for running notebook cells on remote HPC resources. Powered by Apache Airavata."
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "Yasith Jayawardana", email = "yasith@gatech.edu" },
+    { name = "Dimuthu Wannipurage", email = "dimuthuw@gatech.edu" },
+    { name = "Lahiru Jayathilake", email = "ljayathilake3@gatech.edu" }
 ]
 license = { text = "Apache-2.0" }
 readme = "README.md"
@@ -20,9 +22,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["black", "flake8"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["*.py"]
+[tool.setuptools]
+py-modules = ["airavata_magics", "device_auth"]
 
 [project.urls]
 Homepage = "https://github.com/apache/airavata"
