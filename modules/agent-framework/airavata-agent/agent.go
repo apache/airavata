@@ -52,7 +52,7 @@ func main() {
 
 	go func() {
 		log.Printf("Starting jupyter kernel")
-		cmd := exec.Command("python", "/opt/jupyter/kernel.py")
+		cmd := exec.Command("micromamba", "run", "-n", "base", "python", "/opt/jupyter/kernel.py")
 		//cmd := exec.Command("jupyter/venv/bin/python", "jupyter/kernel.py")
 		stdout, err := cmd.StdoutPipe()
 
