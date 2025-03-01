@@ -1,0 +1,24 @@
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - ipykernel
+  - numba==0.56.3
+  - scipy
+  - libnetcdf
+  - rasterio
+  - pip:
+    - airavata-jupyter-magic
+    - pyhdf
+    - matplotlib
+    - boto3
+    - s3fs
+    - beautifulsoup4
+    - cartopy
+    - tqdm
+    - netCDF4
+    - h5netcdf
+    - rioxarray
+    - psutil
+    - satpy

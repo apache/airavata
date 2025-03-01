@@ -23,7 +23,7 @@ dependencies = [
 dev = ["black", "flake8"]
 
 [tool.setuptools]
-py-modules = ["airavata_magics", "device_auth"]
+py-modules = ["airavata_jupyter_magic", "device_auth"]
 
 [project.urls]
 Homepage = "https://github.com/apache/airavata"
