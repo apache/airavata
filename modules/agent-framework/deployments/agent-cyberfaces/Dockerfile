@@ -62,4 +62,5 @@ RUN micromamba install -y -n base -c conda-forge \
 
 RUN micromamba run -n base pip install --no-cache-dir --force-reinstall \
     cdo-api-py \
-    typing_extensions>=4.12.0
+    "typing_extensions>=4.12.0" \
+    "numpy<2.0.0"
