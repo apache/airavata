@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airavata-jupyter-magic"
-version = "1.0.3"
+version = "1.0.5"
 description = "Jupyter magics for running notebook cells on remote HPC resources. Powered by Apache Airavata."
 authors = [
     { name = "Yasith Jayawardana", email = "yasith@gatech.edu" },
