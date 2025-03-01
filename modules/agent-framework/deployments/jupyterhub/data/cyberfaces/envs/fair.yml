@@ -1,0 +1,83 @@
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - ipykernel
+  - numba==0.56.3
+  - gdal
+  - fiona  
+  - rasterio
+  - ipyleaflet
+  - scipy
+  - bsddb3
+  - qgis
+  - scikit-learn
+  # - pillow
+  # - osmnx
+  # - mapclassify
+  # - mplleaflet
+
+  - pip:
+    - airavata-jupyter-magic
+    - wget
+    - jupyter_contrib_nbextensions
+    - utm
+    - matplotlib
+    - matplotlib_scalebar
+    - geopandas
+    # - shapely
+    - folium
+    - earthpy
+    - patool
+    - cdsapi
+    - geemap
+    - gdown
+    # - pysal
+    # - textblob
+    # - wordcloud
+    # - spatialite
+    - geojson
+    - pyarrow
+    # - mordecai
+    - xarray
+    - pooch
+    - zarr
+    - cython
+    - dask
+    - fsspec
+    - gcsfs
+    - intake
+    - intake-esm
+    - cmaps
+    - cartopy
+    - regionmask
+    # - processing
+    - cdo-api-py
+    - pynhd
+    - progressbar
+    - hydrofunctions
+    - googledrivedownloader
+    - cartopy
+    - s3fs
+    - pywbt
+    - cfgrib
+    # - satpy
+    # - tensorflow
+    # - seaborn
+
+    
+# # INITIALIZE PYQGIS (run once per session)
+# import sys, os
+# os.environ['QT_QPA_PLATFORM']='offscreen'
+# sys.path.append('/opt/conda/envs/ct-fair/share/qgis/python')
+# from qgis.core import *
+# from qgis.analysis import QgsNativeAlgorithms
+# #from qgis.utils import *
+# # import processing
+# # from processing.core.Processing import Processing 
+# from qgis import processing
+
+# qgs = QgsApplication([], False)
+# qgs.initQgis()
+# QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms()) 
