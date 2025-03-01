@@ -1,0 +1,45 @@
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - ipykernel
+  - numba==0.56.3
+  - scipy
+  - pip:
+    - airavata-jupyter-magic
+    - wget
+    - jupyter_contrib_nbextensions
+    - tensorflow
+    - seaborn
+    - earthengine-api
+    - folium
+    - scikit-learn
+    - netCDF4
+    - xarray
+    - statsmodels
+    - pmdarima
+    - pygridmet
+    - hydrofunctions
+    - pynhd
+    - missingno
+    - geemap
+
+
+
+
+    
+# # INITIALIZE PYQGIS (run once per session)
+# import sys, os
+# os.environ['QT_QPA_PLATFORM']='offscreen'
+# sys.path.append('/opt/conda/envs/ct-fair/share/qgis/python')
+# from qgis.core import *
+# from qgis.analysis import QgsNativeAlgorithms
+# #from qgis.utils import *
+# # import processing
+# # from processing.core.Processing import Processing 
+# from qgis import processing
+
+# qgs = QgsApplication([], False)
+# qgs.initQgis()
+# QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms()) 
