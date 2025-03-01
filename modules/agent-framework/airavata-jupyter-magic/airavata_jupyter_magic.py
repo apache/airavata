@@ -13,18 +13,12 @@ import jwt
 import requests
 from device_auth import DeviceFlowAuthenticator
 from IPython.core.getipython import get_ipython
-from IPython.core.interactiveshell import ExecutionResult, ExecutionInfo
+from IPython.core.interactiveshell import ExecutionInfo, ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
 from IPython.display import HTML, Image, display
 
-# autorun when imported
-ipython = get_ipython()
-if ipython is None:
-    raise RuntimeError("airavata_jupyter_magic requires an ipython session")
-
-api_base_url = "https://api.gateway.cybershuttle.org"
-file_server_url = "http://3.142.234.94:8050"
-MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
+# ========================================================================
+# DATA STRUCTURES
 
 
 class RequestedRuntime:
@@ -69,6 +63,7 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('group', str),
 ])
 
+
 PENDING_STATES = [
     ProcessState.CREATED,
     ProcessState.VALIDATED,
@@ -80,6 +75,7 @@ PENDING_STATES = [
     ProcessState.QUEUED,
     ProcessState.REQUEUED,
 ]
+
 
 TERMINAL_STATES = [
     ProcessState.DEQUEUING,
@@ -95,32 +91,45 @@ class State:
     current_runtime: str  # none => local
     all_runtimes: dict[str, RuntimeInfo]  # user-defined runtime dict
 
+
+# END OF DATA STRUCTURES
 # ========================================================================
-# ========================================================================
+# HELPER FUNCTIONS
 
 
-state = State(current_runtime="local", all_runtimes={})
+def get_access_token(envar_name: str = "CS_ACCESS_TOKEN", state_path: str = "/tmp/av.json") -> str | None:
+    """
+    Get access token from environment or file
+
+    @param None:
+    @returns: access token if present, None otherwise
+
+    """
+    token = os.getenv(envar_name)
+    if not token:
+        try:
+            token = json.load(Path(state_path).open("r")).get("access_token")
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+    return token
 
 
-def get_access_token() -> str | None:
-    token_from_env = os.getenv('CS_ACCESS_TOKEN')
-    if token_from_env:
-        return token_from_env
-    EXPLICIT_TOKEN_FILE = Path("~").expanduser() / \
-        "csagent" / "token" / "keys.json"
-    if EXPLICIT_TOKEN_FILE.exists():
-        with open(EXPLICIT_TOKEN_FILE, "r") as f:
-            return json.load(f).get("access_token")
+def is_runtime_ready(agent_id: str) -> bool:
+    """
+    Check if the runtime (i.e., agent job) is ready to receive requests
 
+    @param agent_id: the agent id
+    @returns: True if ready, False otherwise
 
-def is_agent_up(agent_id: str) -> bool:
+    """
     url = f"{api_base_url}/api/v1/agent/{agent_id}"
-    response = requests.get(url)
-    if response.status_code == 202:
-        data: dict = response.json()
+    res = requests.get(url)
+    code = res.status_code
+    if code == 202:
+        data: dict = res.json()
         return bool(data.get("agentUp", None) or False)
     else:
-        print(f"Got [{response.status_code}] Response: {response.text}")
+        print(f"[{code}] Runtime status check failed: {res.text}")
         return False
 
 
@@ -128,23 +137,36 @@ def get_process_state(experiment_id: str, headers: dict) -> tuple[str, ProcessSt
     """
     Get process state by experiment id
 
+    @param experiment_id: the experiment id
+    @param headers: the headers
+    @returns: process id and state
+
     """
     url = f"{api_base_url}/api/v1/exp/{experiment_id}/process"
     pid, pstate = "", ProcessState.QUEUED
     while not pid:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data: dict = response.json()
+        res = requests.get(url, headers=headers)
+        code = res.status_code
+        if code == 200:
+            data: dict = res.json()
             pid = data.get("processId")
-            proc_states = data.get("processState")
-            if proc_states and len(proc_states):
-                pstate = ProcessState(proc_states[0].get("state"))
+            pstates = data.get("processState")
+            if pstates and len(pstates):
+                pstate = ProcessState(pstates[0].get("state"))
         else:
             time.sleep(5)
     return pid, pstate
 
 
 def generate_headers(access_token: str, gateway_id: str) -> dict:
+    """
+    Generate headers for the request
+
+    @param access_token: the access token
+    @param gateway_id: the gateway id
+    @returns: the headers
+
+    """
     decode = jwt.decode(access_token, options={"verify_signature": False})
     user_id = decode['preferred_username']
     claimsMap = {
@@ -171,7 +193,19 @@ def submit_agent_job(
     gateway_id: str = 'default',
 ) -> None:
     """
-    Submit an agent (as job) to the requested runtime
+    Submit an agent job to the given runtime
+
+    @param rt_name: the runtime name
+    @param access_token: the access token
+    @param app_name: the application name
+    @param cluster: the cluster
+    @param cpus: the number of cpus
+    @param memory: the memory
+    @param walltime: the walltime
+    @param queue: the queue
+    @param group: the group
+    @param gateway_id: the gateway id
+    @returns: None
 
     """
     # URL to which the POST request will be sent
@@ -195,9 +229,10 @@ def submit_agent_job(
     # Send the POST request
     headers = generate_headers(access_token, gateway_id)
     res = requests.post(url, headers=headers, data=json_data)
+    code = res.status_code
 
     # Check if the request was successful
-    if res.status_code == 200:
+    if code == 200:
         obj = res.json()
         pid, pstate = get_process_state(obj['experimentId'], headers=headers)
         rt = RuntimeInfo(
@@ -215,11 +250,42 @@ def submit_agent_job(
         state.all_runtimes[rt_name] = rt
         print(f'Requested runtime={rt_name}. state={pstate.value}')
     else:
-        print(
-            f'[{res.status_code}] Failed to request runtime={rt_name}. error={res.text}')
+        print(f'[{code}] Failed to request runtime={rt_name}. error={res.text}')
+
+
+def wait_until_runtime_ready(rt_name: str):
+    """
+    Block execution until the runtime is ready.
+
+    @param rt_name: the runtime name
+    @returns: None when ready
+
+    """
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        return print(f"Runtime {rt_name} not found.")
+    if rt_name == "local":
+        return
+    if not is_runtime_ready(rt.agentId):
+        print(f"Waiting for runtime={rt_name} to be ready...")
+        time.sleep(5)
+    while not is_runtime_ready(rt.agentId):
+        time.sleep(5)
+    else:
+        print(f"Runtime={rt_name} is ready!")
+    return True
 
 
 def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
+    """
+    Stop the agent job on the given runtime.
+
+    @param access_token: the access token
+    @param runtime_name: the runtime name
+    @param runtime: the runtime info
+    @returns: None
+
+    """
 
     url = api_base_url + '/api/v1/exp/terminate/' + runtime.experimentId
 
@@ -248,35 +314,6 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
     else:
         print(
             f'[{res.status_code}] Failed to terminate runtime={runtime_name}: error={res.text}')
-
-
-orig_run_cell = ipython.run_cell
-
-
-def find_magic(raw_cell: str) -> bool:
-    lines = raw_cell.strip().split("\n")
-    for line in lines:
-        if line.strip().startswith((r"%switch_runtime", r"%%run_on", r"%authenticate", r"%request_runtime", r"%stop_runtime", r"%stat_runtime", r"%copy_data")):
-            return True
-    return False
-
-
-def run_cell(raw_cell, store_history=False, silent=False, shell_futures=True, cell_id=None):
-    rt = state.current_runtime
-    has_magic = find_magic(raw_cell)
-    if rt == "local" or has_magic:
-        return orig_run_cell(
-            raw_cell,
-            store_history=store_history,
-            silent=silent,
-            shell_futures=shell_futures,
-            cell_id=cell_id,
-        )
-    else:
-        return run_on_runtime(rt, raw_cell, store_history, silent, shell_futures, cell_id)
-
-
-ipython.run_cell = run_cell
 
 
 def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, shell_futures=True, cell_id=None):
@@ -431,8 +468,67 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
     return excResult
 
 
+def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
+    """
+    Push a local file to a remote runtime
+
+    @param local_path: the local file path
+    @param remot_rt: the remote runtime name
+    @param remot_path: the remote file path
+    @returns: None
+
+    """
+    if not state.all_runtimes.get(remot_rt, None):
+        return print(MSG_NOT_INITIALIZED)
+    # validate paths
+    if not remot_path or not local_path:
+        return print("Please provide paths for both source and target")
+    # upload file
+    print(f"Pushing local:{local_path} to remote:{remot_path}")
+    url = f"{file_server_url}/upload/live/{state.all_runtimes[state.current_runtime].processId}/{remot_path}"
+    with open(local_path, "rb") as file:
+        files = {"file": file}
+        response = requests.post(url, files=files)
+    print(
+        f"[{response.status_code}] Uploaded local:{local_path} to remote:{remot_path}")
+
+
+def pull_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
+    """
+    Pull a remote file to a local runtime
+
+    @param local_path: the local file path
+    @param remot_rt: the remote runtime name
+    @param remot_path: the remote file path
+    @returns: None
+
+    """
+    if not state.all_runtimes.get(remot_rt, None):
+        return print(MSG_NOT_INITIALIZED)
+    # validate paths
+    if not remot_path or not local_path:
+        return print("Please provide paths for both source and target")
+    # download file
+    print(f"Pulling remote:{remot_path} to local:{local_path}")
+    url = f"{file_server_url}/download/live/{state.all_runtimes[state.current_runtime].processId}/{remot_path}"
+    response = requests.get(url)
+    with open(local_path, "wb") as file:
+        file.write(response.content)
+    print(
+        f"[{response.status_code}] Downloaded remote:{remot_path} to local:{local_path}")
+
+
+# END OF HELPER FUNCTIONS
+# ========================================================================
+# MAGIC FUNCTIONS
+
+
 @register_cell_magic
 def run_on(line: str, cell: str):
+    """
+    Run the cell on the given runtime
+
+    """
     assert ipython is not None
     cell_runtime = line.strip()
     orig_runtime = state.current_runtime
@@ -448,6 +544,10 @@ def run_on(line: str, cell: str):
 
 @register_line_magic
 def switch_runtime(line: str):
+    """
+    Switch the active runtime
+
+    """
     cell_runtime = line.strip()
     try:
         if cell_runtime not in ["local", *state.all_runtimes]:
@@ -462,6 +562,10 @@ def switch_runtime(line: str):
 
 @register_line_magic
 def authenticate(line: str):
+    """
+    Authenticate to access high-performance runtimes
+
+    """
     try:
         authenticator = DeviceFlowAuthenticator()
         authenticator.login()
@@ -471,6 +575,10 @@ def authenticate(line: str):
 
 @register_line_magic
 def request_runtime(line: str):
+    """
+    Request a runtime with given capabilities
+
+    """
 
     access_token = get_access_token()
     assert access_token is not None
@@ -483,7 +591,7 @@ def request_runtime(line: str):
 
     rt = state.all_runtimes.get(rt_name, None)
     if rt is not None:
-        status = is_agent_up(rt.agentId)
+        status = is_runtime_ready(rt.agentId)
         if status:
             return print(f"Runtime={rt_name} already exists!")
 
@@ -522,6 +630,10 @@ def request_runtime(line: str):
 
 @register_line_magic
 def stat_runtime(line: str):
+    """
+    Show the status of the runtime
+
+    """
 
     access_token = get_access_token()
     assert access_token is not None
@@ -535,7 +647,7 @@ def stat_runtime(line: str):
     if rt is None:
         return print(f"Runtime {runtime_name} not found.")
 
-    status = is_agent_up(rt.agentId)
+    status = is_runtime_ready(rt.agentId)
     if status:
         print(f"Runtime {runtime_name} is ready!")
     else:
@@ -544,6 +656,10 @@ def stat_runtime(line: str):
 
 @register_line_magic
 def stop_runtime(runtime_name: str):
+    """
+    Stop the runtime
+
+    """
     access_token = get_access_token()
     assert access_token is not None
 
@@ -554,58 +670,73 @@ def stop_runtime(runtime_name: str):
 
 
 @register_line_magic
-def push_remote(line):
-    if not state.current_runtime:
-        return print(MSG_NOT_INITIALIZED)
-    pairs = line.split()
-    remot_path = None
-    local_path = None
-    for pair in pairs:
-        if pair.startswith("source="):
-            local_path = pair.split("=")[1]
-        if pair.startswith("target="):
-            remot_path = pair.split("=")[1]
-    # validate paths
-    if not remot_path or not local_path:
-        return print("Please provide paths for both source and target")
-    # upload file
-    print(f"Pushing local:{local_path} to remote:{remot_path}")
-    url = f"{file_server_url}/upload/live/{state.all_runtimes[state.current_runtime].processId}/{remot_path}"
-    with open(local_path, "rb") as file:
-        files = {"file": file}
-        response = requests.post(url, files=files)
+def copy_data(line: str):
+    """
+    Copy data between runtimes
+
+    """
+    parts = line.strip().split()
+    args = {}
+    for part in parts:
+        if "=" in part:
+            k, v = part.split("=", 1)
+            args[k] = v
+    source = args.get("source")
+    target = args.get("target")
+    if not source or not target:
+        return print("Usage: %copy_data source=<runtime>:<path> target=<runtime>:<path>")
+
+    source_runtime, source_path = source.split(":")
+    target_runtime, target_path = target.split(":")
     print(
-        f"[{response.status_code}] Uploaded local:{local_path} to remote:{remot_path}")
+        f"Copying from {source_runtime}:{source_path} to {target_runtime}:{target_path}")
+
+    if source_runtime == "local":
+        push_remote(source_path, target_runtime, target_path)
+    elif target_runtime == "local":
+        pull_remote(target_path, source_runtime, source_path)
+    else:
+        print("remote-to-remote copy is not supported yet")
 
 
-@register_line_magic
-def pull_remote(line):
-    if not state.current_runtime:
-        return print(MSG_NOT_INITIALIZED)
-    pairs = line.split()
-    remot_path = None
-    local_path = None
-    for pair in pairs:
-        if pair.startswith("source="):
-            remot_path = pair.split("=")[1]
-        if pair.startswith("target="):
-            local_path = pair.split("=")[1]
-    # validate paths
-    if not remot_path or not local_path:
-        return print("Please provide paths for both source and target")
-    # download file
-    print(f"Pulling remote:{remot_path} to local:{local_path}")
-    url = f"{file_server_url}/download/live/{state.all_runtimes[state.current_runtime].processId}/{remot_path}"
-    response = requests.get(url)
-    with open(local_path, "wb") as file:
-        file.write(response.content)
-    print(
-        f"[{response.status_code}] Downloaded remote:{remot_path} to local:{local_path}")
+# END OF MAGIC FUNCTIONS
+# ========================================================================
+# AUTORUN
 
+
+ipython = get_ipython()
+if ipython is None:
+    raise RuntimeError("airavata_jupyter_magic requires an ipython session")
+
+api_base_url = "https://api.gateway.cybershuttle.org"
+file_server_url = "http://3.142.234.94:8050"
+MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
+
+state = State(current_runtime="local", all_runtimes={})
+orig_run_cell = ipython.run_cell
+
+
+def cell_has_magic(raw_cell: str) -> bool:
+    lines = raw_cell.strip().splitlines()
+    magics = (r"%switch_runtime", r"%%run_on", r"%authenticate",
+              r"%request_runtime", r"%stop_runtime", r"%stat_runtime", r"%copy_data")
+    return any(line.strip().startswith(magics) for line in lines)
+
+
+def run_cell(raw_cell, store_history=False, silent=False, shell_futures=True, cell_id=None):
+    rt = state.current_runtime
+    if rt == "local" or cell_has_magic(raw_cell):
+        return orig_run_cell(raw_cell, store_history, silent, shell_futures, cell_id)
+    else:
+        wait_until_runtime_ready(rt)
+        return run_on_runtime(rt, raw_cell, store_history, silent, shell_futures, cell_id)
+
+
+ipython.run_cell = run_cell
 
 print(r"""
-Loaded airavata magics.
-(runtime=local)
+Loaded airavata_jupyter_magic
+(current runtime = local)
 
   %authenticate                      -- Authenticate to access high-performance runtimes.
   %request_runtime <rt> [args]       -- Request a runtime named <rt> with configuration <args>. Call multiple times to request multiple runtimes.
@@ -615,3 +746,6 @@ Loaded airavata magics.
   %copy_data <r1:file1> <r2:file2>   -- Copy <file1> in <r1> to <file2> in <r2>.
 
 """)
+
+# END OF AUTORUN
+# ========================================================================
