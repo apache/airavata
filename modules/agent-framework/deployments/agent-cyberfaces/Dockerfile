@@ -3,25 +3,36 @@ FROM cybershuttle/remote-agent-base:latest
 USER root
 
 RUN micromamba install -y -n base -c conda-forge \
+    python \
+    pip \
+    ipykernel \
+    numba==0.56.3 \
     gdal \
-    pandas \
-    geopandas \
-    pygeos \
-    matplotlib \
-    numpy \
-    libpysal \
-    esda \
-    contextily \
+    fiona   \
+    rasterio \
+    ipyleaflet \
+    scipy \
+    bsddb3 \
+    qgis \
+    scikit-learn \
+    && micromamba clean --all -y
+
+RUN micromamba run -n base pip install --no-cache-dir \
     wget \
     jupyter_contrib_nbextensions \
     utm \
-    matplotlib-scalebar \
+    matplotlib \
+    matplotlib_scalebar \
+    geopandas \
+    folium \
     earthpy \
     patool \
     cdsapi \
+    geemap \
     gdown \
     geojson \
     pyarrow \
+    xarray \
     pooch \
     zarr \
     cython \
@@ -33,34 +44,12 @@ RUN micromamba install -y -n base -c conda-forge \
     cmaps \
     cartopy \
     regionmask \
-    cdo \
-    progressbar2 \
+    cdo-api-py \
+    pynhd \
+    progressbar \
+    hydrofunctions \
     googledrivedownloader \
+    cartopy \
     s3fs \
     pywbt \
-    cfgrib \
-    tensorflow \
-    seaborn \
-    earthengine-api \
-    folium \
-    scikit-learn \
-    netCDF4 \
-    xarray \
-    statsmodels \
-    pmdarima \
-    pygridmet \
-    hydrofunctions \
-    pynhd \
-    missingno \
-    geemap \
-    numba \
-    scipy \
-    rasterio \
-    ipyleaflet \
-    bsddb3 \
-    && micromamba clean --all -y
-
-RUN micromamba run -n base pip install --no-cache-dir --force-reinstall \
-    cdo-api-py \
-    "typing_extensions>=4.12.0" \
-    "numpy<2.0.0"
+    cfgrib

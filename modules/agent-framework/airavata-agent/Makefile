@@ -4,7 +4,7 @@ AGENT_ID=test
 
 build-container:
 	GOOS=linux GOARCH=amd64 go build -o airavata-agent && \
-	docker build --platform linux/x86_64 -t $(IMAGE_NAME) . && \
+	docker build --platform linux/amd64 -t $(IMAGE_NAME) . && \
 	docker push $(IMAGE_NAME)
 
 run-container:
