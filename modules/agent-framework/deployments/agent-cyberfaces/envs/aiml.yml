@@ -7,7 +7,6 @@ dependencies:
   - numba==0.56.3
   - scipy
   - pip:
-    - airavata-jupyter-magic
     - wget
     - jupyter_contrib_nbextensions
     - tensorflow

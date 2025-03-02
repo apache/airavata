@@ -9,7 +9,6 @@ dependencies:
   - libnetcdf
   - rasterio
   - pip:
-    - airavata-jupyter-magic
     - pyhdf
     - matplotlib
     - boto3
