@@ -3,7 +3,7 @@ FROM mambaorg/micromamba:latest
 USER root
 
 RUN micromamba install -y -n base -c conda-forge \
-    python=3.11 \
+    "python<3.12" \
     pip \
     git \
     flask \

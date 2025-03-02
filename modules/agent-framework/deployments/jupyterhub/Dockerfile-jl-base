@@ -24,5 +24,5 @@ CMD micromamba run -n base jupyter lab \
     --port=8888 \
     --no-browser \
     --allow-root \
-    --NotebookApp.exec_lines='import airavata_magics' \
+    --NotebookApp.exec_lines='import airavata_jupyter_magic' \
     --NotebookApp.token=''
