@@ -19,7 +19,6 @@ dependencies:
   # - mplleaflet
 
   - pip:
-    - airavata-jupyter-magic
     - wget
     - jupyter_contrib_nbextensions
     - utm
