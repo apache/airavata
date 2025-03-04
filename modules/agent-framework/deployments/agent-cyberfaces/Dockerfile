@@ -4,11 +4,9 @@ USER root
 
 RUN micromamba install -y -n base -c conda-forge \
     python \
-    pip \
-    ipykernel \
     numba==0.56.3 \
     gdal \
-    fiona   \
+    fiona  \
     rasterio \
     ipyleaflet \
     scipy \
