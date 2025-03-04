@@ -5,6 +5,7 @@ USER root
 RUN micromamba install -y -n base -c conda-forge \
     "python<3.12" \
     pip \
+    ipykernel \
     git \
     flask \
     jupyter_client \
