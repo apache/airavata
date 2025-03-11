@@ -1,7 +1,7 @@
 version: '3'
 services:
   keycloak:
-    image: jboss/keycloak:2.5.4.Final
+    image: quay.io/keycloak/keycloak:latest
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
@@ -12,32 +12,46 @@ services:
       - ./keycloak/Default-export.json:/opt/keycloak/Default-export.json
       - ../resources/keystores/airavata.jks:/opt/jboss/keycloak/standalone/configuration/keystores/airavata.jks
       - ./keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml
-    command: ["-b", "0.0.0.0", "-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=singleFile", "-Dkeycloak.migration.file=/opt/keycloak/Default-export.json", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
+    command:
+      [
+        "start-dev",
+        "--import-realm"
+      ]
+    depends_on:
+      - db
+
   db:
     image: mariadb:10.4.13
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_USER=airavata
       - MYSQL_PASSWORD=123456
     volumes:
+      - db_data:/var/lib/mysql
       - ./database_scripts/init:/docker-entrypoint-initdb.d
-      - ./database_data:/var/lib/mysql
     ports:
-        - "13306:3306"
+      - "13306:3306"
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=']
+
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3.12-management
+    restart: always
     environment:
       - RABBITMQ_DEFAULT_VHOST=develop
     ports:
       - "5672:5672"
       - "15672:15672"
+    depends_on:
+      - db
+
   zookeeper:
     image: zookeeper
     restart: always
     hostname: zk
     ports:
       - "12181:2181"
+
   kafka:
     image: wurstmeister/kafka
     hostname: kafka
@@ -46,9 +60,16 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
+
   sshd:
     image: dimuthuupe/sshd:1.0
     volumes:
       - /tmp:/tmp
     ports:
       - "22222:22"
+    restart: always
+
+volumes:
+  db_data:
