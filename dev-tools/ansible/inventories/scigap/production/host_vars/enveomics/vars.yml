@@ -29,8 +29,8 @@ ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
-# Increase max upload size to 200MB
-#django_file_upload_max_file_size_mb: 200
+# Increase max upload size to 10GB
+django_file_upload_max_file_size_mb: 10000
 
 ## Keycloak related variables
 tenant_domain: "enveomics"
