@@ -50,3 +50,4 @@ airavata-local-agent/renderer/.next
 airavata-local-agent/dist
 
 logs
+airavata-local-agent/build.sh
