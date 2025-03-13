@@ -23,7 +23,7 @@
 # TODO: tus not setup yet
 tusd_vhost_servername:
 
-vhost_servername: "cybershuttle.org"
+vhost_servername: "dev.gateway.cybershuttle.org"
 vhost_ssl: True
 ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"

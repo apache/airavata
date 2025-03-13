@@ -47,8 +47,18 @@ public class SCPFileTransferWrapper implements FileTransfer, Closeable {
     }
 
     @Override
+    public void upload(String localPath, String remotePath, long byteOffset) throws IOException {
+        scpFileTransfer.upload(localPath, remotePath, byteOffset);
+    }
+
+    @Override
     public void download(String remotePath, String localPath) throws IOException {
         scpFileTransfer.download(remotePath, localPath);
+    }
+
+    @Override
+    public void download(String remotePath, String localPath, long byteOffset) throws IOException {
+        scpFileTransfer.download(remotePath, localPath, byteOffset);
     }
 
     @Override
@@ -57,8 +67,18 @@ public class SCPFileTransferWrapper implements FileTransfer, Closeable {
     }
 
     @Override
+    public void upload(LocalSourceFile localFile, String remotePath, long byteOffset) throws IOException {
+        scpFileTransfer.upload(localFile, remotePath, byteOffset);
+    }
+
+    @Override
     public void download(String remotePath, LocalDestFile localFile) throws IOException {
         scpFileTransfer.download(remotePath, localFile);
+    }
+
+    @Override
+    public void download(String remotePath, LocalDestFile localFile, long byteOffset) throws IOException {
+        scpFileTransfer.download(remotePath, localFile, byteOffset);
     }
 
     @Override

@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  jupyterhub:
+    build: .
+    container_name: cs-hub
+    ports:
+      - "8000:8000"
+    environment:
+      OAUTH_CLIENT_ID: "cs-jupyterlab"
+      OAUTH_CLIENT_SECRET: "xxxxxxxxx"
+      JUPYTERHUB_CRYPT_KEY: "a99323294a5d6f9b1d0e7e33450dff44db664264231b985e069c6eba8f9a3e09"
+      DOCKER_NETWORK_NAME: jupyterhub_network
+      DOCKER_NOTEBOOK_IMAGE: lahiruj/md-user-notebook
+    volumes:
+      - ./data:/home/jovyan
+      - ./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    networks:
+      - jupyterhub_network
+
+networks:
+  jupyterhub_network:
+    name: jupyterhub_network

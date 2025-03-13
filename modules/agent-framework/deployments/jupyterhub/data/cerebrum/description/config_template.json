@@ -1,0 +1,283 @@
+{
+    "airavata_cerebrum.dataset.abm_celltypes.CTDbCellApiQuery": {
+        "label": "Query Cell Types from Allen DB",
+        "type": "query",
+        "init_params": {},
+        "exec_params": {
+            "species": {
+                "type": "option",
+                "label": "Species",
+                "doc": "Species",
+                "default": "Mus musculus",
+                "options": [
+                    "Homo sapiens",
+                    "Mus musculus"
+                ]
+            }
+        }
+    },
+    "airavata_cerebrum.dataset.abm_celltypes.CTDbGlifApiQuery": {
+        "label": "Query GLIF Models from Allen DB",
+        "type": "query",
+        "init_params": {},
+        "exec_params": {
+            "key": {
+                "type": "option",
+                "label": "Index Key",
+                "doc": "Field to be used as the Output Key",
+                "default": "specimen__id",
+                "options": [
+                    "",
+                    "specimen__id"
+                ]
+            },
+            "first": {
+                "type": "check",
+                "label": "Select only the first",
+                "doc": "Select only the first",
+                "default": true
+            }
+        }
+    },
+    "airavata_cerebrum.dataset.abc_mouse.ABCDbMERFISH_CCFQuery": {
+        "label": "Query Allen Brain Cell Atlas CCF",
+        "type": "query",
+        "init_params": {
+            "download_base": {
+                "type": "text",
+                "label": "Download Directory",
+                "doc": "Download Directory",
+                "default": "./cache/abc_mouse/"
+            }
+        },
+        "exec_params": {
+            "region": {
+                "type": "tags",
+                "label": "Regions of Interest",
+                "doc": "Selected Region of interest",
+                "allowed": [
+                    "VISp",
+                    "AUDp",
+                    "MOp"
+                ],
+                "default": [
+                    "VISp"
+                ]
+            }
+        }
+    },
+    "airavata_cerebrum.dataset.ai_synphys.AISynPhysQuery": {
+        "label": "Query Allen Institute Syn Phys Data",
+        "type": "query",
+        "init_params": {
+            "download_base": {
+                "type": "text",
+                "label": "Download Directory",
+                "doc": "Download Directory",
+                "default": "./cache/abc_mouse/"
+            }
+        },
+        "exec_params": {
+            "layer": {
+                "type": "tags",
+                "label": "Layers of Interest",
+                "doc": "Layers of interest",
+                "allowed": [
+                    "L23",
+                    "L5",
+                    "L6",
+                    "L4"
+                ],
+                "default": [
+                    "L4"
+                ]
+            }
+        }
+    },
+    "airavata_cerebrum.operations.xform.TQDMWrapper": {
+        "type": "xform",
+        "label": "TQDM Wrapper",
+        "doc": "TQDM Wrapper",
+        "init_params": {},
+        "exec_params": {
+            "jupyter": {
+                "type": "check",
+                "label": "Running in a Jupyter notebook",
+                "doc": "Running in a Jupyter notebook",
+                "default": false
+            }
+        }
+    },
+    "airavata_cerebrum.operations.abm_celltypes.CTExplainedRatioFilter": {
+        "type": "xform",
+        "label": "Cell Type Explained Ratio Filter",
+        "doc": "Cell Type Explained Ratio Filter",
+        "init_params": {},
+        "exec_params": {
+            "ratio": {
+                "type": "float",
+                "label": "Explained Ratio",
+                "doc": "Explained Ratio",
+                "default": 0.7
+            }
+        }
+    },
+    "airavata_cerebrum.operations.abm_celltypes.CTPropertyFilter": {
+        "type": "xform",
+        "label": "Filter CT by Region and Layer",
+        "doc": "Filter CT by Region and Layer",
+        "init_params": {},
+        "exec_params": {
+            "key": {
+                "type": "text",
+                "label": "Key",
+                "doc": "Key",
+                "default": "ct"
+            },
+            "layer": {
+                "type": "option",
+                "label": "Selected Region",
+                "doc": "Selected Region",
+                "options": [
+                    "",
+                    "4",
+                    "3",
+                    "5",
+                    "2/3",
+                    "6"
+                ],
+                "default": "4"
+            },
+            "region": {
+                "type": "option",
+                "label": "Selected Layer",
+                "doc": "Selected Layer",
+                "options": [
+                    "",
+                    "VISp",
+                    "AUDp"
+                ],
+                "default": "VISp"
+            },
+            "line": {
+                "type": "option",
+                "label": "Line",
+                "doc": "Line",
+                "options": [
+                    "",
+                    "Scnn1a",
+                    "Rorb",
+                    "Vip-",
+                    "Pvalb-IRES",
+                    "Sst"
+                ],
+                "default": ""
+            },
+            "reporter_status": {
+                "type": "option",
+                "label": "Reporter Status",
+                "doc": "Reporter Status",
+                "options": [
+                    "",
+                    "positive",
+                    "negative"
+                ],
+                "default": ""
+            }
+        }
+    },
+    "airavata_cerebrum.operations.abm_celltypes.CTModelNameFilter": {
+        "type": "xform",
+        "label": "Filter CT by Model Name",
+        "doc": "Filter CT by Model Name",
+        "init_params": {},
+        "exec_params": {
+            "model_name": {
+                "type": "text",
+                "label": "Model Name",
+                "doc": "Model Name",
+                "default": "3 LIF + Afterspike Currents"
+            }
+        }
+    },
+    "airavata_cerebrum.dataset.abm_celltypes.CTDbGlifApiModelConfigQry":{
+        "type": "query",
+        "label": "Acquire GLIF Models",
+        "doc": "Acquire GLIF Models",
+        "init_params": {},
+        "exec_params": {
+            "suffix": {
+                "type": "text",
+                "label": "File Name Suffix",
+                "doc": "File Name Suffix",
+                "default": "_glif_lif_asc_config.json"
+            },
+            "output_dir": {
+                "type": "text",
+                "label": "Output Directory",
+                "doct": "Output Directory",
+                "default": "v1l4/components/point_neuron_models/"
+            }
+        }
+    },
+    "airavata_cerebrum.operations.abc_mouse.ABCDbMERFISH_CCFLayerRegionFilter": {
+        "type": "xform",
+        "label": "Filter Model by Layer/Region",
+        "doc": "Filter Model by Layer/Region",
+        "init_params": {},
+        "exec_params": {
+            "region": {
+                "type": "text",
+                "label": "Region",
+                "doc": "Region",
+                "default": "VISp"
+            },
+            "sub_region": {
+                "type": "text",
+                "label": "Sub Region",
+                "doc": "Sub Region",
+                "default": "VISp4"
+            }
+        }
+    },
+    "airavata_cerebrum.operations.abc_mouse.ABCDbMERFISH_CCFFractionFilter": {
+        "type": "xform",
+        "label": "Fraction by Region/Cell Type",
+        "doc": "Fraction by Region/Cell Type",
+        "init_params": {},
+        "exec_params": {
+            "region": {
+                "type": "text",
+                "label": "Region",
+                "doc": "Region",
+                "default": "VISp4"
+            },
+            "cell_type": {
+                "type": "text",
+                "label": "Cell Type",
+                "doc": "Cell Type",
+                "default": "Vip"
+            }
+        }
+    },
+    "airavata_cerebrum.operations.ai_synphys.AISynPhysPairFilter": {
+        "type": "xform",
+        "label": "Filter AI Syn by Pair",
+        "doc": "Filter AI Syn by Pair",
+        "init_params": {},
+        "exec_params": {
+            "pre": {
+                "type": "text",
+                "label": "Pre-synaptic Type",
+                "doc": "Pre-synaptic Type",
+                "default": "VISp4"
+            },
+            "post": {
+                "type": "text",
+                "label": "Post-synaptic Type",
+                "doc": "Post-synaptic Type",
+                "default": "Vip"
+            }
+        }
+    }
+}

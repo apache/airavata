@@ -46,7 +46,7 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.18.1'
+REQUIRED_THRIFT_VERSION='0.21.0'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 AIRAVATA_DIR=`dirname "$SCRIPT_DIR"`
 
@@ -299,13 +299,13 @@ generate_python_stubs() {
 
     # Using thrift Python generator, generate the python classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${CREDENTIAL_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${CREDENTIAL_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate Python thrift classes
 
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR

@@ -14,13 +14,12 @@
 #  limitations under the License.
 #
 
-import logging
 import configparser
+import logging
+from typing import Optional
 
-from airavata_sdk.transport.settings import IAMAdminClientSettings
 from airavata_sdk.transport import utils
-
-from airavata.api.error.ttypes import TException
+from airavata_sdk.transport.settings import ProfileServerSettings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -36,211 +35,35 @@ logger.addHandler(handler)
 
 class IAMAdminClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.iam_admin_settings = IAMAdminClientSettings(configuration_file_location)
+    def __init__(self, configuration_file_location: Optional[str] = None):
+        self.settings = ProfileServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.iam_admin_client_pool = utils.initialize_iam_admin_client(
-            self.iam_admin_settings.PROFILE_SERVICE_HOST,
-            self.iam_admin_settings.PROFILE_SERVICE_PORT,
-            self.iam_admin_settings.PROFILE_SERVICE_SECURE)
+        self.client = utils.initialize_iam_admin_client(
+            self.settings.PROFILE_SERVICE_HOST,
+            self.settings.PROFILE_SERVICE_PORT,
+            self.settings.PROFILE_SERVICE_SECURE,
+        )
+        # expose the needed functions
+        self.set_up_gateway = self.client.setUpGateway
+        self.is_username_available = self.client.isUsernameAvailable
+        self.register_user = self.client.registerUser
+        self.enable_user = self.client.enableUser
+        self.is_user_enabled = self.client.isUserEnabled
+        self.is_user_exist = self.client.isUserExist
+        self.get_user = self.client.getUser
+        self.get_users = self.client.getUsers
+        self.reset_user_password = self.client.resetUserPassword
+        self.find_users = self.client.findUsers
+        self.update_user_profile = self.client.updateUserProfile
+        self.delete_user = self.client.deleteUser
+        self.add_role_to_user = self.client.addRoleToUser
+        self.remove_role_from_user = self.client.removeRoleFromUser
+        self.get_users_with_role = self.client.getUsersWithRole
 
-    def set_up_gateway(self, authz_token, gateway):
-        """
-        Parameters:
-         - authz_token
-         - gateway
-        """
-        try:
-            return self.iam_admin_client_pool.setUpGateway(authz_token, gateway)
-        except TException:
-            logger.exception("Error occurred in set_up_gateway, ", TException)
-            raise
-
-    def is_username_available(self, authz_token, username):
-        """
-        Parameters:
-         - authz_token
-         - username
-        """
-        try:
-            return self.iam_admin_client_pool.isUsernameAvailable(authz_token, username)
-        except TException:
-            logger.exception("Error occurred in is_username_available, ", TException)
-            raise
-
-    def register_user(self, authz_token, username, email_address, first_name, last_name, new_password):
-        """
-        Parameters:
-         - authz_token
-         - username
-         - email_address
-         - first_name
-         - last_name
-         - new_password
-        """
-        try:
-            return self.iam_admin_client_pool.registerUser(authz_token, username, email_address,
-                                                              first_name, last_name, new_password)
-        except TException:
-            logger.exception("Error occurred in register_user, ", TException)
-            raise
-
-    def enable_user(self, authz_token, username):
-        """
-        Parameters:
-         - authz_token
-         - username
-        """
-        try:
-            return self.iam_admin_client_pool.enableUser(authz_token, username)
-        except TException:
-            logger.exception("Error occurred in enable_user, ", TException)
-            raise
-
-    def is_user_enabled(self, authz_token, username):
-        """
-        Parameters:
-         - authzToken
-         - username
-        """
-        try:
-            return self.iam_admin_client_pool.isUserEnabled(authz_token, username)
-        except TException:
-            logger.exception("Error occurred in is_user_enabled, ", TException)
-            raise
-
-    def is_user_exist(self, authz_token, username):
-        """
-        Parameters:
-         - authzToken
-         - username
-        """
-        try:
-            return self.iam_admin_client_pool.isUserExist(authz_token, username)
-        except TException:
-            logger.exception("Error occurred in is_user_exist, ", TException)
-            raise
-
-    def get_user(self, authz_token, username):
-        """
-        Parameters:
-         - authzToken
-         - username
-        """
-        try:
-            return self.iam_admin_client_pool.getUser(authz_token, username)
-        except TException:
-            logger.exception("Error occurred in get_user, ", TException)
-            raise
-
-    def get_users(self, authz_token, offset, limit, search):
-        """
-        Parameters:
-         - authzToken
-         - offset
-         - limit
-         - search
-        """
-        try:
-            return self.iam_admin_client_pool.getUsers(authz_token, offset, limit, search)
-        except TException:
-            logger.exception("Error occurred in get_users, ", TException)
-            raise
-
-    def reset_user_password(self, authz_token, username, new_password):
-        """
-        Parameters:
-         - authzToken
-         - username
-         - newPassword
-        """
-        try:
-            return self.iam_admin_client_pool.resetUserPassword( authz_token, username, new_password)
-        except TException:
-            logger.exception("Error occurred in reset_user_password, ", TException)
-            raise
-
-    def find_users(self, authz_token, email, user_id):
-        """
-        Parameters:
-         - authzToken
-         - email
-         - userId
-        """
-        try:
-            return self.iam_admin_client_pool.findUsers(authz_token, email, user_id)
-        except TException:
-            logger.exception("Error occurred in find_users, ", TException)
-            raise
-
-    def update_user_profile(self, authz_token, user_details):
-        """
-        Parameters:
-         - authzToken
-         - userDetails
-        """
-        try:
-            return self.iam_admin_client_pool.updateUserProfile(authz_token, user_details)
-        except TException:
-            logger.exception("Error occurred in update_user_profile, ", TException)
-            raise
-
-    def delete_user(self, authz_token, username):
-        """
-        Parameters:
-         - authzToken
-         - username
-        """
-        try:
-            return self.iam_admin_client_pool.deleteUser(authz_token, username)
-        except TException:
-            logger.exception("Error occurred in delete_user, ", TException)
-            raise
-
-    def add_role_to_user(self, authz_token, username, role_name):
-        """
-        Parameters:
-         - authzToken
-         - username
-         - roleName
-        """
-        try:
-            return self.iam_admin_client_pool.addRoleToUser(authz_token, username, role_name)
-        except TException:
-            logger.exception("Error occurred in add_role_to_user, ", TException)
-            raise
-
-    def remove_role_from_user(self, authz_token, username, role_name):
-        """
-        Parameters:
-         - authzToken
-         - username
-         - roleName
-        """
-        try:
-            return self.iam_admin_client_pool.removeRoleFromUser(authz_token, username, role_name)
-        except TException:
-            logger.exception("Error occurred in remove_role_from_user, ", TException)
-            raise
-
-    def get_users_with_role(self, authz_token, role_name):
-        """
-        Parameters:
-         - authzToken
-         - roleName
-        """
-        try:
-            return self.iam_admin_client_pool.getUsersWithRole(authz_token, role_name)
-        except TException:
-            logger.exception("Error occurred in create_group, ", TException)
-            raise
-
-    def _load_settings(self, configuration_file_location):
+    def _load_settings(self, configuration_file_location: Optional[str]):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.iam_admin_settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-            self.iam_admin_settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-            self.iam_admin_settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer',
-                                                                                   'PROFILE_SERVICE_SECURE')
-
+            self.settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
+            self.settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
+            self.settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')

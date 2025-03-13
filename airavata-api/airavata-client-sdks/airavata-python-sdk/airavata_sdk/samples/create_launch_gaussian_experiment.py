@@ -16,31 +16,13 @@
 
 import logging
 import time
-import json
+
 import airavata_sdk.samples.file_utils as fb
-
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
-
 from airavata_sdk.clients.api_server_client import APIServerClient
-
-from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
-
 from airavata_sdk.clients.credential_store_client import CredentialStoreClient
-
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
-
-from airavata.model.workspace.ttypes import Gateway, Notification, Project
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
-from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
-from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, \
-    ReplicaLocationCategory, ReplicaPersistentType
-
-from airavata.model.application.io.ttypes import InputDataObjectType
-
-from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
-
-from airavata.api.error.ttypes import TException, InvalidRequestException, AiravataSystemException, \
-    AiravataClientException, AuthorizationException
 
 logger = logging.getLogger(__name__)
 
@@ -54,16 +36,26 @@ user_name = "username"
 password = "password"
 gateway_id = "cyberwater"
 
-token = authenticator.get_token_and_user_info_password_flow(username=user_name, password=password,
-                                                            gateway_id=gateway_id)
+token = authenticator.get_token_and_user_info_password_flow(
+    username=user_name,
+    password=password,
+    gateway_id=gateway_id,
+)
 
 api_server_client = APIServerClient(configFile)
 
-airavata_util = APIServerClientUtil(configFile, username=user_name, password=password, gateway_id=gateway_id)
-data_model_client = DataModelCreationUtil(configFile,
-                                          username=user_name,
-                                          password=password,
-                                          gateway_id=gateway_id)
+airavata_util = APIServerClientUtil(
+    configFile,
+    gateway_id=gateway_id,
+    username=user_name,
+    password=password,
+)
+data_model_client = DataModelCreationUtil(
+    configFile,
+    gateway_id=gateway_id,
+    username=user_name,
+    password=password,
+)
 
 credential_store_client = CredentialStoreClient(configFile)
 
@@ -94,7 +86,7 @@ path = fb.upload_files(api_server_client, credential_store_client, token, gatewa
 experiment = data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,
                                                                          computation_resource_name="karst.uits.iu.edu",
                                                                          group_resource_profile_name="Default Gateway Profile",
-                                                                         storage_name="pgadev.scigap.org",
+                                                                         storageId="pgadev.scigap.org",
                                                                          node_count=1,
                                                                          total_cpu_count=16,
                                                                          wall_time_limit=15,

@@ -13,7 +13,7 @@
     <artifactId>agent-framework</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>connection-service</module>
+        <module>agent-service</module>
     </modules>
 
     <properties>

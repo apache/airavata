@@ -39,3 +39,8 @@ github:
     - workfloworchestrator
     - workflow
     - bigdata
+
+features:
+    wiki: false
+    issues: true
+    projects: false
