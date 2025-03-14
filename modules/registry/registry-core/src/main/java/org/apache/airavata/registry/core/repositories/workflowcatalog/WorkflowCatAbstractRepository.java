@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.repositories.workflowcatalog;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.apache.airavata.registry.core.utils.JPAUtil.WorkflowCatalogJPAUtils;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 

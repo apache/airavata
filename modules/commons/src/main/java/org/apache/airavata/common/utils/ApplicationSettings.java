@@ -145,6 +145,7 @@ public class ApplicationSettings {
      * @throws ApplicationSettingsException If an error occurred while reading configurations.
      * @deprecated use #getSetting(String) instead
      */
+    @Deprecated
     public String getAbsoluteSetting(String key) throws ApplicationSettingsException {
 
         String configurationValueWithVariables = ApplicationSettings.getSetting(key);
@@ -290,6 +291,7 @@ public class ApplicationSettings {
      * @deprecated use {{@link #getSetting(String)}}
      * @return
      */
+    @Deprecated
     public Properties getPropertiesImpl() {
         return properties;
     }
@@ -501,6 +503,7 @@ public class ApplicationSettings {
      * @return
      * @throws ApplicationSettingsException 
      */
+    @Deprecated
     public static Properties getProperties() throws ApplicationSettingsException {
         return getInstance().properties;
     }
