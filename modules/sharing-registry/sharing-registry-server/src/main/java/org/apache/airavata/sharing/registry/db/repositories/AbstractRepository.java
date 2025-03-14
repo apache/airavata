@@ -28,8 +28,8 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +122,7 @@ public abstract class AbstractRepository<T, E, Id> {
         String queryString = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
         List resultSet = execute(entityManager -> {
-            javax.persistence.Query q = entityManager.createQuery(queryString);
+            jakarta.persistence.Query q = entityManager.createQuery(queryString);
             for (int i = 0; i < parameters.size(); i++) {
                 q.setParameter(i + 1, parameters.get(i));
             }

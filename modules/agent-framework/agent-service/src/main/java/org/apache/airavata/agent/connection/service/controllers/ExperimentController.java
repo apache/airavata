@@ -18,8 +18,6 @@
  */
 package org.apache.airavata.agent.connection.service.controllers;
 
-import javax.validation.Valid;
-
 import org.apache.airavata.agent.connection.service.handlers.AgentManagementHandler;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
@@ -39,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import org.springframework.validation.annotation.Validated;
+
 @RestController
 @RequestMapping("/api/v1/exp")
 public class ExperimentController {
@@ -57,13 +57,13 @@ public class ExperimentController {
     }
 
     @PostMapping(value = "/launch", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AgentLaunchResponse> createAndLaunchExperiment(@Valid @RequestBody AgentLaunchRequest request) {
+    public ResponseEntity<AgentLaunchResponse> createAndLaunchExperiment(@Validated @RequestBody AgentLaunchRequest request) {
         AgentLaunchResponse agentResponse = agentManagementHandler.createAndLaunchExperiment(request);
         return ResponseEntity.ok(agentResponse);
     }
 
     @PostMapping(value = "/launchoptimize", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AgentLaunchResponse> createAndLaunchOptimizedExperiment(@Valid @RequestBody List<AgentLaunchRequest> request) {
+    public ResponseEntity<AgentLaunchResponse> createAndLaunchOptimizedExperiment(@Validated @RequestBody List<AgentLaunchRequest> request) {
         try {
             AgentLaunchRequest agentLaunchRequest = agentManagementHandler.filterOptimumLaunchRequest(request);
             AgentLaunchResponse agentResponse = agentManagementHandler.createAndLaunchExperiment(agentLaunchRequest);

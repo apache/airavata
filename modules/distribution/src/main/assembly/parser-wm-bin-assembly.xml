@@ -138,7 +138,7 @@
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.lz4:lz4-java:jar</include>
-                <include>javax.mail:mail:jar</include>
+                <include>jakarta.mail:jakarta.mail:jar</include>
                 <include>io.dropwizard.metrics:metrics-core:jar</include>
                 <include>org.jboss.netty:netty:jar</include>
                 <include>org.apache.openjpa:openjpa:jar</include>

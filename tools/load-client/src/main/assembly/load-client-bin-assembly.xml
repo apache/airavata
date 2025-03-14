@@ -54,7 +54,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources</directory>
+            <directory>../../keystores</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>
             <includes>

@@ -22,7 +22,7 @@
 
 package org.apache.airavata.service.profile.commons.user.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "CUSTOMIZED_DASHBOARD")

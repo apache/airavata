@@ -1,6 +1,8 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-public class UserPK {
+import java.io.Serializable;
+
+public class UserPK implements Serializable {
     private String gatewayId;
     private String userId;
 
