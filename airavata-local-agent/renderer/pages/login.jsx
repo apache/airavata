@@ -19,10 +19,10 @@
 *                                                              
 *
 *****************************************************************/
-import { Box, Center, Flex, FormControl, FormLabel, Input, Img, Text, VStack, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { Box, Center, Flex, Select, Img, Text, Button, Alert, AlertIcon, Link, Heading, Spinner } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { HeaderBox } from "../components/HeaderBox";
-import { AuthContext, useAuth } from "../lib/Contexts";
+import { useAuth, useBackendUrls } from "../lib/Contexts";
 import { useRouter } from "next/router";
 import { TOKEN_FILE } from "../lib/constants";
 
@@ -33,8 +33,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [verifyURL, setVerifyURL] = useState("");
   const [isProd, setIsProd] = useState(false);
+  const [gatewayOptions, setGatewayOptions] = useState([]);
+  const [selectedGateway, setSelectedGateway] = useState("");
   const [authInfo, setAuthInfo] = useAuth();
   const router = useRouter();
+  const { apiUrl, authUrl, loginUrl, setGatewayId } = useBackendUrls();
 
   // general a random string
   const randomString = (length) => {
@@ -72,6 +75,8 @@ const Login = () => {
   useEffect(() => {
 
     window.ipc.send('is-prod');
+    window.ipc.send('get-all-gateways');
+    window.ipc.send('get-gateway');
 
     if (localStorage.getItem("ciLoginAuto") === "true") {
       setLoading(true);
@@ -126,10 +131,23 @@ const Login = () => {
       setIsProd(isProdResult);
     });
 
+
+    window.ipc.on('got-gateways', (data) => {
+      setGatewayOptions(data);
+    });
+
+    window.ipc.on('gateway-got', (gateway) => {
+      setSelectedGateway(gateway);
+    });
+
+    // TODO: ask background process for what gateway we are currently configured on
+
     return () => {
       window.ipc.removeAllListeners('file-written');
       window.ipc.removeAllListeners('file-read');
       window.ipc.removeAllListeners('is-prod-reply');
+      window.ipc.removeAllListeners('got-gateways');
+      window.ipc.removeAllListeners('gateway-got');
     };
   }, []);
 
@@ -167,16 +185,43 @@ const Login = () => {
 
           <Box shadow='md' rounded='md' p={4} mt={4}>
             <Heading size='md' textAlign="left" color='blue.500'>
+              Gateway
+            </Heading>
+            <Select mt={4}
+              onChange={(e) => {
+                const gateway = e.target.value;
+
+                if (gateway) {
+                  window.ipc.send('set-gateway', gateway);
+                  setSelectedGateway(gateway);
+                  setGatewayId(gateway);
+                }
+              }}
+              value={selectedGateway}
+            >
+              {
+                gatewayOptions.map((item) => {
+                  return (
+                    <option key={item.gateway} value={item.id}>
+                      {item.name} ({item.gateway})
+                    </option>
+                  );
+                })
+              }
+            </Select>
+          </Box>
+
+          <Box shadow='md' rounded='md' p={4} mt={4}>
+            <Heading size='md' textAlign="left" color='blue.500'>
 
               Log in with your existing organizational login</Heading>
 
             {
               isProd ? (
                 <Button colorScheme='blue' w='full' mt={4}
-
                   onClick={() => {
                     setLoading(true);
-                    window.open(`https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`, '_blank');
+                    window.open(loginUrl, '_blank');
                   }}
                   isDisabled={loading}
                 > {
