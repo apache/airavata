@@ -189,7 +189,7 @@ https://myaccount.google.com/security
 ### NOTE: (Optional) Creating certificates if expired 
   
   * This is required only when the self signed certificate for keycloak is expired
-  * Go to airavata/keystores
+  * Go to <PROJECT_ROOT>/keystores
   * Provide password as airavata for all key stores
 
     ```sh

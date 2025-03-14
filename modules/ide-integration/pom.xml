@@ -84,7 +84,7 @@
                 </excludes>
             </resource>
             <resource>
-                <directory>../../keystore</directory>
+                <directory>../../keystores</directory>
                 <includes>
                   <include>*.jks</include>
                   <include>*.p12</include>
