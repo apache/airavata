@@ -170,6 +170,13 @@
             <testResource>
                 <directory>${project.basedir}/src/test/resources</directory>
             </testResource>
+            <testResource>
+                <directory>${project.basedir}/../../../keystores</directory>
+                <includes>
+                  <include>*.jks</include>
+                  <include>*.p12</include>
+                </includes>
+            </testResource>
         </testResources>
     </build>
 </project>

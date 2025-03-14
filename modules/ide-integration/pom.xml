@@ -83,6 +83,13 @@
                     <exclude>pga/**</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>../../keystore</directory>
+                <includes>
+                  <include>*.jks</include>
+                  <include>*.p12</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 

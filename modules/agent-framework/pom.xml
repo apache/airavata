@@ -22,4 +22,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <build>
+      <resources>
+        <resource>
+          <directory>../../keystores</directory>
+          <includes>
+            <include>*.jks</include>
+            <include>*.p12</include>
+          </includes>
+        </resource>
+      </resources>
+    </build>
+
 </project>
