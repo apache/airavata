@@ -44,6 +44,7 @@ public class UserProfileService {
      * @param authzToken
      * @param userProfile
      */
+    @Deprecated
     public java.lang.String addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public boolean updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;

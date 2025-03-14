@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 public class SharingRepository extends AbstractRepository<Sharing, SharingEntity, SharingPK> {
     private final static Logger logger = LoggerFactory.getLogger(SharingRepository.class);

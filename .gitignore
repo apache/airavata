@@ -32,6 +32,7 @@ com_crashlytics_export_strings.xml
 .DS_Store
 .project
 .vscode
+!.vscode/launch.json
 .settings
 .classpath
 .factorypath

@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
 import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 
