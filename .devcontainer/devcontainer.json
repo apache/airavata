@@ -1,0 +1,53 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+  "name": "Ubuntu",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "dockerComposeFile": "../modules/ide-integration/src/main/containers/docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/roul/devcontainer-features/mise": {},
+    "ghcr.io/roul/devcontainer-features/mise-java": {
+      "version": "openjdk-17"
+    },
+    "ghcr.io/roul/devcontainer-features/mise-python": {
+      "version": "3.10"
+    },
+    "ghcr.io/roul/devcontainer-features/mise-golang": {
+      "version": "1.23"
+    }
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [
+    18080,
+    8443,
+    13306,
+    5672,
+    15672,
+    12181,
+    9092,
+    22222
+  ],
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "mise install -y maven@3.9.9 && mise use -g maven@3.9.9 && echo 'export PATH=$PATH:~/.local/share/mise/installs/maven/3.9.9/bin' >> ~/.bashrc",
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "lkrms.inifmt",
+        "ms-python.python",
+        "ms-python.autopep8",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        "njpwerner.autodocstring",
+        "vscjava.vscode-java-pack",
+      ]
+    }
+  }
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+  
+}

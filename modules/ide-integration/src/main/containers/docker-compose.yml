@@ -1,6 +1,19 @@
+networks:
+  airavata-network:
+    driver: bridge
+    name: airavata.host
+
 services:
+  devcontainer:
+    image: mcr.microsoft.com/devcontainers/base:debian
+    volumes:
+      - ./../../../../..:/workspace:cached
+    command: sleep infinity
+    networks:
+      - airavata-network
   keycloak:
     image: keycloak/keycloak:24.0
+    restart: always
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -9,13 +22,16 @@ services:
       - "8443:8443"
     volumes:
       - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
-      - ../resources/keystores/airavata.jks:/opt/keycloak/conf/keystores/airavata.jks
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-    command: ["start-dev", "--import-realm"]
+      - ../../../../../keystores/airavata.jks:/opt/keycloak/conf/keystores/airavata.jks
+    command: [ "start-dev", "--import-realm" ]
     depends_on:
       - db
+    networks:
+      - airavata-network
   db:
     image: mariadb:10.4.13
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_USER=airavata
@@ -26,8 +42,11 @@ services:
     ports:
       - "13306:3306"
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=' ]
+    networks:
+      - airavata-network
   rabbitmq:
     image: rabbitmq:3.12-management
+    restart: always
     environment:
       - RABBITMQ_DEFAULT_VHOST=develop
     ports:
@@ -35,14 +54,19 @@ services:
       - "15672:15672"
     depends_on:
       - db
+    networks:
+      - airavata-network
   zookeeper:
     image: zookeeper
     restart: always
     hostname: zk
     ports:
       - "12181:2181"
+    networks:
+      - airavata-network
   kafka:
     image: wurstmeister/kafka:latest
+    restart: always
     hostname: kafka
     ports:
       - "9092:9092"
@@ -51,9 +75,14 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
       - zookeeper
+    networks:
+      - airavata-network
   sshd:
     image: dimuthuupe/sshd:1.0
+    restart: always
     volumes:
       - /tmp:/tmp
     ports:
       - "22222:22"
+    networks:
+      - airavata-network
