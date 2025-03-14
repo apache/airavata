@@ -1,7 +1,7 @@
 version: '3'
 services:
   keycloak:
-    image: jboss/keycloak:2.5.4.Final
+    image: quay.io/keycloak/keycloak:latest
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
