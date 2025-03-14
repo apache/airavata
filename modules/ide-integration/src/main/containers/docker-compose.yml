@@ -2,6 +2,14 @@ networks:
   airavata-network:
     driver: bridge
     name: airavata.host
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
+          gateway: 192.168.100.1
+
+volumes:
+  db_data:
+    driver: local
 
 services:
   devcontainer:
@@ -10,13 +18,17 @@ services:
       - ./../../../../..:/workspace:cached
     command: sleep infinity
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.10
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   keycloak:
     image: keycloak/keycloak:24.0
     restart: always
     environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "18080:8080"
       - "8443:8443"
@@ -24,38 +36,56 @@ services:
       - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
       - ../../../../../keystores/airavata.jks:/opt/keycloak/conf/keystores/airavata.jks
-    command: [ "start-dev", "--import-realm" ]
+    command: ["start-dev", "--import-realm"]
     depends_on:
       - db
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.11
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   db:
     image: mariadb:10.4.13
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_USER=airavata
-      - MYSQL_PASSWORD=123456
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: airavata
+      MYSQL_PASSWORD: 123456
     volumes:
       - ./database_scripts/init:/docker-entrypoint-initdb.d
-      - ./database_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
     ports:
       - "13306:3306"
-    command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=' ]
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--sql-mode=NO_ENGINE_SUBSTITUTION",
+      ]
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.12
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   rabbitmq:
     image: rabbitmq:3.12-management
     restart: always
     environment:
-      - RABBITMQ_DEFAULT_VHOST=develop
+      RABBITMQ_DEFAULT_VHOST: develop
     ports:
       - "5672:5672"
       - "15672:15672"
     depends_on:
       - db
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.13
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   zookeeper:
     image: zookeeper
     restart: always
@@ -63,7 +93,11 @@ services:
     ports:
       - "12181:2181"
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.14
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   kafka:
     image: wurstmeister/kafka:latest
     restart: always
@@ -71,12 +105,16 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.100.15
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
       - zookeeper
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.15
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   sshd:
     image: dimuthuupe/sshd:1.0
     restart: always
@@ -85,4 +123,20 @@ services:
     ports:
       - "22222:22"
     networks:
-      - airavata-network
+      airavata-network:
+        ipv4_address: 192.168.100.16
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "18088:8080"
+    depends_on:
+      - db
+    networks:
+      airavata-network:
+        ipv4_address: 192.168.100.17
+    extra_hosts:
+      - "airavata.host:192.168.100.1"

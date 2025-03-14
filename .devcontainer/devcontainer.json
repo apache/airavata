@@ -36,6 +36,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "esbenp.prettier-vscode",
+        "foxundermoon.shell-format",
         "golang.go",
         "lkrms.inifmt",
         "ms-python.python",

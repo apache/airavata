@@ -12,7 +12,7 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
   datasource:
-    url: "jdbc:mariadb://localhost:13306/app_catalog"
+    url: "jdbc:mariadb://airavata.host:13306/app_catalog"
     username: "root"
     password: "123456"
     driver-class-name: org.mariadb.jdbc.Driver
