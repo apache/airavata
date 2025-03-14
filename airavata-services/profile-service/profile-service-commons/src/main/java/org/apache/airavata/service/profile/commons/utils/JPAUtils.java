@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.service.profile.commons.utils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.airavata.common.utils.JDBCConfig;
 
