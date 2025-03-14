@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 /**

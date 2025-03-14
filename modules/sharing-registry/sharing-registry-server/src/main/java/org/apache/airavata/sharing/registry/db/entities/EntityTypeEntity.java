@@ -22,7 +22,7 @@ package org.apache.airavata.sharing.registry.db.entities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "ENTITY_TYPE", schema = "")

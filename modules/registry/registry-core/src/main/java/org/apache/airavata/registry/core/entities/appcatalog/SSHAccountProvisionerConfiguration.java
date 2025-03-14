@@ -20,7 +20,7 @@
 
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * The persistent class for the ssh_account_provisioner_config database table.

@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "USERS")
