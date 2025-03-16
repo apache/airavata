@@ -1,18 +1,19 @@
 version: '3'
 services:
   keycloak:
-    image: jboss/keycloak:2.5.4.Final
+    image: quay.io/keycloak/keycloak:24.0.0
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
-      - "18080:8080"
+      - "8080:8080"
       - "8443:8443"
     volumes:
-      - ./keycloak/Default-export.json:/opt/keycloak/Default-export.json
-      - ../resources/keystores/airavata.jks:/opt/jboss/keycloak/standalone/configuration/keystores/airavata.jks
-      - ./keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml
-    command: ["-b", "0.0.0.0", "-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=singleFile", "-Dkeycloak.migration.file=/opt/keycloak/Default-export.json", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
+      - ./keycloak/Default-export.json:/opt/keycloak/data/import/Default-export.json
+    command:
+      - start-dev
+      - "--import-realm"
+      - "--hostname-strict=false"
   db:
     image: mariadb:10.4.13
     environment:
@@ -21,9 +22,9 @@ services:
       - MYSQL_PASSWORD=123456
     volumes:
       - ./database_scripts/init:/docker-entrypoint-initdb.d
-      - ./database_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     ports:
-        - "13306:3306"
+      - "13306:3306"
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=']
   rabbitmq:
     image: rabbitmq
@@ -52,3 +53,7 @@ services:
       - /tmp:/tmp
     ports:
       - "22222:22"
+
+volumes:
+  mysql_data:
+    driver: local
