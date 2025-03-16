@@ -15,7 +15,7 @@ services:
   devcontainer:
     image: mcr.microsoft.com/devcontainers/base:debian
     volumes:
-      - ./../../../../..:/workspace:cached
+      - ..:/workspace:cached
     command: sleep infinity
     networks:
       airavata-network:
@@ -33,9 +33,9 @@ services:
       - "18080:8080"
       - "8443:8443"
     volumes:
-      - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
-      - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-      - ../../../../../keystores/airavata.jks:/opt/keycloak/conf/keystores/airavata.jks
+      - ../modules/ide-integration/src/main/containers/keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
+      - ../modules/ide-integration/src/main/containers/keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ../keystores/airavata.jks:/opt/keycloak/conf/keystores/airavata.jks
     command: ["start-dev", "--import-realm"]
     depends_on:
       - db
@@ -53,7 +53,7 @@ services:
       MYSQL_USER: airavata
       MYSQL_PASSWORD: 123456
     volumes:
-      - ./database_scripts/init:/docker-entrypoint-initdb.d
+      - ../modules/ide-integration/src/main/containers/database_scripts/init:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
     ports:
       - "13306:3306"
