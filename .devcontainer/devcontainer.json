@@ -3,7 +3,7 @@
 {
   "name": "Airavata",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "dockerComposeFile": "../modules/ide-integration/src/main/containers/docker-compose.yml",
+  "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
   // Features to add to the dev container. More info: https://containers.dev/features.
