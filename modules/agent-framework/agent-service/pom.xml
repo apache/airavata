@@ -20,9 +20,9 @@
         <javax.version>2.0.1.Final</javax.version>
         <apache.commons.lang3.version>3.14.0</apache.commons.lang3.version>
         <mysql.connector.java>8.0.31</mysql.connector.java>
-        <protoc.version>30.1</protoc.version>
+        <protoc.version>4.30.1</protoc.version>
         <protobuf-plugin.version>2.12.1</protobuf-plugin.version>
-        <grpc.version>1.63.0</grpc.version>
+        <grpc.version>1.71.0</grpc.version>
         <agent.service.dist.name>Agent-Service-0.01</agent.service.dist.name>
     </properties>
 
@@ -150,6 +150,9 @@
               <version>${protobuf-plugin.version}</version>
               <configuration>
                 <protocVersion>${protoc.version}</protocVersion>
+                <sourceDirectories>
+                  <sourceDirectory>${project.basedir}/../proto</sourceDirectory>
+                </sourceDirectories>
               </configuration>
               <executions>
                 <execution>
