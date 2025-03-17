@@ -21,7 +21,7 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 /**

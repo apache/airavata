@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.repositories.replicacatalog;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.apache.airavata.registry.core.utils.JPAUtil.RepCatalogJPAUtils;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class RepCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 

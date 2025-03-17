@@ -26,7 +26,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
