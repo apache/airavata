@@ -20,16 +20,8 @@
     }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    18080,
-    8443,
-    13306,
-    5672,
-    15672,
-    12181,
-    9092,
-    22222
-  ],
+  // TODO mention the ports used all airavata services
+  "forwardPorts": [],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "mise install -y maven@3.9.9 && mise use -g maven@3.9.9 && echo 'export PATH=$PATH:~/.local/share/mise/installs/maven/3.9.9/bin' >> ~/.bashrc",
   // Configure tool-specific properties.
@@ -37,6 +29,7 @@
     "vscode": {
       "extensions": [
         "esbenp.prettier-vscode",
+        "eamodio.gitlens",
         "foxundermoon.shell-format",
         "golang.go",
         "lkrms.inifmt",
@@ -51,5 +44,4 @@
   }
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
-  
 }

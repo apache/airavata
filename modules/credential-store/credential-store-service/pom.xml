@@ -172,6 +172,7 @@
             </testResource>
             <testResource>
                 <directory>${project.basedir}/../../../keystores</directory>
+                <targetPath>keystores</targetPath>
                 <includes>
                   <include>*.jks</include>
                   <include>*.p12</include>

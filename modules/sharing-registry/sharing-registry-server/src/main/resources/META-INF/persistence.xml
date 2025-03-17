@@ -12,5 +12,10 @@
         <class>org.apache.airavata.sharing.registry.db.entities.UserEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.GroupAdminEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
+        <properties>
+            <property name="openjpa.RuntimeOptimization" value="true" />
+            <property name="openjpa.jdbc.MappingDefaults"
+                      value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+        </properties>
     </persistence-unit>
 </persistence>
