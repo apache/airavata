@@ -42,18 +42,12 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.0</version>
+            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messaging-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.2.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
