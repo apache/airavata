@@ -84,11 +84,12 @@
                 </excludes>
             </resource>
             <resource>
-                <directory>../../keystores</directory>
-                <includes>
-                  <include>*.jks</include>
-                  <include>*.p12</include>
-                </includes>
+              <directory>../../keystores</directory>
+              <targetPath>keystores</targetPath>
+              <includes>
+                <include>*.jks</include>
+                <include>*.p12</include>
+              </includes>
             </resource>
         </resources>
     </build>

@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Start API Server",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/modules/ide-integration",
+      "mainClass": "org.apache.airavata.ide.integration.APIServerStarter",
+      "vmArgs": "-javaagent:/home/vscode/.m2/repository/org/apache/openjpa/openjpa/3.2.2/openjpa-3.2.2.jar",
+    },
+    {
+      "type": "java",
+      "name": "Start Job Engine",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/modules/ide-integration",
+      "mainClass": "org.apache.airavata.ide.integration.JobEngineStarter"
+    },
+    {
+      "type": "java",
+      "name": "Start Job Monitor",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/modules/ide-integration",
+      "mainClass": "org.apache.airavata.ide.integration.JobMonitorStarter"
+    }
+  ],
+}
