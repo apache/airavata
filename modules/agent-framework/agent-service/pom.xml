@@ -20,8 +20,8 @@
         <javax.version>2.0.1.Final</javax.version>
         <apache.commons.lang3.version>3.14.0</apache.commons.lang3.version>
         <mysql.connector.java>8.0.31</mysql.connector.java>
-        <protobuf.version>3.23.4</protobuf.version>
-        <protobuf-plugin.version>0.6.1</protobuf-plugin.version>
+        <protoc.version>30.1</protoc.version>
+        <protobuf-plugin.version>2.12.1</protobuf-plugin.version>
         <grpc.version>1.63.0</grpc.version>
         <agent.service.dist.name>Agent-Service-0.01</agent.service.dist.name>
     </properties>
@@ -145,22 +145,19 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>${protobuf-plugin.version}</version>
-                <configuration>
-                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-                    <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>compile-custom</goal>
-                        </goals>
-                    </execution>
-                </executions>
+              <groupId>io.github.ascopes</groupId>
+              <artifactId>protobuf-maven-plugin</artifactId>
+              <version>${protobuf-plugin.version}</version>
+              <configuration>
+                <protocVersion>${protoc.version}</protocVersion>
+              </configuration>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>generate</goal>
+                  </goals>
+                </execution>
+              </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
