@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.entities.replicacatalog;
 
 import org.apache.airavata.model.data.replica.DataProductType;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;

@@ -22,8 +22,8 @@ package org.apache.airavata.sharing.registry.db.entities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import java.io.Serializable;
 
 public class PermissionTypePK implements Serializable {

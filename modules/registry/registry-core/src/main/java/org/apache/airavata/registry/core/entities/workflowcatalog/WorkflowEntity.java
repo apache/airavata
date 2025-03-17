@@ -25,7 +25,7 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 

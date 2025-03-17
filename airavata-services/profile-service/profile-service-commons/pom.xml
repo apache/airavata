@@ -98,7 +98,7 @@
             <plugin>
                 <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>${openjpa.version}</version>
+                <version>${openjpa.maven.plugin.version}</version>
                 <configuration>
                     <includes>**/entities/*.class</includes>
                     <excludes>**/entities/XML*.class</excludes>
