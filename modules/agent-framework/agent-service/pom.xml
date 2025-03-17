@@ -169,7 +169,7 @@
               <configuration>
                 <source>17</source>
                 <target>17</target>
-                <generatedSourcesDirectory>${project.build.directory}/generated-sources</generatedSourcesDirectory>
+                <generatedSourcesDirectory>${project.build.directory}/generated-sources/protobuf</generatedSourcesDirectory>
                 <includes>
                   <include>${project.build.directory}/generated-sources/**/*.java</include>
                 </includes>

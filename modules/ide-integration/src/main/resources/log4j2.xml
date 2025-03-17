@@ -26,7 +26,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d [%t] %-5p %c{30} %X - %m%n"/>
         </Console>
-        <RollingFile name="RollingFileAppender" fileName="../logs/airavata.log"
+        <RollingFile name="RollingFileAppender" fileName="logs/airavata.log"
                      filePattern="logs/${date:yyyy-MM}/airavata-log-%d{MM-dd-yyyy}-%i.log.gz">
             <PatternLayout>
                 <Pattern>%d [%t] %-5p %c{30} %X - %m%n</Pattern>
@@ -45,6 +45,8 @@
         <logger name="org.apache.zookeeper" level="ERROR"/>
         <logger name="org.apache.airavata" level="INFO"/>
         <logger name="org.hibernate" level="ERROR"/>
+        <logger name="org.apache.openjpa" level="DEBUG"/>
+        <logger name="org.apache.openjpa.enhance" level="DEBUG"/>
         <Root level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFileAppender"/>

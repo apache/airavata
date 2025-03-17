@@ -29,7 +29,6 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
-            <property name="openjpa.RuntimeOptimization" value="true" />
             <property name="openjpa.jdbc.MappingDefaults"
                       value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
         </properties>

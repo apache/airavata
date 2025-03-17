@@ -82,7 +82,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="openjpa.RuntimeOptimization" value="true" />
             <property name="openjpa.jdbc.MappingDefaults"
                       value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
         </properties>
@@ -95,7 +94,6 @@
         <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="openjpa.RuntimeOptimization" value="true" />
             <property name="openjpa.jdbc.MappingDefaults"
                       value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
         </properties>
@@ -116,7 +114,6 @@
         <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowHandlerEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="openjpa.RuntimeOptimization" value="true" />
             <property name="openjpa.jdbc.MappingDefaults"
                       value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
         </properties>
@@ -152,7 +149,6 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="openjpa.RuntimeOptimization" value="true" />
             <property name="openjpa.jdbc.MappingDefaults"
                       value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
         </properties>
