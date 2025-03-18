@@ -8,9 +8,14 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.constraints.Valid;
+
+class ExperimentController {
+
+};
 
 @RestController
 @RequestMapping("/api/v1/exp")

@@ -154,7 +154,7 @@
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
         <helix.version>0.9.7</helix.version>
         <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>
-        <rest.easy.client.version>6.2.8.Final</rest.easy.client.version>
+        <rest.easy.client.version>6.2.12.Final</rest.easy.client.version>
         <httpclient.version>4.5.14</httpclient.version>
         <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
         <spring.boot.version>3.2.4</spring.boot.version>
