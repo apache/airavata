@@ -13,7 +13,7 @@ volumes:
 
 services:
   devcontainer:
-    image: mcr.microsoft.com/devcontainers/base:debian
+    build: .
     volumes:
       - ..:/workspace:cached
     command: sleep infinity

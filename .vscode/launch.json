@@ -6,7 +6,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/modules/ide-integration",
       "mainClass": "org.apache.airavata.ide.integration.APIServerStarter",
-      "vmArgs": "-javaagent:/home/vscode/.m2/repository/org/apache/openjpa/openjpa/3.2.2/openjpa-3.2.2.jar",
+      "vmArgs": "-javaagent:/home/vscode/.m2/repository/org/apache/openjpa/openjpa/4.0.1/openjpa-4.0.1.jar",
     },
     {
       "type": "java",
