@@ -33,15 +33,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.mail.Address;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.search.FlagTerm;
-import javax.mail.search.SearchTerm;
+import jakarta.mail.Address;
+import jakarta.mail.Flags;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.search.FlagTerm;
+import jakarta.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.util.*;
 
@@ -193,6 +193,9 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                         emailFolder = store.getFolder(folderName);
                     }
                     log.info("[EJM]: Retrieving unseen emails");
+                    if (emailFolder == null) {
+                        return;
+                    }
                     emailFolder.open(Folder.READ_WRITE);
                     if (emailFolder.isOpen()) {
                         // flush if any message left in flushUnseenMessage
@@ -228,7 +231,9 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 log.error("[EJM]: Caught a throwable ", e);
             } finally {
                 try {
-                    emailFolder.close(false);
+                    if (emailFolder != null) {
+                        emailFolder.close(false);
+                    }
                     store.close();
                 } catch (MessagingException e) {
                     log.error("[EJM]: Store close operation failed, couldn't close store", e);
