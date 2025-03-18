@@ -91,6 +91,11 @@
             <version>${grpc.version}</version>
         </dependency>
         <dependency>
+          <groupId>com.google.protobuf</groupId>
+          <artifactId>protobuf-java</artifactId>
+          <version>${protoc.version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
             <version>3.0.0.RELEASE</version>
@@ -165,7 +170,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
-              <version>3.8.1</version>
+              <version>${maven.compiler.plugin.version}</version>
               <configuration>
                 <source>17</source>
                 <target>17</target>

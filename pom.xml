@@ -138,6 +138,7 @@
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
         <maven.assembly.plugin>3.3.0</maven.assembly.plugin>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <json.version>20160212</json.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -287,6 +288,7 @@
                 <version>1.0.0</version>
                 <executions>
                     <execution>
+                        <phase>process-resources</phase>
                         <id>filtering-java-templates</id>
                         <goals>
                             <goal>filter-sources</goal>
@@ -342,7 +344,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>

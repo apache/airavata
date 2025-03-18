@@ -2,30 +2,11 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
   "name": "Airavata",
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
+  "features": {},
   "workspaceFolder": "/workspace",
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // Features to add to the dev container. More info: https://containers.dev/features.
-  "features": {
-    "ghcr.io/roul/devcontainer-features/mise": {},
-    "ghcr.io/roul/devcontainer-features/mise-java": {
-      "version": "openjdk-17"
-    },
-    "ghcr.io/roul/devcontainer-features/mise-python": {
-      "version": "3.10"
-    },
-    "ghcr.io/roul/devcontainer-features/mise-golang": {
-      "version": "1.23"
-    }
-  },
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // TODO mention the ports used all airavata services
   "forwardPorts": [],
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "mise install -y maven@3.9.9 && mise use -g maven@3.9.9 && echo 'export PATH=$PATH:~/.local/share/mise/installs/maven/3.9.9/bin' >> ~/.bashrc; sudo ln -s ~/.m2 /m2",
-  // Configure tool-specific properties.
   "customizations": {
     "vscode": {
       "extensions": [
