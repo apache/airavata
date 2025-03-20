@@ -92,8 +92,7 @@
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>org.apache.thrift:libthrift:jar</include>
 
-                <include>jakarta.mail:jakarta.mail-api:jar</include>
-                <include>jakarta.mail:jakarta.mail:jar</include>
+                <include>org.eclipse.angus:jakarta.mail:jar</include>
                 <include>javax.activation:activation:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
 
@@ -130,7 +129,7 @@
                 <include>io.prometheus:simpleclient:jar</include>
                 <include>io.prometheus:simpleclient_httpserver:jar</include>
                 <include>io.prometheus:simpleclient_common:jar</include>
-                <include>org.apache.commons:commons-lang3</include>
+                <include>commons-lang:commons-lang:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
