@@ -234,7 +234,9 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                     if (emailFolder != null) {
                         emailFolder.close(false);
                     }
-                    store.close();
+                    if (store != null) {
+                        store.close();
+                    }
                 } catch (MessagingException e) {
                     log.error("[EJM]: Store close operation failed, couldn't close store", e);
                 } catch (Throwable e) {

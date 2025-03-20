@@ -35,8 +35,8 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
-import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -114,20 +114,20 @@ public class StatusConsumer extends DefaultConsumer {
                 event = jobStatusChangeEvent;
                 gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
             } else if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
-                TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
+                ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
+                ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
                 log.debug(" Message Received with message id '" + message.getMessageId()
                         + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                        taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
-                event = taskSubmitEvent;
-                gatewayId = taskSubmitEvent.getGatewayId();
+                        processSubmitEvent.getExperimentId() + "and processId: " + processSubmitEvent.getProcessId());
+                event = processSubmitEvent;
+                gatewayId = processSubmitEvent.getGatewayId();
             } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
-                TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
+                ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent();
+                ThriftUtils.createThriftFromBytes(message.getEvent(), processTerminateEvent);
                 log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                        taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
-                event = taskTerminateEvent;
+                        + "' and with message type '" + message.getMessageType() + "'  for processId: " +
+                        processTerminateEvent.getProcessId());
+                event = processTerminateEvent;
                 gatewayId = null;
             }
             MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
