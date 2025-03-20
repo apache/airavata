@@ -23,7 +23,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
@@ -161,9 +161,9 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         String computeResource =  addSampleComputeResource("1");
 
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
-        deployment.setAppDeploymentId(application_interface_modelConstants.DEFAULT_ID);
+        deployment.setAppDeploymentId(airavata_commonsConstants.DEFAULT_ID);
         String deploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
-        Assert.assertNotEquals(deploymentId, application_interface_modelConstants.DEFAULT_ID);
+        Assert.assertNotEquals(deploymentId, airavata_commonsConstants.DEFAULT_ID);
         Assert.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
     }
 

@@ -21,10 +21,11 @@
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
-namespace py airavata.model.workflow
+namespace py airavata.model
 
 include "../app-catalog-models/application_io_models.thrift"
 include "../../airavata-apis/airavata_commons.thrift"
+include "workflow_model.thrift"
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
