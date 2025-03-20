@@ -19,24 +19,17 @@
  */
 
 include "../airavata-apis/airavata_commons.thrift"
-include "experiment-catalog-models/workspace_model.thrift"
 include "../airavata-apis/airavata_errors.thrift"
 include "../airavata-apis/messaging_events.thrift"
 include "../airavata-apis/security_model.thrift"
 include "../airavata-apis/db_event_model.thrift"
-include "experiment-catalog-models/experiment_model.thrift"
-include "experiment-catalog-models/job_model.thrift"
-include "experiment-catalog-models/task_model.thrift"
-include "experiment-catalog-models/process_model.thrift"
-include "experiment-catalog-models/scheduling_model.thrift"
-include "experiment-catalog-models/status_models.thrift"
-include "resource-catalog-models/data_movement_models.thrift"
+include "app-catalog-models/app_catalog_models.thrift"
+include "credential-store-models/credential_store_models.thrift"
+include "experiment-catalog-models/experiment_catalog_models.thrift"
 include "replica-catalog-models/replica_catalog_models.thrift"
-include "user-tenant-group-models/user_profile_model.thrift"
-include "user-tenant-group-models/group_manager_model.thrift"
-include "user-tenant-group-models/tenant_profile_model.thrift"
-include "credential-store-models/credential_store_data_models.thrift"
-include "resource-catalog-models/gateway_groups_model.thrift"
+include "resource-catalog-models/resource_catalog_models.thrift"
+include "user-tenant-group-models/user_tenant_group_models.thrift"
+include "workflow-models/workflow_data_model.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
