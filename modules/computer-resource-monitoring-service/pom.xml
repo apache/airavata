@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.2</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -49,13 +49,6 @@
             <artifactId>metascheduler-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-commons</artifactId>
-            <version>0.21-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 
     <properties>

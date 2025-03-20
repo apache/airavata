@@ -71,6 +71,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven.assembly.plugin}</version>
                 <configuration>
                     <archive>
                         <manifest>

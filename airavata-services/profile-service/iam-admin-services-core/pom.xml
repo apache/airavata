@@ -39,13 +39,13 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${rest.easy.client.version}</version>
+            <version>${resteasy.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jackson2-provider -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>${rest.easy.client.version}</version>
+            <version>${resteasy.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
