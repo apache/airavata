@@ -7,6 +7,7 @@
         <groupId>org.apache.airavata</groupId>
         <artifactId>agent-framework</artifactId>
         <version>0.21-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>agent-service</artifactId>
@@ -15,14 +16,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jul-to-slf4j.version>1.7.0</jul-to-slf4j.version>
-        <json.version>20240303</json.version>
-        <javax.version>2.0.1.Final</javax.version>
-        <apache.commons.lang3.version>3.14.0</apache.commons.lang3.version>
-        <mysql.connector.java>8.0.31</mysql.connector.java>
-        <protoc.version>4.30.1</protoc.version>
-        <protobuf-plugin.version>2.12.1</protobuf-plugin.version>
-        <grpc.version>1.71.0</grpc.version>
         <agent.service.dist.name>Agent-Service-0.01</agent.service.dist.name>
     </properties>
 
@@ -42,7 +35,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>1.5.7</version>
+            <version>${mariadb-java-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -91,19 +84,14 @@
             <version>${grpc.version}</version>
         </dependency>
         <dependency>
-          <groupId>com.google.protobuf</groupId>
-          <artifactId>protobuf-java</artifactId>
-          <version>${protoc.version}</version>
-        </dependency>
-        <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
-            <version>3.0.0.RELEASE</version>
+            <version>${grpc-server-spring-boot-starter.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>${jakarta.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -117,7 +105,7 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>${os-maven-plugin.version}</version>
             </extension>
         </extensions>
 
@@ -147,9 +135,9 @@
             <plugin>
               <groupId>io.github.ascopes</groupId>
               <artifactId>protobuf-maven-plugin</artifactId>
-              <version>${protobuf-plugin.version}</version>
+              <version>${protobuf-maven-plugin.version}</version>
               <configuration>
-                <protocVersion>${protoc.version}</protocVersion>
+                <protocVersion>${protobuf-java.version}</protocVersion>
                 <sourceDirectories>
                   <sourceDirectory>${project.basedir}/../proto</sourceDirectory>
                 </sourceDirectories>
@@ -167,8 +155,7 @@
               <artifactId>maven-compiler-plugin</artifactId>
               <version>${maven.compiler.plugin.version}</version>
               <configuration>
-                <source>17</source>
-                <target>17</target>
+                <release>17</release>
                 <generatedSourcesDirectory>${project.build.directory}/generated-sources/protobuf</generatedSourcesDirectory>
                 <includes>
                   <include>${project.build.directory}/generated-sources/**/*.java</include>
