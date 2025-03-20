@@ -86,8 +86,7 @@
                 <include>org.apache.airavata:airavata-server-configuration:jar</include>
                 <include>com.rabbitmq:amqp-client:jar</include>
                 <include>asm:asm:jar</include>
-                <include>org.bouncycastle:bcpkix-jdk15on:jar</include>
-                <include>org.bouncycastle:bcprov-jdk15on:jar</include>
+                <include>org.bouncycastle:bcpkix-jdk18on:jar</include>
                 <include>commons-cli:commons-cli:jar</include>
                 <include>commons-codec:commons-codec:jar</include>
                 <include>commons-collections:commons-collections:jar</include>
@@ -139,7 +138,7 @@
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.lz4:lz4-java:jar</include>
                 <include>io.dropwizard.metrics:metrics-core:jar</include>
-                <include>jakarta.mail:jakarta.mail:jar</include>
+                <include>org.eclipse.angus:jakarta.mail:jar</include>
                 <include>org.jboss.netty:netty:jar</include>
                 <include>org.apache.openjpa:openjpa:jar</include>
                 <include>org.apache.airavata:platform-monitor:jar</include>
@@ -174,10 +173,9 @@
                 <include>io.prometheus:simpleclient:jar</include>
                 <include>io.prometheus:simpleclient_httpserver:jar</include>
                 <include>io.prometheus:simpleclient_common:jar</include>
-                <include>org.apache.commons:commons-lang3</include>
             </includes>
             <excludes>
-                <exclude>mysql:mysql-connector-java:jar</exclude>
+                <exclude>com.mysql:mysql-connector-j:jar</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

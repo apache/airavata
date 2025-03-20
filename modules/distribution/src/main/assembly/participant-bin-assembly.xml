@@ -88,8 +88,7 @@
                 <include>org.apache.airavata:profile-service-stubs:jar</include>
                 <include>com.rabbitmq:amqp-client:jar</include>
                 <include>asm:asm:jar</include>
-                <include>org.bouncycastle:bcpkix-jdk15on:jar</include>
-                <include>org.bouncycastle:bcprov-jdk15on:jar</include>
+                <include>org.bouncycastle:bcpkix-jdk18on:jar</include>
                 <include>commons-cli:commons-cli:jar</include>
                 <include>commons-codec:commons-codec:jar</include>
                 <include>commons-collections:commons-collections:jar</include>
@@ -139,7 +138,7 @@
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.lz4:lz4-java:jar</include>
-                <include>jakarta.mail:jakarta.mail:jar</include>
+                <include>org.eclipse.angus:jakarta.mail:jar</include>
                 <include>io.dropwizard.metrics:metrics-core:jar</include>
                 <include>org.jboss.netty:netty:jar</include>
                 <include>org.apache.openjpa:openjpa:jar</include>
@@ -178,7 +177,7 @@
                 <include>com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar</include>
                 <include>org.glassfish.jersey.connectors:jersey-apache-connector:jar</include>
                 <include>org.glassfish.jersey.core:jersey-common:jar</include>
-                <include>javax.annotation:javax.annotation-api:jar</include>
+                <include>jakarta.annotation:jakarta.annotation-api:jar</include>
                 <include>org.glassfish.jersey.bundles.repackaged:jersey-guava:jar</include>
                 <include>org.glassfish.hk2:osgi-resource-locator:jar</include>
                 <include>org.apache.httpcomponents:httpcore:jar</include>
@@ -193,12 +192,10 @@
                 <include>com.kohlschutter.junixsocket:junixsocket-native-common:jar</include>
                 <include>org.scijava:native-lib-loader:jar</include>
                 <include>org.apache.commons:commons-compress:jar</include>
-                <include>commons-lang:commons-lang:jar</include>
                 <include>commons-io:commons-io:jar</include>
                 <include>org.slf4j:jcl-over-slf4j:jar</include>
                 <include>com.google.guava:guava:jar</include>
-                <include>org.bouncycastle:bcpkix-jdk15on:jar</include>
-                <include>org.bouncycastle:bcprov-jdk15on:jar</include>
+                <include>org.bouncycastle:bcpkix-jdk18on:jar</include>
                 <include>io.netty:netty-codec-http:jar</include>
                 <include>io.netty:netty-codec:jar</include>
                 <include>io.netty:netty-handler:jar</include>
@@ -219,10 +216,9 @@
                 <include>io.prometheus:simpleclient:jar</include>
                 <include>io.prometheus:simpleclient_httpserver:jar</include>
                 <include>io.prometheus:simpleclient_common:jar</include>
-                <include>org.apache.commons:commons-lang3</include>
             </includes>
             <excludes>
-                <exclude>mysql:mysql-connector-java:jar</exclude>
+                <exclude>com.mysql:mysql-connector-j:jar</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

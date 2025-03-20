@@ -25,6 +25,7 @@
         <artifactId>agent-impl</artifactId>
         <groupId>org.apache.airavata</groupId>
         <version>0.21-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -34,7 +35,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.39.0</version>
+            <version>${sshj.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
