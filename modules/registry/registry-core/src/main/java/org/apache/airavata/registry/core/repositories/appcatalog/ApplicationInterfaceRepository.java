@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingEntity;
@@ -56,7 +56,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     protected ApplicationInterfaceEntity saveApplicationInterface(
             ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
 
-        if (applicationInterfaceDescription.getApplicationInterfaceId().trim().equals("") || applicationInterfaceDescription.getApplicationInterfaceId().equals(application_interface_modelConstants.DEFAULT_ID) ) {
+        if (applicationInterfaceDescription.getApplicationInterfaceId().trim().equals("") || applicationInterfaceDescription.getApplicationInterfaceId().equals(airavata_commonsConstants.DEFAULT_ID) ) {
             logger.debug("If Application Interface ID is empty or DEFAULT, set it as the Application Interface Name plus random UUID");
             applicationInterfaceDescription.setApplicationInterfaceId(AiravataUtils.getId(applicationInterfaceDescription.getApplicationName()));
         }
@@ -98,7 +98,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     protected ApplicationModuleEntity saveApplicationModule(
             ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
 
-        if (applicationModule.getAppModuleId().trim().equals("") || applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
+        if (applicationModule.getAppModuleId().trim().equals("") || applicationModule.getAppModuleId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("If Application Module ID is empty or DEFAULT, set it as the Application Module Name plus random UUID");
             applicationModule.setAppModuleId(AiravataUtils.getId(applicationModule.getAppModuleName()));
         }
