@@ -23,7 +23,7 @@
  *
 */
 
-include "../data-models/credential-store-models/credential_store_data_models.thrift"
+include "../data-models/credential-store-models/credential_store_models.thrift"
 include "credential_store_errors.thrift"
 include "../base-api/base_api.thrift"
 
@@ -34,13 +34,13 @@ const string CS_CPI_VERSION = "0.18.0"
 
 service CredentialStoreService extends base_api.BaseAPI {
 
-  credential_store_data_models.CredentialSummary getCredentialSummary (
+  credential_store_models.CredentialSummary getCredentialSummary (
         1: required string tokenId,
         2: required string gatewayId)
     throws (1:credential_store_errors.CredentialStoreException csException);
 
-  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaries(
-      1: required credential_store_data_models.SummaryType type,
+  list<credential_store_models.CredentialSummary> getAllCredentialSummaries(
+      1: required credential_store_models.SummaryType type,
       2: required list<string> accessibleTokenIds,
       3: required string gatewayId)
     throws (1: credential_store_errors.CredentialStoreException csException);
@@ -48,31 +48,31 @@ service CredentialStoreService extends base_api.BaseAPI {
   /**
   * This method is to add SSHCredential which will return the token Id in success
   **/
-  string addSSHCredential (1: required credential_store_data_models.SSHCredential sshCredential)
+  string addSSHCredential (1: required credential_store_models.SSHCredential sshCredential)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  string addCertificateCredential (1: required credential_store_data_models.CertificateCredential certificateCredential)
+  string addCertificateCredential (1: required credential_store_models.CertificateCredential certificateCredential)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  string addPasswordCredential (1: required credential_store_data_models.PasswordCredential passwordCredential)
+  string addPasswordCredential (1: required credential_store_models.PasswordCredential passwordCredential)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  credential_store_data_models.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
+  credential_store_models.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  credential_store_data_models.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
+  credential_store_models.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  credential_store_data_models.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
+  credential_store_models.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
   // Deprecated
-  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required credential_store_data_models.SummaryType type,
+  list<credential_store_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required credential_store_models.SummaryType type,
                               2: required string gatewayId)
                               throws (1:credential_store_errors.CredentialStoreException csException);
 
     // Deprecated
-    list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForUserInGateway (1: required credential_store_data_models.SummaryType type,
+    list<credential_store_models.CredentialSummary> getAllCredentialSummaryForUserInGateway (1: required credential_store_models.SummaryType type,
                                                 2: required string gatewayId,
                                                 3: required string userId)
                                                 throws (1:credential_store_errors.CredentialStoreException csException);

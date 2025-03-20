@@ -44,7 +44,7 @@ public class JPAUtils {
      */
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig) {
 
-        return getEntityManagerFactory(persistenceUnitName, jdbcConfig, Collections.emptyMap());
+        return getEntityManagerFactory(persistenceUnitName, jdbcConfig, DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
     }
 
     /**
