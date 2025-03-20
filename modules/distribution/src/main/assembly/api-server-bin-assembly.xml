@@ -168,7 +168,7 @@
                 <include>*:*:jar</include>
             </includes>
             <excludes>
-                <exclude>mysql:mysql-connector-java</exclude>
+                <exclude>com.mysql:mysql-connector-j</exclude>
             </excludes>
         </dependencySet>
 

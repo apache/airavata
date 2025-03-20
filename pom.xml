@@ -25,10 +25,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
@@ -110,11 +106,11 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <derby.version>10.13.1.1</derby.version>
         <org.slf4j.version>2.0.16</org.slf4j.version>
-        <log4j2.slf4j.impl>2.24.0</log4j2.slf4j.impl>
-        <log4j2.version>2.24.0</log4j2.version>
+        <log4j2.version>2.24.3</log4j2.version>
+        <log4j2.slf4j.impl>2.24.3</log4j2.slf4j.impl>
         <surefire.version>3.0.0-M4</surefire.version>
-        <junit.version>4.12</junit.version>
-        <curator.version>5.7.0</curator.version>
+        <junit.version>4.13.1</junit.version>
+        <curator.version>5.6.0</curator.version>
         <groovy.version>3.0.23</groovy.version>
         <xpp3.version>1.1.6</xpp3.version>
         <xpp5.version>1.2.8</xpp5.version>
@@ -124,47 +120,116 @@
         <fasterxml.jackson.version>2.15.4</fasterxml.jackson.version>
         <jersey.version>1.13</jersey.version>
         <cargo.version>1.3.1</cargo.version>
-        <oa4mp.version>1.1.3</oa4mp.version>
+        <oa4mp.version>4.3</oa4mp.version>
         <antrun.version>1.8</antrun.version>
-        <bouncy.castle.version>1.70</bouncy.castle.version>
+        <bouncy.castle.version>1.78</bouncy.castle.version>
         <ebay.cors.filter>1.0.0</ebay.cors.filter>
-        <thrift.version>0.18.1</thrift.version>
-        <mysql.connector.version>8.0.31</mysql.connector.version>
+        <thrift.version>0.21.0</thrift.version>
+        <mysql.connector.version>8.2.0</mysql.connector.version>
         <skipTests>false</skipTests>
         <google.gson.version>2.10.1</google.gson.version>
         <zk.version>3.9.2</zk.version>
-        <amqp.client.version>3.5.1</amqp.client.version>
-        <snakeyaml.version>1.15</snakeyaml.version>
+        <amqp.client.version>4.12.0</amqp.client.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
         <maven.assembly.plugin>3.3.0</maven.assembly.plugin>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
-        <kafka-clients.version>1.0.0</kafka-clients.version>
-        <json.version>20160212</json.version>
-        <commons.io.version>2.11.0</commons.io.version>
+        <kafka-clients.version>3.7.1</kafka-clients.version>
+        <json.version>20250107</json.version>
         <google.guava.version>33.2.1-jre</google.guava.version>
         <jacoco.version>0.8.1</jacoco.version>
         <openjpa.maven.plugin.version>4.0.1</openjpa.maven.plugin.version>
         <openjpa.version>4.0.1</openjpa.version>
         <dozer.version>5.4.0</dozer.version>
+        <jakarta.annotation.version>2.1.1</jakarta.annotation.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
+        <jakarta.xml.bind-api.version>4.0.0</jakarta.xml.bind-api.version>
+        <jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
+        <angus-activation.version>2.0.2</angus-activation.version>
         <jaxb.version>2.4.0-b180830.0359</jaxb.version>
         <jmockit.version>1.44</jmockit.version>
-        <commons.lang.version>2.6</commons.lang.version>
-        <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
-        <helix.version>0.9.7</helix.version>
+        <helix.version>1.4.3</helix.version>
         <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>
-        <rest.easy.client.version>6.2.12.Final</rest.easy.client.version>
+        <resteasy.version>6.2.12.Final</resteasy.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <httpcore.version>4.4.16</httpcore.version>
+        <httpcore.version>4.4.16</httpcore.version>
         <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
         <spring.boot.version>3.2.4</spring.boot.version>
+        <aopalliance.version>1.0</aopalliance.version>
+        <oltu.oauth2.client.version>1.0.0</oltu.oauth2.client.version>
+        <jsch.version>0.1.54</jsch.version>
+        <sshj.version>0.39.0</sshj.version>
+        <quartz.version>2.4.0</quartz.version>
+        <directory.api.version>1.0.0</directory.api.version>
+        <mariadb-java-client.version>3.5.2</mariadb-java-client.version>
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+        <grpc-server-spring-boot-starter.version>3.1.0.RELEASE</grpc-server-spring-boot-starter.version>
+        <commons-beanutils.version>1.9.2</commons-beanutils.version>
+        <commons-io.version>2.18.0</commons-io.version>
+        <commons-pool2.version>2.12.1</commons-pool2.version>
+        <commons-pool.version>1.6</commons-pool.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <commons-cli.version>1.9.0</commons-cli.version>
+        <commons-email.version>1.5</commons-email.version>
+        <commons-codec.version>1.18.0</commons-codec.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <commons-exec.version>1.4.0</commons-exec.version>
+        <commons-logging.version>1.3.5</commons-logging.version>
+        <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
+        <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
+        <ibatis-sqlmap.version>2.3.0</ibatis-sqlmap.version>
+        <testng.version>7.7.0</testng.version>
+        <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
+        <shiro-core.version>2.0.2</shiro-core.version>
+        <tomcat-embed-core.version>11.0.3</tomcat-embed-core.version>
+        <tomcat-embed-logging-juli.version>8.5.2</tomcat-embed-logging-juli.version>
+        <keycloak.authz.client.version>24.0.4</keycloak.authz.client.version>
+        <guice.version>7.0.0</guice.version>
+        <templating.maven.version>1.0.0</templating.maven.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <contiperf.version>2.3.4</contiperf.version>
+        <docker-java.version>3.4.2</docker-java.version>
+        <prometheus.version>0.9.0</prometheus.version>
+        <jakarta.mail.version>2.0.2</jakarta.mail.version>
+        <jakarta.activation-api.version>2.1.3</jakarta.activation-api.version>
+        <servlet-api.version>2.5</servlet-api.version>
+        <jets3t.version>0.8.0</jets3t.version>
+        <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+        <build-helper-maven-plugin.version>1.7</build-helper-maven-plugin.version>
+        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+        <maven-surefire-plugin.version>2.12.4</maven-surefire-plugin.version>
+        <json-simple.version>1.1</json-simple.version>
+        <xerces.version>2.12.2</xerces.version>
+        <icu4j.version>3.4.4</icu4j.version>
+        <hamcrest.version>1.1</hamcrest.version>
+        <mockito.version>1.8.5</mockito.version>
+        <jopt-simple.version>3.2</jopt-simple.version>
+        <selenium-maven-plugin.version>2.3</selenium-maven-plugin.version>
+        <selenium-java-client-driver.version>1.0.1</selenium-java-client-driver.version>
+        <selenium-firefox-driver.version>2.44.0</selenium-firefox-driver.version>
+        <selenium-remote-driver.version>2.44.0</selenium-remote-driver.version>
+        <selenium-java.version>2.44.0</selenium-java.version>
+        <jackson-core-asl.version>1.9.13</jackson-core-asl.version>
+        <snappy-java.version>1.1.10.7</snappy-java.version>
+        <netty.version>4.1.113.Final</netty.version>
+        <logback.version>1.4.14</logback.version>
+        <!-- From Agent Service -->
+        <protobuf-java.version>3.25.5</protobuf-java.version>
+        <protobuf-maven-plugin.version>2.12.1</protobuf-maven-plugin.version>
+        <grpc.version>1.63.0</grpc.version>
+        <j2objc-annotations.version>2.8</j2objc-annotations.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -186,6 +251,51 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat-embed-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-core</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-core-spi</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jackson2-provider</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
@@ -222,13 +332,23 @@
                 <version>${junit.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bouncy.castle.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
+                <artifactId>bcpkix-jdk18on</artifactId>
                 <version>${bouncy.castle.version}</version>
             </dependency>
             <dependency>
@@ -267,15 +387,215 @@
                 <version>${google.guava.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbytools</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbynet</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${codehaus.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${commons-cli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-pool</groupId>
+                <artifactId>commons-pool</artifactId>
+                <version>${commons-pool.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
-                <version>${org.apache.commons.pool2.version}</version>
+                <version>${commons-pool2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
                 <version>${jmockit.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson-core-asl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>${snappy-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-unix-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-epoll</artifactId>
+                <version>${os.detected.classifier}:${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${jakarta.activation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jakarta.xml.bind-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql.connector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${jakarta.ws.rs-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-activation</artifactId>
+                <version>${angus-activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.20.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.j2objc</groupId>
+                <artifactId>j2objc-annotations</artifactId>
+                <version>${j2objc-annotations.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -285,7 +605,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>templating-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>${templating.maven.version}</version>
                 <executions>
                     <execution>
                         <phase>process-resources</phase>
@@ -346,16 +666,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <!--</configuration>-->
-                    <!--&lt;!&ndash;<version>3.8.0</version>&ndash;&gt;-->
-                    <!--<configuration>-->
-
-                    <!--<compilerArgs>-->
-                    <!--<arg>&#45;&#45;add-exports=java.base/sun.security=ALL-UNNAMED</arg>-->
-                    <!--</compilerArgs>-->
-                    <!--<release>17</release>-->
+                    <release>17</release>
                     <fork>true</fork>
                 </configuration>
 
@@ -393,7 +704,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>${maven-enforcer-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce-versions</id>
@@ -402,9 +713,8 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <requireMavenVersion>
-                                    <version>3.0</version>
-                                </requireMavenVersion>
+<!--                                <requireUpperBoundDeps/>-->
+                                <dependencyConvergence/>
                             </rules>
                         </configuration>
                     </execution>

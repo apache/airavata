@@ -97,14 +97,6 @@
             <artifactId>computer-resource-monitoring-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>metadata-analyzer</artifactId>
-            <version>0.21-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-
     </dependencies>
 
     <properties>

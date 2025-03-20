@@ -123,7 +123,7 @@
                 <include>io.prometheus:simpleclient:jar</include>
                 <include>io.prometheus:simpleclient_httpserver:jar</include>
                 <include>io.prometheus:simpleclient_common:jar</include>
-                <include>org.apache.commons:commons-lang3</include>
+                <include>commons-lang:commons-lang:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
