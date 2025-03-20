@@ -59,6 +59,10 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -67,8 +71,8 @@
             <version>${openjpa.version}</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>${mysql.connector.version}</version>
         </dependency>
         <dependency>
@@ -79,7 +83,7 @@
         <dependency>
             <groupId>org.databene</groupId>
             <artifactId>contiperf</artifactId>
-            <version>2.3.4</version>
+            <version>${contiperf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -89,7 +93,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>${commons.lang.version}</version>
+            <version>${commons-lang.version}</version>
         </dependency>
 
 
@@ -103,18 +107,12 @@
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <release>17</release>
-                    <source>17</source>
-                    <target>17</target>
-                    <!--<compilerArgs>-->
-                        <!--<arg>&#45;&#45;add-opens=java.base/java.lang=ALL-UNNAMED</arg>-->
-                    <!--</compilerArgs>-->
-                    <!--<fork>true</fork>-->
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>${maven-jar-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.openjpa</groupId>
