@@ -23,15 +23,12 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
-import org.apache.helix.manager.zk.ZNRecordSerializer;
-import org.apache.helix.manager.zk.ZkClient;
+import org.apache.helix.model.BuiltInStateModelDefinitions;
+import org.apache.helix.model.IdealState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * TODO: Class level comments please
@@ -43,13 +40,13 @@ public class HelixController implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(HelixController.class);
 
-    private String clusterName;
-    private String controllerName;
-    private String zkAddress;
+    private final String clusterName;
+    private final String controllerName;
+    private final String zkAddress;
     private org.apache.helix.HelixManager zkHelixManager;
 
-    private CountDownLatch startLatch = new CountDownLatch(1);
-    private CountDownLatch stopLatch = new CountDownLatch(1);
+    private final CountDownLatch startLatch = new CountDownLatch(1);
+    private final CountDownLatch stopLatch = new CountDownLatch(1);
 
     @SuppressWarnings("WeakerAccess")
     public HelixController() throws ApplicationSettingsException {
@@ -60,50 +57,43 @@ public class HelixController implements Runnable {
 
     public void run() {
         try {
-            ZkClient zkClient = new ZkClient(ServerSettings.getZookeeperConnection(), ZkClient.DEFAULT_SESSION_TIMEOUT,
-                    ZkClient.DEFAULT_CONNECTION_TIMEOUT, new ZNRecordSerializer());
-            ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
-
-            // Creates the zk cluster if not available
-            if (! zkHelixAdmin.getClusters().contains(clusterName)) {
-                zkHelixAdmin.addCluster(clusterName, true);
-            }
-
+            logger.info("Zookeeper connection string: {}", zkAddress);
+            logger.info("Helix cluster: {}", clusterName);
+            logger.info("Helix controller: {}", controllerName);
+            ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin.Builder().setZkAddress(this.zkAddress).build();
+            logger.info("[zkAdmin] started");
+            logger.info("[zkAdmin] Cluster: {} adding if not available...", clusterName);
+            zkHelixAdmin.addCluster(this.clusterName, true);
+            logger.info("[zkAdmin] Cluster: {} now available!", clusterName);
             zkHelixAdmin.close();
-            zkClient.close();
+            logger.info("[zkAdmin] closed");
 
-            logger.info("Connection to helix cluster : " + clusterName + " with name : " + controllerName);
-            logger.info("Zookeeper connection string " + zkAddress);
-
-            zkHelixManager = HelixControllerMain.startHelixController(zkAddress, clusterName,
-                    controllerName, HelixControllerMain.STANDALONE);
+            logger.info("helix controller - starting...");
+            zkHelixManager = HelixControllerMain.startHelixController(zkAddress, clusterName, controllerName, HelixControllerMain.STANDALONE);
+            logger.info("Helix controller - started");
             startLatch.countDown();
             stopLatch.await();
         } catch (Exception ex) {
-            logger.error("Error in run() for Controller: " + controllerName + ", reason: " + ex, ex);
+            logger.error("Error in run() for Controller: {}, reason: {}", controllerName, ex, ex);
         } finally {
             disconnect();
         }
     }
 
+    @SuppressWarnings("RedundantThrows")
     public void startServer() throws Exception {
-
-        //WorkflowCleanupAgent cleanupAgent = new WorkflowCleanupAgent();
-        //cleanupAgent.init();
-        //ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        //executor.scheduleWithFixedDelay(cleanupAgent, 10, 120, TimeUnit.SECONDS);
 
         new Thread(this).start();
         try {
             startLatch.await();
-            logger.info("Controller: " + controllerName + ", has connected to cluster: " + clusterName);
+            logger.info("Controller: {}, has connected to cluster: {}", controllerName, clusterName);
 
             Runtime.getRuntime().addShutdownHook(
                     new Thread(this::disconnect)
             );
 
         } catch (InterruptedException ex) {
-            logger.error("Controller: " + controllerName + ", is interrupted! reason: " + ex, ex);
+            logger.error("Controller: {}, is interrupted! reason: {}", controllerName, ex, ex);
         }
     }
 
@@ -114,12 +104,12 @@ public class HelixController implements Runnable {
 
     private void disconnect() {
         if (zkHelixManager != null) {
-            logger.info("Controller: " + controllerName + ", has disconnected from cluster: " + clusterName);
+            logger.info("Controller: {}, has disconnected from cluster: {}", controllerName, clusterName);
             zkHelixManager.disconnect();
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
 
             logger.info("Starting helix controller");
