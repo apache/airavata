@@ -5,9 +5,8 @@ import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.constraints.Valid;
 
 
 @RestController
@@ -28,12 +27,12 @@ public class AgentController {
     }
 
     @PostMapping("/tunnel")
-    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelCreationRequest tunnelRequest) {
+    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Validated @RequestBody AgentTunnelCreationRequest tunnelRequest) {
         return ResponseEntity.accepted().body(agentConnectionHandler.runTunnelOnAgent(tunnelRequest));
     }
 
     @PostMapping("/executecommandrequest")
-    public ResponseEntity<AgentCommandAck> runCommandOnAgent(@Valid @RequestBody AgentCommandRequest commandRequest) {
+    public ResponseEntity<AgentCommandAck> runCommandOnAgent(@Validated @RequestBody AgentCommandRequest commandRequest) {
         logger.info("Received command request to run on agent {}", commandRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runCommandOnAgent(commandRequest));
@@ -51,7 +50,7 @@ public class AgentController {
     }
 
     @PostMapping("/executejupyterrequest")
-    public ResponseEntity<JupyterExecutionAck> runJupyterOnAgent(@Valid @RequestBody JupyterExecutionRequest executionRequest) {
+    public ResponseEntity<JupyterExecutionAck> runJupyterOnAgent(@Validated @RequestBody JupyterExecutionRequest executionRequest) {
         logger.info("Received jupyter execution request to run on agent {}", executionRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(executionRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runJupyterOnAgent(executionRequest));
@@ -70,7 +69,7 @@ public class AgentController {
 
 
     @PostMapping("/executepythonrequest")
-    public ResponseEntity<AgentPythonRunAck> runPythonOnAgent(@Valid @RequestBody AgentPythonRunRequest pythonRunRequest) {
+    public ResponseEntity<AgentPythonRunAck> runPythonOnAgent(@Validated @RequestBody AgentPythonRunRequest pythonRunRequest) {
         logger.info("Received python execution request to run on agent {}", pythonRunRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(pythonRunRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runPythonOnAgent(pythonRunRequest));

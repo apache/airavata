@@ -20,9 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
-
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -48,9 +45,8 @@ public class LibraryPrependPathEntity implements Serializable {
 	@Column(name="NAME")
 	private String name;
 
-	@ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "DEPLOYMENT_ID")
-	@ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
 	private ApplicationDeploymentEntity applicationDeployment;
 
 	public LibraryPrependPathEntity() {

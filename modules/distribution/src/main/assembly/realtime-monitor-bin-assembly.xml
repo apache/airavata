@@ -88,7 +88,6 @@
                 <include>org.apache.airavata:airavata-commons:jar</include>
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>commons-cli:commons-cli</include>
-                <include>commons-pool:commons-pool</include>
                 <include>org.apache.thrift:libthrift:jar</include>
 
                 <!-- kafka specific jars -->
@@ -115,10 +114,8 @@
                 <include>org.apache.logging.log4j:log4j-core</include>
                 <include>org.apache.logging.log4j:log4j-slf4j2-impl</include>
                 <include>org.apache.logging.log4j:log4j-1.2-api</include>
-
-                <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
-
+                <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.apache.airavata:platform-monitoring:jar</include>
                 <include>io.prometheus:simpleclient:jar</include>
                 <include>io.prometheus:simpleclient_httpserver:jar</include>

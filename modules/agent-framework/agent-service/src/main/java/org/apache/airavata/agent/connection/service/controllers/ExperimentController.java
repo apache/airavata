@@ -8,14 +8,9 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.constraints.Valid;
-
-class ExperimentController {
-
-};
 
 @RestController
 @RequestMapping("/api/v1/exp")
@@ -33,7 +28,7 @@ public class ExperimentController {
     }
 
     @PostMapping(value = "/launch", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LaunchAgentResponse> createAndLaunchExperiment(@Valid @RequestBody LaunchAgentRequest request) {
+    public ResponseEntity<LaunchAgentResponse> createAndLaunchExperiment(@Validated @RequestBody LaunchAgentRequest request) {
         LaunchAgentResponse agentResponse = agentManagementHandler.createAndLaunchExperiment(request);
         return ResponseEntity.ok(agentResponse);
     }
