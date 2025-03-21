@@ -30,7 +30,7 @@ import java.util.List;
  * The persistent class for the gateway_profile database table.
  */
 @Entity
-@Table(name = "GATEWAY_PROFILE")
+@Table(name = "GATEWAY_PROFILE", catalog = "app_catalog")
 public class GatewayProfileEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

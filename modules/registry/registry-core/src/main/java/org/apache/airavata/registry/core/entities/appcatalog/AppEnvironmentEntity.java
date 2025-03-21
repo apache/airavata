@@ -20,9 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
-
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -49,9 +46,8 @@ public class AppEnvironmentEntity implements Serializable {
     @Column(name = "ENV_ORDER")
     private int envPathOrder;
 
-    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class)
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "DEPLOYMENT_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public AppEnvironmentEntity() {

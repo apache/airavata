@@ -74,7 +74,7 @@ public class   ExperimentEntity implements Serializable {
     public boolean enableEmailNotification;
 
     @Lob
-    @Column(name = "EMAIL_ADDRESSES")
+    @Column(name = "EMAIL_ADDRESSES", columnDefinition = "text")
     public String emailAddresses;
 
     @OneToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL,

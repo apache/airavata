@@ -43,7 +43,7 @@ public class ProcessOutputEntity implements Serializable {
     private String name;
 
     @Lob
-    @Column(name = "OUTPUT_VALUE")
+    @Column(name = "OUTPUT_VALUE", columnDefinition = "longtext")
     private String value;
 
     @Column(name = "DATA_TYPE")
@@ -53,13 +53,13 @@ public class ProcessOutputEntity implements Serializable {
     @Column(name = "APPLICATION_ARGUMENT")
     private String applicationArgument;
 
-    @Column(name = "IS_REQUIRED")
+    @Column(name = "IS_REQUIRED", columnDefinition = "smallint")
     private boolean isRequired;
 
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
     private boolean requiredToAddedToCommandLine;
 
-    @Column(name = "DATA_MOVEMENT")
+    @Column(name = "DATA_MOVEMENT", columnDefinition = "smallint")
     private boolean dataMovement;
 
     @Column(name = "LOCATION")
@@ -68,7 +68,7 @@ public class ProcessOutputEntity implements Serializable {
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
-    @Column(name = "OUTPUT_STREAMING")
+    @Column(name = "OUTPUT_STREAMING", columnDefinition = "smallint")
     private boolean outputStreaming;
 
     @Column(name = "STORAGE_RESOURCE_ID")

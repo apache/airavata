@@ -35,9 +35,6 @@ import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
-
 /**
  * The persistent class for the COMPUTE_RESOURCE_RESERVATION database table.
  */
@@ -67,12 +64,11 @@ public class ComputeResourceReservationEntity implements Serializable {
 
     // TODO: FK queue table to BatchQueueEntity?
 
-    @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
+    @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class, cascade = CascadeType.ALL)
     @JoinColumns({
             @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false, updatable = false),
             @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", referencedColumnName = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
     })
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public ComputeResourceReservationEntity() {

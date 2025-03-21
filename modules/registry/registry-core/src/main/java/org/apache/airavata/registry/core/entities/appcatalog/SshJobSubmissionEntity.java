@@ -42,7 +42,7 @@ public class SshJobSubmissionEntity implements Serializable {
 	private String jobSubmissionInterfaceId;
 
 	@ManyToOne(cascade= CascadeType.MERGE)
-	@JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", nullable = false, updatable = false)
+	@JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, nullable = false, updatable = false)
 	private ResourceJobManagerEntity resourceJobManager;
 
 	@Column(name="ALTERNATIVE_SSH_HOSTNAME")

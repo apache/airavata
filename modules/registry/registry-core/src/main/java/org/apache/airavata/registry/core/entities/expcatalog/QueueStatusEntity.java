@@ -43,13 +43,13 @@ public class QueueStatusEntity implements Serializable {
     private String queueName;
 
     @Id
-    @Column(name = "CREATED_TIME")
+    @Column(name = "CREATED_TIME", columnDefinition = "bigint")
     private BigInteger time;
 
     @Column(name = "QUEUE_UP")
     private boolean queueUp;
 
-    @Column(name = "RUNNING_JOBS")
+    @Column(name = "RUNNING_JOBS", columnDefinition = "int")
     private boolean runningJobs;
 
     @Column(name = "QUEUED_JOBS")

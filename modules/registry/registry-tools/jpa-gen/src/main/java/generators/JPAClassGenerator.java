@@ -222,9 +222,9 @@ public class JPAClassGenerator extends AbstractGenerator{
 
 	public String generatePersistenceXmlEntry(JPAClassModel model){
 		String xmlEntry=null;
-		xmlEntry=addLines(xmlEntry,"<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0\">");
+		xmlEntry=addLines(xmlEntry,"<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.0\">");
 		xmlEntry=addLines(xmlEntry,tabs(1)+"<persistence-unit name=\"appcatalog_data\">");
-		xmlEntry=addLines(xmlEntry,tabs(2)+"<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>");
+		xmlEntry=addLines(xmlEntry,tabs(2)+"<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>");
 		xmlEntry=addLines(xmlEntry,tabs(2)+"<class>"+getJpaClassPackageName()+"."+model.className+"</class>");
 		xmlEntry=addLines(xmlEntry,tabs(2)+"<exclude-unlisted-classes>true</exclude-unlisted-classes>");
 		xmlEntry=addLines(xmlEntry,tabs(1)+"</persistence-unit>");

@@ -45,7 +45,7 @@ public class ApplicationInterfaceEntity implements Serializable {
 	@Column(name="APPLICATION_NAME")
 	private String applicationName;
 
-	@Column(name="ARCHIVE_WORKING_DIRECTORY")
+	@Column(name="ARCHIVE_WORKING_DIRECTORY", columnDefinition = "smallint")
 	private boolean archiveWorkingDirectory;
 
 	@Column(name="CREATION_TIME", nullable = false, updatable = false)

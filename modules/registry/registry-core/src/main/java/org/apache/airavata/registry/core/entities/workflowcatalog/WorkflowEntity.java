@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.workflowcatalog;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 
-import java.nio.ByteBuffer;
+//import java.nio.ByteBuffer;
 import java.util.List;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -54,7 +54,7 @@ public class WorkflowEntity implements Serializable {
     private String graph;
 
     @Column(name = "IMAGE")
-    private ByteBuffer image;
+    private byte[] image;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -123,12 +123,12 @@ public class WorkflowEntity implements Serializable {
         this.graph = graph;
     }
 
-    public ByteBuffer getImage() {
+    public byte[] getImage() {
 
         return this.image;
     }
 
-    public void setImage(ByteBuffer image) {
+    public void setImage(byte[] image) {
 
         this.image = image;
     }

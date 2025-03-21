@@ -27,7 +27,7 @@ import jakarta.persistence.*;
  *
  */
 @Entity
-@Table(name = "SSH_ACCOUNT_PROVISIONER_CONFIG")
+@Table(name = "SSH_ACCOUNT_PROVISIONER_CONFIG", catalog = "app_catalog")
 @IdClass(SSHAccountProvisionerConfigurationPK.class)
 public class SSHAccountProvisionerConfiguration {
     @Id

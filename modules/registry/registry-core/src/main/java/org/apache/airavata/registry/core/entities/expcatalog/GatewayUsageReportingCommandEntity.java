@@ -37,7 +37,7 @@ public class GatewayUsageReportingCommandEntity implements Serializable {
     private String computeResourceId;
 
     @Lob
-    @Column(name = "COMMAND")
+    @Column(name = "COMMAND", columnDefinition = "longtext")
     private String command;
 
     public String getGatewayId() {

@@ -43,7 +43,7 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "DESCRIPTION")
     private String storageResourceDescription;
 
-    @Column(name = "ENABLED")
+    @Column(name = "ENABLED", columnDefinition = "smallint")
     private boolean enabled;
 
     @Column(name = "HOST_NAME")

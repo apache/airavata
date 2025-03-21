@@ -88,7 +88,6 @@
 
                 <include>org.apache.airavata:airavata-commons:jar</include>
                 <include>commons-cli:commons-cli</include>
-                <include>commons-pool:commons-pool</include>
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>org.apache.thrift:libthrift:jar</include>
 

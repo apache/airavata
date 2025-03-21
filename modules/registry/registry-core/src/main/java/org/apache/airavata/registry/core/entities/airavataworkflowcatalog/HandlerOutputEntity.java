@@ -50,13 +50,13 @@ public class HandlerOutputEntity implements Serializable {
     @Column(name = "APPLICATION_ARGUMENT")
     private String applicationArgument;
 
-    @Column(name = "IS_REQUIRED")
+    @Column(name = "IS_REQUIRED", columnDefinition = "smallint")
     private boolean isRequired;
 
     @Column(name = "REQUIRED_TO_ADDED_TO_COMMAND_LINE")
     private boolean requiredToAddedToCommandLine;
 
-    @Column(name = "DATA_MOVEMENT")
+    @Column(name = "DATA_MOVEMENT", columnDefinition = "smallint")
     private boolean dataMovement;
 
     @Column(name = "LOCATION")
@@ -65,7 +65,7 @@ public class HandlerOutputEntity implements Serializable {
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
-    @Column(name = "OUTPUT_STREAMING")
+    @Column(name = "OUTPUT_STREAMING", columnDefinition = "tinyint")
     private boolean outputStreaming;
 
     @Column(name = "STORAGE_RESOURCE_ID")
