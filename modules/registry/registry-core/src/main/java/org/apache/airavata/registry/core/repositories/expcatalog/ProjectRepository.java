@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.workspace.Project;
@@ -30,12 +31,14 @@ import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProjectRepository extends ExpCatAbstractRepository<Project, ProjectEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ProjectRepository.class);

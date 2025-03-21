@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.sharing.registry.db.repositories;
 
+import jakarta.persistence.Query;
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
 import org.apache.airavata.sharing.registry.db.entities.SharingPK;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
@@ -31,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.persistence.Query;
 
 public class SharingRepository extends AbstractRepository<Sharing, SharingEntity, SharingPK> {
     private final static Logger logger = LoggerFactory.getLogger(SharingRepository.class);

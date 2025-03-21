@@ -3,8 +3,6 @@ package org.apache.airavata.agent.connection.service.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class AgentLaunchRequest {
 
     private String experimentName;
@@ -86,7 +84,7 @@ public class AgentLaunchRequest {
     }
 
     public String getApplicationInterfaceName() {
-        return remoteCluster + (StringUtils.isNotBlank(group) ? ("_" + group) : "");
+        return remoteCluster + (group != null && !group.trim().isEmpty() ? ("_" + group) : "");
     }
 
     public String getProjectName() {

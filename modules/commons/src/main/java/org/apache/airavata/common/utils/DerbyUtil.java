@@ -19,14 +19,14 @@
  */
 package org.apache.airavata.common.utils;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.sql.DriverManager;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**

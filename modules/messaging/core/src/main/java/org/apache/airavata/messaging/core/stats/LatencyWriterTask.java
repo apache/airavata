@@ -20,7 +20,6 @@
 package org.apache.airavata.messaging.core.stats;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 

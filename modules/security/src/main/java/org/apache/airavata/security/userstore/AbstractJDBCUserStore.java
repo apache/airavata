@@ -20,7 +20,6 @@
 package org.apache.airavata.security.userstore;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.UserStore;
 import org.apache.airavata.security.UserStoreException;

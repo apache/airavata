@@ -20,19 +20,18 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorPK;
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorPK;
 import org.apache.airavata.registry.core.utils.ExpCatalogUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 public class ProcessErrorRepository extends ExpCatAbstractRepository<ErrorModel, ProcessErrorEntity, ProcessErrorPK> {
     private final static Logger logger = LoggerFactory.getLogger(ProcessErrorRepository.class);

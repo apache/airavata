@@ -1,6 +1,5 @@
 package org.apache.airavata.file.server.controller;
 
-import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.FileUploadResponse;
 import org.apache.airavata.file.server.service.AirvataFileService;
 import org.slf4j.Logger;

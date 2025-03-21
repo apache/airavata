@@ -20,7 +20,6 @@
 package org.apache.airavata.credential.store.notifier.impl;
 
 import junit.framework.TestCase;
-import org.apache.airavata.credential.store.notifier.NotificationMessage;
 
 /**
  * User: AmilaJ (amilaj@apache.org)

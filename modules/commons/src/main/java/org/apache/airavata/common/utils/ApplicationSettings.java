@@ -20,7 +20,6 @@
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -349,9 +348,8 @@ public class ApplicationSettings {
     }
 
     public static boolean getBooleanSetting(String key) throws ApplicationSettingsException {
-        String val = getInstance().getSettingImpl(key);
-        return Optional.ofNullable(BooleanUtils.toBooleanObject(val))
-                .orElseThrow(() -> new ApplicationSettingsException("Value can not be parsed to Boolean"));
+        String value = getSetting(key);
+        return Boolean.parseBoolean(value);
     }
 
     public static long getLongSetting(String key) throws ApplicationSettingsException {

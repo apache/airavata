@@ -19,13 +19,13 @@
  */
 package org.apache.airavata.service.profile.user.core.repositories;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.commons.utils.JPAUtils;
 import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.service.profile.commons.utils.QueryConstants;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +95,7 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
     public UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         UserProfileEntity entity = mapper.map(userProfile, UserProfileEntity.class);
         UserProfileEntity persistedCopy = JPAUtils.execute(entityManager -> {
             UserProfileEntity result = entityManager.merge(entity);

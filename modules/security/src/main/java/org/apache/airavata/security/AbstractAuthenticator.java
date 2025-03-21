@@ -19,8 +19,6 @@
  */
 package org.apache.airavata.security;
 
-import org.apache.airavata.common.context.RequestContext;
-import org.apache.airavata.common.context.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

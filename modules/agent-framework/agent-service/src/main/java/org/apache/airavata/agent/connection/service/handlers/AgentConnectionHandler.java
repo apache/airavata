@@ -1,48 +1,16 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
-import java.awt.image.Kernel;
+import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
+import org.apache.airavata.agent.*;
+import org.apache.airavata.agent.connection.service.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.airavata.agent.AgentCommunicationServiceGrpc;
-import org.apache.airavata.agent.AgentMessage;
-import org.apache.airavata.agent.AgentPing;
-import org.apache.airavata.agent.CommandExecutionRequest;
-import org.apache.airavata.agent.CommandExecutionResponse;
-import org.apache.airavata.agent.EnvSetupResponse;
-import org.apache.airavata.agent.JupyterExecutionResponse;
-import org.apache.airavata.agent.KernelRestartRequest;
-import org.apache.airavata.agent.KernelRestartResponse;
-import org.apache.airavata.agent.PythonExecutionRequest;
-import org.apache.airavata.agent.PythonExecutionResponse;
-import org.apache.airavata.agent.ServerMessage;
-import org.apache.airavata.agent.TunnelCreationRequest;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupAck;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupRequest;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupResponse;
-import org.apache.airavata.agent.connection.service.models.AgentInfoResponse;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartAck;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartRequest;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartResponse;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelAck;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelRequest;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.server.service.GrpcService;
 
 @GrpcService
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {

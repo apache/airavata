@@ -20,20 +20,23 @@
 */
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.DataProductInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String> implements DataProductInterface {
     private final static Logger logger = LoggerFactory.getLogger(DataProductRepository.class);

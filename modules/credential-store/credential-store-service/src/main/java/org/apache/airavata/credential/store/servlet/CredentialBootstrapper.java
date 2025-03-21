@@ -19,29 +19,43 @@
  */
 package org.apache.airavata.credential.store.servlet;
 
-import edu.uiuc.ncsa.myproxy.oa4mp.client.loader.ClientBootstrapper;
-import edu.uiuc.ncsa.security.core.util.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 
 import javax.servlet.ServletContext;
 import java.io.File;
 
 /**
- * Bootstrapper class for credential-store.
+ * Bootstrapper class for credential-store using Spring Security OAuth2.
  */
-public class CredentialBootstrapper extends ClientBootstrapper {
+public class CredentialBootstrapper {
 
     protected static Logger log = LoggerFactory.getLogger(CredentialBootstrapper.class);
 
-    public ConfigurationLoader getConfigurationLoader(ServletContext servletContext) throws Exception {
-
+    public ClientRegistrationRepository getClientRegistrationRepository(ServletContext servletContext) throws Exception {
         File currentDirectory = new File(".");
-
         log.info("Current directory is - " + currentDirectory.getAbsolutePath());
 
-        return super.getConfigurationLoader(servletContext);
+        // Create OAuth2 client registration
+        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId("myproxy")
+                .clientId(System.getProperty("oauth.client.id"))
+                .clientSecret(System.getProperty("oauth.client.secret"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+                .scope("openid", "profile", "email")
+                .authorizationUri(System.getProperty("oauth.authorization.uri"))
+                .tokenUri(System.getProperty("oauth.token.uri"))
+                .userInfoUri(System.getProperty("oauth.userinfo.uri"))
+                .userNameAttributeName("sub")
+                .clientName("MyProxy OAuth2 Client")
+                .build();
 
+        return new InMemoryClientRegistrationRepository(clientRegistration);
     }
-
 }

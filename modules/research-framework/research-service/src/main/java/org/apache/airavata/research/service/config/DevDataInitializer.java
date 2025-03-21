@@ -17,9 +17,6 @@
  */
 package org.apache.airavata.research.service.config;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
@@ -33,6 +30,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Profile("dev")

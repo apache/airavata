@@ -21,16 +21,13 @@ package org.apache.airavata.service.profile.client.samples;
 
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.*;
-import org.apache.airavata.model.workspace.User;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.client.util.ProfileServiceClientUtil;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

@@ -1,34 +1,12 @@
 package org.apache.airavata.agent.connection.service.controllers;
 
 import org.apache.airavata.agent.connection.service.handlers.AgentConnectionHandler;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupAck;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupRequest;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupResponse;
-import org.apache.airavata.agent.connection.service.models.AgentInfoResponse;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartAck;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartRequest;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartResponse;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelAck;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelRequest;
+import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/agent")

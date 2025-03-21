@@ -20,9 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
+import jakarta.persistence.*;
 import org.apache.airavata.model.ComponentStatus;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 

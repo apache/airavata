@@ -4,12 +4,12 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
+import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageSerializer;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.TaskResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 @TaskDef(name = "Parsing Triggering Task")
 public class ParsingTriggeringTask extends AiravataTask {
 
-    private final static Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(ParsingTriggeringTask.class);
 
     private static Producer<String, ProcessCompletionMessage> producer;
 
@@ -33,7 +33,7 @@ public class ParsingTriggeringTask extends AiravataTask {
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                     StringSerializer.class.getName());
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ProcessCompletionMessageSerializer.class.getName());
-            producer = new KafkaProducer<String, ProcessCompletionMessage>(props);
+            producer = new KafkaProducer<>(props);
         }
     }
 
@@ -49,7 +49,7 @@ public class ParsingTriggeringTask extends AiravataTask {
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
 
-        logger.info("Starting parsing triggerring task " + getTaskId() + ", experiment id " + getExperimentId());
+        logger.info("Starting parsing triggering task {}, experiment id {}", getTaskId(), getExperimentId());
 
         ProcessCompletionMessage completionMessage = new ProcessCompletionMessage();
         completionMessage.setExperimentId(getExperimentId());

@@ -1,8 +1,8 @@
 package org.apache.airavata.common.utils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -11,11 +11,9 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class ThriftClientPoolTest {
 

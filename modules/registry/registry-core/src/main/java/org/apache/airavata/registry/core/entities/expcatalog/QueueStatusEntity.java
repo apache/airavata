@@ -21,9 +21,9 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 /**
  * The persistent class for the queue_status database table.

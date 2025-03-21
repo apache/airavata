@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
@@ -30,14 +31,15 @@ import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.UsrResourceProfile;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class UserResourceProfileRepository extends AppCatAbstractRepository<UserResourceProfile, UserResourceProfileEntity, UserResourceProfilePK> implements UsrResourceProfile {
     private final static Logger logger = LoggerFactory.getLogger(UserResourceProfileRepository.class);

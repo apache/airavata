@@ -19,11 +19,11 @@
  */
 package org.apache.airavata.helix.task.api.support;
 
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-
-import java.io.File;
 
 /**
  * TODO: Class level comments please

@@ -37,16 +37,13 @@
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
-            <version>${thrift.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-            <version>${jakarta.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
@@ -54,31 +51,5 @@
             <version>${javax.annotation.version}</version>
         </dependency>
     </dependencies>
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>replacer</artifactId>
-                <version>${maven.replacer.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <includes>
-                        <include>${basedir}/src/main/java/org/apache/airavata/**/*.java</include>
-                    </includes>
-                    <token>, date = ".*"</token>
-                    <value> </value>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

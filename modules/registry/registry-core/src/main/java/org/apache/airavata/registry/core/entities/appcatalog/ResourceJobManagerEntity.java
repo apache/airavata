@@ -20,10 +20,10 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import jakarta.persistence.*;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
