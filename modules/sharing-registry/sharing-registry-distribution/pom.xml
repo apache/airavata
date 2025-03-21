@@ -56,9 +56,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>${openjpa.version}</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate-core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>

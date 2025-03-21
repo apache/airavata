@@ -21,8 +21,6 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -104,9 +102,8 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @OrderBy("startTime ASC")
     private List<ComputeResourceReservationEntity> reservations;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private  GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {
