@@ -49,7 +49,7 @@ public class ProcessEntity implements Serializable {
     private Timestamp lastUpdateTime;
 
     @Lob
-    @Column(name = "PROCESS_DETAIL")
+    @Column(name = "PROCESS_DETAIL", columnDefinition = "text")
     private String processDetail;
 
     @Column(name = "APPLICATION_INTERFACE_ID")
@@ -62,7 +62,7 @@ public class ProcessEntity implements Serializable {
     private String computeResourceId;
 
     @Lob
-    @Column(name = "TASK_DAG")
+    @Column(name = "TASK_DAG", columnDefinition = "text")
     private String taskDag;
 
     @Column(name = "GATEWAY_EXECUTION_ID")
@@ -72,7 +72,7 @@ public class ProcessEntity implements Serializable {
     private boolean enableEmailNotification;
 
     @Lob
-    @Column(name = "EMAIL_ADDRESSES")
+    @Column(name = "EMAIL_ADDRESSES", columnDefinition = "text")
     private String emailAddresses;
 
     @Column(name = "STORAGE_RESOURCE_ID")
@@ -81,7 +81,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "USER_DN")
     private String userDn;
 
-    @Column(name = "GENERATE_CERT")
+    @Column(name = "GENERATE_CERT", columnDefinition = "smallint")
     private boolean generateCert;
 
     @Column(name = "EXPERIMENT_DATA_DIR", length = 512)
@@ -122,7 +122,7 @@ public class ProcessEntity implements Serializable {
     private List<TaskEntity> tasks;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", insertable = false, nullable = false, updatable = false)
     private ExperimentEntity experiment;
 
     @OneToMany(targetEntity = ProcessWorkflowEntity.class, cascade = CascadeType.ALL,

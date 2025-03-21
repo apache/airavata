@@ -9,8 +9,10 @@ public class ProcessWorkflowPK implements Serializable {
     private String processId;
     private String workflowId;
 
-    @Id
-    @Column(name = "PROCESS_ID")
+    public ProcessWorkflowPK() {}
+
+//    @Id
+//    @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
     }
@@ -19,8 +21,8 @@ public class ProcessWorkflowPK implements Serializable {
         this.processId = processId;
     }
 
-    @Id
-    @Column(name = "WORKFLOW_ID")
+//    @Id
+//    @Column(name = "WORKFLOW_ID")
     public String getWorkflowId() {
         return workflowId;
     }

@@ -46,7 +46,7 @@ public class JobEntity implements Serializable {
     private String processId;
 
     @Lob
-    @Column(name = "JOB_DESCRIPTION")
+    @Column(name = "JOB_DESCRIPTION", columnDefinition = "longtext")
     private String jobDescription;
 
     @Column(name = "CREATION_TIME")
@@ -62,11 +62,11 @@ public class JobEntity implements Serializable {
     private String workingDir;
 
     @Lob
-    @Column(name = "STD_OUT")
+    @Column(name = "STD_OUT", columnDefinition = "longtext")
     private String stdOut;
 
     @Lob
-    @Column(name = "STD_ERR")
+    @Column(name = "STD_ERR", columnDefinition = "longtext")
     private String stdErr;
 
     @Column(name = "EXIT_CODE")

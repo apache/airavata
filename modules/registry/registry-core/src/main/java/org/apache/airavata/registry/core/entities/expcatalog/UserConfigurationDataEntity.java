@@ -51,7 +51,7 @@ public class UserConfigurationDataEntity implements Serializable {
     @Column(name = "USER_DN")
     private String userDN;
 
-    @Column(name = "GENERATE_CERT")
+    @Column(name = "GENERATE_CERT", columnDefinition = "smallint")
     private boolean generateCert;
 
     @Column(name = "RESOURCE_HOST_ID")

@@ -27,7 +27,7 @@ import java.io.Serializable;
  * The persistent class for the storage_preference database table.
  */
 @Entity
-@Table(name = "STORAGE_PREFERENCE")
+@Table(name = "STORAGE_PREFERENCE", catalog = "app_catalog")
 @IdClass(StoragePreferencePK.class)
 public class StoragePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;

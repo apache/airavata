@@ -45,7 +45,7 @@ public class ApplicationOutputEntity implements Serializable {
     @Column(name = "APP_ARGUMENT")
     private String applicationArgument;
 
-    @Column(name = "DATA_MOVEMENT")
+    @Column(name = "DATA_MOVEMENT", columnDefinition = "smallint")
     private boolean dataMovement;
 
     @Column(name = "DATA_NAME_LOCATION")
@@ -55,16 +55,16 @@ public class ApplicationOutputEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private DataType type;
 
-    @Column(name = "IS_REQUIRED")
+    @Column(name = "IS_REQUIRED", columnDefinition = "smallint")
     private boolean isRequired;
 
-    @Column(name = "OUTPUT_STREAMING")
+    @Column(name = "OUTPUT_STREAMING", columnDefinition = "smallint")
     private boolean outputStreaming;
 
     @Column(name = "OUTPUT_VALUE")
     private String value;
 
-    @Column(name = "REQUIRED_TO_COMMANDLINE")
+    @Column(name = "REQUIRED_TO_COMMANDLINE", columnDefinition = "smallint")
     private boolean requiredToAddedToCommandLine;
 
     @Column(name = "SEARCH_QUERY")

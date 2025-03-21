@@ -43,7 +43,7 @@ public class WorkflowInputEntity implements Serializable {
     @Column(name = "APP_ARGUMENT")
     private String applicationArgument;
 
-    @Column(name = "DATA_STAGED")
+    @Column(name = "DATA_STAGED", columnDefinition = "smallint")
     private boolean dataStaged;
 
     @Column(name = "DATA_TYPE")
@@ -52,22 +52,22 @@ public class WorkflowInputEntity implements Serializable {
     @Column(name = "INPUT_ORDER")
     private int inputOrder;
 
-    @Column(name = "INPUT_VALUE")
+    @Column(name = "INPUT_VALUE", columnDefinition = "text")
     private String inputValue;
 
-    @Column(name = "IS_REQUIRED")
+    @Column(name = "IS_REQUIRED", columnDefinition = "smallint")
     private boolean isRequired;
 
     @Column(name = "METADATA")
     private String metaData;
 
-    @Column(name = "REQUIRED_TO_COMMANDLINE")
+    @Column(name = "REQUIRED_TO_COMMANDLINE", columnDefinition = "smallint")
     private boolean requiredToAddedToCommandLine;
 
-    @Column(name = "STANDARD_INPUT")
+    @Column(name = "STANDARD_INPUT", columnDefinition = "smallint")
     private boolean standardInput;
 
-    @Column(name = "USER_FRIENDLY_DESC")
+    @Column(name = "USER_FRIENDLY_DESC", columnDefinition = "text")
     private String userFriendlyDescription;
 
     @ManyToOne(targetEntity = WorkflowEntity.class, cascade = CascadeType.MERGE)
