@@ -50,10 +50,10 @@ public class HandlerInputEntity implements Serializable {
     @Column(name = "APPLICATION_ARGUMENT")
     private String applicationArgument;
 
-    @Column(name = "STANDARD_INPUT")
+    @Column(name = "STANDARD_INPUT", columnDefinition = "smallint")
     private boolean standardInput;
 
-    @Column(name = "USER_FRIENDLY_DESCRIPTION")
+    @Column(name = "USER_FRIENDLY_DESCRIPTION", columnDefinition = "text")
     private String userFriendlyDescription;
 
     @Column(name = "METADATA", length = 4096)
@@ -62,19 +62,19 @@ public class HandlerInputEntity implements Serializable {
     @Column(name = "INPUT_ORDER")
     private int inputOrder;
 
-    @Column(name = "IS_REQUIRED")
+    @Column(name = "IS_REQUIRED", columnDefinition = "smallint")
     private boolean isRequired;
 
     @Column(name = "REQUIRED_TO_ADDED_TO_COMMAND_LINE")
     private boolean requiredToAddedToCommandLine;
 
-    @Column(name = "DATA_STAGED")
+    @Column(name = "DATA_STAGED", columnDefinition = "smallint")
     private boolean dataStaged;
 
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
-    @Column(name = "IS_READ_ONLY")
+    @Column(name = "IS_READ_ONLY", columnDefinition = "smallint")
     private boolean isReadOnly;
 
     @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

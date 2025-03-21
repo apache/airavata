@@ -19,9 +19,6 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,12 +55,11 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
     @Column(name = "CONFIG_VALUE")
     private String configValue;
 
-    @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
+    @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class, cascade = CascadeType.ALL)
     @JoinColumns({
             @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false),
             @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", referencedColumnName = "GROUP_RESOURCE_PROFILE_ID", nullable = false)
     })
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public GroupSSHAccountProvisionerConfig() {

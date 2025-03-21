@@ -2,7 +2,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
 
     <persistence-unit name="airavata-sharing-registry">
-        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>org.apache.airavata.sharing.registry.db.entities.DomainEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.EntityEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.EntityTypeEntity</class>
@@ -13,8 +13,7 @@
         <class>org.apache.airavata.sharing.registry.db.entities.GroupAdminEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
         <properties>
-            <property name="openjpa.jdbc.MappingDefaults"
-                      value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+            <property name="hibernate.cascade" value="all"/>
         </properties>
     </persistence-unit>
 </persistence>

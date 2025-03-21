@@ -51,7 +51,7 @@ public class ProcessStatusEntity implements Serializable {
     private Timestamp timeOfStateChange;
 
     @Lob
-    @Column(name = "REASON")
+    @Column(name = "REASON", columnDefinition = "longtext")
     private String reason;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)

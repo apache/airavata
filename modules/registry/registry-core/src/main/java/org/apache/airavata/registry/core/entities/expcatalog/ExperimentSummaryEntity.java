@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 /**
  * The class for the experiment_summary view.
  */
-@Entity
+//@Entity // @yasithdev EXPERIMENT_SUMMARY not in db. commenting to skip validation.
 @Table(name = "EXPERIMENT_SUMMARY")
 public class ExperimentSummaryEntity implements Serializable {
     private static final long serialVersionUID = 1L;

@@ -53,7 +53,7 @@ public class WorkflowOutputEntity implements Serializable {
 	@Column(name="DATA_TYPE")
 	private String type;
 
-	@Column(name="IS_REQUIRED")
+	@Column(name="IS_REQUIRED", columnDefinition = "smallint")
 	private short isRequired;
 
 	@Column(name="OUTPUT_STREAMING")
@@ -62,7 +62,7 @@ public class WorkflowOutputEntity implements Serializable {
 	@Column(name="OUTPUT_VALUE")
 	private String value;
 
-	@Column(name="REQUIRED_TO_COMMANDLINE")
+	@Column(name="REQUIRED_TO_COMMANDLINE", columnDefinition = "smallint")
 	private short requiredToAddedToCommandLine;
 
 	@Column(name="SEARCH_QUERY")

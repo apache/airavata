@@ -21,8 +21,6 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -65,7 +63,7 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
 
-    @Column(name = "OVERRIDE_BY_AIRAVATA")
+    @Column(name = "OVERRIDE_BY_AIRAVATA", columnDefinition = "smallint")
     private short overridebyAiravata;
 
     @Column(name = "PREFERED_BATCH_QUEUE")
@@ -104,9 +102,8 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @OrderBy("startTime ASC")
     private List<ComputeResourceReservationEntity> reservations;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, nullable = false, updatable = false)
     private  GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {

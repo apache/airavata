@@ -44,9 +44,7 @@
         <logger name="org.apache.helix" level="WARN"/>
         <logger name="org.apache.zookeeper" level="ERROR"/>
         <logger name="org.apache.airavata" level="INFO"/>
-        <logger name="org.hibernate" level="ERROR"/>
-        <logger name="org.apache.openjpa" level="DEBUG"/>
-        <logger name="org.apache.openjpa.enhance" level="DEBUG"/>
+        <logger name="org.hibernate" level="INFO"/>
         <Root level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFileAppender"/>
