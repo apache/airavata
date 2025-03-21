@@ -19,8 +19,6 @@
  */
 package org.apache.airavata.common.utils;
 
-import org.apache.airavata.model.dbevent.EntityType;
-
 /**
  * Created by Ajinkya on 3/22/17.
  */

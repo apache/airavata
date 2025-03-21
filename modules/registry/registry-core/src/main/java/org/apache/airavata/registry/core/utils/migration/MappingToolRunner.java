@@ -4,13 +4,12 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.metamodel.Type;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
-
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.tool.schema.internal.SchemaCreatorImpl;
 import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.tool.schema.internal.SchemaCreatorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

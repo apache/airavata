@@ -21,14 +21,16 @@ package org.apache.airavata.server;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
 import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.commons.cli.ParseException;
 import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,7 +183,7 @@ public class ServerMain {
 			Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
 		}
 
-		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
+		CommandLineParameters commandLineParameters = new StringUtil.CommandLineParameters(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);
         } else {
@@ -197,13 +199,8 @@ public class ServerMain {
 		for (String string : args) {
 			logger.info("Server Arguments: " + string);
 		}
-		String serverNames;
-		try {
-			serverNames = ApplicationSettings.getSetting(SERVERS_KEY);
-			startAllServers(serverNames);
-		} catch (ApplicationSettingsException e1) {
-			logger.error("Error finding servers property");
-		}
+		String serverNames = ApplicationSettings.getSetting(SERVERS_KEY, "all");
+    startAllServers(serverNames);
 		while(!hasStopRequested()){
 			try {
 				Thread.sleep(2000);

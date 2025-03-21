@@ -21,6 +21,7 @@
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
 import jakarta.persistence.*;
+
 import java.io.Serializable;
 
 /**

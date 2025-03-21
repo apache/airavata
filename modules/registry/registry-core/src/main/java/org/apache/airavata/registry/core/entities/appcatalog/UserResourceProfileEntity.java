@@ -20,9 +20,10 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import java.util.*;
 import jakarta.persistence.*;
+
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * The persistent class for the user_resource_profile database table.

@@ -20,17 +20,16 @@
 package org.apache.airavata.api.client;
 
 import org.apache.airavata.api.Airavata;
-
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.thrift.transport.TSSLTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

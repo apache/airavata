@@ -22,20 +22,11 @@ package org.apache.airavata.common.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 
 public class StringUtil {
 	public static final String DELIMETER=",";
@@ -373,106 +364,54 @@ public class StringUtil {
         return byteArrayOutputStream.toString();
     }
     
-    private static Options deriveCommandLineOptions(String[] args){
-    	Options options = new Options();
-    	String[] argCopy = getChangedList(args);
-    	int i=0;
-        for (String arg : argCopy) {
-            if (arg.startsWith("--")){
-            	arg=arg.substring(2);
-                int pos = arg.indexOf('=');
-                String opt;
-                boolean hasArgs=true;
-	            if (pos==-1){ //if not of the form --arg=value
-	            	if (i==argCopy.length-1 || argCopy[i+1].startsWith("-")){ // no value specified 
-	            		hasArgs=false;
-	            	}
-	            	opt=arg;
-	            }else{
-	            	opt=arg.substring(0, pos);
-	            }
-                options.addOption(opt, hasArgs, "");
+    public static Map<String, String> parseCommandLineOptions(String[] args) {
+        Map<String, String> options = new HashMap<>();
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.startsWith("--")) {
+                String key = arg.substring(2);
+                if (i + 1 < args.length && !args[i + 1].startsWith("--")) {
+                    options.put(key, args[i + 1]);
+                    i++;
+                } else {
+                    options.put(key, "true");
+                }
             }
-            i++;
         }
         return options;
     }
-    
-	public static Map<String, String> parseCommandLineOptions(String[] args) {
-		Map<String,String> commandLineOptions=new HashMap<String,String>();
-		try {
-			CommandLineParameters cmdParameters = getCommandLineParser(args);
-			Map<String, String> parameters = cmdParameters.getParameters();
-			for (String s : parameters.keySet()) {
-				commandLineOptions.put(s, parameters.get(s)==null? "":parameters.get(s));
-			}
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-		return commandLineOptions;
-	}
 
-	public static CommandLineParameters getCommandLineParser(String[] args)
-			throws ParseException {
-		String[] argCopy = getChangedList(args);
-		CommandLineParser parser = new DynamicOptionPosixParser();
-		CommandLine cmdLine = parser.parse(deriveCommandLineOptions(argCopy), argCopy);
-		return new CommandLineParameters(cmdLine);
-	}
+    public static class CommandLineParameters {
+        private Map<String, String> parameters = new HashMap<>();
+        private List<String> arguments = new ArrayList<>();
 
-	
-	//commons-cli does not support arg names having the period (".")
-	private static final String ARG_DOT_REPLACE="dot_replacement_value";
-	
-	private static String[] getChangedList(String[] args) {
-		String[] argCopy = Arrays.asList(args).toArray(new String []{});
-		for (int i=0;i<argCopy.length; i++) {
-			argCopy[i]=changeOption(argCopy[i]);
-		}
-		return argCopy;
-	}
-	
-	private static String revertOption(String option){
-		return option==null? option : option.replaceAll(Pattern.quote(ARG_DOT_REPLACE), ".");
-	}
-	
-	private static String changeOption(String option){
-		return option==null? option : option.replaceAll(Pattern.quote("."), ARG_DOT_REPLACE);
-	}
-	
-	private static class DynamicOptionPosixParser extends PosixParser{
-		@Override
-		protected void processOption(String arg0, @SuppressWarnings("rawtypes") ListIterator arg1)
-				throws ParseException {
-			if (getOptions().hasOption(arg0)){
-				super.processOption(arg0, arg1);
-			}
-		}
-	}
-	
-	public static class CommandLineParameters{
-		private Map<String,String> parameters=new HashMap<String, String>();
-		private List<String> arguments=new ArrayList<String>();
-		protected CommandLineParameters(CommandLine cmd){
-			for(Option opt:cmd.getOptions()){
-				parameters.put(revertOption(opt.getOpt()), revertOption(opt.getValue()));
-			}
-			for(String arg:cmd.getArgs()){
-				arguments.add(revertOption(arg));
-			}
-		}
-		public List<String> getArguments() {
-			return arguments;
-		}
-		public void setArguments(List<String> arguments) {
-			this.arguments = arguments;
-		}
-		public Map<String,String> getParameters() {
-			return parameters;
-		}
-		public void setParameters(Map<String,String> parameters) {
-			this.parameters = parameters;
-		}
-	}
+        public CommandLineParameters(String[] args) {
+            Map<String, String> options = parseCommandLineOptions(args);
+            parameters.putAll(options);
+            
+            // Collect non-option arguments
+            for (String arg : args) {
+                if (!arg.startsWith("--")) {
+                    arguments.add(arg);
+                }
+            }
+        }
+
+        public List<String> getArguments() {
+            return arguments;
+        }
+
+        public void setArguments(List<String> arguments) {
+            this.arguments = arguments;
+        }
+
+        public Map<String, String> getParameters() {
+            return parameters;
+        }
+
+        public void setParameters(Map<String, String> parameters) {
+            this.parameters = parameters;
+        }
+    }
 
 }

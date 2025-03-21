@@ -22,7 +22,6 @@ package org.apache.airavata.orchestrator.core.validator;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.task.TaskModel;
 
 /**
  * This is the interface to implement a validation logic, users can implement their validation

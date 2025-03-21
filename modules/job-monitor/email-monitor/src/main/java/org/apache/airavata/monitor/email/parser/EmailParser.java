@@ -19,12 +19,11 @@
  */
 package org.apache.airavata.monitor.email.parser;
 
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.registry.api.RegistryService;
-
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
 
 public interface EmailParser {
     static final String STATUS = "status";

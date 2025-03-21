@@ -21,6 +21,8 @@ package org.apache.airavata.security.util;
 
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.security.AiravataSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -31,8 +33,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TrustStoreManager {
     private final static Logger logger = LoggerFactory.getLogger(TrustStoreManager.class);

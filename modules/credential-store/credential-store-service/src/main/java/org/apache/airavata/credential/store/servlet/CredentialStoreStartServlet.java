@@ -19,163 +19,130 @@
  */
 package org.apache.airavata.credential.store.servlet;
 
-import edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment;
-import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPResponse;
-import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPService;
-import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
-import edu.uiuc.ncsa.security.servlet.JSPUtil;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.util.ConfigurationReader;
 import org.apache.airavata.credential.store.util.CredentialStoreConstants;
-import org.apache.airavata.credential.store.util.PrivateKeyStore;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_KEY;
 
 /**
  * When portal initiate a request to get credentials it will hit this servlet.
  */
-public class CredentialStoreStartServlet extends ClientServlet {
+public class CredentialStoreStartServlet extends HttpServlet {
 
     private static ConfigurationReader configurationReader = null;
-
     private static Logger log = LoggerFactory.getLogger(CredentialStoreStartServlet.class);
-    private OA4MPService oa4mpService;
-
-    protected String decorateURI(URI inputURI, Map<String, String> parameters) {
-
-        if (parameters.isEmpty()) {
-            return inputURI.toString();
-        }
-
-        String stringUri = inputURI.toString();
-        StringBuilder stringBuilder = new StringBuilder(stringUri);
-
-        boolean isFirst = true;
-
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            if (isFirst) {
-                stringBuilder.append("?");
-                isFirst = false;
-            } else {
-                stringBuilder.append("&");
-            }
-
-            stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
-        }
-
-        return stringBuilder.toString();
-
-    }
+    private ClientRegistrationRepository clientRegistrationRepository;
+    private OAuth2AuthorizedClientService authorizedClientService;
 
     public void init() throws ServletException {
-
-        super.init();
-
         try {
             if (configurationReader == null) {
                 configurationReader = new ConfigurationReader();
             }
-        } catch (CredentialStoreException e) {
+            CredentialBootstrapper bootstrapper = new CredentialBootstrapper();
+            clientRegistrationRepository = bootstrapper.getClientRegistrationRepository(getServletContext());
+        } catch (Exception e) {
             throw new ServletException(e);
         }
-
     }
 
     @Override
-    public OA4MPService getOA4MPService() {
-        return oa4mpService;
-    }
-
-    @Override
-    public void loadEnvironment() throws IOException {
-        environment = getConfigurationLoader().load();
-        oa4mpService = new OA4MPService((ClientEnvironment) environment);
-    }
-
-    @Override
-    protected void doIt(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-
-        String gatewayName
-                = request.getParameter(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER);
-        String portalUserName
-                = request.getParameter(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER);
-        String contactEmail
-                = request.getParameter(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String gatewayName = request.getParameter(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER);
+        String portalUserName = request.getParameter(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER);
+        String contactEmail = request.getParameter(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER);
         String associatedToken = TokenGenerator.generateToken(gatewayName, portalUserName);
 
         if (gatewayName == null) {
-            JSPUtil.handleException(new RuntimeException("Please specify a gateway name."), request, response,
-                    configurationReader.getErrorUrl());
+            handleError(request, response, "Please specify a gateway name.");
             return;
         }
 
         if (portalUserName == null) {
-            JSPUtil.handleException(new RuntimeException("Please specify a portal user name."), request, response,
-                    configurationReader.getErrorUrl());
+            handleError(request, response, "Please specify a portal user name.");
             return;
         }
 
         if (contactEmail == null) {
-            JSPUtil.handleException(new RuntimeException("Please specify a contact email address for community"
-                    + " user account."), request, response, configurationReader.getErrorUrl());
+            handleError(request, response, "Please specify a contact email address for community user account.");
             return;
         }
 
-        log.info("1.a. Starting transaction");
-        OA4MPResponse gtwResp;
-
-        Map<String, String> queryParameters = new HashMap<String, String>();
-        queryParameters.put(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER, gatewayName);
-        queryParameters.put(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER, portalUserName);
-        queryParameters.put(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER, contactEmail);
-        queryParameters.put(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED, associatedToken);
-
-        Map<String, String> additionalParameters = new HashMap<String, String>();
-
-        if (getOA4MPService() == null) {
-            loadEnvironment();
-        }
-
-        String modifiedCallbackUri = decorateURI(getOA4MPService().getEnvironment().getCallback(), queryParameters);
-
-        info("The modified callback URI - " + modifiedCallbackUri);
-
-        additionalParameters.put(getEnvironment().getConstants().get(CALLBACK_URI_KEY), modifiedCallbackUri);
+        log.info("1.a. Starting OAuth2 authorization request");
 
         try {
-            gtwResp = getOA4MPService().requestCert(additionalParameters);
+            ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("myproxy");
+            String redirectUri = clientRegistration.getRedirectUri()
+                    .replace("{baseUrl}", request.getRequestURL().toString().replace(request.getRequestURI(), ""))
+                    .replace("{registrationId}", clientRegistration.getRegistrationId());
 
-            // Private key in store
-            PrivateKeyStore privateKeyStore = PrivateKeyStore.getPrivateKeyStore();
-            privateKeyStore.addKey(associatedToken, gtwResp.getPrivateKey());
+            Map<String, Object> additionalParameters = new HashMap<>();
+            additionalParameters.put(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER, gatewayName);
+            additionalParameters.put(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER, portalUserName);
+            additionalParameters.put(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER, contactEmail);
+            additionalParameters.put(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED, associatedToken);
 
-        } catch (Throwable t) {
-            JSPUtil.handleException(t, request, response, configurationReader.getErrorUrl());
-            return;
+            String state = generateState();
+            String codeVerifier = new Base64StringKeyGenerator(32).generateKey();
+            String codeChallenge = generateCodeChallenge(codeVerifier);
+
+            OAuth2AuthorizationRequest.Builder builder = OAuth2AuthorizationRequest.authorizationCode()
+                    .clientId(clientRegistration.getClientId())
+                    .authorizationUri(clientRegistration.getProviderDetails().getAuthorizationUri())
+                    .redirectUri(redirectUri)
+                    .state(state)
+                    .scope(clientRegistration.getScopes().toArray(new String[0]))
+                    .additionalParameters(additionalParameters);
+
+            builder.attributes(attrs -> {
+                attrs.put(PkceParameterNames.CODE_VERIFIER, codeVerifier);
+                attrs.put(PkceParameterNames.CODE_CHALLENGE, codeChallenge);
+                attrs.put(PkceParameterNames.CODE_CHALLENGE_METHOD, "S256");
+            });
+
+            OAuth2AuthorizationRequest authorizationRequest = builder.build();
+            String authorizationRequestUri = authorizationRequest.getAuthorizationRequestUri();
+            response.sendRedirect(authorizationRequestUri);
+        } catch (RuntimeException e) {
+            handleError(request, response, "Failed to process authorization request: " + e.getMessage());
         }
-        log.info("1.b. Got response. Creating page with redirect for " + gtwResp.getRedirect().getHost());
-        // Normally, we'd just do a redirect, but we will put up a page and show the redirect to the user.
-        // The client response contains the generated private key as well
-        // In a real application, the private key would be stored. This, however, exceeds the scope of this
-        // sample application -- all we need to do to complete the process is send along the redirect url.
+    }
 
-        request.setAttribute(REDIR, REDIR);
-        request.setAttribute("redirectUrl", gtwResp.getRedirect().toString());
-        request.setAttribute(ACTION_KEY, ACTION_KEY);
-        request.setAttribute("action", ACTION_REDIRECT_VALUE);
-        log.info("1.b. Showing redirect page.");
-        JSPUtil.fwd(request, response, configurationReader.getPortalRedirectUrl());
+    private void handleError(HttpServletRequest request, HttpServletResponse response, String message) throws ServletException, IOException {
+        request.setAttribute("error", message);
+        request.getRequestDispatcher(configurationReader.getErrorUrl()).forward(request, response);
+    }
 
+    private String generateState() {
+        return java.util.UUID.randomUUID().toString();
+    }
+
+    private String generateCodeChallenge(String codeVerifier) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Failed to generate code challenge", e);
+        }
     }
 }

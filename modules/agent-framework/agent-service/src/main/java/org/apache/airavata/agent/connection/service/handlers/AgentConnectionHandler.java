@@ -18,22 +18,18 @@
  */
 package org.apache.airavata.agent.connection.service.handlers;
 
-import java.util.List;
+import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
+import org.apache.airavata.agent.*;
+import org.apache.airavata.agent.connection.service.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import org.apache.airavata.agent.*;
-import org.apache.airavata.agent.AsyncCommand;
-import org.apache.airavata.agent.connection.service.models.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.server.service.GrpcService;
-import org.springframework.beans.factory.annotation.Value;
 
 @GrpcService
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {

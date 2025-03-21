@@ -19,11 +19,8 @@
  */
 package org.apache.airavata.agents.api;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
 /**

@@ -13,7 +13,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven.compiler.plugin.version}</version>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
             <release>17</release>
         </configuration>
@@ -83,21 +83,9 @@
           <artifactId>selenium-firefox-driver</artifactId>
           <version>${selenium-firefox-driver.version}</version>
       </dependency>
-
-      <dependency>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpclient</artifactId>
-          <version>${httpclient.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpcore</artifactId>
-          <version>${httpclient.version}</version>
-      </dependency>
       <dependency>
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
-          <version>${commons-io.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.commons</groupId>
@@ -105,9 +93,9 @@
           <version>${commons-exec.version}</version>
       </dependency>
       <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-          <version>${commons-logging.version}</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
           <groupId>org.seleniumhq.selenium</groupId>
@@ -123,7 +111,6 @@
       <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
-          <version>${junit.version}</version>
           <scope>test</scope>
       </dependency>
   </dependencies>

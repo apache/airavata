@@ -23,7 +23,6 @@ import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.app.JobUtil;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

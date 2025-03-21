@@ -20,9 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
+import jakarta.persistence.*;
 import org.apache.airavata.model.data.replica.DataProductType;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;

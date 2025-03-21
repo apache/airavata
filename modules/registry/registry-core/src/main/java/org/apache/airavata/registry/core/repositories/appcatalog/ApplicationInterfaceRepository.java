@@ -19,12 +19,13 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.ApplicationInterfaceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity;
@@ -33,7 +34,6 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

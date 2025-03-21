@@ -18,13 +18,13 @@
  * under the License.
  */
 package generators;
-import java.util.ArrayList;
-import java.util.List;
 
 import model.SQLData;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  *

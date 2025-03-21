@@ -19,9 +19,9 @@
  */
 package org.apache.airavata.orchestrator.core.schedule;
 
-import java.util.List;
-
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+
+import java.util.List;
 
 public  interface HostScheduler {
     /**

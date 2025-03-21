@@ -19,11 +19,12 @@
  */
 package org.apache.airavata.helix.agent.ssh;
 
-import com.jcraft.jsch.Channel;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 
 /**
  * TODO: Class level comments please

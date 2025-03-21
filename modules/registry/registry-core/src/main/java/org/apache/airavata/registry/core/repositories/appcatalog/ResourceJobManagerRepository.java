@@ -19,14 +19,16 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import jakarta.persistence.Query;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
-import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

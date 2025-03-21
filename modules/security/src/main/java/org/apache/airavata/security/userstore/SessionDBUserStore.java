@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.security.userstore;
 
-import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;

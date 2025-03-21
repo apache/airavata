@@ -21,14 +21,12 @@ package org.apache.airavata.helix.agent.ssh;
 
 import com.jcraft.jsch.*;
 import org.apache.airavata.agents.api.*;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

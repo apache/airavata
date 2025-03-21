@@ -19,9 +19,8 @@
  */
 package org.apache.airavata.registry.core.entities.airavataworkflowcatalog;
 
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
-
 import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;

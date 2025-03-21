@@ -19,9 +19,6 @@
  */
 package org.apache.airavata.credential.store.store.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
@@ -33,6 +30,9 @@ import org.apache.airavata.credential.store.store.CredentialWriter;
 import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Writes SSH credentials to database.

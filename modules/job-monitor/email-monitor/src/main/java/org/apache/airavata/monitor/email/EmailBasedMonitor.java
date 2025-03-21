@@ -19,29 +19,22 @@
  */
 package org.apache.airavata.monitor.email;
 
+import jakarta.mail.*;
+import jakarta.mail.search.FlagTerm;
+import jakarta.mail.search.SearchTerm;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import jakarta.mail.Address;
-import jakarta.mail.Flags;
-import jakarta.mail.Folder;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Store;
-import jakarta.mail.search.FlagTerm;
-import jakarta.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.util.*;
 

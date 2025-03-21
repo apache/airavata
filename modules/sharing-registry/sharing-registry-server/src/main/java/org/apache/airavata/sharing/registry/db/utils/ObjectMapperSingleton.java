@@ -19,20 +19,28 @@
  */
 package org.apache.airavata.sharing.registry.db.utils;
 
-import org.dozer.DozerBeanMapper;
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ObjectMapperSingleton extends DozerBeanMapper{
+public class ObjectMapperSingleton {
     private final static Logger logger = LoggerFactory.getLogger(ObjectMapperSingleton.class);
 
     private static ObjectMapperSingleton instance;
+    private final Mapper mapper;
 
-    private ObjectMapperSingleton(){}
+    private ObjectMapperSingleton() {
+        mapper = DozerBeanMapperBuilder.buildDefault();
+    }
 
-    public static ObjectMapperSingleton getInstance(){
-        if(instance == null)
+    public static ObjectMapperSingleton getInstance() {
+        if (instance == null)
             instance = new ObjectMapperSingleton();
         return instance;
+    }
+
+    public Mapper getMapper() {
+        return mapper;
     }
 }

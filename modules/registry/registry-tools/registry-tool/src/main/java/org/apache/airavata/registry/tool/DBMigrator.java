@@ -27,8 +27,10 @@ import java.io.*;
 import java.net.URI;
 import java.sql.*;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class DBMigrator {
     private static final Logger logger = LoggerFactory.getLogger(DBMigrator.class);

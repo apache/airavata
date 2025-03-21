@@ -20,6 +20,7 @@
 package org.apache.airavata.service.profile.commons.user.entities;
 
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity

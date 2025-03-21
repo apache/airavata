@@ -26,10 +26,10 @@ import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
-import org.apache.airavata.credential.store.store.impl.db.CommunityUserDAO;
-import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.CredentialWriter;
+import org.apache.airavata.credential.store.store.impl.db.CommunityUserDAO;
+import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

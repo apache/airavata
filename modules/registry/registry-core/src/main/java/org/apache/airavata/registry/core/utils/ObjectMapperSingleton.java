@@ -23,30 +23,29 @@ package org.apache.airavata.registry.core.utils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TFieldIdEnum;
-import org.dozer.CustomFieldMapper;
-import org.dozer.DozerBeanMapper;
-import org.dozer.classmap.ClassMap;
-import org.dozer.fieldmap.FieldMap;
+import com.github.dozermapper.core.CustomFieldMapper;
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
+import com.github.dozermapper.core.classmap.ClassMap;
+import com.github.dozermapper.core.fieldmap.FieldMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-public class ObjectMapperSingleton extends DozerBeanMapper{
+public class ObjectMapperSingleton {
     private final static Logger logger = LoggerFactory.getLogger(ObjectMapperSingleton.class);
 
-    private static ObjectMapperSingleton instance;
+    private static Mapper instance;
 
     private ObjectMapperSingleton(){}
 
-    public static ObjectMapperSingleton getInstance(){
+    public static Mapper getInstance(){
         if(instance == null) {
-            instance = new ObjectMapperSingleton();
-            instance.setMappingFiles(
-                    new ArrayList<String>(){{
-                        add("dozer_mapping.xml");
-                    }});
-            instance.setCustomFieldMapper(new SkipUnsetPrimitiveFieldMapper());
+            instance = DozerBeanMapperBuilder.create()
+                .withMappingFiles("dozer_mapping.xml")
+                .withCustomFieldMapper(new SkipUnsetPrimitiveFieldMapper())
+                .build();
         }
         return instance;
     }

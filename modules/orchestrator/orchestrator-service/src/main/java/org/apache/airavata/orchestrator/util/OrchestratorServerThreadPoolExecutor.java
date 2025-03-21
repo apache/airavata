@@ -19,14 +19,13 @@
  */
 package org.apache.airavata.orchestrator.util;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class OrchestratorServerThreadPoolExecutor {
 	    private final static Logger logger = LoggerFactory.getLogger(OrchestratorServerThreadPoolExecutor.class);

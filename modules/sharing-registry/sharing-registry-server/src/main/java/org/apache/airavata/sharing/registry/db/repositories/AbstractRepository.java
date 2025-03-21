@@ -19,17 +19,17 @@
  */
 package org.apache.airavata.sharing.registry.db.repositories;
 
+import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.apache.airavata.sharing.registry.db.utils.Committer;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.db.utils.ObjectMapperSingleton;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public  T update(T t) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         E entity = mapper.map(t, dbEntityGenericClass);
         E persistedCopy = execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
@@ -87,7 +87,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public T get(Id id) throws SharingRegistryException {
         E entity = execute(entityManager -> entityManager
                 .find(dbEntityGenericClass, id));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         if(entity == null)
             return null;
         return mapper.map(entity, thriftGenericClass);
@@ -128,7 +128,7 @@ public abstract class AbstractRepository<T, E, Id> {
             }
             return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;
@@ -143,7 +143,7 @@ public abstract class AbstractRepository<T, E, Id> {
             }
             return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;

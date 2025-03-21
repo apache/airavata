@@ -21,35 +21,33 @@
 
 package org.apache.airavata.registry.core.utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.github.dozermapper.core.BeanFactory;
+import com.github.dozermapper.core.config.BeanContainer;
+import com.github.dozermapper.core.util.MappingUtils;
+import com.github.dozermapper.core.util.ReflectionUtils;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TFieldIdEnum;
-import org.apache.thrift.TFieldRequirementType;
 import org.apache.thrift.meta_data.FieldMetaData;
-import org.dozer.BeanFactory;
-import org.dozer.util.MappingUtils;
-import org.dozer.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class CustomBeanFactory implements BeanFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(CustomBeanFactory.class);
 
     @Override
-    public Object createBean(Object source, Class<?> sourceClass, String targetBeanId) {
+    public Object createBean(Object source, Class<?> sourceClass, String targetBeanId, BeanContainer beanContainer) {
         Object result;
-        Class<?> destClass = MappingUtils.loadClass(targetBeanId);
+        Class<?> destClass = MappingUtils.loadClass(targetBeanId, beanContainer);
         if (logger.isDebugEnabled()) {
             logger.debug("Creating bean of type " + destClass.getSimpleName());
         }
         result = ReflectionUtils.newInstance(destClass);
         if (result instanceof TBase) {
-
             callSettersOnThriftFieldsWithDefaults((TBase) result);
         }
         return result;

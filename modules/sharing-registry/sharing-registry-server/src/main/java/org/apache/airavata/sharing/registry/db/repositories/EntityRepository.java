@@ -25,7 +25,10 @@ import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.SharingRegistryJDBCConfig;
 import org.apache.airavata.sharing.registry.models.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
 

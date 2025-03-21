@@ -20,7 +20,6 @@
 package org.apache.airavata.db.event.manager.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.db.event.manager.messaging.impl.DBEventMessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;

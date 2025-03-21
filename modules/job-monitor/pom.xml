@@ -41,12 +41,10 @@
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
-                <version>${snakeyaml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.angus</groupId>
                 <artifactId>jakarta.mail</artifactId>
-                <version>${jakarta.mail.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.airavata</groupId>

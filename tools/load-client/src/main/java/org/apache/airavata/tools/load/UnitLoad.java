@@ -10,8 +10,6 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.tools.load.Configuration;
-import org.apache.airavata.tools.load.StorageResourceManager;
 import org.apache.thrift.TException;
 
 import java.io.File;

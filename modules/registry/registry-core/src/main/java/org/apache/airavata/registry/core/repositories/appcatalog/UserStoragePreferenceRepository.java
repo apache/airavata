@@ -22,8 +22,6 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferencePK;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class UserStoragePreferenceRepository extends AppCatAbstractRepository<UserStoragePreference, UserStoragePreferenceEntity, UserStoragePreferencePK> {
 

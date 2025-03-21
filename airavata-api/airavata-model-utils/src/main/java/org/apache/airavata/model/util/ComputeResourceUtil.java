@@ -19,10 +19,6 @@
  */
 package org.apache.airavata.model.util;
 
-import org.apache.airavata.model.appcatalog.computeresource.*;
-
-import java.util.List;
-
 public class ComputeResourceUtil {
 //    public static ComputeResourceDescription createComputeResource (String resourceName,
 //                                                                    String resourceDesc,

@@ -1,20 +1,20 @@
 package org.apache.airavata.registry.core.utils.migration;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
-import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.JPAUtil.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.utils.JPAUtil.ExpCatalogJPAUtils;
 import org.apache.airavata.registry.core.utils.JPAUtil.RepCatalogJPAUtils;
+import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class MigrationSchemaGenerator {
 

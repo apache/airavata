@@ -20,7 +20,7 @@
 
 package org.apache.airavata.registry.core.utils.DozerConverter;
 
-import org.dozer.DozerConverter;
+import com.github.dozermapper.core.DozerConverter;
 
 import java.sql.Timestamp;
 

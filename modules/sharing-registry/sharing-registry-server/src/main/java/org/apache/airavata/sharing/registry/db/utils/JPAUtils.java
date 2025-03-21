@@ -21,7 +21,6 @@ package org.apache.airavata.sharing.registry.db.utils;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import org.apache.airavata.common.utils.JDBCConfig;
 
 public class JPAUtils {

@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.monitor.email.parser;
 
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
@@ -27,9 +29,6 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;

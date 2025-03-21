@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.repositories;
 import org.apache.airavata.registry.core.utils.Committer;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.dozer.Mapper;
+import com.github.dozermapper.core.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

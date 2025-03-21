@@ -23,13 +23,12 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -70,26 +69,50 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     }
 
     private boolean deepCompareDeployment(ApplicationDeploymentDescription expected, ApplicationDeploymentDescription actual) {
-        boolean equals = true;
-        equals = equals && EqualsBuilder.reflectionEquals(expected, actual,
-                "moduleLoadCmds", "libPrependPaths", "libAppendPaths" ,"setEnvironment" ,"preJobCommands"
-                ,"postJobCommands", "__isset_bitfield");
-        equals = equals && deepCompareLists(expected.getSetEnvironment(), actual.getSetEnvironment(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
-        equals = equals && deepCompareLists(expected.getLibPrependPaths(), actual.getLibPrependPaths(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
-        equals = equals && deepCompareLists(expected.getLibAppendPaths(), actual.getLibAppendPaths(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
-        equals = equals && deepCompareLists(expected.getModuleLoadCmds(), actual.getModuleLoadCmds(), Comparator.comparingInt(CommandObject::getCommandOrder));
-        equals = equals && deepCompareLists(expected.getPreJobCommands(), actual.getPreJobCommands(), Comparator.comparingInt(CommandObject::getCommandOrder));
-        equals = equals && deepCompareLists(expected.getPostJobCommands(), actual.getPostJobCommands(), Comparator.comparingInt(CommandObject::getCommandOrder));
-        return equals;
+        if (expected == actual) return true;
+        if (expected == null || actual == null) return false;
+        
+        return Objects.equals(expected.getAppDeploymentId(), actual.getAppDeploymentId()) &&
+               Objects.equals(expected.getAppDeploymentDescription(), actual.getAppDeploymentDescription()) &&
+               Objects.equals(expected.getAppModuleId(), actual.getAppModuleId()) &&
+               Objects.equals(expected.getComputeHostId(), actual.getComputeHostId()) &&
+               Objects.equals(expected.getExecutablePath(), actual.getExecutablePath()) &&
+               Objects.equals(expected.getParallelism(), actual.getParallelism()) &&
+               Objects.equals(expected.getDefaultQueueName(), actual.getDefaultQueueName()) &&
+               expected.getDefaultCPUCount() == actual.getDefaultCPUCount() &&
+               expected.getDefaultNodeCount() == actual.getDefaultNodeCount() &&
+               expected.getDefaultWalltime() == actual.getDefaultWalltime() &&
+               expected.isEditableByUser() == actual.isEditableByUser() &&
+               deepCompareLists(expected.getSetEnvironment(), actual.getSetEnvironment(), 
+                   Comparator.comparingInt(SetEnvPaths::getEnvPathOrder)) &&
+               deepCompareLists(expected.getLibPrependPaths(), actual.getLibPrependPaths(),
+                   Comparator.comparingInt(SetEnvPaths::getEnvPathOrder)) &&
+               deepCompareLists(expected.getLibAppendPaths(), actual.getLibAppendPaths(),
+                   Comparator.comparingInt(SetEnvPaths::getEnvPathOrder)) &&
+               deepCompareLists(expected.getModuleLoadCmds(), actual.getModuleLoadCmds(),
+                   Comparator.comparingInt(CommandObject::getCommandOrder)) &&
+               deepCompareLists(expected.getPreJobCommands(), actual.getPreJobCommands(),
+                   Comparator.comparingInt(CommandObject::getCommandOrder)) &&
+               deepCompareLists(expected.getPostJobCommands(), actual.getPostJobCommands(),
+                   Comparator.comparingInt(CommandObject::getCommandOrder));
     }
 
     private <T> boolean deepCompareLists(List<T> expected, List<T> actual, Comparator<? super T> c) {
+        if (expected == actual) return true;
+        if (expected == null || actual == null) return false;
+        if (expected.size() != actual.size()) return false;
 
         List<T> expectedCopy = new ArrayList<>(expected);
-        expectedCopy.sort(c);
         List<T> actualCopy = new ArrayList<>(actual);
+        expectedCopy.sort(c);
         actualCopy.sort(c);
-        return EqualsBuilder.reflectionEquals(expectedCopy, actualCopy);
+        
+        for (int i = 0; i < expectedCopy.size(); i++) {
+            if (!Objects.equals(expectedCopy.get(i), actualCopy.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private ApplicationDeploymentDescription prepareSampleDeployment(String tag, String applicationModule, String computeResource) {

@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.monitor.kafka;
 
-import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;

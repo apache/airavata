@@ -19,11 +19,7 @@
  */
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataProductType;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
-import org.apache.airavata.model.data.replica.ReplicaPersistentType;
+import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
@@ -33,9 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DataProductRepositoryTest extends TestBase {
 

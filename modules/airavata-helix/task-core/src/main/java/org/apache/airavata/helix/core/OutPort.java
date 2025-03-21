@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.core;
 
 import org.apache.helix.task.TaskResult;
-import org.apache.helix.task.UserContentStore;
 
 /**
  * TODO: Class level comments please

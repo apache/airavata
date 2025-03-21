@@ -1,9 +1,5 @@
 package org.apache.airavata.metascheduler.core.api;
 
-import org.apache.airavata.model.process.ProcessModel;
-
-import java.util.Optional;
-
 /**
  * Provides interfaces for Process related scheduling operations
  */

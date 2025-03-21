@@ -54,7 +54,7 @@
         <!-- Pushgateway exposition-->
         <dependency>
             <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_pushgateway</artifactId>
+            <artifactId>simpleclient_pushgateway</artifactId>
             <version>${prometheus.version}</version>
         </dependency>
     </dependencies>

@@ -22,7 +22,7 @@ package org.apache.airavata.messaging.core.stats;
 
 import org.apache.airavata.model.messaging.event.Message;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 public class StatCounter {

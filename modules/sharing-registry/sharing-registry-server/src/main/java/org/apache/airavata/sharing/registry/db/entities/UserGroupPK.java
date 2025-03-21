@@ -19,11 +19,11 @@
  */
 package org.apache.airavata.sharing.registry.db.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import java.io.Serializable;
 
 public class UserGroupPK implements Serializable {

@@ -19,10 +19,6 @@
  */
 package org.apache.airavata.registry.api.service;
 
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
@@ -41,6 +37,10 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
 
 public class RegistryAPIServer implements IServer {
     private final static Logger logger = LoggerFactory.getLogger(RegistryAPIServer.class);

@@ -22,8 +22,6 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferencePK;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class UserComputeResourcePreferenceRepository extends AppCatAbstractRepository<UserComputeResourcePreference, UserComputeResourcePreferenceEntity, UserComputeResourcePreferencePK> {
 

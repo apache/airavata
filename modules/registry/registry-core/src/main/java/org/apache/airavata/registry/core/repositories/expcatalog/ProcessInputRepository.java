@@ -20,17 +20,17 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessInputPK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 public class ProcessInputRepository extends ExpCatAbstractRepository<InputDataObjectType, ProcessInputEntity, ProcessInputPK> {
     private final static Logger logger = LoggerFactory.getLogger(ProcessInputRepository.class);

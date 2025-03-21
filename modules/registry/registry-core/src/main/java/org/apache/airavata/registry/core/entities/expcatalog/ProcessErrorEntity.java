@@ -21,9 +21,9 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.List;
 
 /**
  * The persistent class for the process_error database table.

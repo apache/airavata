@@ -21,10 +21,10 @@
 
 package org.apache.airavata.registry.core.utils.DozerConverter;
 
+import com.github.dozermapper.core.DozerConverter;
+
 import java.util.Arrays;
 import java.util.List;
-
-import org.dozer.DozerConverter;
 
 /**
  * CsvStringConverter

@@ -21,17 +21,17 @@ package org.apache.airavata.cluster.monitoring;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.quartz.*;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-
 import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.*;
-import static org.quartz.SimpleScheduleBuilder.*;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class ClusterStatusMonitorJobScheduler {
     private final static Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJobScheduler.class);

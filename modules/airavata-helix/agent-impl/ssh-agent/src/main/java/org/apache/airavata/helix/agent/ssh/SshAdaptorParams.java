@@ -21,7 +21,9 @@ package org.apache.airavata.helix.agent.ssh;
 
 import org.apache.airavata.agents.api.AdaptorParams;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * TODO: Class level comments please

@@ -23,7 +23,6 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.QueueingConsumer;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -37,28 +36,29 @@ import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rabbitmq.client.DefaultConsumer;
 
 import java.io.IOException;
 
-public class ProcessConsumer extends QueueingConsumer{
+public class ProcessConsumer extends DefaultConsumer {
     private static final Logger log = LoggerFactory.getLogger(ProcessConsumer.class);
 
-    private MessageHandler handler;
+    private final MessageHandler handler;
     private Channel channel;
-    private Connection connection;
+    private final Connection connection;
 
-    public ProcessConsumer(MessageHandler messageHandler, Connection connection, Channel channel){
+    public ProcessConsumer(MessageHandler messageHandler, Connection connection, Channel channel) {
         super(channel);
         this.handler = messageHandler;
         this.connection = connection;
         this.channel = channel;
     }
 
-
-    @Override public void handleDelivery(String consumerTag,
-                               Envelope envelope,
-                               AMQP.BasicProperties basicProperties,
-                               byte[] body) throws IOException {
+    @Override
+    public void handleDelivery(String consumerTag,
+                             Envelope envelope,
+                             AMQP.BasicProperties basicProperties,
+                             byte[] body) throws IOException {
 
         Message message = new Message();
 
@@ -105,11 +105,11 @@ public class ProcessConsumer extends QueueingConsumer{
 
     }
 
-    private void sendAck(long deliveryTag){
+    private void sendAck(long deliveryTag) {
         try {
-            if (channel.isOpen()){
-                channel.basicAck(deliveryTag,false);
-            }else {
+            if (channel.isOpen()) {
+                channel.basicAck(deliveryTag, false);
+            } else {
                 channel = connection.createChannel();
                 channel.basicQos(ServerSettings.getRabbitmqPrefetchCount());
                 channel.basicAck(deliveryTag, false);
