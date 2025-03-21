@@ -23,7 +23,6 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.zookeeper.Op;
 
 import java.util.HashMap;
 import java.util.Map;

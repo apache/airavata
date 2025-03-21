@@ -19,9 +19,10 @@
  */
 package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+
 import java.util.List;
 
 public interface UsrResourceProfile {

@@ -18,13 +18,14 @@
  * under the License.
  */
 package generators;
-import java.util.ArrayList;
-import java.util.List;
 
 import model.JPAClassField;
 import model.JPAClassModel;
 import model.JPAPKClassModel;
 import model.SQLData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /*

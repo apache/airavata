@@ -19,13 +19,13 @@
  */
 package org.apache.airavata.service.profile.commons.repositories;
 
+import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.Query;
 import org.apache.airavata.service.profile.commons.utils.JPAUtils;
 import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T update(T t) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         E entity = mapper.map(t, dbEntityGenericClass);
         E persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
@@ -64,13 +64,13 @@ public abstract class AbstractRepository<T, E, Id> {
     public T get(Id id) {
         E entity = JPAUtils.execute(entityManager -> entityManager
                 .find(dbEntityGenericClass, id));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         return mapper.map(entity, thriftGenericClass);
     }
 
     public List<T> select(String query) {
         List resultSet = (List) JPAUtils.execute(entityManager -> entityManager.createQuery(query).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         List<T> resultList = new ArrayList<>();
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
         return resultList;
@@ -79,7 +79,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public List<T> select(String query, int limit, int offset) {
         List resultSet = (List) JPAUtils.execute(entityManager -> entityManager.createQuery(query).setFirstResult(offset)
                 .setMaxResults(limit).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         List<T> resultList = new ArrayList<>();
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
         return resultList;
@@ -97,7 +97,7 @@ public abstract class AbstractRepository<T, E, Id> {
             return jpaQuery.setFirstResult(offset).setMaxResults(limit).getResultList();
 
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         List<T> resultList = new ArrayList<>();
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
         return resultList;
@@ -115,7 +115,7 @@ public abstract class AbstractRepository<T, E, Id> {
             return jpaQuery.getResultList();
 
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        Mapper mapper = ObjectMapperSingleton.getInstance().getMapper();
         List<T> resultList = new ArrayList<>();
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
         return resultList;

@@ -22,12 +22,11 @@ package appcatalog.computeresource;
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
 import generators.SQLGenerator;
-
-import java.util.Arrays;
-
 import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
+
+import java.util.Arrays;
 
 public class JobManagerCommandGenerator {
 	private static SQLData createSQLData() {

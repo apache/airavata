@@ -20,13 +20,13 @@
 */
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

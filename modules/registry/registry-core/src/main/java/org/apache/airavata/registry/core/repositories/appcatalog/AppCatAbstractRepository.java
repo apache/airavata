@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import jakarta.persistence.EntityManager;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.apache.airavata.registry.core.utils.JPAUtil.AppCatalogJPAUtils;
-
-import jakarta.persistence.EntityManager;
 
 public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 

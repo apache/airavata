@@ -19,14 +19,7 @@
  */
 package org.apache.airavata.common.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -140,11 +133,11 @@ public class JSONUtil {
                     return false;
                 }
             }else if (primitiveOrig.isBoolean() && primitiveNew.isBoolean()) {
-                if ((Boolean.valueOf(primitiveOrig.getAsBoolean()).compareTo(primitiveNew.getAsBoolean()) != 0)) {
+                if ((Boolean.compare(primitiveOrig.getAsBoolean(), primitiveNew.getAsBoolean()) != 0)) {
                     return false;
                 }
             }else if (primitiveOrig.isNumber() && primitiveNew.isNumber() ) {
-                if (new Double(primitiveOrig.getAsDouble()).compareTo(primitiveNew.getAsDouble()) != 0) {
+                if (Double.compare(primitiveOrig.getAsDouble(), primitiveNew.getAsDouble()) != 0) {
                     return false;
                 }
             }else {

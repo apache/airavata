@@ -23,9 +23,9 @@ import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfigura
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 public class SlurmJobConfiguration implements JobManagerConfiguration {
@@ -70,9 +70,9 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
         return scriptExtension;
     }
 
-    public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath) {
-          return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
-                workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
+    public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
+                workingDirectory + File.separator + Path.of(pbsFilePath).getFileName().toString());
     }
 
     public String getInstalledPath() {

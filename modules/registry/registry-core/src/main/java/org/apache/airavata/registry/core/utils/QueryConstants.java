@@ -18,15 +18,11 @@
  */
 package org.apache.airavata.registry.core.utils;
 
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
-
-import javax.print.attribute.standard.JobState;
 
 public interface QueryConstants {
 

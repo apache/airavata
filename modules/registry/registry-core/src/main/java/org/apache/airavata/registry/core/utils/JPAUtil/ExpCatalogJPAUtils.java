@@ -21,7 +21,6 @@ package org.apache.airavata.registry.core.utils.JPAUtil;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.airavata.registry.core.utils.ExpCatalogJDBCConfig;

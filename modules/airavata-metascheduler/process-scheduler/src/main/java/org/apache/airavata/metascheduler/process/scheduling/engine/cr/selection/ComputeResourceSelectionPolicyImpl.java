@@ -5,7 +5,6 @@ import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPol
 import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.RegistryService.Client;
 
 public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResourceSelectionPolicy {
 

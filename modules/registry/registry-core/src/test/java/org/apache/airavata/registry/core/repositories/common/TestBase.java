@@ -1,10 +1,6 @@
 package org.apache.airavata.registry.core.repositories.common;
 
-import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.common.utils.DerbyTestUtil;
-import org.apache.airavata.common.utils.DerbyUtil;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.utils.*;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;

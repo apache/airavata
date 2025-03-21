@@ -1,7 +1,5 @@
 package org.apache.airavata.tools.load;
 
-import org.apache.airavata.tools.load.Configuration;
-
 import java.util.List;
 
 public class Configurations {

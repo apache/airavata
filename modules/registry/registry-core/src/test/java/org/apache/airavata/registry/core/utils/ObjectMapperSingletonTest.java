@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,6 +37,18 @@ public class ObjectMapperSingletonTest {
 
         public void setAiravataAutoSchedule(boolean airavataAutoSchedule) {
             this.airavataAutoSchedule = airavataAutoSchedule;
+        }
+    }
+
+    public static class TestSecurityProtocolModel {
+        private SecurityProtocol securityProtocol;
+
+        public SecurityProtocol getSecurityProtocol() {
+            return securityProtocol;
+        }
+
+        public void setSecurityProtocol(SecurityProtocol securityProtocol) {
+            this.securityProtocol = securityProtocol;
         }
     }
 
@@ -62,5 +75,17 @@ public class ObjectMapperSingletonTest {
                 "even though shareExperimentPublicly isn't a field on the source object, since it has a default value it should be set",
                 userConfigurationDataModel.isSetShareExperimentPublicly());
         Assert.assertFalse(userConfigurationDataModel.isShareExperimentPublicly());
+    }
+
+    @Test
+    public void testEnumMapping() {
+        TestSecurityProtocolModel source = new TestSecurityProtocolModel();
+        source.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
+
+        TestSecurityProtocolModel target = ObjectMapperSingleton.getInstance()
+                .map(source, TestSecurityProtocolModel.class);
+
+        Assert.assertNotNull("Mapped enum should not be null", target.getSecurityProtocol());
+        Assert.assertEquals("Mapped enum should match source", SecurityProtocol.SSH_KEYS, target.getSecurityProtocol());
     }
 }

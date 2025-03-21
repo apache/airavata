@@ -1,9 +1,8 @@
 package org.apache.airavata.sharing.registry.db.entities;
 
+import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "GROUP_ADMIN", schema = "")
