@@ -46,8 +46,6 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.json.JSONException;
@@ -58,11 +56,14 @@ import org.slf4j.MDC;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 public abstract class AiravataTask extends AbstractTask {
 
@@ -140,18 +141,9 @@ public abstract class AiravataTask extends AbstractTask {
         if (currentRetryCount >= getRetryCount() || fatal) {
             ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
             StringWriter errors = new StringWriter();
-
-            String errorCode = UUID.randomUUID().toString();
-            String errorMessage = "Error Code : " + errorCode + ", Task " + getTaskId() + " failed due to " + reason +
-                    (error == null ? "" : ", " + error.getMessage());
-
-            // wrapping from new error object with error code
-            error = new TaskOnFailException(errorMessage, true, error);
-
-            status.setReason(errorMessage);
-            errors.write(ExceptionUtils.getStackTrace(error));
-            logger.error(errorMessage, error);
-
+            PrintWriter pw = new PrintWriter(errors);
+            error.printStackTrace(pw);
+            status.setReason(errors.toString());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             if (getTaskContext() != null) { // task context could be null if the initialization failed
                 getTaskContext().setProcessStatus(status);
@@ -192,14 +184,13 @@ public abstract class AiravataTask extends AbstractTask {
                 saveAndPublishProcessStatus(requeueStatus);
             }
 
-            return onFail(errorMessage, fatal);
+            return onFail(reason, fatal, error);
         } else {
-            return onFail("Handover back to helix engine to retry", fatal);
+            return onFail("Handover back to helix engine to retry", fatal, error);
         }
     }
 
     protected void cleanup() {
-
         try {
             // cleaning up local data directory
             String localDataPath = ServerSettings.getLocalDataLocation();
@@ -207,14 +198,24 @@ public abstract class AiravataTask extends AbstractTask {
             localDataPath = localDataPath + getProcessId();
 
             try {
-                FileUtils.deleteDirectory(new File(localDataPath));
+                Path directory = Path.of(localDataPath);
+                if (Files.exists(directory)) {
+                    Files.walk(directory)
+                            .sorted(Comparator.reverseOrder())
+                            .forEach(path -> {
+                                try {
+                                    Files.delete(path);
+                                } catch (IOException e) {
+                                    logger.error("Failed to delete path " + path, e);
+                                }
+                            });
+                }
             } catch (IOException e) {
                 logger.error("Failed to delete local data directory " + localDataPath, e);
             }
         } catch (Exception e) {
             logger.error("Failed to clean up", e);
         }
-
     }
     protected void saveAndPublishProcessStatus(ProcessState state) {
 

@@ -19,10 +19,7 @@
  */
 package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.workflow.AiravataWorkflow;
-
-import java.util.List;
 
 public interface WorkflowCatalog {
 

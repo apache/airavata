@@ -7,7 +7,6 @@ import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.RegistryService.Client;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;

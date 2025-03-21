@@ -22,26 +22,27 @@ package org.apache.airavata.helix.impl.task.submission;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.commons.ErrorModel;
- import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @TaskDef(name = "Default Job Submission")
 public class DefaultJobSubmissionTask extends JobSubmissionTask {

@@ -19,15 +19,10 @@
  */
 package org.apache.airavata.messaging.core.impl;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
+import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.RabbitMQProperties;
+import org.apache.airavata.messaging.core.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

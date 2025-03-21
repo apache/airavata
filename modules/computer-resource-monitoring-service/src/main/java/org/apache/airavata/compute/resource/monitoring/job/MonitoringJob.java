@@ -13,7 +13,6 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResource
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.RegistryService.Client;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

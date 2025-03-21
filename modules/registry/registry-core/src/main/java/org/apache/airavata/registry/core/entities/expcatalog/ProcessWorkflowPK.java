@@ -1,7 +1,5 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import java.io.Serializable;
 
 public class ProcessWorkflowPK implements Serializable {

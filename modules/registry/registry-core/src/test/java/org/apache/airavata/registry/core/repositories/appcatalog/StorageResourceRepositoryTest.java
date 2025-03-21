@@ -20,11 +20,7 @@
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.SecurityProtocol;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.Test;

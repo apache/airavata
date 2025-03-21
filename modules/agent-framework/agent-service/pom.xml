@@ -54,7 +54,6 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>${mariadb-java-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -110,7 +109,6 @@
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-            <version>${jakarta.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -172,7 +170,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
-              <version>${maven.compiler.plugin.version}</version>
+              <version>${maven-compiler-plugin.version}</version>
               <configuration>
                 <release>17</release>
                 <generatedSourcesDirectory>${project.build.directory}/generated-sources/protobuf</generatedSourcesDirectory>
@@ -180,22 +178,6 @@
                   <include>${project.build.directory}/generated-sources/**/*.java</include>
                 </includes>
               </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-remote-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <includes>
-                        <include>**/*.*</include>
-                    </includes>
-                </configuration>
             </plugin>
         </plugins>
     </build>

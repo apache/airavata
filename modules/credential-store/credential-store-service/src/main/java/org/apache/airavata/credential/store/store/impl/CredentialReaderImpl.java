@@ -28,8 +28,8 @@ import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateAuditInfo;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 
 import java.io.Serializable;
 import java.sql.Connection;

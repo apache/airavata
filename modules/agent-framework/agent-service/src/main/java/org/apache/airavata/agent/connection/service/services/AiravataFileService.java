@@ -18,10 +18,11 @@
  */
 package org.apache.airavata.agent.connection.service.services;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.protobuf.Timestamp;
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 import org.apache.airavata.agent.ServerMessage;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
@@ -34,20 +35,13 @@ import org.apache.airavata.fuse.ReadDirRes;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.protobuf.Timestamp;
-
-import io.grpc.Status;
-import io.grpc.stub.StreamObserver;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AiravataFileService {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- Console Appender -->
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d [%thread] %-5level %logger{30} %X - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <!-- Rolling File Appender -->
+  <appender name="RollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>../logs/airavata.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/%d{yyyy-MM}/airavata-log-%d{MM-dd-yyyy}-%i.log.gz</fileNamePattern>
+      <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>50MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+      <maxHistory>20</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d [%thread] %-5level %logger{30} %X - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <!-- Loggers -->
+  <logger name="ch.qos.logback" level="WARN"/>
+  <logger name="org.apache.helix" level="WARN"/>
+  <logger name="org.apache.kafka" level="INFO"/>
+  <logger name="org.apache.zookeeper" level="ERROR"/>
+  <logger name="org.apache.airavata" level="INFO"/>
+  <logger name="org.hibernate" level="ERROR"/>
+  <!-- Root Logger -->
+  <root level="INFO">
+    <appender-ref ref="Console"/>
+    <appender-ref ref="RollingFileAppender"/>
+  </root>
+</configuration>

@@ -22,7 +22,6 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 /**
  * The primary key class for the queue_status database table.

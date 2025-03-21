@@ -19,12 +19,12 @@
  */
 package org.apache.airavata.sharing.registry;
 
-import org.junit.Assert;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

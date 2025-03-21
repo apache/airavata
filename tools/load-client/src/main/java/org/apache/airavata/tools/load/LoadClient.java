@@ -2,12 +2,12 @@ package org.apache.airavata.tools.load;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.commons.cli.*;
-import org.keycloak.authorization.client.AuthzClient;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;

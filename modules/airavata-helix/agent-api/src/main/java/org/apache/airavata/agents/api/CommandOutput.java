@@ -19,8 +19,6 @@
  */
 package org.apache.airavata.agents.api;
 
-import java.io.OutputStream;
-
 /**
  * TODO: Class level comments please
  *

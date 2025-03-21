@@ -19,21 +19,11 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 /**
  * The persistent class for the COMPUTE_RESOURCE_RESERVATION database table.

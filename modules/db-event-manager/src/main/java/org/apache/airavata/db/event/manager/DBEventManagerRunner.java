@@ -22,15 +22,15 @@ package org.apache.airavata.db.event.manager;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerMessagingFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Ajinkya on 3/29/17.
  */
 public class DBEventManagerRunner implements IServer {
 
-    private static final Logger log = LogManager.getLogger(DBEventManagerRunner.class);
+    private static final Logger log = LoggerFactory.getLogger(DBEventManagerRunner.class);
 
     private static final String SERVER_NAME = "DB Event Manager";
     private static final String SERVER_VERSION = "1.0";
