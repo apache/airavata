@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.persistence.*;
-import java.nio.ByteBuffer;
+//import java.nio.ByteBuffer;
 
 @Entity
 @Table(name = "ENTITY", schema = "")
@@ -37,7 +37,7 @@ public class EntityEntity {
     private String parentEntityId;
     private String name;
     private String description;
-    private ByteBuffer binaryData;
+    private byte[] binaryData;
     private String fullText;
     private Long originalEntityCreationTime;
     private Long sharedCount;
@@ -115,12 +115,12 @@ public class EntityEntity {
     }
 
     @Lob
-    @Column(name="BINARY_DATA")
-    public ByteBuffer getBinaryData() {
+    @Column(name="BINARY_DATA", columnDefinition = "blob")
+    public byte[] getBinaryData() {
         return binaryData;
     }
 
-    public void setBinaryData(ByteBuffer binaryData) {
+    public void setBinaryData(byte[] binaryData) {
         this.binaryData = binaryData;
     }
 

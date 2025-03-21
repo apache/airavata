@@ -55,7 +55,7 @@ public class JobStatusEntity implements Serializable {
     private Timestamp timeOfStateChange;
 
     @Lob
-    @Column(name = "REASON")
+    @Column(name = "REASON", columnDefinition = "longtext")
     private String reason;
 
     @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

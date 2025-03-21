@@ -52,7 +52,7 @@ public class LocalSubmissionEntity implements Serializable {
     private SecurityProtocol securityProtocol;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
+    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, updatable = false, nullable = false)
     private ResourceJobManagerEntity resourceJobManager;
 
     public LocalSubmissionEntity() {

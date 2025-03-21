@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.persistence.*;
-import java.nio.ByteBuffer;
+//import java.nio.ByteBuffer;
 
 @Entity
 @Table(name = "SHARING_USER", schema = "") // USER is a reserved term in derby
@@ -36,7 +36,7 @@ public class UserEntity {
     private String firstName;
     private String lastName;
     private String email;
-    private ByteBuffer icon;
+    private byte[] icon;
     private Long createdTime;
     private Long updatedTime;
 
@@ -101,12 +101,12 @@ public class UserEntity {
     }
 
     @Lob
-    @Column(name = "ICON")
-    public ByteBuffer getIcon() {
+    @Column(name = "ICON", columnDefinition = "blob")
+    public byte[] getIcon() {
         return icon;
     }
 
-    public void setIcon(ByteBuffer icon) {
+    public void setIcon(byte[] icon) {
         this.icon = icon;
     }
 
