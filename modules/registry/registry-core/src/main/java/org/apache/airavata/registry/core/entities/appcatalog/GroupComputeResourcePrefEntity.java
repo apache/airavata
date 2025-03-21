@@ -63,7 +63,7 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
 
-    @Column(name = "OVERRIDE_BY_AIRAVATA")
+    @Column(name = "OVERRIDE_BY_AIRAVATA", columnDefinition = "smallint")
     private short overridebyAiravata;
 
     @Column(name = "PREFERED_BATCH_QUEUE")
@@ -103,7 +103,7 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     private List<ComputeResourceReservationEntity> reservations;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, nullable = false, updatable = false)
     private  GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {

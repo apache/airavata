@@ -56,7 +56,7 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     private Integer maxAllowedWalltime;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, nullable = false, updatable = false)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public BatchQueueResourcePolicyEntity() {

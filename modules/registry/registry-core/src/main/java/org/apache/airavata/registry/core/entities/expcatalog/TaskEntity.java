@@ -53,11 +53,11 @@ public class TaskEntity implements Serializable {
     private Timestamp lastUpdateTime;
 
     @Lob
-    @Column(name = "TASK_DETAIL")
+    @Column(name = "TASK_DETAIL", columnDefinition = "text")
     private String taskDetail;
 
     @Lob
-    @Column(name = "SUB_TASK_MODEL")
+    @Column(name = "SUB_TASK_MODEL", columnDefinition = "blob")
     private byte[] subTaskModel;
 
     @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
@@ -74,7 +74,7 @@ public class TaskEntity implements Serializable {
     private List<JobEntity> jobs;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, nullable = false, updatable = false)
     private ProcessEntity process;
 
     public TaskEntity() {

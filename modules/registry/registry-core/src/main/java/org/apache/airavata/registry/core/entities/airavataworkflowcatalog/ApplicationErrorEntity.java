@@ -42,18 +42,18 @@ public class ApplicationErrorEntity implements Serializable {
     private Timestamp creationTime;
 
     @Lob
-    @Column(name = "ACTUAL_ERROR_MESSAGE")
+    @Column(name = "ACTUAL_ERROR_MESSAGE", columnDefinition = "text")
     private String actualErrorMessage;
 
     @Lob
-    @Column(name = "USER_FRIENDLY_MESSAGE")
+    @Column(name = "USER_FRIENDLY_MESSAGE", columnDefinition = "text")
     private String userFriendlyMessage;
 
     @Column(name = "TRANSIENT_OR_PERSISTENT")
     private boolean transientOrPersistent;
 
     @Lob
-    @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
+    @Column(name = "ROOT_CAUSE_ERROR_ID_LIST", columnDefinition = "text")
     private String rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = WorkflowApplicationEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

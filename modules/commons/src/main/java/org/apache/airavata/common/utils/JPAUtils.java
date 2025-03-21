@@ -19,7 +19,6 @@ public class JPAUtils {
     private final static Map<String, String> DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES;
     static {
         Map<String, String> properties = new HashMap<>();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         properties.put("hibernate.hbm2ddl.auto", "validate");
         properties.put("hibernate.dbcp2.initialSize", "5");
         properties.put("hibernate.dbcp2.maxTotal", "20");
@@ -60,7 +59,7 @@ public class JPAUtils {
 
     public static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
         Map<String, String> connectionProperties = new HashMap<>();
-        connectionProperties.put("hibernate.connection.provider_class", "org.apache.commons.dbcp2.BasicDataSource");
+        connectionProperties.put("hibernate.connection.provider_class", "org.apache.airavata.common.utils.DBConnectionProvider");
         connectionProperties.put("hibernate.connection.driver_class", jdbcConfig.getDriver());
         connectionProperties.put("hibernate.connection.url", jdbcConfig.getURL() + "?autoReconnect=true");
         connectionProperties.put("hibernate.connection.username", jdbcConfig.getUser());

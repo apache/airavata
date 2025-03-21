@@ -51,7 +51,7 @@ public class TaskStatusEntity implements Serializable {
     private Timestamp timeOfStateChange;
 
     @Lob
-    @Column(name = "REASON")
+    @Column(name = "REASON", columnDefinition = "longtext")
     private String reason;
 
     @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
