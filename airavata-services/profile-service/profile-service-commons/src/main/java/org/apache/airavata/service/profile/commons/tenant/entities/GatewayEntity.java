@@ -23,12 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.persistence.*;
-import java.util.Date;
+
+import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "GATEWAY")
-public class GatewayEntity {
+@Table(name = "GATEWAY", catalog = "profile_service")
+public class GatewayEntity implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
     private String airavataInternalGatewayId;
     private String gatewayId;

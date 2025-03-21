@@ -33,7 +33,7 @@ import java.util.List;
  * The persistent class for the compute_resource_preference database table.
  */
 @Entity
-@Table(name = "COMPUTE_RESOURCE_PREFERENCE")
+@Table(name = "COMPUTE_RESOURCE_PREFERENCE", catalog = "app_catalog")
 @IdClass(ComputeResourcePreferencePK.class)
 public class ComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -52,7 +52,7 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
 
-    @Column(name = "OVERRIDE_BY_AIRAVATA")
+    @Column(name = "OVERRIDE_BY_AIRAVATA", columnDefinition = "smallint")
     private boolean overridebyAiravata;
 
     @Column(name = "PREFERED_BATCH_QUEUE")

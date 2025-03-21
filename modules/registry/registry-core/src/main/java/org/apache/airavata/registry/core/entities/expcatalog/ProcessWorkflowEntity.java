@@ -1,12 +1,14 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "PROCESS_WORKFLOW")
 @IdClass(ProcessWorkflowPK.class)
-public class ProcessWorkflowEntity {
+public class ProcessWorkflowEntity implements Serializable {
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -23,7 +25,7 @@ public class ProcessWorkflowEntity {
     private String type;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, nullable = false, updatable = false)
     private ProcessEntity process;
 
     public String getProcessId() {

@@ -128,7 +128,7 @@
         <mysql.connector.version>8.2.0</mysql.connector.version>
         <skipTests>false</skipTests>
         <google.gson.version>2.10.1</google.gson.version>
-        <zk.version>3.9.2</zk.version>
+        <zk.version>3.9.3</zk.version>
         <amqp.client.version>4.12.0</amqp.client.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
@@ -148,7 +148,7 @@
         <angus-activation.version>2.0.2</angus-activation.version>
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jmockit.version>1.44</jmockit.version>
-        <helix.version>1.4.3</helix.version>
+        <helix.version>1.4.0</helix.version>
         <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>
         <resteasy.version>6.2.12.Final</resteasy.version>
         <httpclient.version>4.5.14</httpclient.version>

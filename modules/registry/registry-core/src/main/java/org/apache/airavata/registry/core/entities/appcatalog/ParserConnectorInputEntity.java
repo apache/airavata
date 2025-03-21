@@ -45,15 +45,15 @@ public class ParserConnectorInputEntity implements Serializable {
     private String parserConnectorId;
 
     @ManyToOne(targetEntity = ParserInputEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_INPUT_ID")
+    @JoinColumn(name = "PARSER_INPUT_ID", insertable = false, updatable = false, nullable = false)
     private ParserInputEntity input;
 
     @ManyToOne(targetEntity = ParserOutputEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_OUTPUT_ID")
+    @JoinColumn(name = "PARSER_OUTPUT_ID", insertable = false, updatable = false, nullable = false)
     private ParserOutputEntity output;
 
     @ManyToOne(targetEntity = ParserConnectorEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_CONNECTOR_ID")
+    @JoinColumn(name = "PARSER_CONNECTOR_ID", insertable = false, updatable = false, nullable = false)
     private ParserConnectorEntity parserConnector;
 
     public String getId() {
