@@ -20,15 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -62,9 +55,8 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     @Column(name = "MAX_ALLOWED_WALLTIME")
     private Integer maxAllowedWalltime;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public BatchQueueResourcePolicyEntity() {

@@ -194,9 +194,9 @@
             <artifactId>bcprov-jdk18on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>${openjpa.version}</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate-core.version}</version>
         </dependency>
 
         <dependency>
@@ -417,14 +417,6 @@
             <artifactId>realtime-monitor</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- For thrift client pool -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
-
-        <!-- For Helix -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>

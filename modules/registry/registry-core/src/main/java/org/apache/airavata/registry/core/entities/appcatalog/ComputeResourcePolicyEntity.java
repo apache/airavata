@@ -20,18 +20,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import jakarta.persistence.*;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
@@ -61,9 +51,8 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @Column(name = "QUEUE_NAME")
     private List<String> allowedBatchQueues;
 
-    @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
+    @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public ComputeResourcePolicyEntity() {

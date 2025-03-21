@@ -92,12 +92,12 @@
                 <include>commons-cli:commons-cli:jar</include>
                 <include>commons-codec:commons-codec:jar</include>
                 <include>commons-collections:commons-collections:jar</include>
-                <include>commons-dbcp:commons-dbcp:jar</include>
+                <include>org.apache.commons:commons-dbcp2:jar</include>
+                <include>org.apache.commons:commons-pool2:jar</include>
                 <include>commons-io:commons-io:jar</include>
                 <include>commons-lang:commons-lang:jar</include>
                 <include>commons-logging:commons-logging:jar</include>
                 <include>org.apache.commons:commons-math:jar</include>
-                <include>commons-pool:commons-pool:jar</include>
                 <include>org.apache.curator:curator-client:jar</include>
                 <include>org.apache.curator:curator-framework:jar</include>
                 <include>org.apache.derby:derby:jar</include>
@@ -208,8 +208,6 @@
                 <include>io.netty:netty-common:jar</include>
                 <include>io.netty:netty-transport-native-unix-common:jar</include>
                 <include>io.netty:netty-transport-native-kqueue:jar</include>
-
-                <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
 
                 <include>org.apache.airavata:platform-monitoring:jar</include>
