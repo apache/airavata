@@ -62,18 +62,19 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         t.start();
     }
 
+    @SuppressWarnings("unused")
     public void stopServer() {
 
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         logger.info("Starting global participant");
 
         try {
             ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
             for (String taskClassName : TASK_CLASS_NAMES) {
-                logger.debug("Adding task class: " + taskClassName + " to the global participant");
+                logger.debug("Adding task class: {} to the global participant", taskClassName);
                 taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
             }
 
