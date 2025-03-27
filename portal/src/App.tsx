@@ -1,11 +1,11 @@
-import { Heading } from "@chakra-ui/react";
 import { useColorMode } from "./components/ui/color-mode";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Home from "./components/home";
-import Notebooks from "./components/notebooks";
-import NotebookDetails from "./components/notebooks/NotebookDetails";
-import Repositories from "./components/repositories";
-import { Applications } from "./components/applications";
+import ProjectDetails from "./components/notebooks/ProjectDetails";
+import { Models } from "./components/models";
+import { ModelDetails } from "./components/models/ModelDetails";
+import { Datasets } from "./components/datasets";
+import { DatasetDetails } from "./components/datasets/DatasetDetails";
 
 function App() {
   const colorMode = useColorMode();
@@ -18,12 +18,20 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/notebooks">
-            <Route index element={<Notebooks />} />
-            <Route path=":slug" element={<NotebookDetails />} />
+          <Route path="/notebook">
+            <Route path=":slug" element={<ProjectDetails />} />
           </Route>
-          <Route path="/applications" element={<Applications />} />
-          <Route path="/repositories" element={<Repositories />} />
+          <Route path="/repository">
+            <Route path=":slug" element={<ProjectDetails />} />
+          </Route>
+          <Route path="/models">
+            <Route index element={<Models />} />
+            <Route path=":id" element={<ModelDetails />} />
+          </Route>
+          <Route path="/datasets">
+            <Route index element={<Datasets />} />
+            <Route path=":slug" element={<DatasetDetails />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

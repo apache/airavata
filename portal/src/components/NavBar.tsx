@@ -1,20 +1,44 @@
-import { Flex, Input, Spacer, Image, Button, HStack } from "@chakra-ui/react";
+import { Text, Flex, Spacer, Image, HStack, Avatar } from "@chakra-ui/react";
 import ApacheAiravataLogo from "../assets/airavata-logo.png";
 import { Link } from "react-router";
-import { LuSearch } from "react-icons/lu";
-import { InputGroup } from "./ui/input-group";
+
+const NAV_CONTENT = [
+  {
+    title: "Home",
+    url: "/",
+  },
+  {
+    title: "Datasets",
+    url: "/datasets",
+  },
+  {
+    title: "Models",
+    url: "/models",
+  },
+];
 
 const NavBar = () => {
   return (
-    <Flex as="nav" align="center" p={4} boxShadow="sm">
+    <Flex
+      as="nav"
+      align="center"
+      p={4}
+      boxShadow="sm"
+      position="sticky"
+      top="0"
+      zIndex="1000"
+      bg="white" // Ensure background is not transparent
+    >
       {/* Logo */}
-      <Image src={ApacheAiravataLogo} alt="Logo" boxSize="30px" />
+      <Link to="/">
+        <Image src={ApacheAiravataLogo} alt="Logo" boxSize="30px" />
+      </Link>
 
       {/* Navigation Links */}
       <Flex ml={4} gap={6}>
-        {["Notebooks", "Applications", "Repositories"].map((item) => (
-          <Link key={item} to={`/${item.toLowerCase()}`} color="gray.700">
-            {item}
+        {NAV_CONTENT.map((item) => (
+          <Link key={item.title} to={item.url} color="gray.700">
+            {item.title}
           </Link>
         ))}
       </Flex>
@@ -22,23 +46,13 @@ const NavBar = () => {
       <Spacer />
 
       {/* Search Bar */}
-      <HStack>
-        <InputGroup flex="1" endElement={<LuSearch />}>
-          <Input placeholder="Search" />
-        </InputGroup>
-
-        {/* Help and Login Buttons */}
-        <Flex ml={4} align="center" gap={4}>
-          <Link color="blue.500" to="/help">
-            Help
-          </Link>
-          <Button size="sm" variant="outline" colorScheme="orange">
-            Login
-          </Button>
-        </Flex>
+      <HStack _hover={{ cursor: "pointer" }}>
+        <Text>John Doe</Text>
+        <Avatar.Root variant="subtle">
+          <Avatar.Fallback name="John Doe" />
+        </Avatar.Root>
       </HStack>
     </Flex>
   );
 };
-
 export default NavBar;

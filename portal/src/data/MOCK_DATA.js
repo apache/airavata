@@ -1,5 +1,269 @@
+export const MOCK_PROJECTS = [
+  {
+    "metadata": {
+      "type": "notebook",
+      "title": "A new framework for molecular sciences",
+      "slug": "a-new-framework-for-molecular-sciences",
+      "description": "This study presents a new framework for molecular sciences that can be used to study the molecular structure of molecules and their interactions with other molecules. The framework is based on the concept of molecular structure and is designed to be used in conjunction with other molecular sciences tools.",
+      "author": {
+        "name": "Dr. John Doe",
+        "avatar": "https://media.istockphoto.com/id/1356638196/photo/teenage-student-using-the-microscope-in-the-laboratory.jpg?s=612x612&w=0&k=20&c=v4ZITw5Wm3QmlcNRssQjShgE5l61E9TW62kK3k-G3jY=",
+        "role": "contributor"
+      },
+      "tags": ["science", "molecular", "framework"],
+      "date": "2021-01-01",
+      "images": {
+        "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg"
+      },
+    },
+    "notebookViewer": "https://jupyter.org/try-jupyter/lab/"
+  },
+  {
+    "metadata": {
+      "type": "notebook",
+      "title": "The role of machine learning in molecular sciences",
+      "slug": "the-role-of-machine-learning-in-molecular-sciences",
+      "description": "This study presents the role of machine learning in molecular sciences and how it can be used to study the molecular structure of molecules and their interactions with other molecules. The study is based on the concept of molecular structure and is designed to be used in conjunction with other molecular sciences tools.",
+      "author": {
+        "name": "Dr. Jane Doe",
+        "avatar": "https://media.istockphoto.com/id/1356638196/photo/teenage-student-using-the-microscope-in-the-laboratory.jpg?s=612x612&w=0&k=20&c=v4ZITw5Wm3QmlcNRssQjShgE5l61E9TW62kK3k-G3jY=",
+        "role": "contributor"
+      },
+      "tags": ["science", "molecular", "machine learning"],
+      "date": "2021-01-02",
+      "images": {
+        "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg"
+      },
+    },
+    "notebookViewer": "https://jupyter.org/try-jupyter/lab/"
+  },
+  {
+    "metadata": {
+      "type": "notebook",
+      "title": "The future of molecular sciences",
+      "slug": "the-future-of-molecular-sciences",
+      "description": "This study presents the future of molecular sciences and how it can be used to study the molecular structure of molecules and their interactions with other molecules. The study is based on the concept of molecular structure and is designed to be used in conjunction with other molecular sciences tools.",
+      "author": {
+        "name": "Dr. James Doe",
+        "avatar": "https://media.istockphoto.com/id/1356638196/photo/teenage-student-using-the-microscope-in-the-laboratory.jpg?s=612x612&w=0&k=20&c=v4ZITw5Wm3QmlcNRssQjShgE5l61E9TW62kK3k-G3jY=",
+        "role": "contributor"
+      },
+      "tags": ["science", "molecular", "future"],
+      "date": "2021-01-03",
+      "images": {
+        "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg"
+      },
+    },
+    "notebookViewer": "https://jupyter.org/try-jupyter/lab/"
+  },
+  {
+    "metadata": {
+      "type": "repository",
+      "title": "Apache Airavata Repository",
+      "slug": "apache-airavata-repository",
+      "description": "Apache Airavata is a software framework for executing and managing computational workflows on distributed computing resources including local clusters, supercomputers, national grids, academic and commercial clouds.",
+      "author": {
+        "name": "Apache Software Foundation",
+        "avatar": "https://avatars.githubusercontent.com/u/47359?v=4",
+        "role": "contributor"
+      },
+      "tags": ["apache", "airavata", "repository"],
+      "date": "2021-01-01",
+      "images": {
+        "headerImage": "https://www.gatech.edu/sites/default/files/styles/hero_16_9_extra_extra_large_1800x1013_/public/2022-04/Tech-tower-wreck.jpg?h=fb7e085a&itok=MGAERbjU"
+      },
+    },
+    "repositoryUrl": "https://github.com/apache/airavata"
+  },
+  {
+    "metadata": {
+      "type": "repository",
+      "title": "TensorFlow Repository",
+      "slug": "tensorflow-repository",
+      "description": "TensorFlow is an end-to-end open-source platform for machine learning, providing a comprehensive, flexible ecosystem of tools, libraries, and community resources.",
+      "author": {
+        "name": "Google",
+        "avatar": "https://avatars.githubusercontent.com/u/1342004?v=4",
+        "role": "contributor"
+      },
+      "tags": ["tensorflow", "machine learning", "repository"],
+      "date": "2022-05-15",
+      "images": {
+        "headerImage": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhKis9ECId8eIwn_p0SVMBt3a1vfvKOcOZXy6zK0fWoyzXnzQTguKc2CV__6oI1Pwg22NjWsErpDKqjwQdzjilvmqwWkXPj2ncglphh6mAhpoZ_QXQiDwxnwo-GjKEP0fEOb3uBlNlh9sc/s1600/tensorflow2objectdetection.png"
+      },
+    },
+    "repositoryUrl": "https://github.com/tensorflow/tensorflow",
+  },
+  {
+    "metadata": {
+      "type": "repository",
+      "title": "PyTorch Repository",
+      "slug": "pytorch-repository",
+      "description": "PyTorch is an open-source machine learning framework that accelerates the path from research prototyping to production deployment.",
+      "author": {
+        "name": "Facebook",
+        "avatar": "https://avatars.githubusercontent.com/u/69631?v=4",
+        "role": "contributor"
+      },
+      "tags": ["pytorch", "machine learning", "repository"],
+      "date": "2023-03-10",
+      "images": {
+        "headerImage": "https://pytorch.org/assets/images/community-events-recap/fg1.jpg"
+      },
+    },
+    "repositoryUrl": "https://github.com/pytorch/pytorch"
+  }
+];
+
+export const MOCK_DATASETS = [
+  {
+    "metadata": {
+      "type": "dataset",
+      "title": "Dataset A",
+      "slug": "dataset-a",
+      "description": "Dataset A is the best dataset for machine learning projects. It contains a wide variety of data points and features that can be used to train and test machine learning models.",
+      "author": {
+        "name": "Facebook",
+        "avatar": "https://avatars.githubusercontent.com/u/69631?v=4",
+        "role": "contributor"
+      },
+      "tags": ["pytorch", "machine learning", "repository"],
+      "date": "2023-03-10",
+      "images": {
+        "headerImage": "https://pytorch.org/assets/images/community-events-recap/fg1.jpg"
+      },
+    },
+    "datasetUrl": "https://www.kaggle.com/datasets/muhammadtahir194/movies-dataset-tmdb-top-rated",
+    "private": true,
+  },
+  {
+    "metadata": {
+      "type": "dataset",
+      "title": "Dataset B",
+      "slug": "dataset-b",
+      "description": "Dataset B is the best dataset for machine learning projects. It contains a wide variety of data points and features that can be used to train and test machine learning models.",
+      "author": {
+        "name": "Facebook",
+        "avatar": "https://avatars.githubusercontent.com/u/69631?v=4",
+        "role": "contributor"
+      },
+      "tags": ["pytorch", "machine learning", "repository"],
+      "date": "2023-03-10",
+      "images": {
+        "headerImage": "https://pytorch.org/assets/images/community-events-recap/fg1.jpg"
+      },
+    },
+    "datasetUrl": "https://www.kaggle.com/datasets/muhammadtahir194/movies-dataset-tmdb-top-rated",
+    "private": false,
+  },
+  {
+    "metadata": {
+      "type": "dataset",
+      "title": "Dataset C",
+      "slug": "dataset-c",
+      "description": "Dataset C is the best dataset for machine learning projects. It contains a wide variety of data points and features that can be used to train and test machine learning models.",
+      "author": {
+        "name": "Facebook",
+        "avatar": "https://avatars.githubusercontent.com/u/69631?v=4",
+        "role": "contributor"
+      },
+      "tags": ["pytorch", "machine learning", "repository"],
+      "date": "2023-03-10",
+      "images": {
+        "headerImage": "https://pytorch.org/assets/images/community-events-recap/fg1.jpg"
+      },
+    },
+    "datasetUrl": "https://www.kaggle.com/datasets/muhammadtahir194/movies-dataset-tmdb-top-rated",
+    "private": true,
+  },
+];
+
+export const MOCK_SESSIONS = [
+  {
+    "sessionId": "1",
+    "title": "Jupyter",
+    "started": "4 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "running"
+  },
+  {
+    "sessionId": "2",
+    "title": "Jupyter",
+    "started": "2 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "running"
+  },
+  {
+    "sessionId": "3",
+    "title": "VSCode",
+    "started": "1 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "stopped"
+  },
+  {
+    "sessionId": "4",
+    "title": "Jupyter",
+    "started": "1 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "stopped"
+  },
+  {
+    "sessionId": "5",
+    "title": "VSCode",
+    "started": "1 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "stopped"
+  },
+  {
+    "sessionId": "6",
+    "title": "VSCode",
+    "started": "1 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "stopped"
+  },
+  {
+    "sessionId": "7",
+    "title": "Jupyter",
+    "started": "1 hours ago",
+    "models": ["v1", "v2"],
+    "datasets": ["A", "B", "C"],
+    "nodes": 1,
+    "ram": "8GB",
+    "storage": "40GB",
+    "status": "running"
+  },
+];
+
+
+
+
 export const MOCK_NOTEBOOKS = [
   {
+    "type": "notebook",
     "title": "A new framework for molecular sciences",
     "slug": "a-new-framework-for-molecular-sciences",
     "description": "This study presents a new framework for molecular sciences that can be used to study the molecular structure of molecules and their interactions with other molecules. The framework is based on the concept of molecular structure and is designed to be used in conjunction with other molecular sciences tools.",
@@ -11,11 +275,12 @@ export const MOCK_NOTEBOOKS = [
     "tags": ["science", "molecular", "framework"],
     "date": "2021-01-01",
     "images": {
-      "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg",
+      "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg"
     },
     "notebookViewer": "https://jupyter.org/try-jupyter/lab/"
   },
   {
+    "type": "notebook",
     "title": "The role of machine learning in molecular sciences",
     "slug": "the-role-of-machine-learning-in-molecular-sciences",
     "description": "This study presents the role of machine learning in molecular sciences and how it can be used to study the molecular structure of molecules and their interactions with other molecules. The study is based on the concept of molecular structure and is designed to be used in conjunction with other molecular sciences tools.",
@@ -27,11 +292,12 @@ export const MOCK_NOTEBOOKS = [
     "tags": ["science", "molecular", "machine learning"],
     "date": "2021-01-02",
     "images": {
-      "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg",
+      "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg"
     },
     "notebookViewer": "https://jupyter.org/try-jupyter/lab/"
   },
   {
+    "type": "notebook",
     "title": "The future of molecular sciences",
     "slug": "the-future-of-molecular-sciences",
     "description": "This study presents the future of molecular sciences and how it can be used to study the molecular structure of molecules and their interactions with other molecules. The study is based on the concept of molecular structure and is designed to be used in conjunction with other molecular sciences tools.",
@@ -43,11 +309,63 @@ export const MOCK_NOTEBOOKS = [
     "tags": ["science", "molecular", "future"],
     "date": "2021-01-03",
     "images": {
-      "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg",
+      "headerImage": "https://scitechdaily.com/images/Artistic-Molecular-Structure.jpg"
     },
     "notebookViewer": "https://jupyter.org/try-jupyter/lab/"
+  },
+  {
+    "type": "repository",
+    "title": "Apache Airavata Repository",
+    "slug": "apache-airavata-repository",
+    "description": "Apache Airavata is a software framework for executing and managing computational workflows on distributed computing resources including local clusters, supercomputers, national grids, academic and commercial clouds.",
+    "author": {
+      "name": "Apache Software Foundation",
+      "avatar": "https://avatars.githubusercontent.com/u/47359?v=4",
+      "role": "contributor"
+    },
+    "tags": ["apache", "airavata", "repository"],
+    "date": "2021-01-01",
+    "images": {
+      "headerImage": "https://www.gatech.edu/sites/default/files/styles/hero_16_9_extra_extra_large_1800x1013_/public/2022-04/Tech-tower-wreck.jpg?h=fb7e085a&itok=MGAERbjU"
+    },
+    "repositoryUrl": "https://github.com/apache/airavata"
+  },
+  {
+    "type": "repository",
+    "title": "TensorFlow Repository",
+    "slug": "tensorflow-repository",
+    "description": "TensorFlow is an end-to-end open-source platform for machine learning, providing a comprehensive, flexible ecosystem of tools, libraries, and community resources.",
+    "author": {
+      "name": "Google",
+      "avatar": "https://avatars.githubusercontent.com/u/1342004?v=4",
+      "role": "contributor"
+    },
+    "tags": ["tensorflow", "machine learning", "repository"],
+    "date": "2022-05-15",
+    "images": {
+      "headerImage": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhKis9ECId8eIwn_p0SVMBt3a1vfvKOcOZXy6zK0fWoyzXnzQTguKc2CV__6oI1Pwg22NjWsErpDKqjwQdzjilvmqwWkXPj2ncglphh6mAhpoZ_QXQiDwxnwo-GjKEP0fEOb3uBlNlh9sc/s1600/tensorflow2objectdetection.png"
+    },
+    "repositoryUrl": "https://github.com/tensorflow/tensorflow",
+  },
+  {
+    "type": "repository",
+    "title": "PyTorch Repository",
+    "slug": "pytorch-repository",
+    "description": "PyTorch is an open-source machine learning framework that accelerates the path from research prototyping to production deployment.",
+    "author": {
+      "name": "Facebook",
+      "avatar": "https://avatars.githubusercontent.com/u/69631?v=4",
+      "role": "contributor"
+    },
+    "tags": ["pytorch", "machine learning", "repository"],
+    "date": "2023-03-10",
+    "images": {
+      "headerImage": "https://pytorch.org/assets/images/community-events-recap/fg1.jpg"
+    },
+    "repositoryUrl": "https://github.com/pytorch/pytorch"
   }
 ];
+
 
 export const MOCK_REPOSITORIES = [
   {
@@ -113,7 +431,7 @@ export const MOCK_REPOSITORIES = [
 ];
 
 
-export const MOCK_APPLICATIONS = [
+export const MOCK_MODELS = [
   {
     "appModuleId": "AiravataAgent_6a584041-c8ee-4f89-b1cc-6905093b504c",
     "appModuleName": "AiravataAgent",
