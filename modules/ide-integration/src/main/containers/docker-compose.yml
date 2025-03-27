@@ -6,7 +6,7 @@ services:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
-      - "8080:8080"
+      - "18080:8080"
       - "8443:8443"
     volumes:
       - ./keycloak/Default-export.json:/opt/keycloak/data/import/Default-export.json
@@ -22,7 +22,7 @@ services:
       - MYSQL_PASSWORD=123456
     volumes:
       - ./database_scripts/init:/docker-entrypoint-initdb.d
-      - db-data:/var/lib/mysql
+      - database_data:/var/lib/mysql
     ports:
       - "13306:3306"
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--sql_mode=']
@@ -55,5 +55,5 @@ services:
       - "22222:22"
 
 volumes:
-  db-data:
+  database_data:
     driver: local
