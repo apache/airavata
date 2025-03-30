@@ -31,7 +31,7 @@ class CustomDockerSpawner(DockerSpawner):
         options = {}
 
         if hasattr(self, 'handler') and self.handler:
-            qs_args = self.handler.request.arguments  # eg. {'git': [b'https://github...'], 'dataPath': [b'/home/...']}
+            qs_args = self.handler.request.arguments  # eg. {'git': [b'https://github...'], 'dataPath': [b'bmtk']}
             if 'git' in qs_args:
                 options['git'] = qs_args['git'][0].decode('utf-8')
             if 'dataPath' in qs_args:
@@ -61,9 +61,10 @@ class CustomDockerSpawner(DockerSpawner):
         }
 
         # If dataPath was provided, mount it read-only
-        data_path = self.user_options.get("dataPath")
-        if data_path:
-            volumes_dict[data_path] = {
+        data_subfolder = self.user_options.get("dataPath")
+        if data_subfolder:
+            host_data_path = f"/home/exouser/mnt/{data_subfolder}"
+            volumes_dict[host_data_path] = {
                 'bind': f"/home/jovyan/shared_data_tmp",
                 'mode': 'ro'
             }
