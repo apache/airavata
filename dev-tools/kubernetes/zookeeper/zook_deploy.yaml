@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: zookeeper
+spec:
+  selector:
+    matchLabels:
+      name: zookeeper
+      app: airavata-pga
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        name: zookeeper
+        app: airavata-pga
+    spec:
+      containers:
+      - name: zookeeper
+        image: zookeeper
+        ports: 
+        - containerPort: 2181 
+        - containerPort: 2888
+        - containerPort: 3888
+      restartPolicy: Always
+

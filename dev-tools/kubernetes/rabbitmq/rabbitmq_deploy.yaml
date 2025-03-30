@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  labels:
+    name: rabbitmq
+    app: airavata-pga
+spec:
+  selector:
+    matchLabels:
+      name: rabbitmq
+      app: airavata-pga
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        name: rabbitmq
+        app: airavata-pga
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "root"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "root"
+        ports: 
+        - containerPort: 5672
+        - containerPort: 15672
+
