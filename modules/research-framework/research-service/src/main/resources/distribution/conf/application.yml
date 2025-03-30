@@ -1,0 +1,25 @@
+grpc:
+  server:
+    port: 19908
+
+server:
+  port: 18889
+  address: 0.0.0.0
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  datasource:
+    url: "jdbc:mariadb://airavata.host:13306/research_catalog"
+    username: "root"
+    password: "123456"
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: ResearchCatalogPool
+      leak-detection-threshold: 20000
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false

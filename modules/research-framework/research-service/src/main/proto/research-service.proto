@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package org.apache.airavata.agent;
+
+option java_multiple_files = true;
+option java_package = "org.apache.airavata.research";
+option java_outer_classname = "ResearchServiceProto";
+option go_package = "protos/";
+
+service ResearchService {
+}
