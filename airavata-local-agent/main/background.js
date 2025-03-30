@@ -26,6 +26,8 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const fs = require('fs');
 import log from 'electron-log/main';
+import Store from 'electron-store';
+
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -38,7 +40,7 @@ if (isProd) {
 
 let mainWindow;
 const TOKEN_FILE = '~/csagent/token/keys.json';
-const BASE_URL = 'https://cybershuttle.org';
+let BASE_URL = 'this value will be replaced';
 
 // ----- OUR CUSTOM FUNCTIONS -----
 if (process.defaultApp) {
@@ -795,4 +797,69 @@ const writeFile = async (event, userPath, data) => {
 ipcMain.on('write-file', writeFile);
 
 /*
+GATEWAY PINGING LOGIC
 */
+
+const store = new Store();
+
+const randomString = (length) => {
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  let result = '';
+  for (let i = length; i > 0; --i) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return result;
+};
+
+const gateways = [
+  {
+    "id": "mdcyber",
+    "name": "MD Cybershuttle",
+    "gateway": "https://cybershuttle.org",
+    "loginUrl": `https://iam.scigap.org/auth/realms/testdrive/protocol/openid-connect/auth?response_type=code&client_id=pga&redirect_uri=csagent%3A%2F%2Flogin-callback&scope=openid&state=${randomString(15)}&kc_idp_hint=cilogon&idp_alias=cilogon`
+  },
+  {
+    "id": "aicyber",
+    "name": "AI Cybershuttle",
+    "gateway": "https://ai.cybershuttleadfasfd.org",
+    "loginUrl": `https://google.com`
+  }
+];
+
+log.info("Gateways: ", gateways);
+
+let CURRENT_GATEWAY = store.get('stored-gateway');
+
+log.info("CURRENT_GATEWAY (before): ", CURRENT_GATEWAY);
+
+if (typeof CURRENT_GATEWAY === "undefined" || CURRENT_GATEWAY === null) {
+  CURRENT_GATEWAY = "mdcyber";
+}
+
+log.info("CURRENT_GATEWAY (after): ", CURRENT_GATEWAY);
+
+
+BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY)?.gateway;
+
+log.info("BASE_URL: ", BASE_URL);
+
+ipcMain.on('get-all-gateways', (event) => {
+  log.info("Getting all gateways");
+  event.sender.send('got-gateways', gateways);
+});
+
+ipcMain.on('get-gateway', (event) => {
+  log.info("Getting the gateway");
+  event.sender.send('gateway-got', CURRENT_GATEWAY);
+});
+
+ipcMain.on('set-gateway', (event, gateway) => {
+  log.info("Setting the gateway: ", gateway);
+  CURRENT_GATEWAY = gateway;
+  BASE_URL = gateways.find(g => g.id === CURRENT_GATEWAY).gateway;
+  store.set('stored-gateway', gateway);
+  event.sender.send('gateway-set', gateway);
+});
+

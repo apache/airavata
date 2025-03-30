@@ -23,7 +23,7 @@ import { Box, Flex, Spacer, Text, Modal, ModalOverlay, ModalCloseButton, ModalHe
 import { UserModal } from './UserModal';
 import { useEffect, useState } from "react";
 
-export const HeaderBox = ({ name, email }) => {
+export const HeaderBox = ({ name, email, gatewayName }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [version, setVersion] = useState('');
   const [userObj, setUserObj] = useState({
@@ -100,7 +100,7 @@ export const HeaderBox = ({ name, email }) => {
                     onOpen();
                   }}
                 >
-                  {name} ({email}),
+                  {name} ({email}, {gatewayName})
                 </Text>
               </Tooltip>
               {" "}
