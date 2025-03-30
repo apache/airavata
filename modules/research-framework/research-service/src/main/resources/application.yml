@@ -16,8 +16,8 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
   datasource:
-    url: "jdbc:mariadb://airavata.host:13306/research_catalog"
-    username: "root"
+    url: "jdbc:mariadb://localhost:13306/research_catalog"
+    username: "airavata"
     password: "123456"
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
@@ -27,3 +27,12 @@ spring:
     hibernate:
       ddl-auto: create
     open-in-view: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    doc-expansion: none
