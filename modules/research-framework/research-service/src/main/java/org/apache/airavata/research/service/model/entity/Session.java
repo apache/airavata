@@ -65,6 +65,13 @@ public class Session {
     @LastModifiedDate
     private Date updatedAt;
 
+    public Session() {
+    }
+
+    public Session(String sessionName, User user) {
+        this.sessionName = sessionName;
+        this.user = user;
+    }
 
     public String getId() {
         return id;

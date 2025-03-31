@@ -11,6 +11,7 @@ service ResearchService {
 }
 
 message CreateUserRequest {
+  string userName = 1;
   string firstName = 2;
   string lastName = 3;
   string email = 4;

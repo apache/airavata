@@ -31,45 +31,44 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 
-import org.apache.airavata.research.service.handlers.ProjectHandler;
+import org.apache.airavata.research.service.handlers.ResourceHandler;
 
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/rf/project-management")
 @Tag(name = "Project", description = "The Project API")
-public class ProjectController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+public class ResourceController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceController.class);
 
 
     @org.springframework.beans.factory.annotation.Autowired
-    private ProjectHandler projectHandler;
+    private ResourceHandler resourceHandler;
 
     @PostMapping("/dataset")
     public ResponseEntity<ResourceResponse> createDatasetResource(@RequestBody DatasetResource datasetResource) {
-        ResourceResponse response = projectHandler.createResource(datasetResource, ResourceTypeEnum.DATASET);
+        ResourceResponse response = resourceHandler.createResource(datasetResource, ResourceTypeEnum.DATASET);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/notebook")
     public ResponseEntity<ResourceResponse> createNotebookResource(@RequestBody NotebookResource notebookResource) {
-        ResourceResponse response = projectHandler.createResource(notebookResource, ResourceTypeEnum.NOTEBOOK);
+        ResourceResponse response = resourceHandler.createResource(notebookResource, ResourceTypeEnum.NOTEBOOK);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/repository")
     public ResponseEntity<ResourceResponse> createRepositoryResource(@RequestBody RepositoryResource repositoryResource) {
-        ResourceResponse response = projectHandler.createResource(repositoryResource, ResourceTypeEnum.REPOSITORY);
+        ResourceResponse response = resourceHandler.createResource(repositoryResource, ResourceTypeEnum.REPOSITORY);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/model")
     public ResponseEntity<ResourceResponse> createModelResource(@RequestBody ModelResource modelResource) {
-        ResourceResponse response = projectHandler.createResource(modelResource, ResourceTypeEnum.MODEL);
+        ResourceResponse response = resourceHandler.createResource(modelResource, ResourceTypeEnum.MODEL);
         return ResponseEntity.ok(response);
     }
 
@@ -80,7 +79,7 @@ public class ProjectController {
     )
     @GetMapping(value = "/resources/{id}")
     public ResponseEntity<ResourceResponse> getResource(@PathVariable(value="id") String id) {
-        return ResponseEntity.ok(projectHandler.getResourceById(id));
+        return ResponseEntity.ok(resourceHandler.getResourceById(id));
     }
 
     @Operation(
@@ -104,7 +103,7 @@ public class ProjectController {
                 typeList.add(DatasetResource.class);
             }
         }
-        Page<ResourceResponse> response = projectHandler.getAllResources(pageNumber, pageSize, typeList);
+        Page<ResourceResponse> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList);
 
         return ResponseEntity.ok(response);
     }

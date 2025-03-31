@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -45,8 +46,8 @@ public class ResearchHubController {
     }
 
     @GetMapping("/project/{projectId}")
-    public ResponseEntity<?> resolveRHubUrl(@PathVariable("projectId") String projectId) {
-        String spawnUrl = rHubHandler.spinRHubSession(projectId);
+    public ResponseEntity<?> resolveRHubUrl(@PathVariable("projectId") String projectId, @RequestParam("sessionName") String sessionName) {
+        String spawnUrl = rHubHandler.spinRHubSession(projectId, sessionName);
 
         LOGGER.info("Redirecting user to spawn URL: {}", spawnUrl);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(spawnUrl)).build();
