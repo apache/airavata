@@ -18,10 +18,8 @@
  */
 package org.apache.airavata.research.service.model.repo;
 
-import org.apache.airavata.research.service.model.entity.Project;
+import org.apache.airavata.research.service.model.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ProjectRepo extends JpaRepository<Project, String> {
+public interface SessionRepository extends JpaRepository<Session, String> {
 }
