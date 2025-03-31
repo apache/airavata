@@ -29,6 +29,7 @@ import org.apache.airavata.research.service.model.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
+@ConditionalOnProperty(name = "auth.filter.enabled", havingValue = "true", matchIfMissing = true)
 public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthzTokenFilter.class);
