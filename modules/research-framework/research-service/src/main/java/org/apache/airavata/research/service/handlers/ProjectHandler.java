@@ -99,9 +99,12 @@ public class ProjectHandler {
             response.setType(ResourceTypeEnum.NOTEBOOK);
         } else if (resource instanceof RepositoryResource) {
             response.setType(ResourceTypeEnum.REPOSITORY);
+        } else if (resource instanceof ModelResource) {
+            response.setType(ResourceTypeEnum.MODEL);
         } else {
             throw new RuntimeException("Unknown resource type: " + resource.getClass().getName());
         }
+
         return response;
     }
 
