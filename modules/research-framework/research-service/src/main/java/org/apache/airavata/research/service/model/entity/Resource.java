@@ -33,6 +33,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -82,6 +83,8 @@ public abstract class Resource {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PrivacyEnum privacy;
+
+    public abstract ResourceTypeEnum getType();
 
     public String getHeaderImage() {
         return headerImage;

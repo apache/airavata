@@ -73,8 +73,6 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
-
-
     @Operation(
             summary = "Get dataset, notebook, or repository"
     )

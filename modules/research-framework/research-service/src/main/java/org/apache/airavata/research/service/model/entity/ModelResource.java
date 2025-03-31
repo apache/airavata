@@ -21,6 +21,7 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 
 @Entity
 @Table(name = "MODEL_RESOURCE")
@@ -31,6 +32,11 @@ public class ModelResource extends Resource {
 
     @Column(nullable = false)
     private String version;
+
+    @Override
+    public ResourceTypeEnum getType() {
+        return ResourceTypeEnum.MODEL;
+    }
 
     public String getApplicationInterfaceId() {
         return applicationInterfaceId;

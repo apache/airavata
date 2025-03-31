@@ -84,25 +84,6 @@ public class ProjectHandler {
         return response;
     }
 
-    public ResourceResponse resourceToResponse(Resource resource) {
-        ResourceResponse response = new ResourceResponse();
-        response.setResource(resource);
-
-        if (resource instanceof DatasetResource) {
-            response.setType(ResourceTypeEnum.DATASET);
-        } else if (resource instanceof NotebookResource) {
-            response.setType(ResourceTypeEnum.NOTEBOOK);
-        } else if (resource instanceof RepositoryResource) {
-            response.setType(ResourceTypeEnum.REPOSITORY);
-        } else if (resource instanceof ModelResource) {
-            response.setType(ResourceTypeEnum.MODEL);
-        } else {
-            throw new RuntimeException("Unknown resource type: " + resource.getClass().getName());
-        }
-
-        return response;
-    }
-
     public ResourceResponse getResourceById(String id)
     {
         // Your logic to fetch the resource by ID
@@ -122,4 +103,11 @@ public class ProjectHandler {
         return resources.map(this::resourceToResponse);
     }
 
+    // Helper Functions
+    public ResourceResponse resourceToResponse(Resource resource) {
+        ResourceResponse response = new ResourceResponse();
+        response.setResource(resource);
+        response.setType(resource.getType());
+        return response;
+    }
 }
