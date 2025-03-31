@@ -9,3 +9,11 @@ option go_package = "protos/";
 
 service ResearchService {
 }
+
+message CreateUserRequest {
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string avatar = 5;
+}
+
