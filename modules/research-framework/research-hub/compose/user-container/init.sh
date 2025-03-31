@@ -6,17 +6,16 @@ SHARED_TMP="/home/jovyan/shared_data_tmp"
 mkdir -p "$TARGET_DIR"
 
 if [ ! -f "$TARGET_DIR/.initialized" ]; then
-    echo "Copying default Docker files into the mounted workspace..."
-    touch "$TARGET_DIR/.initialized"
     chown -R jovyan:users "$TARGET_DIR"
 
     # If $GIT_URL is set, clone the repo into the workspace
     if [ -n "$GIT_URL" ]; then
         echo "Cloning repo from $GIT_URL..."
         cd "$TARGET_DIR"
-        git clone "$GIT_URL" repo
-        chown -R jovyan:users "repo"
+        git clone "$GIT_URL" .
+        chown -R jovyan:users .
     fi
+    touch "$TARGET_DIR/.initialized"
 else
     echo "Docker default files already exist, skipping copy."
 fi
