@@ -28,8 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -80,16 +84,7 @@ public class ProjectHandler {
         return response;
     }
 
-    public ResourceResponse getResourceById(String id)
-    {
-        // Your logic to fetch the resource by ID
-        Optional<Resource> opResource = resourceRepository.findById(id);
-
-        if (opResource.isEmpty()) {
-            throw new RuntimeException("Resource not found: " + id);
-        }
-
-        Resource resource = opResource.get();
+    public ResourceResponse resourceToResponse(Resource resource) {
         ResourceResponse response = new ResourceResponse();
         response.setResource(resource);
 
@@ -106,6 +101,25 @@ public class ProjectHandler {
         }
 
         return response;
+    }
+
+    public ResourceResponse getResourceById(String id)
+    {
+        // Your logic to fetch the resource by ID
+        Optional<Resource> opResource = resourceRepository.findById(id);
+
+        if (opResource.isEmpty()) {
+            throw new RuntimeException("Resource not found: " + id);
+        }
+
+        Resource resource = opResource.get();
+        return resourceToResponse(resource);
+    }
+
+    public Page<ResourceResponse> getAllResources(int pageNumber, int pageSize, List<Class<? extends Resource>> typeList) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Resource> resources = resourceRepository.findAllByTypes(typeList, pageable);
+        return resources.map(this::resourceToResponse);
     }
 
 }
