@@ -67,7 +67,7 @@ public class UserHandler {
     }
 
     public User findUserByUsername(String username) {
-        return userRepository.findById(username).orElseThrow(() -> {
+        return userRepository.findByUsername(username).orElseThrow(() -> {
             LOGGER.error("Unable to find a User with a username: " + username);
             return new EntityNotFoundException("Unable to find a User with a username: " + username);
         });
