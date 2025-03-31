@@ -21,6 +21,7 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 
 @Entity
 @Table(name = "NOTEBOOK_RESOURCE")
@@ -28,6 +29,11 @@ public class NotebookResource extends Resource {
 
     @Column(nullable = false)
     private String notebookPath;
+
+    @Override
+    public ResourceTypeEnum getType() {
+        return ResourceTypeEnum.NOTEBOOK;
+    }
 
     public String getNotebookPath() {
         return notebookPath;

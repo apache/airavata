@@ -21,6 +21,7 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 
 @Entity
 @Table(name = "DATASET_RESOURCE")
@@ -28,6 +29,11 @@ public class DatasetResource extends Resource {
 
     @Column(nullable = false)
     private String datasetUrl;
+
+    @Override
+    public ResourceTypeEnum getType() {
+        return ResourceTypeEnum.DATASET;
+    }
 
     public String getDatasetUrl() {
         return datasetUrl;

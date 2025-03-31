@@ -6,6 +6,7 @@ import { Models } from "./components/models";
 import { ModelDetails } from "./components/models/ModelDetails";
 import { Datasets } from "./components/datasets";
 import { DatasetDetails } from "./components/datasets/DatasetDetails";
+import ResourceDetails from "./components/resources/ResourceDetails";
 
 function App() {
   const colorMode = useColorMode();
@@ -18,6 +19,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
+          <Route path="/resources/">
+            <Route path=":id" element={<ResourceDetails />} />
+          </Route>
           <Route path="/notebook">
             <Route path=":slug" element={<ProjectDetails />} />
           </Route>
