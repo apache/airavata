@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.hibernate.annotations.GenericGenerator;
@@ -49,6 +50,8 @@ public abstract class Resource {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PrivacyEnum privacy;
+
+    public abstract ResourceTypeEnum getType();
 
     public String getHeaderImage() {
         return headerImage;

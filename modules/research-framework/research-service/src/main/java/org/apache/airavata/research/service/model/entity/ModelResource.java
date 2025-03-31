@@ -2,6 +2,7 @@ package org.apache.airavata.research.service.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 
 @Entity
 public class ModelResource extends Resource {
@@ -25,5 +26,10 @@ public class ModelResource extends Resource {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    @Override
+    public ResourceTypeEnum getType() {
+        return ResourceTypeEnum.MODEL;
     }
 }
