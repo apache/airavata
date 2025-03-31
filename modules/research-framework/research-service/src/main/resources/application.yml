@@ -10,6 +10,10 @@ cybershuttle:
   hub:
     url: https://hub.dev.cybershuttle.org
 
+auth:
+  filter:
+    enabled: false
+
 spring:
   servlet:
     multipart:
