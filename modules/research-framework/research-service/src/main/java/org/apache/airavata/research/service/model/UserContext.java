@@ -19,12 +19,12 @@
 package org.apache.airavata.research.service.model;
 
 import org.apache.airavata.model.security.AuthzToken;
-
-import java.util.Map;
+import org.apache.airavata.research.service.model.entity.User;
 
 public class UserContext {
 
     private static final ThreadLocal<AuthzToken> AUTHZ_TOKEN = new ThreadLocal<>();
+    private static final ThreadLocal<User> CURRENT_USER = new ThreadLocal<>();
 
     public static AuthzToken authzToken() {
         return AUTHZ_TOKEN.get();
@@ -34,19 +34,15 @@ public class UserContext {
         AUTHZ_TOKEN.set(token);
     }
 
+    public static User user() {
+        return CURRENT_USER.get();
+    }
+
+    public static void setUser(User user) {
+        CURRENT_USER.set(user);
+    }
+
     public static String username() {
-        return getClaim("userName");
-    }
-
-    public static String gatewayId() {
-        return getClaim("gatewayID");
-    }
-
-    private static String getClaim(String claimId) {
-        return AUTHZ_TOKEN.get().getClaimsMap().entrySet().stream()
-                .filter(entry -> entry.getKey().equalsIgnoreCase(claimId))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Missing '" + claimId + "' claim in the authentication token"));
+        return CURRENT_USER.get().getUsername();
     }
 }

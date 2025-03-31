@@ -21,6 +21,7 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -35,13 +36,18 @@ import jakarta.persistence.Table;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "RESOURCE")
 @Inheritance(strategy = InheritanceType.JOINED)
+@EntityListeners(AuditingEntityListener.class)
 public abstract class Resource {
 
     @Id
@@ -82,6 +88,14 @@ public abstract class Resource {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PrivacyEnum privacy;
+
+    @Column(nullable = false, updatable = false)
+    @CreatedDate
+    private Instant createdAt;
+
+    @Column(nullable = false)
+    @LastModifiedDate
+    private Instant updatedAt;
 
     public String getHeaderImage() {
         return headerImage;
@@ -145,5 +159,21 @@ public abstract class Resource {
 
     public void setPrivacy(org.apache.airavata.research.service.enums.PrivacyEnum privacy) {
         this.privacy = privacy;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
