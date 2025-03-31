@@ -20,22 +20,23 @@ package org.apache.airavata.research.service.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Table(name = "SESSION")
+@EntityListeners(AuditingEntityListener.class)
 public class Session {
 
     @Id
@@ -44,7 +45,7 @@ public class Session {
     @Column(nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String sessionName;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -55,22 +56,21 @@ public class Session {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
     @CreatedDate
-    private Date createdAt;
+    private Instant createdAt;
 
     @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
-    private Date updatedAt;
+    private Instant updatedAt;
 
     public Session() {
     }
 
-    public Session(String sessionName, User user) {
+    public Session(String sessionName, User user, Project project) {
         this.sessionName = sessionName;
         this.user = user;
+        this.project = project;
     }
 
     public String getId() {
@@ -105,19 +105,19 @@ public class Session {
         this.project = project;
     }
 
-    public java.util.Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(java.util.Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public java.util.Date getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(java.util.Date updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -30,7 +30,7 @@ import org.apache.airavata.research.service.model.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -38,10 +38,11 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(name = "auth.filter.enabled", havingValue = "true", matchIfMissing = true)
+@Profile("!dev")
 public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthzTokenFilter.class);
+    private static final String USERNAME_CLAIM = "userName";
 
     private final UserHandler userHandler;
 
@@ -76,7 +77,8 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
             authzToken.setClaimsMap(claimsMap);
 
             UserContext.setAuthzToken(authzToken);
-            userHandler.initializeUser(UserContext.username());
+            UserContext.setUser(userHandler.initializeOrGetUser(claimsMap.get(USERNAME_CLAIM)));
+
         } catch (Exception e) {
             LOGGER.error("Invalid authorization data", e);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authorization data");
