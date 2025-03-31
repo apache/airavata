@@ -9,10 +9,7 @@ server:
 cybershuttle:
   hub:
     url: https://hub.dev.cybershuttle.org
-
-auth:
-  filter:
-    enabled: false
+    dev-user: "CHANGE_ME"
 
 spring:
   servlet:

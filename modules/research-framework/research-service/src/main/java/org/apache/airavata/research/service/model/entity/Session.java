@@ -45,7 +45,7 @@ public class Session {
     @Column(nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String sessionName;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
