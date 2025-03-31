@@ -15,6 +15,7 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,6 +37,9 @@ public class AgentManagementHandler {
 
     @Value("${airavata.storageResourceId}")
     private String storageResourceId;
+
+    @Value("${airavata.storagePath}")
+    private String storagePath;
 
     public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
         this.airavataService = airavataService;
@@ -120,14 +125,18 @@ public class AgentManagementHandler {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
-        String projectId = airavataService.extractDefaultProjectId(airavataClient); // TODO should be configurable
+        String projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";
+        String projectDir = projectName.replace(" ", "_");
+        String projectId = airavataService.getProjectId(airavataClient, projectName);
+        AuthzToken authzToken = UserContext.authzToken();
+        String userName = UserContext.username();
+        String gatewayId = UserContext.gatewayId();
         String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
-
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setExperimentName(experimentName);
         experimentModel.setProjectId(projectId);
-        experimentModel.setUserName(UserContext.username());
-        experimentModel.setGatewayId(UserContext.gatewayId());
+        experimentModel.setUserName(userName);
+        experimentModel.setGatewayId(gatewayId);
         experimentModel.setExecutionId(appInterfaceId);
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
@@ -147,19 +156,13 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
         userConfigurationDataModel.setStorageId(storageResourceId);
-        // TODO get storage path from airavata client instead of hardcoding it
-        userConfigurationDataModel.setExperimentDataDir("/var/www/portals/gateway-user-data/cybershuttle"
-                .concat(File.separator)
-                .concat(UserContext.username())
-                .concat(File.separator)
-                .concat(projectId)
-                .concat(File.separator)
-                .concat(experimentName));
+        String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName).toString();
+        userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
         userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
-        List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(UserContext.authzToken(), appInterfaceId);
+        List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(authzToken, appInterfaceId);
         List<InputDataObjectType> experimentInputs = applicationInputs.stream()
                 .peek(input -> {
                     if ("agent_id".equals(input.getName())) {
@@ -172,7 +175,7 @@ public class AgentManagementHandler {
                 .collect(Collectors.toList());
 
         experimentModel.setExperimentInputs(experimentInputs);
-        experimentModel.setExperimentOutputs(airavataClient.getApplicationOutputs(UserContext.authzToken(), appInterfaceId));
+        experimentModel.setExperimentOutputs(airavataClient.getApplicationOutputs(authzToken, appInterfaceId));
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());
 

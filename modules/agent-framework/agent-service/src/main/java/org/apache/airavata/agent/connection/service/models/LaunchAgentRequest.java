@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LaunchAgentRequest {
 
     private String experimentName;
+    private String projectName;
     private String remoteCluster;
     private String group;
 
@@ -80,5 +81,13 @@ public class LaunchAgentRequest {
 
     public String getApplicationInterfaceName() {
         return remoteCluster + (StringUtils.isNotBlank(group) ? ("_" + group) : "");
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }
