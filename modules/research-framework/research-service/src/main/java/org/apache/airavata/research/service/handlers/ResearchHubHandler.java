@@ -45,7 +45,7 @@ public class ResearchHubHandler {
         this.sessionHandler = sessionHandler;
     }
 
-    public String spinRHubSession(String projectId) {
+    public String spinRHubSession(String projectId, String sessionName) {
         // TODO fix the conflict of Project vs Resource
         // TODO extract the data using the projectId
         String gitUrl = "https://github.com/AllenInstitute/bmtk-workshop.git";

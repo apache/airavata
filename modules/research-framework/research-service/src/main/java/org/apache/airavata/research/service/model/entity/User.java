@@ -66,6 +66,16 @@ public class User {
     @Column(nullable = true)
     private String avatar;
 
+    public User() {
+    }
+
+    public User(String username, String firstName, String lastName, String email) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
+
     public String getId() {
         return id;
     }
