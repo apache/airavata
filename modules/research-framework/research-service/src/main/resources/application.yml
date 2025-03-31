@@ -6,6 +6,10 @@ server:
   port: 18889
   address: 0.0.0.0
 
+cybershuttle:
+  hub:
+    url: https://hub.dev.cybershuttle.org
+
 spring:
   servlet:
     multipart:

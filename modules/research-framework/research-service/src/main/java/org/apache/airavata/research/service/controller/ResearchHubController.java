@@ -18,8 +18,10 @@
  */
 package org.apache.airavata.research.service.controller;
 
+import org.apache.airavata.research.service.model.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,22 +38,18 @@ public class ResearchHubController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResearchHubController.class);
 
+    @Value("${cybershuttle.hub.url}")
+    private String csHubUrl;
+
     @GetMapping("/project/{projectId}")
     public ResponseEntity<?> resolveResearchHubUrl(@PathVariable("projectId") String projectId) {
 
         // TODO extract the data using the projectId
         String gitUrl = "https://github.com/AllenInstitute/bmtk-workshop.git";
         String dataPath = "bmtk";
-        String jupyterUser = "airavata@apache.org";
         String randomSessionName = "session-" + UUID.randomUUID().toString().substring(0, 6);
-        System.out.println();
-        String spawnUrl = String.format(
-                "https://hub.dev.cybershuttle.org/hub/spawn/%s/%s?git=%s&dataPath=%s",
-                jupyterUser,
-                randomSessionName,
-                gitUrl,
-                dataPath
-        );
+        System.out.println("Session: " + randomSessionName);
+        String spawnUrl = String.format("%s/hub/spawn/%s/%s?git=%s&dataPath=%s", csHubUrl, UserContext.username(), randomSessionName, gitUrl, dataPath);
 
         LOGGER.info("Redirecting user to spawn URL: {}", spawnUrl);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(spawnUrl)).build();
