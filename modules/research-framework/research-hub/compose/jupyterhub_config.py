@@ -39,11 +39,6 @@ class CustomDockerSpawner(DockerSpawner):
 
         return options
 
-    def get_image(self):
-        user_requested = self.user_options.get("image", "base")
-        default_image = "cybershuttle/dev_jupyterlab-base"
-        return self.allowed_images.get(user_requested, default_image)
-
     def sanitize_name(self, name):
         """Docker safe volume/container names."""
         return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
@@ -54,24 +49,31 @@ class CustomDockerSpawner(DockerSpawner):
         safe_user = self.sanitize_name(self.user.name)
         safe_srv = self.sanitize_name(self.name) or "default"
 
-        vol_name = f"jupyterhub-vol-{safe_user}-{safe_srv}"
+        volumes_dict = {}
 
-        volumes_dict = {
-            vol_name: "/home/jovyan/work"
-        }
-
-        # If dataPath was provided, mount it read-only
+        git_url = self.user_options.get("git")
         data_subfolder = self.user_options.get("dataPath")
-        if data_subfolder:
-            host_data_path = f"/home/exouser/mnt/{data_subfolder}"
-            volumes_dict[host_data_path] = {
-                'bind': f"/home/jovyan/shared_data_tmp",
-                'mode': 'ro'
-            }
+
+        if git_url or data_subfolder:
+            vol_name = f"jupyterhub-vol-{safe_user}-{safe_srv}"
+            volumes_dict[vol_name] = "/home/jovyan/work"
+
+            # If a data subfolder is provided, mount it read-only.
+            if data_subfolder:
+                host_data_path = f"/home/exouser/mnt/{data_subfolder}"
+                volumes_dict[host_data_path] = {
+                    'bind': "/home/jovyan/shared_data_tmp",
+                    'mode': 'ro'
+                }
+            self.image = "cybershuttle/jupyterlab-base" # TODO using ENV variable
+        else:
+            # Sample mode
+            vol_name = f"jupyterhub-vol-{safe_user}-default-jupyterlab-base"
+            volumes_dict[vol_name] = "/home/jovyan/work"
+            self.image = "cybershuttle/jupyterlab-base-sample" # TODO using ENV variable
 
         self.volumes = volumes_dict
 
-        git_url = self.user_options.get("git")
         if git_url:
             if not hasattr(self, "environment"):
                 self.environment = {}
@@ -94,7 +96,6 @@ c.DockerSpawner.environment = {
 c.DockerSpawner.extra_create_kwargs = {'user': 'root'}
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = os.getenv('DOCKER_NETWORK_NAME', 'jupyterhub_network')
-c.DockerSpawner.image = os.environ.get('DOCKER_NOTEBOOK_IMAGE', 'jupyter/base-notebook:latest')
 
 # Hub Configuration
 c.JupyterHub.hub_ip = '0.0.0.0'
