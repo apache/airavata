@@ -34,6 +34,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -96,6 +97,8 @@ public abstract class Resource {
     @Column(nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
+
+    public abstract ResourceTypeEnum getType();
 
     public String getHeaderImage() {
         return headerImage;
