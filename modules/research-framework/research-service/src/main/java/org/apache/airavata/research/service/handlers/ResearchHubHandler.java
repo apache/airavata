@@ -19,13 +19,13 @@
 package org.apache.airavata.research.service.handlers;
 
 import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.research.service.model.entity.DatasetResource;
+import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class ResearchHubHandler {
@@ -46,19 +46,23 @@ public class ResearchHubHandler {
     }
 
     public String spinRHubSession(String projectId, String sessionName) {
-        // TODO fix the conflict of Project vs Resource
-        // TODO extract the data using the projectId
-        String gitUrl = "https://github.com/AllenInstitute/bmtk-workshop.git";
-        String dataPath = "bmtk";
-        String randomSessionName = "session-" + UUID.randomUUID().toString().substring(0, 6);
-        System.out.println("Session: " + randomSessionName);
-        return String.format(RH_SPAWN_URL, csHubUrl, UserContext.username(), randomSessionName, gitUrl, dataPath);
+        Project project = projectHandler.findProject(projectId);
+        // TODO should support multiple data sets for RHub
+        DatasetResource dataset = project.getDatasetResources().stream().findFirst().get();
+        Session session = sessionHandler.createSession(sessionName, project);
+
+        String spawnUrl = String.format(RH_SPAWN_URL, csHubUrl, UserContext.username(), session.getId(), project.getRepositoryResource().getRepositoryUrl(), dataset.getDatasetUrl());
+        LOGGER.debug("Generated the spawn url: {} for the user: {} against the project: {}", spawnUrl, UserContext.username(), projectId);
+        return spawnUrl;
     }
 
     public String resolveRHubExistingSession(String sessionId) {
         LOGGER.debug("Resolving RH session id {} for user: {}", sessionId, UserContext.username());
         // TODO restrict this execution for owner
         Session session = sessionHandler.findSession(sessionId);
-        return String.format(RH_SESSION_URL, csHubUrl, UserContext.username(), session.getId());
+
+        String sessionUrl = String.format(RH_SESSION_URL, csHubUrl, UserContext.username(), session.getId());
+        LOGGER.debug("Generated the session url: {} for the user: {}", sessionUrl, UserContext.username());
+        return sessionUrl;
     }
 }

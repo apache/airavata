@@ -18,14 +18,13 @@
  */
 package org.apache.airavata.research.service.handlers;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.airavata.research.CreateUserRequest;
 import org.apache.airavata.research.service.model.entity.User;
 import org.apache.airavata.research.service.model.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class UserHandler {
@@ -48,9 +47,6 @@ public class UserHandler {
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         user.setEmail(userRequest.getEmail());
-        Date date = new Date(); // same date for createdAt and updatedAt
-        user.setCreatedAt(date);
-        user.setUpdatedAt(date);
         user.setAvatar(userRequest.getAvatar());
 
         return userRepository.save(user);
@@ -70,16 +66,25 @@ public class UserHandler {
         return userRepository.findByEmail(email);
     }
 
-    public void initializeUser(String username) {
-        userRepository.findByUsername(username).ifPresentOrElse(
-                user -> LOGGER.info("User {} is already registered.", username),
-                () -> {
-                    // TODO initialize this using the airavata userprofile
-                    User newUser = new User(username, "CHANGE_ME", "CHANGE_ME", username);
-                    userRepository.save(newUser);
-                    LOGGER.info("Initialized new user with username {}.", username);
-                }
-        );
+    public User findUserByUsername(String username) {
+        return userRepository.findById(username).orElseThrow(() -> {
+            LOGGER.error("Unable to find a User with a username: " + username);
+            return new EntityNotFoundException("Unable to find a User with a username: " + username);
+        });
     }
 
+    public User initializeOrGetUser(String username) {
+        return userRepository.findByUsername(username)
+                .map(user -> {
+                    LOGGER.debug("User {} is already registered.", username);
+                    return user;
+                })
+                .orElseGet(() -> {
+                    // TODO: Initialize this using the Airavata user profile if needed.
+                    User newUser = new User(username, "CHANGE_ME", "CHANGE_ME", username);
+                    newUser = userRepository.save(newUser);
+                    LOGGER.info("Initialized new user with username {}.", username);
+                    return newUser;
+                });
+    }
 }

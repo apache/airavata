@@ -42,6 +42,7 @@ import java.util.Map;
 public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthzTokenFilter.class);
+    private static final String USERNAME_CLAIM = "userName";
 
     private final UserHandler userHandler;
 
@@ -76,7 +77,8 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
             authzToken.setClaimsMap(claimsMap);
 
             UserContext.setAuthzToken(authzToken);
-            userHandler.initializeUser(UserContext.username());
+            UserContext.setUser(userHandler.initializeOrGetUser(claimsMap.get(USERNAME_CLAIM)));
+
         } catch (Exception e) {
             LOGGER.error("Invalid authorization data", e);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authorization data");

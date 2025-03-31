@@ -21,6 +21,7 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,11 +30,16 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "PROJECT")
+@EntityListeners(AuditingEntityListener.class)
 public class Project {
 
     @Id
@@ -46,13 +52,21 @@ public class Project {
     @JoinColumn(name = "repository_resource_id")
     private RepositoryResource repositoryResource;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "project_dataset",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "dataset_resource_id")
     )
     private Set<DatasetResource> datasetResources = new HashSet<>();
+
+    @Column(nullable = false, updatable = false)
+    @CreatedDate
+    private Instant createdAt;
+
+    @Column(nullable = false)
+    @LastModifiedDate
+    private Instant updatedAt;
 
     public String getId() {
         return id;
@@ -76,5 +90,25 @@ public class Project {
 
     public void setDatasetResources(Set<DatasetResource> datasetResources) {
         this.datasetResources = datasetResources;
+    }
+
+    public void addDatasetResource(DatasetResource datasetResource) {
+        this.datasetResources.add(datasetResource);
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
