@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "RESOURCE")
