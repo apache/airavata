@@ -38,6 +38,7 @@ public class UserController {
     ) {
         try {
             CreateUserRequest userRequest = CreateUserRequest.newBuilder()
+                    .setUserName(email)
                     .setEmail(email)
                     .setFirstName(firstName)
                     .setLastName(lastName)

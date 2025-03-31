@@ -90,26 +90,7 @@ public class ResourceHandler {
         return response;
     }
 
-    public ResourceResponse resourceToResponse(Resource resource) {
-        ResourceResponse response = new ResourceResponse();
-        response.setResource(resource);
-
-        if (resource instanceof DatasetResource) {
-            response.setType(ResourceTypeEnum.DATASET);
-        } else if (resource instanceof NotebookResource) {
-            response.setType(ResourceTypeEnum.NOTEBOOK);
-        } else if (resource instanceof RepositoryResource) {
-            response.setType(ResourceTypeEnum.REPOSITORY);
-        } else if (resource instanceof ModelResource) {
-            response.setType(ResourceTypeEnum.MODEL);
-        } else {
-            throw new RuntimeException("Unknown resource type: " + resource.getClass().getName());
-        }
-
-        return response;
-    }
-
-    public ResourceResponse getResourceById(String id) {
+    public Resource getResourceById(String id) {
         // Your logic to fetch the resource by ID
         Optional<Resource> opResource = resourceRepository.findById(id);
 
@@ -117,14 +98,19 @@ public class ResourceHandler {
             throw new RuntimeException("Resource not found: " + id);
         }
 
-        Resource resource = opResource.get();
-        return resourceToResponse(resource);
+        return opResource.get();
     }
 
-    public Page<ResourceResponse> getAllResources(int pageNumber, int pageSize, List<Class<? extends Resource>> typeList) {
+    public Page<Resource> getAllResources(int pageNumber, int pageSize, List<Class<? extends Resource>> typeList) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Resource> resources = resourceRepository.findAllByTypes(typeList, pageable);
-        return resources.map(this::resourceToResponse);
+        return resourceRepository.findAllByTypes(typeList, pageable);
     }
 
+    // Helper methods
+//    public ResourceResponse resourceToResponse(Resource resource) {
+//        ResourceResponse response = new ResourceResponse();
+//        response.setResource(resource);
+//        response.setType(resource.getType());
+//        return response;
+//    }
 }

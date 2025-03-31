@@ -76,7 +76,7 @@ public class ResourceController {
             summary = "Get dataset, notebook, or repository"
     )
     @GetMapping(value = "/resources/{id}")
-    public ResponseEntity<ResourceResponse> getResource(@PathVariable(value="id") String id) {
+    public ResponseEntity<Resource> getResource(@PathVariable(value="id") String id) {
         return ResponseEntity.ok(resourceHandler.getResourceById(id));
     }
 
@@ -84,7 +84,7 @@ public class ResourceController {
             summary = "Get all resources"
     )
     @GetMapping("/resources")
-    public ResponseEntity<Page<ResourceResponse>> getAllResources(
+    public ResponseEntity<Page<Resource>> getAllResources(
             @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value="pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value="type") ResourceTypeEnum[] types
@@ -101,7 +101,7 @@ public class ResourceController {
                 typeList.add(DatasetResource.class);
             }
         }
-        Page<ResourceResponse> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList);
+        Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList);
 
         return ResponseEntity.ok(response);
     }
