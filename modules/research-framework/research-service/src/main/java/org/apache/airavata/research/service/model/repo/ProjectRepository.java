@@ -18,10 +18,10 @@
  */
 package org.apache.airavata.research.service.model.repo;
 
-import org.apache.airavata.research.service.model.entity.Tag;
+import org.apache.airavata.research.service.model.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface TagRepository extends JpaRepository<Tag, String> {
-
-    Tag findByValue(String value);
+@Repository
+public interface ProjectRepository extends JpaRepository<Project, String> {
 }

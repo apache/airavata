@@ -18,13 +18,28 @@
  */
 package org.apache.airavata.research.service.handlers;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.airavata.research.service.model.entity.Session;
+import org.apache.airavata.research.service.model.repo.SessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProjectHandler {
+public class SessionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionHandler.class);
 
+    private final SessionRepository sessionRepository;
+
+    public SessionHandler(SessionRepository sessionRepository) {
+        this.sessionRepository = sessionRepository;
+    }
+
+    public Session findSession(String sessionId) {
+        return sessionRepository.findById(sessionId).orElseThrow(() -> {
+            LOGGER.error("Unable to find session with id: " + sessionId);
+            return new EntityNotFoundException("Unable to find session with id: " + sessionId);
+        });
+    }
 }
