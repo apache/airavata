@@ -147,7 +147,10 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
         userConfigurationDataModel.setStorageId(storageResourceId);
-        userConfigurationDataModel.setExperimentDataDir(UserContext.username()
+        // TODO get storage path from airavata client instead of hardcoding it
+        userConfigurationDataModel.setExperimentDataDir("/var/www/portals/gateway-user-data/cybershuttle"
+                .concat(File.separator)
+                .concat(UserContext.username())
                 .concat(File.separator)
                 .concat(projectId)
                 .concat(File.separator)

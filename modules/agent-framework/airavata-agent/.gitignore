@@ -3,3 +3,4 @@
 go.sum
 *.egg-info
 *.ipynb_checkpoints
+*.sif
