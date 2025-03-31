@@ -38,7 +38,14 @@ const NavBar = () => {
       <Flex ml={4} gap={6}>
         {NAV_CONTENT.map((item) => (
           <Link key={item.title} to={item.url} color="gray.700">
-            {item.title}
+            <Text
+              _hover={{
+                color: "blue.400",
+                textDecoration: "underline",
+              }}
+            >
+              {item.title}
+            </Text>
           </Link>
         ))}
       </Flex>
