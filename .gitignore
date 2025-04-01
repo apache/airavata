@@ -48,4 +48,6 @@ airavata-local-agent/proxy/websockify
 airavata-local-agent/renderer/.next
 airavata-local-agent/dist
 
+modules/research-framework/compose
+
 logs

@@ -18,6 +18,8 @@
  */
 package org.apache.airavata.research.service.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.airavata.research.service.handlers.ResearchHubHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,35 +27,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/rf/hub")
+@Tag(name = "Research Hub", description = "Research Hub Operations")
 public class ResearchHubController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResearchHubController.class);
 
-    @GetMapping("/project/{projectId}")
-    public ResponseEntity<?> resolveResearchHubUrl(@PathVariable("projectId") String projectId) {
+    private final ResearchHubHandler rHubHandler;
 
-        // TODO extract the data using the projectId
-        String gitUrl = "https://github.com/AllenInstitute/bmtk-workshop.git";
-        String dataPath = "bmtk";
-        String jupyterUser = "airavata@apache.org";
-        String randomSessionName = "session-" + UUID.randomUUID().toString().substring(0, 6);
-        System.out.println();
-        String spawnUrl = String.format(
-                "https://hub.dev.cybershuttle.org/hub/spawn/%s/%s?git=%s&dataPath=%s",
-                jupyterUser,
-                randomSessionName,
-                gitUrl,
-                dataPath
-        );
+    public ResearchHubController(ResearchHubHandler rHubHandler) {
+        this.rHubHandler = rHubHandler;
+    }
+
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<?> resolveRHubUrl(@PathVariable("projectId") String projectId, @RequestParam("sessionName") String sessionName) {
+        String spawnUrl = rHubHandler.spinRHubSession(projectId, sessionName);
 
         LOGGER.info("Redirecting user to spawn URL: {}", spawnUrl);
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(spawnUrl)).build();
+    }
+
+    @GetMapping("/session/{sessionId}")
+    public ResponseEntity<?> resolveRHubExistingSession(@PathVariable("sessionId") String sessionId) {
+        String spawnUrl = rHubHandler.resolveRHubExistingSession(sessionId);
+
+        LOGGER.info("Redirecting to existing session spawn URL: {}", spawnUrl);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(spawnUrl)).build();
     }
 }

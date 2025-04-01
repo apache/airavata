@@ -18,12 +18,28 @@
  */
 package org.apache.airavata.research.service.handlers;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.airavata.research.service.model.entity.Project;
+import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProjectHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectHandler.class);
 
+    private final ProjectRepository projectRepository;
 
+    public ProjectHandler(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
+
+    public Project findProject(String projectId) {
+        return projectRepository.findById(projectId).orElseThrow(() -> {
+            LOGGER.error("Unable to find a Project with id: " + projectId);
+            return new EntityNotFoundException("Unable to find a Project with id: " + projectId);
+        });
+    }
 }

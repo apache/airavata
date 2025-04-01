@@ -6,14 +6,18 @@ server:
   port: 18889
   address: 0.0.0.0
 
+cybershuttle:
+  hub:
+    url: https://hub.dev.cybershuttle.org
+
 spring:
   servlet:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
   datasource:
-    url: "jdbc:mariadb://airavata.host:13306/research_catalog"
-    username: "root"
+    url: "jdbc:mariadb://localhost:13306/research_catalog"
+    username: "airavata"
     password: "123456"
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
@@ -21,5 +25,14 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     open-in-view: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    doc-expansion: none

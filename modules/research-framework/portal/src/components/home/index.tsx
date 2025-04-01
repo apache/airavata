@@ -4,7 +4,7 @@ import NavBar from "../NavBar";
 import { PageHeader } from "../PageHeader";
 import { AddRepositoryButton } from "./AddRepositoryButton";
 import { AddZipButton } from "./AddZipButton";
-import { ProjectsSection } from "./ProjectsSection";
+import { NotebooksAndRepositoriesSection } from "./NotebooksAndRepositoriesSection";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { FaPlus } from "react-icons/fa";
 import { SessionsSection } from "./SessionsSection";
@@ -17,7 +17,7 @@ const Home = () => {
       <Container maxW="container.xl" p={4}>
         <HStack alignItems="flex-end" justify="space-between">
           <PageHeader
-            title="Notebooks"
+            title="Notebook & Repositories"
             description="Community-Published Scientific Notebooks and Repositories."
           />
 
@@ -27,7 +27,7 @@ const Home = () => {
           </HStack>
         </HStack>
 
-        <ProjectsSection />
+        <NotebooksAndRepositoriesSection />
 
         <HStack alignItems="flex-end" justify="space-between" mt={4}>
           <PageHeader

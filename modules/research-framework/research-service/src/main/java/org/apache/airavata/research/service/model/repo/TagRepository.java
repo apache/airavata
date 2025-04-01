@@ -16,16 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.research.service.controller;
+package org.apache.airavata.research.service.model.repo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.airavata.research.service.model.entity.Tag;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@RestController
-@RequestMapping("/api/v1/rf/project")
-public class ProjectController {
+public interface TagRepository extends JpaRepository<Tag, String> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+    Tag findByValue(String value);
 }
