@@ -6,7 +6,6 @@ services:
       - "18080:8080"
       - "8443:8443"
     volumes:
-      - ./keycloak/Default-export.json:/opt/keycloak/Default-export.json
       - ../resources/keystores/airavata.jks:/opt/keycloak/conf/airavata.jks
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
       - ./keycloak/Default-export.json:/opt/keycloak/data/import/Default-export.json
