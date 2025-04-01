@@ -9,11 +9,19 @@ const NAV_CONTENT = [
   },
   {
     title: "Datasets",
-    url: "/datasets",
+    url: "/resources/datasets",
+  },
+  {
+    title: "Repositories",
+    url: "/resources/repositories",
+  },
+  {
+    title: "Notebooks",
+    url: "/resources/notebooks",
   },
   {
     title: "Models",
-    url: "/models",
+    url: "/resources/models",
   },
 ];
 

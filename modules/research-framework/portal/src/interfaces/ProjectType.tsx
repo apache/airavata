@@ -1,7 +1,10 @@
-import { MetadataType } from "./MetadataType";
+import { DatasetResource, RepositoryResource } from "./ResourceType";
 
 export interface ProjectType {
-  metadata: MetadataType;
-  notebookViewer?: string;
-  repositoryUrl?: string;
+  id: string;
+  name: string;
+  repositoryResource: RepositoryResource;
+  datasetResources: DatasetResource[];
+  createdAt: string;
+  updatedAt: string;
 }

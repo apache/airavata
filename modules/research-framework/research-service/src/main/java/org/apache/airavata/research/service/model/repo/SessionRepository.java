@@ -20,6 +20,15 @@ package org.apache.airavata.research.service.model.repo;
 
 import org.apache.airavata.research.service.model.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface SessionRepository extends JpaRepository<Session, String> {
+    List<Session> findByUserId(String userId);
+
+    @Query(value = "SELECT * FROM session WHERE project_id = :projectId AND user_id = :userId", nativeQuery = true)
+    Optional<Session> findSessionByProjectIdAndUserId(@Param("projectId") String projectId, @Param("userId") String userId);
 }

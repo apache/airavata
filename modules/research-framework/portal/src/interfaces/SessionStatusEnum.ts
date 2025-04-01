@@ -1,0 +1,7 @@
+export enum SessionStatusEnum {
+  CREATED = "CREATED",
+  RUNNING = "RUNNING",
+  FINISHED = "FINISHED",
+  TERMINATED = "TERMINATED",
+  ERROR = "ERROR"
+};

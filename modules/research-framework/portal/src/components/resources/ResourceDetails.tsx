@@ -23,7 +23,7 @@ import {
 } from "@/interfaces/ResourceType";
 import { Tag } from "@/interfaces/TagType";
 import { User } from "@/interfaces/UserType";
-import { resourceTypeToColor } from "@/lib/util";
+import { isValidImaage, resourceTypeToColor } from "@/lib/util";
 import { ResourceTypeBadge } from "./ResourceTypeBadge";
 import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 import { ModelSpecificBox } from "../models/ModelSpecificBox";
@@ -51,6 +51,8 @@ const ResourceDetails = () => {
   }, [id]);
 
   if (!resource) return <Spinner />;
+
+  const validImage = isValidImaage(resource.headerImage);
 
   return (
     <>
@@ -123,12 +125,14 @@ const ResourceDetails = () => {
             </HStack>
           </Box>
 
-          <Image
-            src={resource.headerImage}
-            alt="Notebook Header"
-            rounded="md"
-            maxW="300px"
-          />
+          {validImage && (
+            <Image
+              src={resource.headerImage}
+              alt="Notebook Header"
+              rounded="md"
+              maxW="300px"
+            />
+          )}
         </HStack>
 
         <Separator my={6} />
