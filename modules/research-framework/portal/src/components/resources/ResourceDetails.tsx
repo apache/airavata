@@ -19,6 +19,7 @@ import api from "@/lib/api";
 import {
   ModelResource,
   NotebookResource,
+  RepositoryResource,
   Resource,
 } from "@/interfaces/ResourceType";
 import { Tag } from "@/interfaces/TagType";
@@ -28,6 +29,7 @@ import { ResourceTypeBadge } from "./ResourceTypeBadge";
 import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 import { ModelSpecificBox } from "../models/ModelSpecificBox";
 import { NotebookSpecificDetails } from "../notebooks/NotebookSpecificDetails";
+import { RepositorySpecificDetails } from "../repositories/RepositorySpecificDetails";
 
 async function getResource(id: string) {
   const response = await api.get(`/project-management/resources/${id}`);
@@ -148,7 +150,11 @@ const ResourceDetails = () => {
 
         <Box>
           {(resource.type as ResourceTypeEnum) ===
-            ResourceTypeEnum.REPOSITORY && <Text>REPO only</Text>}
+            ResourceTypeEnum.REPOSITORY && (
+            <RepositorySpecificDetails
+              dataset={resource as RepositoryResource}
+            />
+          )}
 
           {(resource.type as ResourceTypeEnum) === ResourceTypeEnum.MODEL && (
             <ModelSpecificBox model={resource as ModelResource} />
