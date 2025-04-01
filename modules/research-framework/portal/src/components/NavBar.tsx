@@ -1,11 +1,20 @@
-import { Text, Flex, Spacer, Image, HStack, Avatar } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  Spacer,
+  Image,
+  HStack,
+  Avatar,
+  Box,
+} from "@chakra-ui/react";
 import ApacheAiravataLogo from "../assets/airavata-logo.png";
 import { Link } from "react-router";
+import { useAuth } from "react-oidc-context";
 
 const NAV_CONTENT = [
   {
-    title: "Home",
-    url: "/",
+    title: "Projects",
+    url: "/projects",
   },
   {
     title: "Datasets",
@@ -26,6 +35,9 @@ const NAV_CONTENT = [
 ];
 
 const NavBar = () => {
+  const auth = useAuth();
+
+  console.log(auth);
   return (
     <Flex
       as="nav"
@@ -38,7 +50,7 @@ const NavBar = () => {
       bg="white" // Ensure background is not transparent
     >
       {/* Logo */}
-      <Link to="/">
+      <Link to="/projects">
         <Image src={ApacheAiravataLogo} alt="Logo" boxSize="30px" />
       </Link>
 
@@ -61,11 +73,16 @@ const NavBar = () => {
       <Spacer />
 
       {/* Search Bar */}
-      <HStack _hover={{ cursor: "pointer" }}>
-        <Text>John Doe</Text>
+      <HStack>
         <Avatar.Root variant="subtle">
-          <Avatar.Fallback name="John Doe" />
+          <Avatar.Fallback name={auth.user?.profile.name} />
         </Avatar.Root>
+        <Box>
+          <Text>{auth.user?.profile.name}</Text>
+          <Text fontSize="sm" color="gray.500">
+            {auth.user?.profile.email}
+          </Text>
+        </Box>
       </HStack>
     </Flex>
   );
