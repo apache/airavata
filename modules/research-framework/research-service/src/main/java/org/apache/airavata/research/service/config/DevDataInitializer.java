@@ -32,6 +32,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Component
 @Profile("dev")
 public class DevDataInitializer implements CommandLineRunner {
@@ -51,41 +54,40 @@ public class DevDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        cleanup();
+        if (userRepository.count() == 0) {
+            User user = new User(devUserEmail, "airavata", "admin", devUserEmail);
+            user.setAvatar("");
+            userRepository.save(user);
 
-        User user = new User(devUserEmail, "airavata", "admin", devUserEmail);
-        userRepository.save(user);
+            RepositoryResource repositoryResource = new RepositoryResource();
+            repositoryResource.setName("BMTK Repository");
+            repositoryResource.setDescription("Repository for the BMTK workshop project");
+            repositoryResource.setHeaderImage("header_image.png");
+            repositoryResource.setRepositoryUrl("https://github.com/AllenInstitute/bmtk-workshop.git");
+            repositoryResource.setStatus(StatusEnum.VERIFIED);
+            repositoryResource.setPrivacy(PrivacyEnum.PUBLIC);
+            repositoryResource = resourceRepository.save(repositoryResource);
 
-        RepositoryResource repositoryResource = new RepositoryResource();
-        repositoryResource.setName("BMTK Repository");
-        repositoryResource.setDescription("Repository for the BMTK workshop project");
-        repositoryResource.setHeaderImage("header_image.png");
-        repositoryResource.setRepositoryUrl("https://github.com/AllenInstitute/bmtk-workshop.git");
-        repositoryResource.setStatus(StatusEnum.VERIFIED);
-        repositoryResource.setPrivacy(PrivacyEnum.PUBLIC);
-        repositoryResource = resourceRepository.save(repositoryResource);
+            DatasetResource datasetResource = new DatasetResource();
+            datasetResource.setName("BMTK Dataset");
+            datasetResource.setDescription("Dataset for the BMTK workshop project");
+            datasetResource.setHeaderImage("header_image.png");
+            datasetResource.setDatasetUrl("bmtk");
+            datasetResource.setStatus(StatusEnum.VERIFIED);
+            datasetResource.setPrivacy(PrivacyEnum.PUBLIC);
+            Set<User> set = new HashSet<>();
+            set.add(user);
+            datasetResource.setAuthors(set);
+            datasetResource = resourceRepository.save(datasetResource);
 
-        DatasetResource datasetResource = new DatasetResource();
-        datasetResource.setName("BMTK Dataset");
-        datasetResource.setDescription("Dataset for the BMTK workshop project");
-        datasetResource.setHeaderImage("header_image.png");
-        datasetResource.setDatasetUrl("bmtk");
-        datasetResource.setStatus(StatusEnum.VERIFIED);
-        datasetResource.setPrivacy(PrivacyEnum.PUBLIC);
-        datasetResource = resourceRepository.save(datasetResource);
+            Project project = new Project();
+            project.setRepositoryResource(repositoryResource);
+            project.getDatasetResources().add(datasetResource);
+            project.setName("BMTK Workshop Project");
 
-        Project project = new Project();
-        project.setRepositoryResource(repositoryResource);
-        project.getDatasetResources().add(datasetResource);
+            projectRepository.save(project);
 
-        projectRepository.save(project);
-
-        System.out.println("Initialized Project with id: " + project.getId());
-    }
-
-    public void cleanup() {
-        userRepository.deleteAll();
-        projectRepository.deleteAll();
-        resourceRepository.deleteAll();
+            System.out.println("Initialized Project with id: " + project.getId());
+        }
     }
 }

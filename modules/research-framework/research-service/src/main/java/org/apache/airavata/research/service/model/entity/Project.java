@@ -48,6 +48,9 @@ public class Project {
     @Column(nullable = false, updatable = false, length = 48)
     private String id;
 
+    @Column(nullable = false)
+    private String name;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "repository_resource_id")
     private RepositoryResource repositoryResource;
@@ -67,6 +70,14 @@ public class Project {
     @Column(nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getId() {
         return id;

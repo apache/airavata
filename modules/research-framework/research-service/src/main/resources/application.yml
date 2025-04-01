@@ -9,7 +9,7 @@ server:
 cybershuttle:
   hub:
     url: https://hub.dev.cybershuttle.org
-    dev-user: "CHANGE_ME"
+    dev-user: "ganning.xu@gatech.edu"
 
 spring:
   servlet:
