@@ -19,6 +19,7 @@
 package org.apache.airavata.research.service.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.Session;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,8 +53,30 @@ public class SessionHandler {
     public Session createSession(String sessionName, Project project) {
         sessionName = StringUtils.isNotBlank(sessionName) ? sessionName : UUID.randomUUID().toString().substring(0, 6);
         Session session = new Session(sessionName, UserContext.user(), project);
+        session.setStatus(SessionStatusEnum.CREATED);
         session = sessionRepository.save(session);
         LOGGER.debug("Created session with Id: {}, Name: {}", session.getId(), sessionName);
         return session;
     }
+
+    public List<Session> findAllByUserId(String userId) {
+        List<Session> sessions = sessionRepository.findByUserId(userId);
+        return sessions;
+    }
+
+    public Session updateSessionStatus(String sessionId, SessionStatusEnum status) {
+        Session session = findSession(sessionId);
+        session.setStatus(status);
+        session = sessionRepository.save(session);
+        LOGGER.debug("Updated session with Id: {}, Status: {}", session.getId(), status);
+        return session;
+    }
+
+    public boolean checkIfSessionExists(String projectId, String userId) {
+        if (sessionRepository.findSessionByProjectIdAndUserId(projectId, userId).isEmpty()) {
+            throw new RuntimeException("Session does not exist");
+        }
+        return true;
+    }
+
 }
