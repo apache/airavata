@@ -2,13 +2,12 @@ version: '3'
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.0
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
       - "18080:8080"
       - "8443:8443"
     volumes:
+      - ../resources/keystores/airavata.jks:/opt/keycloak/conf/airavata.jks
+      - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
       - ./keycloak/Default-export.json:/opt/keycloak/data/import/Default-export.json
     command:
       - start-dev
