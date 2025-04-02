@@ -9,7 +9,7 @@ server:
 airavata:
   research-hub:
     url: https://hub.dev.cybershuttle.org
-    dev-user: "CHANGE_ME"
+    dev-user: "ganning.xu@gatech.edu"
   user-profile:
     server: api.dev.cybershuttle.org
     port: 8962
