@@ -8,12 +8,21 @@ import Notebooks from "./components/notebooks";
 import Repositories from "./components/repositories";
 import { Login } from "./components/auth/login";
 import ProtectedComponent from "./components/auth/ProtectedComponent";
-
+import { useAuth } from "react-oidc-context";
+import { useEffect } from "react";
+import { setUserProvider } from "./lib/api";
 function App() {
   const colorMode = useColorMode();
   if (colorMode.colorMode === "dark") {
     colorMode.toggleColorMode();
   }
+
+  const user = useAuth();
+  useEffect(() => {
+    if (user.isAuthenticated) {
+      setUserProvider(() => user.user);
+    }
+  }, [user]);
 
   return (
     <>

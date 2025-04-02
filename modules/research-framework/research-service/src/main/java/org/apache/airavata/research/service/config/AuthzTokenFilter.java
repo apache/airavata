@@ -59,10 +59,13 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
         String xClaimsHeader = request.getHeader("X-Claims");
 
+        if (request.getMethod().equals("OPTIONS")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ") || xClaimsHeader == null) {
             LOGGER.error("Missing or invalid Authorization header");
-            response.setStatus(HttpServletResponse.SC_FOUND);
-            response.setHeader("Location", csHubUrl);
             return;
         }
 
