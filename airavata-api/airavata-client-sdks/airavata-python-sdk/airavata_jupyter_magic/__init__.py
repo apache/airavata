@@ -7,11 +7,12 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
+from rich.console import Console
 from typing import NamedTuple
 
 import jwt
 import requests
-from device_auth import DeviceFlowAuthenticator
+from .device_auth import DeviceFlowAuthenticator
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import ExecutionInfo, ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
@@ -20,11 +21,13 @@ from IPython.display import HTML, Image, display
 # ========================================================================
 # DATA STRUCTURES
 
+class InvalidStateError(Exception):
+    pass
 
 class RequestedRuntime:
     cluster: str
     cpus: int
-    memory: int
+    memory: int | None
     walltime: int
     queue: str
     group: str
@@ -57,7 +60,7 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('cluster', str),
     ('queue', str),
     ('cpus', int),
-    ('memory', int),
+    ('memory', int | None),
     ('walltime', int),
     ('gateway_id', str),
     ('group', str),
@@ -71,7 +74,6 @@ PENDING_STATES = [
     ProcessState.PRE_PROCESSING,
     ProcessState.CONFIGURING_WORKSPACE,
     ProcessState.INPUT_DATA_STAGING,
-    ProcessState.EXECUTING,
     ProcessState.QUEUED,
     ProcessState.REQUEUED,
 ]
@@ -114,23 +116,70 @@ def get_access_token(envar_name: str = "CS_ACCESS_TOKEN", state_path: str = "/tm
     return token
 
 
-def is_runtime_ready(agent_id: str) -> bool:
+def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str) -> tuple[bool, str]:
     """
     Check if the runtime (i.e., agent job) is ready to receive requests
 
-    @param agent_id: the agent id
+    @param access_token: the access token
+    @param rt: information about the runtime
+    @param rt_name: the runtime name
     @returns: True if ready, False otherwise
 
     """
-    url = f"{api_base_url}/api/v1/agent/{agent_id}"
+
+    # first, check the experiment state
+    headers = generate_headers(access_token, rt.gateway_id)
+    exstate, reason = get_experiment_state(rt.experimentId, headers)
+    if exstate in PENDING_STATES:
+        return False, f"EXPERIMENT_{exstate.name}"
+    if exstate in TERMINAL_STATES:
+        msg = f"Runtime={rt_name} is in state=EXPERIMENT_{exstate.name}\n{reason}"
+        raise InvalidStateError(msg)
+
+    # second, check the state of each processes
+    pid, pstate = get_process_state(rt.experimentId, headers)
+    if pstate in PENDING_STATES:
+        return False, f"PROCESS_{pstate.name}"
+    if pstate in TERMINAL_STATES:
+        msg = f"Runtime={rt_name} is in state=PROCESS_{pstate.name}"
+        raise InvalidStateError(msg)
+
+    # third, check the state of agent
+    url = f"{api_base_url}/api/v1/agent/{rt.agentId}"
     res = requests.get(url)
     code = res.status_code
+    astate = "AGENT_CREATED"
     if code == 202:
         data: dict = res.json()
-        return bool(data.get("agentUp", None) or False)
+        if data.get("agentUp", False):
+            astate = "READY"
     else:
         print(f"[{code}] Runtime status check failed: {res.text}")
-        return False
+    return astate == "READY", astate
+
+
+def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessState, str]:
+    """
+    Get experiment state by experiment id
+
+    @param experiment_id: the experiment id
+    @param headers: the headers
+    @returns: the experiment state
+
+    """
+    url = f"{api_base_url}/api/v1/exp/{experiment_id}"
+    res = requests.get(url, headers=headers)
+    code = res.status_code
+    if code != 200:
+        msg = f"Failed to get experiment state: {res.text}"
+        print(msg)
+        raise InvalidStateError(msg)
+    data: dict = res.json()
+    status: dict | None = data.get("experimentStatus", [None])[-1]
+    if status:
+        return ProcessState[status["state"]], status["reason"] or "N/A"
+    else:
+        return ProcessState.CREATED, "N/A"
 
 
 def get_process_state(experiment_id: str, headers: dict) -> tuple[str, ProcessState]:
@@ -143,16 +192,19 @@ def get_process_state(experiment_id: str, headers: dict) -> tuple[str, ProcessSt
 
     """
     url = f"{api_base_url}/api/v1/exp/{experiment_id}/process"
-    pid, pstate = "", ProcessState.QUEUED
+    pid, pstate = "", ProcessState.CREATED
     while not pid:
         res = requests.get(url, headers=headers)
         code = res.status_code
         if code == 200:
             data: dict = res.json()
             pid = data.get("processId")
-            pstates = data.get("processState")
-            if pstates and len(pstates):
-                pstate = ProcessState(pstates[0].get("state"))
+            procs = data.get("processStatuses")
+            if procs and len(procs):
+                for proc in procs:
+                    ps = ProcessState[proc.get("state")]
+                    if ps > pstate:
+                        pstate = ps
         else:
             time.sleep(5)
     return pid, pstate
@@ -186,7 +238,7 @@ def submit_agent_job(
     app_name: str,
     cluster: str,
     cpus: int,
-    memory: int,
+    memory: int | None,
     walltime: int,
     queue: str,
     group: str,
@@ -235,6 +287,10 @@ def submit_agent_job(
     if code == 200:
         obj = res.json()
         pid, pstate = get_process_state(obj['experimentId'], headers=headers)
+        if pstate in TERMINAL_STATES:
+            msg = f"Runtime={rt_name} is in state={pstate.name}"
+            print(msg)
+            raise InvalidStateError(msg)
         rt = RuntimeInfo(
             agentId=obj['agentId'],
             experimentId=obj['experimentId'],
@@ -248,15 +304,16 @@ def submit_agent_job(
             group=group,
         )
         state.all_runtimes[rt_name] = rt
-        print(f'Requested runtime={rt_name}. state={pstate.value}')
+        print(f'Requested runtime={rt_name}. state={pstate.name}')
     else:
         print(f'[{code}] Failed to request runtime={rt_name}. error={res.text}')
 
 
-def wait_until_runtime_ready(rt_name: str):
+def wait_until_runtime_ready(access_token: str, rt_name: str):
     """
     Block execution until the runtime is ready.
 
+    @param access_token: the access token
     @param rt_name: the runtime name
     @returns: None when ready
 
@@ -266,14 +323,18 @@ def wait_until_runtime_ready(rt_name: str):
         return print(f"Runtime {rt_name} not found.")
     if rt_name == "local":
         return
-    if not is_runtime_ready(rt.agentId):
-        print(f"Waiting for runtime={rt_name} to be ready...")
-        time.sleep(5)
-    while not is_runtime_ready(rt.agentId):
-        time.sleep(5)
-    else:
-        print(f"Runtime={rt_name} is ready!")
-    return True
+    console = Console()
+    with console.status(f"Connecting to runtime={rt_name}...") as status:
+        while True:
+            ready, rstate = is_runtime_ready(access_token, rt, rt_name)
+            if ready:
+                status.update(f"Connecting to runtime={rt_name}... status=READY")
+                break
+            else:
+                status.update(f"Connecting to runtime={rt_name}... status={rstate}")
+                time.sleep(5)
+        status.stop()
+    console.clear()
 
 
 def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
@@ -305,15 +366,16 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
 
     # Send the POST request
     res = requests.get(url, headers=headers)
+    status = res.status_code
 
     # Check if the request was successful
-    if res.status_code == 200:
+    if status == 200:
         data = res.json()
         print(f"Terminated runtime={runtime_name}. state={data}")
         state.all_runtimes.pop(runtime_name, None)
     else:
         print(
-            f'[{res.status_code}] Failed to terminate runtime={runtime_name}: error={res.text}')
+            f'[{status}] Failed to terminate runtime={runtime_name}: error={res.text}')
 
 
 def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, shell_futures=True, cell_id=None):
@@ -537,7 +599,9 @@ def run_on(line: str, cell: str):
             state.current_runtime = cell_runtime
             ipython.run_cell(cell, silent=True)
         else:
-            raise Exception(f"Runtime {cell_runtime} not found.")
+            msg = f"Runtime {cell_runtime} not found."
+            print(msg)
+            raise InvalidStateError(msg)
     finally:
         state.current_runtime = orig_runtime
 
@@ -551,10 +615,13 @@ def switch_runtime(line: str):
     cell_runtime = line.strip()
     try:
         if cell_runtime not in ["local", *state.all_runtimes]:
-            raise Exception(f"Runtime {cell_runtime} not found.")
-    except Exception as e:
-        raise Exception(
-            f"Could not switch to runtime={cell_runtime}. error={e}")
+            msg = f"Runtime {cell_runtime} not found."
+            print(msg)
+            raise RuntimeError(msg)
+    except RuntimeError as e:
+        msg = f"Could not switch to runtime={cell_runtime}. error={e}"
+        print(msg)
+        raise RuntimeError(msg)
     else:
         state.current_runtime = cell_runtime
         print(f"Switched to runtime={cell_runtime}.")
@@ -570,7 +637,9 @@ def authenticate(line: str):
         authenticator = DeviceFlowAuthenticator()
         authenticator.login()
     except ValueError as e:
-        print(f"Configuration error: {e}")
+        msg = f"Configuration error: {e}"
+        print(msg)
+        raise RuntimeError(msg)
 
 
 @register_line_magic
@@ -591,15 +660,17 @@ def request_runtime(line: str):
 
     rt = state.all_runtimes.get(rt_name, None)
     if rt is not None:
-        status = is_runtime_ready(rt.agentId)
-        if status:
+        ready, rstate = is_runtime_ready(access_token, rt, rt_name)
+        if ready:
             return print(f"Runtime={rt_name} already exists!")
-
+        else:
+            print(f"Runtime={rt_name} is still preparing... {rstate}")
         headers = generate_headers(access_token, rt.gateway_id)
         _, pstate = get_process_state(rt.experimentId, headers)
         if pstate in PENDING_STATES:
-            return print(f"Runtime={rt_name} is in state={pstate}. Please wait, or run '%stop_runtime {rt_name}' to stop it.")
+            return print(f"Runtime={rt_name} is in state={pstate.name}. Please wait, or run '%stop_runtime {rt_name}' to stop it.")
         if pstate in TERMINAL_STATES:
+            print(f"Runtime={rt_name} is in state={pstate.name}. Cleaning up.")
             state.all_runtimes.pop(rt_name, None)
 
     # parse cli args
@@ -609,7 +680,7 @@ def request_runtime(line: str):
     )
     p.add_argument("--cluster", type=str, help="cluster", required=True)
     p.add_argument("--cpus", type=int, help="CPU cores", required=True)
-    p.add_argument("--memory", type=int, help="memory (MB)", required=True)
+    p.add_argument("--memory", type=int, help="memory (MB)", required=False)
     p.add_argument("--walltime", type=int, help="time (mins)", required=True)
     p.add_argument("--queue", type=str, help="resource queue", required=True)
     p.add_argument("--group", type=str, help="resource group", required=True)
@@ -638,24 +709,24 @@ def stat_runtime(line: str):
     access_token = get_access_token()
     assert access_token is not None
 
-    runtime_name = line.strip()
+    rt_name = line.strip()
 
-    if runtime_name in ["local", None]:
+    if rt_name in ["local", None]:
         return print("Runtime=local is always available")
 
-    rt = state.all_runtimes.get(runtime_name, None)
+    rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
-        return print(f"Runtime {runtime_name} not found.")
+        return print(f"Runtime {rt_name} not found.")
 
-    status = is_runtime_ready(rt.agentId)
-    if status:
-        print(f"Runtime {runtime_name} is ready!")
+    ready, rstate = is_runtime_ready(access_token, rt, rt_name)
+    if ready:
+        print(f"Runtime={rt_name} is ready!")
     else:
-        print(f"Runtime {runtime_name} is still preparing. Please wait")
+        print(f"Runtime={rt_name} is still preparing... {rstate}")
 
 
 @register_line_magic
-def stop_runtime(runtime_name: str):
+def stop_runtime(rt_name: str):
     """
     Stop the runtime
 
@@ -663,10 +734,10 @@ def stop_runtime(runtime_name: str):
     access_token = get_access_token()
     assert access_token is not None
 
-    rt = state.all_runtimes.get(runtime_name, None)
+    rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
-        return print(f"Runtime {runtime_name} not found.")
-    stop_agent_job(access_token, runtime_name, rt)
+        return print(f"Runtime {rt_name} not found.")
+    stop_agent_job(access_token, rt_name, rt)
 
 
 @register_line_magic
@@ -728,8 +799,17 @@ def run_cell(raw_cell, store_history=False, silent=False, shell_futures=True, ce
     if rt == "local" or cell_has_magic(raw_cell):
         return orig_run_cell(raw_cell, store_history, silent, shell_futures, cell_id)
     else:
-        wait_until_runtime_ready(rt)
-        return run_on_runtime(rt, raw_cell, store_history, silent, shell_futures, cell_id)
+        access_token = get_access_token()
+        assert access_token is not None
+        try:
+            wait_until_runtime_ready(access_token, rt)
+            return run_on_runtime(rt, raw_cell, store_history, silent, shell_futures, cell_id)
+        except Exception as e:
+            info = ExecutionInfo(raw_cell, store_history, silent, shell_futures, cell_id)
+            result = ExecutionResult(info)
+            print(f"Error: {e}")
+            result.error_in_exec = e
+            return result
 
 
 ipython.run_cell = run_cell
@@ -744,7 +824,6 @@ Loaded airavata_jupyter_magic
   %switch_runtime <rt>               -- Switch active runtime to <rt>. All subsequent executions will use this runtime.
   %%run_on <rt>                      -- Force a cell to always execute on <rt>, regardless of the active runtime.
   %copy_data <r1:file1> <r2:file2>   -- Copy <file1> in <r1> to <file2> in <r2>.
-
 """)
 
 # END OF AUTORUN
