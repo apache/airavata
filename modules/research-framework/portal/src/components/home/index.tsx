@@ -8,17 +8,21 @@ import { NotebooksAndRepositoriesSection } from "./NotebooksAndRepositoriesSecti
 import { SessionsSection } from "./SessionsSection";
 import {AddCodeButton} from "@/components/home/AddCodeButton.tsx";
 import {AddJupyterButton} from "@/components/home/AddJupyterButton.tsx";
+import { ButtonWithIcon } from "./ButtonWithIcon";
+import { FaPlus } from "react-icons/fa";
+import { SessionsSection } from "./SessionsSection";
+import { ProjectsSection } from "./ProjectsSection";
 
 const Home = () => {
   return (
     <Box>
       <NavBar />
 
-      <Container maxW="container.xl" p={4}>
+      <Container maxW="container.xl" mt={8}>
         <HStack alignItems="flex-end" justify="space-between">
           <PageHeader
-            title="Notebook & Repositories"
-            description="Community-Published Scientific Notebooks and Repositories."
+            title="Projects"
+            description="Projects are a combination of repositories, notebooks, models, and datasets."
           />
 
           <HStack gap={4}>
@@ -27,7 +31,7 @@ const Home = () => {
           </HStack>
         </HStack>
 
-        <NotebooksAndRepositoriesSection />
+        <ProjectsSection />
 
         <HStack alignItems="flex-end" justify="space-between" mt={4}>
           <PageHeader

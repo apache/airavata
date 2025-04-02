@@ -31,6 +31,7 @@ airavata:
     truststore:
       path: CHANGE_ME
   storageResourceId: gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6
+  storagePath: /var/www/portals/gateway-user-data
   cluster:
     applicationInterfaceId:
       expanse: AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6

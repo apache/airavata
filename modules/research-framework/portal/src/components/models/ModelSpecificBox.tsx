@@ -9,7 +9,7 @@ export const ModelSpecificBox = ({ model }: { model: ModelResource }) => {
       as="a"
       w="100%"
       // @ts-expect-error This is fine
-      _target="_blank"
+      target="_blank"
       href={`https://cybershuttle.org/workspace/applications/${model.applicationInterfaceId}/create_experiment`}
     >
       Create{" "}

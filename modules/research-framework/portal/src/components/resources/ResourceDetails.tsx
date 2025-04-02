@@ -19,15 +19,17 @@ import api from "@/lib/api";
 import {
   ModelResource,
   NotebookResource,
+  RepositoryResource,
   Resource,
 } from "@/interfaces/ResourceType";
 import { Tag } from "@/interfaces/TagType";
 import { User } from "@/interfaces/UserType";
-import { resourceTypeToColor } from "@/lib/util";
+import { isValidImaage, resourceTypeToColor } from "@/lib/util";
 import { ResourceTypeBadge } from "./ResourceTypeBadge";
 import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 import { ModelSpecificBox } from "../models/ModelSpecificBox";
 import { NotebookSpecificDetails } from "../notebooks/NotebookSpecificDetails";
+import { RepositorySpecificDetails } from "../repositories/RepositorySpecificDetails";
 
 async function getResource(id: string) {
   const response = await api.get(`/project-management/resources/${id}`);
@@ -51,6 +53,8 @@ const ResourceDetails = () => {
   }, [id]);
 
   if (!resource) return <Spinner />;
+
+  const validImage = isValidImaage(resource.headerImage);
 
   return (
     <>
@@ -123,12 +127,14 @@ const ResourceDetails = () => {
             </HStack>
           </Box>
 
-          <Image
-            src={resource.headerImage}
-            alt="Notebook Header"
-            rounded="md"
-            maxW="300px"
-          />
+          {validImage && (
+            <Image
+              src={resource.headerImage}
+              alt="Notebook Header"
+              rounded="md"
+              maxW="300px"
+            />
+          )}
         </HStack>
 
         <Separator my={6} />
@@ -144,7 +150,11 @@ const ResourceDetails = () => {
 
         <Box>
           {(resource.type as ResourceTypeEnum) ===
-            ResourceTypeEnum.REPOSITORY && <Text>REPO only</Text>}
+            ResourceTypeEnum.REPOSITORY && (
+            <RepositorySpecificDetails
+              dataset={resource as RepositoryResource}
+            />
+          )}
 
           {(resource.type as ResourceTypeEnum) === ResourceTypeEnum.MODEL && (
             <ModelSpecificBox model={resource as ModelResource} />

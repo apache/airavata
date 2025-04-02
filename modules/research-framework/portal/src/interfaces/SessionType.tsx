@@ -1,11 +1,13 @@
+import { ProjectType } from "./ProjectType";
+import { SessionStatusEnum } from "./SessionStatusEnum";
+import { User } from "./UserType";
+
 export interface SessionType {
-  sessionId: string;
-  title: string;
-  started: string;
-  models: string[];
-  datasets: string[];
-  nodes: number;
-  ram: number;
-  storage: number;
-  status: "running" | "stopped";
+  id: string;
+  sessionName: string;
+  user: User;
+  project: ProjectType;
+  createdAt: string;
+  updatedAt: string;
+  status: SessionStatusEnum;
 }

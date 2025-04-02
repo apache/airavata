@@ -21,12 +21,15 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -48,11 +51,10 @@ public class Session {
     @Column(nullable = false)
     private String sessionName;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "project_id")
     private Project project;
 
@@ -64,13 +66,25 @@ public class Session {
     @LastModifiedDate
     private Instant updatedAt;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SessionStatusEnum status;
+
     public Session() {
     }
 
-    public Session(String sessionName, User user, Project project) {
+    public Session(String sessionName, String userId, Project project) {
         this.sessionName = sessionName;
-        this.user = user;
+        this.userId = userId;
         this.project = project;
+    }
+
+    public SessionStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(SessionStatusEnum status) {
+        this.status = status;
     }
 
     public String getId() {
@@ -89,12 +103,12 @@ public class Session {
         this.sessionName = sessionName;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Project getProject() {

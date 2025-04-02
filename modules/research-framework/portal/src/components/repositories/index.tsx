@@ -1,11 +1,37 @@
-import { Container, VStack } from "@chakra-ui/react";
+import { Container, Input, SimpleGrid } from "@chakra-ui/react";
 import NavBar from "../NavBar";
-import { BsGithub } from "react-icons/bs";
 import { PageHeader } from "../PageHeader";
-import { MOCK_REPOSITORIES } from "../../data/MOCK_DATA";
-import { RepositoryCard } from "./RepositoryCard";
+import api from "@/lib/api";
+import { useEffect, useState } from "react";
+import { RepositoryResource } from "@/interfaces/ResourceType";
+import { ResourceCard } from "../home/ResourceCard";
+import { LuSearch } from "react-icons/lu";
+import { InputGroup } from "../ui/input-group";
+
+const getRepositories = async () => {
+  try {
+    const response = await api.get(
+      "/project-management/resources?type=REPOSITORY"
+    );
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.error("Error fetching:", error);
+  }
+};
 
 const Repositories = () => {
+  const [repositories, setRepositories] = useState<RepositoryResource[]>([]);
+
+  useEffect(() => {
+    async function init() {
+      const repositories = await getRepositories();
+      setRepositories(repositories.content);
+    }
+
+    init();
+  }, []);
+
   return (
     <>
       <NavBar />
@@ -13,24 +39,16 @@ const Repositories = () => {
       <Container maxW="container.lg" mt={8}>
         <PageHeader
           title="Repositories"
-          icon={<BsGithub />}
           description="View the most viewed repositories on GitHub, all central to this page."
         />
-
-        <VStack gap={4} mt={8}>
-          {
-            // This is the code that will be replaced by the code snippet
-            // from the instructions
-            MOCK_REPOSITORIES.map((repository) => {
-              return (
-                <RepositoryCard
-                  repository={repository}
-                  key={repository.githubUrl}
-                />
-              );
-            })
-          }
-        </VStack>
+        <InputGroup mt={4} endElement={<LuSearch />} w="100%">
+          <Input placeholder="Search" rounded="md" />
+        </InputGroup>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4} mt={4}>
+          {repositories.map((repo: RepositoryResource) => {
+            return <ResourceCard resource={repo} key={repo.id} />;
+          })}
+        </SimpleGrid>
       </Container>
     </>
   );

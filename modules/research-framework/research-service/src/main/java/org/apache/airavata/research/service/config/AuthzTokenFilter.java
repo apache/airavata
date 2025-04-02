@@ -25,12 +25,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.research.service.handlers.UserHandler;
+import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.model.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -38,19 +38,19 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
-@Profile("!dev")
 public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthzTokenFilter.class);
     private static final String USERNAME_CLAIM = "userName";
+    private static final String GATEWAY_CLAIM = "gatewayID";
 
-    private final UserHandler userHandler;
+    private final AiravataService airavataService;
 
-    @Value("${cybershuttle.hub.url}")
+    @Value("${airavata.research-hub.url}")
     private String csHubUrl;
 
-    public AuthzTokenFilter(UserHandler userHandler) {
-        this.userHandler = userHandler;
+    public AuthzTokenFilter(AiravataService airavataService) {
+        this.airavataService = airavataService;
     }
 
     @Override
@@ -59,10 +59,13 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
         String xClaimsHeader = request.getHeader("X-Claims");
 
+        if (request.getMethod().equals("OPTIONS")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ") || xClaimsHeader == null) {
             LOGGER.error("Missing or invalid Authorization header");
-            response.setStatus(HttpServletResponse.SC_FOUND);
-            response.setHeader("Location", csHubUrl);
             return;
         }
 
@@ -75,10 +78,10 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
             AuthzToken authzToken = new AuthzToken();
             authzToken.setAccessToken(accessToken);
             authzToken.setClaimsMap(claimsMap);
-
             UserContext.setAuthzToken(authzToken);
-            UserContext.setUser(userHandler.initializeOrGetUser(claimsMap.get(USERNAME_CLAIM)));
 
+            UserProfile userProfile = airavataService.getUserProfile(authzToken, getClaim(authzToken, USERNAME_CLAIM), getClaim(authzToken, GATEWAY_CLAIM));
+            UserContext.setUser(userProfile);
         } catch (Exception e) {
             LOGGER.error("Invalid authorization data", e);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authorization data");
@@ -86,6 +89,14 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private static String getClaim(AuthzToken authzToken, String claimId) {
+        return authzToken.getClaimsMap().entrySet().stream()
+                .filter(entry -> entry.getKey().equalsIgnoreCase(claimId))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Missing '" + claimId + "' claim in the authentication token"));
     }
 }
 
