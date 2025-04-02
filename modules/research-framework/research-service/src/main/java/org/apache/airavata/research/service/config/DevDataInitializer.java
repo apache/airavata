@@ -47,6 +47,35 @@ public class DevDataInitializer implements CommandLineRunner {
         this.resourceRepository = resourceRepository;
     }
 
+    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl, User user) {
+        RepositoryResource repo = new RepositoryResource();
+        repo.setName(name);
+        repo.setDescription("Repository for " + name);
+        repo.setHeaderImage("header_image.png");
+        repo.setRepositoryUrl(repoUrl);
+        repo.setStatus(StatusEnum.VERIFIED);
+        repo.setPrivacy(PrivacyEnum.PUBLIC);
+        repo = resourceRepository.save(repo);
+
+        DatasetResource dataset = new DatasetResource();
+        dataset.setName(datasetName);
+        dataset.setDescription("Dataset for " + name);
+        dataset.setHeaderImage("header_image.png");
+        dataset.setDatasetUrl(datasetUrl);
+        dataset.setStatus(StatusEnum.VERIFIED);
+        dataset.setPrivacy(PrivacyEnum.PUBLIC);
+        dataset.setAuthors(new HashSet<>() {{ add(user); }});
+        dataset = resourceRepository.save(dataset);
+
+        Project project = new Project();
+        project.setRepositoryResource(repo);
+        project.getDatasetResources().add(dataset);
+        project.setName(name);
+        projectRepository.save(project);
+
+        System.out.println("Initialized Project with id: " + project.getId());
+    }
+
     @Override
     public void run(String... args) {
         if (projectRepository.existsByOwnerId(devUserEmail)) {
@@ -54,35 +83,37 @@ public class DevDataInitializer implements CommandLineRunner {
             return;
         }
 
-        RepositoryResource repositoryResource = new RepositoryResource();
-        repositoryResource.setName("BMTK Repository");
-        repositoryResource.setDescription("Repository for the BMTK workshop project");
-        repositoryResource.setHeaderImage("header_image.png");
-        repositoryResource.setRepositoryUrl("https://github.com/AllenInstitute/bmtk-workshop.git");
-        repositoryResource.setStatus(StatusEnum.VERIFIED);
-        repositoryResource.setPrivacy(PrivacyEnum.PUBLIC);
-        repositoryResource = resourceRepository.save(repositoryResource);
+            createProject(
+              "Allen / BMTK Workshop",
+              "https://github.com/yasithdev/bmtk-workshop.git",
+              "Allen / BMTK Workshop Data",
+              "allen-bmtk-workshop",
+              user
+            );
 
-        DatasetResource datasetResource = new DatasetResource();
-        datasetResource.setName("BMTK Dataset");
-        datasetResource.setDescription("Dataset for the BMTK workshop project");
-        datasetResource.setHeaderImage("header_image.png");
-        datasetResource.setDatasetUrl("bmtk");
-        datasetResource.setStatus(StatusEnum.VERIFIED);
-        datasetResource.setPrivacy(PrivacyEnum.PUBLIC);
-        datasetResource.setAuthors(new HashSet<>() {{
-            add(devUserEmail);
-        }});
-        datasetResource = resourceRepository.save(datasetResource);
+            createProject(
+              "Allen / V1",
+              "https://github.com/yasithdev/allen-v1.git",
+              "Allen / V1 Data",
+              "allen-v1",
+              user
+            );
 
-        Project project = new Project();
-        project.setOwnerId(devUserEmail);
-        project.setRepositoryResource(repositoryResource);
-        project.getDatasetResources().add(datasetResource);
-        project.setName("BMTK Workshop Project");
+            createProject(
+              "BRAINML / OneHot HMMGLM",
+              "https://github.com/yasithdev/onehot-hmmglm.git",
+              "BRAINML / OneHot HMMGLM Data",
+              "brainml-onehot-hmmglm",
+              user
+            );
 
-        projectRepository.save(project);
-
-        System.out.println("Initialized Project with id: " + project.getId());
+            createProject(
+              "HChoiLab / Functional Network",
+              "https://github.com/yasithdev/functional-network.git",
+              "HChoiLab / Functional Network Data",
+              "hchoilab-functional-network",
+              user
+            );
+        }
     }
 }

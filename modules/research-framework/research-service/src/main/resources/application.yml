@@ -29,7 +29,7 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     open-in-view: false
 
 springdoc:
