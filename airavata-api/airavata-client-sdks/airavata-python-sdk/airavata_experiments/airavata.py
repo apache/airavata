@@ -209,8 +209,9 @@ class AiravataOperator:
     Get process id by experiment id
 
     """
-    tree: any = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
-    processModels: list = tree.processes
+    tree = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
+    processModels = tree.processes
+    assert processModels is not None
     assert len(processModels) == 1, f"Expected 1 process model, got {len(processModels)}"
     return processModels[0].processId
 
@@ -262,7 +263,7 @@ class AiravataOperator:
     return str(grp_id)
   
   def get_group_resource_profile(self, group_id: str):
-    grp: any = self.api_server_client.get_group_resource_profile(self.airavata_token, group_id) # type: ignore
+    grp = self.api_server_client.get_group_resource_profile(self.airavata_token, group_id) # type: ignore
     return grp
 
   def get_compatible_deployments(self, app_interface_id: str, group: str):
@@ -694,10 +695,14 @@ class AiravataOperator:
       sr_host=storage.hostName,
     )
 
-  def get_experiment_status(self, experiment_id: str) -> Literal["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]:
+  def get_experiment_status(self, experiment_id: str) -> Literal['CREATED', 'VALIDATED', 'SCHEDULED', 'LAUNCHED', 'EXECUTING', 'CANCELING', 'CANCELED', 'COMPLETED', 'FAILED']:
     states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
-    status: any = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id) # type: ignore
-    return states[status.state]
+    status = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id)
+    state = status.state.name
+    if state in states:
+      return state
+    else:
+      return "FAILED"
 
   def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
