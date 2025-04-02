@@ -7,8 +7,6 @@ option java_package = "org.apache.airavata.agent";
 option java_outer_classname = "AgentCommunicationProto";
 option go_package = "protos/";
 
-import "airavata-fuse.proto";
-
 service AgentCommunicationService {
   rpc createMessageBus(stream AgentMessage) returns (stream ServerMessage);
 }
@@ -60,15 +58,6 @@ message AgentMessage {
     TerminateExecutionResponse terminateExecutionResponse = 4;
     JupyterExecutionResponse jupyterExecutionResponse = 5;
     PythonExecutionResponse pythonExecutionResponse = 6;
-
-    org.apache.airavata.fuse.StatFsReq statFsReq = 7;
-    org.apache.airavata.fuse.FileInfoReq fileInfoReq = 8;
-    org.apache.airavata.fuse.OpenDirReq openDirReq = 9;
-    org.apache.airavata.fuse.OpenFileReq openFileReq = 10;
-    org.apache.airavata.fuse.ReadDirReq readDirReq = 11;
-    org.apache.airavata.fuse.ReadFileReq readFileReq = 12;
-    org.apache.airavata.fuse.WriteFileReq writeFileReq = 13;
-    org.apache.airavata.fuse.SetInodeAttReq setInodeAttReq = 14;
   }
 }
 
@@ -134,14 +123,5 @@ message ServerMessage {
     TunnelCreationRequest tunnelCreationRequest = 5;
     JupyterExecutionRequest jupyterExecutionRequest = 6;
     PythonExecutionRequest pythonExecutionRequest = 7;
-
-    org.apache.airavata.fuse.StatFsRes statFsRes = 8;
-    org.apache.airavata.fuse.FileInfoRes fileInfoRes = 9;
-    org.apache.airavata.fuse.OpenDirRes openDirRes = 10;
-    org.apache.airavata.fuse.OpenFileRes openFileRes = 11;
-    org.apache.airavata.fuse.ReadDirRes readDirRes = 12;
-    org.apache.airavata.fuse.ReadFileRes readFileRes = 13;
-    org.apache.airavata.fuse.WriteFileRes writeFileRes = 14;
-    org.apache.airavata.fuse.SetInodeAttRes setInodeAttRes = 15;
   }
 }
