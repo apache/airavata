@@ -72,13 +72,13 @@ public class ResearchHubController {
     @Operation(summary = "Check if session with project already exists")
     public ResponseEntity<Boolean> getProjectSessionExists(@PathVariable("projectId") String projectId) {
 
-        return ResponseEntity.ok(sessionHandler.checkIfSessionExists(projectId, UserContext.user().getId()));
+        return ResponseEntity.ok(sessionHandler.checkIfSessionExists(projectId, UserContext.userId()));
     }
 
     @GetMapping("/sessions")
     @Operation(summary = "Get all sessions for a given user")
     public ResponseEntity<List<Session>> getSessions() {
-        String userId = UserContext.user().getId();
+        String userId = UserContext.userId();
         List<Session> sessions = sessionHandler.findAllByUserId(userId);
         return ResponseEntity.ok(sessions);
     }

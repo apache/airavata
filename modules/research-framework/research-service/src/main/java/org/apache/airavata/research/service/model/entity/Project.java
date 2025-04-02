@@ -18,7 +18,6 @@
  */
 package org.apache.airavata.research.service.model.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -51,6 +50,9 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "owner_id", nullable = false)
+    private String ownerId;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "repository_resource_id")
     private RepositoryResource repositoryResource;
@@ -71,6 +73,14 @@ public class Project {
     @LastModifiedDate
     private Instant updatedAt;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -79,12 +89,12 @@ public class Project {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getOwnerId() {
+        return ownerId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
     public RepositoryResource getRepositoryResource() {

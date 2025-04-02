@@ -52,7 +52,7 @@ public class SessionHandler {
 
     public Session createSession(String sessionName, Project project) {
         sessionName = StringUtils.isNotBlank(sessionName) ? sessionName : UUID.randomUUID().toString().substring(0, 6);
-        Session session = new Session(sessionName, UserContext.user(), project);
+        Session session = new Session(sessionName, UserContext.userId(), project);
         session.setStatus(SessionStatusEnum.CREATED);
         session = sessionRepository.save(session);
         LOGGER.debug("Created session with Id: {}, Name: {}", session.getId(), sessionName);

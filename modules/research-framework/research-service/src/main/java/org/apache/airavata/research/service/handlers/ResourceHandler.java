@@ -18,21 +18,16 @@
  */
 package org.apache.airavata.research.service.handlers;
 
+import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.ResponseTypes.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
-import org.apache.airavata.research.service.model.entity.DatasetResource;
-import org.apache.airavata.research.service.model.entity.ModelResource;
-import org.apache.airavata.research.service.model.entity.NotebookResource;
-import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.apache.airavata.research.service.model.entity.Tag;
-import org.apache.airavata.research.service.model.entity.User;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
-import org.apache.airavata.research.service.model.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,23 +43,27 @@ public class ResourceHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceHandler.class);
 
-    @Autowired
-    private UserRepository userRepository;
+    private final AiravataService airavataService;
+    private final TagRepository tagRepository;
+    private final ResourceRepository resourceRepository;
 
-    @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
-    ResourceRepository resourceRepository;
+    public ResourceHandler(AiravataService airavataService, TagRepository tagRepository, ResourceRepository resourceRepository) {
+        this.airavataService = airavataService;
+        this.tagRepository = tagRepository;
+        this.resourceRepository = resourceRepository;
+    }
 
     public void initializeResource(Resource resource) {
-        Set<User> userSet = new HashSet<>();
-        for (User u : resource.getAuthors()) {
-            Optional<User> fetchedUser = userRepository.findById(u.getId());
-            if (fetchedUser.isEmpty()) {
-                throw new RuntimeException("User not found: " + u.getId());
+        Set<String> userSet = new HashSet<>();
+        for (String authorId : resource.getAuthors()) {
+            try {
+                UserProfile fetchedUser = airavataService.getUserProfile(authorId);
+                userSet.add(fetchedUser.getUserId());
+
+            } catch (Exception e) {
+                LOGGER.error("Error while fetching user profile with the userId: {}", authorId, e);
+                throw new RuntimeException("Error while fetching user profile with the userId: " + authorId, e);
             }
-            userSet.add(fetchedUser.get());
         }
 
         HashSet<Tag> tags = new HashSet<>();

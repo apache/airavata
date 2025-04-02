@@ -19,7 +19,9 @@
 package org.apache.airavata.research.service.model.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -66,13 +68,13 @@ public abstract class Resource {
     @Column(nullable = false)
     private String headerImage;
 
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
             name = "resource_authors",
-            joinColumns = @JoinColumn(name = "resource_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+            joinColumns = @JoinColumn(name = "resource_id")
     )
-    private Set<User> authors = new HashSet<>();
+    @Column(name = "author_id")
+    private Set<String> authors = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
@@ -132,19 +134,19 @@ public abstract class Resource {
         this.description = description;
     }
 
-    public java.util.Set<User> getAuthors() {
+    public Set<String> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(java.util.Set<User> authors) {
+    public void setAuthors(Set<String> authors) {
         this.authors = authors;
     }
 
-    public java.util.Set<Tag> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(java.util.Set<Tag> tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 
