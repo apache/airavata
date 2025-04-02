@@ -24,4 +24,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, String> {
+
+    boolean existsByOwnerId(String ownerId);
 }

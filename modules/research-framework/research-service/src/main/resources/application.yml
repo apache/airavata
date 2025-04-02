@@ -6,10 +6,13 @@ server:
   port: 18889
   address: 0.0.0.0
 
-cybershuttle:
-  hub:
+airavata:
+  research-hub:
     url: https://hub.dev.cybershuttle.org
-    dev-user: "ganning.xu@gatech.edu"
+    dev-user: "CHANGE_ME"
+  user-profile:
+    server: api.dev.cybershuttle.org
+    port: 8962
 
 spring:
   servlet:

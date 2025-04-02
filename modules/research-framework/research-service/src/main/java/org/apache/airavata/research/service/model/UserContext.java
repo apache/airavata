@@ -19,12 +19,12 @@
 package org.apache.airavata.research.service.model;
 
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.research.service.model.entity.User;
+import org.apache.airavata.model.user.UserProfile;
 
 public class UserContext {
 
     private static final ThreadLocal<AuthzToken> AUTHZ_TOKEN = new ThreadLocal<>();
-    private static final ThreadLocal<User> CURRENT_USER = new ThreadLocal<>();
+    private static final ThreadLocal<UserProfile> CURRENT_USER = new ThreadLocal<>();
 
     public static AuthzToken authzToken() {
         return AUTHZ_TOKEN.get();
@@ -34,15 +34,19 @@ public class UserContext {
         AUTHZ_TOKEN.set(token);
     }
 
-    public static User user() {
+    public static UserProfile user() {
         return CURRENT_USER.get();
     }
 
-    public static void setUser(User user) {
+    public static void setUser(UserProfile user) {
         CURRENT_USER.set(user);
     }
 
-    public static String username() {
-        return CURRENT_USER.get().getUsername();
+    public static String userId() {
+        return CURRENT_USER.get().getUserId();
+    }
+
+    public static String gatewayId() {
+        return CURRENT_USER.get().getGatewayId();
     }
 }
