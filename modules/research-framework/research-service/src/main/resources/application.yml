@@ -6,10 +6,13 @@ server:
   port: 18889
   address: 0.0.0.0
 
-cybershuttle:
-  hub:
+airavata:
+  research-hub:
     url: https://hub.dev.cybershuttle.org
-    dev-user: "CHANGE_ME"
+    dev-user: "ganning.xu@gatech.edu"
+  user-profile:
+    server: api.dev.cybershuttle.org
+    port: 8962
 
 spring:
   servlet:
@@ -26,7 +29,7 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     open-in-view: false
 
 springdoc:

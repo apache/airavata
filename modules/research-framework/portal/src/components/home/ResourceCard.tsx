@@ -1,6 +1,6 @@
 import { ModelResource, Resource } from "@/interfaces/ResourceType";
 import { Tag } from "@/interfaces/TagType";
-import { resourceTypeToColor } from "@/lib/util";
+import { isValidImaage, resourceTypeToColor } from "@/lib/util";
 import {
   Text,
   Box,
@@ -18,31 +18,36 @@ import { ModelCardButton } from "../models/ModelCardButton";
 export const ResourceCard = ({ resource }: { resource: Resource }) => {
   console.log("Resource:", resource);
   const author = resource.authors[0];
+
+  const isValidImage = isValidImaage(resource.headerImage);
+
   return (
     <Box>
       <Card.Root overflow="hidden" size="md">
-        <Link to={`/resources/${resource.id}`}>
+        <Link to={`${resource.id}`}>
           {/* Image Container with Badge */}
-          <Box position="relative" width="full">
-            {/* Badge in the upper-left */}
-            <ResourceTypeBadge
-              type={resource.type}
-              position="absolute"
-              top="2"
-              left="2"
-              zIndex="1"
-              boxShadow="md" // Optional: Shadow for visibility
-            />
+          {isValidImage && (
+            <Box position="relative" width="full">
+              {/* Badge in the upper-left */}
+              <ResourceTypeBadge
+                type={resource.type}
+                position="absolute"
+                top="2"
+                left="2"
+                zIndex="1"
+                boxShadow="md" // Optional: Shadow for visibility
+              />
 
-            {/* Full-width Image */}
-            <Image
-              src={resource.headerImage}
-              alt={resource.name}
-              width="100%" // Ensure full width
-              height="200px"
-              objectFit="cover"
-            />
-          </Box>
+              {/* Full-width Image */}
+              <Image
+                src={resource.headerImage}
+                alt={resource.name}
+                width="100%" // Ensure full width
+                height="200px"
+                objectFit="cover"
+              />
+            </Box>
+          )}
 
           <Card.Body
             gap="2"
@@ -50,6 +55,11 @@ export const ResourceCard = ({ resource }: { resource: Resource }) => {
           >
             {/* Card Content */}
             <Card.Title>{resource.name}</Card.Title>
+            {!isValidImage && (
+              <Box>
+                <ResourceTypeBadge type={resource.type} />
+              </Box>
+            )}
             <HStack flexWrap="wrap">
               {resource.tags.map((tag: Tag) => (
                 <Badge
@@ -69,20 +79,22 @@ export const ResourceCard = ({ resource }: { resource: Resource }) => {
         </Link>
 
         <Card.Footer justifyContent="space-between" pt={4}>
-          <HStack>
-            <Avatar.Root shape="full" size="sm">
-              <Avatar.Fallback
-                name={author.firstName + " " + author.lastName}
-              />
-              <Avatar.Image src={author.avatar} />
-            </Avatar.Root>
+          {author && (
+            <HStack>
+              <Avatar.Root shape="full" size="sm">
+                <Avatar.Fallback
+                  name={author.firstName + " " + author.lastName}
+                />
+                <Avatar.Image src={author.avatar} />
+              </Avatar.Root>
 
-            <Box>
-              <Text fontWeight="bold">
-                {author.firstName + " " + author.lastName}
-              </Text>
-            </Box>
-          </HStack>
+              <Box>
+                <Text fontWeight="bold">
+                  {author.firstName + " " + author.lastName}
+                </Text>
+              </Box>
+            </HStack>
+          )}
 
           {(resource.type as ResourceTypeEnum) === ResourceTypeEnum.MODEL && (
             <ModelCardButton model={resource as ModelResource} />

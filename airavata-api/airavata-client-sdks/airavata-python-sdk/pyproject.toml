@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airavata-python-sdk"
-version = "2.0.0"
+version = "2.0.4.post1"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
-license = { text = "Apache License 2.0" }
+license = "Apache-2.0"
 authors = [{ name = "Airavata Developers", email = "dev@airavata.apache.org" }]
 requires-python = ">=3.10"
 dependencies = [
@@ -24,8 +24,13 @@ dependencies = [
   "pyjwt",
   "pydantic",
   "rich",
-  "ipywidgets",
   "pandas",
+]
+
+[project.optional-dependencies]
+notebook = [
+  "ipywidgets",
+  "ipython"
 ]
 
 [tool.setuptools.packages.find]
