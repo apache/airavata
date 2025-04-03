@@ -4,6 +4,10 @@ import NavBar from "../NavBar";
 import { PageHeader } from "../PageHeader";
 import { AddRepositoryButton } from "./AddRepositoryButton";
 import { AddZipButton } from "./AddZipButton";
+import { NotebooksAndRepositoriesSection } from "./NotebooksAndRepositoriesSection";
+import { SessionsSection } from "./SessionsSection";
+import {AddCodeButton} from "@/components/home/AddCodeButton.tsx";
+import {AddJupyterButton} from "@/components/home/AddJupyterButton.tsx";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { FaPlus } from "react-icons/fa";
 import { SessionsSection } from "./SessionsSection";
@@ -36,20 +40,8 @@ const Home = () => {
           />
 
           <HStack gap={4}>
-            <ButtonWithIcon
-              bg="purple.500"
-              _hover={{ bg: "purple.600" }}
-              icon={FaPlus}
-            >
-              VSCode
-            </ButtonWithIcon>
-            <ButtonWithIcon
-              bg="green.600"
-              _hover={{ bg: "green.700" }}
-              icon={FaPlus}
-            >
-              Jupyter
-            </ButtonWithIcon>
+            <AddCodeButton/>
+            <AddJupyterButton/>
           </HStack>
         </HStack>
         <SessionsSection />

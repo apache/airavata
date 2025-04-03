@@ -3,13 +3,10 @@ import { Container, HStack, Input, SimpleGrid } from "@chakra-ui/react";
 import { PageHeader } from "../PageHeader";
 import { LuSearch } from "react-icons/lu";
 import { InputGroup } from "../ui/input-group";
-import { ButtonWithIcon } from "../home/ButtonWithIcon";
-import { FaPlus } from "react-icons/fa";
 import api from "@/lib/api";
 import { DatasetResource } from "@/interfaces/ResourceType";
 import { useEffect, useState } from "react";
 import { ResourceCard } from "../home/ResourceCard";
-import { resourceTypeToColor } from "@/lib/util";
 
 const getDatasets = async () => {
   try {
@@ -45,12 +42,6 @@ export const Datasets = () => {
             title="Datasets"
             description="Public and Private Scientific Datasets."
           />
-          <ButtonWithIcon
-            colorPalette={resourceTypeToColor("DATASET")}
-            icon={FaPlus}
-          >
-            Dataset
-          </ButtonWithIcon>
         </HStack>
         <InputGroup mt={4} endElement={<LuSearch />} w="100%">
           <Input placeholder="Search" rounded="md" />

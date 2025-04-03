@@ -3,8 +3,6 @@ import { Container, HStack, Input, SimpleGrid } from "@chakra-ui/react";
 import { PageHeader } from "../PageHeader";
 import { LuSearch } from "react-icons/lu";
 import { InputGroup } from "../ui/input-group";
-import { ButtonWithIcon } from "../home/ButtonWithIcon";
-import { FaPlus } from "react-icons/fa";
 import api from "@/lib/api";
 import { ModelResource } from "@/interfaces/ResourceType";
 import { useEffect, useState } from "react";
@@ -42,9 +40,6 @@ export const Models = () => {
             title="Models"
             description="Public and Private Scientific models that can be run with varying inputs."
           />
-          <ButtonWithIcon colorPalette="teal" icon={FaPlus}>
-            Model
-          </ButtonWithIcon>
         </HStack>
         <InputGroup mt={4} endElement={<LuSearch />} w="100%">
           <Input placeholder="Search" rounded="md" />
