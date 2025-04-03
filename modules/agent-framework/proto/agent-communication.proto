@@ -93,6 +93,16 @@ message JupyterExecutionResponse {
   string responseString = 2;
 }
 
+// server requesting the agent to restart a jupyter kernel
+message KernelRestartRequest {
+  string executionId = 1;
+  string envName = 2;
+}
+message KernelRestartResponse {
+  string executionId = 1;
+  string status = 2;
+}
+
 // server requesting the agent to create a ssh tunnel
 message TunnelCreationRequest {
   string executionId = 1;
@@ -128,8 +138,9 @@ message AgentMessage {
     CommandExecutionResponse commandExecutionResponse = 5;
     PythonExecutionResponse pythonExecutionResponse = 6;
     JupyterExecutionResponse jupyterExecutionResponse = 7;
-    TunnelCreationResponse tunnelCreationResponse = 8;
-    TunnelTerminationResponse tunnelTerminationResponse = 9;
+    KernelRestartResponse kernelRestartResponse = 8;
+    TunnelCreationResponse tunnelCreationResponse = 9;
+    TunnelTerminationResponse tunnelTerminationResponse = 10;
   }
 }
 
@@ -142,7 +153,8 @@ message ServerMessage {
     CommandExecutionRequest commandExecutionRequest = 5;
     PythonExecutionRequest pythonExecutionRequest = 6;
     JupyterExecutionRequest jupyterExecutionRequest = 7;
-    TunnelCreationRequest tunnelCreationRequest = 8;
-    TunnelTerminationRequest tunnelTerminationRequest = 9;
+    KernelRestartRequest kernelRestartRequest = 8;
+    TunnelCreationRequest tunnelCreationRequest = 9;
+    TunnelTerminationRequest tunnelTerminationRequest = 10;
   }
 }
