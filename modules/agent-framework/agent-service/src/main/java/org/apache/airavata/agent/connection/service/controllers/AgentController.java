@@ -13,6 +13,9 @@ import org.apache.airavata.agent.connection.service.models.AgentInfoResponse;
 import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionAck;
 import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionRequest;
 import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionResponse;
+import org.apache.airavata.agent.connection.service.models.AgentKernelRestartAck;
+import org.apache.airavata.agent.connection.service.models.AgentKernelRestartRequest;
+import org.apache.airavata.agent.connection.service.models.AgentKernelRestartResponse;
 import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionAck;
 import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionRequest;
 import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionResponse;
@@ -65,6 +68,24 @@ public class AgentController {
     @GetMapping("/setup/env/{executionId}")
     public ResponseEntity<AgentEnvSetupResponse> getEnvSetupResponse(@PathVariable("executionId") String executionId) {
         return ResponseEntity.accepted().body(agentConnectionHandler.getEnvSetupResponse(executionId));
+    }
+
+    @PostMapping("/setup/restart")
+    public ResponseEntity<AgentKernelRestartAck> runKernelRestartOnAgent(@Valid @RequestBody AgentKernelRestartRequest kernelRestartRequest) {
+        logger.info("Received kernel restart request to run on agent {}", kernelRestartRequest.getAgentId());
+        if (agentConnectionHandler.isAgentUp(kernelRestartRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runKernelRestartOnAgent(kernelRestartRequest));
+        } else {
+            logger.warn("No agent is available to run on agent {}", kernelRestartRequest.getAgentId());
+            AgentKernelRestartAck ack = new AgentKernelRestartAck();
+            ack.setError("Agent not found");
+            return ResponseEntity.accepted().body(ack);
+        }
+    }
+
+    @GetMapping("/setup/restart/{executionId}")
+    public ResponseEntity<AgentKernelRestartResponse> getKernelRestartResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.getKernelRestartResponse(executionId));
     }
 
     @PostMapping("/execute/shell")

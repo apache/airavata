@@ -1,5 +1,6 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
+import java.awt.image.Kernel;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,8 @@ import org.apache.airavata.agent.CommandExecutionRequest;
 import org.apache.airavata.agent.CommandExecutionResponse;
 import org.apache.airavata.agent.EnvSetupResponse;
 import org.apache.airavata.agent.JupyterExecutionResponse;
+import org.apache.airavata.agent.KernelRestartRequest;
+import org.apache.airavata.agent.KernelRestartResponse;
 import org.apache.airavata.agent.PythonExecutionRequest;
 import org.apache.airavata.agent.PythonExecutionResponse;
 import org.apache.airavata.agent.ServerMessage;
@@ -26,6 +29,9 @@ import org.apache.airavata.agent.connection.service.models.AgentInfoResponse;
 import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionAck;
 import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionRequest;
 import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionResponse;
+import org.apache.airavata.agent.connection.service.models.AgentKernelRestartAck;
+import org.apache.airavata.agent.connection.service.models.AgentKernelRestartRequest;
+import org.apache.airavata.agent.connection.service.models.AgentKernelRestartResponse;
 import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionAck;
 import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionRequest;
 import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionResponse;
@@ -52,6 +58,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private final Map<String, EnvSetupResponse> ENV_SETUP_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, CommandExecutionResponse> COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, KernelRestartResponse> KERNEL_RESTART_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
     // response handling
@@ -101,6 +108,19 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             executionResponse.setExecuted(false);
         }
         return executionResponse;
+    }
+
+    public AgentKernelRestartResponse getKernelRestartResponse(String executionId) {
+        AgentKernelRestartResponse kernelRestartResponse = new AgentKernelRestartResponse();
+        if (KERNEL_RESTART_RESPONSE_CACHE.containsKey(executionId)) {
+            kernelRestartResponse.setStatus(KERNEL_RESTART_RESPONSE_CACHE.get(executionId).getStatus());
+            kernelRestartResponse.setExecutionId(executionId);
+            kernelRestartResponse.setRestarted(true);
+            KERNEL_RESTART_RESPONSE_CACHE.remove(executionId);
+        } else {
+            kernelRestartResponse.setRestarted(false);
+        }
+        return kernelRestartResponse;
     }
 
     public AgentPythonExecutionResponse getPythonExecutionResponse(String executionId) {
@@ -269,6 +289,31 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         return ack;
     }
 
+    public AgentKernelRestartAck runKernelRestartOnAgent(AgentKernelRestartRequest kernelRestartRequest) {
+        String executionId = UUID.randomUUID().toString();
+        AgentKernelRestartAck ack = new AgentKernelRestartAck();
+        ack.setExecutionId(executionId);
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(kernelRestartRequest.getAgentId());
+        if (agentStreamObserver.isPresent()) {
+            try {
+                logger.info("restarting kernel on env {}...", kernelRestartRequest.getEnvName());
+                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setKernelRestartRequest(
+                        KernelRestartRequest.newBuilder()
+                                .setExecutionId(executionId)
+                                .setEnvName(kernelRestartRequest.getEnvName())
+                                .build()
+                ).build());
+            } catch (Exception e) {
+                logger.error("{} Failed to restart kernel on env {}!", executionId, kernelRestartRequest.getEnvName(), e);
+                ack.setError(e.getMessage());
+            }
+        } else {
+            logger.warn("No agent found to run the kernel restart on agent {}", kernelRestartRequest.getAgentId());
+            ack.setError("No agent found to run the kernel restart on agent " + kernelRestartRequest.getAgentId());
+        }
+        return ack;
+    }
+
     // internal handlers
     private void handleAgentPing(AgentPing agentPing, String streamId) {
         logger.info("Received agent ping for agent id {}", agentPing.getAgentId());
@@ -288,6 +333,11 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private void handleJupyterExecutionResponse(JupyterExecutionResponse executionResponse) {
         logger.info("Received jupyter execution response for execution id {}", executionResponse.getExecutionId());
         JUPYTER_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
+    }
+
+    private void handleKernelRestartResponse(KernelRestartResponse kernelRestartResponse) {
+        logger.info("Received kernel restart response for execution id {}", kernelRestartResponse.getExecutionId());
+        KERNEL_RESTART_RESPONSE_CACHE.put(kernelRestartResponse.getExecutionId(), kernelRestartResponse);
     }
 
     private void handlePythonExecutionResponse(PythonExecutionResponse executionResponse) {
@@ -326,6 +376,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                     }
                     case JUPYTEREXECUTIONRESPONSE -> {
                         handleJupyterExecutionResponse(request.getJupyterExecutionResponse());
+                    }
+                    case KERNELRESTARTRESPONSE -> {
+                        handleKernelRestartResponse(request.getKernelRestartResponse());
                     }
                     case PYTHONEXECUTIONRESPONSE -> {
                         handlePythonExecutionResponse(request.getPythonExecutionResponse());
