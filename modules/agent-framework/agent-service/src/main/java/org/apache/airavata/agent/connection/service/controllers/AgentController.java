@@ -44,12 +44,12 @@ public class AgentController {
         return ResponseEntity.accepted().body(agentConnectionHandler.isAgentUp(agentId));
     }
 
-    @PostMapping("/create/tunnel")
+    @PostMapping("/setup/tunnel")
     public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelRequest tunnelRequest) {
         return ResponseEntity.accepted().body(agentConnectionHandler.runTunnelOnAgent(tunnelRequest));
     }
 
-    @PostMapping("/create/env")
+    @PostMapping("/setup/env")
     public ResponseEntity<AgentEnvSetupAck> runEnvSetupOnAgent(@Valid @RequestBody AgentEnvSetupRequest envSetupRequest) {
         logger.info("Received env setup request to run on agent {}", envSetupRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(envSetupRequest.getAgentId()).isAgentUp()) {
@@ -62,7 +62,7 @@ public class AgentController {
         }
     }
 
-    @GetMapping("/create/env/{executionId}")
+    @GetMapping("/setup/env/{executionId}")
     public ResponseEntity<AgentEnvSetupResponse> getEnvSetupResponse(@PathVariable("executionId") String executionId) {
         return ResponseEntity.accepted().body(agentConnectionHandler.getEnvSetupResponse(executionId));
     }
