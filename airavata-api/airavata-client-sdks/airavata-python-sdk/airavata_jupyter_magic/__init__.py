@@ -386,7 +386,7 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
         excResult.error_in_exec = Exception(f"Runtime {rt_name} not found.")
         return excResult
 
-    url = api_base_url + '/api/v1/agent/executejupyterrequest'
+    url = api_base_url + '/api/v1/agent/execute/jupyter'
     data = {
         "sessionId": "session1",
         "keepAlive": True,
@@ -410,7 +410,7 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
         return excResult
 
     while True:
-        url = api_base_url + "/api/v1/agent/executejupyterresponse/" + execution_id
+        url = api_base_url + "/api/v1/agent/execute/jupyter/" + execution_id
         response = requests.get(url, headers={'Accept': 'application/json'})
         json_response = response.json()
         if json_response.get('available'):

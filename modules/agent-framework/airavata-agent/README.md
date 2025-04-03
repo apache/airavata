@@ -36,7 +36,7 @@ env GOOS=linux GOARCH=amd64 go build
 
 
 ```
-POST http://localhost:18880/api/v1/agent/executecommandrequest
+POST http://localhost:18880/api/v1/agent/execute/shell
 
 {
     "agentId": "agent1",
@@ -46,7 +46,7 @@ POST http://localhost:18880/api/v1/agent/executecommandrequest
 ```
 
 ```
-http://localhost:18880/api/v1/agent/executejupyterrequest
+http://localhost:18880/api/v1/agent/execute/jupyter
 
 {
     "sessionId": "session1",
@@ -63,7 +63,7 @@ Response
 }
 ```
 ```
-http://localhost:18880/api/v1/agent/executejupyterresponse/22f02087-87cc-4e90-bc3b-3b969179c31b
+http://localhost:18880/api/v1/agent/execute/jupyter/22f02087-87cc-4e90-bc3b-3b969179c31b
 
 Response
 
@@ -76,7 +76,7 @@ Response
 ```
 
 ```
-POST http://localhost:18880/api/v1/agent/tunnel
+POST http://localhost:18880/api/v1/agent/create/tunnel
 
 {
     "destinationHost": "32.241.33.22",

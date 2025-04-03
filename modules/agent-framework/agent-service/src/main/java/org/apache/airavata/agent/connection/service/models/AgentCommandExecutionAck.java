@@ -1,6 +1,6 @@
 package org.apache.airavata.agent.connection.service.models;
 
-public class AgentCommandAck {
+public class AgentCommandExecutionAck {
     private String executionId;
     private String error;
 
