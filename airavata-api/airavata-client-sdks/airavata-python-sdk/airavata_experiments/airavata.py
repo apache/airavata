@@ -366,7 +366,7 @@ class AiravataOperator:
         while True:
           res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
           data = res.json()
-          if data["available"]:
+          if data["executed"]:
             return [fp]
           time.sleep(1)
 
@@ -407,7 +407,7 @@ class AiravataOperator:
       while True:
         res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
         data = res.json()
-        if data["available"]:
+        if data["executed"]:
           files = data["responseString"].split("\n")
           return files
         time.sleep(1)
@@ -447,7 +447,7 @@ class AiravataOperator:
       while True:
         res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
         data = res.json()
-        if data["available"]:
+        if data["executed"]:
           content = data["responseString"]
           import base64
           content = base64.b64decode(content)
@@ -493,7 +493,7 @@ class AiravataOperator:
       while True:
         res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
         data = res.json()
-        if data["available"]:
+        if data["executed"]:
           content = data["responseString"]
           import base64
           content = base64.b64decode(content)
@@ -762,7 +762,7 @@ class AiravataOperator:
       while True: # poll for response
         res = requests.get(f"{self.connection_svc_url()}/agent/setup/env/{exc_id}")
         data = res.json()
-        if data["available"]:
+        if data["setup"]:
           response = str(data["responseString"])
           break
         time.sleep(1)
@@ -780,7 +780,7 @@ class AiravataOperator:
       while True: # poll for response
         res = requests.get(f"{self.connection_svc_url()}/agent/execute/python/{exc_id}")
         data = res.json()
-        if data["available"]:
+        if data["executed"]:
           response = str(data["responseString"])
           break
         time.sleep(1)
