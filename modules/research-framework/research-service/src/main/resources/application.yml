@@ -11,8 +11,9 @@ airavata:
     url: https://hub.dev.cybershuttle.org
     dev-user: "ganning.xu@gatech.edu"
   user-profile:
-    server: api.dev.cybershuttle.org
-    port: 8962
+    server:
+      url: api.gateway.cybershuttle.org
+      port: 8962
 
 spring:
   servlet:
