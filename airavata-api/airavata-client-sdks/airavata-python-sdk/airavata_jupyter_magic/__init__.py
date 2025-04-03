@@ -412,7 +412,7 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
         url = api_base_url + "/api/v1/agent/execute/jupyter/" + execution_id
         response = requests.get(url, headers={'Accept': 'application/json'})
         json_response = response.json()
-        if json_response.get('available'):
+        if json_response.get('executed'):
             break
         time.sleep(1)
 
