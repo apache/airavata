@@ -1,11 +1,11 @@
 package org.apache.airavata.agent.connection.service.models;
 
-public class LaunchAgentResponse {
+public class AgentLaunchResponse {
     private String agentId;
     private String experimentId;
     private String processId;
 
-    public LaunchAgentResponse(String agentId, String experimentId) {
+    public AgentLaunchResponse(String agentId, String experimentId) {
         this.agentId = agentId;
         this.experimentId = experimentId;
     }
