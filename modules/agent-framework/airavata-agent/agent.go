@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/grpc"
@@ -23,11 +24,13 @@ import (
 
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
 
+var pidMap = make(map[string]int)
+
 func main() {
 
 	// get CLI args
-	serverUrl := os.Args[0]
-	agentId := os.Args[1]
+	serverUrl := os.Args[1]
+	agentId := os.Args[2]
 
 	conn, err := grpc.NewClient(serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -115,6 +118,12 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			code := x.JupyterExecutionRequest.Code
 			go executeJupyter(stream, executionId, envName, code)
 
+		case *protos.ServerMessage_KernelRestartRequest:
+			log.Printf("[agent.go] Recived a kernel restart request\n")
+			executionId := x.KernelRestartRequest.ExecutionId
+			envName = x.KernelRestartRequest.EnvName
+			go restartKernel(stream, executionId, envName)
+
 		case *protos.ServerMessage_TunnelCreationRequest:
 			log.Printf("[agent.go] Received a tunnel creation request\n")
 			executionId := x.TunnelCreationRequest.ExecutionId
@@ -133,32 +142,42 @@ func createEnv(stream Stream, executionId string, envName string, envLibs []stri
 	log.Printf("[agent.go] createEnv() Env name %s\n", envName)
 	log.Printf("[agent.go] createEnv() Env libs %s\n", envLibs)
 	log.Printf("[agent.go] createEnv() Env pip %s\n", envPip)
+	// cleanup previous kernel if exists
+	if pid, exists := pidMap[envName]; exists {
+		cmd := exec.Command("kill", fmt.Sprintf("%d", pid))
+		if err := cmd.Run(); err != nil {
+			log.Printf("[agent.go] createEnv() Failed to kill existing process with PID %d: %v\n", pid, err)
+		} else {
+			log.Printf("[agent.go] createEnv() Successfully killed existing process with PID %d\n", pid)
+		}
+		delete(pidMap, envName)
+	}
 	// create environment
 	if envName != "base" {
 		createEnvCmd := exec.Command("micromamba", "create", "-n", envName, "--yes", "--quiet")
-		if err := createEnvCmd.Wait(); err != nil {
+		if err := createEnvCmd.Run(); err != nil {
 			log.Printf("[agent.go] createEnv() Error creating environment: %v\n", err)
 			return
 		}
 		log.Printf("[agent.go] createEnv() Environment created: %s\n", envName)
 	}
-
-	if len(envLibs) > 0 {
-		installDepsCmd := exec.Command("micromamba", "install", "-n", envName, "--yes", "--quiet", strings.Join(envLibs, " "))
-		if err := installDepsCmd.Wait(); err != nil {
-			log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
-			return
-		}
+	envLibs = append(envLibs, "python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client")
+	installDepsCmd := exec.Command("micromamba", "install", "-n", envName, "--yes")
+	installDepsCmd.Args = append(installDepsCmd.Args, envLibs...)
+	if err := installDepsCmd.Run(); err != nil {
+		log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
+		return
 	}
 	if len(envPip) > 0 {
-		installPipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install", strings.Join(envLibs, " "))
-		if err := installPipCmd.Wait(); err != nil {
+		installPipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install")
+		installPipCmd.Args = append(installPipCmd.Args, envPip...)
+		if err := installPipCmd.Run(); err != nil {
 			log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
 			return
 		}
 	}
-	// start python server
-	go startPythonServer(envName)
+	// start kernel in new environment
+	pidMap[envName] = startJupyterKernel(envName)
 	msg := &protos.AgentMessage{
 		Message: &protos.AgentMessage_EnvSetupResponse{
 			EnvSetupResponse: &protos.EnvSetupResponse{
@@ -174,42 +193,44 @@ func createEnv(stream Stream, executionId string, envName string, envLibs []stri
 	}
 }
 
-func startPythonServer(envName string) {
-	log.Printf("[agent.go] startPythonServer() Starting python server in env: %s...\n", envName)
+func startJupyterKernel(envName string) int {
+	log.Printf("[agent.go] startJupyterKernel() Starting python server in env: %s...\n", envName)
 	// Run command
 	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "/opt/jupyter/kernel.py")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Printf("[agent.go] startPythonServer() Error creating StdoutPipe for cmd: %v\n", err)
-		return
+		log.Printf("[agent.go] startJupyterKernel() Error creating StdoutPipe for cmd: %v\n", err)
+		return 0
 	}
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		log.Printf("[agent.go] startPythonServer() Error creating StderrPipe for cmd: %v\n", err)
-		return
+		log.Printf("[agent.go] startJupyterKernel() Error creating StderrPipe for cmd: %v\n", err)
+		return 0
 	}
 	if err := cmd.Start(); err != nil {
-		log.Printf("[agent.go] startPythonServer() Error during start: %v\n", err)
-		return
+		log.Printf("[agent.go] startJupyterKernel() Error during start: %v\n", err)
+		return 0
 	}
-	log.Printf("[agent.go] startPythonServer() Started python server.\n")
+	log.Printf("[agent.go] startJupyterKernel() Started python server.\n")
 	go func() {
 		stdoutScanner := bufio.NewScanner(stdout)
 		for stdoutScanner.Scan() {
-			log.Printf("[agent.go] startPythonServer() stdout: %s\n", stdoutScanner.Text())
+			log.Printf("[agent.go] startJupyterKernel() stdout: %s\n", stdoutScanner.Text())
 		}
 	}()
 	go func() {
 		stderrScanner := bufio.NewScanner(stderr)
 		for stderrScanner.Scan() {
-			log.Printf("[agent.go] startPythonServer() stderr: %s\n", stderrScanner.Text())
+			log.Printf("[agent.go] startJupyterKernel() stderr: %s\n", stderrScanner.Text())
 		}
 	}()
-	if err := cmd.Wait(); err != nil {
-		log.Printf("[agent.go] startPythonServer() Error waiting for command: %v\n", err)
-		return
-	}
-	log.Printf("[agent.go] startPythonServer() Command finished.\n")
+	go func() {
+		if err := cmd.Wait(); err != nil {
+			log.Printf("[agent.go] startJupyterKernel() Error waiting for command: %v\n", err)
+		}
+	}()
+	log.Printf("[agent.go] startJupyterKernel() Command finished.\n")
+	return cmd.Process.Pid
 }
 
 func executePython(stream Stream, executionId string, envName string, workingDir string, code string) {
@@ -218,16 +239,13 @@ func executePython(stream Stream, executionId string, envName string, workingDir
 	log.Printf("[agent.go] executePython() Working Dir %s\n", workingDir)
 	log.Printf("[agent.go] executePython() Code %s\n", code)
 	// Run command
-	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "-c")
+	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "-c", code)
 	cmd.Dir = workingDir
-	cmd.Stdin = strings.NewReader(code)
 	output, err := cmd.CombinedOutput()
-	var responseString string
+	responseString := string(output)
 	if err != nil {
-		responseString = fmt.Sprintf("Error: %v", err)
 		log.Printf("[agent.go] executePython() error: %v\n", err)
 	} else {
-		responseString = string(output)
 		log.Printf("[agent.go] executePython() completed: %s\n", responseString)
 	}
 	msg := &protos.AgentMessage{
@@ -250,15 +268,13 @@ func executeShell(stream Stream, executionId string, envName string, workingDir 
 	log.Printf("[agent.go] executeShell() Env name %s\n", envName)
 	log.Printf("[agent.go] executeShell() Exec args %s\n", execArgs)
 	// Run command
-	cmd := exec.Command("micromamba", "run", "-n", envName, strings.Join(execArgs, " "))
+	cmd := exec.Command("micromamba", "run", "-n", envName, "bash", "-c", strings.Join(execArgs, " "))
 	cmd.Dir = workingDir
 	output, err := cmd.CombinedOutput()
-	var responseString string
+	responseString := string(output)
 	if err != nil {
-		responseString = fmt.Sprintf("Error: %v", err)
 		log.Printf("[agent.go] executeShell() %s failed: %v\n", executionId, err)
 	} else {
-		responseString = string(output)
 		log.Printf("[agent.go] executeShell() %s done: %s\n", executionId, responseString)
 	}
 	msg := &protos.AgentMessage{
@@ -277,6 +293,11 @@ func executeShell(stream Stream, executionId string, envName string, workingDir 
 }
 
 func executeJupyter(stream Stream, executionId string, envName string, code string) {
+	if _, exists := pidMap[envName]; !exists {
+		log.Printf("[agent.go] executeJupyter() Starting python server in env: %s...\n", envName)
+		pidMap[envName] = startJupyterKernel(envName)
+		time.Sleep(5 * time.Second)
+	}
 	log.Printf("[agent.go] executeJupyter() Execution ID: %s, Env: %s, Code: %s\n", executionId, envName, code)
 	unixSock := os.Getenv("KERNEL_SOCK")
 	client := &http.Client{
@@ -349,6 +370,34 @@ func executeJupyter(stream Stream, executionId string, envName string, code stri
 	jupyterResponse := string(bodyBytes)
 	log.Printf("[agent.go] executeJupyter() id: %s response: %s\n", executionId, jupyterResponse)
 	sendResponse(jupyterResponse, nil)
+}
+
+func restartKernel(stream Stream, executionId string, envName string) {
+	log.Printf("[agent.go] restartKernel() Execution id %s\n", executionId)
+	log.Printf("[agent.go] restartKernel() Env name %s\n", envName)
+	if pid, exists := pidMap[envName]; exists {
+		cmd := exec.Command("kill", fmt.Sprintf("%d", pid))
+		if err := cmd.Run(); err != nil {
+			log.Printf("[agent.go] restartKernel() Failed to kill existing process with PID %d: %v\n", pid, err)
+		} else {
+			log.Printf("[agent.go] restartKernel() Successfully killed existing process with PID %d\n", pid)
+		}
+		delete(pidMap, envName)
+	}
+	pidMap[envName] = startJupyterKernel(envName)
+	msg := &protos.AgentMessage{
+		Message: &protos.AgentMessage_KernelRestartResponse{
+			KernelRestartResponse: &protos.KernelRestartResponse{
+				ExecutionId: executionId,
+				Status:      "OK",
+			},
+		},
+	}
+	if err := stream.Send(msg); err != nil {
+		log.Printf("[agent.go] restartKernel() failed to send result to server: %v\n", err)
+	} else {
+		log.Printf("[agent.go] restartKernel() sent result to server\n")
+	}
 }
 
 func openRemoteTunnel(stream Stream, executionId string, destHost string, destPort string, localPort string, sshUser string, sshKeyFile string) {
