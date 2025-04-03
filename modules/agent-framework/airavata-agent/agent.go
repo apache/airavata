@@ -96,20 +96,22 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			log.Printf("[agent.go] Recived a python execution request\n")
 			executionId := x.PythonExecutionRequest.ExecutionId
 			envName = x.PythonExecutionRequest.EnvName
+			workingDir := x.PythonExecutionRequest.WorkingDir
 			code := x.PythonExecutionRequest.Code
-			workDir := x.PythonExecutionRequest.WorkingDir
-			go executePython(stream, executionId, envName, workDir, code)
+			go executePython(stream, executionId, envName, workingDir, code)
 
 		case *protos.ServerMessage_CommandExecutionRequest:
 			log.Printf("[agent.go] Recived a shell execution request\n")
 			executionId := x.CommandExecutionRequest.ExecutionId
+			envName = x.CommandExecutionRequest.EnvName
+			workingDir := x.CommandExecutionRequest.WorkingDir
 			execArgs := x.CommandExecutionRequest.Arguments
-			go executeShell(stream, executionId, envName, execArgs)
+			go executeShell(stream, executionId, envName, workingDir, execArgs)
 
 		case *protos.ServerMessage_JupyterExecutionRequest:
 			log.Printf("[agent.go] Recived a jupyter execution request\n")
 			executionId := x.JupyterExecutionRequest.ExecutionId
-			envName := x.JupyterExecutionRequest.EnvName
+			envName = x.JupyterExecutionRequest.EnvName
 			code := x.JupyterExecutionRequest.Code
 			go executeJupyter(stream, executionId, envName, code)
 
@@ -132,21 +134,28 @@ func createEnv(stream Stream, executionId string, envName string, envLibs []stri
 	log.Printf("[agent.go] createEnv() Env libs %s\n", envLibs)
 	log.Printf("[agent.go] createEnv() Env pip %s\n", envPip)
 	// create environment
-	createEnvCmd := exec.Command("micromamba", "create", "-n", envName, "--yes", "--quiet")
-	if err := createEnvCmd.Wait(); err != nil {
-		log.Printf("[agent.go] createEnv() Error creating environment: %v\n", err)
-		return
+	if envName != "base" {
+		createEnvCmd := exec.Command("micromamba", "create", "-n", envName, "--yes", "--quiet")
+		if err := createEnvCmd.Wait(); err != nil {
+			log.Printf("[agent.go] createEnv() Error creating environment: %v\n", err)
+			return
+		}
+		log.Printf("[agent.go] createEnv() Environment created: %s\n", envName)
 	}
-	log.Printf("[agent.go] createEnv() Environment created: %s\n", envName)
-	installDepsCmd := exec.Command("micromamba", "install", "-n", envName, "--yes", "--quiet", strings.Join(envLibs, " "))
-	if err := installDepsCmd.Wait(); err != nil {
-		log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
-		return
+
+	if len(envLibs) > 0 {
+		installDepsCmd := exec.Command("micromamba", "install", "-n", envName, "--yes", "--quiet", strings.Join(envLibs, " "))
+		if err := installDepsCmd.Wait(); err != nil {
+			log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
+			return
+		}
 	}
-	installPipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install", strings.Join(envLibs, " "))
-	if err := installPipCmd.Wait(); err != nil {
-		log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
-		return
+	if len(envPip) > 0 {
+		installPipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install", strings.Join(envLibs, " "))
+		if err := installPipCmd.Wait(); err != nil {
+			log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
+			return
+		}
 	}
 	// start python server
 	go startPythonServer(envName)
@@ -209,8 +218,10 @@ func executePython(stream Stream, executionId string, envName string, workingDir
 	log.Printf("[agent.go] executePython() Working Dir %s\n", workingDir)
 	log.Printf("[agent.go] executePython() Code %s\n", code)
 	// Run command
-	pythonCmd := exec.Command("micromamba", "run", "-n", envName, "python", "-c", code)
-	output, err := pythonCmd.CombinedOutput()
+	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "-c")
+	cmd.Dir = workingDir
+	cmd.Stdin = strings.NewReader(code)
+	output, err := cmd.CombinedOutput()
 	var responseString string
 	if err != nil {
 		responseString = fmt.Sprintf("Error: %v", err)
@@ -234,12 +245,13 @@ func executePython(stream Stream, executionId string, envName string, workingDir
 	}
 }
 
-func executeShell(stream Stream, executionId string, envName string, execArgs []string) {
+func executeShell(stream Stream, executionId string, envName string, workingDir string, execArgs []string) {
 	log.Printf("[agent.go] executeShell() Execution id %s\n", executionId)
 	log.Printf("[agent.go] executeShell() Env name %s\n", envName)
 	log.Printf("[agent.go] executeShell() Exec args %s\n", execArgs)
 	// Run command
 	cmd := exec.Command("micromamba", "run", "-n", envName, strings.Join(execArgs, " "))
+	cmd.Dir = workingDir
 	output, err := cmd.CombinedOutput()
 	var responseString string
 	if err != nil {

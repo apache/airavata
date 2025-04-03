@@ -76,7 +76,7 @@ Response
 ```
 
 ```
-POST http://localhost:18880/api/v1/agent/create/tunnel
+POST http://localhost:18880/api/v1/agent/setup/tunnel
 
 {
     "destinationHost": "32.241.33.22",

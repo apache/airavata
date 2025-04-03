@@ -388,10 +388,9 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
 
     url = api_base_url + '/api/v1/agent/execute/jupyter'
     data = {
-        "sessionId": "session1",
-        "keepAlive": True,
+        "agentId": rt.agentId,
+        "envName": "base",
         "code": cell,
-        "agentId": rt.agentId
     }
     json_data = json.dumps(data)
     response = requests.post(
