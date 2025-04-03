@@ -1,6 +1,6 @@
 package org.apache.airavata.agent.connection.service.models;
 
-public class AgentTunnelCreationRequest {
+public class AgentTunnelRequest {
     private String agentId;
     private String destinationHost;
     private String destinationPort;

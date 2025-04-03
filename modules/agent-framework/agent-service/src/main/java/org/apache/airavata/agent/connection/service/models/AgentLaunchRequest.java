@@ -2,7 +2,7 @@ package org.apache.airavata.agent.connection.service.models;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class LaunchAgentRequest {
+public class AgentLaunchRequest {
 
     private String experimentName;
     private String projectName;

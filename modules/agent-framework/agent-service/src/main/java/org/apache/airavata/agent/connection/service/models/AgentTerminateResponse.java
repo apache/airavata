@@ -1,10 +1,10 @@
 package org.apache.airavata.agent.connection.service.models;
 
-public class TerminateAgentResponse {
+public class AgentTerminateResponse {
     private String experimentId;
     private boolean terminated;
 
-    public TerminateAgentResponse(String experimentId, boolean terminated) {
+    public AgentTerminateResponse(String experimentId, boolean terminated) {
         this.experimentId = experimentId;
         this.terminated = terminated;
     }

@@ -1,10 +1,15 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.config.ClusterApplicationConfig;
-import org.apache.airavata.agent.connection.service.models.LaunchAgentRequest;
-import org.apache.airavata.agent.connection.service.models.LaunchAgentResponse;
-import org.apache.airavata.agent.connection.service.models.TerminateAgentResponse;
+import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
+import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
+import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
@@ -21,12 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class AgentManagementHandler {
@@ -46,12 +45,12 @@ public class AgentManagementHandler {
         this.clusterApplicationConfig = clusterApplicationConfig;
     }
 
-    public TerminateAgentResponse terminateExperiment(String experimentId) {
+    public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
             Airavata.Client airavata = airavataService.airavata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
             airavata.terminateExperiment(UserContext.authzToken(), experiment.getExperimentId(), experiment.getGatewayId());
-            return new TerminateAgentResponse(experimentId, true);
+            return new AgentTerminateResponse(experimentId, true);
         } catch (Exception e) {
             LOGGER.error("Error terminating experiment {}", experimentId, e);
             throw new RuntimeException("Error terminating experiment with the id: " + experimentId, e);
@@ -79,7 +78,7 @@ public class AgentManagementHandler {
         }
     }
 
-    public LaunchAgentResponse createAndLaunchExperiment(LaunchAgentRequest req) {
+    public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
         try {
             String agentId = "agent_" + UUID.randomUUID().toString();
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
@@ -88,7 +87,7 @@ public class AgentManagementHandler {
             String experimentId = airavataService.airavata().createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
             airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
-            return new LaunchAgentResponse(agentId, experimentId);
+            return new AgentLaunchResponse(agentId, experimentId);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
             throw new RuntimeException("Error while creating the experiment with the name: " + req.getExperimentName(), e);
@@ -121,7 +120,7 @@ public class AgentManagementHandler {
         }
     }
 
-    private ExperimentModel generateExperiment(LaunchAgentRequest req, String agentId) throws TException {
+    private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId) throws TException {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();

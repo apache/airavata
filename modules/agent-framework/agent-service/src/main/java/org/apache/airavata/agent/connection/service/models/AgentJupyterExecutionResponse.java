@@ -1,11 +1,10 @@
 package org.apache.airavata.agent.connection.service.models;
 
-public class JupyterExecutionResponse {
+public class AgentJupyterExecutionResponse {
 
     private String executionId;
-    private String sessionId;
+    private boolean executed;
     private String responseString;
-    private boolean isAvailable;
 
     public String getExecutionId() {
         return executionId;
@@ -15,12 +14,12 @@ public class JupyterExecutionResponse {
         this.executionId = executionId;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public boolean getExecuted() {
+        return executed;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setExecuted(boolean executed) {
+        this.executed = executed;
     }
 
     public String getResponseString() {
@@ -29,13 +28,5 @@ public class JupyterExecutionResponse {
 
     public void setResponseString(String responseString) {
         this.responseString = responseString;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setAvailable(boolean available) {
-        isAvailable = available;
     }
 }
