@@ -18,7 +18,6 @@
  */
 package org.apache.airavata.research.service;
 
-import jakarta.annotation.PostConstruct;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.model.UserContext;
@@ -36,19 +35,16 @@ public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    private UserProfileService.Client userProfileClient;
-
     @Value("${airavata.user-profile.server.url:api.dev.cybershuttle.org}")
     private String profileServerUrl;
 
     @Value("${airavata.user-profile.server.port:8962}")
     private int profileServerPort;
 
-    @PostConstruct
-    public void init() {
+    public UserProfileService.Client userProfileClient() {
         try {
-            userProfileClient = ProfileServiceClientFactory.createUserProfileServiceClient(profileServerUrl, profileServerPort);
             LOGGER.info("User profile client initialized");
+            return ProfileServiceClientFactory.createUserProfileServiceClient(profileServerUrl, profileServerPort);
         } catch (UserProfileServiceException e) {
             LOGGER.error("Error while creating user profile client", e);
             throw new RuntimeException(e);
@@ -57,7 +53,7 @@ public class AiravataService {
 
     public UserProfile getUserProfile(String userId) {
         try {
-            return userProfileClient.getUserProfileById(UserContext.authzToken(), userId, UserContext.gatewayId());
+            return userProfileClient().getUserProfileById(UserContext.authzToken(), userId, UserContext.gatewayId());
         } catch (TException e) {
             LOGGER.error("Error while getting user profile with the id: {}", userId, e);
             throw new RuntimeException("Error while getting user profile with the id: " + userId, e);
@@ -67,7 +63,7 @@ public class AiravataService {
 
     public UserProfile getUserProfile(AuthzToken authzToken, String userId, String gatewayId) {
         try {
-            return userProfileClient.getUserProfileById(authzToken, userId, gatewayId);
+            return userProfileClient().getUserProfileById(authzToken, userId, gatewayId);
         } catch (TException e) {
             LOGGER.error("Error while getting user profile with the id: {} in the gateway: {}", userId, gatewayId, e);
             throw new RuntimeException("Error while getting user profile with the id: " + userId + " in the gateway: " + gatewayId, e);
