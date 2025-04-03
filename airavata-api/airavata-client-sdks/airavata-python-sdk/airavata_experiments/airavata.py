@@ -346,8 +346,9 @@ class AiravataOperator:
       fp = os.path.join("/data", file.name)
       rawdata = file.read_bytes()
       b64data = base64.b64encode(rawdata).decode()
-      res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+      res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
           "agentId": agent_ref,
+          "envName": "base",
           "workingDir": ".",
           "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
       })
@@ -363,7 +364,7 @@ class AiravataOperator:
       else:
         exc_id = data["executionId"]
         while True:
-          res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+          res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
           data = res.json()
           if data["available"]:
             return [fp]
@@ -387,8 +388,9 @@ class AiravataOperator:
     Return Path: /{project_name}/{experiment_name}
 
     """
-    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+    res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
+        "envName": "base",
         "workingDir": ".",
         "arguments": ["sh", "-c", r"find /data -type d -name 'venv' -prune -o -type f -printf '%P\n' | sort"]
     })
@@ -403,7 +405,7 @@ class AiravataOperator:
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
         data = res.json()
         if data["available"]:
           files = data["responseString"].split("\n")
@@ -424,8 +426,9 @@ class AiravataOperator:
     """
     import os
     fp = os.path.join("/data", remote_file)
-    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+    res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
+        "envName": "base",
         "workingDir": ".",
         "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
     })
@@ -442,7 +445,7 @@ class AiravataOperator:
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
         data = res.json()
         if data["available"]:
           content = data["responseString"]
@@ -469,8 +472,9 @@ class AiravataOperator:
     """
     import os
     fp = os.path.join("/data", remote_file)
-    res = requests.post(f"{self.connection_svc_url()}/agent/executecommandrequest", json={
+    res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
+        "envName": "base",
         "workingDir": ".",
         "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
     })
@@ -487,7 +491,7 @@ class AiravataOperator:
     else:
       exc_id = data["executionId"]
       while True:
-        res = requests.get(f"{self.connection_svc_url()}/agent/executecommandresponse/{exc_id}")
+        res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
         data = res.json()
         if data["available"]:
           content = data["responseString"]
@@ -711,20 +715,12 @@ class AiravataOperator:
   
   def execute_py(self, project: str, libraries: list[str], code: str, agent_id: str, pid: str, runtime_args: dict, cold_start: bool = True) -> str | None:
     # lambda to send request
-    print(f"[av] Attempting to submit to agent {agent_id}...")
-    make_request = lambda: requests.post(f"{self.connection_svc_url()}/agent/executepythonrequest", json={
-      "libraries": libraries,
-      "code": code,
-      "pythonVersion": "3.10", # TODO verify
-      "keepAlive": False, # TODO verify
-      "parentExperimentId": "/data", # the working directory
-      "agentId": agent_id,
-    })
     try:
       if cold_start:
-        res = make_request()
+        print(f"[av] Looking for Agent {agent_id}...")
+        res = requests.get(f"{self.connection_svc_url()}/{agent_id}")
         data = res.json()
-        if data["error"] == "Agent not found":
+        if data["agentUp"] == False:
           # waiting for agent to be available
           print(f"[av] Agent {agent_id} not found! Relaunching...")
           self.launch_experiment(
@@ -743,39 +739,55 @@ class AiravataOperator:
             walltime=runtime_args["walltime"],
             group=runtime_args["group"],
           )
-          return self.execute_py(project, libraries, code, agent_id, pid, runtime_args, cold_start=False)
-        elif data["executionId"] is not None:
-          print(f"[av] Submitted to Python Interpreter")
-          # agent response
-          exc_id = data["executionId"]
-        else:
-          # unrecoverable error
-          raise Exception(data["error"])
-      else:
-        # poll until agent is available
-        while True:
-          res = make_request()
-          data = res.json()
-          if data["error"] == "Agent not found":
-            # print(f"[av] Waiting for Agent {agent_id}...")
-            time.sleep(2)
-            continue
-          elif data["executionId"] is not None:
-            print(f"[av] Submitted to Python Interpreter")
-            exc_id = data["executionId"]
-            break
-          else:
-            raise Exception(data["error"])
-      assert exc_id is not None, f"Invalid execution id: {exc_id}"
+        return self.execute_py(project, libraries, code, agent_id, pid, runtime_args, cold_start=False)
+
+      print(f"[av] Waiting for Agent {agent_id}...")
+      while True: # poll for response
+        res = requests.get(f"{self.connection_svc_url()}/{agent_id}")
+        data = res.json()
+        if data["agentUp"]:
+          break
+        time.sleep(1)
       
-      # wait for the execution response to be available
-      while True:
-        res = requests.get(f"{self.connection_svc_url()}/agent/executepythonresponse/{exc_id}")
+      print(f"[av] Agent {agent_id} found! creating environment...")
+      res = requests.post(f"{self.connection_svc_url()}/setup/env", json={
+        "agentId": agent_id,
+        "envName": "base",
+        "libraries": ["python=3.10", "pip"],
+        "pip": libraries,
+      })
+      data = res.json()
+      if {exc_id := data["executionId"]} is None:
+        raise Exception(data["error"])
+      while True: # poll for response
+        res = requests.get(f"{self.connection_svc_url()}/agent/setup/env/{exc_id}")
         data = res.json()
         if data["available"]:
           response = str(data["responseString"])
-          return response
+          break
         time.sleep(1)
+
+      print(f"[av] Agent {agent_id} env created! executing code...")
+      res = requests.post(f"{self.connection_svc_url()}/agent/execute/python", json={
+        "agentId": agent_id,
+        "envName": "base",
+        "workingDir": ".",
+        "code": code,
+      })
+      data = res.json()
+      if {exc_id := data["executionId"]} is None:
+        raise Exception(data["error"])
+      while True: # poll for response
+        res = requests.get(f"{self.connection_svc_url()}/agent/execute/python/{exc_id}")
+        data = res.json()
+        if data["available"]:
+          response = str(data["responseString"])
+          break
+        time.sleep(1)
+      
+      print(f"[av] Agent {agent_id} code executed! response: {response}")
+      return response
+    
     except Exception as e:
       print(f"[av] Remote execution failed! {e}")
       return None
