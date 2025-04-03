@@ -9,7 +9,7 @@ server:
 airavata:
   research-hub:
     url: https://hub.dev.cybershuttle.org
-    dev-user: "ganning.xu@gatech.edu"
+    dev-user: "ljayathilake3@gatech.edu"
   user-profile:
     server:
       url: api.dev.cybershuttle.org
@@ -30,7 +30,7 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     open-in-view: false
 
 springdoc:
