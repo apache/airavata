@@ -1,6 +1,7 @@
-import requests
-import time
 import os
+import time
+
+import requests
 from rich.console import Console
 
 # Load environment variables from .env file
