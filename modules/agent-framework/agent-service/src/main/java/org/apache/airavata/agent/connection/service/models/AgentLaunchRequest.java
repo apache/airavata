@@ -1,5 +1,8 @@
 package org.apache.airavata.agent.connection.service.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class AgentLaunchRequest {
@@ -8,6 +11,9 @@ public class AgentLaunchRequest {
     private String projectName;
     private String remoteCluster;
     private String group;
+    private List<String> libraries = new ArrayList<>();
+    private List<String> pip = new ArrayList<>();
+    private List<String> mounts = new ArrayList<>();
 
     private String queue = "shared";
     private int wallTime = 30;
@@ -89,5 +95,29 @@ public class AgentLaunchRequest {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public List<String> getLibraries() {
+        return libraries;
+    }
+
+    public void setLibraries(List<String> libraries) {
+        this.libraries = libraries;
+    }
+
+    public List<String> getPip() {
+        return pip;
+    }
+
+    public void setPip(List<String> pip) {
+        this.pip = pip;
+    }
+
+    public List<String> getMounts() {
+        return mounts;
+    }
+
+    public void setMounts(List<String> mounts) {
+        this.mounts = mounts;
     }
 }
