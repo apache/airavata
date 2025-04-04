@@ -9,7 +9,7 @@ server:
 airavata:
   research-hub:
     url: https://hub.dev.cybershuttle.org
-    dev-user: "ljayathilake3@gatech.edu"
+    dev-user: "airavata@apache.org"
   research-portal:
     url: http://localhost:5173
 
