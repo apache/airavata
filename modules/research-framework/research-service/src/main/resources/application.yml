@@ -10,6 +10,8 @@ airavata:
   research-hub:
     url: https://hub.dev.cybershuttle.org
     dev-user: "ljayathilake3@gatech.edu"
+  research-portal:
+    url: http://localhost:5173
   user-profile:
     server:
       url: api.dev.cybershuttle.org
