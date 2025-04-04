@@ -1,5 +1,5 @@
 import { Box, HStack, Text, Heading, Icon } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import { ElementType } from "react";
 
 export const PageHeader = ({
   title,
@@ -7,7 +7,7 @@ export const PageHeader = ({
   description,
 }: {
   title: string;
-  icon?: ReactNode;
+  icon?: ElementType;
   description: string;
 }) => {
   const fontSize = "4xl";

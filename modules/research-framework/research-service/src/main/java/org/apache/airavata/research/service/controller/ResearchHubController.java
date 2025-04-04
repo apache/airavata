@@ -20,6 +20,7 @@ package org.apache.airavata.research.service.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.airavata.research.service.ResponseTypes.RedirectResponse;
 import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.handlers.ResearchHubHandler;
 import org.apache.airavata.research.service.handlers.SessionHandler;
@@ -46,55 +47,33 @@ public class ResearchHubController {
 
     private final ResearchHubHandler rHubHandler;
 
-    @Autowired
-    private SessionHandler sessionHandler;
-
     public ResearchHubController(ResearchHubHandler rHubHandler) {
         this.rHubHandler = rHubHandler;
     }
 
-    @GetMapping("/projects")
-    @Operation(summary = "Get all projects")
-    public ResponseEntity<List<Project>> getAllProjects() {
-        return ResponseEntity.ok(rHubHandler.getAllProjects());
-    }
-
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/start/project/{projectId}")
     @Operation(summary = "Spawn new project session")
-    public ResponseEntity<?> resolveRHubUrl(@PathVariable("projectId") String projectId, @RequestParam("sessionName") String sessionName) {
+    public ResponseEntity<RedirectResponse> resolveRHubUrl(@PathVariable("projectId") String projectId, @RequestParam("sessionName") String sessionName) {
+        LOGGER.info("Starting new RHub session ({}) for project: {}", sessionName, projectId);
+
         String spawnUrl = rHubHandler.spinRHubSession(projectId, sessionName);
 
-        LOGGER.info("Redirecting user to spawn URL: {}", spawnUrl);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(spawnUrl)).build();
+        LOGGER.info("Session spawned: {}", spawnUrl);
+
+        RedirectResponse response = new RedirectResponse(spawnUrl);
+
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/project/{projectId}/exists")
-    @Operation(summary = "Check if session with project already exists")
-    public ResponseEntity<Boolean> getProjectSessionExists(@PathVariable("projectId") String projectId) {
-
-        return ResponseEntity.ok(sessionHandler.checkIfSessionExists(projectId, UserContext.userId()));
-    }
-
-    @GetMapping("/sessions")
-    @Operation(summary = "Get all sessions for a given user")
-    public ResponseEntity<List<Session>> getSessions() {
-        String userId = UserContext.userId();
-        List<Session> sessions = sessionHandler.findAllByUserId(userId);
-        return ResponseEntity.ok(sessions);
-    }
-
-    @PatchMapping("/sessions/{sessionId}")
-    @Operation(summary = "Update a session's status")
-    public ResponseEntity<Session> updateSessionStatus(@PathVariable(value="sessionId") String sessionId, @Param(value="status") SessionStatusEnum status) {
-        return ResponseEntity.ok(sessionHandler.updateSessionStatus(sessionId, status));
-    }
-
-    @GetMapping("/sessions/{sessionId}/resolve")
-    public ResponseEntity<?> resolveRHubExistingSession(@PathVariable("sessionId") String sessionId) {
+    @GetMapping("/resume/session/{sessionId}")
+    public ResponseEntity<RedirectResponse> resolveRHubExistingSession(@PathVariable("sessionId") String sessionId) {
+        LOGGER.info("Resuming session: {}", sessionId);
         String spawnUrl = rHubHandler.resolveRHubExistingSession(sessionId);
+        LOGGER.info("Resume success: {}", spawnUrl);
 
-        LOGGER.info("Redirecting to existing session spawn URL: {}", spawnUrl);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(spawnUrl)).build();
+        RedirectResponse response = new RedirectResponse(spawnUrl);
+
+        return ResponseEntity.ok(response);
     }
 }
 

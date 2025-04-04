@@ -7,12 +7,18 @@ import { RepositoryResource } from "@/interfaces/ResourceType";
 import { ResourceCard } from "../home/ResourceCard";
 import { LuSearch } from "react-icons/lu";
 import { InputGroup } from "../ui/input-group";
+import { CONTROLLER } from "@/lib/controller";
+import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 
 const getRepositories = async () => {
   try {
-    const response = await api.get(
-      "/project-management/resources?type=REPOSITORY"
-    );
+    const response = await api.get(`${CONTROLLER.resources}/`, {
+      params: {
+        type: ResourceTypeEnum.REPOSITORY,
+        pageNumber: 0,
+        pageSize: 100,
+      },
+    });
     const data = response.data;
     return data;
   } catch (error) {

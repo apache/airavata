@@ -9,10 +9,19 @@ import api from "@/lib/api";
 import { ModelResource } from "@/interfaces/ResourceType";
 import { useEffect, useState } from "react";
 import { ResourceCard } from "../home/ResourceCard";
+import { CONTROLLER } from "@/lib/controller";
+import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 
 const getModels = async () => {
   try {
-    const response = await api.get("/project-management/resources?type=MODEL");
+    const response = await api.get(`${CONTROLLER.resources}/`, {
+      params: {
+        type: ResourceTypeEnum.MODEL,
+        pageNumber: 0,
+        pageSize: 100,
+      },
+    });
+
     const data = response.data;
     return data;
   } catch (error) {

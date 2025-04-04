@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { API_VERSION, BACKEND_URL } from './constants';
+import { User } from 'oidc-client-ts';
 
 const api: AxiosInstance = axios.create({
   baseURL: `${BACKEND_URL}/api/${API_VERSION}/rf`,
@@ -10,9 +11,9 @@ const api: AxiosInstance = axios.create({
 });
 
 // Function to inject token dynamically
-let getUser: (() => Promise<any | null>) | null = null;
+let getUser: (() => Promise<User | null>) | null = null;
 
-export const setUserProvider = (provider: () => Promise<string | null>) => {
+export const setUserProvider = (provider: () => Promise<User | null>) => {
   getUser = provider;
 };
 
@@ -29,9 +30,6 @@ api.interceptors.request.use(
         });
       }
     }
-
-    console.log("configuration", config);
-
 
     return config;
   },

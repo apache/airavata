@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import NavBar from "../NavBar";
 import {
   Container,
@@ -12,6 +12,7 @@ import {
   Badge,
   Heading,
   Avatar,
+  Button,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
@@ -23,22 +24,23 @@ import {
   Resource,
 } from "@/interfaces/ResourceType";
 import { Tag } from "@/interfaces/TagType";
-import { User } from "@/interfaces/UserType";
 import { isValidImaage, resourceTypeToColor } from "@/lib/util";
 import { ResourceTypeBadge } from "./ResourceTypeBadge";
 import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 import { ModelSpecificBox } from "../models/ModelSpecificBox";
 import { NotebookSpecificDetails } from "../notebooks/NotebookSpecificDetails";
 import { RepositorySpecificDetails } from "../repositories/RepositorySpecificDetails";
+import { CONTROLLER } from "@/lib/controller";
 
 async function getResource(id: string) {
-  const response = await api.get(`/project-management/resources/${id}`);
+  const response = await api.get(`${CONTROLLER.resources}/${id}`);
   return response.data;
 }
 
 const ResourceDetails = () => {
   const { id } = useParams();
   const [resource, setResource] = useState<Resource | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) return;
@@ -61,7 +63,7 @@ const ResourceDetails = () => {
       <NavBar />
       <Container maxW="breakpoint-lg" mx="auto" p={4} mt={16}>
         <Box>
-          <Link to="/">
+          <Button variant="plain" p={0} onClick={() => navigate(-1)}>
             <HStack
               alignItems="center"
               mb={4}
@@ -77,7 +79,7 @@ const ResourceDetails = () => {
               </Icon>
               Back
             </HStack>
-          </Link>
+          </Button>
         </Box>
 
         <HStack
@@ -106,20 +108,16 @@ const ResourceDetails = () => {
             </HStack>
 
             <HStack mt={8}>
-              {resource.authors.map((author: User) => {
+              {resource.authors.map((author: string) => {
                 return (
-                  <HStack key={author.id}>
+                  <HStack key={author}>
                     <Avatar.Root shape="full" size="xl">
-                      <Avatar.Fallback
-                        name={author.firstName + " " + author.lastName}
-                      />
-                      <Avatar.Image src={author.avatar} />
+                      <Avatar.Fallback name={author} />
+                      <Avatar.Image src={author} />
                     </Avatar.Root>
 
                     <Box>
-                      <Text fontWeight="bold">
-                        {author.firstName + " " + author.lastName}
-                      </Text>
+                      <Text fontWeight="bold">{author}</Text>
                     </Box>
                   </HStack>
                 );

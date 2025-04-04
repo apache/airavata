@@ -52,7 +52,9 @@ const Home = () => {
             </ButtonWithIcon>
           </HStack>
         </HStack>
-        {/* <SessionsSection /> */}
+        <SessionsSection />
+
+        <Box my={8} />
       </Container>
     </Box>
   );
