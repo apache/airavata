@@ -4,6 +4,7 @@ import {
   Spacer,
   Image,
   HStack,
+  Avatar,
   Box,
   IconButton,
   useDisclosure,
@@ -14,48 +15,31 @@ import {
 } from "@chakra-ui/react";
 import ApacheAiravataLogo from "../assets/airavata-logo.png";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "react-oidc-context";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoClose } from "react-icons/io5";
-import { UserMenu } from "@/components/auth/UserMenu";
-import { useAuth } from "react-oidc-context";
 
 const NAV_CONTENT = [
   {
-    title: "Catalog",
-    url: "/resources",
-    needsAuth: false,
+    title: "Projects",
+    url: "/projects",
   },
   {
-    title: "Sessions",
-    url: "/sessions",
-    needsAuth: true,
+    title: "Datasets",
+    url: "/resources/datasets",
   },
   {
-    title: "Add",
-    url: "/add",
-    needsAuth: true,
+    title: "Repositories",
+    url: "/resources/repositories",
   },
   {
-    title: "Events",
-    url: "/events",
-    needsAuth: false,
+    title: "Notebooks",
+    url: "/resources/notebooks",
   },
-  // {
-  //   title: "Datasets",
-  //   url: "/resources/datasets",
-  // },
-  // {
-  //   title: "Repositories",
-  //   url: "/resources/repositories",
-  // },
-  // {
-  //   title: "Notebooks",
-  //   url: "/resources/notebooks",
-  // },
-  // {
-  //   title: "Models",
-  //   url: "/resources/models",
-  // },
+  {
+    title: "Models",
+    url: "/resources/models",
+  },
 ];
 
 interface NavLinkProps extends ButtonProps {
@@ -64,16 +48,9 @@ interface NavLinkProps extends ButtonProps {
 }
 
 const NavBar = () => {
+  const auth = useAuth();
   const { open, onToggle } = useDisclosure();
   const navigate = useNavigate();
-  const auth = useAuth();
-
-  const filteredNavContent = NAV_CONTENT.filter((item) => {
-    if (item.needsAuth) {
-      return auth.isAuthenticated;
-    }
-    return true; // Show all items that do not require authentication
-  });
 
   const NavLink = ({ title, url, ...props }: NavLinkProps) => (
     <Button
@@ -107,13 +84,13 @@ const NavBar = () => {
         </IconButton>
 
         {/* Logo */}
-        <Link to="/">
+        <Link to="/projects">
           <Image src={ApacheAiravataLogo} alt="Logo" boxSize="30px" />
         </Link>
 
         {/* Desktop Nav Links */}
         <HStack ml={4} display={{ base: "none", md: "flex" }}>
-          {filteredNavContent.map((item) => (
+          {NAV_CONTENT.map((item) => (
             <NavLink key={item.title} title={item.title} url={item.url} />
           ))}
         </HStack>
@@ -121,7 +98,17 @@ const NavBar = () => {
         <Spacer />
 
         {/* User Profile */}
-        <UserMenu />
+        <HStack gap={3}>
+          <Avatar.Root variant="subtle">
+            <Avatar.Fallback name={auth.user?.profile.name} />
+          </Avatar.Root>
+          <Box textAlign="left">
+            <Text fontSize="sm">{auth.user?.profile.name}</Text>
+            <Text fontSize="xs" color="gray.500">
+              {auth.user?.profile.email}
+            </Text>
+          </Box>
+        </HStack>
       </Flex>
 
       {/* Mobile Nav Links (Collapse) */}
@@ -135,7 +122,7 @@ const NavBar = () => {
             spaceY={2}
             display={{ md: "none" }}
           >
-            {filteredNavContent.map((item) => (
+            {NAV_CONTENT.map((item) => (
               <Box key={item.title} w="100%">
                 <NavLink
                   key={item.title}
