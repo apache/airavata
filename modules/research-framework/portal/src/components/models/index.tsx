@@ -1,4 +1,3 @@
-import NavBar from "../NavBar";
 import { Container, HStack, Input, SimpleGrid } from "@chakra-ui/react";
 import { PageHeader } from "../PageHeader";
 import { LuSearch } from "react-icons/lu";
@@ -43,8 +42,6 @@ export const Models = () => {
 
   return (
     <>
-      <NavBar />
-
       <Container maxW="container.lg" mt={8}>
         <HStack alignItems="flex-end" justify="space-between">
           <PageHeader

@@ -1,5 +1,4 @@
 import { Container, Input, SimpleGrid } from "@chakra-ui/react";
-import NavBar from "../NavBar";
 import { PageHeader } from "../PageHeader";
 import { InputGroup } from "../ui/input-group";
 import { LuSearch } from "react-icons/lu";
@@ -40,8 +39,6 @@ const Notebooks = () => {
 
   return (
     <>
-      <NavBar />
-
       <Container maxW="container.lg" mt={8}>
         <PageHeader
           title="Notebooks"
