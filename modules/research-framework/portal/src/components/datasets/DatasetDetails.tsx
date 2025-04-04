@@ -1,5 +1,5 @@
 import { Metadata } from "../Metadata";
-import NavBar from "../NavBar";
+import NavBar from "../../layouts/NavBar";
 // @ts-expect-error This is fine
 import { MOCK_DATASETS } from "../../data/MOCK_DATA";
 import { DatasetType } from "@/interfaces/DatasetType";

@@ -1,5 +1,4 @@
 import { Container, Input, SimpleGrid } from "@chakra-ui/react";
-import NavBar from "../NavBar";
 import { PageHeader } from "../PageHeader";
 import api from "@/lib/api";
 import { useEffect, useState } from "react";
@@ -40,8 +39,6 @@ const Repositories = () => {
 
   return (
     <>
-      <NavBar />
-
       <Container maxW="container.lg" mt={8}>
         <PageHeader
           title="Repositories"
