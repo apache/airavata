@@ -13,6 +13,9 @@ airavata:
   research-portal:
     url: http://localhost:5173
 
+  openid:
+    url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
+
   user-profile:
     server:
       url: api.dev.cybershuttle.org
@@ -44,3 +47,9 @@ springdoc:
     operationsSorter: alpha
     tagsSorter: alpha
     doc-expansion: none
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: data-catalog-portal
+
+
+
