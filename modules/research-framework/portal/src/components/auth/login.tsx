@@ -1,46 +1,40 @@
-import { Box, Center, SimpleGrid, Flex, Text, Button } from "@chakra-ui/react";
+import { Center, Text, Button, Image, VStack, Stack } from "@chakra-ui/react";
 import { useAuth } from "react-oidc-context";
+import AirvataLogo from "../../assets/airavata-logo.png";
 
 export const Login = () => {
   const auth = useAuth();
   return (
-    <>
-      <Center height="100vh">
-        <SimpleGrid
-          columns={{
-            base: 1,
-            lg: 2,
-          }}
-          gap={32}
-          alignItems="center"
-        >
-          <Box>
-            <Flex gap={4} alignItems="center">
-              <Box>
-                <Text fontWeight="bold">Airavata Data Catalog</Text>
-                <Text color="gray.500" fontSize="sm">
-                  Login to access the data catalog
-                </Text>
-              </Box>
-            </Flex>
+    <Center height="100vh">
+      <Stack
+        gap={8}
+        alignItems="center"
+        padding={4}
+        direction={{ base: "column", lg: "row" }}
+      >
+        <Image src={AirvataLogo} alt="Airavata Logo" maxWidth="100px" />
+        <VStack gap={1} alignItems="flex-start">
+          <Text fontWeight="bold" fontSize="2xl">
+            Cybershuttle Data Catalog
+          </Text>
+          <Text color="gray.500" fontSize="sm" maxWidth="300px">
+            Jupyter Notebooks, repositories, datasets, and models, for
+            scientists, by scientists.
+          </Text>
 
-            <Button
-              bg="black"
-              color="white"
-              _hover={{ bg: "gray.800" }}
-              _active={{ bg: "gray.900" }}
-              rounded="full"
-              w="300px"
-              onClick={() => {
-                console.log("Sign in clicked");
-                auth.signinRedirect();
-              }}
-            >
-              Institution Login
-            </Button>
-          </Box>
-        </SimpleGrid>
-      </Center>
-    </>
+          <Button
+            colorPalette="black"
+            _active={{ bg: "gray.900" }}
+            w="300px"
+            onClick={() => {
+              console.log("Sign in clicked");
+              auth.signinRedirect();
+            }}
+          >
+            Institution Login
+          </Button>
+        </VStack>
+      </Stack>
+    </Center>
   );
 };

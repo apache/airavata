@@ -7,12 +7,18 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { NotebookResource } from "@/interfaces/ResourceType";
 import { ResourceCard } from "../home/ResourceCard";
+import { CONTROLLER } from "@/lib/controller";
+import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 
 const getNotebooks = async () => {
   try {
-    const response = await api.get(
-      "/project-management/resources?type=NOTEBOOK"
-    );
+    const response = await api.get(`${CONTROLLER.resources}/`, {
+      params: {
+        type: ResourceTypeEnum.NOTEBOOK,
+        pageNumber: 0,
+        pageSize: 100,
+      },
+    });
     const data = response.data;
     return data;
   } catch (error) {

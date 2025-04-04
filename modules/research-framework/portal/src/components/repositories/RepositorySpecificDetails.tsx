@@ -32,8 +32,6 @@ export const RepositorySpecificDetails = ({
   const [currentPath, setCurrentPath] = useState<string>("");
   const [history, setHistory] = useState<string[]>([]);
   const [fileContent, setFileContent] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [fileName, setFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -105,7 +103,6 @@ export const RepositorySpecificDetails = ({
       const owner = ownerAndRepo.owner;
       const repo = ownerAndRepo.repo;
       fetchFileContent(owner, repo, path);
-      setFileName(path);
     }
 
     console.log("File clicked:", path);
@@ -117,7 +114,6 @@ export const RepositorySpecificDetails = ({
       setHistory((prev) => prev.slice(0, -1));
       setCurrentPath(previousPath);
       setFileContent(null);
-      setFileName(null);
     }
   };
 

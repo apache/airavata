@@ -60,8 +60,11 @@ public class SessionHandler {
     }
 
     public List<Session> findAllByUserId(String userId) {
-        List<Session> sessions = sessionRepository.findByUserId(userId);
-        return sessions;
+        return sessionRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    public List<Session> findAllByUserIdAndStatus(String userId, SessionStatusEnum status) {
+        return sessionRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, status);
     }
 
     public Session updateSessionStatus(String sessionId, SessionStatusEnum status) {

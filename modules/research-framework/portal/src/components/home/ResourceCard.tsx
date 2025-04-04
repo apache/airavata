@@ -16,8 +16,8 @@ import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 import { ModelCardButton } from "../models/ModelCardButton";
 
 export const ResourceCard = ({ resource }: { resource: Resource }) => {
-  console.log("Resource:", resource);
   const author = resource.authors[0];
+  console.log("author" + author);
 
   const isValidImage = isValidImaage(resource.headerImage);
 
@@ -82,16 +82,12 @@ export const ResourceCard = ({ resource }: { resource: Resource }) => {
           {author && (
             <HStack>
               <Avatar.Root shape="full" size="sm">
-                <Avatar.Fallback
-                  name={author.firstName + " " + author.lastName}
-                />
-                <Avatar.Image src={author.avatar} />
+                <Avatar.Fallback name={author} />
+                <Avatar.Image src={author} />
               </Avatar.Root>
 
               <Box>
-                <Text fontWeight="bold">
-                  {author.firstName + " " + author.lastName}
-                </Text>
+                <Text fontWeight="bold">{author}</Text>
               </Box>
             </HStack>
           )}

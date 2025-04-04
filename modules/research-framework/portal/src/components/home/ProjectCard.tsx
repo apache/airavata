@@ -1,38 +1,10 @@
 import { ProjectType } from "@/interfaces/ProjectType";
-import api from "@/lib/api";
-import { API_VERSION, BACKEND_URL } from "@/lib/constants";
-import { Button, Card, HStack, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-
-async function checkIfSessionWithProjectExists(project: ProjectType) {
-  try {
-    await api.get(`/hub/project/${project.id}/exists`);
-
-    return true;
-  } catch (error: any) {
-    return false;
-  }
-}
+import { Card, HStack, Text } from "@chakra-ui/react";
+import { StartSessionFromProjectButton } from "./StartSessionFromProjectButton";
 
 export const ProjectCard = ({ project }: { project: ProjectType }) => {
-  const [exists, setExists] = useState(false);
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    async function fetchData() {
-      const exists = await checkIfSessionWithProjectExists(project);
-      setExists(exists);
-    }
-
-    fetchData(); // Initial fetch
-
-    intervalId = setInterval(fetchData, 2000); // Fetch every 5 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [project]); // Depend on project so it updates correctly
-
   return (
-    <Card.Root overflow="hidden" size="md">
+    <Card.Root overflow="hidden" size="md" height="fit-content">
       <Card.Body gap="2">
         {/* Card Content */}
         <HStack alignItems="center" justifyContent="space-between">
@@ -55,22 +27,7 @@ export const ProjectCard = ({ project }: { project: ProjectType }) => {
           </Text>
         </Text>
 
-        {exists ? (
-          <Text color="green.600">Session already started</Text>
-        ) : (
-          <Button
-            colorPalette="black"
-            size="sm"
-            onClick={() => {
-              window.open(
-                `${BACKEND_URL}/api/${API_VERSION}/rf/hub/project/${project.id}?sessionName=${project.name}`,
-                "_blank"
-              );
-            }}
-          >
-            Open Project
-          </Button>
-        )}
+        <StartSessionFromProjectButton project={project} />
       </Card.Body>
     </Card.Root>
   );

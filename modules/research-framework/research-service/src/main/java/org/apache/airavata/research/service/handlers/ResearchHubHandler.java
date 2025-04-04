@@ -70,8 +70,4 @@ public class ResearchHubHandler {
         LOGGER.debug("Generated the session url: {} for the user: {}", sessionUrl, UserContext.userId());
         return sessionUrl;
     }
-
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
-    }
 }

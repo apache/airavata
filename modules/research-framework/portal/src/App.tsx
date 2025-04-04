@@ -6,7 +6,7 @@ import { Datasets } from "./components/datasets";
 import ResourceDetails from "./components/resources/ResourceDetails";
 import Notebooks from "./components/notebooks";
 import Repositories from "./components/repositories";
-import { Login } from "./components/auth/login";
+import { Login } from "./components/auth/Login";
 import ProtectedComponent from "./components/auth/ProtectedComponent";
 import { useAuth } from "react-oidc-context";
 import { useEffect } from "react";
@@ -18,9 +18,10 @@ function App() {
   }
 
   const user = useAuth();
+
   useEffect(() => {
     if (user.isAuthenticated) {
-      setUserProvider(() => user.user);
+      setUserProvider(() => Promise.resolve(user.user ?? null));
     }
   }, [user]);
 
@@ -58,21 +59,6 @@ function App() {
               element={<ProtectedComponent Component={ResourceDetails} />}
             />
           </Route>
-
-          {/* <Route path="/notebook">
-            <Route path=":slug" element={<ProjectDetails />} />
-          </Route>
-          <Route path="/repository">
-            <Route path=":slug" element={<ProjectDetails />} />
-          </Route>
-          <Route path="/models">
-            <Route index element={<Models />} />
-            <Route path=":id" element={<ModelDetails />} />
-          </Route>
-          <Route path="/datasets">
-            <Route index element={<Datasets />} />
-            <Route path=":slug" element={<DatasetDetails />} />
-          </Route> */}
         </Routes>
       </BrowserRouter>
     </>
