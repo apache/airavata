@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router";
-import NavBar from "../NavBar";
 import {
   Container,
   Spinner,
@@ -60,7 +59,6 @@ const ResourceDetails = () => {
 
   return (
     <>
-      <NavBar />
       <Container maxW="breakpoint-lg" mx="auto" p={4} mt={16}>
         <Box>
           <Button variant="plain" p={0} onClick={() => navigate(-1)}>
@@ -150,7 +148,7 @@ const ResourceDetails = () => {
           {(resource.type as ResourceTypeEnum) ===
             ResourceTypeEnum.REPOSITORY && (
             <RepositorySpecificDetails
-              dataset={resource as RepositoryResource}
+              repository={resource as RepositoryResource}
             />
           )}
 

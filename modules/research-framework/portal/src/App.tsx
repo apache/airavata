@@ -11,6 +11,7 @@ import ProtectedComponent from "./components/auth/ProtectedComponent";
 import { useAuth } from "react-oidc-context";
 import { useEffect } from "react";
 import { setUserProvider } from "./lib/api";
+import NavBarFooterLayout from "./layouts/NavBarFooterLayout";
 function App() {
   const colorMode = useColorMode();
   if (colorMode.colorMode === "dark") {
@@ -28,7 +29,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
+        {/* <Routes>
           <Route path="/" element={<Login />} />
 
           <Route
@@ -53,11 +54,27 @@ function App() {
               element={<ProtectedComponent Component={Models} />}
             />
 
-            {/* Dynamic Route for specific resource details */}
             <Route
               path=":type/:id"
               element={<ProtectedComponent Component={ResourceDetails} />}
             />
+          </Route>
+        </Routes> */}
+
+        <Routes>
+          {/* Public Route */}
+          <Route path="/" element={<Login />} />
+
+          {/* Protected Routes with Layout */}
+          <Route
+            element={<ProtectedComponent Component={NavBarFooterLayout} />}
+          >
+            <Route path="/projects" element={<Home />} />
+            <Route path="/resources/notebooks" element={<Notebooks />} />
+            <Route path="/resources/datasets" element={<Datasets />} />
+            <Route path="/resources/repositories" element={<Repositories />} />
+            <Route path="/resources/models" element={<Models />} />
+            <Route path="/resources/:type/:id" element={<ResourceDetails />} />
           </Route>
         </Routes>
       </BrowserRouter>

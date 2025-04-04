@@ -11,6 +11,7 @@ import {
   Breadcrumb,
 } from "@chakra-ui/react";
 import { Fragment, useEffect, useState } from "react";
+import { FaGithub } from "react-icons/fa";
 import { FiFolder, FiFile } from "react-icons/fi";
 
 interface FileTreeItem {
@@ -22,11 +23,12 @@ interface FileTreeItem {
 }
 
 export const RepositorySpecificDetails = ({
-  dataset,
+  repository,
 }: {
-  dataset: RepositoryResource;
+  repository: RepositoryResource;
 }) => {
-  const githubUrl = dataset.repositoryUrl;
+  console.log(repository);
+  const githubUrl = repository.repositoryUrl;
   const [fileTree, setFileTree] = useState<FileTreeItem[]>([]);
   const [fileTreeLoading, setFileTreeLoading] = useState(false);
   const [currentPath, setCurrentPath] = useState<string>("");
@@ -122,75 +124,85 @@ export const RepositorySpecificDetails = ({
   if (error !== null) return null;
 
   return (
-    <Box
-      bg="white"
-      p={4}
-      borderRadius="md"
-      shadow="md"
-      overflow="auto"
-      height="full"
-    >
-      <Button onClick={handleGoBack} mb={4}>
-        Back
+    <>
+      {/* @ts-expect-error This is fine */}
+      <Button size="sm" as="a" target="_blank" href={repository.repositoryUrl}>
+        <FaGithub />
+        Open {repository.name} on GitHub
       </Button>
-      <Breadcrumb.Root mt={2}>
-        <Breadcrumb.List>
-          <Breadcrumb.Item>
-            <Breadcrumb.Link href="#">root</Breadcrumb.Link>
-          </Breadcrumb.Item>
 
-          {history.length > 0 &&
-            currentPath
-              .split("/")
-              .filter(Boolean) // Remove empty strings
-              .map((path, index) => (
-                <Fragment key={index}>
-                  <Breadcrumb.Separator />
-                  <Breadcrumb.Item>
-                    <Breadcrumb.Link href="#">{path}</Breadcrumb.Link>
-                  </Breadcrumb.Item>
-                </Fragment>
+      <Box
+        mt={4}
+        bg="white"
+        p={4}
+        borderRadius="md"
+        shadow="md"
+        overflow="auto"
+        height="full"
+      >
+        {/* Open in GitHub button */}
+        <Button onClick={handleGoBack} mb={4}>
+          Back
+        </Button>
+        <Breadcrumb.Root mt={2}>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="#">root</Breadcrumb.Link>
+            </Breadcrumb.Item>
+
+            {history.length > 0 &&
+              currentPath
+                .split("/")
+                .filter(Boolean) // Remove empty strings
+                .map((path, index) => (
+                  <Fragment key={index}>
+                    <Breadcrumb.Separator />
+                    <Breadcrumb.Item>
+                      <Breadcrumb.Link href="#">{path}</Breadcrumb.Link>
+                    </Breadcrumb.Item>
+                  </Fragment>
+                ))}
+          </Breadcrumb.List>
+        </Breadcrumb.Root>{" "}
+        {fileContent ? (
+          <Box p={4} bg="gray.100" borderRadius="md">
+            <Text whiteSpace="pre-wrap" fontSize="sm" fontFamily="monospace">
+              {fileContent}
+            </Text>
+          </Box>
+        ) : (
+          <ListRoot>
+            {Array.isArray(fileTree) &&
+              fileTree.map((file) => (
+                <ListItem
+                  key={file.sha}
+                  display="flex"
+                  alignItems="center"
+                  p={2}
+                  borderRadius="md"
+                  _hover={{ bg: "gray.100", cursor: "pointer" }}
+                  onClick={() =>
+                    file.type === "dir"
+                      ? handleFolderClick(file.path)
+                      : handleFileClick(file.path)
+                  }
+                >
+                  <Icon
+                    as={file.type === "dir" ? FiFolder : FiFile}
+                    color={file.type === "dir" ? "blue.500" : "gray.500"}
+                    mr={2}
+                  />
+                  <p>{file.name}</p>
+                  {file.size !== undefined && file.size > 0 && (
+                    <Text fontSize="xs" color="gray.500" ml={2}>
+                      ({file.size} bytes)
+                    </Text>
+                  )}
+                </ListItem>
               ))}
-        </Breadcrumb.List>
-      </Breadcrumb.Root>{" "}
-      {fileContent ? (
-        <Box p={4} bg="gray.100" borderRadius="md">
-          <Text whiteSpace="pre-wrap" fontSize="sm" fontFamily="monospace">
-            {fileContent}
-          </Text>
-        </Box>
-      ) : (
-        <ListRoot>
-          {Array.isArray(fileTree) &&
-            fileTree.map((file) => (
-              <ListItem
-                key={file.sha}
-                display="flex"
-                alignItems="center"
-                p={2}
-                borderRadius="md"
-                _hover={{ bg: "gray.100", cursor: "pointer" }}
-                onClick={() =>
-                  file.type === "dir"
-                    ? handleFolderClick(file.path)
-                    : handleFileClick(file.path)
-                }
-              >
-                <Icon
-                  as={file.type === "dir" ? FiFolder : FiFile}
-                  color={file.type === "dir" ? "blue.500" : "gray.500"}
-                  mr={2}
-                />
-                <p>{file.name}</p>
-                {file.size !== undefined && file.size > 0 && (
-                  <Text fontSize="xs" color="gray.500" ml={2}>
-                    ({file.size} bytes)
-                  </Text>
-                )}
-              </ListItem>
-            ))}
-        </ListRoot>
-      )}
-    </Box>
+          </ListRoot>
+        )}
+      </Box>
+    </>
   );
 };

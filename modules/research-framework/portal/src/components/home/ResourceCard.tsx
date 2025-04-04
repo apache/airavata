@@ -17,7 +17,6 @@ import { ModelCardButton } from "../models/ModelCardButton";
 
 export const ResourceCard = ({ resource }: { resource: Resource }) => {
   const author = resource.authors[0];
-  console.log("author" + author);
 
   const isValidImage = isValidImaage(resource.headerImage);
 
