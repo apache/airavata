@@ -18,9 +18,11 @@
  */
 package org.apache.airavata.research.service.controller;
 
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.apache.airavata.research.service.ResponseTypes.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.model.entity.*;
+import org.junit.runner.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -84,6 +86,7 @@ public class ResourceController {
     )
     @GetMapping("/")
     public ResponseEntity<Page<Resource>> getAllResources(
+            @RequestHeader(name="X-Claims", required=true) String claims,
             @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value="pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value="type") ResourceTypeEnum[] types
