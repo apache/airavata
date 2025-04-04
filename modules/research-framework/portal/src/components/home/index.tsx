@@ -1,6 +1,5 @@
 import { Box, HStack, Container } from "@chakra-ui/react";
 
-import NavBar from "../NavBar";
 import { PageHeader } from "../PageHeader";
 import { AddRepositoryButton } from "./AddRepositoryButton";
 import { AddZipButton } from "./AddZipButton";
@@ -12,8 +11,6 @@ import { ProjectsSection } from "./ProjectsSection";
 const Home = () => {
   return (
     <Box>
-      <NavBar />
-
       <Container maxW="container.xl" mt={8}>
         <HStack alignItems="flex-end" justify="space-between">
           <PageHeader
