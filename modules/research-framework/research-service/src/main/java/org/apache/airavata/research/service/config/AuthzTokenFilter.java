@@ -56,19 +56,12 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-
-        if (request.getMethod().equalsIgnoreCase("POST") || request.getMethod().equalsIgnoreCase("PUT") || request.getMethod().equalsIgnoreCase("PATCH")) {
-            return false; // mutation requests should be authenticated
-        }
-
-        // TODO: ensure that only GET requests do not need auth
         return path.startsWith("/swagger") ||
                 path.startsWith("/v2/api-docs") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swagger-resources") ||
-                path.startsWith("/webjars/") ||
-                path.startsWith("/api/v1/rf/resources");
+                path.startsWith("/webjars/");
     }
 
     @Override
