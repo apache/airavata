@@ -1,30 +1,32 @@
 import { SessionType } from "@/interfaces/SessionType";
-import { API_VERSION, BACKEND_URL } from "@/lib/constants";
-import {
-  Box,
-  Text,
-  Card,
-  Heading,
-  HStack,
-  Badge,
-  Button,
-} from "@chakra-ui/react";
+import { Box, Text, Card, Heading, HStack, Badge } from "@chakra-ui/react";
+import { SessionCardControls } from "./SessionCardControls";
+import { SessionStatusEnum } from "@/interfaces/SessionStatusEnum";
 
 const getColorPalette = (status: string) => {
   switch (status) {
-    case "CREATED":
+    case SessionStatusEnum.CREATED:
       return "green";
-    case "stopped":
+    case SessionStatusEnum.RUNNING:
+      return "blue";
+    case SessionStatusEnum.FINISHED:
+      return "purple";
+    case SessionStatusEnum.TERMINATED:
+      return "gray";
+    case SessionStatusEnum.ERROR:
       return "red";
-    case "pending":
-      return "yellow";
     default:
       return "gray";
   }
 };
+
+const PREVENT_CONTROL_STATUS = [
+  SessionStatusEnum.TERMINATED,
+  SessionStatusEnum.ERROR,
+];
 export const SessionCard = ({ session }: { session: SessionType }) => {
   return (
-    <Card.Root size="sm">
+    <Card.Root size="sm" height="fit-content">
       <Card.Header>
         <HStack justify="space-between" alignItems="flex-start">
           <Box>
@@ -43,28 +45,9 @@ export const SessionCard = ({ session }: { session: SessionType }) => {
           : {new Date(session.createdAt).toLocaleString()}
         </Text>
 
-        <HStack alignItems="center" mt={2}>
-          <Button
-            size="sm"
-            colorPalette="red"
-            variant="subtle"
-            onClick={() => {}}
-          >
-            Terminate
-          </Button>
-          <Button
-            size="sm"
-            colorPalette="green"
-            onClick={() => {
-              window.open(
-                `${BACKEND_URL}/api/${API_VERSION}/rf/hub/sessions/${session.id}/resolve`,
-                "_blank"
-              );
-            }}
-          >
-            Open Session
-          </Button>
-        </HStack>
+        {!PREVENT_CONTROL_STATUS.includes(session.status) && (
+          <SessionCardControls session={session} />
+        )}
       </Card.Body>
     </Card.Root>
   );

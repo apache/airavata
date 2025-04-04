@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProjectHandler {
 
@@ -41,5 +43,9 @@ public class ProjectHandler {
             LOGGER.error("Unable to find a Project with id: " + projectId);
             return new EntityNotFoundException("Unable to find a Project with id: " + projectId);
         });
+    }
+
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
     }
 }

@@ -10,12 +10,18 @@ import { DatasetResource } from "@/interfaces/ResourceType";
 import { useEffect, useState } from "react";
 import { ResourceCard } from "../home/ResourceCard";
 import { resourceTypeToColor } from "@/lib/util";
+import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
+import { CONTROLLER } from "@/lib/controller";
 
 const getDatasets = async () => {
   try {
-    const response = await api.get(
-      "/project-management/resources?type=DATASET"
-    );
+    const response = await api.get(`${CONTROLLER.resources}/`, {
+      params: {
+        type: ResourceTypeEnum.DATASET,
+        pageNumber: 0,
+        pageSize: 100,
+      },
+    });
     const data = response.data;
     return data;
   } catch (error) {

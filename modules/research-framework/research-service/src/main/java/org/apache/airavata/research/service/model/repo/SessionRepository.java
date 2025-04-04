@@ -18,6 +18,7 @@
  */
 package org.apache.airavata.research.service.model.repo;
 
+import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,10 @@ public interface SessionRepository extends JpaRepository<Session, String> {
 
     @Query(value = "SELECT * FROM session WHERE project_id = :projectId AND user_id = :userId", nativeQuery = true)
     Optional<Session> findSessionByProjectIdAndUserId(@Param("projectId") String projectId, @Param("userId") String userId);
+
+    List<Session> findByUserIdAndStatus(String userId, SessionStatusEnum status);
+
+    List<Session> findByUserIdOrderByCreatedAtDesc(String userId);
+
+    List<Session> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, SessionStatusEnum status);
 }

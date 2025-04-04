@@ -39,11 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/rf/project-management")
-@Tag(name = "Project", description = "The Project API")
+@RequestMapping("/api/v1/rf/resources")
+@Tag(name = "Resources", description = "Datasets, notebooks, repositories, models")
 public class ResourceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceController.class);
-
 
     @org.springframework.beans.factory.annotation.Autowired
     private ResourceHandler resourceHandler;
@@ -75,7 +74,7 @@ public class ResourceController {
     @Operation(
             summary = "Get dataset, notebook, or repository"
     )
-    @GetMapping(value = "/resources/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<Resource> getResource(@PathVariable(value="id") String id) {
         return ResponseEntity.ok(resourceHandler.getResourceById(id));
     }
@@ -83,7 +82,7 @@ public class ResourceController {
     @Operation(
             summary = "Get all resources"
     )
-    @GetMapping("/resources")
+    @GetMapping("/")
     public ResponseEntity<Page<Resource>> getAllResources(
             @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value="pageSize", defaultValue = "10") int pageSize,

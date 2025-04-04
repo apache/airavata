@@ -53,6 +53,8 @@ const Home = () => {
           </HStack>
         </HStack>
         <SessionsSection />
+
+        <Box my={8} />
       </Container>
     </Box>
   );
