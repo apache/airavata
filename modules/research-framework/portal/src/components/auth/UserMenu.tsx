@@ -1,11 +1,28 @@
-import { Avatar, Box, HStack, Text, Menu, Portal } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  HStack,
+  Text,
+  Menu,
+  Portal,
+  Button,
+} from "@chakra-ui/react";
+import { FaArrowRight } from "react-icons/fa6";
 import { useAuth } from "react-oidc-context";
+import { Link } from "react-router";
 
 export const UserMenu = () => {
   const auth = useAuth();
 
-  if (auth.isLoading || !auth.user) return null;
-
+  if (auth.isLoading || !auth.user)
+    return (
+      <Link to="/login">
+        <Button colorPalette="blue">
+          Login
+          <FaArrowRight />
+        </Button>
+      </Link>
+    );
   const handleLogout = async () => {
     await auth.signoutRedirect();
   };
