@@ -4,7 +4,6 @@ import {
   Spacer,
   Image,
   HStack,
-  Avatar,
   Box,
   IconButton,
   useDisclosure,
@@ -15,7 +14,6 @@ import {
 } from "@chakra-ui/react";
 import ApacheAiravataLogo from "../assets/airavata-logo.png";
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "react-oidc-context";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoClose } from "react-icons/io5";
 import { UserMenu } from "@/components/auth/UserMenu";
@@ -49,7 +47,6 @@ interface NavLinkProps extends ButtonProps {
 }
 
 const NavBar = () => {
-  const auth = useAuth();
   const { open, onToggle } = useDisclosure();
   const navigate = useNavigate();
 
