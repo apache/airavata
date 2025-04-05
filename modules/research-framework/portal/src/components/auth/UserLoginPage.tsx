@@ -14,6 +14,9 @@ export const Login = () => {
     }
   }, [auth]);
 
+  const redirect =
+    new URLSearchParams(window.location.search).get("redirect") || "/";
+
   return (
     <Center height="100vh">
       <Stack
@@ -40,6 +43,7 @@ export const Login = () => {
               console.log("Login button clicked");
               setLoading(true);
               auth.signinRedirect({
+                redirect_uri: `${window.location.origin}${redirect}`,
                 extraQueryParams: {
                   prompt: "login",
                   kc_idp_hint: "oidc",
