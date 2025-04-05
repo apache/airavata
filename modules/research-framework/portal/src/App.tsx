@@ -63,7 +63,9 @@ function App() {
 
         <Routes>
           {/* Public Route */}
-          <Route path="/" element={<Login />} />
+          <Route element={<NavBarFooterLayout />}>
+            <Route path="/login" element={<Login />} />
+          </Route>
 
           {/* Protected Routes with Layout */}
           <Route
