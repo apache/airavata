@@ -13,6 +13,9 @@ export const Login = () => {
     }
   }, [auth]);
 
+  const redirect =
+    new URLSearchParams(window.location.search).get("redirect") || "/";
+
   return (
     <Center height="100vh">
       <Stack
@@ -38,6 +41,7 @@ export const Login = () => {
             onClick={() => {
               console.log("Sign in clicked");
               auth.signinRedirect({
+                redirect_uri: `${window.location.origin}${redirect}`,
                 extraQueryParams: {
                   // This is the prompt that will be shown to the user
                   prompt: "login",
