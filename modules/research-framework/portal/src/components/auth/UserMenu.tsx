@@ -1,42 +1,13 @@
-import {
-  Avatar,
-  Box,
-  HStack,
-  Text,
-  Menu,
-  Portal,
-  Button,
-} from "@chakra-ui/react";
-import { FaArrowRight } from "react-icons/fa6";
+import { Avatar, Box, HStack, Text, Menu, Portal } from "@chakra-ui/react";
 import { useAuth } from "react-oidc-context";
 
 export const UserMenu = () => {
   const auth = useAuth();
 
-  if (auth.isLoading || !auth.user || !auth.isAuthenticated)
-    return (
-      <Button
-        colorPalette="black"
-        onClick={() => {
-          auth.signinRedirect({
-            redirect_uri: `${window.location.origin}`,
-            extraQueryParams: {
-              prompt: "login",
-              kc_idp_hint: "oidc",
-            },
-          });
-        }}
-      >
-        Login
-        <FaArrowRight />
-      </Button>
-    );
+  if (auth.isLoading || !auth.user) return null;
+
   const handleLogout = async () => {
-    // Clear the user provider
-    await auth.removeUser();
-    await auth.signoutRedirect({
-      post_logout_redirect_uri: `https://cilogon.org/logout?return=${window.location.origin}`,
-    });
+    await auth.signoutRedirect();
   };
 
   return (
