@@ -10,7 +10,7 @@ function ProtectedComponent({ Component }: { Component: React.FC }) {
   }
 
   if (!auth.isAuthenticated) {
-    navigate("/");
+    navigate("/login");
     return;
   }
 

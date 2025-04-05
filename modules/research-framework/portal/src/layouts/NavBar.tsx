@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "react-oidc-context";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoClose } from "react-icons/io5";
+import { UserMenu } from "@/components/auth/UserMenu";
 
 const NAV_CONTENT = [
   {
@@ -98,17 +99,7 @@ const NavBar = () => {
         <Spacer />
 
         {/* User Profile */}
-        <HStack gap={3}>
-          <Avatar.Root variant="subtle">
-            <Avatar.Fallback name={auth.user?.profile.name} />
-          </Avatar.Root>
-          <Box textAlign="left">
-            <Text fontSize="sm">{auth.user?.profile.name}</Text>
-            <Text fontSize="xs" color="gray.500">
-              {auth.user?.profile.email}
-            </Text>
-          </Box>
-        </HStack>
+        <UserMenu />
       </Flex>
 
       {/* Mobile Nav Links (Collapse) */}

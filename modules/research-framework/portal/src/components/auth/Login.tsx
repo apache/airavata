@@ -1,9 +1,18 @@
 import { Center, Text, Button, Image, VStack, Stack } from "@chakra-ui/react";
 import { useAuth } from "react-oidc-context";
 import AirvataLogo from "../../assets/airavata-logo.png";
+import { useEffect } from "react";
 
 export const Login = () => {
   const auth = useAuth();
+
+  // Automatically login the user if they are authenticated
+  useEffect(() => {
+    if (auth.isAuthenticated && !auth.isLoading) {
+      auth.signinRedirect();
+    }
+  }, [auth]);
+
   return (
     <Center height="100vh">
       <Stack
@@ -28,7 +37,13 @@ export const Login = () => {
             w="300px"
             onClick={() => {
               console.log("Sign in clicked");
-              auth.signinRedirect();
+              auth.signinRedirect({
+                extraQueryParams: {
+                  // This is the prompt that will be shown to the user
+                  prompt: "login",
+                  kc_idp_hint: "oidc",
+                },
+              });
             }}
           >
             Institution Login
