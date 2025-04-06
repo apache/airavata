@@ -164,13 +164,15 @@ public class AgentManagementHandler {
         List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(authzToken, appInterfaceId);
         List<InputDataObjectType> experimentInputs = applicationInputs.stream()
                 .peek(input -> {
-                    switch (input.getName()) {
-                        case "agent_id" -> input.setValue(agentId);
-                        case "server_url" -> input.setValue(airavataService.getServerUrl());
-                        case "libraries" -> input.setValue(String.join(",", req.getLibraries()));
-                        case "pip" -> input.setValue(String.join(",", req.getPip()));
-                        case "mounts" -> input.setValue(String.join(",", req.getMounts()));
-                        default -> {}
+                    if (input != null && input.getName() != null) {
+                        switch (input.getName()) {
+                            case "agent_id" -> input.setValue(agentId);
+                            case "server_url" -> input.setValue(airavataService.getServerUrl());
+                            case "libraries" -> input.setValue(req.getLibraries() != null ? String.join(",", req.getLibraries()) : "");
+                            case "pip" -> input.setValue(req.getPip() != null ? String.join(",", req.getPip()) : "");
+                            case "mounts" -> input.setValue(req.getMounts() != null ? String.join(",", req.getMounts()) : "");
+                            default -> {}
+                        }
                     }
                 })
                 .collect(Collectors.toList());
