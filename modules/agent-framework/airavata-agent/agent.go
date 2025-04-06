@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -24,19 +25,33 @@ import (
 
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
 
+var envName = "base"
 var pidMap = make(map[string]int)
 
 func main() {
 
-	// get CLI args
-	serverUrl := os.Args[1]
-	agentId := os.Args[2]
+	// Define flags with default empty values.
+	serverUrl := flag.String("server", "", "Server flag (optional)")
+	agentId := flag.String("agent", "", "Agent flag (optional)")
+	lib := flag.String("lib", "", "Libraries flag (optional)")
+	pip := flag.String("pip", "", "Pip flag (optional)")
 
-	conn, err := grpc.NewClient(serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("[agent.go] main() Did not connect to %s: %v\n", serverUrl, err)
+	// Parse the flags provided by the user.
+	flag.Parse()
+
+	// Validate required flags
+	if *serverUrl == "" {
+		log.Fatalf("[agent.go] main() Error: --server flag is required.\n")
 	}
-	log.Printf("[agent.go] main() Connected to %s\n", serverUrl)
+	if *agentId == "" {
+		log.Fatalf("[agent.go] main() Error: --agent flag is required.\n")
+	}
+
+	conn, err := grpc.NewClient(*serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("[agent.go] main() Did not connect to %s: %v\n", *serverUrl, err)
+	}
+	log.Printf("[agent.go] main() Connected to %s\n", *serverUrl)
 	defer conn.Close()
 
 	c := protos.NewAgentCommunicationServiceClient(conn)
@@ -46,11 +61,40 @@ func main() {
 	}
 	log.Printf("[agent.go] main() Created stream...\n")
 
-	log.Printf("[agent.go] main() Trying to connect to %s with agent id %s\n", serverUrl, agentId)
+	var libList []string
+	if strings.TrimSpace(*lib) != "" {
+		libList = strings.Split(*lib, ",")
+		log.Printf("[agent.go] main() Installing --lib: %v\n", libList)
+		libCmd := exec.Command("micromamba", "install", "-n", envName, "--yes")
+		libCmd.Args = append(libCmd.Args, libList...)
+		if err := libCmd.Run(); err != nil {
+			log.Fatalf("[agent.go] main() Error Installing --lib: %v\n", err)
+		}
+		log.Printf("[agent.go] main() Installed --lib: %v\n", libList)
+	} else {
+		log.Printf("[agent.go] main() No --lib to install.\n")
+	}
+
+	var pipList []string
+	if strings.TrimSpace(*pip) != "" {
+		pipList = strings.Split(*pip, ",")
+		log.Printf("[agent.go] main() Installing --pip: %v\n", pipList)
+		pipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install")
+		pipCmd.Args = append(pipCmd.Args, pipList...)
+		if err := pipCmd.Run(); err != nil {
+			log.Fatalf("[agent.go] main() Error Installing --pip: %v\n", err)
+		}
+		log.Printf("[agent.go] main() Installed --pip: %v\n", pipList)
+
+	} else {
+		log.Printf("[agent.go] main() No --pip to install.\n")
+	}
+
+	log.Printf("[agent.go] main() Trying to connect to %s with agent id %s\n", *serverUrl, *agentId)
 	msg := &protos.AgentMessage{
 		Message: &protos.AgentMessage_AgentPing{
 			AgentPing: &protos.AgentPing{
-				AgentId: agentId,
+				AgentId: *agentId,
 			},
 		},
 	}
@@ -72,8 +116,6 @@ func main() {
 }
 
 func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
-
-	envName := "base"
 
 	for {
 		in, err := stream.Recv()

@@ -10,6 +10,8 @@ build-container:
 run-container:
 	docker run -it $(IMAGE_NAME) /opt/airavata-agent $(AGENT_SVC_URL) $(AGENT_ID)
 
+deploy-all: deploy-anvil-scigap deploy-anvil-waterhub deploy-anvil-gcommunityus
+
 deploy-anvil-scigap:
 	ssh x-scigap@anvil.rcac.purdue.edu srun -p shared --mem 4G -t 30 singularity pull \
 	--disable-cache \
@@ -30,3 +32,8 @@ deploy-anvil-gcommunityus:
 	--force \
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)
+
+deploy-bootstrap-anvil:
+	scp agent.sh x-scigap@anvil.rcac.purdue.edu:~/cybershuttle/agent.sh && \
+	scp agent.sh x-waterhub@anvil.rcac.purdue.edu:~/cybershuttle/agent.sh && \
+	scp agent.sh x-gcommunityus@anvil.rcac.purdue.edu:~/cybershuttle/agent.sh
