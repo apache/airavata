@@ -1,7 +1,5 @@
-import asyncio
 import base64
 import binascii
-from functools import partial
 import json
 import os
 import time
@@ -9,7 +7,6 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
-from types import CodeType
 from typing import Any, NamedTuple, Optional
 
 import jwt
@@ -281,8 +278,8 @@ def submit_agent_job(
             content = yaml.safe_load(f)
         # workspace
         resources = content["workspace"]["resources"]
-        models = content["workspace"]["model_collection"]
-        datasets = content["workspace"]["data_collection"]
+        models = content["workspace"]["model_collection"] or []
+        datasets = content["workspace"]["data_collection"] or []
         collection = models + datasets
         mounts = [f"{i['identifier']}:{i['mount_point']}" for i in collection]
         # dependencies
