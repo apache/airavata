@@ -18,14 +18,18 @@
 package org.apache.airavata.research.service.config;
 
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
+import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
+import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -37,16 +41,31 @@ public class DevDataInitializer implements CommandLineRunner {
 
     private final ProjectRepository projectRepository;
     private final ResourceRepository resourceRepository;
+    private final TagRepository tagRepository;
 
     @Value("${airavata.research-hub.dev-user}")
     private String devUserEmail;
 
-    public DevDataInitializer(ProjectRepository projectRepository, ResourceRepository resourceRepository) {
+    public DevDataInitializer(ProjectRepository projectRepository, ResourceRepository resourceRepository, TagRepository tagRepository) {
         this.projectRepository = projectRepository;
         this.resourceRepository = resourceRepository;
+        this.tagRepository = tagRepository;
     }
 
-    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl, String user) {
+    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl,  String[] tags, String user) {
+        Set<Tag> tagSet = new HashSet<>();
+        for (String tag : tags) {
+            Tag t = tagRepository.findByValue(tag);
+            if (t != null) {
+                tagSet.add(t);
+            } else {
+                Tag newTag = new Tag();
+                newTag.setValue(tag);
+                tagSet.add(newTag);
+                tagRepository.save(newTag);
+            }
+        }
+
         RepositoryResource repo = new RepositoryResource();
         repo.setName(name);
         repo.setDescription("Repository for " + name);
@@ -54,6 +73,7 @@ public class DevDataInitializer implements CommandLineRunner {
         repo.setRepositoryUrl(repoUrl);
         repo.setStatus(StatusEnum.VERIFIED);
         repo.setPrivacy(PrivacyEnum.PUBLIC);
+        repo.setTags(tagSet);
         repo = resourceRepository.save(repo);
 
         DatasetResource dataset = new DatasetResource();
@@ -63,6 +83,7 @@ public class DevDataInitializer implements CommandLineRunner {
         dataset.setDatasetUrl(datasetUrl);
         dataset.setStatus(StatusEnum.VERIFIED);
         dataset.setPrivacy(PrivacyEnum.PUBLIC);
+        dataset.setTags(tagSet);
         dataset.setAuthors(new HashSet<>() {
             {
                 add(user);
@@ -92,6 +113,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/yasithdev/bmtk-workshop.git",
                 "Allen / BMTK Workshop Data",
                 "allen-bmtk-workshop",
+                new String[]{"allen", "bmtk", "workshop"},
                 devUserEmail
         );
 
@@ -100,6 +122,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/yasithdev/allen-v1.git",
                 "Allen / V1 Data",
                 "allen-v1",
+                new String[]{"allen", "v1", "workshop"},
                 devUserEmail
         );
 
@@ -108,6 +131,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/yasithdev/onehot-hmmglm.git",
                 "BRAINML / OneHot HMMGLM Data",
                 "brainml-onehot-hmmglm",
+                new String[]{"brainml", "onehot", "workshop"},
                 devUserEmail
         );
 
@@ -116,6 +140,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/yasithdev/functional-network.git",
                 "HChoiLab / Functional Network Data",
                 "hchoilab-functional-network",
+                new String[]{"hchoilab", "functional network", "workshop"},
                 devUserEmail
         );
     }

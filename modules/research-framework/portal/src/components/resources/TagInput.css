@@ -1,0 +1,103 @@
+/* TagInput.css */
+
+.tag-input-wrapper {
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* container holding all tags + input */
+.ReactTags__tags {
+  position: relative;
+  /* Add this line */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #fafafa;
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* tag pill style */
+.ReactTags__tag {
+  background-color: #007bff;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* remove (x) icon */
+.ReactTags__remove {
+  margin-left: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* input field container (flexed) */
+.ReactTags__tagInput {
+  flex: 1 1 auto;
+  /* allow it to grow and wrap */
+  min-width: 120px;
+}
+
+.ReactTags__selected {
+  width: 100%;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* actual input element */
+.ReactTags__tagInputField {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.ReactTags__tagInputField::placeholder {
+  color: #888;
+}
+
+/* Make suggestions dropdown absolutely positioned */
+.ReactTags__suggestions {
+  position: absolute;
+  top: 100%;
+  /* Push below the input */
+  left: 0;
+  width: 100%;
+  /* Match parent width */
+  z-index: 10;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  margin-top: 4px;
+  padding: 0;
+}
+
+/* Each individual suggestion */
+.ReactTags__suggestions li {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Active (highlighted) suggestion */
+.ReactTags__activeSuggestion {
+  background-color: #007bff;
+  color: white;
+}

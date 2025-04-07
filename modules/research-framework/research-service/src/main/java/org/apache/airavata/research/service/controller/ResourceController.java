@@ -74,6 +74,14 @@ public class ResourceController {
     }
 
     @Operation(
+            summary = "Get all tags"
+    )
+    @GetMapping(value = "/tags/all")
+    public ResponseEntity<List<org.apache.airavata.research.service.model.entity.Tag>> getTags() {
+        return ResponseEntity.ok(resourceHandler.getAllTags());
+    }
+
+    @Operation(
             summary = "Get dataset, notebook, or repository"
     )
     @GetMapping(value = "/{id}")
@@ -86,10 +94,10 @@ public class ResourceController {
     )
     @GetMapping("/")
     public ResponseEntity<Page<Resource>> getAllResources(
-            @RequestHeader(name="X-Claims", required=true) String claims,
             @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value="pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value="type") ResourceTypeEnum[] types
+            @RequestParam(value="type") ResourceTypeEnum[] types,
+            @RequestParam(value="tag", required = false) String[] tags
     ) {
         List<Class<? extends Resource>> typeList = new ArrayList<>();
         for (ResourceTypeEnum resourceType : types) {
@@ -103,7 +111,7 @@ public class ResourceController {
                 typeList.add(DatasetResource.class);
             }
         }
-        Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList);
+        Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags);
 
         return ResponseEntity.ok(response);
     }
