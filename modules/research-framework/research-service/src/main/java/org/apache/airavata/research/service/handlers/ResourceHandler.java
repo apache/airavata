@@ -22,8 +22,10 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.ResponseTypes.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.apache.airavata.research.service.model.entity.Tag;
+import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.slf4j.Logger;
@@ -46,11 +48,13 @@ public class ResourceHandler {
     private final AiravataService airavataService;
     private final TagRepository tagRepository;
     private final ResourceRepository resourceRepository;
+    private final ProjectRepository projectRepository;
 
-    public ResourceHandler(AiravataService airavataService, TagRepository tagRepository, ResourceRepository resourceRepository) {
+    public ResourceHandler(AiravataService airavataService, TagRepository tagRepository, ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         this.airavataService = airavataService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
+        this.projectRepository = projectRepository;
     }
 
     public void initializeResource(Resource resource) {

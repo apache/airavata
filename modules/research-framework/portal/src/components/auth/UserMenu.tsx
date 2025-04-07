@@ -14,7 +14,7 @@ import { Link } from "react-router";
 export const UserMenu = () => {
   const auth = useAuth();
 
-  if (auth.isLoading || !auth.user)
+  if (auth.isLoading || !auth.user || !auth.isAuthenticated)
     return (
       <Link to="/login">
         <Button colorPalette="blue">

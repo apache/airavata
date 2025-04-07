@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { Toaster, toaster } from "../ui/toaster";
+import { useAuth } from "react-oidc-context";
+import { useNavigate } from "react-router";
 
 export const StartSessionFromProjectButton = ({
   project,
@@ -23,8 +25,22 @@ export const StartSessionFromProjectButton = ({
     new Date().toLocaleDateString() + " " + project.name + " Session";
   const [sessionName, setSessionName] = useState<string>(defaultName);
   const [loadingOpenProject, setLoadingOpenProject] = useState(false);
+  const auth = useAuth();
+  const shouldRedirect = auth.isLoading || !auth.user || !auth.isAuthenticated;
+  const navigate = useNavigate();
+
+  const handleClickStart = () => {
+    if (shouldRedirect) {
+      navigate(`/login?redirect=${window.location.pathname}`, {
+        replace: true,
+      });
+      return;
+    }
+    dialog.setOpen(true);
+  };
 
   const handleOpenProject = async () => {
+    console.log(auth.user);
     if (!sessionName) {
       toaster.create({
         title: "Session name is required",
@@ -32,6 +48,7 @@ export const StartSessionFromProjectButton = ({
       });
       return;
     }
+
     setLoadingOpenProject(true);
     try {
       const resp = await api.get(
@@ -72,11 +89,9 @@ export const StartSessionFromProjectButton = ({
           setSessionName(defaultName); // Reset session name when modal closes
         }}
       >
-        <Dialog.Trigger asChild>
-          <Button colorPalette="black" size="sm">
-            Start Project Session
-          </Button>
-        </Dialog.Trigger>
+        <Button colorPalette="black" size="sm" onClick={handleClickStart}>
+          Start Project Session
+        </Button>
 
         <Portal>
           <Dialog.Backdrop />
