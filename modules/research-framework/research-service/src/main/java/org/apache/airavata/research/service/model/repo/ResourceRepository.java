@@ -33,4 +33,20 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
 
     @Query("SELECT r FROM #{#entityName} r WHERE TYPE(r) IN :types")
     Page<Resource> findAllByTypes(@Param("types") List<Class<? extends Resource>> types, Pageable pageable);
+
+    @Query("""
+    SELECT r
+    FROM Resource r
+    JOIN r.tags t
+    WHERE r.class IN :typeList AND t.value IN :tags
+    GROUP BY r
+    HAVING COUNT(DISTINCT t.value) = :tagCount
+    """)
+    Page<Resource> findAllByTypesAndAllTags(
+            @Param("typeList") List<Class<? extends Resource>> typeList,
+            @Param("tags") String[] tags,
+            @Param("tagCount") long tagCount,
+            Pageable pageable
+    );
+
 }

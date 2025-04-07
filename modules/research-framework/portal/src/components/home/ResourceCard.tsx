@@ -15,15 +15,29 @@ import { ResourceTypeBadge } from "../resources/ResourceTypeBadge";
 import { ResourceTypeEnum } from "@/interfaces/ResourceTypeEnum";
 import { ModelCardButton } from "../models/ModelCardButton";
 
-export const ResourceCard = ({ resource }: { resource: Resource }) => {
+export const ResourceCard = ({
+  resource,
+  appendTypeToUrl = false,
+}: {
+  resource: Resource;
+  appendTypeToUrl?: boolean;
+}) => {
   const author = resource.authors[0];
 
   const isValidImage = isValidImaage(resource.headerImage);
 
+  resource.tags.sort((a, b) => a.value.localeCompare(b.value));
+
+  const linkTo = resource.id;
+  const linkToWithType = `${resource.type}/${resource.id}`;
+
+  // Determine the link based on appendTypeToUrl
+  const link = appendTypeToUrl ? linkToWithType : linkTo;
+
   return (
     <Box>
       <Card.Root overflow="hidden" size="md">
-        <Link to={`${resource.id}`}>
+        <Link to={link}>
           {/* Image Container with Badge */}
           {isValidImage && (
             <Box position="relative" width="full">

@@ -20,24 +20,28 @@ import { UserMenu } from "@/components/auth/UserMenu";
 
 const NAV_CONTENT = [
   {
+    title: "Resources",
+    url: "/resources",
+  },
+  // {
+  //   title: "Datasets",
+  //   url: "/resources/datasets",
+  // },
+  // {
+  //   title: "Repositories",
+  //   url: "/resources/repositories",
+  // },
+  // {
+  //   title: "Notebooks",
+  //   url: "/resources/notebooks",
+  // },
+  // {
+  //   title: "Models",
+  //   url: "/resources/models",
+  // },
+  {
     title: "Projects",
     url: "/projects",
-  },
-  {
-    title: "Datasets",
-    url: "/resources/datasets",
-  },
-  {
-    title: "Repositories",
-    url: "/resources/repositories",
-  },
-  {
-    title: "Notebooks",
-    url: "/resources/notebooks",
-  },
-  {
-    title: "Models",
-    url: "/resources/models",
   },
 ];
 
@@ -82,7 +86,7 @@ const NavBar = () => {
         </IconButton>
 
         {/* Logo */}
-        <Link to="/projects">
+        <Link to="/">
           <Image src={ApacheAiravataLogo} alt="Logo" boxSize="30px" />
         </Link>
 
