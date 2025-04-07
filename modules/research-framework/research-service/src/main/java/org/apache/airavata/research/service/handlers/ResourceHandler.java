@@ -100,9 +100,17 @@ public class ResourceHandler {
         return opResource.get();
     }
 
-    public Page<Resource> getAllResources(int pageNumber, int pageSize, List<Class<? extends Resource>> typeList) {
+    public Page<Resource> getAllResources(int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return resourceRepository.findAllByTypes(typeList, pageable);
+        if (tag == null || tag.length == 0) {
+            return resourceRepository.findAllByTypes(typeList, pageable);
+        }
+
+        return resourceRepository.findAllByTypesAndAllTags(typeList, tag, tag.length, pageable);
+    }
+
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
     }
 
     // Helper methods
