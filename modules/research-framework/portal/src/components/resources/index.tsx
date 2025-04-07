@@ -61,7 +61,7 @@ export const Resources = () => {
   const [resources, setResources] = useState<Resource[]>([]);
 
   const handleDelete = (i: number) => {
-    setTags(tags.filter((tag, index) => index !== i));
+    setTags(tags.filter((_, index) => index !== i));
   };
 
   const handleAddition = (tag: Tag) => {
