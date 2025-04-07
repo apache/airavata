@@ -7,7 +7,6 @@ import {
   Button,
   HStack,
   Code,
-  Spinner,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { SEPARATORS, WithContext as ReactTags, Tag } from "react-tag-input";
@@ -19,23 +18,25 @@ import { Resource } from "@/interfaces/ResourceType";
 import { ResourceCard } from "../home/ResourceCard";
 import { FaCheck } from "react-icons/fa";
 import { Tag as TagEntity } from "@/interfaces/TagType";
-import { useLocation, useNavigate } from "react-router";
-import { toaster } from "../ui/toaster";
 
 const getResources = async (
   types: ResourceTypeEnum[],
   stringTagsArr: string[]
 ) => {
-  const response = await api.get(`${CONTROLLER.resources}/`, {
-    params: {
-      type: types.join(","),
-      tag: stringTagsArr.join(","),
-      pageNumber: 0,
-      pageSize: 100,
-    },
-  });
-  const data = response.data;
-  return data;
+  try {
+    const response = await api.get(`${CONTROLLER.resources}/`, {
+      params: {
+        type: types.join(","),
+        tag: stringTagsArr.join(","),
+        pageNumber: 0,
+        pageSize: 100,
+      },
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.error("Error fetching:", error);
+  }
 };
 
 const getTags = async () => {
@@ -51,122 +52,32 @@ const getTags = async () => {
 export const Resources = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
-  const [resourceTypes, setResourceTypes] = useState<ResourceTypeEnum[]>([]);
+  const [resourceTypes, setResourceTypes] = useState<ResourceTypeEnum[]>([
+    ResourceTypeEnum.DATASET,
+    ResourceTypeEnum.REPOSITORY,
+    ResourceTypeEnum.NOTEBOOK,
+    ResourceTypeEnum.MODEL,
+  ]);
   const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const handleDelete = (i: number) => {
-    const newTags = tags.filter((_, index) => index !== i);
-    setTags(newTags);
-    updateURLWithTags(newTags);
+    setTags(tags.filter((tag, index) => index !== i));
   };
 
   const handleAddition = (tag: Tag) => {
-    const newTags = [...tags, tag];
-    setTags(newTags);
-    updateURLWithTags(newTags);
-  };
-
-  const updateURLWithTags = (updatedTags: Tag[]) => {
-    const params = new URLSearchParams(location.search);
-
-    if (updatedTags.length > 0) {
-      params.set("tags", updatedTags.map((tag) => tag.text).join(","));
-    } else {
-      params.delete("tags");
-    }
-
-    navigate(
-      { pathname: location.pathname, search: params.toString() },
-      { replace: true }
-    );
-  };
-
-  const updateURLWithResourceTypes = (
-    updatedResourceTypes: ResourceTypeEnum[]
-  ) => {
-    const params = new URLSearchParams(location.search);
-
-    if (updatedResourceTypes.length > 0) {
-      params.set(
-        "resourceTypes",
-        updatedResourceTypes.map((type) => type).join(",")
-      );
-    } else {
-      params.delete("resourceTypes");
-    }
-
-    navigate(
-      { pathname: location.pathname, search: params.toString() },
-      { replace: true }
-    );
+    console.log(tag);
+    setTags([...tags, tag]);
   };
 
   useEffect(() => {
-    if (!hydrated) return;
     async function fetchResources() {
-      try {
-        setLoading(true);
-        const stringTagsArr = tags.map((tag) => tag.text);
-        const resources = await getResources(resourceTypes, stringTagsArr);
-        setResources(resources.content);
-      } catch {
-        toaster.create({
-          type: "error",
-          title: "Error fetching resources",
-          description: "An error occurred while fetching resources.",
-        });
-      } finally {
-        setLoading(false);
-      }
+      const stringTagsArr = tags.map((tag) => tag.text);
+      const resources = await getResources(resourceTypes, stringTagsArr);
+      setResources(resources.content);
     }
 
     fetchResources();
-  }, [resourceTypes, tags, hydrated]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tagsParam = params.get("tags");
-    if (tagsParam) {
-      const initialTags = tagsParam.split(",").map((text) => ({
-        id: text,
-        text,
-        className: "",
-      }));
-      setTags(initialTags);
-    } else {
-      setTags([]);
-    }
-
-    const resourceTypesParam = params.get("resourceTypes");
-    if (resourceTypesParam) {
-      const initialResourceTypes = resourceTypesParam.split(
-        ","
-      ) as ResourceTypeEnum[];
-      initialResourceTypes.forEach((type) => {
-        if (
-          !Object.values(ResourceTypeEnum).includes(type as ResourceTypeEnum)
-        ) {
-          toaster.create({
-            type: "error",
-            title: "Invalid resource type",
-            description: `Invalid resource type: ${type}. Valid types are: ${Object.values(
-              ResourceTypeEnum
-            ).join(", ")}`,
-          });
-          return;
-        }
-      });
-      setResourceTypes(initialResourceTypes);
-    } else {
-      setResourceTypes([]);
-    }
-
-    setHydrated(true);
-  }, [location.search]);
+  }, [resourceTypes, tags]);
 
   useEffect(() => {
     async function fetchTags() {
@@ -183,13 +94,6 @@ export const Resources = () => {
     fetchTags();
   }, []);
 
-  const labels = [
-    ResourceTypeEnum.REPOSITORY,
-    ResourceTypeEnum.NOTEBOOK,
-    ResourceTypeEnum.DATASET,
-    ResourceTypeEnum.MODEL,
-  ];
-
   return (
     <>
       <Container maxW="container.lg" mt={8}>
@@ -199,17 +103,13 @@ export const Resources = () => {
           fontWeight="black"
           lineHeight={1.2}
         >
-          Research Catalog
-        </Heading>
-        <Text mt={2} textAlign="center">
-          Browse models, notebooks, repositories, and datasets. Created by
-          scientists and prepared for
-          <Text as="span" color="blue.600" fontWeight="bold">
+          Browse datasets, repositories, notebooks, and models,
+          <Text as="span" color="blue.600">
             {" "}
-            execution in local and remote machines
+            made by scientists, for scientists
           </Text>
           .
-        </Text>
+        </Heading>
 
         <Box mt={4} maxWidth="1000px" mx="auto">
           <ReactTags
@@ -235,7 +135,7 @@ export const Resources = () => {
               Showing
             </Text>
             <HStack wrap="wrap">
-              {labels.map((type) => {
+              {Object.values(ResourceTypeEnum).map((type) => {
                 const isSelected = resourceTypes.includes(type);
                 return (
                   <Button
@@ -249,15 +149,13 @@ export const Resources = () => {
                     }}
                     size="sm"
                     onClick={() => {
-                      let newResourceTypes = [...resourceTypes, type];
-
                       if (isSelected) {
-                        newResourceTypes = resourceTypes.filter(
-                          (t) => t !== type
+                        setResourceTypes(
+                          resourceTypes.filter((t) => t !== type)
                         );
+                      } else {
+                        setResourceTypes([...resourceTypes, type]);
                       }
-                      setResourceTypes(newResourceTypes);
-                      updateURLWithResourceTypes(newResourceTypes);
                     }}
                   >
                     {type}
@@ -285,11 +183,6 @@ export const Resources = () => {
             );
           })}
         </SimpleGrid>
-        {loading && (
-          <Box textAlign="center">
-            <Spinner />
-          </Box>
-        )}
 
         {resources.length === 0 && (
           <Box textAlign="center" color="gray.500">

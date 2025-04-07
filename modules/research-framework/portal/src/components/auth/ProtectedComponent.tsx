@@ -1,25 +1,25 @@
 import { setUserProvider } from "@/lib/api";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
 
 function ProtectedComponent({ Component }: { Component: React.FC }) {
   const auth = useAuth();
   const navigate = useNavigate();
-  const path = window.location.pathname;
+  const initialPathRef = useRef(window.location.pathname); // store once
 
   useEffect(() => {
     if (!auth.isLoading && !auth.isAuthenticated) {
-      navigate(`/login?redirect=${path}`, { replace: true });
+      navigate(`/login?redirect=${initialPathRef.current}`, { replace: true });
     }
 
     if (auth.isAuthenticated) {
       setUserProvider(() => Promise.resolve(auth.user ?? null));
     }
-  }, [auth]);
+  }, [auth, navigate]);
 
   if (auth.isLoading || !auth.isAuthenticated) {
-    return;
+    return null;
   }
 
   return <Component />;

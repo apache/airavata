@@ -19,6 +19,7 @@ import {
   OPENID_CONFIG_URL,
 } from "./lib/constants";
 import { WebStorageStateStore } from "oidc-client-ts";
+import { Resources } from "./components/resources";
 function App() {
   const colorMode = useColorMode();
   const navigate = useNavigate();
@@ -73,10 +74,6 @@ function App() {
       <AuthProvider
         {...oidcConfig}
         onSigninCallback={() => {
-          // const from = location.state?.from || "/"; // fallback to homepage
-          // console.log("Redirecting to:", from);
-          // navigate(from, { replace: true });
-          // clear state from url
           navigate(location.pathname, { replace: true });
         }}
       >
@@ -85,6 +82,12 @@ function App() {
           <Route element={<NavBarFooterLayout />}>
             <Route path="/" element={<CybershuttleLanding />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/resources/datasets" element={<Datasets />} />
+            <Route path="/resources/notebooks" element={<Notebooks />} />
+            <Route path="/resources/repositories" element={<Repositories />} />
+            <Route path="/resources/models" element={<Models />} />
+            <Route path="/resources/:type/:id" element={<ResourceDetails />} />
           </Route>
 
           {/* Protected Routes with Layout */}
@@ -92,11 +95,6 @@ function App() {
             element={<ProtectedComponent Component={NavBarFooterLayout} />}
           >
             <Route path="/projects" element={<Home />} />
-            <Route path="/resources/notebooks" element={<Notebooks />} />
-            <Route path="/resources/datasets" element={<Datasets />} />
-            <Route path="/resources/repositories" element={<Repositories />} />
-            <Route path="/resources/models" element={<Models />} />
-            <Route path="/resources/:type/:id" element={<ResourceDetails />} />
           </Route>
         </Routes>
       </AuthProvider>

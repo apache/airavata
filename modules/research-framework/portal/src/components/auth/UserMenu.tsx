@@ -24,6 +24,7 @@ export const UserMenu = () => {
       </Link>
     );
   const handleLogout = async () => {
+    // Clear the user provider
     await auth.signoutRedirect();
   };
 

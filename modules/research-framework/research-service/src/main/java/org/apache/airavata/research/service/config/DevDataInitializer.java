@@ -18,6 +18,7 @@
 package org.apache.airavata.research.service.config;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.airavata.research.service.enums.PrivacyEnum;
@@ -51,7 +52,7 @@ public class DevDataInitializer implements CommandLineRunner {
         this.tagRepository = tagRepository;
     }
 
-    private void createProject(String name, String description, String repoUrl, String datasetUrl, String[] tags, String user) {
+    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl,  String[] tags, String user) {
         Set<Tag> tagSet = new HashSet<>();
         for (String tag : tags) {
             Tag t = tagRepository.findByValue(tag);
@@ -65,32 +66,29 @@ public class DevDataInitializer implements CommandLineRunner {
             }
         }
 
-        Set<String> authors = new HashSet<>() {
-            {
-                add(user);
-            }
-        };
-
         RepositoryResource repo = new RepositoryResource();
         repo.setName(name);
-        repo.setDescription(description);
+        repo.setDescription("Repository for " + name);
         repo.setHeaderImage("header_image.png");
         repo.setRepositoryUrl(repoUrl);
         repo.setStatus(StatusEnum.VERIFIED);
         repo.setPrivacy(PrivacyEnum.PUBLIC);
         repo.setTags(tagSet);
-        repo.setAuthors(authors);
         repo = resourceRepository.save(repo);
 
         DatasetResource dataset = new DatasetResource();
-        dataset.setName(datasetUrl);
-        dataset.setDescription(description);
+        dataset.setName(datasetName);
+        dataset.setDescription("Dataset for " + name);
         dataset.setHeaderImage("header_image.png");
         dataset.setDatasetUrl(datasetUrl);
         dataset.setStatus(StatusEnum.VERIFIED);
         dataset.setPrivacy(PrivacyEnum.PUBLIC);
         dataset.setTags(tagSet);
-        dataset.setAuthors(authors);
+        dataset.setAuthors(new HashSet<>() {
+            {
+                add(user);
+            }
+        });
         dataset = resourceRepository.save(dataset);
 
         Project project = new Project();
@@ -105,117 +103,45 @@ public class DevDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (projectRepository.count() > 0) {
+        if (projectRepository.existsByOwnerId(devUserEmail)) {
             System.out.println("Dev data already initialized. Skipping initialization.");
             return;
         }
 
         createProject(
-                "Bio-realistic multiscale simulations of cortical circuits",
-               	"Running the AllenAI V1 model, with thalamacortical (LGN) and background (BKG) inputs",
-                "https://github.com/cyber-shuttle/allenai-v1",
-                "allenai-v1",
-                new String[]{"neurodata25", "allenai", "visual_cortex"},
-                "Anton Arkhipov, Laura Green"
+                "Allen / BMTK Workshop",
+                "https://github.com/yasithdev/bmtk-workshop.git",
+                "Allen / BMTK Workshop Data",
+                "allen-bmtk-workshop",
+                new String[]{"allen", "bmtk", "workshop"},
+                devUserEmail
         );
 
         createProject(
-                "Apache Cerebrum",
-                "Constructing computational neuroscience models from large public databases and brain atlases",
-                "https://github.com/cyber-shuttle/airavata-cerebrum",
-                "apache-airavata-cerebrum",
-                new String[]{"neurodata25", "apache", "cerebrum"},
-                "Sriram Chockalingam"
+                "Allen / V1",
+                "https://github.com/yasithdev/allen-v1.git",
+                "Allen / V1 Data",
+                "allen-v1",
+                new String[]{"allen", "v1", "workshop"},
+                devUserEmail
         );
 
         createProject(
-                "Spatio-temporal dynamics of sleep in large-scale brain models",
-                "Running a large-scale brain model during awake and sleep states",
-                "https://github.com/cyber-shuttle/whole-brain-public",
-                "bazhlab-whole-brain",
-                new String[]{"neurodata25", "bazhlab", "whole-brain"},
-                "Maxim Bazhenov, Gabriela Navas Zuloaga"
-        );
-
-	createProject(
-                "Biologically Constrained RNNs",
-                "Running a biologically constrained RNN via Dale's backpropagation and topologically-informed pruning",
-                "https://github.com/cyber-shuttle/biologicalRNNs",
-                "hchoilab-biologicalRNNs",
-                new String[]{"neurodata25", "hchoilab", "biological-rnn"},
-                "Hannah Choi, Aishwarya Balwani"
-        );
-
-        createProject(
-                "One-hot Generalized Linear Model for Switching Brain State Discovery",
-                "Reproducing the One-hot HMM-GLM paper (ICLR 2024)",
-                "https://github.com/cyber-shuttle/onehot-hmmglm",
+                "BRAINML / OneHot HMMGLM",
+                "https://github.com/yasithdev/onehot-hmmglm.git",
+                "BRAINML / OneHot HMMGLM Data",
                 "brainml-onehot-hmmglm",
-                new String[]{"neurodata25", "brainml", "hmm-glm"},
-                "Anqi Wu, Chengrui Li"
-        );
-
-	createProject(
-                "Scaling up neural data analysis with torch_brain and temporaldata",
-                "Understand and highlight the features of torch_brain and temporaldata",
-                "https://github.com/cyber-shuttle/neurodata25_torchbrain_notebooks",
-                "nerdslab-neurodata25",
-                new String[]{"neurodata25", "nerdslab", "torch_brain", "temporaldata"},
-                "Eva Dyer, Vinam Arora, Mahato Shivashriganesh"
-        );
-
-	createProject(
-                "Bridge the Gap between the Structure and Function in the Brain",
-                "Run the NetFormer model for neural connectivity",
-                "https://github.com/cyber-shuttle/neuroaihub-netformer",
-                "neuroaihub-netformer",
-                new String[]{"neurodata25", "neuroaihub", "netformer"},
-                "Lu Mi"
+                new String[]{"brainml", "onehot", "workshop"},
+                devUserEmail
         );
 
         createProject(
-                "Computing with Neural Oscillators",
-                "A speech demo that uses Neural Oscillators",
-                "https://github.com/cyber-shuttle/imamlab-neural-oscillators",
-                "imamlab-neurodata25",
-                new String[]{"neurodata25", "imamlab", "neural-oscillators"},
-                "Nabil Imam, Nand Chandravadia"
+                "HChoiLab / Functional Network",
+                "https://github.com/yasithdev/functional-network.git",
+                "HChoiLab / Functional Network Data",
+                "hchoilab-functional-network",
+                new String[]{"hchoilab", "functional network", "workshop"},
+                devUserEmail
         );
-
-	createProject(
-		"Getting started with Cybershuttle",
-		"Run a simulation and understand the minimum macros required to run Cybershuttle",
-		"https://github.com/cyber-shuttle/cybershuttle-reference",
-		"cybershuttle-reference",
-		new String[]{"cybershuttle", "apache-airavata", "reference"},
-		"Suresh Marru"
-	);
-
-	createProject(
-                "Malicious URL Detector",
-                "Detect malicious URLs using machine learning models",
-                "https://github.com/airavata-courses/malicious-url-detector",
-                "airavata-courses-malicious-url-detector",
-                new String[]{"airavata-courses", "spring-2025"},
-                "Krish Katariya, Jesse Gong, Shreyas Arisa, Devin Fromond"
-        );
-
-	createProject(
-		"Deepseek Remote Execution",
-		"Executing deepseek model on remote HPC",
-		"https://github.com/ZhenmeiOng/proj2-llama",
-		"airavata-courses-deepseek-chat",
-		new String[]{"airavata-courses", "spring-2025", "llm"},
-		"Yashkaran Chauhan, Zhenmei Ong, Varenya Amagowni"
-	);
-
-	createProject(
-		"Fast Chat",
-		"Fast and easy communication with fast chat",
-		"https://github.com/riccog/cybershuttle",
-		"airavata-courses-fast-chat",
-		new String[]{"airavata-courses", "spring-2025"},
-		"Ricco Goss, Mason Graham, Talam, Ruchira"
-	);
     }
 }
