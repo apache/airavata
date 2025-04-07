@@ -68,7 +68,7 @@ func main() {
 		libCmd := exec.Command("micromamba", "install", "-n", envName, "--yes")
 		libCmd.Args = append(libCmd.Args, libList...)
 		if err := libCmd.Run(); err != nil {
-			log.Fatalf("[agent.go] main() Error Installing --lib: %v\n", err)
+			log.Fatalf("[agent.go] main() Error Installing --lib: %v\n%s\n", err, libCmd.Stderr)
 		}
 		log.Printf("[agent.go] main() Installed --lib: %v\n", libList)
 	} else {
@@ -82,7 +82,7 @@ func main() {
 		pipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install")
 		pipCmd.Args = append(pipCmd.Args, pipList...)
 		if err := pipCmd.Run(); err != nil {
-			log.Fatalf("[agent.go] main() Error Installing --pip: %v\n", err)
+			log.Fatalf("[agent.go] main() Error Installing --pip: %v\n%s\n", err, pipCmd.Stderr)
 		}
 		log.Printf("[agent.go] main() Installed --pip: %v\n", pipList)
 
