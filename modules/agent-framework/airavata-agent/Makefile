@@ -10,30 +10,48 @@ build-container:
 run-container:
 	docker run -it $(IMAGE_NAME) /opt/airavata-agent $(AGENT_SVC_URL) $(AGENT_ID)
 
-deploy-all: deploy-anvil-scigap deploy-anvil-waterhub deploy-anvil-gcommunityus
+deploy-anvil: deploy-anvil-scigap deploy-anvil-waterhub deploy-anvil-gcommunityus
 
 deploy-anvil-scigap:
-	ssh x-scigap@anvil.rcac.purdue.edu srun -p shared --mem 4G -t 30 singularity pull \
+	ssh x-scigap@anvil srun -p shared --mem 4G -t 30 singularity pull \
 	--disable-cache \
 	--force \
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)
 
 deploy-anvil-waterhub:
-	ssh x-waterhub@anvil.rcac.purdue.edu srun -p shared --mem 4G -t 30 singularity pull \
+	ssh x-waterhub@anvil srun -p shared --mem 4G -t 30 singularity pull \
 	--disable-cache \
 	--force \
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)
 
 deploy-anvil-gcommunityus:
-	ssh x-gcommunityus@anvil.rcac.purdue.edu srun -p shared --mem 4G -t 30 singularity pull \
+	ssh x-gcommunityus@anvil srun -p shared --mem 4G -t 30 singularity pull \
 	--disable-cache \
 	--force \
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)
 
-deploy-bootstrap-anvil:
-	scp agent.sh x-scigap@anvil.rcac.purdue.edu:~/cybershuttle/agent.sh && \
-	scp agent.sh x-waterhub@anvil.rcac.purdue.edu:~/cybershuttle/agent.sh && \
-	scp agent.sh x-gcommunityus@anvil.rcac.purdue.edu:~/cybershuttle/agent.sh
+deploy-expanse: deploy-expanse-scigap deploy-expanse-gridchem
+
+deploy-expanse-scigap:
+	ssh scigap@expanse srun -p shared --mem 4G -t 30 singularity pull \
+	--disable-cache \
+	--force \
+	cybershuttle/container/remote-agent-base.sif \
+	docker://$(IMAGE_NAME)
+
+deploy-expanse-gridchem:
+	ssh gridchem@expanse srun -p shared --mem 4G -t 30 singularity pull \
+	--disable-cache \
+	--force \
+	cybershuttle/container/remote-agent-base.sif \
+	docker://$(IMAGE_NAME)
+
+deploy-bootstrap:
+	scp agent.sh x-scigap@anvil:~/cybershuttle/agent.sh && \
+	scp agent.sh x-waterhub@anvil:~/cybershuttle/agent.sh && \
+	scp agent.sh x-gcommunityus@anvil:~/cybershuttle/agent.sh && \
+	scp agent.sh scigap@expanse:~/cybershuttle/agent.sh && \
+	scp agent.sh gridchem@expanse:~/cybershuttle/agent.sh

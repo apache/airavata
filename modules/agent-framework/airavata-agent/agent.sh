@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # #####################################################################
 # Airavata Agent Bootstrapper
@@ -18,7 +18,6 @@
 
 # Default values
 CS_HOME=$HOME/cybershuttle
-WORKDIR=$CS_HOME/workspace
 AGENT=""
 SERVER=""
 CONTAINER=""
@@ -26,7 +25,7 @@ LIBRARIES=""
 PIP=""
 BIND_OPTS=()
 
-PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,bind: -n "$0" -- "$@")
+PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,bind: -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
     echo "Usage: $0 \
     --server SERVER \
@@ -50,7 +49,7 @@ while true; do
         --mounts)    
             IFS=',' read -ra MOUNTS <<< "$2"
             for MOUNT in "${MOUNTS[@]}"; do
-              BIND_OPTS+=("--bind $MOUNT:ro")
+              BIND_OPTS+=("--bind $(eval echo $MOUNT):ro")
             done
             shift 2 ;;
         --bind)      BIND_OPTS+=("--bind $2:ro"); shift 2 ;;
@@ -61,7 +60,6 @@ done
 
 # Final values
 echo "CS_HOME=$CS_HOME"
-echo "WORKDIR=$WORKDIR"
 echo "AGENT=$AGENT"
 echo "SERVER=$SERVER"
 echo "CONTAINER=$CONTAINER"
@@ -72,8 +70,14 @@ echo "BIND_OPTS=$BIND_OPTS"
 # ----------------------------------------------------------------------
 # STEP 2 - RUN AGENT
 # ----------------------------------------------------------------------
+# Create overlay image (4GB) if it doesn't exist
+if [ ! -f workspace.img ]; then
+  singularity overlay create --size 4096 workspace.img
+fi
+# Start agent with the given params and overlay
 KERNEL_SOCK=$(mktemp) singularity exec \
-  --bind $WORKDIR:/scratch:ro ${BIND_OPTS[@]} \
+  --overlay workspace.img \
+  ${BIND_OPTS[@]} \
   $CS_HOME/container/$CONTAINER /opt/airavata-agent \
     --server $SERVER:19900 \
     --agent $AGENT \
