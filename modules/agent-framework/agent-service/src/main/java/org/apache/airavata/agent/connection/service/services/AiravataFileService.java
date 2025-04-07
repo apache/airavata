@@ -1,10 +1,9 @@
 package org.apache.airavata.agent.connection.service.services;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.protobuf.Timestamp;
-import io.grpc.Status;
-import io.grpc.stub.StreamObserver;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.airavata.agent.ServerMessage;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
@@ -25,9 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.protobuf.Timestamp;
+
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 
 @Service
 public class AiravataFileService {
@@ -96,7 +98,7 @@ public class AiravataFileService {
             responseObserver.onError(Status.INTERNAL.withDescription("Failed to fetch experiments  when trying to read the directory").asRuntimeException());
         }
 
-        responseObserver.onNext(ServerMessage.newBuilder().setReadDirRes(readDirResBuilder.build()).build());
+        // responseObserver.onNext(ServerMessage.newBuilder().setReadDirRes(readDirResBuilder.build()).build());
         responseObserver.onCompleted();
     }
 

@@ -20,7 +20,6 @@ import {
 } from "./lib/constants";
 import { WebStorageStateStore } from "oidc-client-ts";
 import { Resources } from "./components/resources";
-import { UserSet } from "./components/auth/UserSet";
 function App() {
   const colorMode = useColorMode();
   const navigate = useNavigate();
@@ -78,7 +77,6 @@ function App() {
           navigate(location.pathname, { replace: true });
         }}
       >
-        <UserSet />
         <Routes>
           {/* Public Route */}
           <Route element={<NavBarFooterLayout />}>

@@ -7,22 +7,26 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
-from rich.console import Console
-from typing import NamedTuple
+from typing import Any, NamedTuple, Optional
 
 import jwt
 import requests
-from .device_auth import DeviceFlowAuthenticator
+import yaml
 from IPython.core.getipython import get_ipython
-from IPython.core.interactiveshell import ExecutionInfo, ExecutionResult
+from IPython.core.interactiveshell import ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
 from IPython.display import HTML, Image, display
+from rich.console import Console
+
+from .device_auth import DeviceFlowAuthenticator
 
 # ========================================================================
 # DATA STRUCTURES
 
+
 class InvalidStateError(Exception):
     pass
+
 
 class RequestedRuntime:
     cluster: str
@@ -31,6 +35,7 @@ class RequestedRuntime:
     walltime: int
     queue: str
     group: str
+    file: str | None
 
 
 class ProcessState(IntEnum):
@@ -116,7 +121,7 @@ def get_access_token(envar_name: str = "CS_ACCESS_TOKEN", state_path: str = "/tm
     return token
 
 
-def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str) -> tuple[bool, str]:
+def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str):
     """
     Check if the runtime (i.e., agent job) is ready to receive requests
 
@@ -236,13 +241,14 @@ def submit_agent_job(
     rt_name: str,
     access_token: str,
     app_name: str,
-    cluster: str,
-    cpus: int,
-    memory: int | None,
-    walltime: int,
-    queue: str,
-    group: str,
+    cluster: str | None = None,
+    cpus: int | None = None,
+    memory: int | None = None,
+    walltime: int | None = None,
+    queue: str | None = None,
+    group: str | None = None,
     gateway_id: str = 'default',
+    file: str | None = None,
 ) -> None:
     """
     Submit an agent job to the given runtime
@@ -257,6 +263,7 @@ def submit_agent_job(
     @param queue: the queue
     @param group: the group
     @param gateway_id: the gateway id
+    @param file: environment file
     @returns: None
 
     """
@@ -264,23 +271,53 @@ def submit_agent_job(
     url = api_base_url + '/api/v1/exp/launch'
 
     # Data to be sent in the POST request
-    data = {
-        'experimentName': app_name,
-        'remoteCluster': cluster,
-        'cpuCount': cpus,
-        'nodeCount': 1,
-        'memory': memory,
-        'wallTime': walltime,
-        'queue': queue,
-        'group': group,
-    }
+    if file is not None:
+        fp = Path(file)
+        assert fp.exists(), f"File {file} does not exist"
+        with open(fp, "r") as f:
+            content = yaml.safe_load(f)
+        # workspace
+        resources = content["workspace"]["resources"]
+        models = content["workspace"]["model_collection"] or []
+        datasets = content["workspace"]["data_collection"] or []
+        collection = models + datasets
+        mounts = [f"{i['identifier']}:{i['mount_point']}" for i in collection]
+        # dependencies
+        condas = content["additional_dependencies"]["conda"]
+        pips = content["additional_dependencies"]["pip"]
+        data = {
+            'experimentName': app_name,
+            'nodeCount': 1,
+            'cpuCount': resources["min_cpu"],
+            'memory': resources["min_mem"],
+            'wallTime': resources["walltime"],
+            'remoteCluster': resources["cluster"],
+            'group': resources["group"],
+            'queue': resources["queue"],
+            'libraries': condas,
+            'pip': pips,
+            'mounts': mounts,
+        }
+    else:
+        data = {
+            'experimentName': app_name,
+            'nodeCount': 1,
+            'cpuCount': cpus,
+            'memory': memory,
+            'wallTime': walltime,
+            'remoteCluster': cluster,
+            'group': group,
+            'queue': queue,
+            'libraries': [],
+            'pip': [],
+            'mounts': [],
+        }
 
-    # Convert the data to JSON format
-    json_data = json.dumps(data)
-
+    print(f"Requesting runtime={rt_name}", flush=True)
+    print(yaml.dump(data, indent=2), flush=True)
     # Send the POST request
     headers = generate_headers(access_token, gateway_id)
-    res = requests.post(url, headers=headers, data=json_data)
+    res = requests.post(url, headers=headers, data=json.dumps(data))
     code = res.status_code
 
     # Check if the request was successful
@@ -292,16 +329,16 @@ def submit_agent_job(
             print(msg)
             raise InvalidStateError(msg)
         rt = RuntimeInfo(
+            gateway_id=gateway_id,
+            processId=pid,
             agentId=obj['agentId'],
             experimentId=obj['experimentId'],
-            processId=pid,
-            cluster=cluster,
-            queue=queue,
-            cpus=cpus,
-            memory=memory,
-            walltime=walltime,
-            gateway_id=gateway_id,
-            group=group,
+            cluster=data['remoteCluster'],
+            queue=data['queue'],
+            cpus=data['cpuCount'],
+            memory=data['memory'],
+            walltime=data['wallTime'],
+            group=data['group'],
         )
         state.all_runtimes[rt_name] = rt
         print(f'Requested runtime={rt_name}. state={pstate.name}')
@@ -324,17 +361,67 @@ def wait_until_runtime_ready(access_token: str, rt_name: str):
     if rt_name == "local":
         return
     console = Console()
-    with console.status(f"Connecting to runtime={rt_name}...") as status:
+    with console.status(f"Connecting to={rt_name}...") as status:
         while True:
             ready, rstate = is_runtime_ready(access_token, rt, rt_name)
             if ready:
-                status.update(f"Connecting to runtime={rt_name}... status=READY")
+                status.update(f"Connecting to={rt_name}... status=READY")
                 break
             else:
-                status.update(f"Connecting to runtime={rt_name}... status={rstate}")
+                status.update(f"Connecting to={rt_name}... status={rstate}")
                 time.sleep(5)
         status.stop()
     console.clear()
+
+
+def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runtime: RuntimeInfo):
+    """
+    Restart the kernel runtime on the given runtime.
+
+    @param access_token: the access token
+    @param env_name: the environment name
+    @param runtime: the runtime info
+    @returns: None
+
+    """
+
+    url = api_base_url + '/api/v1/agent/setup/restart'
+
+    decode = jwt.decode(access_token, options={"verify_signature": False})
+    user_id = decode['preferred_username']
+    claimsMap = {
+        "userName": user_id,
+        "gatewayID": runtime.gateway_id
+    }
+
+    # Headers
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token,
+        'X-Claims': json.dumps(claimsMap)
+    }
+
+    # Send the POST request
+    res = requests.post(url, headers=headers, data=json.dumps({
+        "agentId": runtime.agentId,
+        "envName": env_name,
+    }))
+    data = res.json()
+
+    executionId = data.get("executionId")
+    if not executionId:
+        print(f"Failed to restart kernel runtime={runtime.agentId}")
+        return
+
+    # Check if the request was successful
+    while True:
+        url = api_base_url + "/api/v1/agent/setup/restart/" + executionId
+        res = requests.get(url, headers={'Accept': 'application/json'})
+        data = res.json()
+        if data.get('restarted'):
+            print(f"Restarted kernel={env_name} on runtime={rt_name}")
+            break
+        time.sleep(1)
 
 
 def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
@@ -378,20 +465,17 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
             f'[{status}] Failed to terminate runtime={runtime_name}: error={res.text}')
 
 
-def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, shell_futures=True, cell_id=None):
-    info = ExecutionInfo(cell, store_history, silent, shell_futures, cell_id)
-    excResult = ExecutionResult(info)
+def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool:
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
-        excResult.error_in_exec = Exception(f"Runtime {rt_name} not found.")
-        return excResult
+        result.error_in_exec = Exception(f"Runtime {rt_name} not found.")
+        return False
 
-    url = api_base_url + '/api/v1/agent/executejupyterrequest'
+    url = api_base_url + '/api/v1/agent/execute/jupyter'
     data = {
-        "sessionId": "session1",
-        "keepAlive": True,
-        "code": cell,
-        "agentId": rt.agentId
+        "agentId": rt.agentId,
+        "envName": "base",
+        "code": code_obj,
     }
     json_data = json.dumps(data)
     response = requests.post(
@@ -400,33 +484,33 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
 
     execution_id = execution_resp.get("executionId")
     if not execution_id:
-        excResult.error_in_exec = Exception("Failed to start cell execution")
-        return excResult
+        result.error_in_exec = Exception("Failed to start cell execution")
+        return False
 
     error = execution_resp.get("error")
     if error:
-        excResult.error_in_exec = Exception(
+        result.error_in_exec = Exception(
             "Cell execution failed. Error: " + error)
-        return excResult
+        return False
 
     while True:
-        url = api_base_url + "/api/v1/agent/executejupyterresponse/" + execution_id
+        url = api_base_url + "/api/v1/agent/execute/jupyter/" + execution_id
         response = requests.get(url, headers={'Accept': 'application/json'})
         json_response = response.json()
-        if json_response.get('available'):
+        if json_response.get('executed'):
             break
         time.sleep(1)
 
-    result_str = json_response.get('responseString')
+    exec_result_str = json_response.get('responseString')
     try:
-        result = json.loads(result_str)
+        exec_result = json.loads(exec_result_str)
     except json.JSONDecodeError as e:
-        excResult.error_in_exec = Exception(
+        result.error_in_exec = Exception(
             f"Failed to decode response from runtime={rt_name}: {e.msg}")
-        return excResult
+        return False
 
-    if 'outputs' in result:
-        for output in result['outputs']:
+    if 'outputs' in exec_result:
+        for output in exec_result['outputs']:
             output_type = output.get('output_type')
             if output_type == 'display_data':
                 data_obj = output.get('data', {})
@@ -436,9 +520,9 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
                         image_bytes = base64.b64decode(image_data)
                         display(Image(data=image_bytes, format='png'))
                     except binascii.Error as e:
-                        excResult.error_in_exec = Exception(
+                        result.error_in_exec = Exception(
                             f"Failed to decode image data: {e}")
-                        return excResult
+                        return False
 
             elif output_type == 'stream':
                 stream_name = output.get('name', 'stdout')
@@ -458,8 +542,8 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
                     </div>
                     """
                     display(HTML(error_html))
-                    excResult.error_in_exec = Exception(stream_text)
-                    return excResult
+                    result.error_in_exec = Exception(stream_text)
+                    return False
                 else:
                     print(stream_text)
 
@@ -482,31 +566,31 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
                     error_html += f"{line}\n"
                 error_html += "</pre></div>"
                 display(HTML(error_html))
-                excResult.error_in_exec = Exception(f"{ename}: {evalue}")
-                return excResult
+                result.error_in_exec = Exception(f"{ename}: {evalue}")
+                return False
 
             elif output_type == 'execute_result':
                 data_obj = output.get('data', {})
                 if 'text/plain' in data_obj:
                     print(data_obj['text/plain'])
     else:
-        if 'result' in result:
-            print(result['result'])
-        elif 'error' in result:
-            print(result['error']['ename'])
-            print(result['error']['evalue'])
-            print(result['error']['traceback'])
-        elif 'display' in result:
-            data_obj = result['display'].get('data', {})
+        if 'result' in exec_result:
+            print(exec_result['result'])
+        elif 'error' in exec_result:
+            print(exec_result['error']['ename'])
+            print(exec_result['error']['evalue'])
+            print(exec_result['error']['traceback'])
+        elif 'display' in exec_result:
+            data_obj = exec_result['display'].get('data', {})
             if 'image/png' in data_obj:
                 image_data = data_obj['image/png']
                 try:
                     image_bytes = base64.b64decode(image_data)
                     display(Image(data=image_bytes, format='png'))
                 except binascii.Error as e:
-                    excResult.error_in_exec = Exception(
+                    result.error_in_exec = Exception(
                         f"Failed to decode image data: {e}")
-                    return excResult
+                    return False
 
         else:
             # Mark as failed execution if no recognized output format is found
@@ -522,12 +606,12 @@ def run_on_runtime(rt_name: str, cell: str, store_history=False, silent=False, s
             <strong>Error:</strong> Execution failed with unrecognized output format from remote runtime.
             <pre>{}</pre>
           </div>
-          """.format(result_str)
+          """.format(exec_result)
             display(HTML(error_html))
-            excResult.error_in_exec = Exception(
+            result.error_in_exec = Exception(
                 "Execution failed with unrecognized output format from remote runtime.")
-            return excResult
-    return excResult
+            return False
+    return True
 
 
 def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
@@ -597,7 +681,7 @@ def run_on(line: str, cell: str):
     try:
         if cell_runtime in ["local", *state.all_runtimes]:
             state.current_runtime = cell_runtime
-            ipython.run_cell(cell, silent=True)
+            return ipython.run_cell(cell)
         else:
             msg = f"Runtime {cell_runtime} not found."
             print(msg)
@@ -678,25 +762,39 @@ def request_runtime(line: str):
         prog="request_runtime",
         description="Request a runtime with given capabilities",
     )
-    p.add_argument("--cluster", type=str, help="cluster", required=True)
-    p.add_argument("--cpus", type=int, help="CPU cores", required=True)
+    p.add_argument("--cluster", type=str, help="cluster", required=False)
+    p.add_argument("--cpus", type=int, help="CPU cores", required=False)
     p.add_argument("--memory", type=int, help="memory (MB)", required=False)
-    p.add_argument("--walltime", type=int, help="time (mins)", required=True)
-    p.add_argument("--queue", type=str, help="resource queue", required=True)
-    p.add_argument("--group", type=str, help="resource group", required=True)
+    p.add_argument("--walltime", type=int, help="time (mins)", required=False)
+    p.add_argument("--queue", type=str, help="resource queue", required=False)
+    p.add_argument("--group", type=str, help="resource group", required=False)
+    p.add_argument("--file", type=str, help="yml file", required=False)
     args = p.parse_args(cmd_args, namespace=RequestedRuntime())
 
-    submit_agent_job(
-        rt_name=rt_name,
-        access_token=access_token,
-        app_name='CS_Agent',
-        cluster=args.cluster,
-        cpus=args.cpus,
-        memory=args.memory,
-        walltime=args.walltime,
-        queue=args.queue,
-        group=args.group,
-    )
+    if args.file is not None:
+        return submit_agent_job(
+            rt_name=rt_name,
+            access_token=access_token,
+            app_name='CS_Agent',
+            file=args.file,
+        )
+    else:
+        assert args.cluster is not None
+        assert args.cpus is not None
+        assert args.walltime is not None
+        assert args.queue is not None
+        assert args.group is not None
+        return submit_agent_job(
+            rt_name=rt_name,
+            access_token=access_token,
+            app_name='CS_Agent',
+            cluster=args.cluster,
+            cpus=args.cpus,
+            memory=args.memory,
+            walltime=args.walltime,
+            queue=args.queue,
+            group=args.group,
+        )
 
 
 @register_line_magic
@@ -705,7 +803,6 @@ def stat_runtime(line: str):
     Show the status of the runtime
 
     """
-
     access_token = get_access_token()
     assert access_token is not None
 
@@ -726,6 +823,21 @@ def stat_runtime(line: str):
 
 
 @register_line_magic
+def restart_runtime(rt_name: str):
+    """
+    Restart the runtime
+
+    """
+    access_token = get_access_token()
+    assert access_token is not None
+
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        return print(f"Runtime {rt_name} not found.")
+    return restart_runtime_kernel(access_token, rt_name, "base", rt)
+
+
+@register_line_magic
 def stop_runtime(rt_name: str):
     """
     Stop the runtime
@@ -737,7 +849,7 @@ def stop_runtime(rt_name: str):
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         return print(f"Runtime {rt_name} not found.")
-    stop_agent_job(access_token, rt_name, rt)
+    return stop_agent_job(access_token, rt_name, rt)
 
 
 @register_line_magic
@@ -778,13 +890,13 @@ def copy_data(line: str):
 ipython = get_ipython()
 if ipython is None:
     raise RuntimeError("airavata_jupyter_magic requires an ipython session")
-
+assert ipython is not None
 api_base_url = "https://api.gateway.cybershuttle.org"
 file_server_url = "http://3.142.234.94:8050"
 MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
 
 state = State(current_runtime="local", all_runtimes={})
-orig_run_cell = ipython.run_cell
+orig_run_code = ipython.run_cell_async
 
 
 def cell_has_magic(raw_cell: str) -> bool:
@@ -794,25 +906,32 @@ def cell_has_magic(raw_cell: str) -> bool:
     return any(line.strip().startswith(magics) for line in lines)
 
 
-def run_cell(raw_cell, store_history=False, silent=False, shell_futures=True, cell_id=None):
+async def run_cell_async(
+    raw_cell: str,
+    store_history=False,
+    silent=False,
+    shell_futures=True,
+    *,
+    transformed_cell: Optional[str] = None,
+    preprocessing_exc_tuple: Optional[Any] = None,
+    cell_id=None,
+) -> ExecutionResult:
     rt = state.current_runtime
     if rt == "local" or cell_has_magic(raw_cell):
-        return orig_run_cell(raw_cell, store_history, silent, shell_futures, cell_id)
+        return await orig_run_code(raw_cell, store_history, silent, shell_futures, transformed_cell=transformed_cell, preprocessing_exc_tuple=preprocessing_exc_tuple, cell_id=cell_id)
     else:
         access_token = get_access_token()
         assert access_token is not None
+        result = ExecutionResult(info=None)
         try:
             wait_until_runtime_ready(access_token, rt)
-            return run_on_runtime(rt, raw_cell, store_history, silent, shell_futures, cell_id)
+            run_on_runtime(rt, raw_cell, result)
+            return result
         except Exception as e:
-            info = ExecutionInfo(raw_cell, store_history, silent, shell_futures, cell_id)
-            result = ExecutionResult(info)
-            print(f"Error: {e}")
             result.error_in_exec = e
             return result
 
-
-ipython.run_cell = run_cell
+ipython.run_cell_async = run_cell_async
 
 print(r"""
 Loaded airavata_jupyter_magic
@@ -820,6 +939,7 @@ Loaded airavata_jupyter_magic
 
   %authenticate                      -- Authenticate to access high-performance runtimes.
   %request_runtime <rt> [args]       -- Request a runtime named <rt> with configuration <args>. Call multiple times to request multiple runtimes.
+  %restart_runtime <rt>              -- Restart runtime <rt>. Run this if you install new dependencies or if the runtime hangs.
   %stop_runtime <rt>                 -- Stop runtime <rt> when no longer needed.
   %switch_runtime <rt>               -- Switch active runtime to <rt>. All subsequent executions will use this runtime.
   %%run_on <rt>                      -- Force a cell to always execute on <rt>, regardless of the active runtime.
