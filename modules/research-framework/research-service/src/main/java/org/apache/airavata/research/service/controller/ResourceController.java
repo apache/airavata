@@ -110,7 +110,6 @@ public class ResourceController {
     )
     @GetMapping("/")
     public ResponseEntity<Page<Resource>> getAllResources(
-            @RequestHeader(name="X-Claims", required=true) String claims,
             @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value="pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value="type") ResourceTypeEnum[] types,

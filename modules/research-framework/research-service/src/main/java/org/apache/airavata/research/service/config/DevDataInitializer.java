@@ -1,25 +1,24 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
+ * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.airavata.research.service.config;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.airavata.research.service.enums.PrivacyEnum;
@@ -53,7 +52,7 @@ public class DevDataInitializer implements CommandLineRunner {
         this.tagRepository = tagRepository;
     }
 
-    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl, String[] tags, String user) {
+    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl,  String[] tags, String user) {
         Set<Tag> tagSet = new HashSet<>();
         for (String tag : tags) {
             Tag t = tagRepository.findByValue(tag);
@@ -110,65 +109,38 @@ public class DevDataInitializer implements CommandLineRunner {
         }
 
         createProject(
-                "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
+                "Allen / BMTK Workshop",
+                "https://github.com/yasithdev/bmtk-workshop.git",
+                "Allen / BMTK Workshop Data",
+                "allen-bmtk-workshop",
+                new String[]{"allen", "bmtk", "workshop"},
+                devUserEmail
+        );
+
+        createProject(
+                "Allen / V1",
                 "https://github.com/yasithdev/allen-v1.git",
-                "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
-                "allenai-v1",
-                new String[]{"allenai", "v1", "workshop"},
+                "Allen / V1 Data",
+                "allen-v1",
+                new String[]{"allen", "v1", "workshop"},
                 devUserEmail
         );
 
         createProject(
-                "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
-                "https://github.com/srirampc/airavata-cerebrum",
-                "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
-                "apache-airavata-cerebrum",
-                new String[]{"apache", "cerebrum", "workshop"},
-                devUserEmail
-        );
-
-        createProject(
-                "Large-scale brain model during awake and sleep states",
-                "https://github.com/bazhlab-ucsd/whole-brain-public",
-                "Large-scale brain model during awake and sleep states",
-                "bazhlab-whole-brain",
-                new String[]{"bazhlab", "whole-brain", "workshop"},
-                devUserEmail
-        );
-
-        createProject(
-                "One-hot Generalized Linear Model for Switching Brain State Discovery",
-                "https://github.com/JerrySoybean/onehot-hmmglm",
-                "One-hot Generalized Linear Model for Switching Brain State Discovery",
+                "BRAINML / OneHot HMMGLM",
+                "https://github.com/yasithdev/onehot-hmmglm.git",
+                "BRAINML / OneHot HMMGLM Data",
                 "brainml-onehot-hmmglm",
-                new String[]{"brainml", "onehot-hmmglm", "workshop"},
+                new String[]{"brainml", "onehot", "workshop"},
                 devUserEmail
         );
 
         createProject(
-                "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
-                "https://github.com/HChoiLab/biologicalRNNs",
-                "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
-                "hchoilab-biologicalRNNs",
-                new String[]{"hchoilab", "biologicalRNNs", "workshop"},
-                devUserEmail
-        );
-
-        createProject(
-                "NetFormer : Transformer model for neural connectivity",
-                "https://github.com/NeuroAIHub/NetFormer",
-                "NetFormer : Transformer model for neural connectivity",
-                "neuroaihub-netformer",
-                new String[]{"neuroaihub", "netformer", "workshop"},
-                devUserEmail
-        );
-
-        createProject(
-                "Deep Learning in Neuroscience with torch_brain and temporaldata",
-                "https://github.com/nerdslab/neurodata25_torchbrain_notebooks",
-                "Deep Learning in Neuroscience with torch_brain and temporaldata",
-                "nerdslab-neurodata25",
-                new String[]{"nerdslab", "neurodata25", "workshop"},
+                "HChoiLab / Functional Network",
+                "https://github.com/yasithdev/functional-network.git",
+                "HChoiLab / Functional Network Data",
+                "hchoilab-functional-network",
+                new String[]{"hchoilab", "functional network", "workshop"},
                 devUserEmail
         );
     }
