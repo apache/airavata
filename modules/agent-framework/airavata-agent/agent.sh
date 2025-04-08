@@ -49,7 +49,9 @@ while true; do
         --mounts)    
             IFS=',' read -ra MOUNTS <<< "$2"
             for MOUNT in "${MOUNTS[@]}"; do
-              BIND_OPTS+=("--bind $(eval echo $MOUNT):ro")
+              IFS=':' read -r SRC DEST <<< "$MOUNT"
+              SRC=$(eval echo "$SRC")
+              BIND_OPTS+=("--bind $SRC:$DEST:ro")
             done
             shift 2 ;;
         --bind)      BIND_OPTS+=("--bind $2:ro"); shift 2 ;;
@@ -65,22 +67,22 @@ echo "SERVER=$SERVER"
 echo "CONTAINER=$CONTAINER"
 echo "LIBRARIES=$LIBRARIES"
 echo "PIP=$PIP"
-echo "BIND_OPTS=$BIND_OPTS"
+echo "BIND_OPTS=${BIND_OPTS[@]}"
 
 # ----------------------------------------------------------------------
-# STEP 2 - RUN AGENT
+# STEP 2 - RUN USING AGENT
 # ----------------------------------------------------------------------
-# Create overlay image (4GB) if it doesn't exist
-if [ ! -f workspace.img ]; then
-  singularity overlay create --size 4096 workspace.img
-fi
-# Start agent with the given params and overlay
-KERNEL_SOCK=$(mktemp) singularity exec \
-  --overlay workspace.img \
-  ${BIND_OPTS[@]} \
-  $CS_HOME/container/$CONTAINER /opt/airavata-agent \
-    --server $SERVER:19900 \
-    --agent $AGENT \
-    --lib $LIBRARIES \
-    --pip $PIP \
-    $@
+
+mkdir -p $CS_HOME/scratch/tmp
+
+# Run container in environment
+singularity exec \
+  --bind $CS_HOME/scratch:/scratch ${BIND_OPTS[@]} \
+  --env MAMBA_ROOT_PREFIX=/scratch \
+  --env TMPDIR=/scratch/tmp \
+  --env KERNEL_SOCK=$(mktemp) \
+  $CS_HOME/container/$CONTAINER \
+  bash -c "\
+  micromamba create -n $AGENT && \
+  /opt/airavata-agent --server $SERVER:19900 --agent $AGENT --lib $LIBRARIES --pip $PIP $@\
+  "

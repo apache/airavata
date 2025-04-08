@@ -348,7 +348,7 @@ class AiravataOperator:
       b64data = base64.b64encode(rawdata).decode()
       res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
           "agentId": agent_ref,
-          "envName": "base",
+          "envName": agent_ref,
           "workingDir": ".",
           "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
       })
@@ -390,7 +390,7 @@ class AiravataOperator:
     """
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
-        "envName": "base",
+        "envName": agent_ref,
         "workingDir": ".",
         "arguments": ["sh", "-c", r"find /data -type d -name 'venv' -prune -o -type f -printf '%P\n' | sort"]
     })
@@ -428,7 +428,7 @@ class AiravataOperator:
     fp = os.path.join("/data", remote_file)
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
-        "envName": "base",
+        "envName": agent_ref,
         "workingDir": ".",
         "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
     })
@@ -474,7 +474,7 @@ class AiravataOperator:
     fp = os.path.join("/data", remote_file)
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
-        "envName": "base",
+        "envName": agent_ref,
         "workingDir": ".",
         "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
     })
@@ -752,7 +752,7 @@ class AiravataOperator:
       print(f"[av] Agent {agent_id} found! creating environment...")
       res = requests.post(f"{self.connection_svc_url()}/setup/env", json={
         "agentId": agent_id,
-        "envName": "base",
+        "envName": agent_id,
         "libraries": ["python=3.10", "pip"],
         "pip": libraries,
       })
@@ -770,7 +770,7 @@ class AiravataOperator:
       print(f"[av] Agent {agent_id} env created! executing code...")
       res = requests.post(f"{self.connection_svc_url()}/agent/execute/python", json={
         "agentId": agent_id,
-        "envName": "base",
+        "envName": agent_id,
         "workingDir": ".",
         "code": code,
       })
