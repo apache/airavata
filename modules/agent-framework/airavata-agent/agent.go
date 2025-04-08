@@ -25,8 +25,8 @@ import (
 
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
 
-var envName = "base"
 var pidMap = make(map[string]int)
+var defaultLibs = []string{"python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client"}
 
 func main() {
 
@@ -38,6 +38,10 @@ func main() {
 
 	// Parse the flags provided by the user.
 	flag.Parse()
+	log.Printf("[agent.go] main() --server=%s\n", *serverUrl)
+	log.Printf("[agent.go] main() --agent=%s\n", *agentId)
+	log.Printf("[agent.go] main() --lib=%s\n", *lib)
+	log.Printf("[agent.go] main() --pip=%s\n", *pip)
 
 	// Validate required flags
 	if *serverUrl == "" {
@@ -63,12 +67,14 @@ func main() {
 
 	var libList []string
 	if strings.TrimSpace(*lib) != "" {
-		libList = strings.Split(*lib, ",")
+		libList = append(strings.Split(*lib, ","), defaultLibs...)
 		log.Printf("[agent.go] main() Installing --lib: %v\n", libList)
-		libCmd := exec.Command("micromamba", "install", "-n", envName, "--yes")
+		libCmd := exec.Command("micromamba", "install", "-n", *agentId, "--yes")
 		libCmd.Args = append(libCmd.Args, libList...)
+		libCmd.Stdout = os.Stdout
+		libCmd.Stderr = os.Stderr
 		if err := libCmd.Run(); err != nil {
-			log.Fatalf("[agent.go] main() Error Installing --lib: %v\n%s\n", err, libCmd.Stderr)
+			log.Fatalf("[agent.go] main() Error Installing --lib: %v\n", err)
 		}
 		log.Printf("[agent.go] main() Installed --lib: %v\n", libList)
 	} else {
@@ -79,13 +85,14 @@ func main() {
 	if strings.TrimSpace(*pip) != "" {
 		pipList = strings.Split(*pip, ",")
 		log.Printf("[agent.go] main() Installing --pip: %v\n", pipList)
-		pipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install")
+		pipCmd := exec.Command("micromamba", "run", "-n", *agentId, "pip", "install")
 		pipCmd.Args = append(pipCmd.Args, pipList...)
+		pipCmd.Stdout = os.Stdout
+		pipCmd.Stderr = os.Stderr
 		if err := pipCmd.Run(); err != nil {
-			log.Fatalf("[agent.go] main() Error Installing --pip: %v\n%s\n", err, pipCmd.Stderr)
+			log.Fatalf("[agent.go] main() Error Installing --pip: %v\n", err)
 		}
 		log.Printf("[agent.go] main() Installed --pip: %v\n", pipList)
-
 	} else {
 		log.Printf("[agent.go] main() No --pip to install.\n")
 	}
@@ -132,15 +139,15 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 		case *protos.ServerMessage_EnvSetupRequest:
 			log.Printf("[agent.go] Recived a env setup request\n")
 			executionId := x.EnvSetupRequest.ExecutionId
-			envName = x.EnvSetupRequest.EnvName
+			envName := x.EnvSetupRequest.EnvName
 			envLibs := x.EnvSetupRequest.Libraries
 			envPip := x.EnvSetupRequest.Pip
-			go createEnv(stream, executionId, envName, envLibs, envPip)
+			go createEnv(stream, executionId, envName, append(envLibs, defaultLibs...), envPip)
 
 		case *protos.ServerMessage_PythonExecutionRequest:
 			log.Printf("[agent.go] Recived a python execution request\n")
 			executionId := x.PythonExecutionRequest.ExecutionId
-			envName = x.PythonExecutionRequest.EnvName
+			envName := x.PythonExecutionRequest.EnvName
 			workingDir := x.PythonExecutionRequest.WorkingDir
 			code := x.PythonExecutionRequest.Code
 			go executePython(stream, executionId, envName, workingDir, code)
@@ -148,7 +155,7 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 		case *protos.ServerMessage_CommandExecutionRequest:
 			log.Printf("[agent.go] Recived a shell execution request\n")
 			executionId := x.CommandExecutionRequest.ExecutionId
-			envName = x.CommandExecutionRequest.EnvName
+			envName := x.CommandExecutionRequest.EnvName
 			workingDir := x.CommandExecutionRequest.WorkingDir
 			execArgs := x.CommandExecutionRequest.Arguments
 			go executeShell(stream, executionId, envName, workingDir, execArgs)
@@ -156,14 +163,14 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 		case *protos.ServerMessage_JupyterExecutionRequest:
 			log.Printf("[agent.go] Recived a jupyter execution request\n")
 			executionId := x.JupyterExecutionRequest.ExecutionId
-			envName = x.JupyterExecutionRequest.EnvName
+			envName := x.JupyterExecutionRequest.EnvName
 			code := x.JupyterExecutionRequest.Code
 			go executeJupyter(stream, executionId, envName, code)
 
 		case *protos.ServerMessage_KernelRestartRequest:
 			log.Printf("[agent.go] Recived a kernel restart request\n")
 			executionId := x.KernelRestartRequest.ExecutionId
-			envName = x.KernelRestartRequest.EnvName
+			envName := x.KernelRestartRequest.EnvName
 			go restartKernel(stream, executionId, envName)
 
 		case *protos.ServerMessage_TunnelCreationRequest:
@@ -203,7 +210,6 @@ func createEnv(stream Stream, executionId string, envName string, envLibs []stri
 		}
 		log.Printf("[agent.go] createEnv() Environment created: %s\n", envName)
 	}
-	envLibs = append(envLibs, "python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client")
 	installDepsCmd := exec.Command("micromamba", "install", "-n", envName, "--yes")
 	installDepsCmd.Args = append(installDepsCmd.Args, envLibs...)
 	if err := installDepsCmd.Run(); err != nil {

@@ -13,41 +13,41 @@ run-container:
 deploy-anvil: deploy-anvil-scigap deploy-anvil-waterhub deploy-anvil-gcommunityus
 
 deploy-anvil-scigap:
-	ssh x-scigap@anvil srun -p shared --mem 4G -t 30 singularity pull \
-	--disable-cache \
-	--force \
+	ssh x-scigap@anvil \
+	"srun -N1 -n1 -p shared --mem 4G -t 30 \
+	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
-	docker://$(IMAGE_NAME)
+	docker://$(IMAGE_NAME)"
 
 deploy-anvil-waterhub:
-	ssh x-waterhub@anvil srun -p shared --mem 4G -t 30 singularity pull \
-	--disable-cache \
-	--force \
+	ssh x-waterhub@anvil \
+	"srun -N1 -n1 -p shared --mem 4G -t 30 \
+	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
-	docker://$(IMAGE_NAME)
+	docker://$(IMAGE_NAME)"
 
 deploy-anvil-gcommunityus:
-	ssh x-gcommunityus@anvil srun -p shared --mem 4G -t 30 singularity pull \
-	--disable-cache \
-	--force \
+	ssh x-gcommunityus@anvil \
+	"srun -N1 -n1 -p shared --mem 4G -t 30 \
+	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
-	docker://$(IMAGE_NAME)
+	docker://$(IMAGE_NAME)"
 
 deploy-expanse: deploy-expanse-scigap deploy-expanse-gridchem
 
 deploy-expanse-scigap:
-	ssh scigap@expanse srun -p shared --mem 4G -t 30 singularity pull \
-	--disable-cache \
-	--force \
+	ssh scigap@expanse \
+	"module load singularitypro && srun -N1 -n1 -A uic151 -p shared --mem 4G -t 30 \
+	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
-	docker://$(IMAGE_NAME)
+	docker://$(IMAGE_NAME)"
 
 deploy-expanse-gridchem:
-	ssh gridchem@expanse srun -p shared --mem 4G -t 30 singularity pull \
-	--disable-cache \
-	--force \
+	ssh gridchem@expanse \
+	"module load singularitypro && srun -N1 -n1 -A uic151 -p shared --mem 4G -t 30 \
+	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
-	docker://$(IMAGE_NAME)
+	docker://$(IMAGE_NAME)"
 
 deploy-bootstrap:
 	scp agent.sh x-scigap@anvil:~/cybershuttle/agent.sh && \

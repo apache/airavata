@@ -474,7 +474,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
     url = api_base_url + '/api/v1/agent/execute/jupyter'
     data = {
         "agentId": rt.agentId,
-        "envName": "base",
+        "envName": rt.agentId,
         "code": code_obj,
     }
     json_data = json.dumps(data)
