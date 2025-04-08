@@ -37,14 +37,14 @@ deploy-expanse: deploy-expanse-scigap deploy-expanse-gridchem
 
 deploy-expanse-scigap:
 	ssh scigap@expanse \
-	"module load singularitypro && srun -N1 -n1 -A uic151 -p shared --mem 4G -t 30 \
+	"module load singularitypro && srun -N1 -n1 -A ind123 -p shared --mem 4G -t 30 \
 	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)"
 
 deploy-expanse-gridchem:
 	ssh gridchem@expanse \
-	"module load singularitypro && srun -N1 -n1 -A uic151 -p shared --mem 4G -t 30 \
+	"module load singularitypro && srun -N1 -n1 -A ind123 -p shared --mem 4G -t 30 \
 	singularity pull --disable-cache --force \
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)"

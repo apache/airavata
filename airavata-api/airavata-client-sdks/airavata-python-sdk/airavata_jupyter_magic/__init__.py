@@ -283,8 +283,8 @@ def submit_agent_job(
         collection = models + datasets
         mounts = [f"{i['identifier']}:{i['mount_point']}" for i in collection]
         # dependencies
-        condas = content["additional_dependencies"]["conda"]
-        pips = content["additional_dependencies"]["pip"]
+        condas = content["additional_dependencies"]["conda"] or []
+        pips = content["additional_dependencies"]["pip"] or []
         data = {
             'experimentName': app_name,
             'nodeCount': 1,
