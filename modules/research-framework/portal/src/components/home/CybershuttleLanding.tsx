@@ -26,8 +26,7 @@ import AllenLogo from "../../assets/AllenLogo.png";
 import NSFLogo from "../../assets/NSFLogo.png";
 import { FaCheckCircle } from "react-icons/fa";
 import PoweredByApache from "../../assets/PoweredByApache.png";
-import XSEDELogo from "../../assets/XSEDELogo.png";
-import IUFullLogo from "../../assets/IUFullLogo.png";
+import AccessLogoFooter from "../../assets/access-logo-footer.svg";
 
 export const CybershuttleLanding = () => {
   return (
@@ -103,13 +102,11 @@ export const CybershuttleLanding = () => {
                 image={MolecularDyanmics}
                 title="Molecular Dynamics"
                 description="Integrate with molecular dynamics simulations for enhanced analysis."
-                link="https://md.cybershuttle.org/"
               />
               <ExtensionCard
                 image={NeuroScience}
                 title="Neuroscience"
                 description="Integrate with neuroscience data analysis tools for advanced research."
-                link="https://neuroscience.cybershuttle.org/"
               />
             </VStack>
           </Box>
@@ -204,14 +201,14 @@ export const CybershuttleLanding = () => {
           maxH="180px"
           mx="auto"
         />
-        <Image src={XSEDELogo} alt="XSEDE Logo" maxH="180px" mx="auto" />
-        <Image src={NSFLogo} alt="XSEDE Logo" maxH="180px" mx="auto" />
         <Image
-          src={IUFullLogo}
-          alt="Indiana University Logo"
+          src={AccessLogoFooter}
+          alt="Access Logo"
           maxH="180px"
           mx="auto"
         />
+        <Image src={NSFLogo} alt="NSF Logo" maxH="180px" mx="auto" />
+        <Image src={GeorgiaTech} alt="GT Logo" maxH="180px" mx="auto" />
       </SimpleGrid>
     </>
   );
@@ -247,12 +244,10 @@ const ExtensionCard = ({
   image,
   title,
   description,
-  link,
 }: {
   image: string;
   title: string;
   description: string;
-  link: string;
 }) => {
   return (
     <HStack columns={{ base: 1, md: 2 }} gap={4} mt={2} alignItems="center">
@@ -263,11 +258,6 @@ const ExtensionCard = ({
           {title}
         </Text>
         <Text>{description}</Text>
-        <Link href={link} target="_blank">
-          <Text color="blue.500" textDecoration="underline" fontWeight="bold">
-            View Details
-          </Text>
-        </Link>
       </VStack>
     </HStack>
   );

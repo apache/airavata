@@ -103,7 +103,7 @@ export const Resources = () => {
           fontWeight="black"
           lineHeight={1.2}
         >
-          Resources
+          Research Catalog
         </Heading>
         <Text mt={2} textAlign="center">
           Browse models, notebooks, repositories, and datasets. Created by

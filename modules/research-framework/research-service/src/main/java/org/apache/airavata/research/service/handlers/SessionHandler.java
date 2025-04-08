@@ -75,6 +75,12 @@ public class SessionHandler {
         return session;
     }
 
+    public boolean deleteSession(String sessionId) {
+        Session session = findSession(sessionId);
+        sessionRepository.delete(session);
+        return true;
+    }
+
     public boolean checkIfSessionExists(String projectId, String userId) {
         if (sessionRepository.findSessionByProjectIdAndUserId(projectId, userId).isEmpty()) {
             throw new RuntimeException("Session does not exist");

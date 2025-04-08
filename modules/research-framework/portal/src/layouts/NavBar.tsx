@@ -17,11 +17,13 @@ import { Link, useNavigate } from "react-router";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoClose } from "react-icons/io5";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { useAuth } from "react-oidc-context";
 
 const NAV_CONTENT = [
   {
-    title: "Resources",
+    title: "Catalog",
     url: "/resources",
+    needsAuth: false,
   },
   // {
   //   title: "Datasets",
@@ -40,8 +42,9 @@ const NAV_CONTENT = [
   //   url: "/resources/models",
   // },
   {
-    title: "Projects",
-    url: "/projects",
+    title: "Sessions",
+    url: "/sessions",
+    needsAuth: true,
   },
 ];
 
@@ -53,6 +56,7 @@ interface NavLinkProps extends ButtonProps {
 const NavBar = () => {
   const { open, onToggle } = useDisclosure();
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const NavLink = ({ title, url, ...props }: NavLinkProps) => (
     <Button
@@ -92,9 +96,14 @@ const NavBar = () => {
 
         {/* Desktop Nav Links */}
         <HStack ml={4} display={{ base: "none", md: "flex" }}>
-          {NAV_CONTENT.map((item) => (
-            <NavLink key={item.title} title={item.title} url={item.url} />
-          ))}
+          {NAV_CONTENT.map((item) => {
+            if (item.needsAuth && !auth.isAuthenticated) {
+              return null; // Skip if the user is not authenticated
+            }
+            return (
+              <NavLink key={item.title} title={item.title} url={item.url} />
+            );
+          })}
         </HStack>
 
         <Spacer />

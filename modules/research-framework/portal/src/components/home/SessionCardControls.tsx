@@ -52,6 +52,7 @@ export const SessionCardControls = ({ session }: { session: SessionType }) => {
         description: session.sessionName,
         type: "success",
       });
+
       setHideControls(true);
     } catch {
       toaster.create({
@@ -62,27 +63,79 @@ export const SessionCardControls = ({ session }: { session: SessionType }) => {
     setTerminateLoading(false);
   };
 
+  const handleResumeSession = async () => {
+    try {
+      await api.patch(
+        `${CONTROLLER.sessions}/${session.id}`,
+        {},
+        {
+          params: {
+            status: SessionStatusEnum.CREATED,
+          },
+        }
+      );
+
+      toaster.create({
+        title: "Session resumed",
+        description: session.sessionName,
+        type: "success",
+      });
+
+      const resp = await api.get(
+        `${CONTROLLER.hub}/resume/session/${session.id}`
+      );
+      const data = resp.data;
+      window.open(data.redirectUrl, "_blank");
+
+      setHideControls(false);
+    } catch {
+      toaster.create({
+        title: "Error resuming session",
+        type: "error",
+      });
+    }
+  };
+
+  if (session.status === SessionStatusEnum.TERMINATED) {
+    return (
+      <>
+        <Button
+          mt={2}
+          size="sm"
+          colorPalette="yellow"
+          onClick={handleResumeSession}
+          loading={openLoading}
+          disabled={openLoading}
+        >
+          Restart
+        </Button>
+      </>
+    );
+  }
+
   return (
-    <HStack alignItems="center" mt={2} hidden={hideControls}>
-      <Button
-        size="sm"
-        colorPalette="red"
-        variant="subtle"
-        onClick={handleTerminateSession}
-        loading={terminateLoading}
-        disabled={terminateLoading}
-      >
-        Terminate
-      </Button>
-      <Button
-        size="sm"
-        colorPalette="green"
-        onClick={handleOpenSession}
-        loading={openLoading}
-        disabled={openLoading}
-      >
-        Open Session
-      </Button>
-    </HStack>
+    <>
+      <HStack alignItems="center" mt={2} hidden={hideControls}>
+        <Button
+          size="sm"
+          colorPalette="red"
+          variant="outline"
+          onClick={handleTerminateSession}
+          loading={terminateLoading}
+          disabled={terminateLoading}
+        >
+          Terminate
+        </Button>
+        <Button
+          size="sm"
+          colorPalette="green"
+          onClick={handleOpenSession}
+          loading={openLoading}
+          disabled={openLoading}
+        >
+          Open
+        </Button>
+      </HStack>
+    </>
   );
 };
