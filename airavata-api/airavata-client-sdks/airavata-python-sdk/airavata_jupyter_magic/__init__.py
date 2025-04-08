@@ -24,7 +24,7 @@ from .device_auth import DeviceFlowAuthenticator
 # DATA STRUCTURES
 
 
-class InvalidStateError(Exception):
+class InvalidStateError(BaseException):
     pass
 
 
@@ -146,21 +146,21 @@ def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str):
     if pstate in PENDING_STATES:
         return False, f"PROCESS_{pstate.name}"
     if pstate in TERMINAL_STATES:
-        msg = f"Runtime={rt_name} is in state=PROCESS_{pstate.name}"
+        msg = f"Runtime={rt_name} is in state={pstate.name}"
         raise InvalidStateError(msg)
 
     # third, check the state of agent
     url = f"{api_base_url}/api/v1/agent/{rt.agentId}"
     res = requests.get(url)
     code = res.status_code
-    astate = "AGENT_CREATED"
+    astate = "CREATING_WORKSPACE"
     if code == 202:
         data: dict = res.json()
         if data.get("agentUp", False):
-            astate = "READY"
+            astate = "CONNECTED"
     else:
         print(f"[{code}] Runtime status check failed: {res.text}")
-    return astate == "READY", astate
+    return astate == "CONNECTED", astate
 
 
 def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessState, str]:
@@ -206,10 +206,22 @@ def get_process_state(experiment_id: str, headers: dict) -> tuple[str, ProcessSt
             pid = data.get("processId")
             procs = data.get("processStatuses")
             if procs and len(procs):
+                tMax, wait, busy, done = 0, 0, 0, 0
                 for proc in procs:
-                    ps = ProcessState[proc.get("state")]
-                    if ps > pstate:
-                        pstate = ps
+                    t = int(proc.get("timeOfStateChange"))
+                    s = ProcessState[proc.get("state")]
+                    if t >= tMax:
+                      tMax, busy, done = t, 0, 0
+                    if t == tMax:
+                        wait += s in PENDING_STATES
+                        done += s in TERMINAL_STATES
+                        busy += s not in [*PENDING_STATES, *TERMINAL_STATES]
+                if busy == 0 and done == 0:
+                    pstate = ProcessState.CONFIGURING_WORKSPACE
+                elif wait == 0 and busy == 0:
+                    pstate = ProcessState.COMPLETED
+                else:
+                    pstate = ProcessState.EXECUTING
         else:
             time.sleep(5)
     return pid, pstate
@@ -365,7 +377,7 @@ def wait_until_runtime_ready(access_token: str, rt_name: str):
         while True:
             ready, rstate = is_runtime_ready(access_token, rt, rt_name)
             if ready:
-                status.update(f"Connecting to={rt_name}... status=READY")
+                status.update(f"Connecting to={rt_name}... status=CONNECTED")
                 break
             else:
                 status.update(f"Connecting to={rt_name}... status={rstate}")

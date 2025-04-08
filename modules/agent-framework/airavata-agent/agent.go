@@ -244,12 +244,12 @@ func createEnv(stream Stream, executionId string, envName string, envLibs []stri
 func startJupyterKernel(envName string) int {
 	log.Printf("[agent.go] startJupyterKernel() Starting python server in env: %s...\n", envName)
 	// Create temp file for unix socket
-	log.Fatalf("[agent.go] startJupyterKernel() creating unix socket...\n")
+	log.Printf("[agent.go] startJupyterKernel() creating unix socket...\n")
 	tmpFile, err := os.CreateTemp(os.TempDir(), "kernel-*.sock")
 	if err != nil {
 		log.Fatalf("[agent.go] startJupyterKernel() Failed to create unix socket: %v\n", err)
 	}
-	log.Fatalf("[agent.go] startJupyterKernel() created unix socket: %s\n", tmpFile.Name())
+	log.Printf("[agent.go] startJupyterKernel() created unix socket: %s\n", tmpFile.Name())
 	defer tmpFile.Close()
 	os.Setenv("KERNEL_SOCK", tmpFile.Name())
 	// Run command

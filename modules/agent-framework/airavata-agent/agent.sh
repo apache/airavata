@@ -81,4 +81,4 @@ singularity exec \
   --env MAMBA_ROOT_PREFIX=/scratch \
   --env TMPDIR=/scratch/tmp \
   $CS_HOME/container/$CONTAINER \
-  bash -c "micromamba create -n $AGENT && /opt/airavata-agent --server $SERVER:19900 --agent $AGENT --lib $LIBRARIES --pip $PIP"
+  bash -c "micromamba create -n $AGENT && /opt/airavata-agent --server \"$SERVER:19900\" --agent \"$AGENT\" --lib \"$LIBRARIES\" --pip \"$PIP\""
