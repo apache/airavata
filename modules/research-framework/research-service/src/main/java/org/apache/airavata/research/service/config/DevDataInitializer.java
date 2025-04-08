@@ -18,7 +18,6 @@
 package org.apache.airavata.research.service.config;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.airavata.research.service.enums.PrivacyEnum;
@@ -52,7 +51,7 @@ public class DevDataInitializer implements CommandLineRunner {
         this.tagRepository = tagRepository;
     }
 
-    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl,  String[] tags, String user) {
+    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl, String[] tags, String user) {
         Set<Tag> tagSet = new HashSet<>();
         for (String tag : tags) {
             Tag t = tagRepository.findByValue(tag);
@@ -109,38 +108,65 @@ public class DevDataInitializer implements CommandLineRunner {
         }
 
         createProject(
-                "Allen / BMTK Workshop",
-                "https://github.com/yasithdev/bmtk-workshop.git",
-                "Allen / BMTK Workshop Data",
-                "allen-bmtk-workshop",
-                new String[]{"allen", "bmtk", "workshop"},
-                devUserEmail
-        );
-
-        createProject(
-                "Allen / V1",
+                "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
                 "https://github.com/yasithdev/allen-v1.git",
-                "Allen / V1 Data",
-                "allen-v1",
-                new String[]{"allen", "v1", "workshop"},
+                "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
+                "allenai-v1",
+                new String[]{"allenai", "v1", "workshop"},
                 devUserEmail
         );
 
         createProject(
-                "BRAINML / OneHot HMMGLM",
-                "https://github.com/yasithdev/onehot-hmmglm.git",
-                "BRAINML / OneHot HMMGLM Data",
+                "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
+                "https://github.com/srirampc/airavata-cerebrum",
+                "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
+                "artisan-cerebrum",
+                new String[]{"artisan", "cerebrum", "workshop"},
+                devUserEmail
+        );
+
+        createProject(
+                "Large-scale brain model during awake and sleep states",
+                "https://github.com/bazhlab-ucsd/whole-brain-public",
+                "Large-scale brain model during awake and sleep states",
+                "bazhlab-neurodata25",
+                new String[]{"bazhlab", "whole-brain", "workshop"},
+                devUserEmail
+        );
+
+        createProject(
+                "One-hot Generalized Linear Model for Switching Brain State Discovery",
+                "https://github.com/JerrySoybean/onehot-hmmglm",
+                "One-hot Generalized Linear Model for Switching Brain State Discovery",
                 "brainml-onehot-hmmglm",
-                new String[]{"brainml", "onehot", "workshop"},
+                new String[]{"brainml", "onehot-hmmglm", "workshop"},
                 devUserEmail
         );
 
         createProject(
-                "HChoiLab / Functional Network",
-                "https://github.com/yasithdev/functional-network.git",
-                "HChoiLab / Functional Network Data",
-                "hchoilab-functional-network",
-                new String[]{"hchoilab", "functional network", "workshop"},
+                "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
+                "https://github.com/HChoiLab/biologicalRNNs",
+                "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
+                "hchoilab-biologicalRNNs",
+                new String[]{"hchoilab", "biologicalRNNs", "workshop"},
+                devUserEmail
+        );
+
+        createProject(
+                "NetFormer : Transformer model for neural connectivity",
+                "https://github.com/NeuroAIHub/NetFormer",
+                "NetFormer : Transformer model for neural connectivity",
+                "neuroaihub-netformer",
+                new String[]{"neuroaihub", "netformer", "workshop"},
+                devUserEmail
+        );
+
+        createProject(
+                "Deep Learning in Neuroscience with torch_brain and temporaldata",
+                "https://github.com/nerdslab/neurodata25_torchbrain_notebooks",
+                "Deep Learning in Neuroscience with torch_brain and temporaldata",
+                "nerdslab-neurodata25",
+                new String[]{"nerdslab", "neurodata25", "workshop"},
                 devUserEmail
         );
     }
