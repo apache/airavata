@@ -20,6 +20,8 @@ import {
 } from "./lib/constants";
 import { WebStorageStateStore } from "oidc-client-ts";
 import { Resources } from "./components/resources";
+import { UserSet } from "./components/auth/UserSet";
+import { Toaster } from "./components/ui/toaster";
 function App() {
   const colorMode = useColorMode();
   const navigate = useNavigate();
@@ -77,6 +79,8 @@ function App() {
           navigate(location.pathname, { replace: true });
         }}
       >
+        <Toaster />
+        <UserSet />
         <Routes>
           {/* Public Route */}
           <Route element={<NavBarFooterLayout />}>
@@ -94,7 +98,7 @@ function App() {
           <Route
             element={<ProtectedComponent Component={NavBarFooterLayout} />}
           >
-            <Route path="/projects" element={<Home />} />
+            <Route path="/sessions" element={<Home />} />
           </Route>
         </Routes>
       </AuthProvider>

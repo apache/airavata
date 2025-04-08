@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import api from "@/lib/api";
 import {
+  DatasetResource,
   ModelResource,
   NotebookResource,
   RepositoryResource,
@@ -30,6 +31,7 @@ import { ModelSpecificBox } from "../models/ModelSpecificBox";
 import { NotebookSpecificDetails } from "../notebooks/NotebookSpecificDetails";
 import { RepositorySpecificDetails } from "../repositories/RepositorySpecificDetails";
 import { CONTROLLER } from "@/lib/controller";
+import { DatasetSpecificDetails } from "../datasets/DatasetSpecificDetails";
 
 async function getResource(id: string) {
   const response = await api.get(`${CONTROLLER.resources}/${id}`);
@@ -150,6 +152,10 @@ const ResourceDetails = () => {
             <RepositorySpecificDetails
               repository={resource as RepositoryResource}
             />
+          )}
+
+          {(resource.type as ResourceTypeEnum) === ResourceTypeEnum.DATASET && (
+            <DatasetSpecificDetails dataset={resource as DatasetResource} />
           )}
 
           {(resource.type as ResourceTypeEnum) === ResourceTypeEnum.MODEL && (

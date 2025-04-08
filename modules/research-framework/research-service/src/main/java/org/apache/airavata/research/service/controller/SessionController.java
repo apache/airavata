@@ -47,4 +47,13 @@ public class SessionController {
         LOGGER.info("Updating session status for session: {} to {}", sessionId, status);
         return ResponseEntity.ok(sessionHandler.updateSessionStatus(sessionId, status));
     }
+
+    @DeleteMapping("/{sessionId}")
+    @Operation(summary = "Delete a session")
+    public ResponseEntity<Boolean> deleteSessoin(@PathVariable(value="sessionId") String sessionId) {
+        LOGGER.info("Deleting session session: {}", sessionId);
+        sessionHandler.deleteSession(sessionId);
+
+        return ResponseEntity.ok(Boolean.TRUE);
+    }
 }

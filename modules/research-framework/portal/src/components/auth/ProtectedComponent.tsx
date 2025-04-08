@@ -1,4 +1,3 @@
-import { setUserProvider } from "@/lib/api";
 import { useEffect, useRef } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
@@ -11,10 +10,6 @@ function ProtectedComponent({ Component }: { Component: React.FC }) {
   useEffect(() => {
     if (!auth.isLoading && !auth.isAuthenticated) {
       navigate(`/login?redirect=${initialPathRef.current}`, { replace: true });
-    }
-
-    if (auth.isAuthenticated) {
-      setUserProvider(() => Promise.resolve(auth.user ?? null));
     }
   }, [auth, navigate]);
 

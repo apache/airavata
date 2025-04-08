@@ -18,12 +18,21 @@
  */
 package org.apache.airavata.research.service.model.repo;
 
+import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
+import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, String> {
 
     boolean existsByOwnerId(String ownerId);
+
+    List<Project> findProjectsByRepositoryResource(RepositoryResource repositoryResource);
+
+    List<Project> findProjectsByDatasetResourcesContaining(Set<DatasetResource> datasetResources);
 }

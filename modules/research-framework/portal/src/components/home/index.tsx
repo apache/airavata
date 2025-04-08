@@ -1,18 +1,16 @@
 import { Box, HStack, Container } from "@chakra-ui/react";
 
 import { PageHeader } from "../PageHeader";
-import { AddRepositoryButton } from "./AddRepositoryButton";
-import { AddZipButton } from "./AddZipButton";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { FaPlus } from "react-icons/fa";
 import { SessionsSection } from "./SessionsSection";
-import { ProjectsSection } from "./ProjectsSection";
+import { Tooltip } from "../ui/tooltip";
 
 const Home = () => {
   return (
     <Box>
       <Container maxW="container.xl" mt={8}>
-        <HStack alignItems="flex-end" justify="space-between">
+        {/* <HStack alignItems="flex-end" justify="space-between">
           <PageHeader
             title="Projects"
             description="Projects are a combination of repositories, notebooks, models, and datasets."
@@ -24,7 +22,7 @@ const Home = () => {
           </HStack>
         </HStack>
 
-        <ProjectsSection />
+        <ProjectsSection /> */}
 
         <HStack alignItems="flex-end" justify="space-between" mt={4}>
           <PageHeader
@@ -33,20 +31,26 @@ const Home = () => {
           />
 
           <HStack gap={4}>
-            <ButtonWithIcon
-              bg="purple.500"
-              _hover={{ bg: "purple.600" }}
-              icon={FaPlus}
-            >
-              VSCode
-            </ButtonWithIcon>
-            <ButtonWithIcon
-              bg="green.600"
-              _hover={{ bg: "green.700" }}
-              icon={FaPlus}
-            >
-              Jupyter
-            </ButtonWithIcon>
+            <Tooltip content="Currently in development. In the future you'll be able to create new VSCode sessions">
+              <ButtonWithIcon
+                disabled={true}
+                colorPalette="black"
+                icon={FaPlus}
+                size="sm"
+              >
+                VSCode
+              </ButtonWithIcon>
+            </Tooltip>
+            <Tooltip content="Currently in development. In the future you'll be able to create new Jupyter Lab sessions">
+              <ButtonWithIcon
+                disabled={true}
+                colorPalette="black"
+                icon={FaPlus}
+                size="sm"
+              >
+                Jupyter
+              </ButtonWithIcon>
+            </Tooltip>
           </HStack>
         </HStack>
         <SessionsSection />
