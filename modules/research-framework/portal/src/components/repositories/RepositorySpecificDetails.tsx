@@ -16,6 +16,7 @@ import { Fragment, useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FiFolder, FiFile } from "react-icons/fi";
 import { AssociatedProjectsSection } from "../projects/AssociatedProejctsSection";
+import { Toaster } from "../ui/toaster";
 
 interface FileTreeItem {
   name: string;
@@ -73,27 +74,38 @@ export const RepositorySpecificDetails = ({
       });
   };
 
-  const fetchFileContent = (owner: string, repo: string, path: string) => {
-    setFileTreeLoading(true);
-    fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
-      .then((resp) => {
-        if (!resp.ok) {
-          console.error("Error fetching file tree:", error);
-          setFileTreeLoading(false);
-          setFileContent(null);
-          setError(
-            "Error fetching file tree. GitHub's API rate limit might be exceeded (60 / hour)."
-          );
-        }
-        return resp.json();
-      })
-      .then((data) => {
-        if (data.content) {
-          setFileContent(atob(data.content.replace(/\n/g, "")));
-        }
-        setFileTreeLoading(false);
-      });
-  };
+  // const fetchFileContent = (owner: string, repo: string, path: string) => {
+  //   setFileTreeLoading(true);
+  //   fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
+  //     .then((resp) => {
+  //       if (!resp.ok) {
+  //         console.error("Error fetching file tree:", error);
+  //         setFileTreeLoading(false);
+  //         setFileContent(null);
+  //         setError(
+  //           "Error fetching file tree. GitHub's API rate limit might be exceeded (60 / hour)."
+  //         );
+  //       }
+  //       return resp.json();
+  //     })
+  //     .then((data) => {
+  //       if (data.content) {
+  //         setFileContent(atob(data.content.replace(/\n/g, "")));
+  //       } else {
+  //         throw new Error("File may be too large to display");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log("Error fetching file content:", error);
+  //       toaster.create({
+  //         title: "Toast Title",
+  //         description: "Toast Description",
+  //       });
+  //     })
+  //     .finally(() => {
+  //       setFileTreeLoading(false);
+  //     });
+  // };
 
   const handleFolderClick = (path: string) => {
     setHistory((prev) => [...prev, currentPath]);
@@ -102,13 +114,16 @@ export const RepositorySpecificDetails = ({
   };
 
   const handleFileClick = (path: string) => {
-    setHistory((prev) => [...prev, currentPath]);
-    const ownerAndRepo = getGithubOwnerAndRepo(githubUrl);
-    if (ownerAndRepo) {
-      const owner = ownerAndRepo.owner;
-      const repo = ownerAndRepo.repo;
-      fetchFileContent(owner, repo, path);
-    }
+    // setHistory((prev) => [...prev, currentPath]);
+    // const ownerAndRepo = getGithubOwnerAndRepo(githubUrl);
+    // if (ownerAndRepo) {
+    //   const owner = ownerAndRepo.owner;
+    //   const repo = ownerAndRepo.repo;
+    //   fetchFileContent(owner, repo, path);
+    // }
+
+    const urlWithoutGit = repository.repositoryUrl.replace(".git", "");
+    window.open(urlWithoutGit + "/tree/main/" + path, "_blank");
   };
 
   const handleGoBack = () => {
@@ -126,6 +141,8 @@ export const RepositorySpecificDetails = ({
 
   return (
     <Box>
+      <Toaster />
+
       <Box>
         <Heading fontWeight="bold" size="2xl" mb={2}>
           Associated Projects
@@ -169,21 +186,50 @@ export const RepositorySpecificDetails = ({
           <Breadcrumb.Root mt={2}>
             <Breadcrumb.List>
               <Breadcrumb.Item>
-                <Breadcrumb.Link href="#">root</Breadcrumb.Link>
+                <Breadcrumb.Link
+                  as="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setHistory([]);
+                    setCurrentPath("");
+                    setFileContent(null);
+                  }}
+                >
+                  root
+                </Breadcrumb.Link>
               </Breadcrumb.Item>
 
-              {history.length > 0 &&
-                currentPath
-                  .split("/")
-                  .filter(Boolean) // Remove empty strings
-                  .map((path, index) => (
+              {currentPath
+                .split("/")
+                .filter(Boolean)
+                .map((segment, index, arr) => {
+                  const fullPath = arr.slice(0, index + 1).join("/");
+                  return (
                     <Fragment key={index}>
                       <Breadcrumb.Separator />
                       <Breadcrumb.Item>
-                        <Breadcrumb.Link href="#">{path}</Breadcrumb.Link>
+                        <Breadcrumb.Link
+                          as="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setHistory((prev) =>
+                              prev.slice(
+                                0,
+                                prev.indexOf(fullPath) !== -1
+                                  ? prev.indexOf(fullPath)
+                                  : 0
+                              )
+                            );
+                            setCurrentPath(fullPath);
+                            setFileContent(null);
+                          }}
+                        >
+                          {segment}
+                        </Breadcrumb.Link>
                       </Breadcrumb.Item>
                     </Fragment>
-                  ))}
+                  );
+                })}
             </Breadcrumb.List>
           </Breadcrumb.Root>{" "}
           {fileContent ? (
@@ -203,11 +249,13 @@ export const RepositorySpecificDetails = ({
                     p={2}
                     borderRadius="md"
                     _hover={{ bg: "gray.100", cursor: "pointer" }}
-                    onClick={() =>
-                      file.type === "dir"
-                        ? handleFolderClick(file.path)
-                        : handleFileClick(file.path)
-                    }
+                    onClick={() => {
+                      if (file.type === "dir") {
+                        handleFolderClick(file.path);
+                      } else {
+                        handleFileClick(file.path);
+                      }
+                    }}
                   >
                     <Icon
                       as={file.type === "dir" ? FiFolder : FiFile}
