@@ -21,10 +21,12 @@ package org.apache.airavata.research.service.controller;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.apache.airavata.research.service.ResponseTypes.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.handlers.ProjectHandler;
 import org.apache.airavata.research.service.model.entity.*;
 import org.junit.runner.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +50,8 @@ public class ResourceController {
 
     @org.springframework.beans.factory.annotation.Autowired
     private ResourceHandler resourceHandler;
+    @Autowired
+    private ProjectHandler projectHandler;
 
     @PostMapping("/dataset")
     public ResponseEntity<ResourceResponse> createDatasetResource(@RequestBody DatasetResource datasetResource) {
@@ -114,5 +118,23 @@ public class ResourceController {
         Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Get projects associated with a resource"
+    )
+    @GetMapping(value = "/{id}/projects")
+    public ResponseEntity<List<Project>> getProjectsFromResourceId(@PathVariable(value="id") String id) {
+        Resource resouce = resourceHandler.getResourceById(id);
+        List<Project> projects;
+        if (resouce.getClass() == RepositoryResource.class) {
+            projects = projectHandler.findProjectsWithRepository((RepositoryResource) resouce);
+        } else if (resouce.getClass() == DatasetResource.class) {
+            projects = projectHandler.findProjectsContainingDataset((DatasetResource) resouce);
+        } else {
+            throw new RuntimeException("Projects are only associated with repositories and datasets, and id: " + id + " is not either.");
+        }
+
+        return ResponseEntity.ok(projects);
     }
 }

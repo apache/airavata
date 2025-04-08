@@ -19,13 +19,20 @@
 package org.apache.airavata.research.service.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
+import org.apache.airavata.research.service.model.entity.RepositoryResource;
+import org.apache.airavata.research.service.model.entity.Resource;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
+import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProjectHandler {
@@ -33,9 +40,12 @@ public class ProjectHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectHandler.class);
 
     private final ProjectRepository projectRepository;
+    private final ResourceRepository resourceRepository;
 
-    public ProjectHandler(ProjectRepository projectRepository) {
+
+    public ProjectHandler(ProjectRepository projectRepository, ResourceRepository resourceRepository) {
         this.projectRepository = projectRepository;
+        this.resourceRepository = resourceRepository;
     }
 
     public Project findProject(String projectId) {
@@ -48,4 +58,16 @@ public class ProjectHandler {
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
     }
+
+    public List<Project> findProjectsWithRepository(RepositoryResource repositoryResource) {
+        return projectRepository.findProjectsByRepositoryResource(repositoryResource);
+    }
+
+    public List<Project> findProjectsContainingDataset(DatasetResource datasetResource) {
+        Set<DatasetResource> set = new HashSet<>();
+        set.add(datasetResource);
+
+        return projectRepository.findProjectsByDatasetResourcesContaining(set);
+    }
+
 }

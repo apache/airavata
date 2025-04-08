@@ -103,13 +103,17 @@ export const Resources = () => {
           fontWeight="black"
           lineHeight={1.2}
         >
-          Browse datasets, repositories, notebooks, and models,
-          <Text as="span" color="blue.600">
+          Research Catalog
+        </Heading>
+        <Text mt={2} textAlign="center">
+          Browse models, notebooks, repositories, and datasets. Created by
+          scientists and prepared for
+          <Text as="span" color="blue.600" fontWeight="bold">
             {" "}
-            made by scientists, for scientists
+            execution in local and remote machines
           </Text>
           .
-        </Heading>
+        </Text>
 
         <Box mt={4} maxWidth="1000px" mx="auto">
           <ReactTags
