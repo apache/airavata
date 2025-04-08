@@ -80,7 +80,6 @@ singularity exec \
   --bind $CS_HOME/scratch:/scratch ${BIND_OPTS[@]} \
   --env MAMBA_ROOT_PREFIX=/scratch \
   --env TMPDIR=/scratch/tmp \
-  --env KERNEL_SOCK=$(mktemp) \
   $CS_HOME/container/$CONTAINER \
   bash -c "\
   micromamba create -n $AGENT && \
