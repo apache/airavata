@@ -25,6 +25,16 @@ const NAV_CONTENT = [
     url: "/resources",
     needsAuth: false,
   },
+  {
+    title: "Sessions",
+    url: "/sessions",
+    needsAuth: true,
+  },
+  {
+    title: "Events",
+    url: "/events",
+    needsAuth: false,
+  },
   // {
   //   title: "Datasets",
   //   url: "/resources/datasets",
@@ -41,11 +51,6 @@ const NAV_CONTENT = [
   //   title: "Models",
   //   url: "/resources/models",
   // },
-  {
-    title: "Sessions",
-    url: "/sessions",
-    needsAuth: true,
-  },
 ];
 
 interface NavLinkProps extends ButtonProps {
