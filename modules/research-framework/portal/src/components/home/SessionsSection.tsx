@@ -3,7 +3,7 @@ import { SessionCard } from "./SessionCard";
 import api from "@/lib/api";
 import { useEffect, useState } from "react";
 import { CONTROLLER } from "@/lib/controller";
-import { Button, HStack, SimpleGrid } from "@chakra-ui/react";
+import { Button, HStack, SimpleGrid, Text } from "@chakra-ui/react";
 import { SessionStatusEnum } from "@/interfaces/SessionStatusEnum";
 
 async function getSessions(status: SessionStatusEnum | null = null) {
@@ -44,6 +44,11 @@ export const SessionsSection = () => {
     return () => clearInterval(intervalId); // Cleanup
   }, [sessionStatusFilter]); // <== Important dependency
 
+  const sessionStatusFilterOptions = [
+    SessionStatusEnum.CREATED,
+    SessionStatusEnum.TERMINATED,
+  ];
+
   return (
     <>
       <HStack flexWrap={"wrap"} gap={2} mt={4}>
@@ -56,7 +61,8 @@ export const SessionsSection = () => {
         >
           All
         </Button>
-        {Object.values(SessionStatusEnum).map((status) => (
+        {/* {Object.values(SessionStatusEnum).map((status) => ( */}
+        {sessionStatusFilterOptions.map((status) => (
           <Button
             key={status}
             variant={sessionStatusFilter === status ? "solid" : "outline"}
@@ -74,6 +80,12 @@ export const SessionsSection = () => {
           return <SessionCard key={session.id} session={session} />;
         })}
       </SimpleGrid>
+
+      {sessions.length === 0 && (
+        <Text mt={4} color="gray.500">
+          No sessions found.
+        </Text>
+      )}
     </>
   );
 };

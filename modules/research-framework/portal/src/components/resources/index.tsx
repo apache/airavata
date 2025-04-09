@@ -7,6 +7,7 @@ import {
   Button,
   HStack,
   Code,
+  Spinner,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { SEPARATORS, WithContext as ReactTags, Tag } from "react-tag-input";
@@ -53,10 +54,8 @@ export const Resources = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
   const [resourceTypes, setResourceTypes] = useState<ResourceTypeEnum[]>([
-    ResourceTypeEnum.DATASET,
     ResourceTypeEnum.REPOSITORY,
     ResourceTypeEnum.NOTEBOOK,
-    ResourceTypeEnum.MODEL,
   ]);
   const [resources, setResources] = useState<Resource[]>([]);
 
@@ -93,6 +92,13 @@ export const Resources = () => {
 
     fetchTags();
   }, []);
+
+  const labels = [
+    ResourceTypeEnum.REPOSITORY,
+    ResourceTypeEnum.NOTEBOOK,
+    ResourceTypeEnum.DATASET,
+    ResourceTypeEnum.MODEL,
+  ];
 
   return (
     <>
@@ -139,7 +145,7 @@ export const Resources = () => {
               Showing
             </Text>
             <HStack wrap="wrap">
-              {Object.values(ResourceTypeEnum).map((type) => {
+              {labels.map((type) => {
                 const isSelected = resourceTypes.includes(type);
                 return (
                   <Button
@@ -186,6 +192,8 @@ export const Resources = () => {
               />
             );
           })}
+
+          {resources.length === 0 && <Spinner />}
         </SimpleGrid>
 
         {resources.length === 0 && (

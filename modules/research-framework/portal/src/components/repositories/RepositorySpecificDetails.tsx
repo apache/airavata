@@ -11,6 +11,7 @@ import {
   Breadcrumb,
   Heading,
   Separator,
+  HStack,
 } from "@chakra-ui/react";
 import { Fragment, useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
@@ -154,20 +155,22 @@ export const RepositorySpecificDetails = ({
       <Separator my={6} />
 
       <Box>
-        <Heading fontWeight="bold" size="2xl">
-          GitHub
-        </Heading>
-        <Button
-          mt={2}
-          size="sm"
-          as="a"
-          // @ts-expect-error This is fine
-          target="_blank"
-          href={repository.repositoryUrl}
-        >
-          <FaGithub />
-          Open {repository.name} on GitHub
-        </Button>
+        <HStack alignItems="center" justifyContent="space-between">
+          <Heading fontWeight="bold" size="2xl">
+            GitHub Repository
+          </Heading>
+          <Button
+            mt={2}
+            size="sm"
+            as="a"
+            // @ts-expect-error This is fine
+            target="_blank"
+            href={repository.repositoryUrl}
+          >
+            <FaGithub />
+            Open in GitHub
+          </Button>
+        </HStack>
 
         <Box
           mt={4}
