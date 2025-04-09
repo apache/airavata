@@ -62,7 +62,7 @@ class CustomDockerSpawner(DockerSpawner):
             if data_subfolder:
                 host_data_path = f"/home/exouser/mnt/{data_subfolder}"
                 volumes_dict[host_data_path] = {
-                    'bind': "/home/jovyan/shared_data_tmp",
+                    'bind': f"/cybershuttle_data/{data_subfolder}",
                     'mode': 'ro'
                 }
             self.image = "cybershuttle/jupyterlab-base" # TODO using ENV variable

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TARGET_DIR="/home/jovyan/work"
-SHARED_TMP="/home/jovyan/shared_data_tmp"
+SHARED_TMP="/cybershuttle_data"
 
 mkdir -p "$TARGET_DIR"
 
@@ -20,12 +20,9 @@ else
     echo "Docker default files already exist, skipping copy."
 fi
 
-# If there's a shared_data_tmp directory mounted, symlink them
 if [ -d "$SHARED_TMP" ]; then
-    echo "Creating symlinks for shared read-only data inside $TARGET_DIR..."
-    for item in "$SHARED_TMP"/*; do
-        ln -s "$item" "$TARGET_DIR/$(basename "$item")"
-    done
+    echo "Linking shared data to workspace..."
+    ln -s "$SHARED_TMP" "$TARGET_DIR/cybershuttle_data"
 fi
 
 exec "$@"
