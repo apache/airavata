@@ -11,6 +11,7 @@ from typing import Any, NamedTuple, Optional
 
 import jwt
 import requests
+import tomli
 import yaml
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import ExecutionResult
@@ -36,6 +37,7 @@ class RequestedRuntime:
     queue: str
     group: str
     file: str | None
+    use: str | None
 
 
 class ProcessState(IntEnum):
@@ -253,13 +255,13 @@ def submit_agent_job(
     rt_name: str,
     access_token: str,
     app_name: str,
-    cluster: str | None = None,
+    gateway_id: str,
+    walltime: int,
+    cluster: str,
+    queue: str,
+    group: str,
     cpus: int | None = None,
     memory: int | None = None,
-    walltime: int | None = None,
-    queue: str | None = None,
-    group: str | None = None,
-    gateway_id: str = 'default',
     file: str | None = None,
 ) -> None:
     """
@@ -268,13 +270,13 @@ def submit_agent_job(
     @param rt_name: the runtime name
     @param access_token: the access token
     @param app_name: the application name
-    @param cluster: the cluster
-    @param cpus: the number of cpus
-    @param memory: the memory
+    @param gateway_id: the gateway id
     @param walltime: the walltime
+    @param cluster: the cluster
     @param queue: the queue
     @param group: the group
-    @param gateway_id: the gateway id
+    @param cpus: the number of cpus
+    @param memory: the memory
     @param file: environment file
     @returns: None
 
@@ -285,6 +287,7 @@ def submit_agent_job(
     # Data to be sent in the POST request
     if file is not None:
         fp = Path(file)
+        # validation
         assert fp.exists(), f"File {file} does not exist"
         with open(fp, "r") as f:
             content = yaml.safe_load(f)
@@ -777,35 +780,44 @@ def request_runtime(line: str):
     p.add_argument("--cluster", type=str, help="cluster", required=False)
     p.add_argument("--cpus", type=int, help="CPU cores", required=False)
     p.add_argument("--memory", type=int, help="memory (MB)", required=False)
-    p.add_argument("--walltime", type=int, help="time (mins)", required=False)
+    p.add_argument("--walltime", type=int, help="time (mins)", required=True)
     p.add_argument("--queue", type=str, help="resource queue", required=False)
-    p.add_argument("--group", type=str, help="resource group", required=False)
+    p.add_argument("--group", type=str, help="resource group", required=False, default="Default")
     p.add_argument("--file", type=str, help="yml file", required=False)
+    p.add_argument("--use", type=str, help="allowed resources", required=False)
+  
     args = p.parse_args(cmd_args, namespace=RequestedRuntime())
 
     if args.file is not None:
+        assert args.use is not None
+        cluster, queue  = args.use.split(",")[0].split(":", maxsplit=1) # TODO replace with meta-scheduler
         return submit_agent_job(
             rt_name=rt_name,
             access_token=access_token,
             app_name='CS_Agent',
+            gateway_id='default',
+            walltime=args.walltime,
+            cluster=cluster,
+            queue=queue,
+            group=args.group,
             file=args.file,
         )
     else:
         assert args.cluster is not None
-        assert args.cpus is not None
-        assert args.walltime is not None
         assert args.queue is not None
         assert args.group is not None
+        assert args.cpus is not None
         return submit_agent_job(
             rt_name=rt_name,
             access_token=access_token,
             app_name='CS_Agent',
-            cluster=args.cluster,
-            cpus=args.cpus,
-            memory=args.memory,
+            gateway_id='default',
             walltime=args.walltime,
+            cluster=args.cluster,
             queue=args.queue,
             group=args.group,
+            cpus=args.cpus,
+            memory=args.memory,
         )
 
 
@@ -913,8 +925,7 @@ orig_run_code = ipython.run_cell_async
 
 def cell_has_magic(raw_cell: str) -> bool:
     lines = raw_cell.strip().splitlines()
-    magics = (r"%switch_runtime", r"%%run_on", r"%authenticate",
-              r"%request_runtime", r"%stop_runtime", r"%stat_runtime", r"%copy_data")
+    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime" r"%stop_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data")
     return any(line.strip().startswith(magics) for line in lines)
 
 
@@ -945,8 +956,12 @@ async def run_cell_async(
 
 ipython.run_cell_async = run_cell_async
 
-print(r"""
-Loaded airavata_jupyter_magic
+
+with open("pyproject.toml", "rb") as f:
+    pyproject = tomli.load(f)
+version = pyproject["project"]["version"]
+print(rf"""
+Loaded airavata_jupyter_magic ({version}) 
 (current runtime = local)
 
   %authenticate                      -- Authenticate to access high-performance runtimes.
@@ -955,6 +970,7 @@ Loaded airavata_jupyter_magic
   %stop_runtime <rt>                 -- Stop runtime <rt> when no longer needed.
   %switch_runtime <rt>               -- Switch active runtime to <rt>. All subsequent executions will use this runtime.
   %%run_on <rt>                      -- Force a cell to always execute on <rt>, regardless of the active runtime.
+  %stat_runtime <rt>                 -- Show the status of runtime <rt>.
   %copy_data <r1:file1> <r2:file2>   -- Copy <file1> in <r1> to <file2> in <r2>.
 """)
 
