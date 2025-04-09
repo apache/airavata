@@ -58,6 +58,13 @@ const NavBar = () => {
   const navigate = useNavigate();
   const auth = useAuth();
 
+  const filteredNavContent = NAV_CONTENT.filter((item) => {
+    if (item.needsAuth) {
+      return auth.isAuthenticated;
+    }
+    return true; // Show all items that do not require authentication
+  });
+
   const NavLink = ({ title, url, ...props }: NavLinkProps) => (
     <Button
       variant="plain"
@@ -96,14 +103,9 @@ const NavBar = () => {
 
         {/* Desktop Nav Links */}
         <HStack ml={4} display={{ base: "none", md: "flex" }}>
-          {NAV_CONTENT.map((item) => {
-            if (item.needsAuth && !auth.isAuthenticated) {
-              return null; // Skip if the user is not authenticated
-            }
-            return (
-              <NavLink key={item.title} title={item.title} url={item.url} />
-            );
-          })}
+          {filteredNavContent.map((item) => (
+            <NavLink key={item.title} title={item.title} url={item.url} />
+          ))}
         </HStack>
 
         <Spacer />
@@ -123,7 +125,7 @@ const NavBar = () => {
             spaceY={2}
             display={{ md: "none" }}
           >
-            {NAV_CONTENT.map((item) => (
+            {filteredNavContent.map((item) => (
               <Box key={item.title} w="100%">
                 <NavLink
                   key={item.title}
