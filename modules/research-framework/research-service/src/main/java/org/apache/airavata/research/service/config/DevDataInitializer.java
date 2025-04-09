@@ -120,8 +120,8 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
                 "https://github.com/srirampc/airavata-cerebrum",
                 "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
-                "artisan-cerebrum",
-                new String[]{"artisan", "cerebrum", "workshop"},
+                "apache-airavata-cerebrum",
+                new String[]{"apache", "cerebrum", "workshop"},
                 devUserEmail
         );
 
@@ -129,7 +129,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Large-scale brain model during awake and sleep states",
                 "https://github.com/bazhlab-ucsd/whole-brain-public",
                 "Large-scale brain model during awake and sleep states",
-                "bazhlab-neurodata25",
+                "bazhlab-whole-brain",
                 new String[]{"bazhlab", "whole-brain", "workshop"},
                 devUserEmail
         );

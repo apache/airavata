@@ -6,9 +6,20 @@ server:
   port: 18889
   address: 0.0.0.0
 
-cybershuttle:
-  hub:
+airavata:
+  research-hub:
     url: https://hub.dev.cybershuttle.org
+    dev-user: "airavata@apache.org"
+  research-portal:
+    url: http://dev.cybershuttle.org
+
+  openid:
+    url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
+
+  user-profile:
+    server:
+      url: api.dev.cybershuttle.org
+      port: 8962
 
 spring:
   servlet:
@@ -36,3 +47,9 @@ springdoc:
     operationsSorter: alpha
     tagsSorter: alpha
     doc-expansion: none
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: data-catalog-portal
+
+
+
