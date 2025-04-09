@@ -1,5 +1,6 @@
 import base64
 import binascii
+import importlib.metadata
 import json
 import os
 import time
@@ -305,10 +306,10 @@ def submit_agent_job(
             'nodeCount': 1,
             'cpuCount': resources["min_cpu"],
             'memory': resources["min_mem"],
-            'wallTime': resources["walltime"],
-            'remoteCluster': resources["cluster"],
-            'group': resources["group"],
-            'queue': resources["queue"],
+            'wallTime': walltime,
+            'remoteCluster': cluster,
+            'group': group,
+            'queue': queue,
             'libraries': condas,
             'pip': pips,
             'mounts': mounts,
@@ -957,9 +958,7 @@ async def run_cell_async(
 ipython.run_cell_async = run_cell_async
 
 
-with open("pyproject.toml", "rb") as f:
-    pyproject = tomli.load(f)
-version = pyproject["project"]["version"]
+version = importlib.metadata.version("airavata-python-sdk")
 print(rf"""
 Loaded airavata_jupyter_magic ({version}) 
 (current runtime = local)
