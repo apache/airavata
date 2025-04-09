@@ -50,8 +50,7 @@ while true; do
             IFS=',' read -ra MOUNTS <<< "$2"
             for MOUNT in "${MOUNTS[@]}"; do
               IFS=':' read -r SRC DEST <<< "$MOUNT"
-              SRC=$(eval echo "$SRC")
-              BIND_OPTS+=("--bind $SRC:$DEST:ro")
+              BIND_OPTS+=("--bind $CS_HOME/dataset/$SRC:$DEST:ro")
             done
             shift 2 ;;
         --bind)      BIND_OPTS+=("--bind $2:ro"); shift 2 ;;
