@@ -16,7 +16,7 @@ import yaml
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
-from IPython.display import HTML, Image, display
+from IPython.display import HTML, Image, display, Javascript, HTML
 from rich.console import Console
 
 from .device_auth import DeviceFlowAuthenticator
@@ -538,6 +538,12 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
                         result.error_in_exec = Exception(
                             f"Failed to decode image data: {e}")
                         return False
+                elif 'text/html' in data_obj:
+                    html_data = data_obj['text/html']
+                    display(HTML(html_data))
+                elif 'application/javascript' in data_obj:
+                    js_data = data_obj['application/javascript']
+                    display(Javascript(js_data))
 
             elif output_type == 'stream':
                 stream_name = output.get('name', 'stdout')
@@ -558,7 +564,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
                     """
                     display(HTML(error_html))
                     result.error_in_exec = Exception(stream_text)
-                    return False
+                    #return False This prevents rest of the message not getting rendered
                 else:
                     print(stream_text)
 
