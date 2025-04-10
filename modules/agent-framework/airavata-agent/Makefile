@@ -49,9 +49,26 @@ deploy-expanse-gridchem:
 	cybershuttle/container/remote-agent-base.sif \
 	docker://$(IMAGE_NAME)"
 
+deploy-neurodata25-vc: deploy-neurodata25-vc-1 deploy-neurodata25-vc-2
+
+deploy-neurodata25-vc-1:
+	ssh exouser@js2.cpu.airavata.org \
+	"module load singularity && srun -p cloud -t 30 \
+	singularity pull --disable-cache --force \
+	cybershuttle/container/remote-agent-base.sif \
+	docker://$(IMAGE_NAME)"
+
+deploy-neurodata25-vc-2:
+	ssh exouser@js2.gpu.airavata.org \
+	"module load singularity && srun -p cloud -t 30 \
+	singularity pull --disable-cache --force \
+	cybershuttle/container/remote-agent-base.sif \
+	docker://$(IMAGE_NAME)"
+
 deploy-bootstrap:
 	scp agent.sh x-scigap@anvil:~/cybershuttle/agent.sh && \
 	scp agent.sh x-waterhub@anvil:~/cybershuttle/agent.sh && \
 	scp agent.sh x-gcommunityus@anvil:~/cybershuttle/agent.sh && \
 	scp agent.sh scigap@expanse:~/cybershuttle/agent.sh && \
-	scp agent.sh gridchem@expanse:~/cybershuttle/agent.sh
+	scp agent.sh exouser@js2.cpu.airavata.org:~/cybershuttle/agent.sh && \
+	scp agent.sh exouser@js2.gpu.airavata.org:~/cybershuttle/agent.sh
