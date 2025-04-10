@@ -13,6 +13,7 @@ const agendaItems = [
     topic: "Breakfast/ Sign in",
     session: "",
     speaker: "",
+    highlight: true,
   },
   {
     time: "8:15 am – 8:30 am",
@@ -44,6 +45,7 @@ const agendaItems = [
     topic: "Break",
     session: "",
     speaker: "",
+    highlight: true,
   },
   {
     time: "11:00 am – 11:45 am",
@@ -64,6 +66,7 @@ const agendaItems = [
     topic: "Lunch",
     session: "",
     speaker: "",
+    highlight: true,
   },
   {
     time: "1:00 pm – 2:00 pm",
@@ -85,27 +88,29 @@ const agendaItems = [
     topic: "Break",
     session: "",
     speaker: "",
+    highlight: true,
   },
   {
     time: "3:00 pm – 3:45 pm",
-    topic: "TBD",
+    topic: "Computing with Neural Oscillators",
     session: ["Presentation", "Hands on"],
-    speaker: ["Ratan Murty", "Ratan Murty Student"],
+    speaker: ["Nabil Imam", "Nand Chandravadia"],
   },
   {
     time: "3:45 pm – 4:30 pm",
-    topic:
-      "Self-organization of cortical areas in the development and evolution of neocortex",
+    topic: "Executable NeuroAI models for vision neuroscience",
     session: ["Presentation", "Hands on"],
-    speaker: ["Nabil Imam", "Nand Chandravadia"],
+    speaker: ["Ratan Murty", "Ratan Murty Student"],
   },
   {
     time: "4:30 pm – 4:45 pm",
     topic: "Conclusion",
     session: "Presentation",
-    speaker: "Giri",
+    speaker: "Giri Krishnan",
   },
 ];
+
+const indexToColor = ["black", "blue.600"];
 
 export const Events = () => {
   return (
@@ -128,7 +133,7 @@ export const Events = () => {
         />
       </VStack>
 
-      <Table.Root mt={4} striped={true} stickyHeader={true} interactive={true}>
+      <Table.Root mt={4} stickyHeader={true} interactive={true}>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader>Time</Table.ColumnHeader>
@@ -139,7 +144,10 @@ export const Events = () => {
         </Table.Header>
         <Table.Body>
           {agendaItems.map((item, index) => (
-            <Table.Row key={index}>
+            <Table.Row
+              key={index}
+              bg={item.highlight ? "green.100" : "transparent"}
+            >
               <Table.Cell>{item.time}</Table.Cell>
               <Table.Cell>{item.topic}</Table.Cell>
               {typeof item.session === "string" ? (
@@ -147,7 +155,9 @@ export const Events = () => {
               ) : (
                 <Table.Cell>
                   {item.session.map((session, index) => (
-                    <Text key={index}>{session}</Text>
+                    <Text key={index} color={indexToColor[index]}>
+                      {session}
+                    </Text>
                   ))}
                 </Table.Cell>
               )}
@@ -158,7 +168,9 @@ export const Events = () => {
                 ) : (
                   <Text>
                     {item.speaker.map((speaker, index) => (
-                      <Text key={index}>{speaker}</Text>
+                      <Text key={index} color={indexToColor[index]}>
+                        {speaker}
+                      </Text>
                     ))}
                   </Text>
                 )}

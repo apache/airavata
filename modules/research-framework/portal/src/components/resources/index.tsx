@@ -58,6 +58,7 @@ export const Resources = () => {
     ResourceTypeEnum.NOTEBOOK,
   ]);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleDelete = (i: number) => {
     setTags(tags.filter((_, index) => index !== i));
@@ -70,9 +71,11 @@ export const Resources = () => {
 
   useEffect(() => {
     async function fetchResources() {
+      setLoading(true);
       const stringTagsArr = tags.map((tag) => tag.text);
       const resources = await getResources(resourceTypes, stringTagsArr);
       setResources(resources.content);
+      setLoading(false);
     }
 
     fetchResources();
@@ -192,9 +195,12 @@ export const Resources = () => {
               />
             );
           })}
-
-          {resources.length === 0 && <Spinner />}
         </SimpleGrid>
+        {loading && (
+          <Box textAlign="center">
+            <Spinner />
+          </Box>
+        )}
 
         {resources.length === 0 && (
           <Box textAlign="center" color="gray.500">

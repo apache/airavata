@@ -14,7 +14,6 @@ import NavBarFooterLayout from "./layouts/NavBarFooterLayout";
 import { CybershuttleLanding } from "./components/home/CybershuttleLanding";
 import {
   APP_REDIRECT_URI,
-  BACKEND_URL,
   CLIENT_ID,
   OPENID_CONFIG_URL,
 } from "./lib/constants";
@@ -42,7 +41,7 @@ function App() {
         const redirectUri = APP_REDIRECT_URI;
 
         const theConfig: AuthProviderProps = {
-          authority: `${BACKEND_URL}/api/v1/identity-management/`,
+          authority: `https://auth.dev.cybershuttle.org/admin/master/console/#/default`,
           client_id: CLIENT_ID,
           redirect_uri: redirectUri,
           response_type: "code",
