@@ -33,6 +33,7 @@ func main() {
 	// Define flags with default empty values.
 	serverUrl := flag.String("server", "", "Server flag (optional)")
 	agentId := flag.String("agent", "", "Agent flag (optional)")
+	environ := flag.String("environ", "", "Environment name (optional)")
 	lib := flag.String("lib", "", "Libraries flag (optional)")
 	pip := flag.String("pip", "", "Pip flag (optional)")
 
@@ -40,6 +41,7 @@ func main() {
 	flag.Parse()
 	log.Printf("[agent.go] main() --server=%s\n", *serverUrl)
 	log.Printf("[agent.go] main() --agent=%s\n", *agentId)
+	log.Printf("[agent.go] main() --environ=%s\n", *environ)
 	log.Printf("[agent.go] main() --lib=%s\n", *lib)
 	log.Printf("[agent.go] main() --pip=%s\n", *pip)
 
@@ -49,6 +51,9 @@ func main() {
 	}
 	if *agentId == "" {
 		log.Fatalf("[agent.go] main() Error: --agent flag is required.\n")
+	}
+	if *environ == "" {
+		log.Fatalf("[agent.go] main() Error: --environ flag is required.\n")
 	}
 
 	ctx := context.Background()
@@ -76,11 +81,20 @@ func main() {
 	}
 	log.Printf("[agent.go] main() Created stream...\n")
 
+	// create environment, don't recreate if exists
+	envCmd := exec.Command("micromamba", "create", "-n", *environ)
+	envCmd.Stdin = strings.NewReader("n\n")
+	if err := envCmd.Run(); err != nil {
+		log.Printf("[agent.go] main() Using environment: %s", *environ)
+	} else {
+		log.Printf("[agent.go] main() Created environment: %s\n", *environ)
+	}
+
 	var libList []string
 	if strings.TrimSpace(*lib) != "" {
 		libList = append(strings.Split(*lib, ","), defaultLibs...)
 		log.Printf("[agent.go] main() Installing --lib: %v\n", libList)
-		libCmd := exec.Command("micromamba", "install", "-n", *agentId, "--yes")
+		libCmd := exec.Command("micromamba", "install", "-n", *environ, "--yes")
 		libCmd.Args = append(libCmd.Args, libList...)
 		libCmd.Stdout = os.Stdout
 		libCmd.Stderr = os.Stderr
@@ -96,7 +110,7 @@ func main() {
 	if strings.TrimSpace(*pip) != "" {
 		pipList = strings.Split(*pip, ",")
 		log.Printf("[agent.go] main() Installing --pip: %v\n", pipList)
-		pipCmd := exec.Command("micromamba", "run", "-n", *agentId, "pip", "install")
+		pipCmd := exec.Command("micromamba", "run", "-n", *environ, "pip", "install")
 		pipCmd.Args = append(pipCmd.Args, pipList...)
 		pipCmd.Stdout = os.Stdout
 		pipCmd.Stderr = os.Stderr

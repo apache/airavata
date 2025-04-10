@@ -22,10 +22,11 @@ AGENT=""
 SERVER=""
 CONTAINER=""
 LIBRARIES=""
+ENVIRON=""
 PIP=""
 BIND_OPTS=()
 
-PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,bind: -n "$0" -- "$@")
+PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,environ:,bind: -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
     echo "Usage: $0 \
     --server SERVER \
@@ -34,6 +35,7 @@ if [ $? -ne 0 ]; then
     --libraries LIBRARIES \
     --pip PIP \
     --mounts MOUNTS \
+    --environ ENVIRON
     [--bind BIND] ..."
     exit 1
 fi
@@ -53,6 +55,7 @@ while true; do
               BIND_OPTS+=("--bind $CS_HOME/dataset/$SRC:$DEST:ro")
             done
             shift 2 ;;
+        --environ)   ENVIRON="$2"; shift 2 ;;
         --bind)      BIND_OPTS+=("--bind $2:ro"); shift 2 ;;
         --)          shift; break ;;
         *) echo "Unexpected option: $1"; exit 1 ;;
@@ -80,4 +83,4 @@ singularity exec \
   --env MAMBA_ROOT_PREFIX=/scratch \
   --env TMPDIR=/scratch/tmp \
   $CS_HOME/container/$CONTAINER \
-  bash -c "micromamba create -n $AGENT && /opt/airavata-agent --server \"$SERVER:19900\" --agent \"$AGENT\" --lib \"$LIBRARIES\" --pip \"$PIP\""
+  bash -c "/opt/airavata-agent --server \"$SERVER:19900\" --agent \"$AGENT\" --environ \"$ENVIRON\" --lib \"$LIBRARIES\" --pip \"$PIP\""

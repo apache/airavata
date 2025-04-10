@@ -1,5 +1,6 @@
 import base64
 import binascii
+import hashlib
 import importlib.metadata
 import json
 import os
@@ -12,12 +13,11 @@ from typing import Any, NamedTuple, Optional
 
 import jwt
 import requests
-import tomli
 import yaml
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
-from IPython.display import HTML, Image, display, Javascript, HTML
+from IPython.display import HTML, Image, Javascript, display
 from rich.console import Console
 
 from .device_auth import DeviceFlowAuthenticator
@@ -72,7 +72,13 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('walltime', int),
     ('gateway_id', str),
     ('group', str),
+    ('libraries', list[str]),
+    ('pip', list[str]),
 ])
+
+def getEnvName(rt: RuntimeInfo) -> str:
+    string = ''.join(rt.libraries + rt.pip)
+    return hashlib.sha256(string.encode('utf-8')).hexdigest()
 
 
 PENDING_STATES = [
@@ -355,6 +361,8 @@ def submit_agent_job(
             memory=data['memory'],
             walltime=data['wallTime'],
             group=data['group'],
+            libraries=data['libraries'],
+            pip=data['pip'],
         )
         state.all_runtimes[rt_name] = rt
         print(f'Requested runtime={rt_name}. state={pstate.name}')
@@ -420,7 +428,7 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
     # Send the POST request
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": runtime.agentId,
-        "envName": env_name,
+        "envName": getEnvName(runtime),
     }))
     data = res.json()
 
@@ -490,7 +498,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
     url = api_base_url + '/api/v1/agent/execute/jupyter'
     data = {
         "agentId": rt.agentId,
-        "envName": rt.agentId,
+        "envName": getEnvName(rt),
         "code": code_obj,
     }
     json_data = json.dumps(data)
