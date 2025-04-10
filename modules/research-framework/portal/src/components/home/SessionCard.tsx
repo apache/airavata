@@ -98,7 +98,7 @@ export const SessionCard = ({ session }: { session: SessionType }) => {
                   loading={deleteLoading}
                   onClick={handleDeleteSession}
                 >
-                  Save
+                  Delete
                 </Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger asChild>
@@ -116,10 +116,6 @@ export const SessionCard = ({ session }: { session: SessionType }) => {
               <Heading size="lg">{session.sessionName}</Heading>
             </Box>
             <VStack alignItems="flex-end">
-              <Badge size="md" colorPalette={getColorPalette(session.status)}>
-                {session.status}
-              </Badge>
-
               <IconButton
                 color="red.600"
                 size="xs"
@@ -132,12 +128,15 @@ export const SessionCard = ({ session }: { session: SessionType }) => {
           </HStack>
         </Card.Header>
         <Card.Body>
-          <Text color="fg.muted">
-            <Text as="span" fontWeight="bold">
-              Created
+          <HStack alignItems={"center"} gap={1}>
+            <Badge size="md" colorPalette={getColorPalette(session.status)}>
+              {session.status}
+            </Badge>
+            •
+            <Text color="fg.muted">
+              {new Date(session.createdAt).toLocaleString()}
             </Text>
-            : {new Date(session.createdAt).toLocaleString()}
-          </Text>
+          </HStack>
 
           <SessionCardControls session={session} />
         </Card.Body>
