@@ -22,6 +22,7 @@ import { WebStorageStateStore } from "oidc-client-ts";
 import { Resources } from "./components/resources";
 import { UserSet } from "./components/auth/UserSet";
 import { Toaster } from "./components/ui/toaster";
+import { Events } from "./components/events";
 function App() {
   const colorMode = useColorMode();
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ function App() {
             <Route path="/" element={<CybershuttleLanding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/resources/datasets" element={<Datasets />} />
             <Route path="/resources/notebooks" element={<Notebooks />} />
             <Route path="/resources/repositories" element={<Repositories />} />

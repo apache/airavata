@@ -1,9 +1,10 @@
 import { Center, Text, Button, Image, VStack, Stack } from "@chakra-ui/react";
 import { useAuth } from "react-oidc-context";
 import AirvataLogo from "../../assets/airavata-logo.png";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const Login = () => {
+  const [loading, setLoading] = useState(false);
   const auth = useAuth();
 
   // Automatically login the user if they are authenticated
@@ -39,16 +40,18 @@ export const Login = () => {
             _active={{ bg: "gray.900" }}
             w="300px"
             onClick={() => {
-              console.log("Sign in clicked");
+              console.log("Login button clicked");
+              setLoading(true);
               auth.signinRedirect({
                 redirect_uri: `${window.location.origin}${redirect}`,
                 extraQueryParams: {
-                  // This is the prompt that will be shown to the user
                   prompt: "login",
                   kc_idp_hint: "oidc",
                 },
               });
+              // no need to set loading to false here, as the redirect will happen
             }}
+            loading={loading}
           >
             Institution Login
           </Button>
