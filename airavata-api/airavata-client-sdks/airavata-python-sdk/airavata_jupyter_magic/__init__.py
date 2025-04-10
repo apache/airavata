@@ -1,6 +1,5 @@
 import base64
 import binascii
-import hashlib
 import importlib.metadata
 import json
 import os
@@ -74,12 +73,8 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('group', str),
     ('libraries', list[str]),
     ('pip', list[str]),
+    ('envName', str),
 ])
-
-def getEnvName(rt: RuntimeInfo) -> str:
-    string = ''.join(rt.libraries + rt.pip)
-    return hashlib.sha256(string.encode('utf-8')).hexdigest()
-
 
 PENDING_STATES = [
     ProcessState.CREATED,
@@ -363,6 +358,7 @@ def submit_agent_job(
             group=data['group'],
             libraries=data['libraries'],
             pip=data['pip'],
+            envName=obj['envName']
         )
         state.all_runtimes[rt_name] = rt
         print(f'Requested runtime={rt_name}. state={pstate.name}')
@@ -428,7 +424,7 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
     # Send the POST request
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": runtime.agentId,
-        "envName": getEnvName(runtime),
+        "envName": runtime.envName,
     }))
     data = res.json()
 
@@ -498,7 +494,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
     url = api_base_url + '/api/v1/agent/execute/jupyter'
     data = {
         "agentId": rt.agentId,
-        "envName": getEnvName(rt),
+        "envName": rt.envName,
         "code": code_obj,
     }
     json_data = json.dumps(data)

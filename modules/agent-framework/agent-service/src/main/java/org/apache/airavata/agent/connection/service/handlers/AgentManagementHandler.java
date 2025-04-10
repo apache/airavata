@@ -106,16 +106,22 @@ public class AgentManagementHandler {
         return sortedLaunchRequest;
     }
 
+    private String generateEnvName(List<String> libraries, List<String> pip) {
+      String key = String.join(",", libraries) + "|" + String.join(",", pip);
+      return Integer.toHexString(key.hashCode());
+    }
+
     public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
         try {
             String agentId = "agent_" + UUID.randomUUID().toString();
+            String envName = generateEnvName(req.getLibraries(), req.getPip());
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
-            ExperimentModel experiment = generateExperiment(req, agentId);
+            ExperimentModel experiment = generateExperiment(req, agentId, envName);
 
             String experimentId = airavataService.airavata().createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
             airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
-            return new AgentLaunchResponse(agentId, experimentId);
+            return new AgentLaunchResponse(agentId, experimentId, envName);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
             throw new RuntimeException("Error while creating the experiment with the name: " + req.getExperimentName(), e);
@@ -148,7 +154,7 @@ public class AgentManagementHandler {
         }
     }
 
-    private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId) throws TException {
+    private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName) throws TException {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
@@ -195,6 +201,7 @@ public class AgentManagementHandler {
                     if (input != null && input.getName() != null) {
                         switch (input.getName()) {
                             case "agent_id" -> input.setValue(agentId);
+                            case "env_name" -> input.setValue(envName);
                             case "server_url" -> input.setValue(airavataService.getServerUrl());
                             case "libraries" -> input.setValue(req.getLibraries() != null ? String.join(",", req.getLibraries()) : "");
                             case "pip" -> input.setValue(req.getPip() != null ? String.join(",", req.getPip()) : "");
