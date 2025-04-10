@@ -16,6 +16,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeRes
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -76,6 +77,33 @@ public class AgentManagementHandler {
             LOGGER.error("Error while extracting the experiment with the id: {}", experimentId);
             throw new RuntimeException("Error while extracting the experiment with the id: " + experimentId, e);
         }
+    }
+
+    /**
+     * Meta-scheduling logic
+     * @param launchRequests
+     * @return
+     * @throws Exception
+     */
+    public AgentLaunchRequest filterOptimumLaunchRequest(List<AgentLaunchRequest> launchRequests) throws Exception {
+        int leastRunningExpCount = Integer.MAX_VALUE;
+        AgentLaunchRequest sortedLaunchRequest = launchRequests.get(0);
+
+        for (AgentLaunchRequest req : launchRequests) {
+            String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
+            ExperimentStatistics experimentStatistics = airavataService.airavata().getExperimentStatistics(UserContext.authzToken(), UserContext.gatewayId(),
+                    System.currentTimeMillis() -  60 * 60 * 1000, System.currentTimeMillis(), null,
+                    appInterfaceId, null, 100, 0);
+
+            int runningExperimentCount = experimentStatistics.getRunningExperimentCount();
+            int failedExperimentCount = experimentStatistics.getFailedExperimentCount();
+            LOGGER.info("Running count {} failed count {} for appInterfaceId {}", runningExperimentCount, failedExperimentCount, appInterfaceId);
+            if (runningExperimentCount + failedExperimentCount < leastRunningExpCount) {
+                leastRunningExpCount = runningExperimentCount + failedExperimentCount;
+                sortedLaunchRequest = req;
+            }
+        }
+        return sortedLaunchRequest;
     }
 
     public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
