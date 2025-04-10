@@ -12,7 +12,7 @@ const agendaItems = [
     time: "8:00 am – 8:15 am",
     topic: "Breakfast/ Sign in",
     session: "",
-    speaker: "",
+    speaker: "https://s.apache.org/cs-neuro-25",
     highlight: true,
   },
   {
@@ -164,7 +164,20 @@ export const Events = () => {
 
               <Table.Cell>
                 {typeof item.speaker === "string" ? (
-                  <Text>{item.speaker}</Text>
+                  <Text>
+                    {item.speaker.includes("http") ? (
+                      <Link
+                        href={item.speaker}
+                        target="_blank"
+                        color="blue.600"
+                        textDecor={"underline"}
+                      >
+                        {item.speaker}
+                      </Link>
+                    ) : (
+                      item.speaker
+                    )}
+                  </Text>
                 ) : (
                   <Text>
                     {item.speaker.map((speaker, index) => (
