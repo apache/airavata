@@ -51,7 +51,18 @@ func main() {
 		log.Fatalf("[agent.go] main() Error: --agent flag is required.\n")
 	}
 
-	conn, err := grpc.NewClient(*serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	ctx := context.Background()
+	conn, err := grpc.DialContext(
+		ctx,
+		*serverUrl,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(20*1024*1024), // 10MB for incoming messages
+			grpc.MaxCallSendMsgSize(20*1024*1024), // 10MB for outgoing messages (if needed)
+		),
+	) // Enable large message support
+
+	//conn, err := grpc.NewClient(*serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("[agent.go] main() Did not connect to %s: %v\n", *serverUrl, err)
 	}
@@ -426,6 +437,8 @@ func executeJupyter(stream Stream, executionId string, envName string, code stri
 	}
 	jupyterResponse := string(bodyBytes)
 	log.Printf("[agent.go] executeJupyter() id: %s response: %s\n", executionId, jupyterResponse)
+	fmt.Printf("Response size: %d bytes\n", len(jupyterResponse))
+
 	sendResponse(jupyterResponse, nil)
 }
 
