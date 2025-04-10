@@ -65,6 +65,12 @@ public class DevDataInitializer implements CommandLineRunner {
             }
         }
 
+        Set<String> authors = new HashSet<>() {
+            {
+                add(user);
+            }
+        };
+
         RepositoryResource repo = new RepositoryResource();
         repo.setName(name);
         repo.setDescription("Repository for " + name);
@@ -73,6 +79,7 @@ public class DevDataInitializer implements CommandLineRunner {
         repo.setStatus(StatusEnum.VERIFIED);
         repo.setPrivacy(PrivacyEnum.PUBLIC);
         repo.setTags(tagSet);
+        repo.setAuthors(authors);
         repo = resourceRepository.save(repo);
 
         DatasetResource dataset = new DatasetResource();
@@ -83,11 +90,7 @@ public class DevDataInitializer implements CommandLineRunner {
         dataset.setStatus(StatusEnum.VERIFIED);
         dataset.setPrivacy(PrivacyEnum.PUBLIC);
         dataset.setTags(tagSet);
-        dataset.setAuthors(new HashSet<>() {
-            {
-                add(user);
-            }
-        });
+        dataset.setAuthors(authors);
         dataset = resourceRepository.save(dataset);
 
         Project project = new Project();
@@ -113,7 +116,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
                 "allenai-v1",
                 new String[]{"allenai", "v1-model", "workshop"},
-                devUserEmail
+                "Anton Arkhipov & Laura Green"
         );
 
         createProject(
@@ -122,7 +125,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
                 "apache-airavata-cerebrum",
                 new String[]{"apache", "cerebrum", "workshop"},
-                devUserEmail
+                "Sriram Chockalingam"
         );
 
         createProject(
@@ -131,7 +134,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Large-scale brain model during awake and sleep states",
                 "bazhlab-whole-brain",
                 new String[]{"bazhlab", "whole-brain", "workshop"},
-                devUserEmail
+                "Maxim Bazhenov & Gabriela Navas Zuloaga"
         );
 
         createProject(
@@ -140,7 +143,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "One-hot Generalized Linear Model for Switching Brain State Discovery",
                 "brainml-onehot-hmmglm",
                 new String[]{"brainml", "onehot-hmmglm", "workshop"},
-                devUserEmail
+                "Anqi Wu & Chengrui Li"
         );
 
         createProject(
@@ -149,7 +152,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
                 "hchoilab-biologicalRNNs",
                 new String[]{"hchoilab", "biologicalRNNs", "workshop"},
-                devUserEmail
+                "Hanna Choi & Aishwarya Balwani"
         );
 
         createProject(
@@ -158,7 +161,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Computing with Neural Oscillators",
                 "immam-gt-neurodata25",
                 new String[]{"immam-gt", "neural-oscillators", "workshop"},
-                devUserEmail
+                "Nabil Imam & Nand Chandravadia"
         );
 
         createProject(
@@ -167,16 +170,16 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Deep Learning in Neuroscience with torch_brain and temporaldata",
                 "nerdslab-neurodata25",
                 new String[]{"nerdslab", "torch_brain", "workshop"},
-                devUserEmail
+                "Vinam Arora & Mahato Shivashriganesh"
         );
 
         createProject(
-                "NetFormer : Transformer model for neural connectivity",
+                "NetFormer: Transformer model for neural connectivity",
                 "https://github.com/cyber-shuttle/NetFormer",
                 "NetFormer : Transformer model for neural connectivity",
                 "neuroaihub-netformer",
                 new String[]{"neuroaihub", "netformer", "workshop"},
-                devUserEmail
+                "Lu Mi"
         );
     }
 }

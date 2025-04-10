@@ -20,6 +20,7 @@ async function getSessions(status: SessionStatusEnum | null = null) {
     return data;
   } catch (error) {
     console.error("Error fetching:", error);
+    return null;
   }
 }
 
@@ -33,8 +34,11 @@ export const SessionsSection = () => {
 
     async function fetchData() {
       const allSessions = await getSessions(sessionStatusFilter);
-
-      setSessions(allSessions);
+      if (!allSessions) {
+        console.error("Error fetching sessions");
+      } else {
+        setSessions(allSessions);
+      }
     }
 
     fetchData(); // Initial fetch

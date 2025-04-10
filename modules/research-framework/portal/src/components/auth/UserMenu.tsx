@@ -25,7 +25,10 @@ export const UserMenu = () => {
     );
   const handleLogout = async () => {
     // Clear the user provider
-    await auth.signoutRedirect();
+    await auth.removeUser();
+    await auth.signoutRedirect({
+      post_logout_redirect_uri: `https://cilogon.org/logout?return=${window.location.origin}`,
+    });
   };
 
   return (

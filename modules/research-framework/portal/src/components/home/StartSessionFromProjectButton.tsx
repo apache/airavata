@@ -70,6 +70,8 @@ export const StartSessionFromProjectButton = ({
       console.error("Error fetching project:", error);
       toaster.create({
         title: "Error starting session",
+        description:
+          "This is likely because you just made an account and haven't been enabled yet. Please let us know so we can enable your account.",
         type: "error",
       });
     }
