@@ -599,6 +599,18 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
                 data_obj = output.get('data', {})
                 if 'text/plain' in data_obj:
                     print(data_obj['text/plain'])
+
+                if 'text/html' in data_obj:
+                    html_data = data_obj['text/html']
+                    display(HTML(html_data))
+
+                if 'application/javascript' in data_obj:
+                    js_data = data_obj['application/javascript']
+                    display(Javascript(js_data))
+
+                if 'application/vnd.jupyter.widget-view+json' in data_obj:
+                    widget_data = data_obj
+                    display(widget_data, raw=True)
     else:
         if 'result' in exec_result:
             print(exec_result['result'])
@@ -796,7 +808,7 @@ def request_runtime(line: str):
     p.add_argument("--group", type=str, help="resource group", required=False, default="Default")
     p.add_argument("--file", type=str, help="yml file", required=False)
     p.add_argument("--use", type=str, help="allowed resources", required=False)
-  
+
     args = p.parse_args(cmd_args, namespace=RequestedRuntime())
 
     if args.file is not None:
