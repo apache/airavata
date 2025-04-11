@@ -960,10 +960,11 @@ async def run_cell_async(
         try:
             wait_until_runtime_ready(access_token, rt)
             run_on_runtime(rt, raw_cell, result)
-            return result
         except Exception as e:
             result.error_in_exec = e
-            return result
+        if store_history and ipython:
+            ipython.execution_count += 1
+        return result
 
 ipython.run_cell_async = run_cell_async
 
