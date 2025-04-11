@@ -105,7 +105,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (projectRepository.existsByOwnerId(devUserEmail)) {
+        if (projectRepository.count() > 0) {
             System.out.println("Dev data already initialized. Skipping initialization.");
             return;
         }

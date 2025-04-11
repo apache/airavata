@@ -27,6 +27,7 @@ import org.apache.airavata.research.service.model.repo.SessionRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,8 +40,11 @@ public class SessionHandler {
 
     private final SessionRepository sessionRepository;
 
-    public SessionHandler(SessionRepository sessionRepository) {
+    private final ResearchHubHandler researchHubHandler;
+
+    public SessionHandler(SessionRepository sessionRepository, @Lazy ResearchHubHandler researchHubHandler) {
         this.sessionRepository = sessionRepository;
+        this.researchHubHandler = researchHubHandler;
     }
 
     public Session findSession(String sessionId) {
@@ -69,23 +73,34 @@ public class SessionHandler {
 
     public Session updateSessionStatus(String sessionId, SessionStatusEnum status) {
         Session session = findSession(sessionId);
+
+        String userId = UserContext.userId();
+        if (!session.getUserId().equals(userId)) {
+            throw new RuntimeException("User is not authorized to update session");
+        }
+
+        if (status == SessionStatusEnum.TERMINATED) {
+            researchHubHandler.stopSession(sessionId);
+        }
+
         session.setStatus(status);
         session = sessionRepository.save(session);
         LOGGER.debug("Updated session with Id: {}, Status: {}", session.getId(), status);
         return session;
     }
 
+    public int countSessionsByUserIdAndStatus(String userId, SessionStatusEnum status) {
+        return sessionRepository.countSessionsByUserIdAndStatus(userId, status);
+    }
+
     public boolean deleteSession(String sessionId) {
         Session session = findSession(sessionId);
+        if (!session.getUserId().equals(UserContext.userId())) {
+            throw new RuntimeException("Invalid session ID");
+        }
+
+        researchHubHandler.deleteSession(sessionId);
         sessionRepository.delete(session);
         return true;
     }
-
-    public boolean checkIfSessionExists(String projectId, String userId) {
-        if (sessionRepository.findSessionByProjectIdAndUserId(projectId, userId).isEmpty()) {
-            throw new RuntimeException("Session does not exist");
-        }
-        return true;
-    }
-
 }
