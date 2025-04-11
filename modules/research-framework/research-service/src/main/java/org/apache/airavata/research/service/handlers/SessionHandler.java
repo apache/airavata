@@ -80,7 +80,11 @@ public class SessionHandler {
         }
 
         if (status == SessionStatusEnum.TERMINATED) {
-            researchHubHandler.stopSession(sessionId);
+            try {
+                researchHubHandler.stopSession(sessionId);
+            } catch(Exception e) {
+                LOGGER.warn("Unable to stop session");
+            }
         }
 
         session.setStatus(status);
@@ -99,7 +103,12 @@ public class SessionHandler {
             throw new RuntimeException("Invalid session ID");
         }
 
-        researchHubHandler.deleteSession(sessionId);
+        try {
+            researchHubHandler.deleteSession(sessionId);
+        } catch(Exception e) {
+            LOGGER.warn("Unable to delete session, user already deleted it");
+        }
+
         sessionRepository.delete(session);
         return true;
     }
