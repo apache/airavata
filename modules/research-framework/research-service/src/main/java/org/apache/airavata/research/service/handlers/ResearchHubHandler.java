@@ -18,6 +18,7 @@
  */
 package org.apache.airavata.research.service.handlers;
 
+import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
@@ -27,8 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ResearchHubHandler {
@@ -37,6 +44,8 @@ public class ResearchHubHandler {
     private static final String RH_SPAWN_URL = "%s/hub/spawn/%s/%s?git=%s&dataPath=%s";
     private static final String RH_SESSION_URL = "%s/hub/spawn/%s/%s";
 
+    private static final String SERVERS_API_URL = "%s/hub/api/users/%s/servers/%s";
+
     private final ProjectHandler projectHandler;
     private final SessionHandler sessionHandler;
     private final ProjectRepository projectRepository;
@@ -44,13 +53,77 @@ public class ResearchHubHandler {
     @Value("${airavata.research-hub.url}")
     private String csHubUrl;
 
+    @Value("${airavata.research-hub.adminApiKey}")
+    private String adminApiKey;
+
+    @Value("${airavata.research-hub.limit}")
+    private int maxRHubSessions;
+
     public ResearchHubHandler(ProjectHandler projectHandler, SessionHandler sessionHandler, ProjectRepository projectRepository) {
         this.projectHandler = projectHandler;
         this.sessionHandler = sessionHandler;
         this.projectRepository = projectRepository;
     }
 
+    public boolean stopSession(String sessionId) {
+        String userId = UserContext.userId();
+        String url = String.format(SERVERS_API_URL, csHubUrl, userId, sessionId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "token " + adminApiKey);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<Void> response = new RestTemplate().exchange(
+                url,
+                HttpMethod.DELETE,
+                request,
+                Void.class
+        );
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            LOGGER.info("Successfully stopped/deleted RHub session {} for user {}", sessionId, userId);
+            return true;
+        } else {
+            throw new RuntimeException("Failed to delete RHub session " + sessionId + " for user " + userId);
+        }
+    }
+
+    public boolean deleteSession(String sessionId) {
+        String userId = UserContext.userId();
+        String url = String.format(SERVERS_API_URL, csHubUrl, userId, sessionId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "token " + adminApiKey);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("remove", true);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        ResponseEntity<Void> response = new RestTemplate().exchange(
+                url,
+                HttpMethod.DELETE,
+                request,
+                Void.class
+        );
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            LOGGER.info("Successfully stopped/deleted RHub session {} for user {}", sessionId, userId);
+            return true;
+        } else {
+            throw new RuntimeException("Failed to delete RHub session " + sessionId + " for user " + userId);
+        }
+    }
+
+
+
     public String spinRHubSession(String projectId, String sessionName) {
+        String userId = UserContext.userId();
+        int alreadyCreated = sessionHandler.countSessionsByUserIdAndStatus(userId, SessionStatusEnum.CREATED);
+        if (alreadyCreated >= maxRHubSessions) {
+            throw new RuntimeException("Max number of active sessions (10) has already been reached. Please terminate or delete a session to continue.");
+        }
+
         Project project = projectHandler.findProject(projectId);
         // TODO should support multiple data sets for RHub
         DatasetResource dataset = project.getDatasetResources().stream().findFirst().get();

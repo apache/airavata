@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Toaster, toaster } from "../ui/toaster";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
+import { AxiosError } from "axios";
 
 export const StartSessionFromProjectButton = ({
   project,
@@ -67,11 +68,17 @@ export const StartSessionFromProjectButton = ({
         type: "success",
       });
     } catch (error) {
-      console.error("Error fetching project:", error);
+      const err = error as AxiosError<unknown>;
+      let msg: string = (err.response?.data as { message: string })?.message;
+
+      if (!msg) {
+        msg =
+          "This is likely because you just made an account and haven't been enabled yet. Please let us know so we can enable your account";
+      }
+
       toaster.create({
         title: "Error starting session",
-        description:
-          "This is likely because you just made an account and haven't been enabled yet. Please let us know so we can enable your account.",
+        description: msg,
         type: "error",
       });
     }

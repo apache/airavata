@@ -6,7 +6,7 @@ import { Datasets } from "./components/datasets";
 import ResourceDetails from "./components/resources/ResourceDetails";
 import Notebooks from "./components/notebooks";
 import Repositories from "./components/repositories";
-import { Login } from "./components/auth/Login";
+import { Login } from "./components/auth/UserLoginPage";
 import ProtectedComponent from "./components/auth/ProtectedComponent";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { useEffect, useState } from "react";

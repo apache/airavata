@@ -116,14 +116,16 @@ export const SessionCard = ({ session }: { session: SessionType }) => {
               <Heading size="lg">{session.sessionName}</Heading>
             </Box>
             <VStack alignItems="flex-end">
-              <IconButton
-                color="red.600"
-                size="xs"
-                variant={"ghost"}
-                onClick={() => dialog.setOpen(true)}
-              >
-                <FaTrash />
-              </IconButton>
+              {session.status === SessionStatusEnum.TERMINATED && (
+                <IconButton
+                  color="red.600"
+                  size="xs"
+                  variant={"ghost"}
+                  onClick={() => dialog.setOpen(true)}
+                >
+                  <FaTrash />
+                </IconButton>
+              )}
             </VStack>
           </HStack>
         </Card.Header>

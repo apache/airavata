@@ -38,4 +38,6 @@ public interface SessionRepository extends JpaRepository<Session, String> {
     List<Session> findByUserIdOrderByCreatedAtDesc(String userId);
 
     List<Session> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, SessionStatusEnum status);
+
+    int countSessionsByUserIdAndStatus(String userId, SessionStatusEnum status);
 }

@@ -26,6 +26,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ControllerAdvice
 public class GlobalExceptionController {
 
@@ -48,10 +51,13 @@ public class GlobalExceptionController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
+    public ResponseEntity<Map<String, String>> handleOtherExceptions(Exception ex) {
         LOGGER.error("Unexpected error occurred: ", ex);
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", ex.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Unexpected error occurred");
+                .body(errorResponse);
     }
 }
