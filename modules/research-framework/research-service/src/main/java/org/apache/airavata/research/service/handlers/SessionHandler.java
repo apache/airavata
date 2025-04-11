@@ -76,14 +76,15 @@ public class SessionHandler {
 
         String userId = UserContext.userId();
         if (!session.getUserId().equals(userId)) {
-            throw new RuntimeException("User is not authorized to update session");
+            LOGGER.error("User " + userId + " is not authorized to update session " + session.getId());
+            throw new RuntimeException("User " + userId + " is not authorized to update session " + session.getId());
         }
 
         if (status == SessionStatusEnum.TERMINATED) {
             try {
                 researchHubHandler.stopSession(sessionId);
             } catch(Exception e) {
-                LOGGER.warn("Unable to stop session");
+                LOGGER.error("Unable to stop session {} for user {}", sessionId, userId, e);
             }
         }
 
@@ -100,13 +101,14 @@ public class SessionHandler {
     public boolean deleteSession(String sessionId) {
         Session session = findSession(sessionId);
         if (!session.getUserId().equals(UserContext.userId())) {
+            LOGGER.error("Invalid session id {} for user {}", sessionId, session.getUserId());
             throw new RuntimeException("Invalid session ID");
         }
 
         try {
             researchHubHandler.deleteSession(sessionId);
         } catch(Exception e) {
-            LOGGER.warn("Unable to delete session, user already deleted it");
+            LOGGER.error("Unable to delete session, user already deleted it", e);
         }
 
         sessionRepository.delete(session);
