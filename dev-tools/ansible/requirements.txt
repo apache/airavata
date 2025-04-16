@@ -23,7 +23,7 @@ charset-normalizer==2.0.12
 cryptography==36.0.2
 docker==5.0.3
 idna==3.3
-Jinja2==3.1.1
+Jinja2==3.1.6
 MarkupSafe==2.1.1
 packaging==21.3
 pycparser==2.21
