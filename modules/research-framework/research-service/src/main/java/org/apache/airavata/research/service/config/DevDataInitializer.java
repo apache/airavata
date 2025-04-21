@@ -51,7 +51,7 @@ public class DevDataInitializer implements CommandLineRunner {
         this.tagRepository = tagRepository;
     }
 
-    private void createProject(String name, String repoUrl, String datasetName, String datasetUrl, String[] tags, String user) {
+    private void createProject(String name, String description, String repoUrl, String datasetUrl, String[] tags, String user) {
         Set<Tag> tagSet = new HashSet<>();
         for (String tag : tags) {
             Tag t = tagRepository.findByValue(tag);
@@ -73,7 +73,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         RepositoryResource repo = new RepositoryResource();
         repo.setName(name);
-        repo.setDescription("Repository for " + name);
+        repo.setDescription(description);
         repo.setHeaderImage("header_image.png");
         repo.setRepositoryUrl(repoUrl);
         repo.setStatus(StatusEnum.VERIFIED);
@@ -83,8 +83,8 @@ public class DevDataInitializer implements CommandLineRunner {
         repo = resourceRepository.save(repo);
 
         DatasetResource dataset = new DatasetResource();
-        dataset.setName(datasetName);
-        dataset.setDescription("Dataset for " + name);
+        dataset.setName(name);
+        dataset.setDescription(description);
         dataset.setHeaderImage("header_image.png");
         dataset.setDatasetUrl(datasetUrl);
         dataset.setStatus(StatusEnum.VERIFIED);
@@ -111,75 +111,93 @@ public class DevDataInitializer implements CommandLineRunner {
         }
 
         createProject(
-                "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
-                "https://github.com/cyber-shuttle/allen-v1.git",
-                "Bio-realistic model of primary visual cortex (V1) (Allen Institute)",
+                "Bio-realistic multiscale simulations of cortical circuits",
+                "This repository contains notebooks and configurations to run the AllenAI V1 model, with thalamacortical (LGN) and background (BKG) inputs",
+                "https://github.com/cyber-shuttle/allenai-v1",
                 "allenai-v1",
-                new String[]{"allenai", "v1-model", "workshop"},
-                "Anton Arkhipov & Laura Green"
+                new String[]{"neurodata25", "allenai", "visual_cortex"},
+                "Anton Arkhipov, Laura Green"
         );
 
         createProject(
-                "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
+                "Apache Cerebrum",
+                "Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
                 "https://github.com/cyber-shuttle/airavata-cerebrum",
-                "Apache Cerebrum: Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
                 "apache-airavata-cerebrum",
-                new String[]{"apache", "cerebrum", "workshop"},
+                new String[]{"neurodata25", "apache", "cerebrum"},
                 "Sriram Chockalingam"
         );
 
         createProject(
-                "Large-scale brain model during awake and sleep states",
+                "Spatio-temporal dynamics of sleep in large-scale brain models",
+                "This repository contains code to run a large-scale brain model during awake and sleep states",
                 "https://github.com/cyber-shuttle/whole-brain-public",
-                "Large-scale brain model during awake and sleep states",
                 "bazhlab-whole-brain",
-                new String[]{"bazhlab", "whole-brain", "workshop"},
-                "Maxim Bazhenov & Gabriela Navas Zuloaga"
+                new String[]{"neurodata25", "bazhlab", "whole-brain"},
+                "Maxim Bazhenov, Gabriela Navas Zuloaga"
         );
 
-        createProject(
-                "One-hot Generalized Linear Model for Switching Brain State Discovery",
-                "https://github.com/cyber-shuttle/onehot-hmmglm",
-                "One-hot Generalized Linear Model for Switching Brain State Discovery",
-                "brainml-onehot-hmmglm",
-                new String[]{"brainml", "onehot-hmmglm", "workshop"},
-                "Anqi Wu & Chengrui Li"
-        );
-
-        createProject(
+	createProject(
                 "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
+                "This project contains notebooks and code for biologically constrained RNNs via Dale's backpropagation and topologically-informed pruning",
                 "https://github.com/cyber-shuttle/biologicalRNNs",
-                "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
                 "hchoilab-biologicalRNNs",
-                new String[]{"hchoilab", "biologicalRNNs", "workshop"},
-                "Hanna Choi & Aishwarya Balwani"
+                new String[]{"neurodata25", "hchoilab", "biological-rnn"},
+                "Hannah Choi, Aishwarya Balwani"
         );
 
         createProject(
-                "Computing with Neural Oscillators",
-                "https://github.com/cyber-shuttle/NeuroDATA_2025",
-                "Computing with Neural Oscillators",
-                "immam-gt-neurodata25",
-                new String[]{"immam-gt", "neural-oscillators", "workshop"},
-                "Nabil Imam & Nand Chandravadia"
+                "One-hot Generalized Linear Model for Switching Brain State Discovery",
+                "This repository contains notebooks and code to reproduce the One-hot HMM-GLM paper",
+                "https://github.com/cyber-shuttle/onehot-hmmglm",
+                "brainml-onehot-hmmglm",
+                new String[]{"neurodata25", "brainml", "hmm-glm"},
+                "Anqi Wu, Chengrui Li"
         );
 
-        createProject(
-                "Deep Learning in Neuroscience with torch_brain and temporaldata",
+	createProject(
+                "Scaling up neural data analysis with torch_brain and temporaldata",
+                "This repository contains notebooks and configurations to understand and highlight the features of torch_brain and temporaldata",
                 "https://github.com/cyber-shuttle/neurodata25_torchbrain_notebooks",
-                "Deep Learning in Neuroscience with torch_brain and temporaldata",
                 "nerdslab-neurodata25",
-                new String[]{"nerdslab", "torch_brain", "workshop"},
-                "Vinam Arora & Mahato Shivashriganesh"
+                new String[]{"neurodata25", "nerdslab", "torch_brain", "temporaldata"},
+                "Eva Dyer, Vinam Arora, Mahato Shivashriganesh"
+        );
+
+	createProject(
+                "Bridge the Gap between the Structure and Function in the Brain",
+                "This repository contains code for the NetFormer model for neural connectivity",
+                "https://github.com/cyber-shuttle/neuroaihub-netformer",
+                "neuroaihub-netformer",
+                new String[]{"neurodata25", "neuroaihub", "netformer"},
+                "Lu Mi"
         );
 
         createProject(
-                "NetFormer: Transformer model for neural connectivity",
-                "https://github.com/cyber-shuttle/NetFormer",
-                "NetFormer : Transformer model for neural connectivity",
-                "neuroaihub-netformer",
-                new String[]{"neuroaihub", "netformer", "workshop"},
-                "Lu Mi"
+                "Computing with Neural Oscillators",
+                "This repository contains a speech demo that uses Neural Oscillators",
+                "https://github.com/cyber-shuttle/imamlab-neural-oscillators",
+                "imamlab-neurodata25",
+                new String[]{"neurodata25", "imamlab", "neural-oscillators"},
+                "Nabil Imam, Nand Chandravadia"
+        );
+
+	createProject(
+		"Getting started with Cybershuttle",
+		"This repository contains notebooks and configurations to run a simulation and understand the minimum macros required to run Cybershuttle",
+		"https://github.com/cyber-shuttle/cybershuttle-reference",
+		"cybershuttle-reference",
+		new String[]{"cybershuttle", "apache-airavata", "reference"},
+		"Suresh Marru"
+	);
+
+	createProject(
+                "Malicious URL Detector",
+                "Detect malicious URLs using machine learning models",
+                "https://github.com/airavata-courses/malicious-url-detector",
+                "airavata-courses-malicious-url-detector",
+                new String[]{"airavata-courses", "spring-2025"},
+                "Krish Katariya, Jesse Gong, Shreyas Arisa, Devin Fromond"
         );
     }
 }
