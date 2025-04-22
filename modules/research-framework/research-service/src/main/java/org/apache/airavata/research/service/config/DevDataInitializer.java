@@ -83,7 +83,7 @@ public class DevDataInitializer implements CommandLineRunner {
         repo = resourceRepository.save(repo);
 
         DatasetResource dataset = new DatasetResource();
-        dataset.setName(name);
+        dataset.setName(datasetUrl);
         dataset.setDescription(description);
         dataset.setHeaderImage("header_image.png");
         dataset.setDatasetUrl(datasetUrl);
@@ -112,7 +112,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         createProject(
                 "Bio-realistic multiscale simulations of cortical circuits",
-                "This repository contains notebooks and configurations to run the AllenAI V1 model, with thalamacortical (LGN) and background (BKG) inputs",
+               	"Running the AllenAI V1 model, with thalamacortical (LGN) and background (BKG) inputs",
                 "https://github.com/cyber-shuttle/allenai-v1",
                 "allenai-v1",
                 new String[]{"neurodata25", "allenai", "visual_cortex"},
@@ -121,7 +121,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         createProject(
                 "Apache Cerebrum",
-                "Flexible tool for constructing computational neuroscience models from large public databases and brain atlases",
+                "Constructing computational neuroscience models from large public databases and brain atlases",
                 "https://github.com/cyber-shuttle/airavata-cerebrum",
                 "apache-airavata-cerebrum",
                 new String[]{"neurodata25", "apache", "cerebrum"},
@@ -130,7 +130,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         createProject(
                 "Spatio-temporal dynamics of sleep in large-scale brain models",
-                "This repository contains code to run a large-scale brain model during awake and sleep states",
+                "Running a large-scale brain model during awake and sleep states",
                 "https://github.com/cyber-shuttle/whole-brain-public",
                 "bazhlab-whole-brain",
                 new String[]{"neurodata25", "bazhlab", "whole-brain"},
@@ -138,8 +138,8 @@ public class DevDataInitializer implements CommandLineRunner {
         );
 
 	createProject(
-                "Biologically Constrained RNNs via Dale's Backpropagation and Topologically-Informed Pruning",
-                "This project contains notebooks and code for biologically constrained RNNs via Dale's backpropagation and topologically-informed pruning",
+                "Biologically Constrained RNNs",
+                "Running a biologically constrained RNN via Dale's backpropagation and topologically-informed pruning",
                 "https://github.com/cyber-shuttle/biologicalRNNs",
                 "hchoilab-biologicalRNNs",
                 new String[]{"neurodata25", "hchoilab", "biological-rnn"},
@@ -148,7 +148,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         createProject(
                 "One-hot Generalized Linear Model for Switching Brain State Discovery",
-                "This repository contains notebooks and code to reproduce the One-hot HMM-GLM paper",
+                "Reproducing the One-hot HMM-GLM paper (ICLR 2024)",
                 "https://github.com/cyber-shuttle/onehot-hmmglm",
                 "brainml-onehot-hmmglm",
                 new String[]{"neurodata25", "brainml", "hmm-glm"},
@@ -157,7 +157,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
 	createProject(
                 "Scaling up neural data analysis with torch_brain and temporaldata",
-                "This repository contains notebooks and configurations to understand and highlight the features of torch_brain and temporaldata",
+                "Understand and highlight the features of torch_brain and temporaldata",
                 "https://github.com/cyber-shuttle/neurodata25_torchbrain_notebooks",
                 "nerdslab-neurodata25",
                 new String[]{"neurodata25", "nerdslab", "torch_brain", "temporaldata"},
@@ -166,7 +166,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
 	createProject(
                 "Bridge the Gap between the Structure and Function in the Brain",
-                "This repository contains code for the NetFormer model for neural connectivity",
+                "Run the NetFormer model for neural connectivity",
                 "https://github.com/cyber-shuttle/neuroaihub-netformer",
                 "neuroaihub-netformer",
                 new String[]{"neurodata25", "neuroaihub", "netformer"},
@@ -175,7 +175,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         createProject(
                 "Computing with Neural Oscillators",
-                "This repository contains a speech demo that uses Neural Oscillators",
+                "A speech demo that uses Neural Oscillators",
                 "https://github.com/cyber-shuttle/imamlab-neural-oscillators",
                 "imamlab-neurodata25",
                 new String[]{"neurodata25", "imamlab", "neural-oscillators"},
@@ -184,7 +184,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
 	createProject(
 		"Getting started with Cybershuttle",
-		"This repository contains notebooks and configurations to run a simulation and understand the minimum macros required to run Cybershuttle",
+		"Run a simulation and understand the minimum macros required to run Cybershuttle",
 		"https://github.com/cyber-shuttle/cybershuttle-reference",
 		"cybershuttle-reference",
 		new String[]{"cybershuttle", "apache-airavata", "reference"},
