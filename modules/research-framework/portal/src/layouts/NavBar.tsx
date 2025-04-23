@@ -17,11 +17,28 @@ import { Link, useNavigate } from "react-router";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoClose } from "react-icons/io5";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { useAuth } from "react-oidc-context";
 
 const NAV_CONTENT = [
   {
-    title: "Resources",
+    title: "Catalog",
     url: "/resources",
+    needsAuth: false,
+  },
+  {
+    title: "Sessions",
+    url: "/sessions",
+    needsAuth: true,
+  },
+  {
+    title: "Add",
+    url: "/add",
+    needsAuth: true,
+  },
+  {
+    title: "Events",
+    url: "/events",
+    needsAuth: false,
   },
   // {
   //   title: "Datasets",
@@ -39,10 +56,6 @@ const NAV_CONTENT = [
   //   title: "Models",
   //   url: "/resources/models",
   // },
-  {
-    title: "Projects",
-    url: "/projects",
-  },
 ];
 
 interface NavLinkProps extends ButtonProps {
@@ -53,6 +66,14 @@ interface NavLinkProps extends ButtonProps {
 const NavBar = () => {
   const { open, onToggle } = useDisclosure();
   const navigate = useNavigate();
+  const auth = useAuth();
+
+  const filteredNavContent = NAV_CONTENT.filter((item) => {
+    if (item.needsAuth) {
+      return auth.isAuthenticated;
+    }
+    return true; // Show all items that do not require authentication
+  });
 
   const NavLink = ({ title, url, ...props }: NavLinkProps) => (
     <Button
@@ -92,7 +113,7 @@ const NavBar = () => {
 
         {/* Desktop Nav Links */}
         <HStack ml={4} display={{ base: "none", md: "flex" }}>
-          {NAV_CONTENT.map((item) => (
+          {filteredNavContent.map((item) => (
             <NavLink key={item.title} title={item.title} url={item.url} />
           ))}
         </HStack>
@@ -114,7 +135,7 @@ const NavBar = () => {
             spaceY={2}
             display={{ md: "none" }}
           >
-            {NAV_CONTENT.map((item) => (
+            {filteredNavContent.map((item) => (
               <Box key={item.title} w="100%">
                 <NavLink
                   key={item.title}

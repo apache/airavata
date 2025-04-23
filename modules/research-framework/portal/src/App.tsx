@@ -6,7 +6,7 @@ import { Datasets } from "./components/datasets";
 import ResourceDetails from "./components/resources/ResourceDetails";
 import Notebooks from "./components/notebooks";
 import Repositories from "./components/repositories";
-import { Login } from "./components/auth/Login";
+import { Login } from "./components/auth/UserLoginPage";
 import ProtectedComponent from "./components/auth/ProtectedComponent";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 import { useEffect, useState } from "react";
@@ -14,12 +14,16 @@ import NavBarFooterLayout from "./layouts/NavBarFooterLayout";
 import { CybershuttleLanding } from "./components/home/CybershuttleLanding";
 import {
   APP_REDIRECT_URI,
-  BACKEND_URL,
   CLIENT_ID,
   OPENID_CONFIG_URL,
 } from "./lib/constants";
 import { WebStorageStateStore } from "oidc-client-ts";
 import { Resources } from "./components/resources";
+import { UserSet } from "./components/auth/UserSet";
+import { Toaster } from "./components/ui/toaster";
+import { Events } from "./components/events";
+import { AddRepoMaster } from "./components/add/AddRepoMaster";
+import { Add } from "./components/add";
 function App() {
   const colorMode = useColorMode();
   const navigate = useNavigate();
@@ -39,7 +43,7 @@ function App() {
         const redirectUri = APP_REDIRECT_URI;
 
         const theConfig: AuthProviderProps = {
-          authority: `${BACKEND_URL}/api/v1/identity-management/`,
+          authority: `https://auth.dev.cybershuttle.org/admin/master/console/#/default`,
           client_id: CLIENT_ID,
           redirect_uri: redirectUri,
           response_type: "code",
@@ -77,12 +81,15 @@ function App() {
           navigate(location.pathname, { replace: true });
         }}
       >
+        <Toaster />
+        <UserSet />
         <Routes>
           {/* Public Route */}
           <Route element={<NavBarFooterLayout />}>
             <Route path="/" element={<CybershuttleLanding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/resources/datasets" element={<Datasets />} />
             <Route path="/resources/notebooks" element={<Notebooks />} />
             <Route path="/resources/repositories" element={<Repositories />} />
@@ -94,7 +101,9 @@ function App() {
           <Route
             element={<ProtectedComponent Component={NavBarFooterLayout} />}
           >
-            <Route path="/projects" element={<Home />} />
+            <Route path="/sessions" element={<Home />} />
+            <Route path="/add" element={<Add />} />
+            <Route path="/add/repo" element={<AddRepoMaster />} />
           </Route>
         </Routes>
       </AuthProvider>
