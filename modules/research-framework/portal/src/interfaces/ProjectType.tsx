@@ -8,3 +8,10 @@ export interface ProjectType {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ProjectPostData {
+  name: string;
+  repositoryId: string;
+  datasetIds: string[];
+  ownerId: string;
+}
