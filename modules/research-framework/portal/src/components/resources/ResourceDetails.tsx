@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import {
   Container,
   Spinner,
@@ -42,6 +42,7 @@ const ResourceDetails = () => {
   const { id } = useParams();
   const [resource, setResource] = useState<Resource | null>(null);
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   useEffect(() => {
     if (!id) return;
@@ -53,7 +54,7 @@ const ResourceDetails = () => {
       setResource(r);
     }
     getData();
-  }, [id]);
+  }, [id, state]);
 
   if (!resource) return <Spinner />;
 
@@ -83,7 +84,7 @@ const ResourceDetails = () => {
         </Box>
 
         <HStack
-          alignItems={"center"}
+          alignItems={"flex-start"}
           mb={4}
           gap={8}
           justifyContent="space-between"
@@ -125,14 +126,16 @@ const ResourceDetails = () => {
             </HStack>
           </Box>
 
-          {validImage && (
-            <Image
-              src={resource.headerImage}
-              alt="Notebook Header"
-              rounded="md"
-              maxW="300px"
-            />
-          )}
+          <Box>
+            {validImage && (
+              <Image
+                src={resource.headerImage}
+                alt="Notebook Header"
+                rounded="md"
+                maxW="300px"
+              />
+            )}
+          </Box>
         </HStack>
 
         <Separator my={6} />
