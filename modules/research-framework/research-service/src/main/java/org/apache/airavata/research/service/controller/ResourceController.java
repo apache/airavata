@@ -70,7 +70,7 @@ public class ResourceController {
     }
 
     @PostMapping("/repository")
-    public ResponseEntity<ResourceResponse> createRepositoryResource(@RequestBody CreateResourceRequest resourceRequest, @RequestParam(value="GitHub URL") String repositoryUrl) {
+    public ResponseEntity<ResourceResponse> createRepositoryResource(@RequestBody CreateResourceRequest resourceRequest, @RequestParam(value="githubUrl") String repositoryUrl) {
         ResourceResponse response = resourceHandler.createRepositoryResource(resourceRequest, repositoryUrl);
         return ResponseEntity.ok(response);
     }

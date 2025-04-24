@@ -3,10 +3,15 @@ import { useState } from "react";
 import { AddGitUrl } from "./AddGitUrl";
 import { useNavigate } from "react-router";
 import { FaArrowLeft } from "react-icons/fa";
+import { CreateResourceRequest } from "@/interfaces/Requests/CreateResourceRequest";
+import { ConfirmRepoDetails } from "./ConfirmRepoDetails";
 
 export const AddRepoMaster = () => {
   const [addStage, setAddStage] = useState(0);
-  const [repoData, setRepoData] = useState({});
+  const [createResourceRequest, setCreateResourceRequest] = useState({
+    privacy: "PUBLIC",
+  } as CreateResourceRequest);
+  const [githubUrl, setGithubUrl] = useState("");
   const navigate = useNavigate();
 
   const nextStage = () => {
@@ -42,8 +47,18 @@ export const AddRepoMaster = () => {
         {addStage === 0 && (
           <AddGitUrl
             nextStage={nextStage}
-            repoData={repoData}
-            setRepoData={setRepoData}
+            createResourceRequest={createResourceRequest}
+            setCreateResourceRequest={setCreateResourceRequest}
+            setGithubUrl={setGithubUrl}
+            githubUrl={githubUrl}
+          />
+        )}
+
+        {addStage === 1 && (
+          <ConfirmRepoDetails
+            createResourceRequest={createResourceRequest}
+            setCreateResourceRequest={setCreateResourceRequest}
+            githubUrl={githubUrl}
           />
         )}
       </Box>
