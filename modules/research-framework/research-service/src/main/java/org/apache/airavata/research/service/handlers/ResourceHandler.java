@@ -18,11 +18,15 @@
  */
 package org.apache.airavata.research.service.handlers;
 
+import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
-import org.apache.airavata.research.service.ResponseTypes.ResourceResponse;
+import org.apache.airavata.research.service.dto.CreateResourceRequest;
+import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
-import org.apache.airavata.research.service.model.entity.Project;
+import org.apache.airavata.research.service.enums.StatusEnum;
+import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
@@ -93,6 +97,43 @@ public class ResourceHandler {
         return response;
     }
 
+    public void transferResourceRequestFields(Resource resource, CreateResourceRequest createResourceRequest) {
+        // check that the logged in author is at least one of the authors making the request
+        String currentUserId = UserContext.userId();
+        boolean found = false;
+        for (String authorId : createResourceRequest.getAuthors()) {
+            if (authorId.equalsIgnoreCase(currentUserId)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new RuntimeException("You cannot create a resource on another author's behalf, without you being one of the authors");
+        }
+
+        resource.setName(createResourceRequest.getName());
+        resource.setDescription(createResourceRequest.getDescription());
+        resource.setAuthors(createResourceRequest.getAuthors());
+        Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
+        for (String tag: createResourceRequest.getTags()) {
+            org.apache.airavata.research.service.model.entity.Tag t = new org.apache.airavata.research.service.model.entity.Tag();
+            t.setValue(tag);
+            tagsSet.add(t);
+        }
+        resource.setTags(tagsSet);
+        resource.setPrivacy(createResourceRequest.getPrivacy());
+        resource.setStatus(StatusEnum.NONE);
+        resource.setHeaderImage(createResourceRequest.getHeaderImgage());
+
+    }
+
+    public ResourceResponse createRepositoryResource(CreateResourceRequest resourceRequest, String repoUrl) {
+        RepositoryResource repositoryResource = new RepositoryResource();
+        transferResourceRequestFields(repositoryResource, resourceRequest);
+        repositoryResource.setRepositoryUrl(repoUrl);
+        return createResource(repositoryResource, ResourceTypeEnum.REPOSITORY);
+    }
+
     public Resource getResourceById(String id) {
         // Your logic to fetch the resource by ID
         Optional<Resource> opResource = resourceRepository.findById(id);
@@ -117,11 +158,8 @@ public class ResourceHandler {
         return tagRepository.findAll();
     }
 
-    // Helper methods
-//    public ResourceResponse resourceToResponse(Resource resource) {
-//        ResourceResponse response = new ResourceResponse();
-//        response.setResource(resource);
-//        response.setType(resource.getType());
-//        return response;
-//    }
+    public List<Resource> getAllResourcesByTypeAndName(Class<? extends Resource> type, String name) {
+
+        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name);
+    }
 }

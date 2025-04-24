@@ -49,4 +49,15 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             Pageable pageable
     );
 
+    @Query("""
+    SELECT r
+    FROM Resource r
+    WHERE TYPE(r) = :type
+    AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))
+    """)
+    List<Resource> findByTypeAndNameContainingIgnoreCase(
+            @Param("type") Class<? extends Resource> type,
+            @Param("name") String name
+    );
+
 }

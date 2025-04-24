@@ -1,4 +1,4 @@
-package org.apache.airavata.research.service.ResponseTypes;
+package org.apache.airavata.research.service.dto;
 
 public class RedirectResponse {
     private String redirectUrl;
