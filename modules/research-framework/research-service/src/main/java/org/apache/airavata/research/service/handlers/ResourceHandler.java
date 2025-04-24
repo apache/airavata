@@ -22,6 +22,7 @@ import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
+import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -132,6 +134,33 @@ public class ResourceHandler {
         transferResourceRequestFields(repositoryResource, resourceRequest);
         repositoryResource.setRepositoryUrl(repoUrl);
         return createResource(repositoryResource, ResourceTypeEnum.REPOSITORY);
+    }
+
+    public Resource modifyResource(ModifyResourceRequest resourceRequest) {
+        Optional<Resource> resourceOp = resourceRepository.findById(resourceRequest.getId());
+        if (resourceOp.isEmpty()) {
+            throw new RuntimeException("Resource not found");
+        }
+
+        Resource resource = resourceOp.get();
+
+        // ensure that the user making the request is one of the current authors
+        boolean found = false;
+        for (String authorId : resource.getAuthors()) {
+            if (authorId.equalsIgnoreCase(UserContext.userId())) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new RuntimeException("Author is not authorized");
+        }
+
+        transferResourceRequestFields(resource, resourceRequest);
+        initializeResource(resource);
+
+        resourceRepository.save(resource);
+        return resource;
     }
 
     public Resource getResourceById(String id) {

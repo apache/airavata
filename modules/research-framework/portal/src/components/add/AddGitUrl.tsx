@@ -32,7 +32,7 @@ export const AddGitUrl = ({
       const [_, owner, repo] = match;
 
       const tryFetch = async (branch: string) => {
-        const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/cybershuttle.yml`;
+        const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/cybershuttle.yml?ts=${Date.now()}`;
         const res = await fetch(rawUrl);
         if (!res.ok) throw new Error(`Branch ${branch} not found`);
         return res.text();

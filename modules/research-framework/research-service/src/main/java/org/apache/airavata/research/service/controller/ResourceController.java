@@ -20,6 +20,7 @@ package org.apache.airavata.research.service.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
+import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
@@ -72,6 +73,12 @@ public class ResourceController {
     @PostMapping("/repository")
     public ResponseEntity<ResourceResponse> createRepositoryResource(@RequestBody CreateResourceRequest resourceRequest, @RequestParam(value="githubUrl") String repositoryUrl) {
         ResourceResponse response = resourceHandler.createRepositoryResource(resourceRequest, repositoryUrl);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/repository")
+    public ResponseEntity<Resource> modifyRepositoryResource(@RequestBody ModifyResourceRequest resourceRequest) {
+        Resource response = resourceHandler.modifyResource(resourceRequest);
         return ResponseEntity.ok(response);
     }
 

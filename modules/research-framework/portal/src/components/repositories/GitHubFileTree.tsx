@@ -15,6 +15,8 @@ import { FaGithub } from "react-icons/fa";
 import { FiFolder, FiFile } from "react-icons/fi";
 import { Fragment, useEffect, useState } from "react";
 import { getGithubOwnerAndRepo } from "@/lib/util";
+import { useAuth } from "react-oidc-context";
+import { ResourceSyncButton } from "../resources/ResourceSyncButton";
 
 interface FileTreeItem {
   name: string;
@@ -36,6 +38,7 @@ export const GitHubFileTree = ({
   const [history, setHistory] = useState<string[]>([]);
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const auth = useAuth();
 
   useEffect(() => {
     if (!githubUrl) return;
@@ -136,23 +139,30 @@ export const GitHubFileTree = ({
   if (fileTreeLoading) return <Spinner />;
   if (error !== null) return null;
 
+  // handles the case where the user is not logged in
+  const isOwner = repository.authors.some(
+    (author) => author === auth.user?.profile.email
+  );
+
   return (
     <Box>
       <HStack alignItems="center" justifyContent="space-between">
         <Heading fontWeight="bold" size="2xl">
           GitHub Repository
         </Heading>
-        <Button
-          mt={2}
-          size="sm"
-          as="a"
-          // @ts-expect-error This is fine
-          target="_blank"
-          href={repository.repositoryUrl}
-        >
-          <FaGithub />
-          Open in GitHub
-        </Button>
+        <HStack alignItems="center">
+          {isOwner && <ResourceSyncButton repository={repository} />}
+          <Button
+            size="sm"
+            as="a"
+            // @ts-expect-error This is fine
+            target="_blank"
+            href={repository.repositoryUrl}
+          >
+            <FaGithub />
+            Open in GitHub
+          </Button>
+        </HStack>
       </HStack>
 
       <Box
