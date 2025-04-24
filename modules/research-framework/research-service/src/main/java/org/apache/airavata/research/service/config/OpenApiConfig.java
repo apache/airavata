@@ -12,6 +12,8 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("public")
                 .pathsToMatch("/api/**")
+                .addOpenApiCustomizer(globalHeaderCustomizer())
                 .build();
     }
 
@@ -47,8 +50,25 @@ public class OpenApiConfig {
                                                         .scopes(new Scopes()
                                                                 .addString("openid", "openid")
                                                                 .addString("email", "email"))))));
-
-
     }
 
+
+    @Bean
+    public OpenApiCustomizer globalHeaderCustomizer() {
+        System.out.println("Applying global header customizer...");
+        return openApi -> {
+            Parameter claimsHeader = new Parameter()
+                    .in("header")
+                    .schema(new StringSchema())
+                    .name("X-Claims")
+                    .description("{userName: ..., gatewayID: ...}")
+                    .required(false);
+
+            openApi.getPaths().values().forEach(pathItem -> {
+                pathItem.readOperations().forEach(operation -> {
+                    operation.addParametersItem(claimsHeader);
+                });
+            });
+        };
+    }
 }
