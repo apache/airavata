@@ -25,6 +25,12 @@ public class ProjectController {
         return ResponseEntity.ok(projectHandler.getAllProjects());
     }
 
+    @GetMapping("/{ownerId}")
+    @Operation(summary = "Get all projects")
+    public ResponseEntity<List<Project>> getProjectsByOwnerId(@PathVariable(value="ownerId") String ownerId) {
+        return ResponseEntity.ok(projectHandler.getAllProjectsByOwnerId(ownerId));
+    }
+
     @PostMapping("/")
     @Operation(summary = "Create a project")
 

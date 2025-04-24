@@ -4,13 +4,19 @@ import { SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ProjectCard } from "./ProjectCard";
 import { CONTROLLER } from "@/lib/controller";
+import { useAuth } from "react-oidc-context";
 
 export const ProjectsSection = () => {
   const [projects, setProjects] = useState<ProjectType[]>([]);
+  const auth = useAuth();
 
-  async function getAllProjects() {
+  async function getAllProjects(userName: string) {
     try {
-      const response = await api.get(`${CONTROLLER.projects}/`);
+      if (!userName) {
+        console.error("No userName provided");
+        return [];
+      }
+      const response = await api.get(`${CONTROLLER.projects}/${userName}`);
       const data = response.data;
       console.log("projects", data);
       return data;
@@ -20,8 +26,11 @@ export const ProjectsSection = () => {
   }
 
   useEffect(() => {
+    if (!auth) {
+      return;
+    }
     async function init() {
-      const projects = await getAllProjects();
+      const projects = await getAllProjects(auth.user?.profile.email || "");
       console.log(projects);
       setProjects(projects);
     }
