@@ -103,6 +103,10 @@ public class ProjectHandler {
         return projectRepository.findAll();
     }
 
+    public List<Project> getAllProjectsByOwnerId(String ownerId) {
+        return projectRepository.findAllByOwnerIdOrderByCreatedAtDesc(ownerId);
+    }
+
     public List<Project> findProjectsWithRepository(RepositoryResource repositoryResource) {
         return projectRepository.findProjectsByRepositoryResource(repositoryResource);
     }
