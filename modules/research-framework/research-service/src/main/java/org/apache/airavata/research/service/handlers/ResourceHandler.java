@@ -123,7 +123,7 @@ public class ResourceHandler {
         resource.setTags(tagsSet);
         resource.setPrivacy(createResourceRequest.getPrivacy());
         resource.setStatus(StatusEnum.NONE);
-        resource.setHeaderImage(createResourceRequest.getHeaderImgage());
+        resource.setHeaderImage(createResourceRequest.getHeaderImage());
 
     }
 

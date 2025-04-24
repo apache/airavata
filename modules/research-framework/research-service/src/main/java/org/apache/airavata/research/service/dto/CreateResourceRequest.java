@@ -1,7 +1,6 @@
 package org.apache.airavata.research.service.dto;
 
 import org.apache.airavata.research.service.enums.PrivacyEnum;
-import org.apache.airavata.research.service.enums.StatusEnum;
 
 import java.util.Set;
 
@@ -9,7 +8,7 @@ public class CreateResourceRequest {
     public String name;
     public String description;
     Set<String> tags;
-    public String headerImgage;
+    public String headerImage;
     Set<String> authors;
     PrivacyEnum privacy;
 
@@ -29,12 +28,12 @@ public class CreateResourceRequest {
         this.authors = authors;
     }
 
-    public String getHeaderImgage() {
-        return headerImgage;
+    public String getHeaderImage() {
+        return headerImage;
     }
 
-    public void setHeaderImgage(String headerImgage) {
-        this.headerImgage = headerImgage;
+    public void setHeaderImage(String headerImage) {
+        this.headerImage = headerImage;
     }
 
     public Set<String> getTags() {

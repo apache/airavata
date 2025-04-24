@@ -1,28 +1,34 @@
 import { Button, Code, Input, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import yaml from "js-yaml";
+import { CreateResourceRequest } from "@/interfaces/Requests/CreateResourceRequest";
 
 export const AddGitUrl = ({
   nextStage,
-  repoData,
-  setRepoData,
+  createResourceRequest,
+  setCreateResourceRequest,
+  githubUrl,
+  setGithubUrl,
 }: {
   nextStage: () => void;
-  repoData: any;
-  setRepoData: React.Dispatch<React.SetStateAction<any>>;
+  createResourceRequest: CreateResourceRequest;
+  setCreateResourceRequest: (data: CreateResourceRequest) => void;
+  githubUrl: string;
+  setGithubUrl: (url: string) => void;
 }) => {
-  const [githubUrl, setGithubUrl] = useState("");
   const [loadingPull, setLoadingPull] = useState(false);
 
   const onPullCybershuttleYml = async () => {
     try {
       setLoadingPull(true);
+      // eslint-disable-next-line no-useless-escape
       const match = githubUrl.match(/github\.com\/([^\/]+)\/([^\/]+)(\.git)?/);
       if (!match) {
         alert("Invalid GitHub URL format.");
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, owner, repo] = match;
 
       const tryFetch = async (branch: string) => {
@@ -39,8 +45,16 @@ export const AddGitUrl = ({
         fileContent = await tryFetch("master");
       }
 
-      const parsed = yaml.load(fileContent);
-      console.log("Parsed cybershuttle.yml:", parsed);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const parsed = yaml.load(fileContent) as any;
+      setCreateResourceRequest({
+        ...createResourceRequest,
+        name: parsed.project.name,
+        headerImage: "image.png",
+        description: parsed.project.description,
+        tags: parsed.project.tags,
+        authors: parsed.project.authors,
+      });
       nextStage();
     } catch (error) {
       console.error("Error fetching cybershuttle.yml:", error);
