@@ -35,4 +35,8 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     List<Project> findProjectsByRepositoryResource(RepositoryResource repositoryResource);
 
     List<Project> findProjectsByDatasetResourcesContaining(Set<DatasetResource> datasetResources);
+
+    List<Project> findAllByOwnerId(String ownerId);
+
+    List<Project> findAllByOwnerIdOrderByCreatedAtDesc(String ownerId);
 }

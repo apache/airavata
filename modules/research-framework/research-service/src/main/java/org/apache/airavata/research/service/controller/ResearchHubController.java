@@ -20,23 +20,12 @@ package org.apache.airavata.research.service.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.airavata.research.service.ResponseTypes.RedirectResponse;
-import org.apache.airavata.research.service.enums.SessionStatusEnum;
+import org.apache.airavata.research.service.dto.RedirectResponse;
 import org.apache.airavata.research.service.handlers.ResearchHubHandler;
-import org.apache.airavata.research.service.handlers.SessionHandler;
-import org.apache.airavata.research.service.model.UserContext;
-import org.apache.airavata.research.service.model.entity.Project;
-import org.apache.airavata.research.service.model.entity.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/rf/hub")

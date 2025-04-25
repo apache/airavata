@@ -11,7 +11,7 @@ import {
   CloseButton,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { Toaster, toaster } from "../ui/toaster";
+import { toaster } from "../ui/toaster";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
 import { AxiosError } from "axios";
@@ -87,8 +87,6 @@ export const StartSessionFromProjectButton = ({
 
   return (
     <>
-      <Toaster />
-
       <Dialog.RootProvider
         value={dialog}
         size="sm"

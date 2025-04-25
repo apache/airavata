@@ -18,12 +18,15 @@
  */
 package org.apache.airavata.research.service.controller;
 
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import org.apache.airavata.research.service.ResponseTypes.ResourceResponse;
+import io.swagger.v3.oas.annotations.tags.Tags;
+import org.apache.airavata.research.service.dto.CreateResourceRequest;
+import org.apache.airavata.research.service.dto.ModifyResourceRequest;
+import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.handlers.ProjectHandler;
+import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.*;
-import org.junit.runner.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +43,9 @@ import org.apache.airavata.research.service.handlers.ResourceHandler;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/rf/resources")
@@ -66,8 +71,14 @@ public class ResourceController {
     }
 
     @PostMapping("/repository")
-    public ResponseEntity<ResourceResponse> createRepositoryResource(@RequestBody RepositoryResource repositoryResource) {
-        ResourceResponse response = resourceHandler.createResource(repositoryResource, ResourceTypeEnum.REPOSITORY);
+    public ResponseEntity<ResourceResponse> createRepositoryResource(@RequestBody CreateResourceRequest resourceRequest, @RequestParam(value="githubUrl") String repositoryUrl) {
+        ResourceResponse response = resourceHandler.createRepositoryResource(resourceRequest, repositoryUrl);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/repository")
+    public ResponseEntity<Resource> modifyRepositoryResource(@RequestBody ModifyResourceRequest resourceRequest) {
+        Resource response = resourceHandler.modifyResource(resourceRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -121,6 +132,19 @@ public class ResourceController {
     }
 
     @Operation(
+            summary = "Get resource by name"
+    )
+    @GetMapping("/search")
+    public ResponseEntity<List<Resource>> searchResource(
+            @RequestParam(value="type") ResourceTypeEnum type,
+            @RequestParam(value="name", required = false) String name
+    ) {
+
+        List<Resource> resources = resourceHandler.getAllResourcesByTypeAndName(getResourceType(type), name);
+        return ResponseEntity.ok(resources);
+    }
+
+    @Operation(
             summary = "Get projects associated with a resource"
     )
     @GetMapping(value = "/{id}/projects")
@@ -136,5 +160,15 @@ public class ResourceController {
         }
 
         return ResponseEntity.ok(projects);
+    }
+
+    private Class<? extends Resource> getResourceType(ResourceTypeEnum resourceTypeEnum) {
+        return switch (resourceTypeEnum) {
+            case REPOSITORY -> RepositoryResource.class;
+            case NOTEBOOK -> NotebookResource.class;
+            case MODEL -> ModelResource.class;
+            case DATASET -> DatasetResource.class;
+            default -> null;
+        };
     }
 }

@@ -19,6 +19,9 @@
 package org.apache.airavata.research.service.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.airavata.research.service.dto.CreateProjectRequest;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
@@ -33,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectHandler {
@@ -55,8 +59,52 @@ public class ProjectHandler {
         });
     }
 
+    public Project createProject(CreateProjectRequest createProjectRequest) {
+        String userId = UserContext.userId();
+        if (!userId.equalsIgnoreCase(createProjectRequest.getOwnerId())) {
+            throw new RuntimeException("User is not owner of this project");
+        }
+
+        Project project = new Project();
+        project.setName(createProjectRequest.getName());
+        project.setOwnerId(createProjectRequest.getOwnerId());
+
+        Optional<Resource> resource = resourceRepository.findById(createProjectRequest.getRepositoryId());
+        if (resource.isEmpty()) {
+            throw new RuntimeException("Repository not found");
+        } else if (!resource.get().getType().equals(ResourceTypeEnum.REPOSITORY)) {
+            throw new RuntimeException("RepositoryId: " + createProjectRequest.getRepositoryId() + " is not a repository");
+        }
+        RepositoryResource repositoryResource = (RepositoryResource) resource.get();
+        project.setRepositoryResource(repositoryResource);
+
+        List<Resource> resources = resourceRepository.findAllById(createProjectRequest.getDatasetIds());
+        if (resources.size() != createProjectRequest.getDatasetIds().size()) {
+            throw new RuntimeException("At least one of the data set ids is not a valid resource id");
+        }
+        for (Resource r : resources) {
+            if (!r.getType().equals(ResourceTypeEnum.DATASET)) {
+                throw new RuntimeException("DatasetId: " + r.getId() + " is not a dataset");
+            }
+        }
+
+        List<DatasetResource> datasetResourcesList = resources.stream()
+                .filter(r -> r instanceof DatasetResource)
+                .map(r -> (DatasetResource) r)
+                .collect(Collectors.toList());
+
+        Set<DatasetResource> datasetResourcesSet = new HashSet<>(datasetResourcesList);
+        project.setDatasetResources(datasetResourcesSet);
+        projectRepository.save(project);
+        return project;
+    }
+
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
+    }
+
+    public List<Project> getAllProjectsByOwnerId(String ownerId) {
+        return projectRepository.findAllByOwnerIdOrderByCreatedAtDesc(ownerId);
     }
 
     public List<Project> findProjectsWithRepository(RepositoryResource repositoryResource) {

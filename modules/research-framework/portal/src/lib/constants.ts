@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === 'production') {
   BACKEND_URL = "https://api.cybershuttle.org:18889";
   APP_URL = "https://catalog.dev.cybershuttle.org";
 } else {
-  BACKEND_URL = "http://localhost:18889";
+  BACKEND_URL = "http://localhost:18999";
   APP_URL = 'http://localhost:5173';
 }
 

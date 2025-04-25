@@ -1,7 +1,6 @@
 import { RepositoryResource } from "@/interfaces/ResourceType";
 import { Box, Heading, Separator } from "@chakra-ui/react";
 import { AssociatedProjectsSection } from "../projects/AssociatedProejctsSection";
-import { Toaster } from "../ui/toaster";
 import { GitHubFileTree } from "./GitHubFileTree";
 
 export const RepositorySpecificDetails = ({
@@ -11,8 +10,6 @@ export const RepositorySpecificDetails = ({
 }) => {
   return (
     <Box>
-      <Toaster />
-
       <Box>
         <Heading fontWeight="bold" size="2xl" mb={2}>
           Associated Projects

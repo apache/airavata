@@ -31,6 +31,11 @@ const NAV_CONTENT = [
     needsAuth: true,
   },
   {
+    title: "Add",
+    url: "/add",
+    needsAuth: true,
+  },
+  {
     title: "Events",
     url: "/events",
     needsAuth: false,

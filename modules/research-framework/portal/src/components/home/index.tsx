@@ -5,6 +5,7 @@ import { ButtonWithIcon } from "./ButtonWithIcon";
 import { FaPlus } from "react-icons/fa";
 import { SessionsSection } from "./SessionsSection";
 import { Tooltip } from "../ui/tooltip";
+import { ProjectsSection } from "./ProjectsSection";
 
 const Home = () => {
   return (
@@ -54,6 +55,14 @@ const Home = () => {
           </HStack>
         </HStack>
         <SessionsSection />
+
+        <Box my={16} />
+        <PageHeader
+          title="Projects"
+          description="All of your projects, ready to start sessions."
+        />
+
+        <ProjectsSection />
 
         <Box my={8} />
       </Container>

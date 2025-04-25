@@ -22,6 +22,9 @@ import { Resources } from "./components/resources";
 import { UserSet } from "./components/auth/UserSet";
 import { Toaster } from "./components/ui/toaster";
 import { Events } from "./components/events";
+import { AddRepoMaster } from "./components/add/AddRepoMaster";
+import { Add } from "./components/add";
+import { AddProjectMaster } from "./components/add/AddProjectMaster";
 function App() {
   const colorMode = useColorMode();
   const navigate = useNavigate();
@@ -100,6 +103,9 @@ function App() {
             element={<ProtectedComponent Component={NavBarFooterLayout} />}
           >
             <Route path="/sessions" element={<Home />} />
+            <Route path="/add" element={<Add />} />
+            <Route path="/add/repo" element={<AddRepoMaster />} />
+            <Route path="/add/project" element={<AddProjectMaster />} />
           </Route>
         </Routes>
       </AuthProvider>
