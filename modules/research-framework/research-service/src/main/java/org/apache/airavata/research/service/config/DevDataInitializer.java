@@ -199,5 +199,23 @@ public class DevDataInitializer implements CommandLineRunner {
                 new String[]{"airavata-courses", "spring-2025"},
                 "Krish Katariya, Jesse Gong, Shreyas Arisa, Devin Fromond"
         );
+
+	createProject(
+		"Deepseek Remote Execution",
+		"Executing deepseek model on remote HPC",
+		"https://github.com/ZhenmeiOng/proj2-llama",
+		"airavata-courses-deepseek-chat",
+		new String[]{"airavata-courses", "spring-2025", "llm"},
+		"Yashkaran Chauhan, Zhenmei Ong, Varenya Amagowni"
+	);
+
+	createProject(
+		"Fast Chat",
+		"Fast and easy communication with fast chat",
+		"https://github.com/riccog/cybershuttle",
+		"airavata-courses-fast-chat",
+		new String[]{"airavata-courses", "spring-2025"},
+		"Ricco Goss, Mason Graham, Talam, Ruchira"
+	);
     }
 }
