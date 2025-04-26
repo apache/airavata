@@ -34,6 +34,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +44,8 @@ import java.util.Map;
 public class ResearchHubHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResearchHubHandler.class);
-    private static final String RH_SPAWN_URL = "%s/hub/spawn/%s/%s?git=%s&dataPath=%s";
+    private static final String RH_SPAWN_URL = "%s/hub/spawn/%s/%s?git=%s";
+
     private static final String RH_SESSION_URL = "%s/hub/spawn/%s/%s";
 
     private static final String SERVERS_API_URL = "%s/hub/api/users/%s/servers/%s";
@@ -125,11 +129,24 @@ public class ResearchHubHandler {
         }
 
         Project project = projectHandler.findProject(projectId);
-        // TODO should support multiple data sets for RHub
-        DatasetResource dataset = project.getDatasetResources().stream().findFirst().get();
+        ArrayList<DatasetResource> datasetResourceArrayList = new ArrayList<DatasetResource>(project.getDatasetResources());
+
         Session session = sessionHandler.createSession(sessionName, project);
 
-        String spawnUrl = String.format(RH_SPAWN_URL, csHubUrl, UserContext.userId(), session.getId(), project.getRepositoryResource().getRepositoryUrl(), dataset.getDatasetUrl());
+        String baseSpawnUrl = String.format(RH_SPAWN_URL,
+                csHubUrl,
+                UserContext.userId(),
+                session.getId(),
+                project.getRepositoryResource().getRepositoryUrl()
+        );
+
+        StringBuilder spawnUrlBuilder = new StringBuilder(baseSpawnUrl);
+        for (DatasetResource datasetResource : datasetResourceArrayList) {
+            spawnUrlBuilder.append("&dataPath=").append(URLEncoder.encode(datasetResource.getDatasetUrl(), StandardCharsets.UTF_8));
+        }
+
+        String spawnUrl = spawnUrlBuilder.toString();
+
         LOGGER.debug("Generated the spawn url: {} for the user: {} against the project: {}", spawnUrl, UserContext.userId(), projectId);
         return spawnUrl;
     }
