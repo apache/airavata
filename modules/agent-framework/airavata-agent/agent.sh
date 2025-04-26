@@ -75,7 +75,9 @@ echo "BIND_OPTS=${BIND_OPTS[@]}"
 # STEP 2 - RUN USING AGENT
 # ----------------------------------------------------------------------
 
-mkdir -p $CS_HOME/scratch/tmp
+# initialize scratch/tmp and scratch/envs (node-local)
+mkdir -p "$(readlink $CS_HOME/scratch/tmp)"
+mkdir -p "$(readlink $CS_HOME/scratch/envs)"
 
 # Run container in environment
 singularity exec \
