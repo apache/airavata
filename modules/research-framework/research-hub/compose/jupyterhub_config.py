@@ -35,7 +35,8 @@ class CustomDockerSpawner(DockerSpawner):
             if 'git' in qs_args:
                 options['git'] = qs_args['git'][0].decode('utf-8')
             if 'dataPath' in qs_args:
-                options['dataPath'] = qs_args['dataPath'][0].decode('utf-8')
+                # decode ALL dataPath values into a list of strings
+                options['dataPath'] = [v.decode('utf-8') for v in qs_args['dataPath']]
 
         return options
 
@@ -52,17 +53,19 @@ class CustomDockerSpawner(DockerSpawner):
         volumes_dict = {}
 
         git_url = self.user_options.get("git")
-        data_subfolder = self.user_options.get("dataPath")
+        data_subfolders = self.user_options.get("dataPath", [])
+        print("THE DATA PATH IS: ", data_subfolders)
 
-        if git_url or data_subfolder:
+        if git_url or data_subfolders:
             vol_name = f"jupyterhub-vol-{safe_user}-{safe_srv}"
             volumes_dict[vol_name] = "/home/jovyan/work"
 
-            # If a data subfolder is provided, mount it read-only.
-            if data_subfolder:
-                host_data_path = f"/home/exouser/mnt/{data_subfolder}"
+            # If one or more data subfolders are provided, mount them all read-only.
+            for subfolder in data_subfolders:
+                host_data_path = os.path.expandvars("$HOME/mnt/{subfolder}")
+                container_path = f"/cybershuttle_data/{subfolder}"
                 volumes_dict[host_data_path] = {
-                    'bind': f"/cybershuttle_data/{data_subfolder}",
+                    'bind': container_path,
                     'mode': 'ro'
                 }
             self.image = "cybershuttle/jupyterlab-base" # TODO using ENV variable
@@ -84,7 +87,7 @@ class CustomDockerSpawner(DockerSpawner):
 
 # Spawner Configuration
 c.JupyterHub.allow_named_servers = True
-c.JupyterHub.named_server_limit_per_user = 5
+c.JupyterHub.named_server_limit_per_user = 10
 c.JupyterHub.spawner_class = CustomDockerSpawner
 c.DockerSpawner.notebook_dir = '/home/jovyan/work'
 c.DockerSpawner.default_url = "/lab"
@@ -104,7 +107,7 @@ c.JupyterHub.hub_connect_ip = 'jupyterhub'
 c.JupyterHub.shutdown_on_logout = True
 
 # External URL
-c.JupyterHub.external_url = 'https://hub.dev.cybershuttle.org'
+c.JupyterHub.external_url = 'https://hub.cybershuttle.org'
 
 # Logging
 c.JupyterHub.log_level = 'DEBUG'
