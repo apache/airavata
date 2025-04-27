@@ -33,7 +33,7 @@
     <description>Module to expose a profile-service-commons as a thrift service</description>
 
     <properties>
-        <derby.version>10.11.1.1</derby.version>
+        <derby.version>10.14.2.0</derby.version>
         <surefire.version>2.18.1</surefire.version>
         <skipTests>true</skipTests>
         <mysql.connector.version>5.1.34</mysql.connector.version>
