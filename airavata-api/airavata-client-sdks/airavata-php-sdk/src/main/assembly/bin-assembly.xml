@@ -1,6 +1,4 @@
 <!--
-
-
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -17,25 +15,11 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-
 -->
-<!DOCTYPE assembly [
-        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
-        <!ELEMENT id (#PCDATA)>
-        <!ELEMENT includeBaseDirectory (#PCDATA)>
-        <!ELEMENT baseDirectory (#PCDATA)>
-        <!ELEMENT formats (format)*>
-        <!ELEMENT format (#PCDATA)>
-        <!ELEMENT fileSets (fileSet)*>
-        <!ELEMENT fileSet (directory|outputDirectory|includes)*>
-        <!ELEMENT directory (#PCDATA)>
-        <!ELEMENT outputDirectory (#PCDATA)>
-        <!ELEMENT includes (include)*>
-        <!ELEMENT include (#PCDATA)>
-        <!ELEMENT dependencySets (dependencySet)*>
-        <!ELEMENT dependencySet (outputDirectory|includes)*>
-        ]>
-<assembly>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    
     <id>bin</id>
     <includeBaseDirectory>false</includeBaseDirectory>
     <baseDirectory>${archive.name}-${version}</baseDirectory>
@@ -43,35 +27,33 @@
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
+    
     <fileSets>
-        <!-- ********************** copy release notes files ********************** -->
         <fileSet>
-            <directory>../../../</directory>
-            <outputDirectory>${archive.name}-${version}</outputDirectory>
+            <directory>${project.basedir}/../../..</directory>
+            <outputDirectory>.</outputDirectory>
             <includes>
                 <include>RELEASE_NOTES</include>
-            </includes>
-        </fileSet>
-        <!-- ********************** copy licenses, readme etc. ********************** -->
-        <fileSet>
-            <directory>src/main/resources/</directory>
-            <outputDirectory>${archive.name}-${version}</outputDirectory>
-            <includes>
-                <include>php-cli-samples/*</include>
-		        <include>lib/**</include>
-                <include>conf/*</include>
                 <include>LICENSE</include>
                 <include>NOTICE</include>
-                <include>README</include>
                 <include>INSTALL</include>
+                <include>README.md</include>
             </includes>
         </fileSet>
-<!--	<fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.build.directory}/conf</directory>
             <outputDirectory>conf</outputDirectory>
-	    <includes>
-                <include>*.properties</include>
+            <includes>
+                <include>*</include>
             </includes>
-        </fileSet>-->
+        </fileSet>
     </fileSets>
+    
 </assembly>

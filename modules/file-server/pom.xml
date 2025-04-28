@@ -59,28 +59,6 @@
                     <release>17</release>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven.assembly.plugin}</version>
-                <executions>
-                    <execution>
-                        <id>file-service-distribution-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${file.service.dist.name}</finalName>
-                            <descriptors>
-                                <descriptor>src/main/assembly/file-service-bin-assembly.xml</descriptor>
-                            </descriptors>
-                            <attach>false</attach>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
