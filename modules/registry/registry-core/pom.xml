@@ -195,7 +195,7 @@
                             <goal>up</goal>
                         </goals>
                         <configuration>
-                            <composeFile>${project.basedir}/src/main/resources/migrations-util/mysql/docker-compose.yml</composeFile>
+                            <composeFile>src/main/resources/migrations-util/mysql/docker-compose.yml</composeFile>
                             <detachedMode>true</detachedMode>
                         </configuration>
                     </execution>
@@ -205,7 +205,7 @@
                             <goal>down</goal>
                         </goals>
                         <configuration>
-                            <composeFile>${project.basedir}/src/main/resources/migrations-util/mysql/docker-compose.yml</composeFile>
+                            <composeFile>src/main/resources/migrations-util/mysql/docker-compose.yml</composeFile>
                         </configuration>
                     </execution>
                 </executions>

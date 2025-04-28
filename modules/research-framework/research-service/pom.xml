@@ -150,34 +150,13 @@
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>research-service-distribution-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>research-service-0.01</finalName>
-                            <descriptors>
-                                <descriptor>src/main/assembly/research-service-bin-assembly.xml</descriptor>
-                            </descriptors>
-                            <attach>false</attach>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>io.github.ascopes</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>${protobuf-maven-plugin.version}</version>
                 <configuration>
                     <protocVersion>${protobuf-java.version}</protocVersion>
                     <sourceDirectories>
-                        <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
+                        <sourceDirectory>src/main/proto</sourceDirectory>
                     </sourceDirectories>
                     <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>
                 </configuration>
