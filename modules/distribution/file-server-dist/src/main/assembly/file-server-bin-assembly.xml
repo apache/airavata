@@ -22,7 +22,7 @@
     
     <id>bin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>load-client</baseDirectory>
+    <baseDirectory>${file.server.dist.name}</baseDirectory>
     <formats>
         <format>tar.gz</format>
         <format>zip</format>
@@ -41,22 +41,23 @@
             <directory>${project.basedir}/src/main/resources/conf</directory>
             <outputDirectory>conf</outputDirectory>
             <includes>
-                <include>load-config.yml</include>
+                <include>application.properties</include>
+                <include>log4j2.xml</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../keystores</directory>
-            <outputDirectory>bin</outputDirectory>
-            <includes>
-                <include>client_truststore.jks</include>
-            </includes>
+            <directory>./</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 
     <dependencySets>
       <dependencySet>
           <outputDirectory>lib</outputDirectory>
-          <useProjectArtifact>true</useProjectArtifact>
+          <useProjectArtifact>false</useProjectArtifact>
           <unpack>false</unpack>
           <scope>runtime</scope>
       </dependencySet>

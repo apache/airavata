@@ -115,7 +115,7 @@
                 <inherited>true</inherited>
                 <configuration>
                     <systemPropertyVariables>
-                        <credential.module.directory>${basedir}</credential.module.directory>
+                        <credential.module.directory>.</credential.module.directory>
                     </systemPropertyVariables>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
@@ -126,18 +126,18 @@
                         <exclude>**/DAOBaseTestCase.java</exclude>
                         <exclude>**/MappingDAOTest.java</exclude>
                     </excludes>
-                    <testSourceDirectory>${basedir}\src\test\java\</testSourceDirectory>
+                    <testSourceDirectory>src/test/java</testSourceDirectory>
                 </configuration>
             </plugin>
         </plugins>
-        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
         <testResources>
             <testResource>
-                <directory>${project.basedir}/src/test/resources</directory>
+                <directory>src/test/resources</directory>
             </testResource>
             <testResource>
-                <directory>${project.basedir}/../../../keystores</directory>
+                <directory>../../../keystores</directory>
                 <targetPath>keystores</targetPath>
                 <includes>
                   <include>*.jks</include>

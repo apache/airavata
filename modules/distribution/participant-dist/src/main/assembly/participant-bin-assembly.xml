@@ -19,16 +19,27 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
-    
+
     <id>bin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>load-client</baseDirectory>
+    <baseDirectory>${participant.dist.name}</baseDirectory>
     <formats>
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
 
     <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/../../..</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>RELEASE_NOTES</include>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>INSTALL</include>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
@@ -41,22 +52,24 @@
             <directory>${project.basedir}/src/main/resources/conf</directory>
             <outputDirectory>conf</outputDirectory>
             <includes>
-                <include>load-config.yml</include>
+                <include>airavata-server.properties</include>
+                <include>log4j2.xml</include>
+                <include>cred_store.jks</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../keystores</directory>
-            <outputDirectory>bin</outputDirectory>
-            <includes>
-                <include>client_truststore.jks</include>
-            </includes>
+            <directory>./</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 
     <dependencySets>
       <dependencySet>
           <outputDirectory>lib</outputDirectory>
-          <useProjectArtifact>true</useProjectArtifact>
+          <useProjectArtifact>false</useProjectArtifact>
           <unpack>false</unpack>
           <scope>runtime</scope>
       </dependencySet>
