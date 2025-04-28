@@ -371,6 +371,11 @@
                 <version>${curator.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-client</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
@@ -440,6 +445,11 @@
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
                 <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.helix</groupId>
+                <artifactId>helix-core</artifactId>
+                <version>${helix.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xerial.snappy</groupId>
@@ -925,10 +935,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
+                            <outputDirectory>${project.build.directory}/classes/META-INF</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/main/assembly/dist</directory>
+                                    <directory>src/main/assembly/dist</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>

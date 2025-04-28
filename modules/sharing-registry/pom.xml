@@ -39,6 +39,5 @@
         <module>sharing-registry-stubs</module>
         <module>sharing-registry-server</module>
         <module>sharing-data-migrator</module>
-        <module>sharing-registry-distribution</module>
     </modules>
 </project>
