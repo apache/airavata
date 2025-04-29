@@ -96,7 +96,8 @@ const agendaItems = [
   },
   {
     time: "4:00 pm – 4:30 pm",
-    topic: "Reinforcement learning",
+    topic:
+      "Reinforcement learning  for supervised finetuning of robotics policies",
     session: "Presentation",
     speaker: "Zsolt Kira",
   },
@@ -121,7 +122,7 @@ export const May7Workshop = () => {
         Cyberinfrastructure and Services for Science & Engineering Workshop
       </Heading>
       <VStack gap={1} align="start" mt={2}>
-        <KeyPair keyStr="When" valueStr="May 7, 2025 | 8:00 a.m. - 5:00 p.m." />
+        <KeyPair keyStr="When" valueStr="May 7, 2025 | 8:00 a.m. - 5:15 p.m." />
         <KeyPair
           keyStr="Where"
           valueStr="Marcus Nanotechnology Building 1116 - 1118"

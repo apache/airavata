@@ -25,7 +25,6 @@ export const AddProjectMaster = () => {
   );
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
-  console.log(auth);
 
   const handleSubmit = async () => {
     try {
