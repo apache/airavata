@@ -17,7 +17,7 @@ export const UserMenu = () => {
   if (auth.isLoading || !auth.user || !auth.isAuthenticated)
     return (
       <Link to="/login">
-        <Button colorPalette="blue">
+        <Button colorPalette="black">
           Login
           <FaArrowRight />
         </Button>
