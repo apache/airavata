@@ -13,7 +13,6 @@ import {
 import { useState } from "react";
 import { toaster } from "../ui/toaster";
 import { useAuth } from "react-oidc-context";
-import { useNavigate } from "react-router";
 import { AxiosError } from "axios";
 
 export const StartSessionFromProjectButton = ({
@@ -28,13 +27,18 @@ export const StartSessionFromProjectButton = ({
   const [loadingOpenProject, setLoadingOpenProject] = useState(false);
   const auth = useAuth();
   const shouldRedirect = auth.isLoading || !auth.user || !auth.isAuthenticated;
-  const navigate = useNavigate();
 
   const handleClickStart = () => {
     if (shouldRedirect) {
-      navigate(`/login?redirect=${window.location.pathname}`, {
-        replace: true,
+      auth.signinRedirect({
+        redirect_uri: `${window.location.origin}/${window.location.pathname}`,
+        extraQueryParams: {
+          prompt: "login",
+          kc_idp_hint: "oidc",
+        },
+        redirectMethod: "replace",
       });
+
       return;
     }
     dialog.setOpen(true);
