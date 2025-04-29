@@ -61,7 +61,6 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>${mariadb-java-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
