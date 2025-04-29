@@ -20,25 +20,22 @@ import { ResourceCard } from "../home/ResourceCard";
 import { FaCheck } from "react-icons/fa";
 import { Tag as TagEntity } from "@/interfaces/TagType";
 import { useLocation, useNavigate } from "react-router";
+import { toaster } from "../ui/toaster";
 
 const getResources = async (
   types: ResourceTypeEnum[],
   stringTagsArr: string[]
 ) => {
-  try {
-    const response = await api.get(`${CONTROLLER.resources}/`, {
-      params: {
-        type: types.join(","),
-        tag: stringTagsArr.join(","),
-        pageNumber: 0,
-        pageSize: 100,
-      },
-    });
-    const data = response.data;
-    return data;
-  } catch (error) {
-    console.error("Error fetching:", error);
-  }
+  const response = await api.get(`${CONTROLLER.resources}/`, {
+    params: {
+      type: types.join(","),
+      tag: stringTagsArr.join(","),
+      pageNumber: 0,
+      pageSize: 100,
+    },
+  });
+  const data = response.data;
+  return data;
 };
 
 const getTags = async () => {
@@ -111,11 +108,20 @@ export const Resources = () => {
   useEffect(() => {
     if (!hydrated) return;
     async function fetchResources() {
-      setLoading(true);
-      const stringTagsArr = tags.map((tag) => tag.text);
-      const resources = await getResources(resourceTypes, stringTagsArr);
-      setResources(resources.content);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const stringTagsArr = tags.map((tag) => tag.text);
+        const resources = await getResources(resourceTypes, stringTagsArr);
+        setResources(resources.content);
+      } catch {
+        toaster.create({
+          type: "error",
+          title: "Error fetching resources",
+          description: "An error occurred while fetching resources.",
+        });
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchResources();
@@ -140,6 +146,20 @@ export const Resources = () => {
       const initialResourceTypes = resourceTypesParam.split(
         ","
       ) as ResourceTypeEnum[];
+      initialResourceTypes.forEach((type) => {
+        if (
+          !Object.values(ResourceTypeEnum).includes(type as ResourceTypeEnum)
+        ) {
+          toaster.create({
+            type: "error",
+            title: "Invalid resource type",
+            description: `Invalid resource type: ${type}. Valid types are: ${Object.values(
+              ResourceTypeEnum
+            ).join(", ")}`,
+          });
+          return;
+        }
+      });
       setResourceTypes(initialResourceTypes);
     } else {
       setResourceTypes([]);
