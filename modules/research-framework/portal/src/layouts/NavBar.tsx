@@ -22,7 +22,7 @@ import { useAuth } from "react-oidc-context";
 const NAV_CONTENT = [
   {
     title: "Catalog",
-    url: "/resources",
+    url: "/resources?resourceTypes=REPOSITORY%2CNOTEBOOK%2CDATASET%2CMODEL",
     needsAuth: false,
   },
   {

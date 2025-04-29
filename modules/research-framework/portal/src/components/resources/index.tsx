@@ -19,25 +19,23 @@ import { Resource } from "@/interfaces/ResourceType";
 import { ResourceCard } from "../home/ResourceCard";
 import { FaCheck } from "react-icons/fa";
 import { Tag as TagEntity } from "@/interfaces/TagType";
+import { useLocation, useNavigate } from "react-router";
+import { toaster } from "../ui/toaster";
 
 const getResources = async (
   types: ResourceTypeEnum[],
   stringTagsArr: string[]
 ) => {
-  try {
-    const response = await api.get(`${CONTROLLER.resources}/`, {
-      params: {
-        type: types.join(","),
-        tag: stringTagsArr.join(","),
-        pageNumber: 0,
-        pageSize: 100,
-      },
-    });
-    const data = response.data;
-    return data;
-  } catch (error) {
-    console.error("Error fetching:", error);
-  }
+  const response = await api.get(`${CONTROLLER.resources}/`, {
+    params: {
+      type: types.join(","),
+      tag: stringTagsArr.join(","),
+      pageNumber: 0,
+      pageSize: 100,
+    },
+  });
+  const data = response.data;
+  return data;
 };
 
 const getTags = async () => {
@@ -53,33 +51,122 @@ const getTags = async () => {
 export const Resources = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
-  const [resourceTypes, setResourceTypes] = useState<ResourceTypeEnum[]>([
-    ResourceTypeEnum.REPOSITORY,
-    ResourceTypeEnum.NOTEBOOK,
-  ]);
+  const [resourceTypes, setResourceTypes] = useState<ResourceTypeEnum[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleDelete = (i: number) => {
-    setTags(tags.filter((_, index) => index !== i));
+    const newTags = tags.filter((_, index) => index !== i);
+    setTags(newTags);
+    updateURLWithTags(newTags);
   };
 
   const handleAddition = (tag: Tag) => {
-    console.log(tag);
-    setTags([...tags, tag]);
+    const newTags = [...tags, tag];
+    setTags(newTags);
+    updateURLWithTags(newTags);
+  };
+
+  const updateURLWithTags = (updatedTags: Tag[]) => {
+    const params = new URLSearchParams(location.search);
+
+    if (updatedTags.length > 0) {
+      params.set("tags", updatedTags.map((tag) => tag.text).join(","));
+    } else {
+      params.delete("tags");
+    }
+
+    navigate(
+      { pathname: location.pathname, search: params.toString() },
+      { replace: true }
+    );
+  };
+
+  const updateURLWithResourceTypes = (
+    updatedResourceTypes: ResourceTypeEnum[]
+  ) => {
+    const params = new URLSearchParams(location.search);
+
+    if (updatedResourceTypes.length > 0) {
+      params.set(
+        "resourceTypes",
+        updatedResourceTypes.map((type) => type).join(",")
+      );
+    } else {
+      params.delete("resourceTypes");
+    }
+
+    navigate(
+      { pathname: location.pathname, search: params.toString() },
+      { replace: true }
+    );
   };
 
   useEffect(() => {
+    if (!hydrated) return;
     async function fetchResources() {
-      setLoading(true);
-      const stringTagsArr = tags.map((tag) => tag.text);
-      const resources = await getResources(resourceTypes, stringTagsArr);
-      setResources(resources.content);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const stringTagsArr = tags.map((tag) => tag.text);
+        const resources = await getResources(resourceTypes, stringTagsArr);
+        setResources(resources.content);
+      } catch {
+        toaster.create({
+          type: "error",
+          title: "Error fetching resources",
+          description: "An error occurred while fetching resources.",
+        });
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchResources();
-  }, [resourceTypes, tags]);
+  }, [resourceTypes, tags, hydrated]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tagsParam = params.get("tags");
+    if (tagsParam) {
+      const initialTags = tagsParam.split(",").map((text) => ({
+        id: text,
+        text,
+        className: "",
+      }));
+      setTags(initialTags);
+    } else {
+      setTags([]);
+    }
+
+    const resourceTypesParam = params.get("resourceTypes");
+    if (resourceTypesParam) {
+      const initialResourceTypes = resourceTypesParam.split(
+        ","
+      ) as ResourceTypeEnum[];
+      initialResourceTypes.forEach((type) => {
+        if (
+          !Object.values(ResourceTypeEnum).includes(type as ResourceTypeEnum)
+        ) {
+          toaster.create({
+            type: "error",
+            title: "Invalid resource type",
+            description: `Invalid resource type: ${type}. Valid types are: ${Object.values(
+              ResourceTypeEnum
+            ).join(", ")}`,
+          });
+          return;
+        }
+      });
+      setResourceTypes(initialResourceTypes);
+    } else {
+      setResourceTypes([]);
+    }
+
+    setHydrated(true);
+  }, [location.search]);
 
   useEffect(() => {
     async function fetchTags() {
@@ -162,13 +249,15 @@ export const Resources = () => {
                     }}
                     size="sm"
                     onClick={() => {
+                      let newResourceTypes = [...resourceTypes, type];
+
                       if (isSelected) {
-                        setResourceTypes(
-                          resourceTypes.filter((t) => t !== type)
+                        newResourceTypes = resourceTypes.filter(
+                          (t) => t !== type
                         );
-                      } else {
-                        setResourceTypes([...resourceTypes, type]);
                       }
+                      setResourceTypes(newResourceTypes);
+                      updateURLWithResourceTypes(newResourceTypes);
                     }}
                   >
                     {type}
