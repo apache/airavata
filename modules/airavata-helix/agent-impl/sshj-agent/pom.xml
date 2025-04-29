@@ -35,7 +35,6 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>${sshj.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
