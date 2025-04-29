@@ -29,32 +29,6 @@
 
     <artifactId>research-service</artifactId>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-bom</artifactId>
-                <version>${grpc.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-bom</artifactId>
-                <version>${protobuf-java.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
@@ -141,22 +115,14 @@
     </dependencies>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-            </extension>
-        </extensions>
-
         <plugins>
             <plugin>
                 <groupId>io.github.ascopes</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>${protobuf-maven-plugin.version}</version>
                 <configuration>
                     <protocVersion>${protobuf-java.version}</protocVersion>
                     <sourceDirectories>
-                        <sourceDirectory>src/main/proto</sourceDirectory>
+                        <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
                     </sourceDirectories>
                     <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>
                 </configuration>
@@ -171,7 +137,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>17</release>
                 </configuration>
@@ -179,7 +144,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.maven.plugin.version}</version>
             </plugin>
         </plugins>
     </build>

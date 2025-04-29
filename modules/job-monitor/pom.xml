@@ -35,27 +35,4 @@
         <module>email-monitor</module>
         <module>real-time-monitor</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.angus</groupId>
-                <artifactId>jakarta.mail</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.airavata</groupId>
-                <artifactId>task-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.airavata</groupId>
-                <artifactId>registry-api-stubs</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>

@@ -13,7 +13,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-compiler-plugin.version}</version>
         <configuration>
             <release>17</release>
         </configuration>
@@ -21,7 +20,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
         <configuration>
             <includes>
                 <include>**/RunAllTests.java</include>
@@ -56,18 +54,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>selenium-maven-plugin</artifactId>
-        <version>${selenium-maven-plugin.version}</version>
-        <!--executions>
-          <execution>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>start-server</goal>
-            </goals>
-            <configuration>
-              <background>false</background>
-            </configuration>
-          </execution>
-        </executions -->
       </plugin>
     </plugins>
   </build>
@@ -75,13 +61,11 @@
     <dependency>
       <groupId>org.seleniumhq.selenium.client-drivers</groupId>
       <artifactId>selenium-java-client-driver</artifactId>
-      <version>${selenium-java-client-driver.version}</version>
       <scope>test</scope>
     </dependency>
       <dependency>
           <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-firefox-driver</artifactId>
-          <version>${selenium-firefox-driver.version}</version>
       </dependency>
       <dependency>
           <groupId>commons-io</groupId>
@@ -90,23 +74,18 @@
       <dependency>
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-exec</artifactId>
-          <version>${commons-exec.version}</version>
       </dependency>
       <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
-          <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
           <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-remote-driver</artifactId>
-          <version>${selenium-remote-driver.version}</version>
       </dependency>
-
       <dependency>
           <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-java</artifactId>
-          <version>${selenium-java.version}</version>
       </dependency>
       <dependency>
           <groupId>junit</groupId>

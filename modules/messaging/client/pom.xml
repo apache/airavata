@@ -37,8 +37,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-messaging-core</artifactId>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -50,28 +50,28 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-data-models</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-data-models</artifactId>
+            <artifactId>airavata-messaging-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven.assembly.plugin}</version>
                 <configuration>
                     <archive>
                         <manifest>
