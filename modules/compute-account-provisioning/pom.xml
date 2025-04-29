@@ -45,13 +45,11 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>${jsch.version}</version>
         </dependency>
         <!-- apache directory ldap api! -->
         <dependency>
             <groupId>org.apache.directory.api</groupId>
             <artifactId>api-all</artifactId>
-            <version>${directory.api.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -61,7 +59,6 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${google.gson.version}</version>
         </dependency>
     </dependencies>
 

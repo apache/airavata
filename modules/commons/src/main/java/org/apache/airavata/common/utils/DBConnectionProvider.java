@@ -5,10 +5,7 @@ import org.checkerframework.checker.initialization.qual.Initialized;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.UnknownKeyFor;
 import org.hibernate.HibernateException;
-import org.hibernate.dialect.DatabaseVersion;
-import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
-import org.hibernate.engine.jdbc.connections.spi.DatabaseConnectionInfo;
 import org.hibernate.service.UnknownUnwrapTypeException;
 import org.hibernate.service.spi.Configurable;
 import org.hibernate.service.spi.Stoppable;
@@ -17,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.Map;
 
@@ -113,73 +109,5 @@ public class DBConnectionProvider implements ConnectionProvider, Configurable, S
             return (T) this;
         }
         throw new UnknownUnwrapTypeException(unwrapType);
-    }
-
-    /**
-     * Provides connection info for Hibernate to display or use internally.
-     * If you wish, you can parse the DB name from the URL or set it to null.
-     */
-    @Override
-    public DatabaseConnectionInfo getDatabaseConnectionInfo(Dialect dialect) {
-        return new DatabaseConnectionInfo() {
-            @Override
-            public String getJdbcUrl() {
-                return dataSource.getUrl();
-            }
-
-            @Override
-            public String getJdbcDriver() {
-                return dataSource.getDriverClassName();
-            }
-
-            @Override
-            public DatabaseVersion getDialectVersion() {
-                return DatabaseVersion.make(8, 0);
-            }
-
-            @Override
-            public String getAutoCommitMode() {
-                boolean autoCommit = dataSource.getDefaultAutoCommit();
-                return Boolean.toString(autoCommit);
-            }
-
-            @Override
-            public String getIsolationLevel() {
-                int isolation = dataSource.getDefaultTransactionIsolation();
-                return switch (isolation) {
-                    case Connection.TRANSACTION_NONE -> "TRANSACTION_NONE";
-                    case Connection.TRANSACTION_READ_UNCOMMITTED -> "TRANSACTION_READ_UNCOMMITTED";
-                    case Connection.TRANSACTION_READ_COMMITTED -> "TRANSACTION_READ_COMMITTED";
-                    case Connection.TRANSACTION_REPEATABLE_READ -> "TRANSACTION_REPEATABLE_READ";
-                    case Connection.TRANSACTION_SERIALIZABLE -> "TRANSACTION_SERIALIZABLE";
-                    default -> "UNKNOWN_ISOLATION_LEVEL";
-                };
-            }
-
-            @Override
-            public Integer getPoolMinSize() {
-                return dataSource.getConnectionPool().getMinIdle();
-            }
-
-            @Override
-            public Integer getPoolMaxSize() {
-                return dataSource.getConnectionPool().getMaxTotal();
-            }
-
-            @Override
-            public String toInfoString() {
-                return MessageFormat.format(dataSourceAsString,
-                        dataSource.getDriverClassName(),
-                        dataSource.getUrl(),
-                        dataSource.getUserName(),
-                        dataSource.getValidationQuery(),
-                        dataSource.getInitialSize(),
-                        dataSource.getMaxTotal(),
-                        dataSource.getMaxIdle(),
-                        dataSource.getMinIdle(),
-                        dataSource.getMaxWaitDuration()
-                );
-            }
-        };
     }
 }
