@@ -7,7 +7,7 @@ export const Events = () => {
     <Container maxW="breakpoint-lg" my={8}>
       <Accordion.Root multiple defaultValue={["May 7, 2025"]}>
         {events.map((event) => (
-          <Accordion.Item key={event.id} value={event.id}>
+          <Accordion.Item key={event.id} value={event.id} mb={8}>
             <Accordion.ItemTrigger>
               {event.name} <Spacer />
               <Span color="gray.400" fontSize="sm">

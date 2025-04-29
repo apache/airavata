@@ -48,10 +48,12 @@ export const ConfirmRepoDetails = ({
 
       toaster.create({
         title: "Success",
-        description: "Repository added successfully",
+        description: "Repository created successfully",
         type: "success",
       });
-      navigate("/resources");
+      navigate(
+        "/resources?resourceTypes=REPOSITORY%2CNOTEBOOK%2CDATASET%2CMODEL"
+      );
     } catch (error) {
       console.error("Error adding repository:", error);
       toaster.create({

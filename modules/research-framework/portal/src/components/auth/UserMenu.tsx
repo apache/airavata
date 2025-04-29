@@ -9,19 +9,27 @@ import {
 } from "@chakra-ui/react";
 import { FaArrowRight } from "react-icons/fa6";
 import { useAuth } from "react-oidc-context";
-import { Link } from "react-router";
 
 export const UserMenu = () => {
   const auth = useAuth();
 
   if (auth.isLoading || !auth.user || !auth.isAuthenticated)
     return (
-      <Link to="/login">
-        <Button colorPalette="black">
-          Login
-          <FaArrowRight />
-        </Button>
-      </Link>
+      <Button
+        colorPalette="black"
+        onClick={() => {
+          auth.signinRedirect({
+            redirect_uri: `${window.location.origin}`,
+            extraQueryParams: {
+              prompt: "login",
+              kc_idp_hint: "oidc",
+            },
+          });
+        }}
+      >
+        Login
+        <FaArrowRight />
+      </Button>
     );
   const handleLogout = async () => {
     // Clear the user provider
