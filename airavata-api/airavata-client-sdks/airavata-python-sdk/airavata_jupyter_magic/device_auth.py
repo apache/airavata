@@ -39,7 +39,7 @@ class DeviceFlowAuthenticator:
         assert self.interval is not None
         token_url = f"{self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
         counter = 0
-        with self.console.status(f"Authenticate via link: [link={url}]{url}[/link]", refresh_per_second=3) as status:
+        with self.console.status(f"Authenticate via link: [link={url}]{url}[/link]", refresh_per_second=1) as status:
             while True:
                 response = requests.post(token_url, data={
                     "client_id": self.client_id,
