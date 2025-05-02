@@ -21,7 +21,6 @@ import (
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/keepalive"
 )
 
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
@@ -57,12 +56,6 @@ func main() {
 		log.Fatalf("[agent.go] main() Error: --environ flag is required.\n")
 	}
 
-	var kaParams = keepalive.ClientParameters{
-		Time:                30 * time.Second, // send pings every 30 seconds
-		Timeout:             10 * time.Second, // wait 10 seconds for pong before considering the connection dead
-		PermitWithoutStream: true,             // send pings even if there are no active streams
-	}
-
 	ctx := context.Background()
 	conn, err := grpc.DialContext(
 		ctx,
@@ -72,7 +65,6 @@ func main() {
 			grpc.MaxCallRecvMsgSize(20*1024*1024), // 10MB for incoming messages
 			grpc.MaxCallSendMsgSize(20*1024*1024), // 10MB for outgoing messages (if needed)
 		),
-		grpc.WithKeepaliveParams(kaParams),
 	)
 
 	//conn, err := grpc.NewClient(*serverUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))

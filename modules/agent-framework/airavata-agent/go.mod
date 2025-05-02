@@ -1,7 +1,8 @@
 module airavata-agent
 
-go 1.22.3
-toolchain go1.24.1
+go 1.23.0
+
+toolchain go1.24.2
 
 require (
 	golang.org/x/crypto v0.35.0

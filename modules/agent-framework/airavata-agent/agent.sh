@@ -24,8 +24,12 @@ CONTAINER=""
 LIBRARIES=""
 ENVIRON=""
 PIP=""
-BIND_OPTS=()
+MOUNTS=()
 
+# setup application directory
+ln -s $CS_HOME/application $PWD/application
+
+# parse command line args
 PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,environ:,bind: -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
     echo "Usage: $0 \
@@ -35,12 +39,10 @@ if [ $? -ne 0 ]; then
     --libraries LIBRARIES \
     --pip PIP \
     --mounts MOUNTS \
-    --environ ENVIRON
-    [--bind BIND] ..."
+    --environ ENVIRON"
     exit 1
 fi
 eval set -- "$PARSED_OPTIONS"
-
 while true; do
     case "$1" in
         --server)    SERVER="$2";  shift 2 ;;
@@ -52,11 +54,11 @@ while true; do
             IFS=',' read -ra MOUNTS <<< "$2"
             for MOUNT in "${MOUNTS[@]}"; do
               IFS=':' read -r SRC DEST <<< "$MOUNT"
-              BIND_OPTS+=("--bind $CS_HOME/dataset/$SRC:$DEST:ro")
+              mkdir -p ".$DEST"
+              ln -s "$CS_HOME/dataset/$SRC" ".$DEST"
             done
             shift 2 ;;
         --environ)   ENVIRON="$2"; shift 2 ;;
-        --bind)      BIND_OPTS+=("--bind $2:ro"); shift 2 ;;
         --)          shift; break ;;
         *) echo "Unexpected option: $1"; exit 1 ;;
     esac
@@ -69,7 +71,7 @@ echo "SERVER=$SERVER"
 echo "CONTAINER=$CONTAINER"
 echo "LIBRARIES=$LIBRARIES"
 echo "PIP=$PIP"
-echo "BIND_OPTS=${BIND_OPTS[@]}"
+echo "MOUNTS=${MOUNTS[@]}"
 
 # ----------------------------------------------------------------------
 # STEP 2 - RUN USING AGENT
@@ -79,10 +81,15 @@ echo "BIND_OPTS=${BIND_OPTS[@]}"
 mkdir -p "$(readlink $CS_HOME/scratch/tmp)"
 mkdir -p "$(readlink $CS_HOME/scratch/envs)"
 
-# Run container in environment
-singularity exec \
-  --bind $CS_HOME/scratch:/scratch ${BIND_OPTS[@]} \
-  --env MAMBA_ROOT_PREFIX=/scratch \
-  --env TMPDIR=/scratch/tmp \
-  $CS_HOME/container/$CONTAINER \
-  bash -c "/opt/airavata-agent --server \"$SERVER:19900\" --agent \"$AGENT\" --environ \"$ENVIRON\" --lib \"$LIBRARIES\" --pip \"$PIP\""
+# fetch binaries
+wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/airavata-agent-linux-amd64 -O airavata-agent
+wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.1.0-0/micromamba-linux-64 -O micromamba
+chmod +x airavata-agent micromamba
+
+# define environment variables
+export MAMBA_ROOT_PREFIX=$CS_HOME/scratch
+export TMPDIR=$CS_HOME/scratch/tmp
+export PATH=$PWD:$PATH
+
+# run agent
+airavata-agent --server $SERVER:19900 --agent $AGENT --environ $ENVIRON --lib $LIBRARIES --pip $PIP
