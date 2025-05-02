@@ -30,7 +30,7 @@ MOUNTS=()
 ln -s $CS_HOME/application $PWD/application
 
 # parse command line args
-PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,environ:,bind: -n "$0" -- "$@")
+PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,environ: -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
     echo "Usage: $0 \
     --server SERVER \
@@ -94,4 +94,4 @@ export TMPDIR=$CS_HOME/scratch/tmp
 export PATH=$PWD:$PATH
 
 # run agent
-airavata-agent --server $SERVER:19900 --agent $AGENT --environ $ENVIRON --lib $LIBRARIES --pip $PIP
+airavata-agent --server "$SERVER:19900" --agent "$AGENT" --environ "$ENVIRON" --lib "$LIBRARIES" --pip "$PIP"
