@@ -43,21 +43,22 @@ class RequestedRuntime:
 class ProcessState(IntEnum):
     CREATED = 0
     VALIDATED = 1
-    STARTED = 2
-    PRE_PROCESSING = 3
-    CONFIGURING_WORKSPACE = 4
-    INPUT_DATA_STAGING = 5
-    EXECUTING = 6
-    MONITORING = 7
-    OUTPUT_DATA_STAGING = 8
-    POST_PROCESSING = 9
-    COMPLETED = 10
-    FAILED = 11
-    CANCELLING = 12
-    CANCELED = 13
-    QUEUED = 14
-    DEQUEUING = 15
-    REQUEUED = 16
+    LAUNCHED = 2
+    STARTED = 3
+    PRE_PROCESSING = 4
+    CONFIGURING_WORKSPACE = 5
+    INPUT_DATA_STAGING = 6
+    EXECUTING = 7
+    MONITORING = 8
+    OUTPUT_DATA_STAGING = 9
+    POST_PROCESSING = 10
+    COMPLETED = 11
+    FAILED = 12
+    CANCELLING = 13
+    CANCELED = 14
+    QUEUED = 15
+    DEQUEUING = 16
+    REQUEUED = 17
 
 
 RuntimeInfo = NamedTuple('RuntimeInfo', [
@@ -78,6 +79,7 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
 
 PENDING_STATES = [
     ProcessState.CREATED,
+    ProcessState.LAUNCHED,
     ProcessState.VALIDATED,
     ProcessState.STARTED,
     ProcessState.PRE_PROCESSING,
@@ -264,74 +266,92 @@ def submit_agent_job(
     group: str,
     cpus: int | None = None,
     memory: int | None = None,
+    gpus: int | None = None,
+    gpu_memory: int | None = None,
     file: str | None = None,
 ) -> None:
     """
     Submit an agent job to the given runtime
 
-    @param rt_name: the runtime name
-    @param access_token: the access token
-    @param app_name: the application name
-    @param gateway_id: the gateway id
-    @param walltime: the walltime
-    @param cluster: the cluster
-    @param queue: the queue
-    @param group: the group
-    @param cpus: the number of cpus
-    @param memory: the memory
-    @param file: environment file
+    @param rt_name: the runtime name (string)
+    @param access_token: the access token (string)
+    @param app_name: the application name (string)
+    @param gateway_id: the gateway id (string)
+    @param walltime: the walltime (minutes)
+    @param cluster: the cluster (string)
+    @param queue: the queue (string)
+    @param group: the group (string)
+    @param cpus: the number of cpus (int)
+    @param memory: the memory for cpu (MB)
+    @param gpus: the number of gpus (int)
+    @param gpu_memory: the memory for gpu (MB)
+    @param file: environment file (path)
     @returns: None
 
     """
     # URL to which the POST request will be sent
     url = api_base_url + '/api/v1/exp/launch'
 
-    # Data to be sent in the POST request
+    # data from file
+    min_cpu: int = 1
+    min_mem: int = 2048
+    min_gpu: int = 0
+    gpu_mem: int = 0
+    mounts: list[str] = []
+    modules: list[str] = []
+    conda: list[str] = []
+    pip: list[str] = []
+
+    # if file is provided, validate it and use the given values as defaults
     if file is not None:
         fp = Path(file)
         # validation
         assert fp.exists(), f"File {file} does not exist"
         with open(fp, "r") as f:
             content = yaml.safe_load(f)
-        # workspace
-        resources = content["workspace"]["resources"]
-        models = content["workspace"]["model_collection"] or []
-        datasets = content["workspace"]["data_collection"] or []
+        # validation: /workspace
+        assert (workspace := content.get("workspace", None)) is not None, "missing section: /workspace"
+        assert (resources := workspace.get("resources", None)) is not None, "missing section: /workspace/resources"
+        assert (min_cpu := resources.get("min_cpu", None)) is not None, "missing section: /workspace/resources/min_cpu"
+        assert (min_mem := resources.get("min_mem", None)) is not None, "missing section: /workspace/resources/min_mem"
+        assert (min_gpu := resources.get("min_gpu", None)) is not None, "missing section: /workspace/resources/min_gpu"
+        assert (gpu_mem := resources.get("gpu_mem", None)) is not None, "missing section: /workspace/resources/gpu_mem"
+        assert (models := workspace.get("model_collection", None)) is not None, "missing section: /workspace/model_collection"
+        assert (datasets := workspace.get("data_collection", None)) is not None, "missing section: /workspace/data_collection"
         collection = models + datasets
+        # validation: /additional_dependencies
+        assert (additional_dependencies := content.get("additional_dependencies", None)) is not None, "missing section: /additional_dependencies"
+        assert (modules := additional_dependencies.get("modules", None)) is not None, "missing /additional_dependencies/modules section"
+        assert (conda := additional_dependencies.get("conda", None)) is not None, "missing /additional_dependencies/conda section"
+        assert (pip := additional_dependencies.get("pip", None)) is not None, "missing /additional_dependencies/pip section"
         mounts = [f"{i['identifier']}:{i['mount_point']}" for i in collection]
-        # dependencies
-        condas = content["additional_dependencies"]["conda"] or []
-        pips = content["additional_dependencies"]["pip"] or []
-        data = {
-            'experimentName': app_name,
-            'nodeCount': 1,
-            'cpuCount': resources["min_cpu"],
-            'memory': resources["min_mem"],
-            'wallTime': walltime,
-            'remoteCluster': cluster,
-            'group': group,
-            'queue': queue,
-            'libraries': condas,
-            'pip': pips,
-            'mounts': mounts,
-        }
-    else:
-        data = {
-            'experimentName': app_name,
-            'nodeCount': 1,
-            'cpuCount': cpus,
-            'memory': memory,
-            'wallTime': walltime,
-            'remoteCluster': cluster,
-            'group': group,
-            'queue': queue,
-            'libraries': [],
-            'pip': [],
-            'mounts': [],
-        }
+    
+    # payload
+    data = {
+        'experimentName': app_name,
+        'nodeCount': 1,
+        'cpuCount': cpus or min_cpu,
+        'gpuCount': gpus or min_gpu,
+        'memory': memory or min_mem,
+        'gpu_memory': gpu_memory or gpu_mem,
+        'wallTime': walltime,
+        'remoteCluster': cluster,
+        'group': group,
+        'queue': queue,
+        'modules': modules,
+        'libraries': conda,
+        'pip': pip,
+        'mounts': mounts,
+    }
 
-    print(f"Requesting runtime={rt_name}", flush=True)
-    print(yaml.dump(data, indent=2), flush=True)
+    # print the data
+    print(f"Requesting runtime={rt_name}...", flush=True)
+    print(f"[{data['remoteCluster']}:{data['queue']}, {data['wallTime']} Minutes, {data['nodeCount']} Node(s), {data['cpuCount']} CPU(s), {data['gpuCount']} GPU(s), {data['memory']} MB RAM, {data['gpu_memory']} MB VRAM]", flush=True)
+    print(f"* modules={data['modules']}", flush=True)
+    print(f"* libraries={data['libraries']}", flush=True)
+    print(f"* pip={data['pip']}", flush=True)
+    print(f"* mounts={data['mounts']}", flush=True)
+    
     # Send the POST request
     headers = generate_headers(access_token, gateway_id)
     res = requests.post(url, headers=headers, data=json.dumps(data))
@@ -361,9 +381,9 @@ def submit_agent_job(
             envName=obj['envName']
         )
         state.all_runtimes[rt_name] = rt
-        print(f'Requested runtime={rt_name}. state={pstate.name}')
+        print(f'Requested runtime={rt_name}', flush=True)
     else:
-        print(f'[{code}] Failed to request runtime={rt_name}. error={res.text}')
+        print(f'[{code}] Failed to request runtime={rt_name}. error={res.text}', flush=True)
 
 
 def wait_until_runtime_ready(access_token: str, rt_name: str):
@@ -870,6 +890,21 @@ def stat_runtime(line: str):
 
 
 @register_line_magic
+def wait_for_runtime(rt_name: str):
+    """
+    Wait for the runtime to be ready
+
+    """
+    access_token = get_access_token()
+    assert access_token is not None
+
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        return print(f"Runtime {rt_name} not found.")
+    return wait_until_runtime_ready(access_token, rt_name)
+
+
+@register_line_magic
 def restart_runtime(rt_name: str):
     """
     Restart the runtime
@@ -938,8 +973,9 @@ ipython = get_ipython()
 if ipython is None:
     raise RuntimeError("airavata_jupyter_magic requires an ipython session")
 assert ipython is not None
-api_base_url = "https://api.gateway.cybershuttle.org"
-file_server_url = "http://3.142.234.94:8050"
+api_host = "api.gateway.cybershuttle.org"
+api_base_url = f"https://{api_host}"
+file_server_url = f"http://{api_host}:8050"
 MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
 
 state = State(current_runtime="local", all_runtimes={})
@@ -948,7 +984,7 @@ orig_run_code = ipython.run_cell_async
 
 def cell_has_magic(raw_cell: str) -> bool:
     lines = raw_cell.strip().splitlines()
-    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime" r"%stop_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data")
+    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime" r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data")
     return any(line.strip().startswith(magics) for line in lines)
 
 
@@ -986,14 +1022,16 @@ print(rf"""
 Loaded airavata_jupyter_magic ({version}) 
 (current runtime = local)
 
-  %authenticate                      -- Authenticate to access high-performance runtimes.
-  %request_runtime <rt> [args]       -- Request a runtime named <rt> with configuration <args>. Call multiple times to request multiple runtimes.
-  %restart_runtime <rt>              -- Restart runtime <rt>. Run this if you install new dependencies or if the runtime hangs.
-  %stop_runtime <rt>                 -- Stop runtime <rt> when no longer needed.
-  %switch_runtime <rt>               -- Switch active runtime to <rt>. All subsequent executions will use this runtime.
-  %%run_on <rt>                      -- Force a cell to always execute on <rt>, regardless of the active runtime.
-  %stat_runtime <rt>                 -- Show the status of runtime <rt>.
-  %copy_data <r1:file1> <r2:file2>   -- Copy <file1> in <r1> to <file2> in <r2>.
+  %authenticate                              -- Authenticate to access high-performance runtimes.
+  %request_runtime <rt> [args]               -- Request a runtime named <rt> with configuration <args>.
+                                                Call multiple times to request multiple runtimes.
+  %restart_runtime <rt>                      -- Restart runtime <rt> if it hangs. This will clear all variables.
+  %stop_runtime <rt>                         -- Stop runtime <rt> when no longer needed.
+  %wait_for_runtime <rt>                     -- Wait for runtime <rt> to be ready.
+  %switch_runtime <rt>                       -- Switch the active runtime to <rt>. All subsequent cells will run here.
+  %%run_on <rt>                              -- Force a cell to always execute on <rt>, regardless of the active runtime.
+  %stat_runtime <rt>                         -- Show the status of runtime <rt>.
+  %copy_data source=<r1:f1> target=<r2:f2>   -- Copy <f1> in <r1> to <f2> in <r2>.
 """)
 
 # END OF AUTORUN
