@@ -278,7 +278,7 @@ func startJupyterKernel(envName string) int {
 	defer tmpFile.Close()
 	os.Setenv("KERNEL_SOCK", tmpFile.Name())
 	// Run command
-	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "/opt/jupyter/kernel.py")
+	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "kernel.py")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Printf("[agent.go] startJupyterKernel() Error creating StdoutPipe for cmd: %v\n", err)

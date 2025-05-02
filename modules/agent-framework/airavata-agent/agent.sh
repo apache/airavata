@@ -83,7 +83,9 @@ mkdir -p "$(readlink $CS_HOME/scratch/envs)"
 
 # fetch binaries
 wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/airavata-agent-linux-amd64 -O airavata-agent
+wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/kernel.py -O kernel.py
 wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.1.0-0/micromamba-linux-64 -O micromamba
+
 chmod +x airavata-agent micromamba
 
 # define environment variables
