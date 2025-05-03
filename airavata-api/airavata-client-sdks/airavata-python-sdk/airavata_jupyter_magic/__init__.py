@@ -18,6 +18,9 @@ from IPython.core.interactiveshell import ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
 from IPython.display import HTML, Image, Javascript, display
 from rich.console import Console
+from rich.layout import Layout
+from rich.live import Live
+from rich.panel import Panel
 
 from .device_auth import DeviceFlowAuthenticator
 
@@ -54,7 +57,7 @@ class ProcessState(IntEnum):
     POST_PROCESSING = 10
     COMPLETED = 11
     FAILED = 12
-    CANCELLING = 13
+    CANCELING = 13
     CANCELED = 14
     QUEUED = 15
     DEQUEUING = 16
@@ -92,7 +95,7 @@ PENDING_STATES = [
 
 TERMINAL_STATES = [
     ProcessState.DEQUEUING,
-    ProcessState.CANCELLING,
+    ProcessState.CANCELING,
     ProcessState.COMPLETED,
     ProcessState.FAILED,
     ProcessState.CANCELED,
@@ -385,8 +388,22 @@ def submit_agent_job(
     else:
         print(f'[{code}] Failed to request runtime={rt_name}. error={res.text}', flush=True)
 
+def fetch_logs(rt_name: str) -> tuple[str, str]:
+    """
+    Fetch stdout and stderr for the runtime.
 
-def wait_until_runtime_ready(access_token: str, rt_name: str):
+    @param rt_name: the runtime name
+    @returns: (stdout, stderr)
+
+    """
+    pid = state.all_runtimes[rt_name].processId
+    stdout_res = requests.get(f"{file_server_url}/download/live/{pid}/AiravataAgent.stdout")
+    stderr_res = requests.get(f"{file_server_url}/download/live/{pid}/AiravataAgent.stderr")
+    stdout = "No STDOUT" if stdout_res.status_code != 200 else stdout_res.content.decode('utf-8').strip()
+    stderr = "No STDERR" if stderr_res.status_code != 200 else stderr_res.content.decode('utf-8').strip()
+    return stdout, stderr
+
+def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: bool = False):
     """
     Block execution until the runtime is ready.
 
@@ -401,17 +418,44 @@ def wait_until_runtime_ready(access_token: str, rt_name: str):
     if rt_name == "local":
         return
     console = Console()
-    with console.status(f"Connecting to={rt_name}...") as status:
-        while True:
-            ready, rstate = is_runtime_ready(access_token, rt, rt_name)
-            if ready:
-                status.update(f"Connecting to={rt_name}... status=CONNECTED")
-                break
-            else:
-                status.update(f"Connecting to={rt_name}... status={rstate}")
-                time.sleep(5)
-        status.stop()
-    console.clear()
+
+    try:
+      if render_live_logs:
+        def render(title_text, stdout_text, stderr_text):
+            layout = Layout()
+            layout.split_column(
+                Layout(Panel(title_text, title="STATUS", border_style="green")),
+                Layout(Panel(stdout_text, title="STDOUT", border_style="black")),
+                Layout(Panel(stderr_text, title="STDERR", border_style="red")),
+            )
+            return layout
+        
+        with Live(render(f"Connecting to={rt_name}...", "No STDOUT", "No STDERR"), refresh_per_second=1, console=console) as live:
+            while True:
+              ready, rstate = is_runtime_ready(access_token, rt, rt_name)
+              stdout, stderr = fetch_logs(rt_name)
+              if ready:
+                  live.update(render(f"Connecting to={rt_name}... status=CONNECTED", stdout, stderr))
+                  break
+              else:
+                  live.update(render(f"Connecting to={rt_name}... status={rstate}", stdout, stderr))
+              time.sleep(5)
+      else:
+        with console.status(f"Connecting to={rt_name}...") as status:
+            while True:
+                ready, rstate = is_runtime_ready(access_token, rt, rt_name)
+                if ready:
+                    status.update(f"Connecting to={rt_name}... status=CONNECTED")
+                    break
+                else:
+                    status.update(f"Connecting to={rt_name}... status={rstate}")
+                    time.sleep(5)
+            status.stop()
+    except InvalidStateError as e:
+        stdout, stderr = fetch_logs(rt_name)
+        error_message = f"{str(e)}\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
+        e.args = (error_message,) + e.args[1:] if len(e.args) > 0 else (error_message,)
+        raise e
 
 
 def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runtime: RuntimeInfo):
@@ -689,7 +733,8 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
         return print("Please provide paths for both source and target")
     # upload file
     print(f"local:{local_path} --> {remot_rt}:{remot_path}...", end=" ", flush=True)
-    url = f"{file_server_url}/upload/live/{state.all_runtimes[remot_rt].processId}/{remot_path}"
+    pid = state.all_runtimes[remot_rt].processId
+    url = f"{file_server_url}/upload/live/{pid}/{remot_path}"
     with open(local_path, "rb") as file:
         files = {"file": file}
         response = requests.post(url, files=files)
@@ -713,7 +758,8 @@ def pull_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
         return print("Please provide paths for both source and target")
     # download file
     print(f"local:{local_path} <-- {remot_rt}:{remot_path}...", end=" ", flush=True)
-    url = f"{file_server_url}/download/live/{state.all_runtimes[remot_rt].processId}/{remot_path}"
+    pid = state.all_runtimes[remot_rt].processId
+    url = f"{file_server_url}/download/live/{pid}/{remot_path}"
     response = requests.get(url)
     with open(local_path, "wb") as file:
         file.write(response.content)
@@ -888,18 +934,26 @@ def stat_runtime(line: str):
 
 
 @register_line_magic
-def wait_for_runtime(rt_name: str):
+def wait_for_runtime(line: str):
     """
     Wait for the runtime to be ready
 
     """
+    parts = line.strip().split()
+    if len(parts) == 1:
+        rt_name, render_live_logs = parts[0], False
+    elif len(parts) == 2:
+        assert parts[1] == "--live", "Usage: %wait_for_runtime <rt> [--live]"
+        rt_name, render_live_logs = parts[0], True
+    else:
+        raise ValueError("Usage: %wait_for_runtime <rt> [--live]")
     access_token = get_access_token()
     assert access_token is not None
 
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         return print(f"Runtime {rt_name} not found.")
-    return wait_until_runtime_ready(access_token, rt_name)
+    return wait_until_runtime_ready(access_token, rt_name, render_live_logs)
 
 
 @register_line_magic
@@ -1017,7 +1071,7 @@ async def run_cell_async(
         assert access_token is not None
         result = ExecutionResult(info=None)
         try:
-            wait_until_runtime_ready(access_token, rt)
+            wait_until_runtime_ready(access_token, rt, render_live_logs=False)
             run_on_runtime(rt, raw_cell, result)
         except Exception as e:
             result.error_in_exec = e
