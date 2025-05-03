@@ -422,13 +422,13 @@ def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: 
     try:
       if render_live_logs:
         def render(title_text, stdout_text, stderr_text):
-            layout = Layout()
-            layout.split_column(
-                Layout(Panel(title_text, title="STATUS", border_style="green")),
-                Layout(Panel(stdout_text, title="STDOUT", border_style="black")),
-                Layout(Panel(stderr_text, title="STDERR", border_style="red")),
+            outer = Layout()
+            outer.split_column(
+                Layout(Panel(title_text, height=3)),
+                Layout(Panel(stdout_text, style="black", height=12)),
+                Layout(Panel(stderr_text, style="red", height=12)),
             )
-            return layout
+            return outer
         
         with Live(render(f"Connecting to={rt_name}...", "No STDOUT", "No STDERR"), refresh_per_second=1, console=console) as live:
             while True:
