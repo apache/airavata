@@ -36,7 +36,7 @@ public class FileController {
             throw e;
         }
     }
-    @GetMapping("/list/{live}/{processId}/{subPath}")
+    @GetMapping("/list/{live}/{processId}/{*subPath}")
     @ResponseBody
     public Object listFiles(@PathVariable String live,
                             @PathVariable String processId,
@@ -49,7 +49,7 @@ public class FileController {
         }
     }
 
-    @GetMapping("/download/{live}/{processId}/{subPath}")
+    @GetMapping("/download/{live}/{processId}/{*subPath}")
     @ResponseBody
     public ResponseEntity downloadFile(@PathVariable String live,
                                                  @PathVariable String processId,
@@ -69,7 +69,7 @@ public class FileController {
         }
     }
 
-    @PostMapping("/upload/{live}/{processId}/{subPath}")
+    @PostMapping("/upload/{live}/{processId}/{*subPath}")
     @ResponseBody
     public ResponseEntity uploadFile(@PathVariable String live,
                                          @PathVariable String processId,
