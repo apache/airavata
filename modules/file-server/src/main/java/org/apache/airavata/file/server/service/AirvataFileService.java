@@ -71,6 +71,7 @@ public class AirvataFileService {
         subPath = dataManager.getBaseDir() + (subPath.isEmpty()? "" : "/" + subPath);
 
         try {
+            agentAdaptor.createDirectory(subPath, true);
             agentAdaptor.uploadFile(tempFile.toFile().getAbsolutePath(), subPath);
         } catch (Exception e) {
             logger.error("Failed to upload file {} from local path to process path {}",

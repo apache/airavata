@@ -688,13 +688,12 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
     if not remot_path or not local_path:
         return print("Please provide paths for both source and target")
     # upload file
-    print(f"Pushing local:{local_path} to remote:{remot_path}")
-    url = f"{file_server_url}/upload/live/{state.all_runtimes[state.current_runtime].processId}/{remot_path}"
+    print(f"local:{local_path} --> {remot_rt}:{remot_path}...", end=" ", flush=True)
+    url = f"{file_server_url}/upload/live/{state.all_runtimes[remot_rt].processId}/{remot_path}"
     with open(local_path, "rb") as file:
         files = {"file": file}
         response = requests.post(url, files=files)
-    print(
-        f"[{response.status_code}] Uploaded local:{local_path} to remote:{remot_path}")
+    print(f"[{response.status_code}]", flush=True)
 
 
 def pull_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
@@ -713,13 +712,12 @@ def pull_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
     if not remot_path or not local_path:
         return print("Please provide paths for both source and target")
     # download file
-    print(f"Pulling remote:{remot_path} to local:{local_path}")
-    url = f"{file_server_url}/download/live/{state.all_runtimes[state.current_runtime].processId}/{remot_path}"
+    print(f"local:{local_path} <-- {remot_rt}:{remot_path}...", end=" ", flush=True)
+    url = f"{file_server_url}/download/live/{state.all_runtimes[remot_rt].processId}/{remot_path}"
     response = requests.get(url)
     with open(local_path, "wb") as file:
         file.write(response.content)
-    print(
-        f"[{response.status_code}] Downloaded remote:{remot_path} to local:{local_path}")
+    print(f"[{response.status_code}]", flush=True)
 
 
 # END OF HELPER FUNCTIONS
@@ -957,7 +955,20 @@ def copy_data(line: str):
         f"Copying from {source_runtime}:{source_path} to {target_runtime}:{target_path}")
 
     if source_runtime == "local":
-        push_remote(source_path, target_runtime, target_path)
+        # Check if source_path is a directory
+        source_path_obj = Path(source_path)
+        if source_path_obj.is_dir():
+            # Recursively upload all files, preserving structure
+            for root, dirs, files in os.walk(source_path):
+                for file in files:
+                    file_path = Path(root) / file
+                    # Compute relative path from the source directory
+                    rel_path = file_path.relative_to(source_path_obj)
+                    # Construct the corresponding remote path
+                    remote_file_path = str(Path(target_path) / rel_path)
+                    push_remote(str(file_path), target_runtime, remote_file_path)
+        else:
+            push_remote(source_path, target_runtime, target_path)
     elif target_runtime == "local":
         pull_remote(target_path, source_runtime, source_path)
     else:
@@ -984,7 +995,7 @@ orig_run_code = ipython.run_cell_async
 
 def cell_has_magic(raw_cell: str) -> bool:
     lines = raw_cell.strip().splitlines()
-    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime" r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data")
+    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime", r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data")
     return any(line.strip().startswith(magics) for line in lines)
 
 
