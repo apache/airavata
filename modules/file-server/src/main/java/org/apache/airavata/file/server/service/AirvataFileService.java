@@ -39,24 +39,51 @@ public class AirvataFileService {
         }
         return agentAdaptor;
     }
-    public AiravataDirectory listFiles(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
 
+    public FileMetadata getInfo(String processId, String subPath) throws Exception {
+      ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+      AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+      String absPath = dataManager.getBaseDir() + subPath;
+      
+      logger.info("Getting metadata for path {}", absPath);
+      return agentAdaptor.getFileMetadata(absPath);
+  }
+
+    public AiravataDirectory listDir(String processId, String subPath) throws Exception {
+        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
 
-        AiravataDirectory airavataDirectory = new AiravataDirectory("root", System.currentTimeMillis()); // TODO: set dir name
-
-        subPath = dataManager.getBaseDir() + (subPath.isEmpty()? "" : "/" + subPath);
-        logger.info("Listing files in path {}", subPath);
-        List<String> fileList = agentAdaptor.listDirectory(subPath); // TODO: Validate if this is a file or dir
+        String absPath = dataManager.getBaseDir() + subPath;
+        logger.info("Getting metadata for path {}", absPath);
+        FileMetadata rm = agentAdaptor.getFileMetadata(absPath);
+        if (!rm.isDirectory()) {
+          throw new Exception("Path " + absPath + " is not a directory");
+        }
+        
+        AiravataDirectory airavataDirectory = AiravataDirectory.fromMetadata(rm);
+        logger.info("Listing files in path {}", absPath);
+        List<String> fileList = agentAdaptor.listDirectory(absPath);
         for (String fileOrDir : fileList) {
-            logger.info("Processing file {}", fileOrDir);
-            FileMetadata fileMetadata = agentAdaptor.getFileMetadata(subPath + "/" + fileOrDir);
-            airavataDirectory.getInnerFiles().add(new AiravataFile(fileMetadata.getName(),
-                    fileMetadata.getSize(), System.currentTimeMillis(), System.currentTimeMillis())); // TODO: update created and updated time
+            logger.info("Getting metadata for path {}", fileOrDir);
+            FileMetadata m = agentAdaptor.getFileMetadata(absPath + "/" + fileOrDir);
+            if (m.isDirectory()) {
+              airavataDirectory.getInnerDirectories().add(AiravataDirectory.fromMetadata(m));
+            } else {
+              airavataDirectory.getInnerFiles().add(AiravataFile.fromMetadata(m));
+            }
         }
 
         return airavataDirectory;
+    }
+
+    public AiravataFile listFile(String processId, String subPath) throws Exception {
+      ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+      AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+
+      String absPath = dataManager.getBaseDir() + subPath;
+
+      var info = agentAdaptor.getFileMetadata(absPath);
+      return AiravataFile.fromMetadata(info);
     }
 
     public void uploadFile(String processId, String subPath, MultipartFile file) throws Exception {
@@ -66,16 +93,16 @@ public class AirvataFileService {
         Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
 
         ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
-
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
-        subPath = dataManager.getBaseDir() + (subPath.isEmpty()? "" : "/" + subPath);
+
+        String tmpPath = tempFile.toFile().getAbsolutePath();
+        String absPath = dataManager.getBaseDir() + subPath;
 
         try {
-            agentAdaptor.createDirectory(subPath, true);
-            agentAdaptor.uploadFile(tempFile.toFile().getAbsolutePath(), subPath);
+            agentAdaptor.createDirectory(absPath, true);
+            agentAdaptor.uploadFile(tmpPath, absPath);
         } catch (Exception e) {
-            logger.error("Failed to upload file {} from local path to process path {}",
-                    tempFile.toFile().getAbsolutePath(), subPath);
+            logger.error("Failed to upload file {}:{} to {}:{}", "temp", tmpPath, processId, absPath);
             try {
                 tempFile.toFile().delete();
             } catch (Exception ignore) {
@@ -84,31 +111,35 @@ public class AirvataFileService {
             throw e;
         }
     }
+
     public Path downloadFile(String processId, String subPath) throws Exception {
 
         ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
-
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
-        subPath = dataManager.getBaseDir() + (subPath.isEmpty()? "" : "/" + subPath);
 
-        if (agentAdaptor.doesFileExist(subPath)) {
+        String absPath = dataManager.getBaseDir() + subPath;
+
+        if (agentAdaptor.doesFileExist(absPath)) {
             Path tempFile = Files.createTempFile("tempfile_", ".data");
             tempFile.toFile().deleteOnExit();
+            
+            String tmpPath = tempFile.toFile().getAbsolutePath();
+            
             try {
-                agentAdaptor.downloadFile(subPath, tempFile.toFile().getAbsolutePath());
+                agentAdaptor.downloadFile(absPath, tmpPath);
                 return tempFile;
             } catch (Exception e) {
-                logger.error("Failed to download file {} from process {} to local path {}",
-                        subPath, processId, tempFile.toFile().getAbsolutePath());
+                logger.error("Failed to download file {}:{} to {}:{}", processId, absPath, "temp", tmpPath);
+                throw e;
+            } finally {
                 try {
                     tempFile.toFile().delete();
                 } catch (Exception ignore) {
                     // Ignore
                 }
-                throw e;
             }
         } else {
-            throw new Exception("File " + subPath + "  does not exist in process " + processId);
+            throw new Exception("File " + absPath + " does not exist in process " + processId);
         }
     }
 }
