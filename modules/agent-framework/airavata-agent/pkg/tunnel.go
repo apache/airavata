@@ -13,6 +13,30 @@ import (
 var tunnelErrorStorage = make(map[string]chan error)
 var tunnelServerStorage = make(map[string]*frpclient.Service)
 
+func CloseRemoteTunnel(stream Stream, executionId string, tunnelId string) error {
+	log.Printf("[agent.go] CloseRemoteTunnel() tunnelId: %s\n", tunnelId)
+
+	status := "Failed"
+	if srv, ok := tunnelServerStorage[tunnelId]; ok {
+		srv.Close()
+		delete(tunnelServerStorage, tunnelId)
+		delete(tunnelErrorStorage, tunnelId)
+		status = "OK"
+	}
+	msg := &protos.AgentMessage{
+		Message: &protos.AgentMessage_TunnelTerminationResponse{
+			TunnelTerminationResponse: &protos.TunnelTerminationResponse{
+				ExecutionId: executionId,
+				Status:      status,
+			},
+		},
+	}
+	if streamErr := stream.Send(msg); streamErr != nil {
+		log.Printf("[agent.go] CloseRemoteTunnel() failed to inform the server: %v\n", streamErr)
+	}
+	return nil
+}
+
 func OpenRemoteTunnel(stream Stream, executionId string, localBindHost string, localPort int32,
 	tunnelServerHost string, tunnelServerPort int32, tunnelServerApiUrl string, tunnelServerToken string) error {
 
@@ -38,7 +62,6 @@ func OpenRemoteTunnel(stream Stream, executionId string, localBindHost string, l
 		tunnelErrorStorage[tunnelId] = chanErr
 		tunnelServerStorage[tunnelId] = srv
 		log.Printf("[agent.go] OpenRemoteTunnel() tunnelId: %s\n", tunnelId)
-		log.Printf("[agent.go] OpenRemoteTunnel() tunnelToken: %s\n", tunnelServerToken)
 		msg := &protos.AgentMessage{
 			Message: &protos.AgentMessage_TunnelCreationResponse{
 				TunnelCreationResponse: &protos.TunnelCreationResponse{
