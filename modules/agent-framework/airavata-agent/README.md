@@ -161,16 +161,38 @@ Response
 }
 ```
 
-Set Up an SSH Tunnel
+Set Up a tcp Tunnel
 ```
 POST http://localhost:18880/api/v1/agent/setup/tunnel
 
 {
-    "destinationHost": "32.241.33.22",
-    "destinationPort": "9999",
-    "sshUserName": "sshuser",
-    "sourcePort": "9001",
-    "sshKeyPath": "/Users/dwannipu/.ssh/id_rsa_unencrypted",
-    "processId": "process1"
+    "agentId": "agent1",
+    "localPort": 7000,
+    "localBindHost": "localhost"
+}
+
+Response 
+
+{
+    "executionId": "f2f1c982-5a8b-4813-b048-8a71cdfc9578",
+    "status": 0,
+    "error": null
+}
+
+```
+Get tunnel info
+
+```
+GET http://localhost:18880/api/v1/agent/setup/tunnel/<execution_id>
+
+Response
+
+{
+    "executionId": "f2f1c982-5a8b-4813-b048-8a71cdfc9578",
+    "tunnelId": "ff2516f6-d5a4-426c-adf4-cd988c66bfc2",
+    "poxyPort": 10000,
+    "proxyHost": "poxy-host",
+    "status": "OK"
 }
 ```
+

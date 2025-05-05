@@ -2,30 +2,21 @@ package main
 
 import (
 	protos "airavata-agent/protos"
-	"bufio"
-	"bytes"
 	"context"
-	"encoding/json"
 	"flag"
-	"fmt"
 	"io"
 	"log"
-	"net"
-	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 
-	"golang.org/x/crypto/ssh"
+	"airavata-agent/pkg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
 
-var pidMap = make(map[string]int)
 var defaultLibs = []string{"python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client"}
 
 func main() {
@@ -167,7 +158,7 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			envName := x.EnvSetupRequest.EnvName
 			envLibs := x.EnvSetupRequest.Libraries
 			envPip := x.EnvSetupRequest.Pip
-			go createEnv(stream, executionId, envName, append(envLibs, defaultLibs...), envPip)
+			go pkg.CreateEnv(stream, executionId, envName, append(envLibs, defaultLibs...), envPip)
 
 		case *protos.ServerMessage_PythonExecutionRequest:
 			log.Printf("[agent.go] Recived a python execution request\n")
@@ -175,7 +166,7 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			envName := x.PythonExecutionRequest.EnvName
 			workingDir := x.PythonExecutionRequest.WorkingDir
 			code := x.PythonExecutionRequest.Code
-			go executePython(stream, executionId, envName, workingDir, code)
+			go pkg.ExecutePython(stream, executionId, envName, workingDir, code)
 
 		case *protos.ServerMessage_CommandExecutionRequest:
 			log.Printf("[agent.go] Recived a shell execution request\n")
@@ -183,380 +174,34 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			envName := x.CommandExecutionRequest.EnvName
 			workingDir := x.CommandExecutionRequest.WorkingDir
 			execArgs := x.CommandExecutionRequest.Arguments
-			go executeShell(stream, executionId, envName, workingDir, execArgs)
+			go pkg.ExecuteShell(stream, executionId, envName, workingDir, execArgs)
 
 		case *protos.ServerMessage_JupyterExecutionRequest:
 			log.Printf("[agent.go] Recived a jupyter execution request\n")
 			executionId := x.JupyterExecutionRequest.ExecutionId
 			envName := x.JupyterExecutionRequest.EnvName
 			code := x.JupyterExecutionRequest.Code
-			go executeJupyter(stream, executionId, envName, code)
+			go pkg.ExecuteJupyter(stream, executionId, envName, code)
 
 		case *protos.ServerMessage_KernelRestartRequest:
 			log.Printf("[agent.go] Recived a kernel restart request\n")
 			executionId := x.KernelRestartRequest.ExecutionId
 			envName := x.KernelRestartRequest.EnvName
-			go restartKernel(stream, executionId, envName)
+			go pkg.RestartKernel(stream, executionId, envName)
 
 		case *protos.ServerMessage_TunnelCreationRequest:
 			log.Printf("[agent.go] Received a tunnel creation request\n")
 			executionId := x.TunnelCreationRequest.ExecutionId
-			destHost := x.TunnelCreationRequest.DestinationHost
-			destPort := x.TunnelCreationRequest.DestinationPort
-			srcPort := x.TunnelCreationRequest.SourcePort
-			sshUser := x.TunnelCreationRequest.SshUserName
-			keyPath := x.TunnelCreationRequest.SshKeyPath
-			go openRemoteTunnel(stream, executionId, destHost, destPort, srcPort, sshUser, keyPath)
-		}
-	}
-}
+			localBindHost := x.TunnelCreationRequest.LocalBindHost
+			localPort := x.TunnelCreationRequest.LocalPort
+			tunnelServerHost := x.TunnelCreationRequest.TunnelServerHost
+			tunnelServerPort := x.TunnelCreationRequest.TunnelServerPort
+			tunnelServerApiUrl := x.TunnelCreationRequest.TunnelServerApiUrl
+			tunnelServerToken := x.TunnelCreationRequest.TunnelServerToken
 
-func createEnv(stream Stream, executionId string, envName string, envLibs []string, envPip []string) {
-	log.Printf("[agent.go] createEnv() Execution id %s\n", executionId)
-	log.Printf("[agent.go] createEnv() Env name %s\n", envName)
-	log.Printf("[agent.go] createEnv() Env libs %s\n", envLibs)
-	log.Printf("[agent.go] createEnv() Env pip %s\n", envPip)
-	// cleanup previous kernel if exists
-	if pid, exists := pidMap[envName]; exists {
-		cmd := exec.Command("kill", fmt.Sprintf("%d", pid))
-		if err := cmd.Run(); err != nil {
-			log.Printf("[agent.go] createEnv() Failed to kill existing process with PID %d: %v\n", pid, err)
-		} else {
-			log.Printf("[agent.go] createEnv() Successfully killed existing process with PID %d\n", pid)
-		}
-		delete(pidMap, envName)
-	}
-	// create environment
-	if envName != "base" {
-		createEnvCmd := exec.Command("micromamba", "create", "-n", envName, "--yes", "--quiet")
-		if err := createEnvCmd.Run(); err != nil {
-			log.Printf("[agent.go] createEnv() Error creating environment: %v\n", err)
-			return
-		}
-		log.Printf("[agent.go] createEnv() Environment created: %s\n", envName)
-	}
-	installDepsCmd := exec.Command("micromamba", "install", "-n", envName, "--yes")
-	installDepsCmd.Args = append(installDepsCmd.Args, envLibs...)
-	if err := installDepsCmd.Run(); err != nil {
-		log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
-		return
-	}
-	if len(envPip) > 0 {
-		installPipCmd := exec.Command("micromamba", "run", "-n", envName, "pip", "install")
-		installPipCmd.Args = append(installPipCmd.Args, envPip...)
-		if err := installPipCmd.Run(); err != nil {
-			log.Printf("[agent.go] createEnv() Error waiting for command: %v\n", err)
-			return
-		}
-	}
-	// start kernel in new environment
-	pidMap[envName] = startJupyterKernel(envName)
-	msg := &protos.AgentMessage{
-		Message: &protos.AgentMessage_EnvSetupResponse{
-			EnvSetupResponse: &protos.EnvSetupResponse{
-				ExecutionId: executionId,
-				Status:      "OK",
-			},
-		},
-	}
-	if err := stream.Send(msg); err != nil {
-		log.Printf("[agent.go] executePython() failed to send result to server: %v\n", err)
-	} else {
-		log.Printf("[agent.go] executePython() sent result to server\n")
-	}
-}
+			pkg.OpenRemoteTunnel(stream, executionId, localBindHost, localPort, tunnelServerHost,
+				tunnelServerPort, tunnelServerApiUrl, tunnelServerToken)
 
-func startJupyterKernel(envName string) int {
-	log.Printf("[agent.go] startJupyterKernel() Starting python server in env: %s...\n", envName)
-	// Create temp file for unix socket
-	log.Printf("[agent.go] startJupyterKernel() creating unix socket...\n")
-	tmpFile, err := os.CreateTemp(os.TempDir(), "kernel-*.sock")
-	if err != nil {
-		log.Fatalf("[agent.go] startJupyterKernel() Failed to create unix socket: %v\n", err)
-	}
-	log.Printf("[agent.go] startJupyterKernel() created unix socket: %s\n", tmpFile.Name())
-	defer tmpFile.Close()
-	os.Setenv("KERNEL_SOCK", tmpFile.Name())
-	// Run command
-	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "kernel.py")
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		log.Printf("[agent.go] startJupyterKernel() Error creating StdoutPipe for cmd: %v\n", err)
-		return 0
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Printf("[agent.go] startJupyterKernel() Error creating StderrPipe for cmd: %v\n", err)
-		return 0
-	}
-	if err := cmd.Start(); err != nil {
-		log.Printf("[agent.go] startJupyterKernel() Error during start: %v\n", err)
-		return 0
-	}
-	log.Printf("[agent.go] startJupyterKernel() Started python server.\n")
-	go func() {
-		stdoutScanner := bufio.NewScanner(stdout)
-		for stdoutScanner.Scan() {
-			log.Printf("[agent.go] startJupyterKernel() stdout: %s\n", stdoutScanner.Text())
 		}
-	}()
-	go func() {
-		stderrScanner := bufio.NewScanner(stderr)
-		for stderrScanner.Scan() {
-			log.Printf("[agent.go] startJupyterKernel() stderr: %s\n", stderrScanner.Text())
-		}
-	}()
-	go func() {
-		if err := cmd.Wait(); err != nil {
-			log.Printf("[agent.go] startJupyterKernel() Error waiting for command: %v\n", err)
-		}
-	}()
-	log.Printf("[agent.go] startJupyterKernel() Command finished.\n")
-	return cmd.Process.Pid
-}
-
-func executePython(stream Stream, executionId string, envName string, workingDir string, code string) {
-	log.Printf("[agent.go] executePython() Execution id %s\n", executionId)
-	log.Printf("[agent.go] executePython() Env name %s\n", envName)
-	log.Printf("[agent.go] executePython() Working Dir %s\n", workingDir)
-	log.Printf("[agent.go] executePython() Code %s\n", code)
-	// Run command
-	cmd := exec.Command("micromamba", "run", "-n", envName, "python", "-c", code)
-	cmd.Dir = workingDir
-	output, err := cmd.CombinedOutput()
-	responseString := string(output)
-	if err != nil {
-		log.Printf("[agent.go] executePython() error: %v\n", err)
-	} else {
-		log.Printf("[agent.go] executePython() completed: %s\n", responseString)
-	}
-	msg := &protos.AgentMessage{
-		Message: &protos.AgentMessage_PythonExecutionResponse{
-			PythonExecutionResponse: &protos.PythonExecutionResponse{
-				ExecutionId:    executionId,
-				ResponseString: responseString,
-			},
-		},
-	}
-	if err := stream.Send(msg); err != nil {
-		log.Printf("[agent.go] executePython() failed to send result to server: %v\n", err)
-	} else {
-		log.Printf("[agent.go] executePython() Sent result to server: %s\n", output)
-	}
-}
-
-func executeShell(stream Stream, executionId string, envName string, workingDir string, execArgs []string) {
-	log.Printf("[agent.go] executeShell() Execution id %s\n", executionId)
-	log.Printf("[agent.go] executeShell() Env name %s\n", envName)
-	log.Printf("[agent.go] executeShell() Exec args %s\n", execArgs)
-	// Run command
-	cmd := exec.Command("micromamba", "run", "-n", envName, "bash", "-c", strings.Join(execArgs, " "))
-	cmd.Dir = workingDir
-	output, err := cmd.CombinedOutput()
-	responseString := string(output)
-	if err != nil {
-		log.Printf("[agent.go] executeShell() %s failed: %v\n", executionId, err)
-	} else {
-		log.Printf("[agent.go] executeShell() %s done: %s\n", executionId, responseString)
-	}
-	msg := &protos.AgentMessage{
-		Message: &protos.AgentMessage_CommandExecutionResponse{
-			CommandExecutionResponse: &protos.CommandExecutionResponse{
-				ExecutionId:    executionId,
-				ResponseString: responseString,
-			},
-		},
-	}
-	if err := stream.Send(msg); err != nil {
-		log.Printf("[agent.go] executeShell() Failed to send execution result to server: %v\n", err)
-	} else {
-		log.Printf("[agent.go] executeShell() Sent execution result to server: %s\n", output)
-	}
-}
-
-func executeJupyter(stream Stream, executionId string, envName string, code string) {
-	if _, exists := pidMap[envName]; !exists {
-		log.Printf("[agent.go] executeJupyter() Starting python server in env: %s...\n", envName)
-		pidMap[envName] = startJupyterKernel(envName)
-		time.Sleep(5 * time.Second)
-	}
-	log.Printf("[agent.go] executeJupyter() Execution ID: %s, Env: %s, Code: %s\n", executionId, envName, code)
-	unixSock := os.Getenv("KERNEL_SOCK")
-	client := &http.Client{
-		Transport: &http.Transport{
-			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
-				return net.Dial("unix", unixSock)
-			},
-		},
-	}
-	sendResponse := func(response string, err error) {
-		if err != nil {
-			log.Printf("[agent.go] executeJupyter() Error: %v\n", err)
-			response = "Failed while running the cell in remote. Please retry"
-		}
-		msg := &protos.AgentMessage{
-			Message: &protos.AgentMessage_JupyterExecutionResponse{
-				JupyterExecutionResponse: &protos.JupyterExecutionResponse{
-					ExecutionId:    executionId,
-					ResponseString: response,
-				},
-			},
-		}
-		if streamErr := stream.Send(msg); streamErr != nil {
-			log.Printf("[agent.go] executeJupyter() Failed to send jupyter execution result to server: %v\n", streamErr)
-		}
-	}
-	// Start kernel
-	startUrl := &url.URL{Scheme: "http", Host: "localhost", Path: "/start"}
-	req, err := http.NewRequest("GET", startUrl.String(), nil)
-	if err != nil {
-		sendResponse("", fmt.Errorf("failed to create start kernel request: %w", err))
-		return
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		sendResponse("", fmt.Errorf("failed to send start kernel request: %w", err))
-		return
-	}
-	defer resp.Body.Close()
-	if _, err := io.ReadAll(resp.Body); err != nil {
-		sendResponse("", fmt.Errorf("failed to read start kernel response: %w", err))
-		return
-	}
-	log.Printf("[agent.go] executeJupyter() Successfully started the jupyter kernel\n")
-	// Execute code on kernel
-	executeUrl := &url.URL{Scheme: "http", Host: "localhost", Path: "/execute"}
-	data := map[string]string{"code": code, "executionId": executionId}
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		sendResponse("", fmt.Errorf("failed to marshal JSON: %w", err))
-		return
-	}
-	req, err = http.NewRequest("POST", executeUrl.String(), bytes.NewBuffer(jsonData))
-	if err != nil {
-		sendResponse("", fmt.Errorf("failed to create execute code request: %w", err))
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err = client.Do(req)
-	if err != nil {
-		sendResponse("", fmt.Errorf("failed to send execute code request: %w", err))
-		return
-	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		sendResponse("", fmt.Errorf("failed to read execute code response: %w", err))
-		return
-	}
-	jupyterResponse := string(bodyBytes)
-	log.Printf("[agent.go] executeJupyter() id: %s response: %s\n", executionId, jupyterResponse)
-	fmt.Printf("Response size: %d bytes\n", len(jupyterResponse))
-
-	sendResponse(jupyterResponse, nil)
-}
-
-func restartKernel(stream Stream, executionId string, envName string) {
-	log.Printf("[agent.go] restartKernel() Execution id %s\n", executionId)
-	log.Printf("[agent.go] restartKernel() Env name %s\n", envName)
-	if pid, exists := pidMap[envName]; exists {
-		cmd := exec.Command("kill", fmt.Sprintf("%d", pid))
-		if err := cmd.Run(); err != nil {
-			log.Printf("[agent.go] restartKernel() Failed to kill existing process with PID %d: %v\n", pid, err)
-		} else {
-			log.Printf("[agent.go] restartKernel() Successfully killed existing process with PID %d\n", pid)
-		}
-		delete(pidMap, envName)
-	}
-	pidMap[envName] = startJupyterKernel(envName)
-	msg := &protos.AgentMessage{
-		Message: &protos.AgentMessage_KernelRestartResponse{
-			KernelRestartResponse: &protos.KernelRestartResponse{
-				ExecutionId: executionId,
-				Status:      "OK",
-			},
-		},
-	}
-	if err := stream.Send(msg); err != nil {
-		log.Printf("[agent.go] restartKernel() failed to send result to server: %v\n", err)
-	} else {
-		log.Printf("[agent.go] restartKernel() sent result to server\n")
-	}
-}
-
-func openRemoteTunnel(stream Stream, executionId string, destHost string, destPort string, localPort string, sshUser string, sshKeyFile string) {
-	log.Printf("[agent.go] openRemoteTunnel() rhost: %s, rport: %s, lport: %s, user: %s, keyfile: %s\n", destHost, destPort, localPort, sshUser, sshKeyFile)
-	key, err := os.ReadFile(sshKeyFile)
-	if err != nil {
-		log.Printf("[agent.go] openRemoteTunnel() unable to read private key: %v\n", err)
-		return
-	}
-	signer, err := ssh.ParsePrivateKey(key)
-	if err != nil {
-		log.Printf("[agent.go] openRemoteTunnel() unable to parse private key: %v\n", err)
-		return
-	}
-	sshConfig := &ssh.ClientConfig{
-		User:            sshUser,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-	sshConn, err := ssh.Dial("tcp", net.JoinHostPort(destHost, "22"), sshConfig)
-	if err != nil {
-		log.Printf("[agent.go] openRemoteTunnel() failed to dial SSH: %v\n", err)
-		return
-	}
-	defer sshConn.Close()
-	log.Printf("[agent.go] openRemoteTunnel() SSH connection established.\n")
-	remoteListener, err := sshConn.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", destPort))
-	if err != nil {
-		log.Printf("[agent.go] openRemoteTunnel() failed to listen on remote port %s: %s\n", destPort, err)
-		return
-	}
-	defer remoteListener.Close()
-	log.Printf("[agent.go] openRemoteTunnel() reverse SSH tunnel established. Listening on remote port: %s\n", destPort)
-	msg := &protos.AgentMessage{
-		Message: &protos.AgentMessage_TunnelCreationResponse{
-			TunnelCreationResponse: &protos.TunnelCreationResponse{
-				ExecutionId: executionId,
-				Status:      "OK",
-			},
-		},
-	}
-	if streamErr := stream.Send(msg); streamErr != nil {
-		log.Printf("[agent.go] openRemoteTunnel() failed to inform the server: %v\n", streamErr)
-	}
-	for {
-		remoteConn, err := remoteListener.Accept()
-		if err != nil {
-			log.Printf("[agent.go] openRemoteTunnel() failed to accept remote connection: %v\n", err)
-			continue
-		}
-		go handleConnection(remoteConn, "localhost", localPort)
-	}
-}
-
-func handleConnection(remoteConn net.Conn, localHost, localPort string) {
-	log.Printf("[agent.go] handleConnection() Handling connection to local host %s:%s\n", localHost, localPort)
-	defer remoteConn.Close()
-	localConn, err := net.Dial("tcp", net.JoinHostPort(localHost, localPort))
-	if err != nil {
-		log.Printf("[agent.go] handleConnection() failed to connect to local host %s:%s! %v\n", localHost, localPort, err)
-		return
-	}
-	defer localConn.Close()
-	done := make(chan struct{}, 2) // Buffered channel to prevent goroutine leaks
-	log.Printf("[agent.go] handleConnection() starting data transfer between remote and local connections...\n")
-	go copyConn(remoteConn, localConn, done)
-	go copyConn(localConn, remoteConn, done)
-	<-done // Wait for both copy operations to complete
-	<-done
-	log.Printf("[agent.go] handleConnection() Data transfer completed.\n")
-}
-
-func copyConn(writer, reader net.Conn, done chan struct{}) {
-	defer func() { done <- struct{}{} }()
-	if _, err := io.Copy(writer, reader); err != nil && err != io.EOF {
-		log.Printf("[agent.go] copyConn() Data copy error: %v\n", err)
 	}
 }

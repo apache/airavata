@@ -106,23 +106,26 @@ message KernelRestartResponse {
 // server requesting the agent to create a ssh tunnel
 message TunnelCreationRequest {
   string executionId = 1;
-  string destinationHost = 2;
-  string destinationPort = 3;
-  string sshUserName = 4;
-  string sourcePort = 5;
-  string sshKeyPath = 6;
-  string password = 7;
+  int32 localPort = 2;
+  string localBindHost = 3;
+  string tunnelServerHost = 4;
+  int32 tunnelServerPort = 5;
+  string tunnelServerApiUrl = 6;
+  string tunnelServerToken = 7;
 }
+
 message TunnelCreationResponse {
   string executionId = 1;
   string status = 2;
+  string tunnelHost = 3;
+  int32 tunnelPort = 4;
+  string tunnelId = 5;
 }
 
 // server requesting the agent to terminate a ssh tunnel
 message TunnelTerminationRequest {
-  string destinationHost = 1;
-  int32 destinationPort = 2;
-  string sourcePort = 3;
+  string executionId = 1;
+  string tunnelId = 2;
 }
 message TunnelTerminationResponse {
   string executionId = 1;

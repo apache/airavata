@@ -2,25 +2,9 @@ package org.apache.airavata.agent.connection.service.controllers;
 
 import javax.validation.Valid;
 
+import org.apache.airavata.agent.TunnelCreationResponse;
 import org.apache.airavata.agent.connection.service.handlers.AgentConnectionHandler;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupAck;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupRequest;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupResponse;
-import org.apache.airavata.agent.connection.service.models.AgentInfoResponse;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartAck;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartRequest;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartResponse;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelAck;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelRequest;
+import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +31,19 @@ public class AgentController {
         return ResponseEntity.accepted().body(agentConnectionHandler.isAgentUp(agentId));
     }
 
+    @GetMapping("/setup/tunnel/{executionId}")
+    public ResponseEntity<AgentTunnelCreateResponse> getTunnelCreteResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.getTunnelCreateResponse(executionId));
+    }
+
     @PostMapping("/setup/tunnel")
-    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelRequest tunnelRequest) {
+    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelCreateRequest tunnelRequest) {
         return ResponseEntity.accepted().body(agentConnectionHandler.runTunnelOnAgent(tunnelRequest));
+    }
+
+    @PostMapping("/terminate/tunnel")
+    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelTerminateRequest terminateRequest) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.terminateTunnelOnAgent(terminateRequest));
     }
 
     @PostMapping("/setup/env")
