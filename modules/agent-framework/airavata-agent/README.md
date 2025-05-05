@@ -196,3 +196,21 @@ Response
 }
 ```
 
+Terminate tunnel
+
+```
+POST http://localhost:18880/api/v1/agent/terminate/tunnel
+
+{
+    "agentId": "agent1",
+    "tunnelId": "0c03281d-a713-4361-9a34-ad833b98dc4f"
+}
+
+Response 
+
+{
+    "executionId": "fa88ccd8-515d-4c31-bc5a-71471c23d189",
+    "status": 0,
+    "error": null
+}
+```

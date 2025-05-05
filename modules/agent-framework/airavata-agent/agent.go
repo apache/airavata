@@ -202,6 +202,16 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			pkg.OpenRemoteTunnel(stream, executionId, localBindHost, localPort, tunnelServerHost,
 				tunnelServerPort, tunnelServerApiUrl, tunnelServerToken)
 
+		case *protos.ServerMessage_TunnelTerminationRequest:
+			executionId := x.TunnelTerminationRequest.ExecutionId
+			tunnelId := x.TunnelTerminationRequest.TunnelId
+			log.Printf("[agent.go] Received a tunnel termination request for tunnelId: %s\n", tunnelId)
+			if err := pkg.CloseRemoteTunnel(stream, executionId, tunnelId); err != nil {
+				log.Printf("[agent.go] Failed to close tunnel: %v\n", err)
+			} else {
+				log.Printf("[agent.go] Closed tunnel: %s\n", tunnelId)
+			}
 		}
+
 	}
 }
