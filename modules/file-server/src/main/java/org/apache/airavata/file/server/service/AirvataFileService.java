@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -97,7 +98,7 @@ public class AirvataFileService {
         String absPath = dataManager.getBaseDir() + subPath;
 
         try {
-            agentAdaptor.createDirectory(absPath, true);
+            agentAdaptor.createDirectory(new File(absPath).getParent(), true);
             logger.info("Uploading file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
             agentAdaptor.uploadFile(tempPath.toString(), absPath);
             logger.info("Uploaded file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
