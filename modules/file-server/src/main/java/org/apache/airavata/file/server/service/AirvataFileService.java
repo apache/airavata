@@ -88,27 +88,24 @@ public class AirvataFileService {
 
     public void uploadFile(String processId, String subPath, MultipartFile file) throws Exception {
 
-        Path tempFile = Files.createTempFile("tempfile_", ".data");
-        tempFile.toFile().deleteOnExit();
-        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+        var tempPath = Files.createTempFile("tempfile_", ".data").toAbsolutePath();
+        var tempFile = tempPath.toFile();
+        Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
 
         ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
-
-        String tmpPath = tempFile.toFile().getAbsolutePath();
         String absPath = dataManager.getBaseDir() + subPath;
 
         try {
             agentAdaptor.createDirectory(absPath, true);
-            agentAdaptor.uploadFile(tmpPath, absPath);
+            logger.info("Uploading file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
+            agentAdaptor.uploadFile(tempPath.toString(), absPath);
+            logger.info("Uploaded file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
         } catch (Exception e) {
-            logger.error("Failed to upload file {}:{} to {}:{}", "temp", tmpPath, processId, absPath);
-            try {
-                tempFile.toFile().delete();
-            } catch (Exception ignore) {
-                // Ignore
-            }
+            logger.error("Failed to upload file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
             throw e;
+        } finally {
+            tempFile.deleteOnExit();
         }
     }
 
@@ -116,27 +113,25 @@ public class AirvataFileService {
 
         ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
-
         String absPath = dataManager.getBaseDir() + subPath;
 
         if (agentAdaptor.doesFileExist(absPath)) {
-            Path tempFile = Files.createTempFile("tempfile_", ".data");
-            tempFile.toFile().deleteOnExit();
-            
-            String tmpPath = tempFile.toFile().getAbsolutePath();
-            
+            var tempPath = Files.createTempFile("tempfile_", ".data").toAbsolutePath();
+            var tempFile = tempPath.toFile();
             try {
-                agentAdaptor.downloadFile(absPath, tmpPath);
-                return tempFile;
+                logger.info("Downloading file {}:{} to {}:{}", processId, subPath, "temp", tempPath.toString());
+                agentAdaptor.downloadFile(absPath, tempPath.toString());
+                if (tempPath.toFile().exists()) {
+                    logger.info("Downloaded file {}:{} to {}:{}", processId, subPath, "temp", tempPath.toString());
+                    return tempPath;
+                } else {
+                    throw new Exception("Failed to download file to " + tempPath.toString());
+                }
             } catch (Exception e) {
-                logger.error("Failed to download file {}:{} to {}:{}", processId, absPath, "temp", tmpPath);
+                logger.error("Failed to download file {}:{} to {}:{}", processId, subPath, "temp", tempPath.toString());
                 throw e;
             } finally {
-                try {
-                    tempFile.toFile().delete();
-                } catch (Exception ignore) {
-                    // Ignore
-                }
+                tempFile.deleteOnExit();
             }
         } else {
             throw new Exception("File " + absPath + " does not exist in process " + processId);

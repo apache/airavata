@@ -741,7 +741,32 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
     print(f"[{response.status_code}]", flush=True)
 
 
-def pull_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
+def list_remote_content(remot_rt: str, remot_path: str) -> tuple[list[str], list[str]]:
+    """
+    List content in a remote runtime
+
+    @param remot_rt: the remote runtime name
+    @param remot_path: the remote file path
+    @param include_dirs: whether to include directories
+    @returns: list of files, list of directories
+
+    """
+    if not state.all_runtimes.get(remot_rt, None):
+        raise RuntimeError(MSG_NOT_INITIALIZED)
+    pid = state.all_runtimes[remot_rt].processId
+    url = f"{file_server_url}/list/live/{pid}/{remot_path}"
+    response = requests.get(url)
+    res = response.json()
+    if "fileName" in res:
+        return [remot_path + "/" + res["fileName"]], []
+    elif "directoryName" in res:
+        files = [remot_path + "/" + d["fileName"] for d in res["innerFiles"]]
+        dirs = [remot_path + "/" + d["directoryName"] for d in res["innerDirectories"]]
+        return files, dirs
+    else:
+        raise Exception(f"Unexpected response from {url}: {res}")
+
+def pull_remote(remot_rt: str, remot_path: str, local_path: str) -> None:
     """
     Pull a remote file to a local runtime
 
@@ -757,13 +782,23 @@ def pull_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
     if not remot_path or not local_path:
         return print("Please provide paths for both source and target")
     # download file
-    print(f"local:{local_path} <-- {remot_rt}:{remot_path}...", end=" ", flush=True)
     pid = state.all_runtimes[remot_rt].processId
-    url = f"{file_server_url}/download/live/{pid}/{remot_path}"
-    response = requests.get(url)
-    with open(local_path, "wb") as file:
-        file.write(response.content)
-    print(f"[{response.status_code}]", flush=True)
+    remote_files, remote_dirs = list_remote_content(remot_rt, remot_path)
+    # download files first
+    for remote_file in remote_files:
+        url = f"{file_server_url}/download/live/{pid}/{remote_file}"
+        response = requests.get(url)
+        # download to local path
+        fp = Path(local_path) / remote_file
+        print(f"local:{fp} <-- {remot_rt}:{remot_path}...", end=" ", flush=True)
+        with open(fp, "wb") as file:
+            file.write(response.content)
+        print(f"[{response.status_code}]", flush=True)
+    # download directories next
+    for remote_dir in remote_dirs:
+        target_dir = Path(local_path) / remote_dir
+        os.makedirs(target_dir.as_posix(), exist_ok=True)
+        pull_remote(remot_rt, remote_dir, target_dir.as_posix())
 
 
 # END OF HELPER FUNCTIONS
@@ -1010,21 +1045,22 @@ def copy_data(line: str):
 
     if source_runtime == "local":
         # Check if source_path is a directory
-        source_path_obj = Path(source_path)
-        if source_path_obj.is_dir():
-            # Recursively upload all files, preserving structure
-            for root, dirs, files in os.walk(source_path):
-                for file in files:
-                    file_path = Path(root) / file
-                    # Compute relative path from the source directory
-                    rel_path = file_path.relative_to(source_path_obj)
-                    # Construct the corresponding remote path
+        source_matches = Path.cwd().glob(source_path)
+        for source_path in source_matches:
+            if source_path.is_dir():
+                # Recursively upload all files, preserving structure
+                for root, dirs, files in os.walk(source_path):
+                    for file in files:
+                        file_path = Path(root) / file
+                        # Compute relative path from the source directory
+                        rel_path = file_path.relative_to(source_path)
+                        # Construct the corresponding remote path
                     remote_file_path = str(Path(target_path) / rel_path)
                     push_remote(str(file_path), target_runtime, remote_file_path)
-        else:
-            push_remote(source_path, target_runtime, target_path)
+            else:
+                push_remote(source_path.as_posix(), target_runtime, target_path)
     elif target_runtime == "local":
-        pull_remote(target_path, source_runtime, source_path)
+        pull_remote(source_runtime, source_path, target_path)
     else:
         print("remote-to-remote copy is not supported yet")
 
