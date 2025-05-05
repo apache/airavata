@@ -57,12 +57,13 @@ public class FileController {
     @ResponseBody
     public ResponseEntity downloadFile(@PathVariable String live, @PathVariable String processId, @PathVariable String subPath) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
+        String fileName = new File(relPath).getName();
+        Path localPath = null;
         try {
-            Path localPath = fileService.downloadFile(processId, relPath);
+            localPath = fileService.downloadFile(processId, relPath);
             Resource resource = new UrlResource(localPath.toUri());
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + new File(relPath).getName() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
                     .body(resource);
         } catch (Exception e) {
             logger.error("Failed to download file {} from process {}", relPath, processId, e);
