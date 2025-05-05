@@ -1,48 +1,18 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
-import java.awt.image.Kernel;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.airavata.agent.AgentCommunicationServiceGrpc;
-import org.apache.airavata.agent.AgentMessage;
-import org.apache.airavata.agent.AgentPing;
-import org.apache.airavata.agent.CommandExecutionRequest;
-import org.apache.airavata.agent.CommandExecutionResponse;
-import org.apache.airavata.agent.EnvSetupResponse;
-import org.apache.airavata.agent.JupyterExecutionResponse;
-import org.apache.airavata.agent.KernelRestartRequest;
-import org.apache.airavata.agent.KernelRestartResponse;
-import org.apache.airavata.agent.PythonExecutionRequest;
-import org.apache.airavata.agent.PythonExecutionResponse;
-import org.apache.airavata.agent.ServerMessage;
-import org.apache.airavata.agent.TunnelCreationRequest;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentCommandExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupAck;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupRequest;
-import org.apache.airavata.agent.connection.service.models.AgentEnvSetupResponse;
-import org.apache.airavata.agent.connection.service.models.AgentInfoResponse;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentJupyterExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartAck;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartRequest;
-import org.apache.airavata.agent.connection.service.models.AgentKernelRestartResponse;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionAck;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionRequest;
-import org.apache.airavata.agent.connection.service.models.AgentPythonExecutionResponse;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelAck;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelRequest;
-import org.apache.airavata.agent.connection.service.models.AgentTunnelResponse;
+import org.apache.airavata.agent.*;
+import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.springframework.beans.factory.annotation.Value;
 
 @GrpcService
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
@@ -60,6 +30,19 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, KernelRestartResponse> KERNEL_RESTART_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, TunnelCreationResponse> TUNNEL_CREATION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+
+    @Value("${airavata.tunnel.serverHost}")
+    private String tunnelServerHost;
+
+    @Value("${airavata.tunnel.serverPort}")
+    private int tunnelServerPort;
+
+    @Value("${airavata.tunnel.serverApiUrl}")
+    private String tunnelServerApiUrl;
+
+    @Value("${airavata.tunnel.serverToken}")
+    private String tunnelServerToken;
 
     // response handling
     public AgentInfoResponse isAgentUp(String agentId) {
@@ -134,18 +117,6 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             runResponse.setExecuted(false);
         }
         return runResponse;
-    }
-
-    public AgentTunnelResponse getTunnelResponse(String executionId) {
-        AgentTunnelResponse tunnelResponse = new AgentTunnelResponse();
-        if (AGENT_STREAM_MAPPING.containsKey(executionId)
-                && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(executionId))) {
-            tunnelResponse.setExecutionId(executionId);
-            tunnelResponse.setTunneled(true);
-        } else {
-            tunnelResponse.setTunneled(false);
-        }
-        return tunnelResponse;
     }
 
     // request handling
@@ -261,8 +232,41 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         return ack;
     }
 
-    public AgentTunnelAck runTunnelOnAgent(AgentTunnelRequest tunnelRequest) {
+    public AgentTunnelAck terminateTunnelOnAgent(AgentTunnelTerminateRequest tunnelTerminateRequest) {
+        String executionId = UUID.randomUUID().toString();
+
         AgentTunnelAck ack = new AgentTunnelAck();
+        ack.setExecutionId(executionId);
+        if (AGENT_STREAM_MAPPING.containsKey(tunnelTerminateRequest.getAgentId())
+                && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(tunnelTerminateRequest.getAgentId()))) {
+
+            String agentId = AGENT_STREAM_MAPPING.get(tunnelTerminateRequest.getAgentId());
+            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(agentId);
+             try {
+                 streamObserver.onNext(ServerMessage.newBuilder().setTunnelTerminationRequest(
+                         TunnelTerminationRequest.newBuilder()
+                                 .setTunnelId(tunnelTerminateRequest.getTunnelId())
+                                 .setExecutionId(executionId)
+                                 .build()
+                 ).build());
+             } catch (Exception e) {
+                 logger.error("Failed to submit tunnel termination request on agent {}", agentId, e);
+                 ack.setError(e.getMessage());
+             }
+
+        } else {
+            logger.warn("No agent found to terminate the tunnel for agent id ", tunnelTerminateRequest.getAgentId());
+            ack.setError("No agent found to terminate the tunnel for agent id " + tunnelTerminateRequest.getAgentId());
+        }
+
+        return ack;
+    }
+
+    public AgentTunnelAck runTunnelOnAgent(AgentTunnelCreateRequest tunnelRequest) {
+        String executionId = UUID.randomUUID().toString();
+
+        AgentTunnelAck ack = new AgentTunnelAck();
+        ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(tunnelRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(tunnelRequest.getAgentId()))) {
             String agentId = AGENT_STREAM_MAPPING.get(tunnelRequest.getAgentId());
@@ -270,12 +274,13 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             try {
                 streamObserver.onNext(ServerMessage.newBuilder().setTunnelCreationRequest(
                         TunnelCreationRequest.newBuilder()
-                                .setDestinationHost(tunnelRequest.getDestinationHost())
-                                .setDestinationPort(tunnelRequest.getDestinationPort())
-                                .setSourcePort(tunnelRequest.getSourcePort())
-                                .setSshUserName(tunnelRequest.getSshUserName())
-                                .setPassword(Optional.ofNullable(tunnelRequest.getPassword()).orElse(""))
-                                .setSshKeyPath(Optional.ofNullable(tunnelRequest.getSshKeyPath()).orElse(""))
+                                .setExecutionId(executionId)
+                                .setLocalPort(tunnelRequest.getLocalPort())
+                                .setLocalBindHost(tunnelRequest.getLocalBindHost())
+                                .setTunnelServerHost(tunnelServerHost)
+                                .setTunnelServerPort(tunnelServerPort)
+                                .setTunnelServerApiUrl(tunnelServerApiUrl)
+                                .setTunnelServerToken(tunnelServerToken)
                                 .build()
                 ).build());
             } catch (Exception e) {
@@ -287,6 +292,22 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             ack.setError("No agent found to run the tunnel for agent id " + tunnelRequest.getAgentId());
         }
         return ack;
+    }
+
+    public AgentTunnelCreateResponse getTunnelCreateResponse(String executionId) {
+        AgentTunnelCreateResponse tunnelResponse = new AgentTunnelCreateResponse();
+        if (TUNNEL_CREATION_RESPONSE_CACHE.containsKey(executionId)) {
+            TunnelCreationResponse tunnelCreationResponse = TUNNEL_CREATION_RESPONSE_CACHE.get(executionId);
+            tunnelResponse.setTunnelId(tunnelCreationResponse.getTunnelId());
+            tunnelResponse.setExecutionId(executionId);
+            tunnelResponse.setProxyHost(tunnelCreationResponse.getTunnelHost());
+            tunnelResponse.setPoxyPort(tunnelCreationResponse.getTunnelPort());
+            tunnelResponse.setStatus(tunnelCreationResponse.getStatus());
+            TUNNEL_CREATION_RESPONSE_CACHE.remove(executionId);
+        } else {
+            tunnelResponse.setStatus("Pending");
+        }
+        return tunnelResponse;
     }
 
     public AgentKernelRestartAck runKernelRestartOnAgent(AgentKernelRestartRequest kernelRestartRequest) {
@@ -323,6 +344,15 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private void handleEnvSetupResponse(EnvSetupResponse envSetupResponse) {
         logger.info("Received env setup response for execution id {}", envSetupResponse.getExecutionId());
         ENV_SETUP_RESPONSE_CACHE.put(envSetupResponse.getExecutionId(), envSetupResponse);
+    }
+
+    private void handleTunnelCreationResponse(TunnelCreationResponse tunnelCreationResponse) {
+        logger.info("Received tunnel creation response for execution id {}", tunnelCreationResponse.getExecutionId());
+        TUNNEL_CREATION_RESPONSE_CACHE.put(tunnelCreationResponse.getExecutionId(), tunnelCreationResponse);
+    }
+
+    private void handleTunnelTerminationResponse(TunnelTerminationResponse tunnelTerminationResponse) {
+        logger.info("Received tunnel termination response for execution id {}", tunnelTerminationResponse.getExecutionId());
     }
 
     private void handleCommandExecutionResponse(CommandExecutionResponse commandExecutionResponse) {
@@ -385,6 +415,12 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                     }
                     case ENVSETUPRESPONSE -> {
                         handleEnvSetupResponse(request.getEnvSetupResponse());
+                    }
+                    case TUNNELCREATIONRESPONSE -> {
+                        handleTunnelCreationResponse(request.getTunnelCreationResponse());
+                    }
+                    case TUNNELTERMINATIONRESPONSE -> {
+
                     }
                 }
             }
