@@ -78,6 +78,8 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('libraries', list[str]),
     ('pip', list[str]),
     ('envName', str),
+    ('pids', list[int]),
+    ('tunnels', dict[str, tuple[str, int]]),
 ])
 
 PENDING_STATES = [
@@ -170,6 +172,124 @@ def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str):
     else:
         print(f"[{code}] Runtime status check failed: {res.text}")
     return astate == "CONNECTED", astate
+
+
+def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -> None:
+    """
+    Execute a shell command asynchronously (Added 2025-05-06)
+
+    @param access_token: the access token
+    @param rt_name: the runtime name
+    """
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        raise Exception(f"Runtime {rt_name} not found.")
+    
+    url = f"{api_base_url}/api/v1/agent/execute/asyncshell"
+    headers = generate_headers(access_token, rt_name)
+    res = requests.post(url, headers=headers, data=json.dumps({
+        "agentId": rt.agentId,
+        "envName": rt.envName,
+        "workingDir": ".",
+        "arguments": arguments,
+    }))
+    code = res.status_code
+    if code != 200:
+        print(f"[{code}] Failed to execute async shell command: {res.text}")
+    
+    executionId = res.json()["executionId"]
+    if not executionId:
+        print(f"Failed to restart kernel runtime={rt.agentId}")
+        return
+
+    # Check if the request was successful
+    while True:
+        url = api_base_url + "/api/v1/agent/execute/asyncshell/" + executionId
+        res = requests.get(url, headers={'Accept': 'application/json'})
+        data = res.json()
+
+        processId = data.get('processId')
+        errorMessage = data.get('errorMessage')
+        if errorMessage:
+            return print(f"Error running async shell on env={rt.envName}, runtime={rt_name}: {errorMessage}")
+        else:
+            rt.pids.append(int(processId))
+        time.sleep(1)
+
+def get_hostname(access_token: str, rt_name: str) -> str | None:
+    """
+    Get the hostname of the runtime (Added 2025-05-06)
+
+    @param access_token: the access token
+    @param rt_name: the runtime name
+    """
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        raise Exception(f"Runtime {rt_name} not found.")
+    
+    url = f"{api_base_url}/api/v1/agent/execute/shell"
+    headers = generate_headers(access_token, rt_name)
+    res = requests.post(url, headers=headers, data=json.dumps({
+        "agentId": rt.agentId,
+        "envName": rt.envName,
+        "workingDir": ".",
+        "arguments": ["hostname"],
+    }))
+    code = res.status_code
+    if code != 200:
+        print(f"[{code}] Failed to get hostname: {res.text}")
+    executionId = res.json()["executionId"]
+    if not executionId:
+        return print(f"Failed to get hostname for runtime={rt_name}")
+    
+    while True:
+        url = f"{api_base_url}/api/v1/agent/execute/shell/{executionId}"
+        res = requests.get(url, headers={'Accept': 'application/json'})
+        data = res.json()
+        if data.get('executed'):
+            responseString = str(data.get('responseString'))
+            return responseString.strip()
+        time.sleep(1)
+
+def setup_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int) -> tuple[str, int] | None:
+    """
+    Setup a tunnel to the runtime (Added 2025-05-06)
+
+    @param access_token: the access token
+    @param rt_name: the runtime name
+    @param rt_hostname: the hostname of the runtime
+    @param rt_port: the port of the runtime
+    """
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        raise Exception(f"Runtime {rt_name} not found.")
+    
+    url = f"{api_base_url}/api/v1/agent/setup/tunnel"
+    headers = generate_headers(access_token, rt_name)
+    res = requests.post(url, headers=headers, data=json.dumps({
+        "agentId": rt.agentId,
+        "localBindHost": rt_hostname,
+        "localPort": rt_port,
+    }))
+    code = res.status_code
+    if code != 200:
+        print(f"[{code}] Failed to setup tunnel: {res.text}")
+    
+    executionId = res.json()["executionId"]
+    if not executionId:
+        return print(f"Failed to setup tunnel for runtime={rt_name}")
+    
+    while True:
+        url = f"{api_base_url}/api/v1/agent/setup/tunnel/{executionId}"
+        res = requests.get(url, headers={'Accept': 'application/json'})
+        data = res.json()
+        if data.get('status') == "OK":
+            tunnelId = data.get('tunnelId')
+            proxyPort = data.get('poxyPort')
+            proxyHost = data.get('proxyHost')
+            rt.tunnels[tunnelId] = (proxyHost, proxyPort)
+            return (proxyHost, proxyPort)
+        time.sleep(1)
 
 
 def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessState, str]:
@@ -381,7 +501,9 @@ def submit_agent_job(
             group=data['group'],
             libraries=data['libraries'],
             pip=data['pip'],
-            envName=obj['envName']
+            envName=obj['envName'],
+            pids=[],
+            tunnels={},
         )
         state.all_runtimes[rt_name] = rt
         print(f'Requested runtime={rt_name}', flush=True)
