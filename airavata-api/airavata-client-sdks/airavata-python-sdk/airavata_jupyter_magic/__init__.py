@@ -216,6 +216,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
             rt.pids.append(int(processId))
         time.sleep(1)
 
+
 def get_hostname(access_token: str, rt_name: str) -> str | None:
     """
     Get the hostname of the runtime (Added 2025-05-06)
@@ -250,6 +251,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
             responseString = str(data.get('responseString'))
             return responseString.strip()
         time.sleep(1)
+
 
 def setup_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int) -> tuple[str, int] | None:
     """
@@ -290,6 +292,33 @@ def setup_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int
             rt.tunnels[tunnelId] = (proxyHost, proxyPort)
             return (proxyHost, proxyPort)
         time.sleep(1)
+
+
+def terminate_shell_async(access_token: str, rt_name: str, process_id: str) -> None:
+    """
+    Terminate a shell command asynchronously (Added 2025-05-06)
+
+    @param access_token: the access token
+    @param rt_name: the runtime name
+    @param process_id: the process id
+    """
+    rt = state.all_runtimes.get(rt_name, None)
+    if rt is None:
+        raise Exception(f"Runtime {rt_name} not found.")
+    
+    url = f"{api_base_url}/api/v1/agent/terminate/asyncshell"
+    headers = generate_headers(access_token, rt_name)
+    res = requests.post(url, headers=headers, data=json.dumps({
+        "agentId": rt.agentId,
+        "processId": process_id,
+    }))
+    code = res.status_code
+    if code != 200:
+        print(f"[{code}] Failed to terminate shell: {res.text}")
+    
+    executionId = res.json()["executionId"]
+    if not executionId:
+        return print(f"Failed to terminate shell for runtime={rt_name}, process_id={process_id}")
 
 
 def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessState, str]:
