@@ -28,21 +28,25 @@ public class AgentController {
 
     @GetMapping("/{agentId}")
     public ResponseEntity<AgentInfoResponse> getAgentInfo(@PathVariable("agentId") String agentId) {
+        logger.info("Received agent info request for agent {}", agentId);
         return ResponseEntity.accepted().body(agentConnectionHandler.isAgentUp(agentId));
     }
 
     @GetMapping("/setup/tunnel/{executionId}")
     public ResponseEntity<AgentTunnelCreateResponse> getTunnelCreteResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received tunnel creation response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getTunnelCreateResponse(executionId));
     }
 
     @PostMapping("/setup/tunnel")
     public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelCreateRequest tunnelRequest) {
+        logger.info("Received tunnel creation request to run on agent {}", tunnelRequest.getAgentId());
         return ResponseEntity.accepted().body(agentConnectionHandler.runTunnelOnAgent(tunnelRequest));
     }
 
     @PostMapping("/terminate/tunnel")
     public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Valid @RequestBody AgentTunnelTerminateRequest terminateRequest) {
+        logger.info("Received tunnel termination request to run on agent {}", terminateRequest.getAgentId());
         return ResponseEntity.accepted().body(agentConnectionHandler.terminateTunnelOnAgent(terminateRequest));
     }
 
@@ -61,6 +65,7 @@ public class AgentController {
 
     @GetMapping("/setup/env/{executionId}")
     public ResponseEntity<AgentEnvSetupResponse> getEnvSetupResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received env setup response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getEnvSetupResponse(executionId));
     }
 
@@ -79,6 +84,7 @@ public class AgentController {
 
     @GetMapping("/setup/restart/{executionId}")
     public ResponseEntity<AgentKernelRestartResponse> getKernelRestartResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received kernel restart response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getKernelRestartResponse(executionId));
     }
 
@@ -97,6 +103,7 @@ public class AgentController {
 
     @GetMapping("/execute/shell/{executionId}")
     public ResponseEntity<AgentCommandExecutionResponse> getExecutionResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getCommandExecutionResponse(executionId));
     }
 
@@ -116,6 +123,7 @@ public class AgentController {
 
     @GetMapping("/execute/asyncshell/{executionId}")
     public ResponseEntity<AgentAsyncCommandExecutionResponse> getAsyncExecutionResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received async command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandExecutionResponse(executionId));
     }
 
@@ -135,6 +143,7 @@ public class AgentController {
 
     @GetMapping("/list/asyncshell/{executionId}")
     public ResponseEntity<AgentAsyncCommandListResponse> getAsyncCommandListResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received list async command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandListResponse(executionId));
     }
 
@@ -154,6 +163,7 @@ public class AgentController {
 
     @GetMapping("/terminate/asyncshell/{executionId}")
     public ResponseEntity<AgentAsyncCommandTerminateResponse> getAsyncCommandTerminateResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received terminate async command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandTerminateResponse(executionId));
     }
 
@@ -172,6 +182,7 @@ public class AgentController {
 
     @GetMapping("/execute/jupyter/{executionId}")
     public ResponseEntity<AgentJupyterExecutionResponse> getJupyterResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received jupyter execution response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getJupyterExecutionResponse(executionId));
     }
 
@@ -190,6 +201,7 @@ public class AgentController {
 
     @GetMapping("/execute/python/{executionId}")
     public ResponseEntity<AgentPythonExecutionResponse> getPythonResponse(@PathVariable("executionId") String executionId) {
+        logger.info("Received python execution response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getPythonExecutionResponse(executionId));
     }
 
