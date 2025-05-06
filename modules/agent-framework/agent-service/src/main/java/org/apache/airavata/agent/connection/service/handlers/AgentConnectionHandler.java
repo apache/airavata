@@ -500,6 +500,16 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
     }
 
+    private void handleAsyncCommandListResponse(AsyncCommandListResponse commandListResponse) {
+        logger.info("Received async command list response for execution id {}", commandListResponse.getExecutionId());
+        ASYNC_COMMAND_LIST_RESPONSE_CACHE.put(commandListResponse.getExecutionId(), commandListResponse);
+    }
+
+    private void handleAsyncCommandTerminateResponse(AsyncCommandTerminateResponse commandTerminateResponse) {
+        logger.info("Received async command terminate response for execution id {}", commandTerminateResponse.getExecutionId());
+        ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.put(commandTerminateResponse.getExecutionId(), commandTerminateResponse);
+    }
+
     private void handleJupyterExecutionResponse(JupyterExecutionResponse executionResponse) {
         logger.info("Received jupyter execution response for execution id {}", executionResponse.getExecutionId());
         JUPYTER_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
@@ -565,6 +575,14 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
                     case ASYNCCOMMANDEXECUTIONRESPONSE -> {
                         handleAsyncCommandExecutionResponse(request.getAsyncCommandExecutionResponse());
+                    }
+
+                    case ASYNCCOMMANDLISTRESPONSE -> {
+                        handleAsyncCommandListResponse(request.getAsyncCommandListResponse());
+                    }
+
+                    case ASYNCCOMMANDTERMINATERESPONSE -> {
+                        handleAsyncCommandTerminateResponse(request.getAsyncCommandTerminateResponse());
                     }
                 }
             }
