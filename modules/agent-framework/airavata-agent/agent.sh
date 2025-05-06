@@ -88,6 +88,9 @@ wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.1.0
 
 chmod +x airavata-agent micromamba
 
+# sync data
+rsync -av --delete ubuntu@hub.cybershuttle.org:~/jupyterhub/mnt/ $CS_HOME/dataset
+
 # define environment variables
 export MAMBA_ROOT_PREFIX=$CS_HOME/scratch
 export TMPDIR=$CS_HOME/scratch/tmp

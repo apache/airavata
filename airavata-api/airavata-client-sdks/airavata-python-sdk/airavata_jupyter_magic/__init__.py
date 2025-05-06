@@ -425,8 +425,8 @@ def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: 
             outer = Layout()
             outer.split_column(
                 Layout(Panel(title_text, height=3)),
-                Layout(Panel(stdout_text, style="black", height=12)),
-                Layout(Panel(stderr_text, style="red", height=12)),
+                Layout(Panel("\n".join(stdout_text.split("\n")[-100:]), style="black", height=12)),
+                Layout(Panel("\n".join(stderr_text.split("\n")[-100:]), style="red", height=12)),
             )
             return outer
         
@@ -731,6 +731,8 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
     # validate paths
     if not remot_path or not local_path:
         return print("Please provide paths for both source and target")
+    if remot_path.endswith("/"):
+        remot_path = remot_path + os.path.basename(local_path)
     # upload file
     print(f"local:{local_path} --> {remot_rt}:{remot_path}...", end=" ", flush=True)
     pid = state.all_runtimes[remot_rt].processId
@@ -739,34 +741,17 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
         files = {"file": file}
         response = requests.post(url, files=files)
     print(f"[{response.status_code}]", flush=True)
-
-
-def list_remote_content(remot_rt: str, remot_path: str) -> tuple[list[str], list[str]]:
-    """
-    List content in a remote runtime
-
-    @param remot_rt: the remote runtime name
-    @param remot_path: the remote file path
-    @param include_dirs: whether to include directories
-    @returns: list of files, list of directories
-
-    """
-    if not state.all_runtimes.get(remot_rt, None):
-        raise RuntimeError(MSG_NOT_INITIALIZED)
+    
+def pull_remote_file(remot_rt: str, remot_fp: str, local_fp: str) -> None:
     pid = state.all_runtimes[remot_rt].processId
-    url = f"{file_server_url}/list/live/{pid}/{remot_path}"
+    url = f"{file_server_url}/download/live/{pid}/{remot_fp}"
+    print(f"GET {url}")
     response = requests.get(url)
-    res = response.json()
-    if "fileName" in res:
-        return [remot_path + "/" + res["fileName"]], []
-    elif "directoryName" in res:
-        files = [remot_path + "/" + d["fileName"] for d in res["innerFiles"]]
-        dirs = [remot_path + "/" + d["directoryName"] for d in res["innerDirectories"]]
-        return files, dirs
-    else:
-        raise Exception(f"Unexpected response from {url}: {res}")
+    with open(local_fp, "wb") as file:
+        file.write(response.content)
+    print(f"local:{local_fp} <-- {remot_rt}:{remot_fp}...", end=" ", flush=True)
 
-def pull_remote(remot_rt: str, remot_path: str, local_path: str) -> None:
+def pull_remote(remot_rt: str, remot_path: str, local_path: Path, local_is_dir: bool) -> None:
     """
     Pull a remote file to a local runtime
 
@@ -778,27 +763,33 @@ def pull_remote(remot_rt: str, remot_path: str, local_path: str) -> None:
     """
     if not state.all_runtimes.get(remot_rt, None):
         return print(MSG_NOT_INITIALIZED)
-    # validate paths
-    if not remot_path or not local_path:
-        return print("Please provide paths for both source and target")
-    # download file
     pid = state.all_runtimes[remot_rt].processId
-    remote_files, remote_dirs = list_remote_content(remot_rt, remot_path)
-    # download files first
-    for remote_file in remote_files:
-        url = f"{file_server_url}/download/live/{pid}/{remote_file}"
-        response = requests.get(url)
-        # download to local path
-        fp = Path(local_path) / remote_file
-        print(f"local:{fp} <-- {remot_rt}:{remot_path}...", end=" ", flush=True)
-        with open(fp, "wb") as file:
-            file.write(response.content)
-        print(f"[{response.status_code}]", flush=True)
-    # download directories next
-    for remote_dir in remote_dirs:
-        target_dir = Path(local_path) / remote_dir
-        os.makedirs(target_dir.as_posix(), exist_ok=True)
-        pull_remote(remot_rt, remote_dir, target_dir.as_posix())
+    url = f"{file_server_url}/list/live/{pid}/{remot_path}"
+    print(f"GET {url}")
+    response = requests.get(url)
+    res = response.json()
+    if "fileName" in res:
+        # remot_path is a file
+        if local_is_dir:
+            local_fp = local_path / remot_path
+        else:
+            local_fp = local_path
+        os.makedirs(local_fp.parent, exist_ok=True)
+        pull_remote_file(remot_rt, remot_path, local_fp.as_posix())
+    elif "directoryName" in res:
+        # remot_path is a directory
+        assert local_is_dir, f"Cannot pull directory {remot_path} to file {local_path}"
+        os.makedirs(local_path, exist_ok=True)
+        for file in [d["fileName"] for d in res["innerFiles"]]:
+            local_fp = local_path / str(file)
+            pull_remote_file(remot_rt, os.path.join(remot_path, file), local_fp.as_posix())
+                  
+        for file in [d["directoryName"] for d in res["innerDirectories"]]:
+            local_dp = local_path / str(file)
+            if os.path.isfile(local_dp):
+                raise RuntimeError(f"Cannot pull directory {remot_path} to file {local_path}")
+            os.makedirs(local_dp, exist_ok=True)
+            pull_remote(remot_rt, os.path.join(remot_path, file), local_dp, local_is_dir=True)
 
 
 # END OF HELPER FUNCTIONS
@@ -1028,39 +1019,49 @@ def copy_data(line: str):
 
     """
     parts = line.strip().split()
-    args = {}
+    args: dict[str, str] = {}
     for part in parts:
         if "=" in part:
             k, v = part.split("=", 1)
             args[k] = v
-    source = args.get("source")
-    target = args.get("target")
+    source: str = args.get("source", "")
+    target: str = args.get("target", "")
     if not source or not target:
         return print("Usage: %copy_data source=<runtime>:<path> target=<runtime>:<path>")
 
     source_runtime, source_path = source.split(":")
     target_runtime, target_path = target.split(":")
-    print(
-        f"Copying from {source_runtime}:{source_path} to {target_runtime}:{target_path}")
+    print(f"copying {source_runtime}:{source_path} to {target_runtime}:{target_path}")
 
     if source_runtime == "local":
-        # Check if source_path is a directory
-        source_matches = Path.cwd().glob(source_path)
-        for source_path in source_matches:
-            if source_path.is_dir():
-                # Recursively upload all files, preserving structure
-                for root, dirs, files in os.walk(source_path):
-                    for file in files:
-                        file_path = Path(root) / file
-                        # Compute relative path from the source directory
-                        rel_path = file_path.relative_to(source_path)
-                        # Construct the corresponding remote path
-                    remote_file_path = str(Path(target_path) / rel_path)
-                    push_remote(str(file_path), target_runtime, remote_file_path)
-            else:
-                push_remote(source_path.as_posix(), target_runtime, target_path)
+        # ensure source_path is given in right form
+        assert os.path.exists(source_path), f"Source path {source_path} does not exist"
+        source_isdir = os.path.isdir(source_path)
+        # upload all files, preserving structure
+        if source_isdir:
+            # Recursively upload all files, preserving structure
+            for root, dirs, files in os.walk(source_path):
+                for file in files:
+                    local_path = Path(root) / file
+                    remote_path = Path(target_path) / local_path.relative_to(source_path)
+                    push_remote(
+                        local_path=local_path.as_posix(),
+                        remot_rt=target_runtime,
+                        remot_path=remote_path.as_posix(),
+                    )
+        else:
+            push_remote(
+                local_path=source_path,
+                remot_rt=target_runtime,
+                remot_path=target_path,
+            )
     elif target_runtime == "local":
-        pull_remote(source_runtime, source_path, target_path)
+        pull_remote(
+            remot_rt=source_runtime,
+            remot_path=source_path.lstrip("./ "),
+            local_path=Path.cwd() / target_path.lstrip("./ "),
+            local_is_dir=target_path in ["", "."] or target_path.endswith("/"),
+        )
     else:
         print("remote-to-remote copy is not supported yet")
 

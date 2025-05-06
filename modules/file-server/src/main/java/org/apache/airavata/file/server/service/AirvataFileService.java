@@ -90,7 +90,9 @@ public class AirvataFileService {
     public void uploadFile(String processId, String subPath, MultipartFile file) throws Exception {
 
         var tempPath = Files.createTempFile("tempfile_", ".data").toAbsolutePath();
-        var tempFile = tempPath.toFile();
+        var metadata = new FileMetadata();
+        metadata.setName(file.getName());
+        metadata.setSize(file.getSize());
         Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
 
         ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
@@ -98,15 +100,16 @@ public class AirvataFileService {
         String absPath = dataManager.getBaseDir() + subPath;
 
         try {
+            var content = Files.newInputStream(tempPath);
             agentAdaptor.createDirectory(new File(absPath).getParent(), true);
-            logger.info("Uploading file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
-            agentAdaptor.uploadFile(tempPath.toString(), absPath);
-            logger.info("Uploaded file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
+            logger.info("Uploading file {}:{} to {}:{}", "temp", metadata.getName(), processId, subPath);
+            agentAdaptor.uploadFile(content, metadata, absPath);
+            logger.info("Uploaded file {}:{} to {}:{}", "temp", metadata.getName(), processId, subPath);
         } catch (Exception e) {
-            logger.error("Failed to upload file {}:{} to {}:{}", "temp", tempPath.toString(), processId, subPath);
+            logger.error("Failed to upload file {}:{} to {}:{}", "temp", metadata.getName(), processId, subPath);
             throw e;
         } finally {
-            tempFile.deleteOnExit();
+            tempPath.toFile().deleteOnExit();
         }
     }
 
@@ -118,7 +121,6 @@ public class AirvataFileService {
 
         if (agentAdaptor.doesFileExist(absPath)) {
             var tempPath = Files.createTempFile("tempfile_", ".data").toAbsolutePath();
-            var tempFile = tempPath.toFile();
             try {
                 logger.info("Downloading file {}:{} to {}:{}", processId, subPath, "temp", tempPath.toString());
                 agentAdaptor.downloadFile(absPath, tempPath.toString());
@@ -132,7 +134,7 @@ public class AirvataFileService {
                 logger.error("Failed to download file {}:{} to {}:{}", processId, subPath, "temp", tempPath.toString());
                 throw e;
             } finally {
-                tempFile.deleteOnExit();
+                tempPath.toFile().deleteOnExit();
             }
         } else {
             throw new Exception("File " + absPath + " does not exist in process " + processId);
