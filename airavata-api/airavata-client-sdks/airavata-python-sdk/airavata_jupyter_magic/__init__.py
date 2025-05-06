@@ -332,7 +332,7 @@ def terminate_shell_async(access_token: str, rt_name: str, process_id: str, proc
         "processId": process_id,
     }))
     code = res.status_code
-    if code != 200:
+    if code != 202:
         print(f"[{code}] Failed to terminate shell: {res.text}")
     
     executionId = res.json()["executionId"]
