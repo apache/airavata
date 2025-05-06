@@ -1,11 +1,14 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.airavata.agent.*;
+import org.apache.airavata.agent.AsyncCommand;
 import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
     private final Map<String, EnvSetupResponse> ENV_SETUP_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, CommandExecutionResponse> COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, AsyncCommandExecutionResponse> ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, AsyncCommandListResponse> ASYNC_COMMAND_LIST_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, AsyncCommandTerminateResponse> ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, KernelRestartResponse> KERNEL_RESTART_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
@@ -78,6 +84,54 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             agentCommandResponse.setExecuted(false);
         }
         return agentCommandResponse;
+    }
+
+    public AgentAsyncCommandExecutionResponse getAsyncCommandExecutionResponse(String executionId) {
+        AgentAsyncCommandExecutionResponse agentCommandResponse = new AgentAsyncCommandExecutionResponse();
+        if (ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
+            AsyncCommandExecutionResponse asyncCommandExecutionResponse = ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId);
+            agentCommandResponse.setProcessId(asyncCommandExecutionResponse.getProcessId());
+            agentCommandResponse.setExecutionId(executionId);
+            agentCommandResponse.setErrorMessage(asyncCommandExecutionResponse.getErrorMessage());
+            ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.remove(executionId);
+        } else {
+            agentCommandResponse.setErrorMessage("Not Ready");
+            agentCommandResponse.setProcessId(-1);
+        }
+        return agentCommandResponse;
+    }
+
+    public AgentAsyncCommandListResponse getAsyncCommandListResponse(String executionId) {
+        AgentAsyncCommandListResponse agentCommandListResponse = new AgentAsyncCommandListResponse();
+        if (ASYNC_COMMAND_LIST_RESPONSE_CACHE.containsKey(executionId)) {
+            AsyncCommandListResponse asyncCommandListResponse = ASYNC_COMMAND_LIST_RESPONSE_CACHE.get(executionId);
+            agentCommandListResponse.setExecutionId(executionId);
+            List<AsyncCommand> commandsList = asyncCommandListResponse.getCommandsList();
+
+            agentCommandListResponse.setCommands(commandsList.stream().map(c -> {
+                org.apache.airavata.agent.connection.service.models.AsyncCommand cmd = new org.apache.airavata.agent.connection.service.models.AsyncCommand();
+                cmd.setProcessId(c.getProcessId());
+                cmd.setArguments(c.getArgumentsList());
+                return cmd;
+            }).collect(Collectors.toList()));
+            ASYNC_COMMAND_LIST_RESPONSE_CACHE.remove(executionId);
+        } else {
+            agentCommandListResponse.setError("Not Ready");
+        }
+        return agentCommandListResponse;
+    }
+
+    public AgentAsyncCommandTerminateResponse getAsyncCommandTerminateResponse(String executionId) {
+        AgentAsyncCommandTerminateResponse agentAsyncCommandTerminateResponse = new AgentAsyncCommandTerminateResponse();
+        if (ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.containsKey(executionId)) {
+            AsyncCommandTerminateResponse asyncCommandTerminateResponse = ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.get(executionId);
+            agentAsyncCommandTerminateResponse.setExecutionId(executionId);
+            agentAsyncCommandTerminateResponse.setStatus(asyncCommandTerminateResponse.getStatus());
+            ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.remove(executionId);
+        } else {
+            agentAsyncCommandTerminateResponse.setStatus("Not Ready");
+        }
+        return agentAsyncCommandTerminateResponse;
     }
 
     public AgentJupyterExecutionResponse getJupyterExecutionResponse(String executionId) {
@@ -176,6 +230,87 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         }
         return ack;
     }
+
+    public AgentCommandExecutionAck runAsyncCommandOnAgent(AgentAsyncCommandExecutionRequest commandRequest) {
+        String executionId = UUID.randomUUID().toString();
+        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        ack.setExecutionId(executionId);
+        if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
+                && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
+            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            try {
+                logger.info("Running an async command on agent {}", commandRequest.getAgentId());
+                streamObserver.onNext(ServerMessage.newBuilder().setAsyncCommandExecutionRequest(
+                        AsyncCommandExecutionRequest.newBuilder()
+                                .setExecutionId(executionId)
+                                .setEnvName(commandRequest.getEnvName())
+                                .setWorkingDir(commandRequest.getWorkingDir())
+                                .addAllArguments(commandRequest.getArguments()).build()).build());
+            } catch (Exception e) {
+                logger.error("Failed to submit async command execution request {} on agent {}",
+                        executionId, commandRequest.getAgentId(), e);
+                ack.setError(e.getMessage());
+            }
+        } else {
+            logger.warn("No agent found to run the async command on agent {}", commandRequest.getAgentId());
+            ack.setError("No agent found to run the async command on agent " + commandRequest.getAgentId());
+        }
+        return ack;
+    }
+
+    public AgentCommandExecutionAck runAsyncCommandListOnAgent(AgentAsyncCommandListRequest commandRequest) {
+        String executionId = UUID.randomUUID().toString();
+        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        ack.setExecutionId(executionId);
+        if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
+                && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
+            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            try {
+                logger.info("Running an async command list on agent {}", commandRequest.getAgentId());
+                streamObserver.onNext(ServerMessage.newBuilder().setAsyncCommandListRequest(
+                        AsyncCommandListRequest.newBuilder()
+                                .setExecutionId(executionId).build()).build());
+            } catch (Exception e) {
+                logger.error("Failed to submit async command list execution request {} on agent {}",
+                        executionId, commandRequest.getAgentId(), e);
+                ack.setError(e.getMessage());
+            }
+        } else {
+            logger.warn("No agent found to run the async command list on agent {}", commandRequest.getAgentId());
+            ack.setError("No agent found to run the async command list on agent " + commandRequest.getAgentId());
+        }
+        return ack;
+    }
+
+    public AgentCommandExecutionAck runAsyncCommandTerminateOnAgent(AgentAsyncCommandTerminateRequest commandRequest) {
+        String executionId = UUID.randomUUID().toString();
+        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        ack.setExecutionId(executionId);
+        if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
+                && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
+            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            try {
+                logger.info("Running an async command terminate on agent {}", commandRequest.getAgentId());
+                streamObserver.onNext(ServerMessage.newBuilder().setAsyncCommandTerminateRequest(
+                        AsyncCommandTerminateRequest.newBuilder()
+                                .setExecutionId(executionId)
+                                .setProcessId(commandRequest.getProcessId()).build()).build());
+            } catch (Exception e) {
+                logger.error("Failed to submit async command terminate execution request {} on agent {}",
+                        executionId, commandRequest.getAgentId(), e);
+                ack.setError(e.getMessage());
+            }
+        } else {
+            logger.warn("No agent found to run the async command terminate on agent {}", commandRequest.getAgentId());
+            ack.setError("No agent found to run the async command terminate on agent " + commandRequest.getAgentId());
+        }
+        return ack;
+    }
+
+
 
     public AgentJupyterExecutionAck runJupyterOnAgent(AgentJupyterExecutionRequest jupyterExecutionRequest) {
         String executionId = UUID.randomUUID().toString();
@@ -360,6 +495,11 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         COMMAND_EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
     }
 
+    private void handleAsyncCommandExecutionResponse(AsyncCommandExecutionResponse commandExecutionResponse) {
+        logger.info("Received async command execution response for execution id {}", commandExecutionResponse.getExecutionId());
+        ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
+    }
+
     private void handleJupyterExecutionResponse(JupyterExecutionResponse executionResponse) {
         logger.info("Received jupyter execution response for execution id {}", executionResponse.getExecutionId());
         JUPYTER_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
@@ -421,6 +561,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                     }
                     case TUNNELTERMINATIONRESPONSE -> {
 
+                    }
+
+                    case ASYNCCOMMANDEXECUTIONRESPONSE -> {
+                        handleAsyncCommandExecutionResponse(request.getAsyncCommandExecutionResponse());
                     }
                 }
             }

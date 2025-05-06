@@ -100,6 +100,63 @@ public class AgentController {
         return ResponseEntity.accepted().body(agentConnectionHandler.getCommandExecutionResponse(executionId));
     }
 
+
+    @PostMapping("/execute/asyncshell")
+    public ResponseEntity<AgentCommandExecutionAck> runAsyncCommandOnAgent(@Valid @RequestBody AgentAsyncCommandExecutionRequest commandRequest) {
+        logger.info("Received async command request to run on agent {}", commandRequest.getAgentId());
+        if (agentConnectionHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runAsyncCommandOnAgent(commandRequest));
+        } else {
+            logger.warn("No agent is available to run on agent {}", commandRequest.getAgentId());
+            AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+            ack.setError("Agent not found");
+            return ResponseEntity.accepted().body(ack);
+        }
+    }
+
+    @GetMapping("/execute/asyncshell/{executionId}")
+    public ResponseEntity<AgentAsyncCommandExecutionResponse> getAsyncExecutionResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandExecutionResponse(executionId));
+    }
+
+    @PostMapping("/list/asyncshell")
+    public ResponseEntity<AgentCommandExecutionAck> listAsyncCommandOnAgent(
+            @Valid @RequestBody AgentAsyncCommandListRequest commandListRequest) {
+        logger.info("Received list async command request to run on agent {}", commandListRequest.getAgentId());
+        if (agentConnectionHandler.isAgentUp(commandListRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runAsyncCommandListOnAgent(commandListRequest));
+        } else {
+            logger.warn("No agent is available to run on agent {}", commandListRequest.getAgentId());
+            AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+            ack.setError("Agent not found");
+            return ResponseEntity.accepted().body(ack);
+        }
+    }
+
+    @GetMapping("/list/asyncshell/{executionId}")
+    public ResponseEntity<AgentAsyncCommandListResponse> getAsyncCommandListResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandListResponse(executionId));
+    }
+
+    @PostMapping("/terminate/asyncshell")
+    public ResponseEntity<AgentCommandExecutionAck> terminateAsyncCommandOnAgent(
+            @Valid @RequestBody AgentAsyncCommandTerminateRequest commandTerminateRequest) {
+        logger.info("Received terminate async command request to run on agent {}", commandTerminateRequest.getAgentId());
+        if (agentConnectionHandler.isAgentUp(commandTerminateRequest.getAgentId()).isAgentUp()) {
+            return ResponseEntity.accepted().body(agentConnectionHandler.runAsyncCommandTerminateOnAgent(commandTerminateRequest));
+        } else {
+            logger.warn("No agent is available to run on agent {}", commandTerminateRequest.getAgentId());
+            AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+            ack.setError("Agent not found");
+            return ResponseEntity.accepted().body(ack);
+        }
+    }
+
+    @GetMapping("/terminate/asyncshell/{executionId}")
+    public ResponseEntity<AgentAsyncCommandTerminateResponse> getAsyncCommandTerminateResponse(@PathVariable("executionId") String executionId) {
+        return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandTerminateResponse(executionId));
+    }
+
     @PostMapping("/execute/jupyter")
     public ResponseEntity<AgentJupyterExecutionAck> runJupyterOnAgent(@Valid @RequestBody AgentJupyterExecutionRequest executionRequest) {
         logger.info("Received jupyter execution request to run on agent {}", executionRequest.getAgentId());

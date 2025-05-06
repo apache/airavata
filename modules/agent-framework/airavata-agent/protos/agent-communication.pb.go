@@ -603,6 +603,386 @@ func (x *CommandExecutionResponse) GetResponseString() string {
 	return ""
 }
 
+type AsyncCommandExecutionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExecutionId   string                 `protobuf:"bytes,1,opt,name=executionId,proto3" json:"executionId,omitempty"`
+	EnvName       string                 `protobuf:"bytes,2,opt,name=envName,proto3" json:"envName,omitempty"`
+	WorkingDir    string                 `protobuf:"bytes,3,opt,name=workingDir,proto3" json:"workingDir,omitempty"`
+	Arguments     []string               `protobuf:"bytes,4,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommandExecutionRequest) Reset() {
+	*x = AsyncCommandExecutionRequest{}
+	mi := &file_agent_communication_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommandExecutionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommandExecutionRequest) ProtoMessage() {}
+
+func (x *AsyncCommandExecutionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommandExecutionRequest.ProtoReflect.Descriptor instead.
+func (*AsyncCommandExecutionRequest) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AsyncCommandExecutionRequest) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+func (x *AsyncCommandExecutionRequest) GetEnvName() string {
+	if x != nil {
+		return x.EnvName
+	}
+	return ""
+}
+
+func (x *AsyncCommandExecutionRequest) GetWorkingDir() string {
+	if x != nil {
+		return x.WorkingDir
+	}
+	return ""
+}
+
+func (x *AsyncCommandExecutionRequest) GetArguments() []string {
+	if x != nil {
+		return x.Arguments
+	}
+	return nil
+}
+
+type AsyncCommandExecutionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExecutionId   string                 `protobuf:"bytes,1,opt,name=executionId,proto3" json:"executionId,omitempty"`
+	ProcessId     int32                  `protobuf:"varint,2,opt,name=processId,proto3" json:"processId,omitempty"`
+	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=errorMessage,proto3" json:"errorMessage,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommandExecutionResponse) Reset() {
+	*x = AsyncCommandExecutionResponse{}
+	mi := &file_agent_communication_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommandExecutionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommandExecutionResponse) ProtoMessage() {}
+
+func (x *AsyncCommandExecutionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommandExecutionResponse.ProtoReflect.Descriptor instead.
+func (*AsyncCommandExecutionResponse) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *AsyncCommandExecutionResponse) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+func (x *AsyncCommandExecutionResponse) GetProcessId() int32 {
+	if x != nil {
+		return x.ProcessId
+	}
+	return 0
+}
+
+func (x *AsyncCommandExecutionResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+type AsyncCommandListRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExecutionId   string                 `protobuf:"bytes,1,opt,name=executionId,proto3" json:"executionId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommandListRequest) Reset() {
+	*x = AsyncCommandListRequest{}
+	mi := &file_agent_communication_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommandListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommandListRequest) ProtoMessage() {}
+
+func (x *AsyncCommandListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommandListRequest.ProtoReflect.Descriptor instead.
+func (*AsyncCommandListRequest) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *AsyncCommandListRequest) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+type AsyncCommand struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProcessId     int32                  `protobuf:"varint,1,opt,name=processId,proto3" json:"processId,omitempty"`
+	Arguments     []string               `protobuf:"bytes,4,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommand) Reset() {
+	*x = AsyncCommand{}
+	mi := &file_agent_communication_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommand) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommand) ProtoMessage() {}
+
+func (x *AsyncCommand) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommand.ProtoReflect.Descriptor instead.
+func (*AsyncCommand) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *AsyncCommand) GetProcessId() int32 {
+	if x != nil {
+		return x.ProcessId
+	}
+	return 0
+}
+
+func (x *AsyncCommand) GetArguments() []string {
+	if x != nil {
+		return x.Arguments
+	}
+	return nil
+}
+
+type AsyncCommandListResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExecutionId   string                 `protobuf:"bytes,1,opt,name=executionId,proto3" json:"executionId,omitempty"`
+	Commands      []*AsyncCommand        `protobuf:"bytes,2,rep,name=commands,proto3" json:"commands,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommandListResponse) Reset() {
+	*x = AsyncCommandListResponse{}
+	mi := &file_agent_communication_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommandListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommandListResponse) ProtoMessage() {}
+
+func (x *AsyncCommandListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommandListResponse.ProtoReflect.Descriptor instead.
+func (*AsyncCommandListResponse) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *AsyncCommandListResponse) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+func (x *AsyncCommandListResponse) GetCommands() []*AsyncCommand {
+	if x != nil {
+		return x.Commands
+	}
+	return nil
+}
+
+type AsyncCommandTerminateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExecutionId   string                 `protobuf:"bytes,1,opt,name=executionId,proto3" json:"executionId,omitempty"`
+	ProcessId     int32                  `protobuf:"varint,2,opt,name=processId,proto3" json:"processId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommandTerminateRequest) Reset() {
+	*x = AsyncCommandTerminateRequest{}
+	mi := &file_agent_communication_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommandTerminateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommandTerminateRequest) ProtoMessage() {}
+
+func (x *AsyncCommandTerminateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommandTerminateRequest.ProtoReflect.Descriptor instead.
+func (*AsyncCommandTerminateRequest) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *AsyncCommandTerminateRequest) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+func (x *AsyncCommandTerminateRequest) GetProcessId() int32 {
+	if x != nil {
+		return x.ProcessId
+	}
+	return 0
+}
+
+type AsyncCommandTerminateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExecutionId   string                 `protobuf:"bytes,1,opt,name=executionId,proto3" json:"executionId,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncCommandTerminateResponse) Reset() {
+	*x = AsyncCommandTerminateResponse{}
+	mi := &file_agent_communication_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncCommandTerminateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncCommandTerminateResponse) ProtoMessage() {}
+
+func (x *AsyncCommandTerminateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_communication_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncCommandTerminateResponse.ProtoReflect.Descriptor instead.
+func (*AsyncCommandTerminateResponse) Descriptor() ([]byte, []int) {
+	return file_agent_communication_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *AsyncCommandTerminateResponse) GetExecutionId() string {
+	if x != nil {
+		return x.ExecutionId
+	}
+	return ""
+}
+
+func (x *AsyncCommandTerminateResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
 // server requesting the agent to execute a python script in the environment
 type PythonExecutionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -616,7 +996,7 @@ type PythonExecutionRequest struct {
 
 func (x *PythonExecutionRequest) Reset() {
 	*x = PythonExecutionRequest{}
-	mi := &file_agent_communication_proto_msgTypes[10]
+	mi := &file_agent_communication_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -628,7 +1008,7 @@ func (x *PythonExecutionRequest) String() string {
 func (*PythonExecutionRequest) ProtoMessage() {}
 
 func (x *PythonExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[10]
+	mi := &file_agent_communication_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -641,7 +1021,7 @@ func (x *PythonExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PythonExecutionRequest.ProtoReflect.Descriptor instead.
 func (*PythonExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{10}
+	return file_agent_communication_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PythonExecutionRequest) GetExecutionId() string {
@@ -682,7 +1062,7 @@ type PythonExecutionResponse struct {
 
 func (x *PythonExecutionResponse) Reset() {
 	*x = PythonExecutionResponse{}
-	mi := &file_agent_communication_proto_msgTypes[11]
+	mi := &file_agent_communication_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -694,7 +1074,7 @@ func (x *PythonExecutionResponse) String() string {
 func (*PythonExecutionResponse) ProtoMessage() {}
 
 func (x *PythonExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[11]
+	mi := &file_agent_communication_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -707,7 +1087,7 @@ func (x *PythonExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PythonExecutionResponse.ProtoReflect.Descriptor instead.
 func (*PythonExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{11}
+	return file_agent_communication_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *PythonExecutionResponse) GetExecutionId() string {
@@ -736,7 +1116,7 @@ type JupyterExecutionRequest struct {
 
 func (x *JupyterExecutionRequest) Reset() {
 	*x = JupyterExecutionRequest{}
-	mi := &file_agent_communication_proto_msgTypes[12]
+	mi := &file_agent_communication_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +1128,7 @@ func (x *JupyterExecutionRequest) String() string {
 func (*JupyterExecutionRequest) ProtoMessage() {}
 
 func (x *JupyterExecutionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[12]
+	mi := &file_agent_communication_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,7 +1141,7 @@ func (x *JupyterExecutionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JupyterExecutionRequest.ProtoReflect.Descriptor instead.
 func (*JupyterExecutionRequest) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{12}
+	return file_agent_communication_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *JupyterExecutionRequest) GetExecutionId() string {
@@ -795,7 +1175,7 @@ type JupyterExecutionResponse struct {
 
 func (x *JupyterExecutionResponse) Reset() {
 	*x = JupyterExecutionResponse{}
-	mi := &file_agent_communication_proto_msgTypes[13]
+	mi := &file_agent_communication_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -807,7 +1187,7 @@ func (x *JupyterExecutionResponse) String() string {
 func (*JupyterExecutionResponse) ProtoMessage() {}
 
 func (x *JupyterExecutionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[13]
+	mi := &file_agent_communication_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -820,7 +1200,7 @@ func (x *JupyterExecutionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JupyterExecutionResponse.ProtoReflect.Descriptor instead.
 func (*JupyterExecutionResponse) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{13}
+	return file_agent_communication_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *JupyterExecutionResponse) GetExecutionId() string {
@@ -848,7 +1228,7 @@ type KernelRestartRequest struct {
 
 func (x *KernelRestartRequest) Reset() {
 	*x = KernelRestartRequest{}
-	mi := &file_agent_communication_proto_msgTypes[14]
+	mi := &file_agent_communication_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -860,7 +1240,7 @@ func (x *KernelRestartRequest) String() string {
 func (*KernelRestartRequest) ProtoMessage() {}
 
 func (x *KernelRestartRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[14]
+	mi := &file_agent_communication_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -873,7 +1253,7 @@ func (x *KernelRestartRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KernelRestartRequest.ProtoReflect.Descriptor instead.
 func (*KernelRestartRequest) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{14}
+	return file_agent_communication_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *KernelRestartRequest) GetExecutionId() string {
@@ -900,7 +1280,7 @@ type KernelRestartResponse struct {
 
 func (x *KernelRestartResponse) Reset() {
 	*x = KernelRestartResponse{}
-	mi := &file_agent_communication_proto_msgTypes[15]
+	mi := &file_agent_communication_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -912,7 +1292,7 @@ func (x *KernelRestartResponse) String() string {
 func (*KernelRestartResponse) ProtoMessage() {}
 
 func (x *KernelRestartResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[15]
+	mi := &file_agent_communication_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -925,7 +1305,7 @@ func (x *KernelRestartResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KernelRestartResponse.ProtoReflect.Descriptor instead.
 func (*KernelRestartResponse) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{15}
+	return file_agent_communication_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *KernelRestartResponse) GetExecutionId() string {
@@ -958,7 +1338,7 @@ type TunnelCreationRequest struct {
 
 func (x *TunnelCreationRequest) Reset() {
 	*x = TunnelCreationRequest{}
-	mi := &file_agent_communication_proto_msgTypes[16]
+	mi := &file_agent_communication_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -970,7 +1350,7 @@ func (x *TunnelCreationRequest) String() string {
 func (*TunnelCreationRequest) ProtoMessage() {}
 
 func (x *TunnelCreationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[16]
+	mi := &file_agent_communication_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -983,7 +1363,7 @@ func (x *TunnelCreationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TunnelCreationRequest.ProtoReflect.Descriptor instead.
 func (*TunnelCreationRequest) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{16}
+	return file_agent_communication_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *TunnelCreationRequest) GetExecutionId() string {
@@ -1048,7 +1428,7 @@ type TunnelCreationResponse struct {
 
 func (x *TunnelCreationResponse) Reset() {
 	*x = TunnelCreationResponse{}
-	mi := &file_agent_communication_proto_msgTypes[17]
+	mi := &file_agent_communication_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1060,7 +1440,7 @@ func (x *TunnelCreationResponse) String() string {
 func (*TunnelCreationResponse) ProtoMessage() {}
 
 func (x *TunnelCreationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[17]
+	mi := &file_agent_communication_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1073,7 +1453,7 @@ func (x *TunnelCreationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TunnelCreationResponse.ProtoReflect.Descriptor instead.
 func (*TunnelCreationResponse) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{17}
+	return file_agent_communication_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *TunnelCreationResponse) GetExecutionId() string {
@@ -1122,7 +1502,7 @@ type TunnelTerminationRequest struct {
 
 func (x *TunnelTerminationRequest) Reset() {
 	*x = TunnelTerminationRequest{}
-	mi := &file_agent_communication_proto_msgTypes[18]
+	mi := &file_agent_communication_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1134,7 +1514,7 @@ func (x *TunnelTerminationRequest) String() string {
 func (*TunnelTerminationRequest) ProtoMessage() {}
 
 func (x *TunnelTerminationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[18]
+	mi := &file_agent_communication_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1147,7 +1527,7 @@ func (x *TunnelTerminationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TunnelTerminationRequest.ProtoReflect.Descriptor instead.
 func (*TunnelTerminationRequest) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{18}
+	return file_agent_communication_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *TunnelTerminationRequest) GetExecutionId() string {
@@ -1174,7 +1554,7 @@ type TunnelTerminationResponse struct {
 
 func (x *TunnelTerminationResponse) Reset() {
 	*x = TunnelTerminationResponse{}
-	mi := &file_agent_communication_proto_msgTypes[19]
+	mi := &file_agent_communication_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1186,7 +1566,7 @@ func (x *TunnelTerminationResponse) String() string {
 func (*TunnelTerminationResponse) ProtoMessage() {}
 
 func (x *TunnelTerminationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[19]
+	mi := &file_agent_communication_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1199,7 +1579,7 @@ func (x *TunnelTerminationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TunnelTerminationResponse.ProtoReflect.Descriptor instead.
 func (*TunnelTerminationResponse) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{19}
+	return file_agent_communication_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *TunnelTerminationResponse) GetExecutionId() string {
@@ -1230,6 +1610,9 @@ type AgentMessage struct {
 	//	*AgentMessage_KernelRestartResponse
 	//	*AgentMessage_TunnelCreationResponse
 	//	*AgentMessage_TunnelTerminationResponse
+	//	*AgentMessage_AsyncCommandExecutionResponse
+	//	*AgentMessage_AsyncCommandListResponse
+	//	*AgentMessage_AsyncCommandTerminateResponse
 	Message       isAgentMessage_Message `protobuf_oneof:"message"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1237,7 +1620,7 @@ type AgentMessage struct {
 
 func (x *AgentMessage) Reset() {
 	*x = AgentMessage{}
-	mi := &file_agent_communication_proto_msgTypes[20]
+	mi := &file_agent_communication_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1249,7 +1632,7 @@ func (x *AgentMessage) String() string {
 func (*AgentMessage) ProtoMessage() {}
 
 func (x *AgentMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[20]
+	mi := &file_agent_communication_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1262,7 +1645,7 @@ func (x *AgentMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AgentMessage.ProtoReflect.Descriptor instead.
 func (*AgentMessage) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{20}
+	return file_agent_communication_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *AgentMessage) GetMessage() isAgentMessage_Message {
@@ -1362,6 +1745,33 @@ func (x *AgentMessage) GetTunnelTerminationResponse() *TunnelTerminationResponse
 	return nil
 }
 
+func (x *AgentMessage) GetAsyncCommandExecutionResponse() *AsyncCommandExecutionResponse {
+	if x != nil {
+		if x, ok := x.Message.(*AgentMessage_AsyncCommandExecutionResponse); ok {
+			return x.AsyncCommandExecutionResponse
+		}
+	}
+	return nil
+}
+
+func (x *AgentMessage) GetAsyncCommandListResponse() *AsyncCommandListResponse {
+	if x != nil {
+		if x, ok := x.Message.(*AgentMessage_AsyncCommandListResponse); ok {
+			return x.AsyncCommandListResponse
+		}
+	}
+	return nil
+}
+
+func (x *AgentMessage) GetAsyncCommandTerminateResponse() *AsyncCommandTerminateResponse {
+	if x != nil {
+		if x, ok := x.Message.(*AgentMessage_AsyncCommandTerminateResponse); ok {
+			return x.AsyncCommandTerminateResponse
+		}
+	}
+	return nil
+}
+
 type isAgentMessage_Message interface {
 	isAgentMessage_Message()
 }
@@ -1406,6 +1816,18 @@ type AgentMessage_TunnelTerminationResponse struct {
 	TunnelTerminationResponse *TunnelTerminationResponse `protobuf:"bytes,10,opt,name=tunnelTerminationResponse,proto3,oneof"`
 }
 
+type AgentMessage_AsyncCommandExecutionResponse struct {
+	AsyncCommandExecutionResponse *AsyncCommandExecutionResponse `protobuf:"bytes,11,opt,name=asyncCommandExecutionResponse,proto3,oneof"`
+}
+
+type AgentMessage_AsyncCommandListResponse struct {
+	AsyncCommandListResponse *AsyncCommandListResponse `protobuf:"bytes,12,opt,name=asyncCommandListResponse,proto3,oneof"`
+}
+
+type AgentMessage_AsyncCommandTerminateResponse struct {
+	AsyncCommandTerminateResponse *AsyncCommandTerminateResponse `protobuf:"bytes,13,opt,name=asyncCommandTerminateResponse,proto3,oneof"`
+}
+
 func (*AgentMessage_AgentPing) isAgentMessage_Message() {}
 
 func (*AgentMessage_CreateAgentResponse) isAgentMessage_Message() {}
@@ -1426,6 +1848,12 @@ func (*AgentMessage_TunnelCreationResponse) isAgentMessage_Message() {}
 
 func (*AgentMessage_TunnelTerminationResponse) isAgentMessage_Message() {}
 
+func (*AgentMessage_AsyncCommandExecutionResponse) isAgentMessage_Message() {}
+
+func (*AgentMessage_AsyncCommandListResponse) isAgentMessage_Message() {}
+
+func (*AgentMessage_AsyncCommandTerminateResponse) isAgentMessage_Message() {}
+
 type ServerMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Message:
@@ -1440,6 +1868,9 @@ type ServerMessage struct {
 	//	*ServerMessage_KernelRestartRequest
 	//	*ServerMessage_TunnelCreationRequest
 	//	*ServerMessage_TunnelTerminationRequest
+	//	*ServerMessage_AsyncCommandExecutionRequest
+	//	*ServerMessage_AsyncCommandListRequest
+	//	*ServerMessage_AsyncCommandTerminateRequest
 	Message       isServerMessage_Message `protobuf_oneof:"message"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1447,7 +1878,7 @@ type ServerMessage struct {
 
 func (x *ServerMessage) Reset() {
 	*x = ServerMessage{}
-	mi := &file_agent_communication_proto_msgTypes[21]
+	mi := &file_agent_communication_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1459,7 +1890,7 @@ func (x *ServerMessage) String() string {
 func (*ServerMessage) ProtoMessage() {}
 
 func (x *ServerMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_communication_proto_msgTypes[21]
+	mi := &file_agent_communication_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1472,7 +1903,7 @@ func (x *ServerMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage.ProtoReflect.Descriptor instead.
 func (*ServerMessage) Descriptor() ([]byte, []int) {
-	return file_agent_communication_proto_rawDescGZIP(), []int{21}
+	return file_agent_communication_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ServerMessage) GetMessage() isServerMessage_Message {
@@ -1572,6 +2003,33 @@ func (x *ServerMessage) GetTunnelTerminationRequest() *TunnelTerminationRequest 
 	return nil
 }
 
+func (x *ServerMessage) GetAsyncCommandExecutionRequest() *AsyncCommandExecutionRequest {
+	if x != nil {
+		if x, ok := x.Message.(*ServerMessage_AsyncCommandExecutionRequest); ok {
+			return x.AsyncCommandExecutionRequest
+		}
+	}
+	return nil
+}
+
+func (x *ServerMessage) GetAsyncCommandListRequest() *AsyncCommandListRequest {
+	if x != nil {
+		if x, ok := x.Message.(*ServerMessage_AsyncCommandListRequest); ok {
+			return x.AsyncCommandListRequest
+		}
+	}
+	return nil
+}
+
+func (x *ServerMessage) GetAsyncCommandTerminateRequest() *AsyncCommandTerminateRequest {
+	if x != nil {
+		if x, ok := x.Message.(*ServerMessage_AsyncCommandTerminateRequest); ok {
+			return x.AsyncCommandTerminateRequest
+		}
+	}
+	return nil
+}
+
 type isServerMessage_Message interface {
 	isServerMessage_Message()
 }
@@ -1616,6 +2074,18 @@ type ServerMessage_TunnelTerminationRequest struct {
 	TunnelTerminationRequest *TunnelTerminationRequest `protobuf:"bytes,10,opt,name=tunnelTerminationRequest,proto3,oneof"`
 }
 
+type ServerMessage_AsyncCommandExecutionRequest struct {
+	AsyncCommandExecutionRequest *AsyncCommandExecutionRequest `protobuf:"bytes,11,opt,name=asyncCommandExecutionRequest,proto3,oneof"`
+}
+
+type ServerMessage_AsyncCommandListRequest struct {
+	AsyncCommandListRequest *AsyncCommandListRequest `protobuf:"bytes,12,opt,name=asyncCommandListRequest,proto3,oneof"`
+}
+
+type ServerMessage_AsyncCommandTerminateRequest struct {
+	AsyncCommandTerminateRequest *AsyncCommandTerminateRequest `protobuf:"bytes,13,opt,name=asyncCommandTerminateRequest,proto3,oneof"`
+}
+
 func (*ServerMessage_ShutdownRequest) isServerMessage_Message() {}
 
 func (*ServerMessage_CreateAgentRequest) isServerMessage_Message() {}
@@ -1635,6 +2105,12 @@ func (*ServerMessage_KernelRestartRequest) isServerMessage_Message() {}
 func (*ServerMessage_TunnelCreationRequest) isServerMessage_Message() {}
 
 func (*ServerMessage_TunnelTerminationRequest) isServerMessage_Message() {}
+
+func (*ServerMessage_AsyncCommandExecutionRequest) isServerMessage_Message() {}
+
+func (*ServerMessage_AsyncCommandListRequest) isServerMessage_Message() {}
+
+func (*ServerMessage_AsyncCommandTerminateRequest) isServerMessage_Message() {}
 
 var File_agent_communication_proto protoreflect.FileDescriptor
 
@@ -1681,7 +2157,32 @@ const file_agent_communication_proto_rawDesc = "" +
 	"\targuments\x18\x04 \x03(\tR\targuments\"d\n" +
 	"\x18CommandExecutionResponse\x12 \n" +
 	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12&\n" +
-	"\x0eresponseString\x18\x02 \x01(\tR\x0eresponseString\"\x88\x01\n" +
+	"\x0eresponseString\x18\x02 \x01(\tR\x0eresponseString\"\x98\x01\n" +
+	"\x1cAsyncCommandExecutionRequest\x12 \n" +
+	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12\x18\n" +
+	"\aenvName\x18\x02 \x01(\tR\aenvName\x12\x1e\n" +
+	"\n" +
+	"workingDir\x18\x03 \x01(\tR\n" +
+	"workingDir\x12\x1c\n" +
+	"\targuments\x18\x04 \x03(\tR\targuments\"\x83\x01\n" +
+	"\x1dAsyncCommandExecutionResponse\x12 \n" +
+	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12\x1c\n" +
+	"\tprocessId\x18\x02 \x01(\x05R\tprocessId\x12\"\n" +
+	"\ferrorMessage\x18\x03 \x01(\tR\ferrorMessage\";\n" +
+	"\x17AsyncCommandListRequest\x12 \n" +
+	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\"J\n" +
+	"\fAsyncCommand\x12\x1c\n" +
+	"\tprocessId\x18\x01 \x01(\x05R\tprocessId\x12\x1c\n" +
+	"\targuments\x18\x04 \x03(\tR\targuments\"\x81\x01\n" +
+	"\x18AsyncCommandListResponse\x12 \n" +
+	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12C\n" +
+	"\bcommands\x18\x02 \x03(\v2'.org.apache.airavata.agent.AsyncCommandR\bcommands\"^\n" +
+	"\x1cAsyncCommandTerminateRequest\x12 \n" +
+	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12\x1c\n" +
+	"\tprocessId\x18\x02 \x01(\x05R\tprocessId\"Y\n" +
+	"\x1dAsyncCommandTerminateResponse\x12 \n" +
+	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\"\x88\x01\n" +
 	"\x16PythonExecutionRequest\x12 \n" +
 	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12\x18\n" +
 	"\aenvName\x18\x02 \x01(\tR\aenvName\x12\x1e\n" +
@@ -1728,7 +2229,7 @@ const file_agent_communication_proto_rawDesc = "" +
 	"\btunnelId\x18\x02 \x01(\tR\btunnelId\"U\n" +
 	"\x19TunnelTerminationResponse\x12 \n" +
 	"\vexecutionId\x18\x01 \x01(\tR\vexecutionId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\"\xae\b\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\"\xa7\v\n" +
 	"\fAgentMessage\x12D\n" +
 	"\tagentPing\x18\x01 \x01(\v2$.org.apache.airavata.agent.AgentPingH\x00R\tagentPing\x12b\n" +
 	"\x13createAgentResponse\x18\x02 \x01(\v2..org.apache.airavata.agent.CreateAgentResponseH\x00R\x13createAgentResponse\x12k\n" +
@@ -1740,8 +2241,11 @@ const file_agent_communication_proto_rawDesc = "" +
 	"\x15kernelRestartResponse\x18\b \x01(\v20.org.apache.airavata.agent.KernelRestartResponseH\x00R\x15kernelRestartResponse\x12k\n" +
 	"\x16tunnelCreationResponse\x18\t \x01(\v21.org.apache.airavata.agent.TunnelCreationResponseH\x00R\x16tunnelCreationResponse\x12t\n" +
 	"\x19tunnelTerminationResponse\x18\n" +
-	" \x01(\v24.org.apache.airavata.agent.TunnelTerminationResponseH\x00R\x19tunnelTerminationResponseB\t\n" +
-	"\amessage\"\xa6\b\n" +
+	" \x01(\v24.org.apache.airavata.agent.TunnelTerminationResponseH\x00R\x19tunnelTerminationResponse\x12\x80\x01\n" +
+	"\x1dasyncCommandExecutionResponse\x18\v \x01(\v28.org.apache.airavata.agent.AsyncCommandExecutionResponseH\x00R\x1dasyncCommandExecutionResponse\x12q\n" +
+	"\x18asyncCommandListResponse\x18\f \x01(\v23.org.apache.airavata.agent.AsyncCommandListResponseH\x00R\x18asyncCommandListResponse\x12\x80\x01\n" +
+	"\x1dasyncCommandTerminateResponse\x18\r \x01(\v28.org.apache.airavata.agent.AsyncCommandTerminateResponseH\x00R\x1dasyncCommandTerminateResponseB\t\n" +
+	"\amessage\"\x94\v\n" +
 	"\rServerMessage\x12V\n" +
 	"\x0fshutdownRequest\x18\x01 \x01(\v2*.org.apache.airavata.agent.ShutdownRequestH\x00R\x0fshutdownRequest\x12_\n" +
 	"\x12createAgentRequest\x18\x02 \x01(\v2-.org.apache.airavata.agent.CreateAgentRequestH\x00R\x12createAgentRequest\x12h\n" +
@@ -1753,7 +2257,10 @@ const file_agent_communication_proto_rawDesc = "" +
 	"\x14kernelRestartRequest\x18\b \x01(\v2/.org.apache.airavata.agent.KernelRestartRequestH\x00R\x14kernelRestartRequest\x12h\n" +
 	"\x15tunnelCreationRequest\x18\t \x01(\v20.org.apache.airavata.agent.TunnelCreationRequestH\x00R\x15tunnelCreationRequest\x12q\n" +
 	"\x18tunnelTerminationRequest\x18\n" +
-	" \x01(\v23.org.apache.airavata.agent.TunnelTerminationRequestH\x00R\x18tunnelTerminationRequestB\t\n" +
+	" \x01(\v23.org.apache.airavata.agent.TunnelTerminationRequestH\x00R\x18tunnelTerminationRequest\x12}\n" +
+	"\x1casyncCommandExecutionRequest\x18\v \x01(\v27.org.apache.airavata.agent.AsyncCommandExecutionRequestH\x00R\x1casyncCommandExecutionRequest\x12n\n" +
+	"\x17asyncCommandListRequest\x18\f \x01(\v22.org.apache.airavata.agent.AsyncCommandListRequestH\x00R\x17asyncCommandListRequest\x12}\n" +
+	"\x1casyncCommandTerminateRequest\x18\r \x01(\v27.org.apache.airavata.agent.AsyncCommandTerminateRequestH\x00R\x1casyncCommandTerminateRequestB\t\n" +
 	"\amessage2\x86\x01\n" +
 	"\x19AgentCommunicationService\x12i\n" +
 	"\x10createMessageBus\x12'.org.apache.airavata.agent.AgentMessage\x1a(.org.apache.airavata.agent.ServerMessage(\x010\x01B?\n" +
@@ -1771,59 +2278,73 @@ func file_agent_communication_proto_rawDescGZIP() []byte {
 	return file_agent_communication_proto_rawDescData
 }
 
-var file_agent_communication_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_agent_communication_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_agent_communication_proto_goTypes = []any{
-	(*AgentPing)(nil),                 // 0: org.apache.airavata.agent.AgentPing
-	(*ShutdownRequest)(nil),           // 1: org.apache.airavata.agent.ShutdownRequest
-	(*CreateAgentRequest)(nil),        // 2: org.apache.airavata.agent.CreateAgentRequest
-	(*CreateAgentResponse)(nil),       // 3: org.apache.airavata.agent.CreateAgentResponse
-	(*TerminateAgentRequest)(nil),     // 4: org.apache.airavata.agent.TerminateAgentRequest
-	(*TerminateAgentResponse)(nil),    // 5: org.apache.airavata.agent.TerminateAgentResponse
-	(*EnvSetupRequest)(nil),           // 6: org.apache.airavata.agent.EnvSetupRequest
-	(*EnvSetupResponse)(nil),          // 7: org.apache.airavata.agent.EnvSetupResponse
-	(*CommandExecutionRequest)(nil),   // 8: org.apache.airavata.agent.CommandExecutionRequest
-	(*CommandExecutionResponse)(nil),  // 9: org.apache.airavata.agent.CommandExecutionResponse
-	(*PythonExecutionRequest)(nil),    // 10: org.apache.airavata.agent.PythonExecutionRequest
-	(*PythonExecutionResponse)(nil),   // 11: org.apache.airavata.agent.PythonExecutionResponse
-	(*JupyterExecutionRequest)(nil),   // 12: org.apache.airavata.agent.JupyterExecutionRequest
-	(*JupyterExecutionResponse)(nil),  // 13: org.apache.airavata.agent.JupyterExecutionResponse
-	(*KernelRestartRequest)(nil),      // 14: org.apache.airavata.agent.KernelRestartRequest
-	(*KernelRestartResponse)(nil),     // 15: org.apache.airavata.agent.KernelRestartResponse
-	(*TunnelCreationRequest)(nil),     // 16: org.apache.airavata.agent.TunnelCreationRequest
-	(*TunnelCreationResponse)(nil),    // 17: org.apache.airavata.agent.TunnelCreationResponse
-	(*TunnelTerminationRequest)(nil),  // 18: org.apache.airavata.agent.TunnelTerminationRequest
-	(*TunnelTerminationResponse)(nil), // 19: org.apache.airavata.agent.TunnelTerminationResponse
-	(*AgentMessage)(nil),              // 20: org.apache.airavata.agent.AgentMessage
-	(*ServerMessage)(nil),             // 21: org.apache.airavata.agent.ServerMessage
+	(*AgentPing)(nil),                     // 0: org.apache.airavata.agent.AgentPing
+	(*ShutdownRequest)(nil),               // 1: org.apache.airavata.agent.ShutdownRequest
+	(*CreateAgentRequest)(nil),            // 2: org.apache.airavata.agent.CreateAgentRequest
+	(*CreateAgentResponse)(nil),           // 3: org.apache.airavata.agent.CreateAgentResponse
+	(*TerminateAgentRequest)(nil),         // 4: org.apache.airavata.agent.TerminateAgentRequest
+	(*TerminateAgentResponse)(nil),        // 5: org.apache.airavata.agent.TerminateAgentResponse
+	(*EnvSetupRequest)(nil),               // 6: org.apache.airavata.agent.EnvSetupRequest
+	(*EnvSetupResponse)(nil),              // 7: org.apache.airavata.agent.EnvSetupResponse
+	(*CommandExecutionRequest)(nil),       // 8: org.apache.airavata.agent.CommandExecutionRequest
+	(*CommandExecutionResponse)(nil),      // 9: org.apache.airavata.agent.CommandExecutionResponse
+	(*AsyncCommandExecutionRequest)(nil),  // 10: org.apache.airavata.agent.AsyncCommandExecutionRequest
+	(*AsyncCommandExecutionResponse)(nil), // 11: org.apache.airavata.agent.AsyncCommandExecutionResponse
+	(*AsyncCommandListRequest)(nil),       // 12: org.apache.airavata.agent.AsyncCommandListRequest
+	(*AsyncCommand)(nil),                  // 13: org.apache.airavata.agent.AsyncCommand
+	(*AsyncCommandListResponse)(nil),      // 14: org.apache.airavata.agent.AsyncCommandListResponse
+	(*AsyncCommandTerminateRequest)(nil),  // 15: org.apache.airavata.agent.AsyncCommandTerminateRequest
+	(*AsyncCommandTerminateResponse)(nil), // 16: org.apache.airavata.agent.AsyncCommandTerminateResponse
+	(*PythonExecutionRequest)(nil),        // 17: org.apache.airavata.agent.PythonExecutionRequest
+	(*PythonExecutionResponse)(nil),       // 18: org.apache.airavata.agent.PythonExecutionResponse
+	(*JupyterExecutionRequest)(nil),       // 19: org.apache.airavata.agent.JupyterExecutionRequest
+	(*JupyterExecutionResponse)(nil),      // 20: org.apache.airavata.agent.JupyterExecutionResponse
+	(*KernelRestartRequest)(nil),          // 21: org.apache.airavata.agent.KernelRestartRequest
+	(*KernelRestartResponse)(nil),         // 22: org.apache.airavata.agent.KernelRestartResponse
+	(*TunnelCreationRequest)(nil),         // 23: org.apache.airavata.agent.TunnelCreationRequest
+	(*TunnelCreationResponse)(nil),        // 24: org.apache.airavata.agent.TunnelCreationResponse
+	(*TunnelTerminationRequest)(nil),      // 25: org.apache.airavata.agent.TunnelTerminationRequest
+	(*TunnelTerminationResponse)(nil),     // 26: org.apache.airavata.agent.TunnelTerminationResponse
+	(*AgentMessage)(nil),                  // 27: org.apache.airavata.agent.AgentMessage
+	(*ServerMessage)(nil),                 // 28: org.apache.airavata.agent.ServerMessage
 }
 var file_agent_communication_proto_depIdxs = []int32{
-	0,  // 0: org.apache.airavata.agent.AgentMessage.agentPing:type_name -> org.apache.airavata.agent.AgentPing
-	3,  // 1: org.apache.airavata.agent.AgentMessage.createAgentResponse:type_name -> org.apache.airavata.agent.CreateAgentResponse
-	5,  // 2: org.apache.airavata.agent.AgentMessage.terminateAgentResponse:type_name -> org.apache.airavata.agent.TerminateAgentResponse
-	7,  // 3: org.apache.airavata.agent.AgentMessage.envSetupResponse:type_name -> org.apache.airavata.agent.EnvSetupResponse
-	9,  // 4: org.apache.airavata.agent.AgentMessage.commandExecutionResponse:type_name -> org.apache.airavata.agent.CommandExecutionResponse
-	11, // 5: org.apache.airavata.agent.AgentMessage.pythonExecutionResponse:type_name -> org.apache.airavata.agent.PythonExecutionResponse
-	13, // 6: org.apache.airavata.agent.AgentMessage.jupyterExecutionResponse:type_name -> org.apache.airavata.agent.JupyterExecutionResponse
-	15, // 7: org.apache.airavata.agent.AgentMessage.kernelRestartResponse:type_name -> org.apache.airavata.agent.KernelRestartResponse
-	17, // 8: org.apache.airavata.agent.AgentMessage.tunnelCreationResponse:type_name -> org.apache.airavata.agent.TunnelCreationResponse
-	19, // 9: org.apache.airavata.agent.AgentMessage.tunnelTerminationResponse:type_name -> org.apache.airavata.agent.TunnelTerminationResponse
-	1,  // 10: org.apache.airavata.agent.ServerMessage.shutdownRequest:type_name -> org.apache.airavata.agent.ShutdownRequest
-	2,  // 11: org.apache.airavata.agent.ServerMessage.createAgentRequest:type_name -> org.apache.airavata.agent.CreateAgentRequest
-	4,  // 12: org.apache.airavata.agent.ServerMessage.terminateAgentRequest:type_name -> org.apache.airavata.agent.TerminateAgentRequest
-	6,  // 13: org.apache.airavata.agent.ServerMessage.envSetupRequest:type_name -> org.apache.airavata.agent.EnvSetupRequest
-	8,  // 14: org.apache.airavata.agent.ServerMessage.commandExecutionRequest:type_name -> org.apache.airavata.agent.CommandExecutionRequest
-	10, // 15: org.apache.airavata.agent.ServerMessage.pythonExecutionRequest:type_name -> org.apache.airavata.agent.PythonExecutionRequest
-	12, // 16: org.apache.airavata.agent.ServerMessage.jupyterExecutionRequest:type_name -> org.apache.airavata.agent.JupyterExecutionRequest
-	14, // 17: org.apache.airavata.agent.ServerMessage.kernelRestartRequest:type_name -> org.apache.airavata.agent.KernelRestartRequest
-	16, // 18: org.apache.airavata.agent.ServerMessage.tunnelCreationRequest:type_name -> org.apache.airavata.agent.TunnelCreationRequest
-	18, // 19: org.apache.airavata.agent.ServerMessage.tunnelTerminationRequest:type_name -> org.apache.airavata.agent.TunnelTerminationRequest
-	20, // 20: org.apache.airavata.agent.AgentCommunicationService.createMessageBus:input_type -> org.apache.airavata.agent.AgentMessage
-	21, // 21: org.apache.airavata.agent.AgentCommunicationService.createMessageBus:output_type -> org.apache.airavata.agent.ServerMessage
-	21, // [21:22] is the sub-list for method output_type
-	20, // [20:21] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	13, // 0: org.apache.airavata.agent.AsyncCommandListResponse.commands:type_name -> org.apache.airavata.agent.AsyncCommand
+	0,  // 1: org.apache.airavata.agent.AgentMessage.agentPing:type_name -> org.apache.airavata.agent.AgentPing
+	3,  // 2: org.apache.airavata.agent.AgentMessage.createAgentResponse:type_name -> org.apache.airavata.agent.CreateAgentResponse
+	5,  // 3: org.apache.airavata.agent.AgentMessage.terminateAgentResponse:type_name -> org.apache.airavata.agent.TerminateAgentResponse
+	7,  // 4: org.apache.airavata.agent.AgentMessage.envSetupResponse:type_name -> org.apache.airavata.agent.EnvSetupResponse
+	9,  // 5: org.apache.airavata.agent.AgentMessage.commandExecutionResponse:type_name -> org.apache.airavata.agent.CommandExecutionResponse
+	18, // 6: org.apache.airavata.agent.AgentMessage.pythonExecutionResponse:type_name -> org.apache.airavata.agent.PythonExecutionResponse
+	20, // 7: org.apache.airavata.agent.AgentMessage.jupyterExecutionResponse:type_name -> org.apache.airavata.agent.JupyterExecutionResponse
+	22, // 8: org.apache.airavata.agent.AgentMessage.kernelRestartResponse:type_name -> org.apache.airavata.agent.KernelRestartResponse
+	24, // 9: org.apache.airavata.agent.AgentMessage.tunnelCreationResponse:type_name -> org.apache.airavata.agent.TunnelCreationResponse
+	26, // 10: org.apache.airavata.agent.AgentMessage.tunnelTerminationResponse:type_name -> org.apache.airavata.agent.TunnelTerminationResponse
+	11, // 11: org.apache.airavata.agent.AgentMessage.asyncCommandExecutionResponse:type_name -> org.apache.airavata.agent.AsyncCommandExecutionResponse
+	14, // 12: org.apache.airavata.agent.AgentMessage.asyncCommandListResponse:type_name -> org.apache.airavata.agent.AsyncCommandListResponse
+	16, // 13: org.apache.airavata.agent.AgentMessage.asyncCommandTerminateResponse:type_name -> org.apache.airavata.agent.AsyncCommandTerminateResponse
+	1,  // 14: org.apache.airavata.agent.ServerMessage.shutdownRequest:type_name -> org.apache.airavata.agent.ShutdownRequest
+	2,  // 15: org.apache.airavata.agent.ServerMessage.createAgentRequest:type_name -> org.apache.airavata.agent.CreateAgentRequest
+	4,  // 16: org.apache.airavata.agent.ServerMessage.terminateAgentRequest:type_name -> org.apache.airavata.agent.TerminateAgentRequest
+	6,  // 17: org.apache.airavata.agent.ServerMessage.envSetupRequest:type_name -> org.apache.airavata.agent.EnvSetupRequest
+	8,  // 18: org.apache.airavata.agent.ServerMessage.commandExecutionRequest:type_name -> org.apache.airavata.agent.CommandExecutionRequest
+	17, // 19: org.apache.airavata.agent.ServerMessage.pythonExecutionRequest:type_name -> org.apache.airavata.agent.PythonExecutionRequest
+	19, // 20: org.apache.airavata.agent.ServerMessage.jupyterExecutionRequest:type_name -> org.apache.airavata.agent.JupyterExecutionRequest
+	21, // 21: org.apache.airavata.agent.ServerMessage.kernelRestartRequest:type_name -> org.apache.airavata.agent.KernelRestartRequest
+	23, // 22: org.apache.airavata.agent.ServerMessage.tunnelCreationRequest:type_name -> org.apache.airavata.agent.TunnelCreationRequest
+	25, // 23: org.apache.airavata.agent.ServerMessage.tunnelTerminationRequest:type_name -> org.apache.airavata.agent.TunnelTerminationRequest
+	10, // 24: org.apache.airavata.agent.ServerMessage.asyncCommandExecutionRequest:type_name -> org.apache.airavata.agent.AsyncCommandExecutionRequest
+	12, // 25: org.apache.airavata.agent.ServerMessage.asyncCommandListRequest:type_name -> org.apache.airavata.agent.AsyncCommandListRequest
+	15, // 26: org.apache.airavata.agent.ServerMessage.asyncCommandTerminateRequest:type_name -> org.apache.airavata.agent.AsyncCommandTerminateRequest
+	27, // 27: org.apache.airavata.agent.AgentCommunicationService.createMessageBus:input_type -> org.apache.airavata.agent.AgentMessage
+	28, // 28: org.apache.airavata.agent.AgentCommunicationService.createMessageBus:output_type -> org.apache.airavata.agent.ServerMessage
+	28, // [28:29] is the sub-list for method output_type
+	27, // [27:28] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_agent_communication_proto_init() }
@@ -1831,7 +2352,7 @@ func file_agent_communication_proto_init() {
 	if File_agent_communication_proto != nil {
 		return
 	}
-	file_agent_communication_proto_msgTypes[20].OneofWrappers = []any{
+	file_agent_communication_proto_msgTypes[27].OneofWrappers = []any{
 		(*AgentMessage_AgentPing)(nil),
 		(*AgentMessage_CreateAgentResponse)(nil),
 		(*AgentMessage_TerminateAgentResponse)(nil),
@@ -1842,8 +2363,11 @@ func file_agent_communication_proto_init() {
 		(*AgentMessage_KernelRestartResponse)(nil),
 		(*AgentMessage_TunnelCreationResponse)(nil),
 		(*AgentMessage_TunnelTerminationResponse)(nil),
+		(*AgentMessage_AsyncCommandExecutionResponse)(nil),
+		(*AgentMessage_AsyncCommandListResponse)(nil),
+		(*AgentMessage_AsyncCommandTerminateResponse)(nil),
 	}
-	file_agent_communication_proto_msgTypes[21].OneofWrappers = []any{
+	file_agent_communication_proto_msgTypes[28].OneofWrappers = []any{
 		(*ServerMessage_ShutdownRequest)(nil),
 		(*ServerMessage_CreateAgentRequest)(nil),
 		(*ServerMessage_TerminateAgentRequest)(nil),
@@ -1854,6 +2378,9 @@ func file_agent_communication_proto_init() {
 		(*ServerMessage_KernelRestartRequest)(nil),
 		(*ServerMessage_TunnelCreationRequest)(nil),
 		(*ServerMessage_TunnelTerminationRequest)(nil),
+		(*ServerMessage_AsyncCommandExecutionRequest)(nil),
+		(*ServerMessage_AsyncCommandListRequest)(nil),
+		(*ServerMessage_AsyncCommandTerminateRequest)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1861,7 +2388,7 @@ func file_agent_communication_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_agent_communication_proto_rawDesc), len(file_agent_communication_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
