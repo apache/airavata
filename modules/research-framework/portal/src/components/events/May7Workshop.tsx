@@ -19,7 +19,7 @@ const agendaItems = [
   {
     time: "8:45 am – 9:15 am",
     topic: "Introduction to the workshop and Tutorial on using Cybershuttle",
-    session: ["Presentation", "Tutorial"],
+    session: ["Presentation"],
     speaker: "Sudhakar Pamidighantam",
   },
   {
@@ -51,7 +51,7 @@ const agendaItems = [
   {
     time: "11:45 am – 12:30 pm",
     topic: "From Sequence to Structure: Interpretability in AlphaFold",
-    session: ["Presentation", "Demo"],
+    session: ["Presentation", "Tutorial"],
     speaker: ["Giri Krishnan", "Tyler Hayes"],
   },
   {
@@ -64,7 +64,7 @@ const agendaItems = [
   {
     time: "1:00 pm – 1:30 pm",
     topic: "Cybershuttle Catalog & Local to Remote Executions",
-    session: ["Presentation", "Demo"],
+    session: ["Presentation"],
     speaker: ["Yasith Jayawardana", "Dimuthu Wannipurage"],
   },
   {
@@ -97,14 +97,14 @@ const agendaItems = [
   {
     time: "4:00 pm – 4:30 pm",
     topic:
-      "Reinforcement learning  for supervised finetuning of robotics policies",
+      "Distributed Training of Vision-Language-Action models for Robotics",
     session: "Presentation",
     speaker: "Zsolt Kira",
   },
   {
     time: "4:30 pm – 5:00 pm",
     topic: "Envoemics Workflows",
-    session: ["Presentation", "Demo"],
+    session: ["Presentation"],
     speaker: "Kostas Konstantinidis",
   },
   {
