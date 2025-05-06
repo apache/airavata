@@ -4,8 +4,8 @@ go 1.24.2
 
 require (
 	github.com/cyber-shuttle/cybershuttle-tunnels v0.0.0-20250505072337-4314f6e407c4
+	github.com/fatedier/frp v0.62.1
 	github.com/google/uuid v1.6.0
-	golang.org/x/crypto v0.37.0
 	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.2
 )
@@ -16,7 +16,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
-	github.com/fatedier/frp v0.62.1 // indirect
 	github.com/fatedier/golib v0.5.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
@@ -52,6 +51,7 @@ require (
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/xtaci/kcp-go/v5 v5.6.13 // indirect
 	go.uber.org/mock v0.5.0 // indirect
+	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
