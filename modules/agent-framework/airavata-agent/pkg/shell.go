@@ -6,8 +6,6 @@ import (
 	"log"
 	"os/exec"
 	"strings"
-
-	"google.golang.org/grpc/internal/status"
 )
 
 type ProcessInfo struct {
