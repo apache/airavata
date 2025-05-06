@@ -211,11 +211,11 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
 
-        processId = data.get('processId', None)
-        errorMessage = data.get('errorMessage', None)
-        if errorMessage != "Not Ready":
+        processId = data.get('processId', -1)
+        errorMessage = data.get('errorMessage', "").strip()
+        if errorMessage not in ["", "Not Ready"]:
             return print(f"Error running async shell on env={rt.envName}, runtime={rt_name}: {errorMessage}")
-        elif processId not in [None, -1]:
+        elif processId != -1:
             rt.pids.append(int(processId))
             return processId
         time.sleep(1)
@@ -289,7 +289,6 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
         url = f"{api_base_url}/api/v1/agent/setup/tunnel/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
-        print(data)
         if data.get('status') == "OK":
             tunnelId = data.get('tunnelId')
             proxyPort = data.get('poxyPort')
@@ -312,7 +311,6 @@ def terminate_tunnel(access_token: str, rt_name: str, tunnel_id: str) -> None:
 
     # cleanup state after termination
     rt.tunnels.pop(tunnel_id)
-    state.tunnels.pop(tunnel_id)
 
 
 def terminate_shell_async(access_token: str, rt_name: str, process_id: str, proc_tunnels: list[str]) -> None:
@@ -598,18 +596,20 @@ def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: 
     try:
       if render_live_logs:
         def render(title_text, stdout_text, stderr_text):
-            text = f"{title_text}\n\nSTDOUT:\n{stdout_text}\n\nSTDERR:\n{stderr_text}"
-            return Layout(Panel(text, height=35))
+            stdout_text = "\n".join(stdout_text.split("\n")[-10:])
+            stderr_text = "\n".join(stderr_text.split("\n")[-10:])
+            text = f"{title_text}\n\n====[STDOUT]====\n{stdout_text}\n\n====[STDERR]====\n{stderr_text}"
+            return text
         
         with Live(render(f"Connecting to={rt_name}...", "No STDOUT", "No STDERR"), refresh_per_second=1, console=console) as live:
             while True:
               ready, rstate = is_runtime_ready(access_token, rt, rt_name)
               stdout, stderr = fetch_logs(rt_name)
               if ready:
-                  live.update(render(f"Connecting to={rt_name}... status=CONNECTED", stdout, stderr))
+                  live.update(render(f"Connecting to={rt_name}... status=CONNECTED", stdout, stderr), refresh=True)
                   break
               else:
-                  live.update(render(f"Connecting to={rt_name}... status={rstate}", stdout, stderr))
+                  live.update(render(f"Connecting to={rt_name}... status={rstate}", stdout, stderr), refresh=True)
               time.sleep(5)
       else:
         with console.status(f"Connecting to={rt_name}...") as status:
@@ -1194,11 +1194,6 @@ def run_subprocess(line: str):
     if not command:
         return print("Usage: %run_async <proc_name> --command=<command> --forward=<ports>")
     
-    ports = str(args.ports)
-    if not ports:
-        forwarded_ports = []
-    else:
-        forwarded_ports = [int(port.strip()) for port in ports.split(",")]
     
     hostname = get_hostname(access_token, rt_name)
     if not hostname:
@@ -1212,14 +1207,16 @@ def run_subprocess(line: str):
     else:
         print(f"started proc_name={proc_name} on rt={rt_name}. pid={process_id}")
     
+    forwarded_ports = [] if not args.ports else [int(port.strip()) for port in str(args.ports).split(",")]
     tunnels = []
+    print(f"forwarding ports={forwarded_ports}")
     for port in forwarded_ports:
         tunnel_id = open_tunnel(access_token, rt_name, hostname, port)
         if tunnel_id is None:
             return print(f"runtime={rt_name} failed to tunnel port={port}")
         tunnels.append(tunnel_id)
         (proxy_host, proxy_port) = state.all_runtimes[rt_name].tunnels[tunnel_id]
-        return print(f"{rt_name}:{port} -> access via {proxy_host}:{proxy_port}")
+        print(f"{rt_name}:{port} -> access via {proxy_host}:{proxy_port}")
     
     state.processes[proc_name] = {
         "rt_name": rt_name,
@@ -1427,7 +1424,7 @@ orig_run_code = ipython.run_cell_async
 
 def cell_has_magic(raw_cell: str) -> bool:
     lines = raw_cell.strip().splitlines()
-    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime", r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data", r"%open_tunnel", r"%run_subprocess", r"%kill_subprocess")
+    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime", r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data", r"%run_subprocess", r"%kill_subprocess", r"%open_tunnels", r"%close_tunnels")
     return any(line.strip().startswith(magics) for line in lines)
 
 
@@ -1475,10 +1472,11 @@ Loaded airavata_jupyter_magic ({version})
   %%run_on <rt>                              -- Force a cell to always execute on <rt>, regardless of the active runtime.
   %stat_runtime <rt>                         -- Show the status of runtime <rt>.
   %copy_data source=<r1:f1> target=<r2:f2>   -- Copy <f1> in <r1> to <f2> in <r2>.
-  %open_tunnel <tn> --forward=<ports>        -- Open a tunnel to the runtime.
+  %open_tunnels <tn> --forward=<ports>       -- Open a TCP tunnel on the runtime.
+  %close_tunnels <tn>                        -- Close a TCP tunnel opened on the runtime.
   %run_subprocess <pn> --command=<cmd>
-                       --forward=<ports>     -- Run a subprocess asynchronously.
-  %kill_subprocess <pn>                      -- Kill a running subprocess.
+                       --forward=<ports>     -- Start a subprocess on the runtime.
+  %kill_subprocess <pn>                      -- Kill a subprocess started on the runtime.
 """)
 
 # END OF AUTORUN
