@@ -70,6 +70,43 @@ message CommandExecutionResponse {
   string responseString = 2;
 }
 
+message AsyncCommandExecutionRequest {
+  string executionId = 1;
+  string envName = 2;
+  string workingDir = 3;
+  repeated string arguments = 4;
+}
+
+message AsyncCommandExecutionResponse {
+  string executionId = 1;
+  int32 processId = 2;
+  string errorMessage = 3;
+}
+
+message AsyncCommandListRequest {
+  string executionId = 1;
+}
+
+message AsyncCommand {
+  int32 processId = 1;
+  repeated string arguments = 4;
+}
+
+message AsyncCommandListResponse {
+  string executionId = 1;
+  repeated AsyncCommand commands = 2;
+}
+
+message AsyncCommandTerminateRequest {
+  string executionId = 1;
+  int32 processId = 2;
+}
+
+message AsyncCommandTerminateResponse {
+  string executionId = 1;
+  string status = 2;
+}
+
 // server requesting the agent to execute a python script in the environment
 message PythonExecutionRequest {
   string executionId = 1;
@@ -144,6 +181,9 @@ message AgentMessage {
     KernelRestartResponse kernelRestartResponse = 8;
     TunnelCreationResponse tunnelCreationResponse = 9;
     TunnelTerminationResponse tunnelTerminationResponse = 10;
+    AsyncCommandExecutionResponse asyncCommandExecutionResponse = 11;
+    AsyncCommandListResponse asyncCommandListResponse = 12;
+    AsyncCommandTerminateResponse asyncCommandTerminateResponse = 13;
   }
 }
 
@@ -159,5 +199,8 @@ message ServerMessage {
     KernelRestartRequest kernelRestartRequest = 8;
     TunnelCreationRequest tunnelCreationRequest = 9;
     TunnelTerminationRequest tunnelTerminationRequest = 10;
+    AsyncCommandExecutionRequest asyncCommandExecutionRequest = 11;
+    AsyncCommandListRequest asyncCommandListRequest = 12;
+    AsyncCommandTerminateRequest asyncCommandTerminateRequest = 13;
   }
 }

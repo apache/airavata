@@ -176,6 +176,25 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			execArgs := x.CommandExecutionRequest.Arguments
 			go pkg.ExecuteShell(stream, executionId, envName, workingDir, execArgs)
 
+		case *protos.ServerMessage_AsyncCommandExecutionRequest:
+			log.Printf("[agent.go] Recived a async shell execution request\n")
+			executionId := x.AsyncCommandExecutionRequest.ExecutionId
+			envName := x.AsyncCommandExecutionRequest.EnvName
+			workingDir := x.AsyncCommandExecutionRequest.WorkingDir
+			execArgs := x.AsyncCommandExecutionRequest.Arguments
+			go pkg.ExecuteShellAsync(stream, executionId, envName, workingDir, execArgs)
+
+		case *protos.ServerMessage_AsyncCommandListRequest:
+			log.Printf("[agent.go] Recived async shell list request\n")
+			executionId := x.AsyncCommandListRequest.ExecutionId
+			go pkg.ListAsyncProcesses(stream, executionId)
+
+		case *protos.ServerMessage_AsyncCommandTerminateRequest:
+			log.Printf("[agent.go] Recived a async shell termination request\n")
+			executionId := x.AsyncCommandTerminateRequest.ExecutionId
+			processId := x.AsyncCommandTerminateRequest.ProcessId
+			go pkg.KillAsyncProcess(stream, executionId, processId)
+
 		case *protos.ServerMessage_JupyterExecutionRequest:
 			log.Printf("[agent.go] Recived a jupyter execution request\n")
 			executionId := x.JupyterExecutionRequest.ExecutionId
