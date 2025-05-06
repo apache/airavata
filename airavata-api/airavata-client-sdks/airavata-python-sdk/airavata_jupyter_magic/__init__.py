@@ -14,17 +14,20 @@ import jwt
 import random
 import requests
 import shlex
+import sys
+import tempfile
 import yaml
 from IPython.core.getipython import get_ipython
-from IPython.core.interactiveshell import ExecutionResult
+from IPython.core.interactiveshell import ExecutionResult, InteractiveShell
 from IPython.core.magic import register_cell_magic, register_line_magic
 from IPython.display import HTML, Image, Javascript, display
 from rich.console import Console
-from rich.layout import Layout
 from rich.live import Live
-from rich.panel import Panel
+
+from jupyter_client.blocking.client import BlockingKernelClient
 
 from .device_auth import DeviceFlowAuthenticator
+import asyncio
 
 # ========================================================================
 # DATA STRUCTURES
@@ -112,6 +115,7 @@ class State:
     processes: dict[str, dict]
     current_runtime: str  # none => local
     all_runtimes: dict[str, RuntimeInfo]  # user-defined runtime dict
+    kernel_clients: dict[str, BlockingKernelClient]  # runtime name -> Jupyter kernel client
 
 
 # END OF DATA STRUCTURES
@@ -963,6 +967,38 @@ def pull_remote(remot_rt: str, remot_path: str, local_path: Path, local_is_dir: 
             pull_remote(remot_rt, os.path.join(remot_path, file), local_dp, local_is_dir=True)
 
 
+def run_subprocess_inner(access_token: str, rt_name: str, proc_name: str, command: str, forwarded_ports: list[int], override_host: str | None = None):
+    
+    if override_host is not None:
+        hostname = override_host
+    else:
+        hostname = get_hostname(access_token, rt_name)
+        if not hostname:
+            return print(f"failed to get hostname for runtime={rt_name}")
+    
+    process_id = execute_shell_async(access_token, rt_name, shlex.split(command))
+    if process_id is None:
+        return print(f"failed to start process {proc_name} on {rt_name}")
+    else:
+        print(f"started proc_name={proc_name} on rt={rt_name}. pid={process_id}")
+    
+    tunnels = {}
+    print(f"forwarding ports={forwarded_ports}")
+    for port in forwarded_ports:
+        tunnel_id = open_tunnel(access_token, rt_name, hostname, port)
+        if tunnel_id is None:
+            return print(f"runtime={rt_name} failed to tunnel port={port}")
+        tunnels[tunnel_id] = (proxy_host, proxy_port) = state.all_runtimes[rt_name].tunnels[tunnel_id]
+        print(f"{rt_name}:{port} -> access via {proxy_host}:{proxy_port}")
+    state.tunnels[proc_name] = tunnels
+    
+    state.processes[proc_name] = {
+        "rt_name": rt_name,
+        "pid": process_id,
+        "tunnels": tunnels
+    }
+
+
 # END OF HELPER FUNCTIONS
 # ========================================================================
 # MAGIC FUNCTIONS
@@ -1045,9 +1081,8 @@ def meta_scheduler(use_list: list[str]) -> tuple[str, str]:
 def request_runtime(line: str):
     """
     Request a runtime with given capabilities
-
+    
     """
-
     access_token = get_access_token()
     assert access_token is not None
 
@@ -1091,7 +1126,7 @@ def request_runtime(line: str):
     if args.file is not None:
         assert args.use is not None
         cluster, queue  = meta_scheduler(args.use.split(","))
-        return submit_agent_job(
+        submit_agent_job(
             rt_name=rt_name,
             access_token=access_token,
             app_name='CS_Agent',
@@ -1107,7 +1142,7 @@ def request_runtime(line: str):
         assert args.queue is not None
         assert args.group is not None
         assert args.cpus is not None
-        return submit_agent_job(
+        submit_agent_job(
             rt_name=rt_name,
             access_token=access_token,
             app_name='CS_Agent',
@@ -1119,6 +1154,7 @@ def request_runtime(line: str):
             cpus=args.cpus,
             memory=args.memory,
         )
+    print(f"Request successful: runtime={rt_name}", flush=True)
 
 
 @register_line_magic
@@ -1150,7 +1186,6 @@ def stat_runtime(line: str):
 def wait_for_runtime(line: str):
     """
     Wait for the runtime to be ready
-
     """
     parts = line.strip().split()
     if len(parts) == 1:
@@ -1166,7 +1201,13 @@ def wait_for_runtime(line: str):
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         return print(f"Runtime {rt_name} not found.")
-    return wait_until_runtime_ready(access_token, rt_name, render_live_logs)
+    wait_until_runtime_ready(access_token, rt_name, render_live_logs)
+    # Validation: launch remote kernel if not already started
+    if rt_name != "local" and rt_name not in state.kernel_clients:
+        random_port = random.randint(2000, 6000) * 5
+        launch_remote_kernel(rt_name, random_port)
+        print(f"Remote Jupyter kernel launched and connected for runtime={rt_name}.")
+    return
 
 
 @register_line_magic
@@ -1194,35 +1235,10 @@ def run_subprocess(line: str):
     if not command:
         return print("Usage: %run_async <proc_name> --command=<command> --forward=<ports>")
     
-    
-    hostname = get_hostname(access_token, rt_name)
-    if not hostname:
-        return print(f"failed to get hostname for runtime={rt_name}")
-    
     print(f"executing command='{command}' on {rt_name}. proc_name={proc_name}")
-    
-    process_id = execute_shell_async(access_token, rt_name, shlex.split(command))
-    if process_id is None:
-        return print(f"failed to start process {proc_name} on {rt_name}")
-    else:
-        print(f"started proc_name={proc_name} on rt={rt_name}. pid={process_id}")
-    
     forwarded_ports = [] if not args.ports else [int(port.strip()) for port in str(args.ports).split(",")]
-    tunnels = []
-    print(f"forwarding ports={forwarded_ports}")
-    for port in forwarded_ports:
-        tunnel_id = open_tunnel(access_token, rt_name, hostname, port)
-        if tunnel_id is None:
-            return print(f"runtime={rt_name} failed to tunnel port={port}")
-        tunnels.append(tunnel_id)
-        (proxy_host, proxy_port) = state.all_runtimes[rt_name].tunnels[tunnel_id]
-        print(f"{rt_name}:{port} -> access via {proxy_host}:{proxy_port}")
-    
-    state.processes[proc_name] = {
-        "rt_name": rt_name,
-        "pid": process_id,
-        "tunnels": tunnels
-    }
+
+    run_subprocess_inner(access_token, rt_name, proc_name, command, forwarded_ports)
 
 
 @register_line_magic
@@ -1404,6 +1420,73 @@ def copy_data(line: str):
         print("remote-to-remote copy is not supported yet")
 
 
+def launch_remote_kernel(rt_name: str, base_port: int):
+    """
+    Launch a remote Jupyter kernel, open tunnels, and connect a local Jupyter client.
+    """
+    assert ipython is not None
+    access_token = get_access_token()
+    assert access_token is not None
+
+    # launch kernel and tunnel ports
+    stdin, shell, iopub, hb, control = base_port, base_port+1, base_port+2, base_port+3, base_port+4
+
+    proc_name = f"{rt_name}_kernel"
+    temp_fp = Path(tempfile.mktemp(prefix="connection_", suffix=".json"))
+    key = base64.b64encode(random.randbytes(32)).decode("utf-8")[:16]
+    remote_connection_info = {
+        "stdin_port": stdin,
+        "shell_port": shell,
+        "iopub_port": iopub,
+        "hb_port": hb,
+        "control_port": control,
+        "ip": "0.0.0.0",
+        "key": key,
+        "signature_scheme": "hmac-sha256",
+        "transport": "tcp",
+        "kernel_name": proc_name,
+    }
+    with open(temp_fp, "w") as f:
+        json.dump(remote_connection_info, f)
+    push_remote(
+        local_path=temp_fp.as_posix(),
+        remot_rt=rt_name,
+        remot_path=temp_fp.name,
+    )
+
+    cmd = f"python -m ipykernel_launcher -f {temp_fp.name}"
+    run_subprocess_inner(access_token, rt_name, proc_name, cmd, [stdin, shell, iopub, hb, control], override_host="127.0.0.1")
+    tunnels = state.tunnels[proc_name]
+
+    # assert all tunnels have the same host
+    hostname = list(tunnels.values())[0][0]
+    assert all(v[0] == hostname for v in tunnels.values()), "All tunnels must originate from the same host"
+    print(hostname)
+
+    # find which ports to connect to
+    kernel_ports = [v[1] for v in tunnels.values()]
+    [tstdin, tshell, tiopub, thb, tcontrol] = kernel_ports
+    
+    local_connection_info = {
+        "stdin_port": tstdin,
+        "shell_port": tshell,
+        "iopub_port": tiopub,
+        "hb_port":thb,
+        "control_port": tcontrol,
+        "ip": hostname,
+        "key": key,
+        "signature_scheme": "hmac-sha256",
+        "transport": "tcp",
+        "kernel_name": proc_name,
+    }
+    client = BlockingKernelClient()
+    client.load_connection_info(local_connection_info)
+    client.start_channels()
+
+    print(f"started ipykernel client for {rt_name}")
+    state.kernel_clients[rt_name] = client
+
+
 # END OF MAGIC FUNCTIONS
 # ========================================================================
 # AUTORUN
@@ -1418,7 +1501,7 @@ api_base_url = f"https://{api_host}"
 file_server_url = f"http://{api_host}:8050"
 MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
 
-state = State(current_runtime="local", all_runtimes={}, processes={}, tunnels={})
+state = State(current_runtime="local", all_runtimes={}, processes={}, tunnels={}, kernel_clients={})
 orig_run_code = ipython.run_cell_async
 
 
@@ -1427,6 +1510,88 @@ def cell_has_magic(raw_cell: str) -> bool:
     magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime", r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data", r"%run_subprocess", r"%kill_subprocess", r"%open_tunnels", r"%close_tunnels")
     return any(line.strip().startswith(magics) for line in lines)
 
+
+def handle_shell_message(msg: dict, result: ExecutionResult):
+    msg_type = msg['msg_type']
+    content = msg['content']
+    if msg_type == 'execute_reply':
+        if content.get('status') == 'error':
+            traceback = '\n'.join(content.get('traceback', []))
+            print(traceback)
+            result.error_in_exec = Exception(content.get('evalue', 'Error'))
+            return 'error'
+        # Optionally handle payload, user_expressions, etc.
+    # Add more shell message types as needed
+    return None
+
+def handle_stdin_message(msg: dict, result: ExecutionResult, client: BlockingKernelClient):
+    msg_type = msg['msg_type']
+    content = msg['content']
+    if msg_type == 'input_request':
+        prompt = content.get('prompt', '')
+        password = content.get('password', False)
+        try:
+            if password:
+                import getpass
+                value = getpass.getpass(prompt)
+            else:
+                value = input(prompt)
+        except Exception as e:
+            value = ''
+        client.input(value)
+    return None
+
+def handle_control_message(msg: dict, result: ExecutionResult):
+    msg_type = msg['msg_type']
+    content = msg['content']
+    print(f"[control] {msg_type}: {content}")
+    # Add more control message handling as needed
+    return None
+
+def send_interrupt_request(client: BlockingKernelClient):
+    # Send an interrupt_request message on the control channel
+    msg = client.session.msg('interrupt_request', {})
+    client.control_channel.send(msg)
+
+def handle_iopub_message(msg: dict, result: ExecutionResult):
+    msg_type = msg['msg_type']
+    content = msg['content']
+
+    if msg_type == 'status':
+        if content['execution_state'] == 'idle':
+            return 'idle'
+
+    elif msg_type == 'stream':
+        stream = content.get('name')
+        text = content.get('text', '')
+        if stream == 'stdout':
+            print(text, end='')
+        elif stream == 'stderr':
+            print(text, end='', file=sys.stderr)
+
+    elif msg_type == 'error':
+        traceback = '\n'.join(content.get('traceback', []))
+        print(traceback)
+        result.error_in_exec = Exception(content.get('evalue', 'Error'))
+        return 'error'
+
+    elif msg_type in ('display_data', 'execute_result'):
+        data = content.get('data', {})
+        metadata = content.get('metadata', {})
+        display_id = content.get('transient', {}).get('display_id')
+        if 'text/plain' in data:
+            print(data['text/plain'])
+        else:
+            try:
+                from IPython.display import update_display
+                if display_id:
+                    update_display(data, metadata=metadata, display_id=display_id)
+                else:
+                    display(data, metadata=metadata)
+            except ImportError:
+                display(data, metadata=metadata)
+
+    return None
 
 async def run_cell_async(
     raw_cell: str,
@@ -1442,12 +1607,104 @@ async def run_cell_async(
     if rt == "local" or cell_has_magic(raw_cell):
         return await orig_run_code(raw_cell, store_history, silent, shell_futures, transformed_cell=transformed_cell, preprocessing_exc_tuple=preprocessing_exc_tuple, cell_id=cell_id)
     else:
+        # Validation: check runtime is ready and kernel is started
         access_token = get_access_token()
         assert access_token is not None
-        result = ExecutionResult(info=None)
-        try:
+        rt_info = state.all_runtimes.get(rt, None)
+        if rt_info is None:
+            result = ExecutionResult(info=None)
+            result.error_in_exec = Exception(f"Runtime {rt} not found.")
+            return result
+        ready, rstate = is_runtime_ready(access_token, rt_info, rt)
+        if not ready:
             wait_until_runtime_ready(access_token, rt, render_live_logs=False)
-            run_on_runtime(rt, raw_cell, result)
+            ready, rstate = is_runtime_ready(access_token, rt_info, rt)
+            if not ready:
+                result = ExecutionResult(info=None)
+                result.error_in_exec = Exception(f"Runtime {rt} is not ready: {rstate}")
+                return result
+        if rt not in state.kernel_clients:
+            random_port = random.randint(2000, 6000) * 5
+            launch_remote_kernel(rt, random_port)
+        
+        # Use Jupyter kernel client for remote runtime
+        result = ExecutionResult(info=None)
+        client = state.kernel_clients.get(rt)
+        if client is None:
+            result.error_in_exec = Exception(f"No Jupyter kernel client found for runtime {rt}. Did you call launch_remote_kernel?")
+            return result
+        try:
+            print(f"executing cell on {rt}...")
+            msg_id = client.execute(raw_cell)
+            print(f"waiting for cell to finish on {rt}...")
+            assert ipython is not None
+            done = False
+            try:
+                while not done:
+                    got_msg = False
+                    # IOPub
+                    if client.iopub_channel.msg_ready():
+                        msg = client.get_iopub_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            status = handle_iopub_message(msg, result)
+                            got_msg = True
+                            if status in ['idle', 'error']:
+                                done = True
+                    # Shell
+                    if client.shell_channel.msg_ready():
+                        msg = client.get_shell_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            status = handle_shell_message(msg, result)
+                            got_msg = True
+                            if status == 'error':
+                                done = True
+                    # Stdin
+                    if client.stdin_channel.msg_ready():
+                        msg = client.get_stdin_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            handle_stdin_message(msg, result, client)
+                            got_msg = True
+                    # Control
+                    if client.control_channel.msg_ready():
+                        msg = client.get_control_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            handle_control_message(msg, result)
+                            got_msg = True
+                    if not got_msg:
+                        time.sleep(0.05)
+            except KeyboardInterrupt:
+                print("Interrupt sent to remote kernel, waiting for response...")
+                send_interrupt_request(client)
+                # Continue polling until remote kernel signals completion
+                while not done:
+                    got_msg = False
+                    if client.iopub_channel.msg_ready():
+                        msg = client.get_iopub_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            status = handle_iopub_message(msg, result)
+                            got_msg = True
+                            if status in ['idle', 'error']:
+                                done = True
+                    if client.shell_channel.msg_ready():
+                        msg = client.get_shell_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            status = handle_shell_message(msg, result)
+                            got_msg = True
+                            if status == 'error':
+                                done = True
+                    if client.stdin_channel.msg_ready():
+                        msg = client.get_stdin_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            handle_stdin_message(msg, result, client)
+                            got_msg = True
+                    if client.control_channel.msg_ready():
+                        msg = client.get_control_msg()
+                        if msg['parent_header'].get('msg_id') == msg_id:
+                            handle_control_message(msg, result)
+                            got_msg = True
+                    if not got_msg:
+                        time.sleep(0.05)
+            print(f"cell finished on {rt}.")
         except Exception as e:
             result.error_in_exec = e
         if store_history and ipython:
