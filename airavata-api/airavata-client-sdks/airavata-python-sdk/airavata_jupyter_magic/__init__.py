@@ -425,8 +425,8 @@ def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: 
             outer = Layout()
             outer.split_column(
                 Layout(Panel(title_text, height=3)),
-                Layout(Panel("\n".join(stdout_text.split("\n")[-100:]), style="black", height=12)),
-                Layout(Panel("\n".join(stderr_text.split("\n")[-100:]), style="red", height=12)),
+                Layout(Panel("\n".join(stdout_text.split("\n")[-10:]), style="black", height=12)),
+                Layout(Panel("\n".join(stderr_text.split("\n")[-10:]), style="red", height=12)),
             )
             return outer
         
