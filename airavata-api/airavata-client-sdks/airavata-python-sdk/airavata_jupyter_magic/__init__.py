@@ -1614,6 +1614,9 @@ def handle_iopub_message(msg: dict, result: ExecutionResult):
         result.error_in_exec = Exception(content.get('evalue', 'Error'))
         return 'error'
 
+    elif msg_type == 'clear_output':
+        from IPython.display import clear_output
+        clear_output(wait=content.get('wait', False))
     elif msg_type in ('display_data', 'execute_result'):
         data = content.get('data', {})
         metadata = content.get('metadata', {})
@@ -1628,11 +1631,11 @@ def handle_iopub_message(msg: dict, result: ExecutionResult):
             except binascii.Error as e:
                 result.error_in_exec = Exception(
                     f"Failed to decode image data: {e}")
-        if 'text/html' in data_obj:
-            html_data = data_obj['text/html']
+        if 'text/html' in data:
+            html_data = data['text/html']
             display(HTML(html_data))
-        if 'application/javascript' in data_obj:
-            js_data = data_obj['application/javascript']
+        if 'application/javascript' in data:
+            js_data = data['application/javascript']
             display(Javascript(js_data))
     return None
 
