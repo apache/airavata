@@ -1291,7 +1291,7 @@ def open_tunnels(line: str):
     tunnel_name, argstring = line.strip().split(" ", maxsplit=1)
     parser = ArgumentParser(prog="open_tunnel")
     parser.add_argument("--ports", type=str, help="comma-separated list of ports to forward", required=False)
-    args = parser.parse_args(argstring.split())
+    args = parser.parse_args(shlex.split(argstring))
     
     ports = str(args.ports)
     if not ports:
