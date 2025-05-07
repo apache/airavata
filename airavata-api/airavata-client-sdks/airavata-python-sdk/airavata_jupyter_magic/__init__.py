@@ -192,7 +192,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
-    
+
     url = f"{api_base_url}/api/v1/agent/execute/asyncshell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
@@ -204,7 +204,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
     code = res.status_code
     if code != 202:
         return print(f"[{code}] Failed to execute async shell command: {res.text}")
-    
+
     executionId = res.json()["executionId"]
     if not executionId:
         return print(f"Failed to restart kernel runtime={rt.agentId}")
@@ -235,7 +235,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
-    
+
     url = f"{api_base_url}/api/v1/agent/execute/shell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
@@ -250,7 +250,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
     executionId = res.json()["executionId"]
     if not executionId:
         return print(f"Failed to get hostname for runtime={rt_name}")
-    
+
     while True:
         url = f"{api_base_url}/api/v1/agent/execute/shell/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
@@ -273,7 +273,7 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
-    
+
     url = f"{api_base_url}/api/v1/agent/setup/tunnel"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
@@ -284,11 +284,11 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
     code = res.status_code
     if code != 202:
         print(f"[{code}] Failed to setup tunnel: {res.text}")
-    
+
     executionId = res.json()["executionId"]
     if not executionId:
         return print(f"Failed to setup tunnel for runtime={rt_name}")
-    
+
     while True:
         url = f"{api_base_url}/api/v1/agent/setup/tunnel/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
@@ -309,7 +309,7 @@ def terminate_tunnel(access_token: str, rt_name: str, tunnel_id: str) -> None:
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
-    
+
     # TODO: send actual API call to terminate tunnel
     assert access_token is not None
 
@@ -328,7 +328,7 @@ def terminate_shell_async(access_token: str, rt_name: str, process_id: str, proc
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
-    
+
     url = f"{api_base_url}/api/v1/agent/terminate/asyncshell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
@@ -338,11 +338,11 @@ def terminate_shell_async(access_token: str, rt_name: str, process_id: str, proc
     code = res.status_code
     if code != 202:
         print(f"[{code}] Failed to terminate shell: {res.text}")
-    
+
     executionId = res.json()["executionId"]
     if not executionId:
         return print(f"Failed to terminate shell for runtime={rt_name}, process_id={process_id}")
-    
+
     for tunnel_id in proc_tunnels:
         terminate_tunnel(access_token, rt_name, tunnel_id)
         print(f"terminated {rt_name}:{tunnel_id}")
@@ -504,7 +504,7 @@ def submit_agent_job(
         assert (conda := additional_dependencies.get("conda", None)) is not None, "missing /additional_dependencies/conda section"
         assert (pip := additional_dependencies.get("pip", None)) is not None, "missing /additional_dependencies/pip section"
         mounts = [f"{i['identifier']}:{i['mount_point']}" for i in collection]
-    
+
     # payload
     data = {
         'experimentName': app_name,
@@ -530,7 +530,7 @@ def submit_agent_job(
     print(f"* libraries={data['libraries']}", flush=True)
     print(f"* pip={data['pip']}", flush=True)
     print(f"* mounts={data['mounts']}", flush=True)
-    
+
     # Send the POST request
     headers = generate_headers(access_token, gateway_id)
     res = requests.post(url, headers=headers, data=json.dumps(data))
@@ -608,7 +608,7 @@ def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: 
                 f"====[STDERR]====\n[red]{stderr_text}[/red]"
             )
             return text
-        
+
         with Live(render(f"Connecting to={rt_name}...", "No STDOUT", "No STDERR"), refresh_per_second=1, console=console) as live:
             while True:
               ready, rstate = is_runtime_ready(access_token, rt, rt_name)
@@ -920,7 +920,7 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
         files = {"file": file}
         response = requests.post(url, files=files)
     print(f"[{response.status_code}]", flush=True)
-    
+
 def pull_remote_file(remot_rt: str, remot_fp: str, local_fp: str) -> None:
     pid = state.all_runtimes[remot_rt].processId
     url = f"{file_server_url}/download/live/{pid}/{remot_fp}"
@@ -962,7 +962,7 @@ def pull_remote(remot_rt: str, remot_path: str, local_path: Path, local_is_dir: 
         for file in [d["fileName"] for d in res["innerFiles"]]:
             local_fp = local_path / str(file)
             pull_remote_file(remot_rt, os.path.join(remot_path, file), local_fp.as_posix())
-                  
+
         for file in [d["directoryName"] for d in res["innerDirectories"]]:
             local_dp = local_path / str(file)
             if os.path.isfile(local_dp):
@@ -972,20 +972,20 @@ def pull_remote(remot_rt: str, remot_path: str, local_path: Path, local_is_dir: 
 
 
 def run_subprocess_inner(access_token: str, rt_name: str, proc_name: str, command: str, forwarded_ports: list[int], override_host: str | None = None):
-    
+
     if override_host is not None:
         hostname = override_host
     else:
         hostname = get_hostname(access_token, rt_name)
         if not hostname:
             return print(f"failed to get hostname for runtime={rt_name}")
-    
+
     process_id = execute_shell_async(access_token, rt_name, command.split())
     if process_id is None:
         return print(f"failed to start process {proc_name} on {rt_name}")
     else:
         print(f"started proc_name={proc_name} on rt={rt_name}. pid={process_id}")
-    
+
     tunnels = {}
     print(f"forwarding ports={forwarded_ports}")
     for port in forwarded_ports:
@@ -995,7 +995,7 @@ def run_subprocess_inner(access_token: str, rt_name: str, proc_name: str, comman
         tunnels[tunnel_id] = (proxy_host, proxy_port) = state.all_runtimes[rt_name].tunnels[tunnel_id]
         print(f"{rt_name}:{port} -> access via {proxy_host}:{proxy_port}")
     state.tunnels[proc_name] = tunnels
-    
+
     state.processes[proc_name] = {
         "rt_name": rt_name,
         "pid": process_id,
@@ -1085,7 +1085,7 @@ def meta_scheduler(use_list: list[str]) -> tuple[str, str]:
 def request_runtime(line: str):
     """
     Request a runtime with given capabilities
-    
+
     """
     access_token = get_access_token()
     assert access_token is not None
@@ -1229,16 +1229,16 @@ def run_subprocess(line: str):
         return print(f"Runtime {rt_name} not found.")
 
     proc_name, argstring = line.strip().split(" ", maxsplit=1)
-    
+
     parser = ArgumentParser(prog="run_async")
     parser.add_argument("--command", type=str, help="bash command to execute", required=True)
     parser.add_argument("--ports", type=str, help="comma-separated list of ports to forward", required=False)
     args = parser.parse_args(argstring.split())
-    
+
     command = str(args.command)
     if not command:
         return print("Usage: %run_async <proc_name> --command=<command> --forward=<ports>")
-    
+
     print(f"executing command='{command}' on {rt_name}. proc_name={proc_name}")
     forwarded_ports = [] if not args.ports else [int(port.strip()) for port in str(args.ports).split(",")]
 
@@ -1263,11 +1263,11 @@ def kill_subprocess(line: str):
     proc = state.processes.get(proc_name, None)
     if proc is None:
         return print(f"Process {proc_name} not found.")
-    
+
     proc_rt_name = proc["rt_name"]
     proc_pid = proc["pid"]
     proc_tunnels = proc["tunnels"]
-    
+
     terminate_shell_async(access_token, proc_rt_name, proc_pid, proc_tunnels)
     print(f"terminated {proc_rt_name}:{proc_name}. pid={proc_pid}")
 
@@ -1292,11 +1292,11 @@ def open_tunnels(line: str):
     parser = ArgumentParser(prog="open_tunnel")
     parser.add_argument("--ports", type=str, help="comma-separated list of ports to forward", required=False)
     args = parser.parse_args(shlex.split(argstring))
-    
+
     ports = str(args.ports)
     if not ports:
         return print("Usage: %open_tunnel <tn> --ports=<ports>")
-    
+
     forwarded_ports = [int(port.strip()) for port in ports.split(",")]
 
     hostname = get_hostname(access_token, rt_name)
@@ -1327,16 +1327,16 @@ def close_tunnels(line: str):
     rt = state.all_runtimes.get(rt_name, None)
     if rt is None:
         return print(f"Runtime {rt_name} not found.")
-    
+
     tunnel_name = line.strip()
     tunnels = state.tunnels.get(tunnel_name, None)
     if tunnels is None:
         return print(f"Tunnel {tunnel_name} not found.")
-    
+
     for tunnel_id in tunnels:
         terminate_tunnel(access_token, rt_name, tunnel_id)
         print(f"terminated {rt_name}:{tunnel_id}")
-    
+
     state.tunnels.pop(tunnel_name)
 
 
@@ -1470,7 +1470,7 @@ def launch_remote_kernel(rt_name: str, base_port: int):
     # find which ports to connect to
     kernel_ports = [v[1] for v in tunnels.values()]
     [tstdin, tshell, tiopub, thb, tcontrol] = kernel_ports
-    
+
     local_connection_info = {
         "stdin_port": tstdin,
         "shell_port": tshell,
@@ -1501,17 +1501,17 @@ def open_web_terminal(line: str):
     # Generate a random port for ttyd
     import random
     random_port = random.randint(10000, 65000)
-    
+
     # Start ttyd subprocess on the runtime
     proc_name = f"{rt_name}_ttyd"
     cmd = f"ttyd -p {random_port} -i 0.0.0.0 --writable bash"
-    
+
     # Get access token
     access_token = get_access_token()
     if access_token is None:
         print("Not authenticated. Please run %authenticate first.")
         return
-    
+
     # Start the subprocess
     run_subprocess_inner(access_token, rt_name, proc_name, cmd, [random_port], override_host="127.0.0.1")
     print(f"Started web terminal on runtime {rt_name} at port {random_port}")
@@ -1523,7 +1523,7 @@ def open_web_terminal(line: str):
 
     from IPython.display import IFrame
     display(IFrame(url, width=800, height=400))
-    
+
 
 
 # END OF MAGIC FUNCTIONS
@@ -1620,16 +1620,20 @@ def handle_iopub_message(msg: dict, result: ExecutionResult):
         display_id = content.get('transient', {}).get('display_id')
         if 'text/plain' in data:
             print(data['text/plain'])
-        else:
+        if 'image/png' in data:
+            image_data = data['image/png']
             try:
-                from IPython.display import update_display
-                if display_id:
-                    update_display(data, metadata=metadata, display_id=display_id)
-                else:
-                    display(data, metadata=metadata)
-            except ImportError:
-                display(data, metadata=metadata)
-
+                image_bytes = base64.b64decode(image_data)
+                display(Image(data=image_bytes, format='png'))
+            except binascii.Error as e:
+                result.error_in_exec = Exception(
+                    f"Failed to decode image data: {e}")
+        if 'text/html' in data_obj:
+            html_data = data_obj['text/html']
+            display(HTML(html_data))
+        if 'application/javascript' in data_obj:
+            js_data = data_obj['application/javascript']
+            display(Javascript(js_data))
     return None
 
 async def run_cell_async(
@@ -1665,7 +1669,7 @@ async def run_cell_async(
         if rt not in state.kernel_clients:
             random_port = random.randint(2000, 6000) * 5
             launch_remote_kernel(rt, random_port)
-        
+
         # Use Jupyter kernel client for remote runtime
         result = ExecutionResult(info=None)
         client = state.kernel_clients.get(rt)
