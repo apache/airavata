@@ -1233,7 +1233,7 @@ def run_subprocess(line: str):
     parser = ArgumentParser(prog="run_async")
     parser.add_argument("--command", type=str, help="bash command to execute", required=True)
     parser.add_argument("--ports", type=str, help="comma-separated list of ports to forward", required=False)
-    args = parser.parse_args(argstring.split())
+    args = parser.parse_args(shlex.split(argstring))
 
     command = str(args.command)
     if not command:
