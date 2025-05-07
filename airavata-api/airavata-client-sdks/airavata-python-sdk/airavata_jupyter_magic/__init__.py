@@ -980,7 +980,7 @@ def run_subprocess_inner(access_token: str, rt_name: str, proc_name: str, comman
         if not hostname:
             return print(f"failed to get hostname for runtime={rt_name}")
     
-    process_id = execute_shell_async(access_token, rt_name, shlex.split(command))
+    process_id = execute_shell_async(access_token, rt_name, command.split())
     if process_id is None:
         return print(f"failed to start process {proc_name} on {rt_name}")
     else:
@@ -1233,7 +1233,7 @@ def run_subprocess(line: str):
     parser = ArgumentParser(prog="run_async")
     parser.add_argument("--command", type=str, help="bash command to execute", required=True)
     parser.add_argument("--ports", type=str, help="comma-separated list of ports to forward", required=False)
-    args = parser.parse_args(shlex.split(argstring))
+    args = parser.parse_args(argstring.split())
     
     command = str(args.command)
     if not command:
