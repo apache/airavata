@@ -1617,26 +1617,14 @@ def handle_iopub_message(msg: dict, result: ExecutionResult):
     elif msg_type == 'clear_output':
         from IPython.display import clear_output
         clear_output(wait=content.get('wait', False))
+
     elif msg_type in ('display_data', 'execute_result'):
+        from IPython.display import publish_display_data
         data = content.get('data', {})
         metadata = content.get('metadata', {})
-        display_id = content.get('transient', {}).get('display_id')
-        if 'text/plain' in data:
-            print(data['text/plain'])
-        if 'image/png' in data:
-            image_data = data['image/png']
-            try:
-                image_bytes = base64.b64decode(image_data)
-                display(Image(data=image_bytes, format='png'))
-            except binascii.Error as e:
-                result.error_in_exec = Exception(
-                    f"Failed to decode image data: {e}")
-        if 'text/html' in data:
-            html_data = data['text/html']
-            display(HTML(html_data))
-        if 'application/javascript' in data:
-            js_data = data['application/javascript']
-            display(Javascript(js_data))
+        transient = content.get('transient', {})
+        publish_display_data(data, metadata, transient=transient)
+        
     return None
 
 async def run_cell_async(
