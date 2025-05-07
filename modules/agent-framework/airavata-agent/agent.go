@@ -11,13 +11,14 @@ import (
 	"strings"
 
 	"airavata-agent/pkg"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
 
-var defaultLibs = []string{"python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client"}
+var defaultLibs = []string{"python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client", "ttyd"}
 
 func main() {
 

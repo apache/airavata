@@ -602,7 +602,11 @@ def wait_until_runtime_ready(access_token: str, rt_name: str, render_live_logs: 
         def render(title_text, stdout_text, stderr_text):
             stdout_text = "\n".join(stdout_text.split("\n")[-10:])
             stderr_text = "\n".join(stderr_text.split("\n")[-10:])
-            text = f"{title_text}\n\n====[STDOUT]====\n{stdout_text}\n\n====[STDERR]====\n{stderr_text}"
+            text = (
+                f"{title_text}\n\n"
+                f"====[STDOUT]====\n[black]{stdout_text}[/black]\n\n"
+                f"====[STDERR]====\n[red]{stderr_text}[/red]"
+            )
             return text
         
         with Live(render(f"Connecting to={rt_name}...", "No STDOUT", "No STDERR"), refresh_per_second=1, console=console) as live:
@@ -1486,6 +1490,41 @@ def launch_remote_kernel(rt_name: str, base_port: int):
     print(f"started ipykernel client for {rt_name}")
     state.kernel_clients[rt_name] = client
 
+@register_line_magic
+def open_web_terminal(line: str):
+    """
+    Open a web terminal to the runtime
+    """
+    parts = line.strip().split()
+    rt_name = parts[0].strip()
+
+    # Generate a random port for ttyd
+    import random
+    random_port = random.randint(10000, 65000)
+    
+    # Start ttyd subprocess on the runtime
+    proc_name = f"{rt_name}_ttyd"
+    cmd = f"ttyd -p {random_port} -i 0.0.0.0 --writable bash"
+    
+    # Get access token
+    access_token = get_access_token()
+    if access_token is None:
+        print("Not authenticated. Please run %authenticate first.")
+        return
+    
+    # Start the subprocess
+    run_subprocess_inner(access_token, rt_name, proc_name, cmd, [random_port], override_host="127.0.0.1")
+    print(f"Started web terminal on runtime {rt_name} at port {random_port}")
+
+    tunnels = state.tunnels[proc_name]
+    assert len(tunnels) == 1
+    proxyhost, proxyport = list(tunnels.values())[0]
+    url = f"http://{proxyhost}:{proxyport}"
+
+    from IPython.display import IFrame
+    display(IFrame(url, width=800, height=400))
+    
+
 
 # END OF MAGIC FUNCTIONS
 # ========================================================================
@@ -1507,7 +1546,7 @@ orig_run_code = ipython.run_cell_async
 
 def cell_has_magic(raw_cell: str) -> bool:
     lines = raw_cell.strip().splitlines()
-    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime", r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data", r"%run_subprocess", r"%kill_subprocess", r"%open_tunnels", r"%close_tunnels")
+    magics = (r"%authenticate", r"%request_runtime", r"%restart_runtime", r"%stop_runtime", r"%wait_for_runtime", r"%switch_runtime", r"%%run_on", r"%stat_runtime", r"%copy_data", r"%run_subprocess", r"%kill_subprocess", r"%open_tunnels", r"%close_tunnels", r"%open_web_terminal")
     return any(line.strip().startswith(magics) for line in lines)
 
 
