@@ -971,14 +971,12 @@ def pull_remote(remot_rt: str, remot_path: str, local_path: Path, local_is_dir: 
             pull_remote(remot_rt, os.path.join(remot_path, file), local_dp, local_is_dir=True)
 
 
-def run_subprocess_inner(access_token: str, rt_name: str, proc_name: str, command: str, forwarded_ports: list[int], override_host: str | None = None):
+def run_subprocess_inner(access_token: str, rt_name: str, proc_name: str, command: str, forwarded_ports: list[int], hostname: str | None = None):
 
-    if override_host is not None:
-        hostname = override_host
-    else:
-        hostname = get_hostname(access_token, rt_name)
-        if not hostname:
-            return print(f"failed to get hostname for runtime={rt_name}")
+    if not hostname:
+      hostname = get_hostname(access_token, rt_name)
+      if not hostname:
+          return print(f"failed to get hostname for runtime={rt_name}")
 
     process_id = execute_shell_async(access_token, rt_name, command.split())
     if process_id is None:
@@ -1209,7 +1207,7 @@ def wait_for_runtime(line: str):
     # Validation: launch remote kernel if not already started
     if rt_name != "local" and rt_name not in state.kernel_clients:
         random_port = random.randint(2000, 6000) * 5
-        launch_remote_kernel(rt_name, random_port)
+        launch_remote_kernel(rt_name, random_port, hostname="127.0.0.1")
         print(f"Remote Jupyter kernel launched and connected for runtime={rt_name}.")
     return
 
@@ -1233,6 +1231,7 @@ def run_subprocess(line: str):
     parser = ArgumentParser(prog="run_async")
     parser.add_argument("--command", type=str, help="bash command to execute", required=True)
     parser.add_argument("--ports", type=str, help="comma-separated list of ports to forward", required=False)
+    parser.add_argument("--hostname", type=str, help="hostname to serve on. otherwise serve on $(hostname)", required=False, default="127.0.0.1")
     args = parser.parse_args(shlex.split(argstring))
 
     command = str(args.command)
@@ -1242,7 +1241,7 @@ def run_subprocess(line: str):
     print(f"executing command='{command}' on {rt_name}. proc_name={proc_name}")
     forwarded_ports = [] if not args.ports else [int(port.strip()) for port in str(args.ports).split(",")]
 
-    run_subprocess_inner(access_token, rt_name, proc_name, command, forwarded_ports)
+    run_subprocess_inner(access_token, rt_name, proc_name, command, forwarded_ports, hostname=args.hostname)
 
 
 @register_line_magic
@@ -1424,7 +1423,7 @@ def copy_data(line: str):
         print("remote-to-remote copy is not supported yet")
 
 
-def launch_remote_kernel(rt_name: str, base_port: int):
+def launch_remote_kernel(rt_name: str, base_port: int, hostname: str):
     """
     Launch a remote Jupyter kernel, open tunnels, and connect a local Jupyter client.
     """
@@ -1459,13 +1458,12 @@ def launch_remote_kernel(rt_name: str, base_port: int):
     )
 
     cmd = f"python -m ipykernel_launcher -f {temp_fp.name}"
-    run_subprocess_inner(access_token, rt_name, proc_name, cmd, [stdin, shell, iopub, hb, control], override_host="127.0.0.1")
+    run_subprocess_inner(access_token, rt_name, proc_name, cmd, [stdin, shell, iopub, hb, control], hostname=hostname)
     tunnels = state.tunnels[proc_name]
 
     # assert all tunnels have the same host
-    hostname = list(tunnels.values())[0][0]
     assert all(v[0] == hostname for v in tunnels.values()), "All tunnels must originate from the same host"
-    print(hostname)
+    print(f"started ipykernel client for {rt_name} at {hostname}")
 
     # find which ports to connect to
     kernel_ports = [v[1] for v in tunnels.values()]
@@ -1513,7 +1511,7 @@ def open_web_terminal(line: str):
         return
 
     # Start the subprocess
-    run_subprocess_inner(access_token, rt_name, proc_name, cmd, [random_port], override_host="127.0.0.1")
+    run_subprocess_inner(access_token, rt_name, proc_name, cmd, [random_port], hostname="127.0.0.1")
     print(f"Started web terminal on runtime {rt_name} at port {random_port}")
 
     tunnels = state.tunnels[proc_name]
@@ -1659,7 +1657,7 @@ async def run_cell_async(
                 return result
         if rt not in state.kernel_clients:
             random_port = random.randint(2000, 6000) * 5
-            launch_remote_kernel(rt, random_port)
+            launch_remote_kernel(rt, random_port, hostname="127.0.0.1")
 
         # Use Jupyter kernel client for remote runtime
         result = ExecutionResult(info=None)
