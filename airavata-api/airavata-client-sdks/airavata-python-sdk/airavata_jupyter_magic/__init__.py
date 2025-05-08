@@ -1520,8 +1520,7 @@ def open_web_terminal(line: str):
     proxyhost, proxyport = list(tunnels.values())[0]
     url = f"http://{proxyhost}:{proxyport}"
 
-    from IPython.display import IFrame
-    display(IFrame(url, width=800, height=400))
+    display(HTML(f'Open the web terminal from <a href="{url}" target="_blank">here</a>.'))
 
 
 
