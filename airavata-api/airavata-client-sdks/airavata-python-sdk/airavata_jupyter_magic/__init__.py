@@ -1461,9 +1461,10 @@ def launch_remote_kernel(rt_name: str, base_port: int, hostname: str):
     run_subprocess_inner(access_token, rt_name, proc_name, cmd, [stdin, shell, iopub, hb, control], hostname=hostname)
     tunnels = state.tunnels[proc_name]
 
-    # assert all tunnels have the same host
-    assert all(v[0] == hostname for v in tunnels.values()), "All tunnels must originate from the same host"
-    print(f"started ipykernel client for {rt_name} at {hostname}")
+    # assert all ports are tunneled over the same host
+    tunnel_host = list(tunnels.values())[0][0]
+    assert all(v[0] == tunnel_host for v in tunnels.values()), "All ports must be tunneled over the same host"
+    print(f"started ipykernel tunnels for {rt_name} at {tunnel_host}")
 
     # find which ports to connect to
     kernel_ports = [v[1] for v in tunnels.values()]
@@ -1475,7 +1476,7 @@ def launch_remote_kernel(rt_name: str, base_port: int, hostname: str):
         "iopub_port": tiopub,
         "hb_port":thb,
         "control_port": tcontrol,
-        "ip": hostname,
+        "ip": tunnel_host,
         "key": key,
         "signature_scheme": "hmac-sha256",
         "transport": "tcp",
