@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS research_catalog;
+
+CREATE USER IF NOT EXISTS 'airavata'@'%' IDENTIFIED BY '123456';
+ALTER USER 'airavata'@'%' IDENTIFIED BY '123456';
+
+GRANT ALL PRIVILEGES ON research_catalog.* TO 'airavata'@'%';
+
+FLUSH PRIVILEGES;

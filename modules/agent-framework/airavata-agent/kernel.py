@@ -134,7 +134,7 @@ def stop():
 
     if not kernel_running:
         return "Kernel is not running to shut down"
-    
+
     kc.stop_channels()
     km.shutdown_kernel()
     kernel_running = False
@@ -142,4 +142,6 @@ def stop():
 
 
 if __name__ == '__main__':
-    app.run(port=15000)
+    unix_socket = os.getenv("KERNEL_SOCK")
+    assert unix_socket is not None
+    app.run(host=f"unix://{unix_socket}")

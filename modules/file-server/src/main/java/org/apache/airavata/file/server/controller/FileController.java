@@ -1,6 +1,5 @@
 package org.apache.airavata.file.server.controller;
 
-import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.FileUploadResponse;
 import org.apache.airavata.file.server.service.AirvataFileService;
 import org.slf4j.Logger;
@@ -27,61 +26,63 @@ public class FileController {
 
     @GetMapping("/list/{live}/{processId}")
     @ResponseBody
-    public Object listFilesRoot(@PathVariable String live,
-                            @PathVariable String processId) throws Exception {
+    public Object listFilesRoot(@PathVariable String live, @PathVariable String processId) throws Exception {
+        String relPath = "/";
         try {
-            return fileService.listFiles(processId, "");
+            return fileService.listDir(processId, relPath);
         } catch (Exception e) {
             logger.error("Failed to list files for path {} in process {}", "root path", processId, e);
             throw e;
         }
     }
-    @GetMapping("/list/{live}/{processId}/{subPath}")
+    
+    @GetMapping("/list/{live}/{processId}/{*subPath}")
     @ResponseBody
-    public Object listFiles(@PathVariable String live,
-                            @PathVariable String processId,
-                            @PathVariable String subPath) throws Exception {
+    public Object listFiles(@PathVariable String live,@PathVariable String processId, @PathVariable String subPath) throws Exception {
+        String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
-            return fileService.listFiles(processId, subPath);
+            var info = fileService.getInfo(processId, relPath);
+            if (info.isDirectory()) {
+                return fileService.listDir(processId, relPath);
+            } else {
+                return fileService.listFile(processId, relPath);
+            }
         } catch (Exception e) {
-            logger.error("Failed to list files for path {} in process {}", subPath, processId, e);
+            logger.error("Failed to list files for path {} in process {}", relPath, processId, e);
             throw e;
         }
     }
 
-    @GetMapping("/download/{live}/{processId}/{subPath}")
+    @GetMapping("/download/{live}/{processId}/{*subPath}")
     @ResponseBody
-    public ResponseEntity downloadFile(@PathVariable String live,
-                                                 @PathVariable String processId,
-                                                 @PathVariable String subPath) {
-
+    public ResponseEntity downloadFile(@PathVariable String live, @PathVariable String processId, @PathVariable String subPath) {
+        String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
+        String fileName = new File(relPath).getName();
+        Path localPath = null;
         try {
-            Path localPath = fileService.downloadFile(processId, subPath);
+            localPath = fileService.downloadFile(processId, relPath);
             Resource resource = new UrlResource(localPath.toUri());
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + new File(subPath).getName() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
                     .body(resource);
         } catch (Exception e) {
-            logger.error("Failed to download file {} from process {}", subPath, processId, e);
+            logger.error("Failed to download file {} from process {}", relPath, processId, e);
             return ResponseEntity.internalServerError()
                     .body("An internal server error occurred: " + e.getMessage());
         }
     }
 
-    @PostMapping("/upload/{live}/{processId}/{subPath}")
+    @PostMapping("/upload/{live}/{processId}/{*subPath}")
     @ResponseBody
-    public ResponseEntity uploadFile(@PathVariable String live,
-                                         @PathVariable String processId,
-                                         @PathVariable String subPath,
-                                         @RequestParam("file") MultipartFile file) {
+    public ResponseEntity uploadFile(@PathVariable String live, @PathVariable String processId, @PathVariable String subPath, @RequestParam("file") MultipartFile file) {
+        String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
             String name = file.getName();
-            fileService.uploadFile(processId, subPath, file);
-            return ResponseEntity.ok(new FileUploadResponse(name, subPath, file.getContentType(), file.getSize()));
+            fileService.uploadFile(processId, relPath, file);
+            return ResponseEntity.ok(new FileUploadResponse(name, relPath, file.getContentType(), file.getSize()));
 
         } catch (Exception e) {
-            logger.error("Failed to upload file {} to process {}", subPath, processId, e);
+            logger.error("Failed to upload file {} to process {}", relPath, processId, e);
             return ResponseEntity.internalServerError()
                     .body("An internal server error occurred: " + e.getMessage());
         }

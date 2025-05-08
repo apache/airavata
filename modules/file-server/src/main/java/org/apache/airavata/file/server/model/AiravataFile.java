@@ -1,10 +1,17 @@
 package org.apache.airavata.file.server.model;
 
+import org.apache.airavata.agents.api.FileMetadata;
+
 public class AiravataFile {
     private String fileName;
     private long fileSize;
     private long createdTime;
     private long updatedTime;
+
+    public static AiravataFile fromMetadata(FileMetadata metadata) {
+        // replace System.currentTimeMillis() with correct times
+        return new AiravataFile(metadata.getName(), metadata.getSize(), System.currentTimeMillis(), System.currentTimeMillis());
+    }
 
     public AiravataFile(String fileName, long fileSize, long createdTime, long updatedTime) {
         this.fileName = fileName;

@@ -50,3 +50,7 @@ config:
    - jobManagerType: HTCONDOR
      emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
      resourceEmailAddresses:
+       - condor@js-169-152.jetstream-cloud.org
+       - Owner of HTCondor Daemons <condor@condor.scigap.org> #EHT Condor Access point
+       - Owner of HTCondor Daemons <condor@login04.osgconnect.net>
+       - slurm@br003.ib.bridges2.psc.edu # AutoDock_Vina

@@ -49,4 +49,6 @@ airavata-local-agent/renderer/.next
 airavata-local-agent/dist
 airavata-local-agent/build.sh
 
+modules/research-framework/compose
+
 logs

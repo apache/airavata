@@ -9,9 +9,9 @@ build-container:
 run-container:
 	docker run -it $(IMAGE_NAME) /opt/airavata-agent $(AGENT_SVC_URL) $(AGENT_ID)
 
-deploy-anvil:
+deploy-anvil-waterhub:
 	ssh x-waterhub@anvil.rcac.purdue.edu srun -p shared --mem 4G -t 30 singularity pull \
 	--disable-cache \
 	--force \
-	agent-framework/container/remote-agent-cyberfaces.sif \
+	cybershuttle/container/remote-agent-cyberfaces.sif \
 	docker://$(IMAGE_NAME)
