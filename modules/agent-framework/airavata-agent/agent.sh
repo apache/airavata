@@ -54,7 +54,7 @@ while true; do
             IFS=',' read -ra MOUNTS <<< "$2"
             for MOUNT in "${MOUNTS[@]}"; do
               IFS=':' read -r SRC DEST <<< "$MOUNT"
-              mkdir -p ".$DEST"
+              mkdir -p "$(dirname ".$DEST")"
               ln -s "$CS_HOME/dataset/$SRC" ".$DEST"
             done
             shift 2 ;;
