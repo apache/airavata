@@ -115,21 +115,20 @@ deploy-vc-gkeyll-gateway-user:
 	docker://$(IMAGE_NAME)"
 
 deploy-bootstrap:
-	scp agent.sh x-scigap@anvil:~/cybershuttle/agent.sh & \
-	scp agent.sh x-waterhub@anvil:~/cybershuttle/agent.sh & \
-	scp agent.sh x-gcommunityus@anvil:~/cybershuttle/agent.sh & \
-	scp agent.sh gcommuni@bridges2:~/cybershuttle/agent.sh & \
-	scp agent.sh svcscigapgwuser@delta:~/cybershuttle/agent.sh & \
-	scp agent.sh scigap@expanse:~/cybershuttle/agent.sh & \
-	scp agent.sh gridchem@expanse:~/cybershuttle/agent.sh & \
-	scp agent.sh ideas-cybershuttle@pace-ice:~/cybershuttle/agent.sh & \
-	scp agent.sh ideas-cybershuttle@pace-phoenix:~/cybershuttle/agent.sh & \
-	scp agent.sh ccguser@stampede3:~/cybershuttle/agent.sh & \
-	scp agent.sh exouser@vc-airavata-cpu:~/cybershuttle/agent.sh & \
-	scp agent.sh exouser@vc-airavata-gpu:~/cybershuttle/agent.sh & \
-	scp agent.sh exouser@vc-gkeyll:~/cybershuttle/agent.sh & \
-	scp agent.sh gateway-user@vc-gkeyll:~/cybershuttle/agent.sh & \
-	wait
+	scp agent.sh x-scigap@anvil:~/cybershuttle/agent.sh; \
+	scp agent.sh x-waterhub@anvil:~/cybershuttle/agent.sh; \
+	scp agent.sh x-gcommunityus@anvil:~/cybershuttle/agent.sh; \
+	scp agent.sh gcommuni@bridges2:~/cybershuttle/agent.sh; \
+	scp agent.sh svcscigapgwuser@delta:~/cybershuttle/agent.sh; \
+	scp agent.sh scigap@expanse:~/cybershuttle/agent.sh; \
+	scp agent.sh gridchem@expanse:~/cybershuttle/agent.sh; \
+	scp agent.sh ideas-cybershuttle@pace-ice:~/cybershuttle/agent.sh; \
+	scp agent.sh ideas-cybershuttle@pace-phoenix:~/cybershuttle/agent.sh; \
+	scp agent.sh ccguser@stampede3:~/cybershuttle/agent.sh; \
+	scp agent.sh exouser@vc-airavata-cpu:~/cybershuttle/agent.sh; \
+	scp agent.sh exouser@vc-airavata-gpu:~/cybershuttle/agent.sh; \
+	scp agent.sh exouser@vc-gkeyll:~/cybershuttle/agent.sh; \
+	scp agent.sh gateway-user@vc-gkeyll:~/cybershuttle/agent.sh;
 
 deploy-anvil: deploy-anvil-scigap deploy-anvil-waterhub deploy-anvil-gcommunityus
 deploy-bridges2: deploy-bridges2-gcommuni
