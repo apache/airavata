@@ -78,18 +78,24 @@ echo "MOUNTS=${MOUNTS[@]}"
 # ----------------------------------------------------------------------
 
 # initialize scratch/tmp and scratch/envs (node-local)
-mkdir -p "$(readlink $CS_HOME/scratch/tmp)"
-mkdir -p "$(readlink $CS_HOME/scratch/envs)"
+CS_TEMP=$(readlink $CS_HOME/scratch/tmp)
+CS_ENVS=$(readlink $CS_HOME/scratch/envs)
+[ -n "$CS_TEMP" ] && mkdir -p $CS_TEMP
+[ -n "$CS_ENVS" ] && mkdir -p $CS_ENVS
+
+# cleanup old envs and workspaces (node-local)
+find $CS_ENVS -mindepth 1 -maxdepth 1 -type d -ctime +3 | xargs -n1 -I{} rm -rf {}
+find $CS_HOME/workspace -mindepth 1 -maxdepth 1 -type d -ctime +3 | xargs -n1 -I{} rm -rf {}
 
 # fetch binaries
 wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/airavata-agent-linux-amd64 -O airavata-agent
 wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/kernel.py -O kernel.py
-wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.1.0-0/micromamba-linux-64 -O micromamba
+wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.1.1-0/micromamba-linux-64 -O micromamba
 
 chmod +x airavata-agent micromamba
 
 # sync data
-rsync -av --delete ubuntu@hub.cybershuttle.org:~/jupyterhub/mnt/ $CS_HOME/dataset
+rsync -av --delete ubuntu@hub.cybershuttle.org:~/mnt/ $CS_HOME/dataset
 
 # define environment variables
 export MAMBA_ROOT_PREFIX=$CS_HOME/scratch
