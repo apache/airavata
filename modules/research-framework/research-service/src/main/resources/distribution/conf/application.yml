@@ -1,0 +1,55 @@
+grpc:
+  server:
+    port: 19908
+
+server:
+  port: 18889
+  address: 0.0.0.0
+
+airavata:
+  research-hub:
+    url: https://hub.dev.cybershuttle.org
+    dev-user: "airavata@apache.org"
+  research-portal:
+    url: http://dev.cybershuttle.org
+
+  openid:
+    url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
+
+  user-profile:
+    server:
+      url: api.dev.cybershuttle.org
+      port: 8962
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  datasource:
+    url: "jdbc:mariadb://localhost:13306/research_catalog"
+    username: "airavata"
+    password: "123456"
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: ResearchCatalogPool
+      leak-detection-threshold: 20000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    doc-expansion: none
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: data-catalog-portal
+
+
+

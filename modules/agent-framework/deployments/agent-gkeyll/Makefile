@@ -9,9 +9,9 @@ build-container:
 run-container:
 	docker run -it $(IMAGE_NAME) /opt/airavata-agent $(AGENT_SVC_URL) $(AGENT_ID)
 
-deploy-anvil:
+deploy-anvil-gcommunityus:
 	ssh x-gcommunityus@anvil.rcac.purdue.edu srun -p shared --mem 4G -t 30 singularity pull \
 	--disable-cache \
 	--force \
-	agent-framework/container/remote-agent-gkeyll2.sif \
+	cybershuttle/container/remote-agent-gkeyll.sif \
 	docker://$(IMAGE_NAME)

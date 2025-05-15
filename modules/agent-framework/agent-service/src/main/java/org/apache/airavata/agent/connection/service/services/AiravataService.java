@@ -1,6 +1,11 @@
 package org.apache.airavata.agent.connection.service.services;
 
-import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
@@ -16,11 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import io.micrometer.common.util.StringUtils;
 
 @Service
 public class AiravataService {
@@ -48,29 +49,27 @@ public class AiravataService {
         }
     }
 
-    public String extractDefaultProjectId(Airavata.Client airavataClient) throws TException {
-        int limit = 10;
-        int offset = 0;
+    public String getProjectId(Airavata.Client airavataClient, String projectName) throws TException {
+      int limit = 10;
+      int offset = 0;
 
-        while (true) {
-            List<Project> userProjects = airavataClient.getUserProjects(UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
+      while (true) {
+          List<Project> userProjects = airavataClient.getUserProjects(UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
+          Optional<Project> defaultProject = userProjects.stream()
+                  .filter(project -> projectName.equals(project.getName()))
+                  .findFirst();
 
-            // Check for the "Default Project"
-            Optional<Project> defaultProject = userProjects.stream()
-                    .filter(project -> "Default Project".equals(project.getName()))
-                    .findFirst();
+          if (defaultProject.isPresent()) {
+              return defaultProject.get().getProjectID(); 
+          }
+          if (userProjects.size() < limit) {
+              break;
+          }
+          offset += limit;
+      }
 
-            if (defaultProject.isPresent()) {
-                return defaultProject.get().getProjectID();
-            }
-            if (userProjects.size() < limit) {
-                break;
-            }
-            offset += limit;
-        }
-
-        throw new RuntimeException("Could not find a Default project for the user: " + UserContext.username());
-    }
+      throw new RuntimeException("Could not find project: " + projectName + " for the user: " + UserContext.username());
+  }
 
     public GroupComputeResourcePreference extractGroupComputeResourcePreference(Airavata.Client airavataClient, String group, String remoteCluster) throws TException {
         List<GroupResourceProfile> groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
@@ -87,7 +86,7 @@ public class AiravataService {
 
     public List<String> getUserExperimentIDs(Airavata.Client airavataClient) throws TException {
         int limit = 100;
-        Map<ExperimentSearchFields, String> filters = Map.of(ExperimentSearchFields.PROJECT_ID, extractDefaultProjectId(airavataClient));
+        Map<ExperimentSearchFields, String> filters = Map.of(ExperimentSearchFields.PROJECT_ID, getProjectId(airavataClient, "Default Project"));
 
         return Stream.iterate(0, offset -> offset + limit)
                 .map(offset -> {

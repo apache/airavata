@@ -21,7 +21,7 @@
 ---
 #Variables associated with this role
 # zookeeper related variable
-zookeeper_version: 3.4.8
+zookeeper_version: 3.8.4
 zookeeper_url: http://archive.apache.org/dist/zookeeper/zookeeper-{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.tar.gz
 
 apt_cache_timeout: 3600

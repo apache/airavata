@@ -1,0 +1,64 @@
+project:
+  name: Foundations of Transformers in Neuroscience
+  version: 1.0.0
+  description: This project demonstrates how to prepare datasets using temporaldata, utilize torch_brain samplers, and build neural decoding models (MLP, Transformer, POYO). You’ll also fine-tune a pretrained POYO model and visualize training, all in an interactive, hands-on notebook.
+  tags:
+    - neuroscience
+    - transformers
+  homepage: https://github.com/yasithdev/allen-v1
+
+workspace:
+  location: /workspace
+  resources:
+    min_cpu: 4
+    min_gpu: 0
+    min_mem: 4096
+    walltime: 60
+    cluster: Anvil
+    group: Cerebrum
+    queue: shared
+  model_collection:
+    - source: cybershuttle
+      identifier: lgn_stimulus
+      mount_point: /data/lgn_stimulus
+    - source: cybershuttle
+      identifier: v1_point
+      mount_point: /data/v1_point
+  data_collection:
+    - source: cybershuttle
+      identifier: lgn_stimulus_configs
+      mount_point: /data/lgn_stimulus_configs
+    - source: cybershuttle
+      identifier: v1_point_configs
+      mount_point: /data/v1_point_configs
+
+additional_dependencies:
+  conda:
+    - python=3.10
+    - pip
+    - ipywidgets
+    - numba
+    - numpy=1.23.5
+    - matplotlib
+    - openpyxl
+    - pandas
+    - pyqtgraph
+    - pyyaml
+    - requests
+    - scipy
+    - sqlalchemy
+    - tqdm
+    - nest-simulator
+    - ipytree
+    - python-jsonpath
+    - pydantic=2.7
+    - anndata
+    - parse
+  pip:
+    - allensdk
+    - bmtk
+    - pytree
+    - git+https://github.com/alleninstitute/abc_atlas_access
+    - git+https://github.com/alleninstitute/neuroanalysis
+    - git+https://github.com/alleninstitute/aisynphys
+    - git+https://github.com/lahirujayathilake/mousev1
