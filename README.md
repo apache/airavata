@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/apache/airavata.svg?branch=master)](https://travis-ci.org/apache/airavata)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.airavata/airavata/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.airavata%22)
 
+![Airavata Logo](https://airavata.apache.org/images/airavata-logo.png)
+
 ## About
 
 Apache Airavata is a software framework for executing and managing computational
