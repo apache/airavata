@@ -3,151 +3,107 @@
 [![Build Status](https://travis-ci.org/apache/airavata.svg?branch=master)](https://travis-ci.org/apache/airavata)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.airavata/airavata/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.airavata%22)
 
-Apache Airavata is a powerful, extensible software framework for orchestrating and managing computational workflows across distributed computing resources — including local clusters, HPC systems, grids, and cloud environments. Airavata brings together the strengths of service-oriented architecture, messaging frameworks, and scientific workflow management.
+## About
 
-- 🧠 Workflow orchestration for scientific computing
-- ⚙️ API-based modular architecture
-- 🎛️ Pluggable components and microservices
-- 🌐 Web-based reference UI using Django
+Apache Airavata is a software framework for executing and managing computational
+jobs on distributed computing resources including local clusters,
+supercomputers, national grids, academic and commercial clouds. Airavata builds
+on general concepts of service oriented computing, distributed messaging, and
+workflow composition and orchestration. Airavata bundles a server package with
+an API, client software development Kits and a general purpose reference UI
+implementation -
+[Apache Airavata Django Portal](https://github.com/apache/airavata-django-portal).
 
-📘 Learn more at: [https://airavata.apache.org](https://airavata.apache.org)  
-🧑‍💻 Reference UI: [Apache Airavata Django Portal](https://github.com/apache/airavata-django-portal)
+Learn more about Airavata at
+[https://airavata.apache.org](https://airavata.apache.org).
 
----
+## Building Apache Airavata
 
-## 🚀 Features
+### Prerequisites
 
-- Distributed job execution
-- Pluggable workflow engine
-- gRPC/Thrift APIs and SDKs
-- Docker-based local setup for developers
-- Integration-ready with Keycloak and Django Portal
-
----
-
-## 📦 Prerequisites
-
-To build and run Apache Airavata locally:
-
-- Java 17+
-- Apache Maven 3.6+
+- Sources compilation requires Java SDK 17.
+- The project is built with Apache Maven 3+.
+- Set or export JAVA_HOME to point to JDK. For example in Ubuntu:
+`export JAVA_HOME=/usr/lib/jvm/java-17-openjdk`
 - Git
-- Docker & Docker Compose (for local test deployment)
 
-Set the `JAVA_HOME` environment variable:
-
-```bash
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-```
-
----
-
-## 🛠️ Building from Source
-
-Clone the repository and compile the source:
+### Build the distribution
 
 ```bash
 git clone https://github.com/apache/airavata.git
 cd airavata
-mvn clean install
+mvn clean install -DskipTests
 ```
 
-> ⏭️ To skip tests:
+The compressed binary distribution is created at
+PROJECT_DIR/modules/distribution/target.
 
-```bash
-mvn clean install -Dmaven.test.skip=true
-```
+### Build and run docker distribution (Experimental and not recommended for production deployments)
 
-The final distribution will be available at:
+* This requires docker and docker-compose installed in your system
 
-```
-modules/distribution/target/
-```
-
----
-
-## 🐳 Docker-Based Local Deployment (Dev Only)
-
-> ⚠️ This is experimental and not for production.
-
-### 🧱 Build Docker Images
-
+* Build the source and docker images for each microservice
 ```bash
 git clone https://github.com/apache/airavata.git
 cd airavata
-mvn clean install
+mvn clean install -DskipTests
 mvn docker:build -pl modules/distribution
 ```
 
-### ▶️ Start Docker Services
-
+* Start supporting services and Airavata miroservices (API Server, Helix Components and the Job Monitors)
 ```bash
-docker-compose -f modules/ide-integration/src/main/containers/docker-compose.yml \
-               -f modules/distribution/src/main/docker/docker-compose.yml up
+docker-compose -f modules/ide-integration/src/main/containers/docker-compose.yml -f modules/distribution/src/main/docker/docker-compose.yml up
 ```
 
-### ⛔ Stop Docker Services
+* Django portal and PGA Portal can be pointed to airavata.host:8930 (API) , airavata.host:8962 (Profile Service), airavata.host:8443 (Keycloak). 
+Make sure that you add a host entry that maps airavata.host -> 127.0.0.1
 
+* To stop all the services
 ```bash
-docker-compose -f modules/ide-integration/src/main/containers/docker-compose.yml \
-               -f modules/distribution/src/main/docker/docker-compose.yml down
+docker-compose -f modules/ide-integration/src/main/containers/docker-compose.yml -f modules/distribution/src/main/docker/docker-compose.yml down
 ```
 
-> After code changes, stop the containers, rebuild the images, and restart.
+* If you do any code change and need to reflect them in the deployment, stop the docker deployment, rebuild docker images and start the docker deployment
 
----
+## Getting Started
 
-## 🧪 Local Development Setup (with IntelliJ)
+The easiest way to get started with running Airavata locally and setting up a
+development environment is to follow the instructions in the
+[ide-integration README](./modules/ide-integration/README.md). Those
+instructions will guide you on setting up a development environment with
+IntelliJ IDEA.
 
-The easiest way to start developing is to follow the [IDE Integration README](./modules/ide-integration/README.md). It walks you through setting up IntelliJ IDEA for working on Apache Airavata.
+## Contact
 
----
+For additional information about Apache Airavata, please contact the user or dev
+mailing lists: https://airavata.apache.org/mailing-list.html
 
-## 🔗 Local Service Endpoints
+## Contributing
 
-When using Docker, the following services are exposed:
+Want to help contribute to the development of Apache Airavata? Check out our
+[contributing documentation](http://airavata.apache.org/get-involved.html).
 
-| Service            | URL                                |
-|--------------------|-------------------------------------|
-| API Server         | http://airavata.host:8930          |
-| Profile Service    | http://airavata.host:8962          |
-| Keycloak Auth      | https://airavata.host:8443         |
+## Links
 
-Add to `/etc/hosts`:
+- [Documentation](https://docs.airavata.org/en/master/)
+- Developer [wiki](https://cwiki.apache.org/confluence/display/AIRAVATA)
+- [Issue Tracker](https://issues.apache.org/jira/projects/AIRAVATA)
 
-```text
-127.0.0.1 airavata.host
-```
+## License
 
----
+Licensed to the Apache Software Foundation (ASF) under one or more contributor
+license agreements. See the NOTICE file distributed with this work for
+additional information regarding copyright ownership. The ASF licenses this file
+to you under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
 
-## 🤝 Contributing
+http://www.apache.org/licenses/LICENSE-2.0
 
-We welcome contributions from the community! To get involved:
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
 
-- 📄 Read our [Contributor Guide](http://airavata.apache.org/get-involved.html)
-- 📧 Join the [mailing lists](https://airavata.apache.org/mailing-list.html)
-- 🐛 View or file issues on our [JIRA Board](https://issues.apache.org/jira/projects/AIRAVATA)
-
----
-
-## 📚 Resources
-
-- [Official Documentation](https://docs.airavata.org/en/master/)
-- [Developer Wiki](https://cwiki.apache.org/confluence/display/AIRAVATA)
-- [Issue Tracker (JIRA)](https://issues.apache.org/jira/projects/AIRAVATA)
-- [Mailing Lists](https://airavata.apache.org/mailing-list.html)
-
----
-
-## ⚖️ License
-
-Apache Airavata is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
-
-Please refer to the [LICENSE](./LICENSE) and [NOTICE](./NOTICE) files for more details.
-
----
-
-### 💡 Tip
-
-Need help fast? Reach out on the dev mailing list or file an issue. We're here to support you.
+Please see the [LICENSE](LICENSE) file included in the root directory of the
+source tree for extended license details.
