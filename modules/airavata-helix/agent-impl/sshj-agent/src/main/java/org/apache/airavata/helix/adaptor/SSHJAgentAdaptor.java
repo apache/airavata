@@ -24,6 +24,7 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.sftp.*;
+import net.schmizz.sshj.sftp.FileMode.Type;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
@@ -520,6 +521,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             metadata.setName(new File(remoteFile).getName());
             metadata.setSize(stat.getSize());
             metadata.setPermissions(FilePermission.toMask(stat.getPermissions()));
+            metadata.setDirectory(stat.getType() == Type.DIRECTORY);
             return metadata;
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
