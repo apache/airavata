@@ -27,7 +27,7 @@
 include "airavata_errors.thrift"
 include "security_model.thrift"
 include "../data-models/airavata_data_models.thrift"
-include "../data-models/credential-store-models/credential_store_data_models.thrift"
+include "../data-models/credential-store-models/credential_store_models.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
@@ -289,13 +289,13 @@ service Airavata extends base_api.BaseAPI {
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
 
-  credential_store_data_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required string tokenId)
+  credential_store_models.CredentialSummary getCredentialSummary(1: required security_model.AuthzToken authzToken, 2: required string tokenId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase,
                      4: airavata_errors.AuthorizationException ae)
 
-  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaries(1: required security_model.AuthzToken authzToken, 2: required credential_store_data_models.SummaryType type)
+  list<credential_store_models.CredentialSummary> getAllCredentialSummaries(1: required security_model.AuthzToken authzToken, 2: required credential_store_models.SummaryType type)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)

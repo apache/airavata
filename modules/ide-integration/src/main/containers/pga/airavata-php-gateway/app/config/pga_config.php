@@ -91,12 +91,12 @@ return array(
         /**
          * For OIDC servers that support the discovery protocol.
          */
-        'openid-connect-discovery-url' => 'https://airavata.host:8443/auth/realms/default/.well-known/openid-configuration',
+        'openid-connect-discovery-url' => 'https://airavata.host:8443/realms/default/.well-known/openid-configuration',
 
         /**
          * Identity server url
          */
-        'service-url' => 'https://airavata.host:8443/auth',
+        'service-url' => 'https://airavata.host:8443',
 
         /**
          * Enable HTTPS server verification

@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 
 import org.apache.airavata.model.application.io.DataType;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 /**
