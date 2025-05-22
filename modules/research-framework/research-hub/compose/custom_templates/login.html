@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CyberShuttle Hub Login</title>
+    <link rel="icon" href="https://dev.cybershuttle.org/static/images/airavata-logo.png">
+    <link rel="stylesheet" href="{{ static_url("css/style.min.css") }}">
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            text-align: center;
+            padding-top: 80px;
+        }
+        .container {
+            display: inline-block;
+            padding: 50px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        img {
+            width: 70px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        a.btn-login {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        a.btn-login:hover {
+            background-color: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="https://dev.cybershuttle.org/static/images/airavata-logo.png" alt="CyberShuttle Logo"/>
+    <h1>Welcome to Dev CyberShuttle Hub</h1>
+    <a class="btn-login" href="{{ authenticator_login_url }}">Login with OAuth 2.0</a>
+</div>
+</body>
+</html>

@@ -1,3 +1,23 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 syntax = "proto3";
 
 package org.apache.airavata.agent;
@@ -7,141 +27,200 @@ option java_package = "org.apache.airavata.agent";
 option java_outer_classname = "AgentCommunicationProto";
 option go_package = "protos/";
 
-import "airavata-fuse.proto";
-
 service AgentCommunicationService {
   rpc createMessageBus(stream AgentMessage) returns (stream ServerMessage);
 }
 
+// agent pinging the server
 message AgentPing {
   string agentId = 1;
 }
 
+// server requesting the agent to shutdown
+message ShutdownRequest {
+  string agentId = 1;
+}
+
+// server requesting the agent to create a new agent subprocess
+message CreateAgentRequest {
+  string executionId = 1;
+  string agentId = 2;
+  string containerId = 3;
+  string workingDir = 4;
+  repeated string mounts = 5;
+}
+message CreateAgentResponse {
+  string executionId = 1;
+  string agentId = 2;
+  string status = 3;
+}
+
+// server requesting the agent to terminate an agent subprocess
+message TerminateAgentRequest {
+  string executionId = 1;
+  string agentId = 2;
+}
+message TerminateAgentResponse {
+  string executionId = 1;
+  string agentId = 2;
+  string status = 3;
+}
+
+// server requesting the agent to setup an environment
+message EnvSetupRequest {
+  string executionId = 1;
+  string envName = 2;
+  repeated string libraries = 3;
+  repeated string pip = 4;
+}
+message EnvSetupResponse {
+  string executionId = 1;
+  string status = 2;
+}
+
+// server requesting the agent to execute a shell command in the environment
+message CommandExecutionRequest {
+  string executionId = 1;
+  string envName = 2;
+  string workingDir = 3;
+  repeated string arguments = 4;
+}
 message CommandExecutionResponse {
   string executionId = 1;
   string responseString = 2;
 }
 
-message ContainerExecutionResponse {
+message AsyncCommandExecutionRequest {
+  string executionId = 1;
+  string envName = 2;
+  string workingDir = 3;
+  repeated string arguments = 4;
+}
+
+message AsyncCommandExecutionResponse {
+  string executionId = 1;
+  int32 processId = 2;
+  string errorMessage = 3;
+}
+
+message AsyncCommandListRequest {
+  string executionId = 1;
+}
+
+message AsyncCommand {
+  int32 processId = 1;
+  repeated string arguments = 4;
+}
+
+message AsyncCommandListResponse {
+  string executionId = 1;
+  repeated AsyncCommand commands = 2;
+}
+
+message AsyncCommandTerminateRequest {
+  string executionId = 1;
+  int32 processId = 2;
+}
+
+message AsyncCommandTerminateResponse {
+  string executionId = 1;
+  string status = 2;
+}
+
+// server requesting the agent to execute a python script in the environment
+message PythonExecutionRequest {
+  string executionId = 1;
+  string envName = 2;
+  string workingDir = 3;
+  string code = 4;
+}
+message PythonExecutionResponse {
   string executionId = 1;
   string responseString = 2;
 }
 
+// server requesting the agent to execute a jupyter notebook cell in the environment
+message JupyterExecutionRequest {
+  string executionId = 1;
+  string envName = 2;
+  string code = 3;
+}
 message JupyterExecutionResponse {
   string executionId = 1;
-  string sessionId = 2;
-  string responseString = 3;
+  string responseString = 2;
 }
 
-message PythonExecutionResponse {
+// server requesting the agent to restart a jupyter kernel
+message KernelRestartRequest {
   string executionId = 1;
-  string sessionId = 2;
-  string responseString = 3;
+  string envName = 2;
+}
+message KernelRestartResponse {
+  string executionId = 1;
+  string status = 2;
 }
 
-message TerminateExecutionResponse {
-  string status = 1;
-  string description = 2;
+// server requesting the agent to create a ssh tunnel
+message TunnelCreationRequest {
+  string executionId = 1;
+  int32 localPort = 2;
+  string localBindHost = 3;
+  string tunnelServerHost = 4;
+  int32 tunnelServerPort = 5;
+  string tunnelServerApiUrl = 6;
+  string tunnelServerToken = 7;
 }
 
 message TunnelCreationResponse {
-  string status = 1;
+  string executionId = 1;
+  string status = 2;
+  string tunnelHost = 3;
+  int32 tunnelPort = 4;
+  string tunnelId = 5;
 }
 
+// server requesting the agent to terminate a ssh tunnel
+message TunnelTerminationRequest {
+  string executionId = 1;
+  string tunnelId = 2;
+}
 message TunnelTerminationResponse {
-  string status = 1;
+  string executionId = 1;
+  string status = 2;
 }
 
 message AgentMessage {
   oneof message {
     AgentPing agentPing = 1;
-    CommandExecutionResponse commandExecutionResponse = 2;
-    ContainerExecutionResponse containerExecutionResponse = 3;
-    TerminateExecutionResponse terminateExecutionResponse = 4;
-    JupyterExecutionResponse jupyterExecutionResponse = 5;
+    CreateAgentResponse createAgentResponse = 2;
+    TerminateAgentResponse terminateAgentResponse = 3;
+    EnvSetupResponse envSetupResponse = 4;
+    CommandExecutionResponse commandExecutionResponse = 5;
     PythonExecutionResponse pythonExecutionResponse = 6;
-
-    org.apache.airavata.fuse.StatFsReq statFsReq = 7;
-    org.apache.airavata.fuse.FileInfoReq fileInfoReq = 8;
-    org.apache.airavata.fuse.OpenDirReq openDirReq = 9;
-    org.apache.airavata.fuse.OpenFileReq openFileReq = 10;
-    org.apache.airavata.fuse.ReadDirReq readDirReq = 11;
-    org.apache.airavata.fuse.ReadFileReq readFileReq = 12;
-    org.apache.airavata.fuse.WriteFileReq writeFileReq = 13;
-    org.apache.airavata.fuse.SetInodeAttReq setInodeAttReq = 14;
+    JupyterExecutionResponse jupyterExecutionResponse = 7;
+    KernelRestartResponse kernelRestartResponse = 8;
+    TunnelCreationResponse tunnelCreationResponse = 9;
+    TunnelTerminationResponse tunnelTerminationResponse = 10;
+    AsyncCommandExecutionResponse asyncCommandExecutionResponse = 11;
+    AsyncCommandListResponse asyncCommandListResponse = 12;
+    AsyncCommandTerminateResponse asyncCommandTerminateResponse = 13;
   }
-}
-
-message ContainerExecutionRequest {
-  string executionId = 1;
-  string containerName = 2;
-  repeated string arguments = 3;
-  string mountPath = 4;
-}
-
-message TunnelCreationRequest {
-  string destinationHost = 1;
-  string destinationPort = 2;
-  string sshUserName = 3;
-  string sourcePort = 4;
-  string sshKeyPath = 5;
-  string password = 6;
-}
-
-message TunnelTerminationRequest {
-  string destinationHost = 1;
-  int32 destinationPort = 2;
-  string sourcePort = 3;
-}
-
-message CommandExecutionRequest {
-  string executionId = 1;
-  repeated string arguments = 2;
-  string workingDir = 3;
-}
-
-message JupyterExecutionRequest {
-  string executionId = 1;
-  string sessionId = 2;
-  bool keepAlive = 3;
-  string code = 4;
-}
-
-message PythonExecutionRequest {
-  string executionId = 1;
-  string sessionId = 2;
-  bool keepAlive = 3;
-  repeated string libraries = 4;
-  string code = 5;
-  string pythonVersion = 6;
-  string workingDir = 7;
-}
-
-message TerminateExecutionRequest {
-  string executionId = 1;
-}
-
-message KillAgentRequest {
-  string reason = 1;
 }
 
 message ServerMessage {
   oneof message {
-    ContainerExecutionRequest containerExecutionRequest = 1;
-    CommandExecutionRequest commandExecutionRequest = 2;
-    TerminateExecutionRequest terminateExecutionRequest = 3;
-    KillAgentRequest killAgentRequest = 4;
-    TunnelCreationRequest tunnelCreationRequest = 5;
-    JupyterExecutionRequest jupyterExecutionRequest = 6;
-    PythonExecutionRequest pythonExecutionRequest = 7;
-
-    org.apache.airavata.fuse.StatFsRes statFsRes = 8;
-    org.apache.airavata.fuse.FileInfoRes fileInfoRes = 9;
-    org.apache.airavata.fuse.OpenDirRes openDirRes = 10;
-    org.apache.airavata.fuse.OpenFileRes openFileRes = 11;
-    org.apache.airavata.fuse.ReadDirRes readDirRes = 12;
-    org.apache.airavata.fuse.ReadFileRes readFileRes = 13;
-    org.apache.airavata.fuse.WriteFileRes writeFileRes = 14;
-    org.apache.airavata.fuse.SetInodeAttRes setInodeAttRes = 15;
+    ShutdownRequest shutdownRequest = 1;
+    CreateAgentRequest createAgentRequest = 2;
+    TerminateAgentRequest terminateAgentRequest = 3;
+    EnvSetupRequest envSetupRequest = 4;
+    CommandExecutionRequest commandExecutionRequest = 5;
+    PythonExecutionRequest pythonExecutionRequest = 6;
+    JupyterExecutionRequest jupyterExecutionRequest = 7;
+    KernelRestartRequest kernelRestartRequest = 8;
+    TunnelCreationRequest tunnelCreationRequest = 9;
+    TunnelTerminationRequest tunnelTerminationRequest = 10;
+    AsyncCommandExecutionRequest asyncCommandExecutionRequest = 11;
+    AsyncCommandListRequest asyncCommandListRequest = 12;
+    AsyncCommandTerminateRequest asyncCommandTerminateRequest = 13;
   }
 }
