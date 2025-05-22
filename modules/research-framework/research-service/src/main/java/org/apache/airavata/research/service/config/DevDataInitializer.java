@@ -1,24 +1,22 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
+ * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p>
+ * with the License. You may obtain a copy of the License at
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  */
 package org.apache.airavata.research.service.config;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
@@ -33,6 +31,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Profile("dev")
@@ -112,7 +113,7 @@ public class DevDataInitializer implements CommandLineRunner {
 
         createProject(
                 "Bio-realistic multiscale simulations of cortical circuits",
-               	"Running the AllenAI V1 model, with thalamacortical (LGN) and background (BKG) inputs",
+                "Running the AllenAI V1 model, with thalamacortical (LGN) and background (BKG) inputs",
                 "https://github.com/cyber-shuttle/allenai-v1",
                 "allenai-v1",
                 new String[]{"neurodata25", "allenai", "visual_cortex"},
@@ -137,7 +138,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Maxim Bazhenov, Gabriela Navas Zuloaga"
         );
 
-	createProject(
+        createProject(
                 "Biologically Constrained RNNs",
                 "Running a biologically constrained RNN via Dale's backpropagation and topologically-informed pruning",
                 "https://github.com/cyber-shuttle/biologicalRNNs",
@@ -155,7 +156,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Anqi Wu, Chengrui Li"
         );
 
-	createProject(
+        createProject(
                 "Scaling up neural data analysis with torch_brain and temporaldata",
                 "Understand and highlight the features of torch_brain and temporaldata",
                 "https://github.com/cyber-shuttle/neurodata25_torchbrain_notebooks",
@@ -164,7 +165,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Eva Dyer, Vinam Arora, Mahato Shivashriganesh"
         );
 
-	createProject(
+        createProject(
                 "Bridge the Gap between the Structure and Function in the Brain",
                 "Run the NetFormer model for neural connectivity",
                 "https://github.com/cyber-shuttle/neuroaihub-netformer",
@@ -182,16 +183,16 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Nabil Imam, Nand Chandravadia"
         );
 
-	createProject(
-		"Getting started with Cybershuttle",
-		"Run a simulation and understand the minimum macros required to run Cybershuttle",
-		"https://github.com/cyber-shuttle/cybershuttle-reference",
-		"cybershuttle-reference",
-		new String[]{"cybershuttle", "apache-airavata", "reference"},
-		"Suresh Marru"
-	);
+        createProject(
+                "Getting started with Cybershuttle",
+                "Run a simulation and understand the minimum macros required to run Cybershuttle",
+                "https://github.com/cyber-shuttle/cybershuttle-reference",
+                "cybershuttle-reference",
+                new String[]{"cybershuttle", "apache-airavata", "reference"},
+                "Suresh Marru"
+        );
 
-	createProject(
+        createProject(
                 "Malicious URL Detector",
                 "Detect malicious URLs using machine learning models",
                 "https://github.com/airavata-courses/malicious-url-detector",
@@ -200,22 +201,22 @@ public class DevDataInitializer implements CommandLineRunner {
                 "Krish Katariya, Jesse Gong, Shreyas Arisa, Devin Fromond"
         );
 
-	createProject(
-		"Deepseek Remote Execution",
-		"Executing deepseek model on remote HPC",
-		"https://github.com/ZhenmeiOng/proj2-llama",
-		"airavata-courses-deepseek-chat",
-		new String[]{"airavata-courses", "spring-2025", "llm"},
-		"Yashkaran Chauhan, Zhenmei Ong, Varenya Amagowni"
-	);
+        createProject(
+                "Deepseek Remote Execution",
+                "Executing deepseek model on remote HPC",
+                "https://github.com/ZhenmeiOng/proj2-llama",
+                "airavata-courses-deepseek-chat",
+                new String[]{"airavata-courses", "spring-2025", "llm"},
+                "Yashkaran Chauhan, Zhenmei Ong, Varenya Amagowni"
+        );
 
-	createProject(
-		"Fast Chat",
-		"Fast and easy communication with fast chat",
-		"https://github.com/riccog/cybershuttle",
-		"airavata-courses-fast-chat",
-		new String[]{"airavata-courses", "spring-2025"},
-		"Ricco Goss, Mason Graham, Talam, Ruchira"
-	);
+        createProject(
+                "Fast Chat",
+                "Fast and easy communication with fast chat",
+                "https://github.com/riccog/cybershuttle",
+                "airavata-courses-fast-chat",
+                new String[]{"airavata-courses", "spring-2025"},
+                "Ricco Goss, Mason Graham, Talam, Ruchira"
+        );
     }
 }
