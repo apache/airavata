@@ -30,9 +30,6 @@ Before starting, ensure you have the following installed on your system:
 git clone https://github.com/apache/airavata.git
 cd airavata
 
-# Switch to development branch
-git checkout develop
-
 # Build the project (this may take a few minutes)
 mvn clean install -DskipTests
 ```
@@ -42,7 +39,6 @@ mvn clean install -DskipTests
 1. **Launch IntelliJ IDEA**
 2. **Open Project** → Navigate to your cloned `airavata` directory
 3. **Navigate to:** `modules` → `ide-integration` module
-4. **Wait for indexing** to complete
 
 ## 🐳 Backend Services Setup
 
@@ -82,8 +78,6 @@ cd modules/ide-integration/src/main/containers
 cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 mysql -p123456
 ```
 
-⏳ **Wait for all services to be ready** (usually 2-3 minutes)
-
 ## 🖥️ Starting Airavata Components
 
 ### 6️⃣ Start API Server
@@ -110,22 +104,29 @@ cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 my
 
 ### 8️⃣ Start Job Monitoring
 
-**Setup Email Monitor (One-time setup):**
+#### **Setup Email Monitor (One-Time Setup)**
 
-1. **Create Gmail Account:** [accounts.google.com/signup](https://accounts.google.com/signup)
-2. **Enable 2-Step Verification:** [myaccount.google.com/security](https://myaccount.google.com/security)
-3. **Generate App Password:**
-   - Type: "Other" 
-   - Name: "Airavata"
+1. **Create a Gmail Account**  [https://accounts.google.com/signup](https://accounts.google.com/signup)
 
-4. **Update Configuration:**
+2. **Enable 2-Step Verification**  [https://myaccount.google.com/security](https://myaccount.google.com/security)
+
+3. **Go to App Passwords**  [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)  
+   *(Make sure you're logged in and have already enabled 2-Step Verification.)*
+
+4. **Generate App Password:**
+   - Enter the name **"Airavata"** and click **"Generate"**.
+
+5. **Copy the Generated App Password**  
+   - A 16 character password will appear **copy and save it immediately**, as it will not be shown again.
+
+5. **Update Configuration:**
    Edit `src/main/resources/airavata-server.properties`:
    ```properties
    email.based.monitor.address=your-email@gmail.com
    email.based.monitor.password=your-app-password
    ```
 
-5. **Start Monitor:**
+6. **Start Monitor:**
    - Navigate to: `org.apache.airavata.ide.integration.JobMonitorStarter`
    - Right-click and **Run**
 
@@ -133,19 +134,24 @@ cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 my
 
 ### 9️⃣ Django Portal Installation
 
+**You can create and launch experiments and manage credentials using this portal.**
+
 ```bash
-# Clone portal repository (outside airavata directory)
+# Navigate outside the Airavata directory
 cd ..
+
+# Clone the Django portal repository
 git clone https://github.com/apache/airavata-django-portal.git
 cd airavata-django-portal
 
-# Create virtual environment
+# Create a virtual environment
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+# Activate the virtual environment
+source venv/bin/activate  # For Windows: venv\Scripts\activate
+
+# Install Python dependencies
 pip install -r requirements.txt
-```
 
 ### 🔟 Configure Django Portal
 
@@ -176,12 +182,13 @@ python3 manage.py runserver
 
 For registering compute resources and storage resources:
 
-### 1️⃣ Start PGA Portal
+### 1️⃣ Starting Super Admin Portal (PGA)
+
+**This portal is required when registering new compute or storage resources into the gateway.**
 
 ```bash
 cd modules/ide-integration/src/main/containers/pga
 docker-compose up -d
-```
 
 ### 2️⃣ Configure Host Resolution
 
@@ -198,6 +205,7 @@ docker-compose exec pga getent hosts host.docker.internal
 ```
 
 **Update container hosts:**
+    *Replace <host-machine-ip> with the actual IP*
 ```bash
 docker-compose exec pga /bin/sh -c "echo '<host-machine-ip> airavata.host' >> /etc/hosts"
 ```
