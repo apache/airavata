@@ -47,6 +47,10 @@ config:
        - sge@bigdog.research.siu.edu # SIU Big Dog
        - root <root@legacy.usd.edu> # USD HPC Cluster
 
-   - jobManagerType: HTCondor
+   - jobManagerType: HTCONDOR
      emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
      resourceEmailAddresses:
+       - condor@js-169-152.jetstream-cloud.org
+       - Owner of HTCondor Daemons <condor@condor.scigap.org> #EHT Condor Access point
+       - Owner of HTCondor Daemons <condor@login04.osgconnect.net>
+       - slurm@br003.ib.bridges2.psc.edu # AutoDock_Vina

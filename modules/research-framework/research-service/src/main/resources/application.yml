@@ -1,0 +1,72 @@
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+grpc:
+  server:
+    port: 19908
+
+server:
+  port: 18999
+  address: 0.0.0.0
+
+airavata:
+  research-hub:
+    url: https://hub.cybershuttle.org
+    dev-user: "airavata@apache.org"
+    adminApiKey: "JUPYTER_ADMIN_API_KEY"
+    limit: 10
+
+  research-portal:
+    url: http://localhost:5173
+
+  openid:
+    url: "https://auth.cybershuttle.org/realms/default/.well-known/openid-configuration"
+
+  user-profile:
+    server:
+      url: api.cybershuttle.org
+      port: 8962
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  datasource:
+    url: "jdbc:mariadb://localhost:13306/research_catalog"
+    username: "airavata"
+    password: "123456"
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: ResearchCatalogPool
+      leak-detection-threshold: 20000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    doc-expansion: none
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: data-catalog-portal
+
