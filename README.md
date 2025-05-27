@@ -11,7 +11,7 @@
 
 ## 🚀 About
 
-Apache Airavata is a modern, scalable software framework designed for executing and managing computational jobs across distributed computing resources. Whether you're working with local clusters, supercomputers, national grids, or cloud platforms, Airavata provides a unified interface for computational workflow management.
+Apache Airavata is a software framework for executing and managing computational jobs on distributed computing resources including local clusters, supercomputers, national grids, academic and commercial clouds. Airavata builds on general concepts of service oriented computing, distributed messaging, and workflow composition and orchestration. Airavata bundles a server package with an API, client software development Kits and a general purpose reference UI implementation.
 
 **Key Features:**
 - 🔧 Service-oriented architecture with distributed messaging
@@ -55,7 +55,7 @@ set JAVA_HOME=C:\Program Files\OpenJDK\openjdk-17
 
 ```bash
 # Clone the repository
-git clone https://github.com/apache/airavata.git
+git clone git@github.com:apache/airavata.git
 cd airavata
 
 # Build with tests
@@ -86,6 +86,8 @@ mvn clean install
 mvn docker:build -pl modules/distribution
 
 # 2. Start all services
+##Start all supporting services and Airavata microservices (API Server, Helix components, and Job Monitors)
+
 docker-compose \
   -f modules/ide-integration/src/main/containers/docker-compose.yml \
   -f modules/distribution/src/main/docker/docker-compose.yml \
@@ -96,7 +98,7 @@ docker-compose ps
 ```
 
 **Service Endpoints:**
-- **API Server:** `airavata.host:8930`
+- **API Server:** `airavata.host:8960`
 - **Profile Service:** `airavata.host:8962`
 - **Keycloak:** `airavata.host:8443`
 
@@ -116,20 +118,7 @@ docker-compose \
 
 ## 🚀 Getting Started
 
-The fastest way to set up a development environment is through our IDE integration:
-
-1. **Follow our [IDE Integration Guide](./modules/ide-integration/README.md)**
-2. **IntelliJ IDEA setup instructions included**
-3. **Automated development environment configuration**
-
-## 📚 Documentation & Resources
-
-| Resource | Description | Link |
-|----------|-------------|------|
-| 📖 **Documentation** | Complete user and developer guides | [docs.airavata.org](https://docs.airavata.org/en/master/) |
-| 🔧 **Developer Wiki** | Technical specifications and architecture | [Apache Confluence](https://cwiki.apache.org/confluence/display/AIRAVATA) |
-| 🐛 **Issue Tracker** | Bug reports and feature requests | [JIRA](https://issues.apache.org/jira/projects/AIRAVATA) |
-| 💬 **Mailing Lists** | Community discussions | [airavata.apache.org/mailing-list](https://airavata.apache.org/mailing-list.html) |
+The easiest way to get started with running Airavata locally and setting up a development environment is to follow the instructions in the ide-integration README. Those instructions will guide you on setting up a development environment with IntelliJ IDEA.
 
 ## 🤝 Contributing
 
@@ -152,11 +141,6 @@ We welcome contributions from the community! Here's how you can help:
 - 📧 **User Mailing List:** [users@airavata.apache.org](mailto:users@airavata.apache.org)
 - 👨‍💻 **Developer Mailing List:** [dev@airavata.apache.org](mailto:dev@airavata.apache.org)
 - 🔗 **All Mailing Lists:** [airavata.apache.org/mailing-list](https://airavata.apache.org/mailing-list.html)
-
-**Stay Connected:**
-- 🌟 Star this repository
-- 👀 Watch for updates
-- 🐦 Follow [@ApacheAiravata](https://twitter.com/ApacheAiravata)
 
 ## 📄 License
 
