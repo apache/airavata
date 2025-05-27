@@ -118,7 +118,7 @@ docker-compose \
 
 ## 🚀 Getting Started
 
-The easiest way to get started with running Airavata locally and setting up a development environment is to follow the instructions in the ide-integration README. Those instructions will guide you on setting up a development environment with IntelliJ IDEA.
+The easiest way to get started with running Airavata locally and setting up a development environment is to follow the instructions in the [ide-integration README](./modules/ide-integration/README.md).Those instructions will guide you on setting up a development environment with IntelliJ IDEA.
 
 ## 🤝 Contributing
 
