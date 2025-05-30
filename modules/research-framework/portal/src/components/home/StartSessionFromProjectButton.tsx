@@ -10,7 +10,7 @@ import {
   Input,
   CloseButton,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toaster } from "../ui/toaster";
 import { useAuth } from "react-oidc-context";
 import { AxiosError } from "axios";
@@ -31,7 +31,7 @@ export const StartSessionFromProjectButton = ({
   const handleClickStart = () => {
     if (shouldRedirect) {
       auth.signinRedirect({
-        redirect_uri: `${window.location.origin}/${window.location.pathname}`,
+        redirect_uri: `${window.location.origin}/${window.location.pathname}?showStartProjectSessionModal=true`,
         extraQueryParams: {
           prompt: "login",
           kc_idp_hint: "oidc",
@@ -88,6 +88,13 @@ export const StartSessionFromProjectButton = ({
     }
     setLoadingOpenProject(false);
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("showStartProjectSessionModal") === "true") {
+      dialog.setOpen(true);
+    }
+  }, []);
 
   return (
     <>
