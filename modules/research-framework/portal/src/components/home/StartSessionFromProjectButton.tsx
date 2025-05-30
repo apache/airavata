@@ -93,8 +93,10 @@ export const StartSessionFromProjectButton = ({
     const params = new URLSearchParams(window.location.search);
     if (params.get("showStartProjectSessionModal") === "true") {
       dialog.setOpen(true);
+      // remove ALL query params
+      window.history.replaceState({}, "", window.location.pathname);
     }
-  }, []);
+  }, [dialog]);
 
   return (
     <>
