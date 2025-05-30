@@ -21,6 +21,7 @@ import { FaCheck } from "react-icons/fa";
 import { Tag as TagEntity } from "@/interfaces/TagType";
 import { useLocation, useNavigate } from "react-router";
 import { toaster } from "../ui/toaster";
+import { resourceTypeToColor } from "@/lib/util";
 
 const getResources = async (
   types: ResourceTypeEnum[],
@@ -237,15 +238,16 @@ export const Resources = () => {
             <HStack wrap="wrap">
               {labels.map((type) => {
                 const isSelected = resourceTypes.includes(type);
+                const color = resourceTypeToColor(type);
                 return (
                   <Button
                     key={type}
                     variant="outline"
-                    color={isSelected ? "blue.600" : "black"}
-                    bg={isSelected ? "blue.100" : "white"}
+                    color={isSelected ? color + ".600" : "black"}
+                    bg={isSelected ? color + ".100" : "white"}
                     _hover={{
-                      bg: isSelected ? "blue.200" : "gray.100",
-                      color: isSelected ? "blue.700" : "black",
+                      bg: isSelected ? color + ".200" : "gray.100",
+                      color: isSelected ? color + ".700" : "black",
                     }}
                     size="sm"
                     onClick={() => {
@@ -261,7 +263,7 @@ export const Resources = () => {
                     }}
                   >
                     {type}
-                    {isSelected && <FaCheck color="blue" />}
+                    {isSelected && <FaCheck color={color} />}
                   </Button>
                 );
               })}

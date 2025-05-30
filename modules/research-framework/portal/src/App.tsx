@@ -79,7 +79,7 @@ function App() {
       <AuthProvider
         {...oidcConfig}
         onSigninCallback={() => {
-          navigate(location.pathname, { replace: true });
+          navigate(location.search, { replace: true });
         }}
       >
         <Toaster />
