@@ -16,6 +16,7 @@
 
 import configparser
 import os
+from typing import Optional
 
 config = configparser.ConfigParser()
 
@@ -24,9 +25,8 @@ defaultSettings = os.path.join(BASE_DIR, "transport", "settings.ini")
 config.read(defaultSettings)
 
 
-class APIServerClientSettings(object):
-
-    def __init__(self, configFileLocation=None):
+class APIServerSettings(object):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
@@ -34,8 +34,8 @@ class APIServerClientSettings(object):
         self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
 
 
-class IAMAdminClientSettings(object):
-    def __init__(self, configFileLocation=None):
+class ProfileServerSettings(object):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
@@ -43,26 +43,8 @@ class IAMAdminClientSettings(object):
         self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
 
 
-class TenantProfileServerClientSettings(object):
-    def __init__(self, configFileLocation=None):
-        if configFileLocation is not None:
-            config.read(configFileLocation)
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
-
-
-class GroupManagerClientSettings(object):
-    def __init__(self, configFileLocation=None):
-        if configFileLocation is not None:
-            config.read(configFileLocation)
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
-
-
-class SharingAPIClientSettings(object):
-    def __init__(self, configFileLocation=None):
+class SharingServerSettings(object):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
@@ -70,8 +52,8 @@ class SharingAPIClientSettings(object):
         self.SHARING_API_SECURE = config.getboolean('SharingServer', 'SHARING_API_SECURE')
 
 
-class CredentialStoreAPIClientSettings(object):
-    def __init__(self, configFileLocation=None):
+class CredentialStoreServerSettings(object):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer', 'CREDENTIAL_STORE_API_HOST')
@@ -79,24 +61,15 @@ class CredentialStoreAPIClientSettings(object):
         self.CREDENTIAL_STORE_API_SECURE = config.getboolean('CredentialStoreServer', 'CREDENTIAL_STORE_API_SECURE')
 
 
-class UserProfileClientSettings(object):
-    def __init__(self, configFileLocation=None):
-        if configFileLocation is not None:
-            config.read(configFileLocation)
-        self.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-        self.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-        self.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
-
-
 class ThriftSettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.THRIFT_CLIENT_POOL_KEEPALIVE = config.getfloat('Thrift', 'THRIFT_CLIENT_POOL_KEEPALIVE')
 
 
-class KeycloakConfiguration(object):
-    def __init__(self, configFileLocation=None):
+class KeycloakServerSettings(object):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         # self.KEYCLOAK_CA_CERTIFICATE = os.path.join(BASE_DIR, "samples", "resources", "incommon_rsa_server_ca.pem")
@@ -105,14 +78,34 @@ class KeycloakConfiguration(object):
         self.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
         self.USER_INFO_URL = config.get('KeycloakServer', 'USER_INFO_URL')
         self.VERIFY_SSL = config.getboolean('KeycloakServer', 'VERIFY_SSL')
+        self.LOGIN_DESKTOP_URI = config.get('KeycloakServer', 'LOGIN_DESKTOP_URI')
 
 
 class GatewaySettings(object):
-    def __init__(self, configFileLocation=None):
+    def __init__(self, configFileLocation: Optional[str] = None):
         if configFileLocation is not None:
             config.read(configFileLocation)
         self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
+        self.GATEWAY_URL = config.get('Gateway', 'GATEWAY_URL')
         self.GATEWAY_DATA_STORE_RESOURCE_ID = config.get('Gateway', 'GATEWAY_DATA_STORE_RESOURCE_ID')
         self.GATEWAY_DATA_STORE_DIR = config.get('Gateway', 'GATEWAY_DATA_STORE_DIR')
         self.GATEWAY_DATA_STORE_HOSTNAME = config.get('Gateway', 'GATEWAY_DATA_STORE_HOSTNAME')
         self.FILE_UPLOAD_TEMP_DIR = config.get('Gateway', 'FILE_UPLOAD_TEMP_DIR')
+
+
+class ExperimentSettings(object):
+    def __init__(self, configFileLocation: Optional[str] = None):
+        if configFileLocation is not None:
+            config.read(configFileLocation)
+        self.APPLICATION_NAME = config.get('ExperimentConf', 'APPLICATION_NAME')
+        self.PROJECT_NAME = config.get('ExperimentConf', 'PROJECT_NAME')
+        self.COMPUTE_HOST_DOMAIN = config.get('ExperimentConf', 'COMPUTE_HOST_DOMAIN')
+        self.GROUP_RESOURCE_PROFILE_NAME = config.get('ExperimentConf', 'GROUP_RESOURCE_PROFILE_NAME')
+        self.STORAGE_RESOURCE_HOST = config.get('ExperimentConf', 'STORAGE_RESOURCE_HOST')
+        self.SFTP_PORT = config.get('ExperimentConf', 'SFTP_PORT')
+        self.NODE_COUNT = config.get('ExperimentConf', 'NODE_COUNT')
+        self.TOTAL_CPU_COUNT = config.get('ExperimentConf', 'TOTAL_CPU_COUNT')
+        self.WALL_TIME_LIMIT = config.get('ExperimentConf', 'WALL_TIME_LIMIT')
+        self.QUEUE_NAME = config.get('ExperimentConf', 'QUEUE_NAME')
+        self.MONITOR_STATUS = config.getboolean('ExperimentConf', 'MONITOR_STATUS')
+

@@ -19,11 +19,20 @@
 #
 
 ---
-- name: Install OpenJDK 11
+- name: Install OpenJDK 11 (CentOS)
   yum: name="{{ openjdk_version }}" state=present update_cache=yes
   become: yes
   tags:
     - always
+  when: ansible_distribution == "CentOS"
+
+- name: Install OpenJDK 11 (Rocky)
+  dnf: name="{{ openjdk_version_rocky }}"
+  become: yes
+  tags:
+    - always
+  when: ansible_distribution == "Rocky"
+
 
 # NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
 - name: set {{ java_home }} as default
@@ -36,16 +45,6 @@
     - { path: "{{ java_home }}/bin", exe: 'keytool' }
     - { path: "{{ java_home }}/bin", exe: 'javac' }
     - { path: "{{ java_home }}/bin", exe: 'javadoc' }
-  become: yes
-  tags:
-       - always
-
-- name: Copy java.security file to {{ java_home }}
-  copy:
-    src: java.security
-    dest: "{{ java_home }}/conf/security/java.security"
-    mode: 644
-    backup: yes
   become: yes
   tags:
        - always

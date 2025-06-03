@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 /**

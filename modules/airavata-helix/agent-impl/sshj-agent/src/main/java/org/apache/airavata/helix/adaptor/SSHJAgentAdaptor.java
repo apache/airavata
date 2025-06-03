@@ -19,12 +19,13 @@
  */
 package org.apache.airavata.helix.adaptor;
 
-import com.google.common.collect.Lists;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.sftp.*;
+import net.schmizz.sshj.sftp.FileMode.Type;
+import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.AuthMethod;
@@ -51,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,18 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
 
         sshjClient = new PoolingSSHJClient(defaultConfig, host, port == 0 ? 22 : port);
-        sshjClient.addHostKeyVerifier((h, p, key) -> true);
+        sshjClient.addHostKeyVerifier(new HostKeyVerifier() {
+
+            @Override
+            public boolean verify(String hostname, int port, PublicKey key) {
+                return true;
+            }
+
+            @Override
+            public List<String> findExistingAlgorithms(String hostname, int port) {
+                return Collections.emptyList();
+            }
+        });
 
         sshjClient.setMaxSessionsForConnection(1);
 
@@ -142,6 +155,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                     computeResourceDescription.getHostName() : alternateHostName;
 
             int selectedPort = sshJobSubmission.getSshPort() == 0 ? 22 : sshJobSubmission.getSshPort();
+
+            logger.info("Using user {}, Host {}, Port {} to create ssh client for compute resource {}",
+                    userId, selectedHostName, selectedPort, computeResource);
 
             createPoolingSSHJClient(userId, selectedHostName, selectedPort,
                     sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase());
@@ -361,7 +377,17 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             fileTransfer = sshjClient.newSCPFileTransferWrapper();
             fileTransfer.download(remoteFile, new LocalDestFile() {
                 @Override
+                public long getLength() {
+                    return metadata.getSize();
+                }
+
+                @Override
                 public OutputStream getOutputStream() throws IOException {
+                    return localOutStream;
+                }
+
+                @Override
+                public OutputStream getOutputStream(boolean append) {
                     return localOutStream;
                 }
 
@@ -495,6 +521,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             metadata.setName(new File(remoteFile).getName());
             metadata.setSize(stat.getSize());
             metadata.setPermissions(FilePermission.toMask(stat.getPermissions()));
+            metadata.setDirectory(stat.getType() == Type.DIRECTORY);
             return metadata;
         } catch (Exception e) {
             if (e instanceof ConnectionException) {

@@ -2,5 +2,14 @@ venv
 airavata_python_sdk.egg-info
 *.pyc
 .tox
-dist
-build
+dist/
+build/
+site/
+__pycache__/
+.DS_Store
+.ipynb_checkpoints
+*.egg-info/
+results*/
+plan.json
+settings*.ini
+auth.state

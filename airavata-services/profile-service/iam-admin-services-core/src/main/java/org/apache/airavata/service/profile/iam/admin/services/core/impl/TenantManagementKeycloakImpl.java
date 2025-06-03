@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.service.profile.iam.admin.services.core.impl;
 
+import jakarta.ws.rs.core.Response;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -30,6 +31,7 @@ import org.apache.airavata.service.profile.iam.admin.services.core.interfaces.Te
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -43,7 +45,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static ResteasyClient getResteasyClient() {
 
-        ResteasyClientBuilder builder = new ResteasyClientBuilder().connectionPoolSize(10);
+        ResteasyClientBuilder builder = new ResteasyClientBuilderImpl().connectionPoolSize(10);
         try {
             if (ServerSettings.isTrustStorePathDefined()) {
                 builder.trustStore(loadKeyStore());

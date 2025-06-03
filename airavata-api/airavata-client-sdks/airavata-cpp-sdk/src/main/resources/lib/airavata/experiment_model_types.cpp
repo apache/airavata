@@ -132,6 +132,11 @@ void UserConfigurationDataModel::__set_groupResourceProfileId(const std::string&
 __isset.groupResourceProfileId = true;
 }
 
+void UserConfigurationDataModel::__set_autoScheduledCompResourceSchedulingList(const std::vector< ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel> & val) {
+  this->autoScheduledCompResourceSchedulingList = val;
+__isset.autoScheduledCompResourceSchedulingList = true;
+}
+
 uint32_t UserConfigurationDataModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -243,6 +248,26 @@ uint32_t UserConfigurationDataModel::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->autoScheduledCompResourceSchedulingList.clear();
+            uint32_t _size0;
+            ::apache::thrift::protocol::TType _etype3;
+            xfer += iprot->readListBegin(_etype3, _size0);
+            this->autoScheduledCompResourceSchedulingList.resize(_size0);
+            uint32_t _i4;
+            for (_i4 = 0; _i4 < _size0; ++_i4)
+            {
+              xfer += this->autoScheduledCompResourceSchedulingList[_i4].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.autoScheduledCompResourceSchedulingList = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -317,6 +342,19 @@ uint32_t UserConfigurationDataModel::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeString(this->groupResourceProfileId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.autoScheduledCompResourceSchedulingList) {
+    xfer += oprot->writeFieldBegin("autoScheduledCompResourceSchedulingList", ::apache::thrift::protocol::T_LIST, 12);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->autoScheduledCompResourceSchedulingList.size()));
+      std::vector< ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel> ::const_iterator _iter5;
+      for (_iter5 = this->autoScheduledCompResourceSchedulingList.begin(); _iter5 != this->autoScheduledCompResourceSchedulingList.end(); ++_iter5)
+      {
+        xfer += (*_iter5).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -335,36 +373,39 @@ void swap(UserConfigurationDataModel &a, UserConfigurationDataModel &b) {
   swap(a.experimentDataDir, b.experimentDataDir);
   swap(a.useUserCRPref, b.useUserCRPref);
   swap(a.groupResourceProfileId, b.groupResourceProfileId);
+  swap(a.autoScheduledCompResourceSchedulingList, b.autoScheduledCompResourceSchedulingList);
   swap(a.__isset, b.__isset);
 }
 
-UserConfigurationDataModel::UserConfigurationDataModel(const UserConfigurationDataModel& other0) {
-  airavataAutoSchedule = other0.airavataAutoSchedule;
-  overrideManualScheduledParams = other0.overrideManualScheduledParams;
-  shareExperimentPublicly = other0.shareExperimentPublicly;
-  computationalResourceScheduling = other0.computationalResourceScheduling;
-  throttleResources = other0.throttleResources;
-  userDN = other0.userDN;
-  generateCert = other0.generateCert;
-  storageId = other0.storageId;
-  experimentDataDir = other0.experimentDataDir;
-  useUserCRPref = other0.useUserCRPref;
-  groupResourceProfileId = other0.groupResourceProfileId;
-  __isset = other0.__isset;
+UserConfigurationDataModel::UserConfigurationDataModel(const UserConfigurationDataModel& other6) {
+  airavataAutoSchedule = other6.airavataAutoSchedule;
+  overrideManualScheduledParams = other6.overrideManualScheduledParams;
+  shareExperimentPublicly = other6.shareExperimentPublicly;
+  computationalResourceScheduling = other6.computationalResourceScheduling;
+  throttleResources = other6.throttleResources;
+  userDN = other6.userDN;
+  generateCert = other6.generateCert;
+  storageId = other6.storageId;
+  experimentDataDir = other6.experimentDataDir;
+  useUserCRPref = other6.useUserCRPref;
+  groupResourceProfileId = other6.groupResourceProfileId;
+  autoScheduledCompResourceSchedulingList = other6.autoScheduledCompResourceSchedulingList;
+  __isset = other6.__isset;
 }
-UserConfigurationDataModel& UserConfigurationDataModel::operator=(const UserConfigurationDataModel& other1) {
-  airavataAutoSchedule = other1.airavataAutoSchedule;
-  overrideManualScheduledParams = other1.overrideManualScheduledParams;
-  shareExperimentPublicly = other1.shareExperimentPublicly;
-  computationalResourceScheduling = other1.computationalResourceScheduling;
-  throttleResources = other1.throttleResources;
-  userDN = other1.userDN;
-  generateCert = other1.generateCert;
-  storageId = other1.storageId;
-  experimentDataDir = other1.experimentDataDir;
-  useUserCRPref = other1.useUserCRPref;
-  groupResourceProfileId = other1.groupResourceProfileId;
-  __isset = other1.__isset;
+UserConfigurationDataModel& UserConfigurationDataModel::operator=(const UserConfigurationDataModel& other7) {
+  airavataAutoSchedule = other7.airavataAutoSchedule;
+  overrideManualScheduledParams = other7.overrideManualScheduledParams;
+  shareExperimentPublicly = other7.shareExperimentPublicly;
+  computationalResourceScheduling = other7.computationalResourceScheduling;
+  throttleResources = other7.throttleResources;
+  userDN = other7.userDN;
+  generateCert = other7.generateCert;
+  storageId = other7.storageId;
+  experimentDataDir = other7.experimentDataDir;
+  useUserCRPref = other7.useUserCRPref;
+  groupResourceProfileId = other7.groupResourceProfileId;
+  autoScheduledCompResourceSchedulingList = other7.autoScheduledCompResourceSchedulingList;
+  __isset = other7.__isset;
   return *this;
 }
 void UserConfigurationDataModel::printTo(std::ostream& out) const {
@@ -381,6 +422,7 @@ void UserConfigurationDataModel::printTo(std::ostream& out) const {
   out << ", " << "experimentDataDir="; (__isset.experimentDataDir ? (out << to_string(experimentDataDir)) : (out << "<null>"));
   out << ", " << "useUserCRPref="; (__isset.useUserCRPref ? (out << to_string(useUserCRPref)) : (out << "<null>"));
   out << ", " << "groupResourceProfileId="; (__isset.groupResourceProfileId ? (out << to_string(groupResourceProfileId)) : (out << "<null>"));
+  out << ", " << "autoScheduledCompResourceSchedulingList="; (__isset.autoScheduledCompResourceSchedulingList ? (out << to_string(autoScheduledCompResourceSchedulingList)) : (out << "<null>"));
   out << ")";
 }
 
@@ -536,9 +578,9 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast2;
-          xfer += iprot->readI32(ecast2);
-          this->experimentType = (ExperimentType::type)ecast2;
+          int32_t ecast8;
+          xfer += iprot->readI32(ecast8);
+          this->experimentType = (ExperimentType::type)ecast8;
           isset_experimentType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -612,14 +654,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->emailAddresses.clear();
-            uint32_t _size3;
-            ::apache::thrift::protocol::TType _etype6;
-            xfer += iprot->readListBegin(_etype6, _size3);
-            this->emailAddresses.resize(_size3);
-            uint32_t _i7;
-            for (_i7 = 0; _i7 < _size3; ++_i7)
+            uint32_t _size9;
+            ::apache::thrift::protocol::TType _etype12;
+            xfer += iprot->readListBegin(_etype12, _size9);
+            this->emailAddresses.resize(_size9);
+            uint32_t _i13;
+            for (_i13 = 0; _i13 < _size9; ++_i13)
             {
-              xfer += iprot->readString(this->emailAddresses[_i7]);
+              xfer += iprot->readString(this->emailAddresses[_i13]);
             }
             xfer += iprot->readListEnd();
           }
@@ -640,14 +682,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentInputs.clear();
-            uint32_t _size8;
-            ::apache::thrift::protocol::TType _etype11;
-            xfer += iprot->readListBegin(_etype11, _size8);
-            this->experimentInputs.resize(_size8);
-            uint32_t _i12;
-            for (_i12 = 0; _i12 < _size8; ++_i12)
+            uint32_t _size14;
+            ::apache::thrift::protocol::TType _etype17;
+            xfer += iprot->readListBegin(_etype17, _size14);
+            this->experimentInputs.resize(_size14);
+            uint32_t _i18;
+            for (_i18 = 0; _i18 < _size14; ++_i18)
             {
-              xfer += this->experimentInputs[_i12].read(iprot);
+              xfer += this->experimentInputs[_i18].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -660,14 +702,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentOutputs.clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readListBegin(_etype16, _size13);
-            this->experimentOutputs.resize(_size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
+            uint32_t _size19;
+            ::apache::thrift::protocol::TType _etype22;
+            xfer += iprot->readListBegin(_etype22, _size19);
+            this->experimentOutputs.resize(_size19);
+            uint32_t _i23;
+            for (_i23 = 0; _i23 < _size19; ++_i23)
             {
-              xfer += this->experimentOutputs[_i17].read(iprot);
+              xfer += this->experimentOutputs[_i23].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -680,14 +722,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentStatus.clear();
-            uint32_t _size18;
-            ::apache::thrift::protocol::TType _etype21;
-            xfer += iprot->readListBegin(_etype21, _size18);
-            this->experimentStatus.resize(_size18);
-            uint32_t _i22;
-            for (_i22 = 0; _i22 < _size18; ++_i22)
+            uint32_t _size24;
+            ::apache::thrift::protocol::TType _etype27;
+            xfer += iprot->readListBegin(_etype27, _size24);
+            this->experimentStatus.resize(_size24);
+            uint32_t _i28;
+            for (_i28 = 0; _i28 < _size24; ++_i28)
             {
-              xfer += this->experimentStatus[_i22].read(iprot);
+              xfer += this->experimentStatus[_i28].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -700,14 +742,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
-            uint32_t _size23;
-            ::apache::thrift::protocol::TType _etype26;
-            xfer += iprot->readListBegin(_etype26, _size23);
-            this->errors.resize(_size23);
-            uint32_t _i27;
-            for (_i27 = 0; _i27 < _size23; ++_i27)
+            uint32_t _size29;
+            ::apache::thrift::protocol::TType _etype32;
+            xfer += iprot->readListBegin(_etype32, _size29);
+            this->errors.resize(_size29);
+            uint32_t _i33;
+            for (_i33 = 0; _i33 < _size29; ++_i33)
             {
-              xfer += this->errors[_i27].read(iprot);
+              xfer += this->errors[_i33].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -720,14 +762,14 @@ uint32_t ExperimentModel::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->processes.clear();
-            uint32_t _size28;
-            ::apache::thrift::protocol::TType _etype31;
-            xfer += iprot->readListBegin(_etype31, _size28);
-            this->processes.resize(_size28);
-            uint32_t _i32;
-            for (_i32 = 0; _i32 < _size28; ++_i32)
+            uint32_t _size34;
+            ::apache::thrift::protocol::TType _etype37;
+            xfer += iprot->readListBegin(_etype37, _size34);
+            this->processes.resize(_size34);
+            uint32_t _i38;
+            for (_i38 = 0; _i38 < _size34; ++_i38)
             {
-              xfer += this->processes[_i32].read(iprot);
+              xfer += this->processes[_i38].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -831,10 +873,10 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("emailAddresses", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->emailAddresses.size()));
-      std::vector<std::string> ::const_iterator _iter33;
-      for (_iter33 = this->emailAddresses.begin(); _iter33 != this->emailAddresses.end(); ++_iter33)
+      std::vector<std::string> ::const_iterator _iter39;
+      for (_iter39 = this->emailAddresses.begin(); _iter39 != this->emailAddresses.end(); ++_iter39)
       {
-        xfer += oprot->writeString((*_iter33));
+        xfer += oprot->writeString((*_iter39));
       }
       xfer += oprot->writeListEnd();
     }
@@ -849,10 +891,10 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("experimentInputs", ::apache::thrift::protocol::T_LIST, 15);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentInputs.size()));
-      std::vector< ::apache::airavata::model::application::io::InputDataObjectType> ::const_iterator _iter34;
-      for (_iter34 = this->experimentInputs.begin(); _iter34 != this->experimentInputs.end(); ++_iter34)
+      std::vector< ::apache::airavata::model::application::io::InputDataObjectType> ::const_iterator _iter40;
+      for (_iter40 = this->experimentInputs.begin(); _iter40 != this->experimentInputs.end(); ++_iter40)
       {
-        xfer += (*_iter34).write(oprot);
+        xfer += (*_iter40).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -862,10 +904,10 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("experimentOutputs", ::apache::thrift::protocol::T_LIST, 16);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentOutputs.size()));
-      std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> ::const_iterator _iter35;
-      for (_iter35 = this->experimentOutputs.begin(); _iter35 != this->experimentOutputs.end(); ++_iter35)
+      std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> ::const_iterator _iter41;
+      for (_iter41 = this->experimentOutputs.begin(); _iter41 != this->experimentOutputs.end(); ++_iter41)
       {
-        xfer += (*_iter35).write(oprot);
+        xfer += (*_iter41).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -875,10 +917,10 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_LIST, 17);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentStatus.size()));
-      std::vector< ::apache::airavata::model::status::ExperimentStatus> ::const_iterator _iter36;
-      for (_iter36 = this->experimentStatus.begin(); _iter36 != this->experimentStatus.end(); ++_iter36)
+      std::vector< ::apache::airavata::model::status::ExperimentStatus> ::const_iterator _iter42;
+      for (_iter42 = this->experimentStatus.begin(); _iter42 != this->experimentStatus.end(); ++_iter42)
       {
-        xfer += (*_iter36).write(oprot);
+        xfer += (*_iter42).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -888,10 +930,10 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 18);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector< ::apache::airavata::model::commons::ErrorModel> ::const_iterator _iter37;
-      for (_iter37 = this->errors.begin(); _iter37 != this->errors.end(); ++_iter37)
+      std::vector< ::apache::airavata::model::commons::ErrorModel> ::const_iterator _iter43;
+      for (_iter43 = this->errors.begin(); _iter43 != this->errors.end(); ++_iter43)
       {
-        xfer += (*_iter37).write(oprot);
+        xfer += (*_iter43).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -901,10 +943,10 @@ uint32_t ExperimentModel::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("processes", ::apache::thrift::protocol::T_LIST, 19);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processes.size()));
-      std::vector< ::apache::airavata::model::process::ProcessModel> ::const_iterator _iter38;
-      for (_iter38 = this->processes.begin(); _iter38 != this->processes.end(); ++_iter38)
+      std::vector< ::apache::airavata::model::process::ProcessModel> ::const_iterator _iter44;
+      for (_iter44 = this->processes.begin(); _iter44 != this->processes.end(); ++_iter44)
       {
-        xfer += (*_iter38).write(oprot);
+        xfer += (*_iter44).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -945,51 +987,51 @@ void swap(ExperimentModel &a, ExperimentModel &b) {
   swap(a.__isset, b.__isset);
 }
 
-ExperimentModel::ExperimentModel(const ExperimentModel& other39) {
-  experimentId = other39.experimentId;
-  projectId = other39.projectId;
-  gatewayId = other39.gatewayId;
-  experimentType = other39.experimentType;
-  userName = other39.userName;
-  experimentName = other39.experimentName;
-  creationTime = other39.creationTime;
-  description = other39.description;
-  executionId = other39.executionId;
-  gatewayExecutionId = other39.gatewayExecutionId;
-  gatewayInstanceId = other39.gatewayInstanceId;
-  enableEmailNotification = other39.enableEmailNotification;
-  emailAddresses = other39.emailAddresses;
-  userConfigurationData = other39.userConfigurationData;
-  experimentInputs = other39.experimentInputs;
-  experimentOutputs = other39.experimentOutputs;
-  experimentStatus = other39.experimentStatus;
-  errors = other39.errors;
-  processes = other39.processes;
-  workflow = other39.workflow;
-  __isset = other39.__isset;
+ExperimentModel::ExperimentModel(const ExperimentModel& other45) {
+  experimentId = other45.experimentId;
+  projectId = other45.projectId;
+  gatewayId = other45.gatewayId;
+  experimentType = other45.experimentType;
+  userName = other45.userName;
+  experimentName = other45.experimentName;
+  creationTime = other45.creationTime;
+  description = other45.description;
+  executionId = other45.executionId;
+  gatewayExecutionId = other45.gatewayExecutionId;
+  gatewayInstanceId = other45.gatewayInstanceId;
+  enableEmailNotification = other45.enableEmailNotification;
+  emailAddresses = other45.emailAddresses;
+  userConfigurationData = other45.userConfigurationData;
+  experimentInputs = other45.experimentInputs;
+  experimentOutputs = other45.experimentOutputs;
+  experimentStatus = other45.experimentStatus;
+  errors = other45.errors;
+  processes = other45.processes;
+  workflow = other45.workflow;
+  __isset = other45.__isset;
 }
-ExperimentModel& ExperimentModel::operator=(const ExperimentModel& other40) {
-  experimentId = other40.experimentId;
-  projectId = other40.projectId;
-  gatewayId = other40.gatewayId;
-  experimentType = other40.experimentType;
-  userName = other40.userName;
-  experimentName = other40.experimentName;
-  creationTime = other40.creationTime;
-  description = other40.description;
-  executionId = other40.executionId;
-  gatewayExecutionId = other40.gatewayExecutionId;
-  gatewayInstanceId = other40.gatewayInstanceId;
-  enableEmailNotification = other40.enableEmailNotification;
-  emailAddresses = other40.emailAddresses;
-  userConfigurationData = other40.userConfigurationData;
-  experimentInputs = other40.experimentInputs;
-  experimentOutputs = other40.experimentOutputs;
-  experimentStatus = other40.experimentStatus;
-  errors = other40.errors;
-  processes = other40.processes;
-  workflow = other40.workflow;
-  __isset = other40.__isset;
+ExperimentModel& ExperimentModel::operator=(const ExperimentModel& other46) {
+  experimentId = other46.experimentId;
+  projectId = other46.projectId;
+  gatewayId = other46.gatewayId;
+  experimentType = other46.experimentType;
+  userName = other46.userName;
+  experimentName = other46.experimentName;
+  creationTime = other46.creationTime;
+  description = other46.description;
+  executionId = other46.executionId;
+  gatewayExecutionId = other46.gatewayExecutionId;
+  gatewayInstanceId = other46.gatewayInstanceId;
+  enableEmailNotification = other46.enableEmailNotification;
+  emailAddresses = other46.emailAddresses;
+  userConfigurationData = other46.userConfigurationData;
+  experimentInputs = other46.experimentInputs;
+  experimentOutputs = other46.experimentOutputs;
+  experimentStatus = other46.experimentStatus;
+  errors = other46.errors;
+  processes = other46.processes;
+  workflow = other46.workflow;
+  __isset = other46.__isset;
   return *this;
 }
 void ExperimentModel::printTo(std::ostream& out) const {
@@ -1285,33 +1327,33 @@ void swap(ExperimentSummaryModel &a, ExperimentSummaryModel &b) {
   swap(a.__isset, b.__isset);
 }
 
-ExperimentSummaryModel::ExperimentSummaryModel(const ExperimentSummaryModel& other41) {
-  experimentId = other41.experimentId;
-  projectId = other41.projectId;
-  gatewayId = other41.gatewayId;
-  creationTime = other41.creationTime;
-  userName = other41.userName;
-  name = other41.name;
-  description = other41.description;
-  executionId = other41.executionId;
-  resourceHostId = other41.resourceHostId;
-  experimentStatus = other41.experimentStatus;
-  statusUpdateTime = other41.statusUpdateTime;
-  __isset = other41.__isset;
+ExperimentSummaryModel::ExperimentSummaryModel(const ExperimentSummaryModel& other47) {
+  experimentId = other47.experimentId;
+  projectId = other47.projectId;
+  gatewayId = other47.gatewayId;
+  creationTime = other47.creationTime;
+  userName = other47.userName;
+  name = other47.name;
+  description = other47.description;
+  executionId = other47.executionId;
+  resourceHostId = other47.resourceHostId;
+  experimentStatus = other47.experimentStatus;
+  statusUpdateTime = other47.statusUpdateTime;
+  __isset = other47.__isset;
 }
-ExperimentSummaryModel& ExperimentSummaryModel::operator=(const ExperimentSummaryModel& other42) {
-  experimentId = other42.experimentId;
-  projectId = other42.projectId;
-  gatewayId = other42.gatewayId;
-  creationTime = other42.creationTime;
-  userName = other42.userName;
-  name = other42.name;
-  description = other42.description;
-  executionId = other42.executionId;
-  resourceHostId = other42.resourceHostId;
-  experimentStatus = other42.experimentStatus;
-  statusUpdateTime = other42.statusUpdateTime;
-  __isset = other42.__isset;
+ExperimentSummaryModel& ExperimentSummaryModel::operator=(const ExperimentSummaryModel& other48) {
+  experimentId = other48.experimentId;
+  projectId = other48.projectId;
+  gatewayId = other48.gatewayId;
+  creationTime = other48.creationTime;
+  userName = other48.userName;
+  name = other48.name;
+  description = other48.description;
+  executionId = other48.executionId;
+  resourceHostId = other48.resourceHostId;
+  experimentStatus = other48.experimentStatus;
+  statusUpdateTime = other48.statusUpdateTime;
+  __isset = other48.__isset;
   return *this;
 }
 void ExperimentSummaryModel::printTo(std::ostream& out) const {
@@ -1469,14 +1511,14 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->allExperiments.clear();
-            uint32_t _size43;
-            ::apache::thrift::protocol::TType _etype46;
-            xfer += iprot->readListBegin(_etype46, _size43);
-            this->allExperiments.resize(_size43);
-            uint32_t _i47;
-            for (_i47 = 0; _i47 < _size43; ++_i47)
+            uint32_t _size49;
+            ::apache::thrift::protocol::TType _etype52;
+            xfer += iprot->readListBegin(_etype52, _size49);
+            this->allExperiments.resize(_size49);
+            uint32_t _i53;
+            for (_i53 = 0; _i53 < _size49; ++_i53)
             {
-              xfer += this->allExperiments[_i47].read(iprot);
+              xfer += this->allExperiments[_i53].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1489,14 +1531,14 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->completedExperiments.clear();
-            uint32_t _size48;
-            ::apache::thrift::protocol::TType _etype51;
-            xfer += iprot->readListBegin(_etype51, _size48);
-            this->completedExperiments.resize(_size48);
-            uint32_t _i52;
-            for (_i52 = 0; _i52 < _size48; ++_i52)
+            uint32_t _size54;
+            ::apache::thrift::protocol::TType _etype57;
+            xfer += iprot->readListBegin(_etype57, _size54);
+            this->completedExperiments.resize(_size54);
+            uint32_t _i58;
+            for (_i58 = 0; _i58 < _size54; ++_i58)
             {
-              xfer += this->completedExperiments[_i52].read(iprot);
+              xfer += this->completedExperiments[_i58].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1509,14 +1551,14 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->failedExperiments.clear();
-            uint32_t _size53;
-            ::apache::thrift::protocol::TType _etype56;
-            xfer += iprot->readListBegin(_etype56, _size53);
-            this->failedExperiments.resize(_size53);
-            uint32_t _i57;
-            for (_i57 = 0; _i57 < _size53; ++_i57)
+            uint32_t _size59;
+            ::apache::thrift::protocol::TType _etype62;
+            xfer += iprot->readListBegin(_etype62, _size59);
+            this->failedExperiments.resize(_size59);
+            uint32_t _i63;
+            for (_i63 = 0; _i63 < _size59; ++_i63)
             {
-              xfer += this->failedExperiments[_i57].read(iprot);
+              xfer += this->failedExperiments[_i63].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1529,14 +1571,14 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->cancelledExperiments.clear();
-            uint32_t _size58;
-            ::apache::thrift::protocol::TType _etype61;
-            xfer += iprot->readListBegin(_etype61, _size58);
-            this->cancelledExperiments.resize(_size58);
-            uint32_t _i62;
-            for (_i62 = 0; _i62 < _size58; ++_i62)
+            uint32_t _size64;
+            ::apache::thrift::protocol::TType _etype67;
+            xfer += iprot->readListBegin(_etype67, _size64);
+            this->cancelledExperiments.resize(_size64);
+            uint32_t _i68;
+            for (_i68 = 0; _i68 < _size64; ++_i68)
             {
-              xfer += this->cancelledExperiments[_i62].read(iprot);
+              xfer += this->cancelledExperiments[_i68].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1549,14 +1591,14 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->createdExperiments.clear();
-            uint32_t _size63;
-            ::apache::thrift::protocol::TType _etype66;
-            xfer += iprot->readListBegin(_etype66, _size63);
-            this->createdExperiments.resize(_size63);
-            uint32_t _i67;
-            for (_i67 = 0; _i67 < _size63; ++_i67)
+            uint32_t _size69;
+            ::apache::thrift::protocol::TType _etype72;
+            xfer += iprot->readListBegin(_etype72, _size69);
+            this->createdExperiments.resize(_size69);
+            uint32_t _i73;
+            for (_i73 = 0; _i73 < _size69; ++_i73)
             {
-              xfer += this->createdExperiments[_i67].read(iprot);
+              xfer += this->createdExperiments[_i73].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1569,14 +1611,14 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->runningExperiments.clear();
-            uint32_t _size68;
-            ::apache::thrift::protocol::TType _etype71;
-            xfer += iprot->readListBegin(_etype71, _size68);
-            this->runningExperiments.resize(_size68);
-            uint32_t _i72;
-            for (_i72 = 0; _i72 < _size68; ++_i72)
+            uint32_t _size74;
+            ::apache::thrift::protocol::TType _etype77;
+            xfer += iprot->readListBegin(_etype77, _size74);
+            this->runningExperiments.resize(_size74);
+            uint32_t _i78;
+            for (_i78 = 0; _i78 < _size74; ++_i78)
             {
-              xfer += this->runningExperiments[_i72].read(iprot);
+              xfer += this->runningExperiments[_i78].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1642,10 +1684,10 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeFieldBegin("allExperiments", ::apache::thrift::protocol::T_LIST, 7);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->allExperiments.size()));
-    std::vector<ExperimentSummaryModel> ::const_iterator _iter73;
-    for (_iter73 = this->allExperiments.begin(); _iter73 != this->allExperiments.end(); ++_iter73)
+    std::vector<ExperimentSummaryModel> ::const_iterator _iter79;
+    for (_iter79 = this->allExperiments.begin(); _iter79 != this->allExperiments.end(); ++_iter79)
     {
-      xfer += (*_iter73).write(oprot);
+      xfer += (*_iter79).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1655,10 +1697,10 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("completedExperiments", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->completedExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter74;
-      for (_iter74 = this->completedExperiments.begin(); _iter74 != this->completedExperiments.end(); ++_iter74)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter80;
+      for (_iter80 = this->completedExperiments.begin(); _iter80 != this->completedExperiments.end(); ++_iter80)
       {
-        xfer += (*_iter74).write(oprot);
+        xfer += (*_iter80).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1668,10 +1710,10 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("failedExperiments", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->failedExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter75;
-      for (_iter75 = this->failedExperiments.begin(); _iter75 != this->failedExperiments.end(); ++_iter75)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter81;
+      for (_iter81 = this->failedExperiments.begin(); _iter81 != this->failedExperiments.end(); ++_iter81)
       {
-        xfer += (*_iter75).write(oprot);
+        xfer += (*_iter81).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1681,10 +1723,10 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("cancelledExperiments", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->cancelledExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter76;
-      for (_iter76 = this->cancelledExperiments.begin(); _iter76 != this->cancelledExperiments.end(); ++_iter76)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter82;
+      for (_iter82 = this->cancelledExperiments.begin(); _iter82 != this->cancelledExperiments.end(); ++_iter82)
       {
-        xfer += (*_iter76).write(oprot);
+        xfer += (*_iter82).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1694,10 +1736,10 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("createdExperiments", ::apache::thrift::protocol::T_LIST, 11);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->createdExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter77;
-      for (_iter77 = this->createdExperiments.begin(); _iter77 != this->createdExperiments.end(); ++_iter77)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter83;
+      for (_iter83 = this->createdExperiments.begin(); _iter83 != this->createdExperiments.end(); ++_iter83)
       {
-        xfer += (*_iter77).write(oprot);
+        xfer += (*_iter83).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1707,10 +1749,10 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("runningExperiments", ::apache::thrift::protocol::T_LIST, 12);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->runningExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter78;
-      for (_iter78 = this->runningExperiments.begin(); _iter78 != this->runningExperiments.end(); ++_iter78)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter84;
+      for (_iter84 = this->runningExperiments.begin(); _iter84 != this->runningExperiments.end(); ++_iter84)
       {
-        xfer += (*_iter78).write(oprot);
+        xfer += (*_iter84).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1738,35 +1780,35 @@ void swap(ExperimentStatistics &a, ExperimentStatistics &b) {
   swap(a.__isset, b.__isset);
 }
 
-ExperimentStatistics::ExperimentStatistics(const ExperimentStatistics& other79) {
-  allExperimentCount = other79.allExperimentCount;
-  completedExperimentCount = other79.completedExperimentCount;
-  cancelledExperimentCount = other79.cancelledExperimentCount;
-  failedExperimentCount = other79.failedExperimentCount;
-  createdExperimentCount = other79.createdExperimentCount;
-  runningExperimentCount = other79.runningExperimentCount;
-  allExperiments = other79.allExperiments;
-  completedExperiments = other79.completedExperiments;
-  failedExperiments = other79.failedExperiments;
-  cancelledExperiments = other79.cancelledExperiments;
-  createdExperiments = other79.createdExperiments;
-  runningExperiments = other79.runningExperiments;
-  __isset = other79.__isset;
+ExperimentStatistics::ExperimentStatistics(const ExperimentStatistics& other85) {
+  allExperimentCount = other85.allExperimentCount;
+  completedExperimentCount = other85.completedExperimentCount;
+  cancelledExperimentCount = other85.cancelledExperimentCount;
+  failedExperimentCount = other85.failedExperimentCount;
+  createdExperimentCount = other85.createdExperimentCount;
+  runningExperimentCount = other85.runningExperimentCount;
+  allExperiments = other85.allExperiments;
+  completedExperiments = other85.completedExperiments;
+  failedExperiments = other85.failedExperiments;
+  cancelledExperiments = other85.cancelledExperiments;
+  createdExperiments = other85.createdExperiments;
+  runningExperiments = other85.runningExperiments;
+  __isset = other85.__isset;
 }
-ExperimentStatistics& ExperimentStatistics::operator=(const ExperimentStatistics& other80) {
-  allExperimentCount = other80.allExperimentCount;
-  completedExperimentCount = other80.completedExperimentCount;
-  cancelledExperimentCount = other80.cancelledExperimentCount;
-  failedExperimentCount = other80.failedExperimentCount;
-  createdExperimentCount = other80.createdExperimentCount;
-  runningExperimentCount = other80.runningExperimentCount;
-  allExperiments = other80.allExperiments;
-  completedExperiments = other80.completedExperiments;
-  failedExperiments = other80.failedExperiments;
-  cancelledExperiments = other80.cancelledExperiments;
-  createdExperiments = other80.createdExperiments;
-  runningExperiments = other80.runningExperiments;
-  __isset = other80.__isset;
+ExperimentStatistics& ExperimentStatistics::operator=(const ExperimentStatistics& other86) {
+  allExperimentCount = other86.allExperimentCount;
+  completedExperimentCount = other86.completedExperimentCount;
+  cancelledExperimentCount = other86.cancelledExperimentCount;
+  failedExperimentCount = other86.failedExperimentCount;
+  createdExperimentCount = other86.createdExperimentCount;
+  runningExperimentCount = other86.runningExperimentCount;
+  allExperiments = other86.allExperiments;
+  completedExperiments = other86.completedExperiments;
+  failedExperiments = other86.failedExperiments;
+  cancelledExperiments = other86.cancelledExperiments;
+  createdExperiments = other86.createdExperiments;
+  runningExperiments = other86.runningExperiments;
+  __isset = other86.__isset;
   return *this;
 }
 void ExperimentStatistics::printTo(std::ostream& out) const {

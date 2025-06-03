@@ -30,6 +30,7 @@ mysql_db_connector_download_url: "https://dev.mysql.com/get/Downloads/Connector-
 keycloak_master_account_username: "username"
 keycloak_master_account_password: "password"
 # keycloak_server_port: "443"
+keycloak_java_home: /usr/lib/jvm/java-1.8.0
 
 keycloak_db_host: "localhost"
 keycloak_db_port: "3306"

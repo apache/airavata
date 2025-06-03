@@ -53,7 +53,8 @@ int _kMessageTypeValues[] = {
   MessageType::LAUNCHPROCESS,
   MessageType::TERMINATEPROCESS,
   MessageType::PROCESSOUTPUT,
-  MessageType::DB_EVENT
+  MessageType::DB_EVENT,
+  MessageType::INTERMEDIATE_OUTPUTS
 };
 const char* _kMessageTypeNames[] = {
   "EXPERIMENT",
@@ -64,9 +65,10 @@ const char* _kMessageTypeNames[] = {
   "LAUNCHPROCESS",
   "TERMINATEPROCESS",
   "PROCESSOUTPUT",
-  "DB_EVENT"
+  "DB_EVENT",
+  "INTERMEDIATE_OUTPUTS"
 };
-const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(9, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(10, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 ExperimentStatusChangeEvent::~ExperimentStatusChangeEvent() throw() {
@@ -1859,6 +1861,158 @@ void JobStatusChangeRequestEvent::printTo(std::ostream& out) const {
 }
 
 
+ExperimentIntermediateOutputsEvent::~ExperimentIntermediateOutputsEvent() throw() {
+}
+
+
+void ExperimentIntermediateOutputsEvent::__set_experimentId(const std::string& val) {
+  this->experimentId = val;
+}
+
+void ExperimentIntermediateOutputsEvent::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
+void ExperimentIntermediateOutputsEvent::__set_outputNames(const std::vector<std::string> & val) {
+  this->outputNames = val;
+}
+
+uint32_t ExperimentIntermediateOutputsEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_experimentId = false;
+  bool isset_gatewayId = false;
+  bool isset_outputNames = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentId);
+          isset_experimentId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->outputNames.clear();
+            uint32_t _size41;
+            ::apache::thrift::protocol::TType _etype44;
+            xfer += iprot->readListBegin(_etype44, _size41);
+            this->outputNames.resize(_size41);
+            uint32_t _i45;
+            for (_i45 = 0; _i45 < _size41; ++_i45)
+            {
+              xfer += iprot->readString(this->outputNames[_i45]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          isset_outputNames = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_experimentId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_outputNames)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ExperimentIntermediateOutputsEvent::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("ExperimentIntermediateOutputsEvent");
+
+  xfer += oprot->writeFieldBegin("experimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("outputNames", ::apache::thrift::protocol::T_LIST, 3);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->outputNames.size()));
+    std::vector<std::string> ::const_iterator _iter46;
+    for (_iter46 = this->outputNames.begin(); _iter46 != this->outputNames.end(); ++_iter46)
+    {
+      xfer += oprot->writeString((*_iter46));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(ExperimentIntermediateOutputsEvent &a, ExperimentIntermediateOutputsEvent &b) {
+  using ::std::swap;
+  swap(a.experimentId, b.experimentId);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.outputNames, b.outputNames);
+}
+
+ExperimentIntermediateOutputsEvent::ExperimentIntermediateOutputsEvent(const ExperimentIntermediateOutputsEvent& other47) {
+  experimentId = other47.experimentId;
+  gatewayId = other47.gatewayId;
+  outputNames = other47.outputNames;
+}
+ExperimentIntermediateOutputsEvent& ExperimentIntermediateOutputsEvent::operator=(const ExperimentIntermediateOutputsEvent& other48) {
+  experimentId = other48.experimentId;
+  gatewayId = other48.gatewayId;
+  outputNames = other48.outputNames;
+  return *this;
+}
+void ExperimentIntermediateOutputsEvent::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "ExperimentIntermediateOutputsEvent(";
+  out << "experimentId=" << to_string(experimentId);
+  out << ", " << "gatewayId=" << to_string(gatewayId);
+  out << ", " << "outputNames=" << to_string(outputNames);
+  out << ")";
+}
+
+
 Message::~Message() throw() {
 }
 
@@ -1927,9 +2081,9 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast41;
-          xfer += iprot->readI32(ecast41);
-          this->messageType = (MessageType::type)ecast41;
+          int32_t ecast49;
+          xfer += iprot->readI32(ecast49);
+          this->messageType = (MessageType::type)ecast49;
           isset_messageType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1945,9 +2099,9 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast42;
-          xfer += iprot->readI32(ecast42);
-          this->messageLevel = (MessageLevel::type)ecast42;
+          int32_t ecast50;
+          xfer += iprot->readI32(ecast50);
+          this->messageLevel = (MessageLevel::type)ecast50;
           this->__isset.messageLevel = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2013,21 +2167,21 @@ void swap(Message &a, Message &b) {
   swap(a.__isset, b.__isset);
 }
 
-Message::Message(const Message& other43) {
-  event = other43.event;
-  messageId = other43.messageId;
-  messageType = other43.messageType;
-  updatedTime = other43.updatedTime;
-  messageLevel = other43.messageLevel;
-  __isset = other43.__isset;
+Message::Message(const Message& other51) {
+  event = other51.event;
+  messageId = other51.messageId;
+  messageType = other51.messageType;
+  updatedTime = other51.updatedTime;
+  messageLevel = other51.messageLevel;
+  __isset = other51.__isset;
 }
-Message& Message::operator=(const Message& other44) {
-  event = other44.event;
-  messageId = other44.messageId;
-  messageType = other44.messageType;
-  updatedTime = other44.updatedTime;
-  messageLevel = other44.messageLevel;
-  __isset = other44.__isset;
+Message& Message::operator=(const Message& other52) {
+  event = other52.event;
+  messageId = other52.messageId;
+  messageType = other52.messageType;
+  updatedTime = other52.updatedTime;
+  messageLevel = other52.messageLevel;
+  __isset = other52.__isset;
   return *this;
 }
 void Message::printTo(std::ostream& out) const {

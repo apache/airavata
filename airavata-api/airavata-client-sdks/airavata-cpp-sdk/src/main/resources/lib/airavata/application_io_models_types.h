@@ -57,7 +57,7 @@ class InputDataObjectType;
 class OutputDataObjectType;
 
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(false), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(false), storageResourceId(false), isReadOnly(false) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(false), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(false), storageResourceId(false), isReadOnly(false), overrideFilename(false) {}
   bool value :1;
   bool type :1;
   bool applicationArgument :1;
@@ -70,6 +70,7 @@ typedef struct _InputDataObjectType__isset {
   bool dataStaged :1;
   bool storageResourceId :1;
   bool isReadOnly :1;
+  bool overrideFilename :1;
 } _InputDataObjectType__isset;
 
 class InputDataObjectType : public virtual ::apache::thrift::TBase {
@@ -77,7 +78,7 @@ class InputDataObjectType : public virtual ::apache::thrift::TBase {
 
   InputDataObjectType(const InputDataObjectType&);
   InputDataObjectType& operator=(const InputDataObjectType&);
-  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(0), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(0), storageResourceId(), isReadOnly(0) {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(0), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(0), storageResourceId(), isReadOnly(0), overrideFilename() {
   }
 
   virtual ~InputDataObjectType() throw();
@@ -94,6 +95,7 @@ class InputDataObjectType : public virtual ::apache::thrift::TBase {
   bool dataStaged;
   std::string storageResourceId;
   bool isReadOnly;
+  std::string overrideFilename;
 
   _InputDataObjectType__isset __isset;
 
@@ -122,6 +124,8 @@ class InputDataObjectType : public virtual ::apache::thrift::TBase {
   void __set_storageResourceId(const std::string& val);
 
   void __set_isReadOnly(const bool val);
+
+  void __set_overrideFilename(const std::string& val);
 
   bool operator == (const InputDataObjectType & rhs) const
   {
@@ -174,6 +178,10 @@ class InputDataObjectType : public virtual ::apache::thrift::TBase {
     if (__isset.isReadOnly != rhs.__isset.isReadOnly)
       return false;
     else if (__isset.isReadOnly && !(isReadOnly == rhs.isReadOnly))
+      return false;
+    if (__isset.overrideFilename != rhs.__isset.overrideFilename)
+      return false;
+    else if (__isset.overrideFilename && !(overrideFilename == rhs.overrideFilename))
       return false;
     return true;
   }

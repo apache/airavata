@@ -621,6 +621,7 @@ public class TaskContext {
         if (this.resourceJobManager == null) {
             JobSubmissionInterface jsInterface = getPreferredJobSubmissionInterface();
 
+
             if (jsInterface == null) {
                 throw new Exception("Job Submission interface cannot be empty at this point");
 

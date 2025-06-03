@@ -20,8 +20,7 @@
 
 ---
 mysql_packages:
-  - MariaDB-server
-  - MariaDB-client
+  - mariadb-server
 
 mysql_databases:
     - "{{ app_catalog }}"

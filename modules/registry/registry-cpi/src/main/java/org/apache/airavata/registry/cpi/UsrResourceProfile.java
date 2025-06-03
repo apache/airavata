@@ -90,6 +90,16 @@ public interface UsrResourceProfile {
      */
     UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayId, String hostId) throws AppCatalogException;
 
+
+    /**
+     *
+     * @param userId
+     * @param gatewayId
+     * @param hostId
+     * @return true or false
+     */
+    boolean isUserComputeResourcePreferenceExists(String userId, String gatewayId, String hostId) throws AppCatalogException;
+
     /**
      * @param userId
      * @param gatewayId

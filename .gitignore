@@ -32,6 +32,7 @@ com_crashlytics_export_strings.xml
 .DS_Store
 .project
 .vscode
+!.vscode/launch.json
 .settings
 .classpath
 .factorypath
@@ -40,3 +41,15 @@ venv
 airavata_custos.egg-info
 *.pyc
 .tox
+
+airavata-local-agent/node_modules
+airavata-local-agent/app
+airavata-local-agent/proxy/config.txt
+airavata-local-agent/proxy/websockify
+airavata-local-agent/renderer/.next
+airavata-local-agent/dist
+airavata-local-agent/build.sh
+
+modules/research-framework/compose
+
+logs

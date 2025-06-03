@@ -1,0 +1,3 @@
+#!/bin/bash
+
+su {{user}} -c ' source "{{ django_venv_dir }}/bin/activate"; cd "{{ airavata_django_checkout }}"; python manage.py archive_user_data'

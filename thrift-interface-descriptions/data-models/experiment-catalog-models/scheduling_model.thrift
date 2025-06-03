@@ -40,5 +40,6 @@ struct ComputationalResourceSchedulingModel {
     9: optional string staticWorkingDir,
     10: optional string overrideLoginUserName,
     11: optional string overrideScratchLocation,
-    12: optional string overrideAllocationProjectNumber
+    12: optional string overrideAllocationProjectNumber,
+    13: optional i32 mGroupCount
 }

@@ -28,19 +28,20 @@ import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.mail.Address;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.search.FlagTerm;
-import javax.mail.search.SearchTerm;
+import jakarta.mail.Address;
+import jakarta.mail.Flags;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.search.FlagTerm;
+import jakarta.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.util.*;
 
@@ -151,9 +152,18 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType
                     .toString() + " for email monitoring -->  " + addressStr);
         }
-        JobStatusResult jobStatusResult = emailParser.parseEmail(message);
-        jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
-        return jobStatusResult;
+        RegistryService.Client regClient = getRegistryClientPool().getResource();
+
+        try {
+            JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
+            jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+            return jobStatusResult;
+        } catch (Exception e) {
+            getRegistryClientPool().returnBrokenResource(regClient);
+            throw e;
+        } finally {
+            getRegistryClientPool().returnResource(regClient);
+        }
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
@@ -183,6 +193,9 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                         emailFolder = store.getFolder(folderName);
                     }
                     log.info("[EJM]: Retrieving unseen emails");
+                    if (emailFolder == null) {
+                        return;
+                    }
                     emailFolder.open(Folder.READ_WRITE);
                     if (emailFolder.isOpen()) {
                         // flush if any message left in flushUnseenMessage
@@ -218,8 +231,12 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 log.error("[EJM]: Caught a throwable ", e);
             } finally {
                 try {
-                    emailFolder.close(false);
-                    store.close();
+                    if (emailFolder != null) {
+                        emailFolder.close(false);
+                    }
+                    if (store != null) {
+                        store.close();
+                    }
                 } catch (MessagingException e) {
                     log.error("[EJM]: Store close operation failed, couldn't close store", e);
                 } catch (Throwable e) {

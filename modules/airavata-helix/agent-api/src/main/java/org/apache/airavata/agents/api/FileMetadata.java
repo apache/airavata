@@ -24,6 +24,7 @@ public class FileMetadata {
     private String name;
     private long size;
     private int permissions = 420;
+    private boolean isDirectory;
 
     public String getName() {
         return name;
@@ -47,5 +48,13 @@ public class FileMetadata {
 
     public void setPermissions(int permissions) {
         this.permissions = permissions;
+    }
+
+    public boolean isDirectory() {
+        return isDirectory;
+    }
+
+    public void setDirectory(boolean isDirectory) {
+        this.isDirectory = isDirectory;
     }
 }

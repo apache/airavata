@@ -32,11 +32,13 @@ tusd_upload_dir: "{{real_user_data_dir}}/tus-temp-dir"
 # django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
 cilogon_userinfo_url: "https://cilogon.org/oauth2/userinfo"
 
+django_user_data_archive_directory: "{{ user_data_dir }}/user-data-archives/{{ gateway_id }}"
+
 # Default email settings
 portal_email_host: "smtp.gmail.com"
 portal_email_port: 587
 portal_email_tls: true
-portal_email_username: "pga.airavata@gmail.com"
+portal_email_username: "django.portal@scigap.org"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_server_email: "{{ portal_email_username }}"
 admin_emails: "[('SGRC Group', 'sgrc-iu-group@iu.edu')]"

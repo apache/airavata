@@ -16,16 +16,19 @@ public class AgentUtils {
         try {
             final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
             final String serverHost = ServerSettings.getRegistryServerHost();
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+
+            return RegistryServiceClientFactory.createRegistryClient(serverHost,
+                    serverPort);
         } catch (RegistryServiceException | ApplicationSettingsException e) {
             throw new AgentException("Unable to create registry client...", e);
         }
+
     }
 
     public static CredentialStoreService.Client getCredentialClient() throws AgentException {
         try {
             final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-            final String serverHost =ServerSettings.getCredentialStoreServerHost();
+            final String serverHost = ServerSettings.getCredentialStoreServerHost();
             return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
         } catch (CredentialStoreException | ApplicationSettingsException e) {
             throw new AgentException("Unable to create credential client...", e);

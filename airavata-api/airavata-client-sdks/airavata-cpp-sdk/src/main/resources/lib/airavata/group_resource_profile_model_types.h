@@ -42,6 +42,8 @@ namespace apache { namespace airavata { namespace model { namespace appcatalog {
 
 class GroupAccountSSHProvisionerConfig;
 
+class ComputeResourceReservation;
+
 class GroupComputeResourcePreference;
 
 class ComputeResourcePolicy;
@@ -113,8 +115,68 @@ inline std::ostream& operator<<(std::ostream& out, const GroupAccountSSHProvisio
   return out;
 }
 
+
+class ComputeResourceReservation : public virtual ::apache::thrift::TBase {
+ public:
+
+  ComputeResourceReservation(const ComputeResourceReservation&);
+  ComputeResourceReservation& operator=(const ComputeResourceReservation&);
+  ComputeResourceReservation() : reservationId("DO_NOT_SET_AT_CLIENTS"), reservationName(), startTime(0), endTime(0) {
+  }
+
+  virtual ~ComputeResourceReservation() throw();
+  std::string reservationId;
+  std::string reservationName;
+  std::vector<std::string>  queueNames;
+  int64_t startTime;
+  int64_t endTime;
+
+  void __set_reservationId(const std::string& val);
+
+  void __set_reservationName(const std::string& val);
+
+  void __set_queueNames(const std::vector<std::string> & val);
+
+  void __set_startTime(const int64_t val);
+
+  void __set_endTime(const int64_t val);
+
+  bool operator == (const ComputeResourceReservation & rhs) const
+  {
+    if (!(reservationId == rhs.reservationId))
+      return false;
+    if (!(reservationName == rhs.reservationName))
+      return false;
+    if (!(queueNames == rhs.queueNames))
+      return false;
+    if (!(startTime == rhs.startTime))
+      return false;
+    if (!(endTime == rhs.endTime))
+      return false;
+    return true;
+  }
+  bool operator != (const ComputeResourceReservation &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ComputeResourceReservation & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(ComputeResourceReservation &a, ComputeResourceReservation &b);
+
+inline std::ostream& operator<<(std::ostream& out, const ComputeResourceReservation& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
 typedef struct _GroupComputeResourcePreference__isset {
-  _GroupComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false), qualityOfService(false), reservation(false), reservationStartTime(false), reservationEndTime(false), sshAccountProvisioner(false), groupSSHAccountProvisionerConfigs(false), sshAccountProvisionerAdditionalInfo(false) {}
+  _GroupComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false), resourceSpecificCredentialStoreToken(false), usageReportingGatewayId(false), qualityOfService(false), sshAccountProvisioner(false), groupSSHAccountProvisionerConfigs(false), sshAccountProvisionerAdditionalInfo(false), reservations(false) {}
   bool loginUserName :1;
   bool preferredJobSubmissionProtocol :1;
   bool preferredDataMovementProtocol :1;
@@ -124,12 +186,10 @@ typedef struct _GroupComputeResourcePreference__isset {
   bool resourceSpecificCredentialStoreToken :1;
   bool usageReportingGatewayId :1;
   bool qualityOfService :1;
-  bool reservation :1;
-  bool reservationStartTime :1;
-  bool reservationEndTime :1;
   bool sshAccountProvisioner :1;
   bool groupSSHAccountProvisionerConfigs :1;
   bool sshAccountProvisionerAdditionalInfo :1;
+  bool reservations :1;
 } _GroupComputeResourcePreference__isset;
 
 class GroupComputeResourcePreference : public virtual ::apache::thrift::TBase {
@@ -137,7 +197,7 @@ class GroupComputeResourcePreference : public virtual ::apache::thrift::TBase {
 
   GroupComputeResourcePreference(const GroupComputeResourcePreference&);
   GroupComputeResourcePreference& operator=(const GroupComputeResourcePreference&);
-  GroupComputeResourcePreference() : computeResourceId(), groupResourceProfileId("DO_NOT_SET_AT_CLIENTS"), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId(), qualityOfService(), reservation(), reservationStartTime(0), reservationEndTime(0), sshAccountProvisioner(), sshAccountProvisionerAdditionalInfo() {
+  GroupComputeResourcePreference() : computeResourceId(), groupResourceProfileId("DO_NOT_SET_AT_CLIENTS"), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::data::movement::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber(), resourceSpecificCredentialStoreToken(), usageReportingGatewayId(), qualityOfService(), sshAccountProvisioner(), sshAccountProvisionerAdditionalInfo() {
   }
 
   virtual ~GroupComputeResourcePreference() throw();
@@ -153,12 +213,10 @@ class GroupComputeResourcePreference : public virtual ::apache::thrift::TBase {
   std::string resourceSpecificCredentialStoreToken;
   std::string usageReportingGatewayId;
   std::string qualityOfService;
-  std::string reservation;
-  int64_t reservationStartTime;
-  int64_t reservationEndTime;
   std::string sshAccountProvisioner;
   std::vector<GroupAccountSSHProvisionerConfig>  groupSSHAccountProvisionerConfigs;
   std::string sshAccountProvisionerAdditionalInfo;
+  std::vector<ComputeResourceReservation>  reservations;
 
   _GroupComputeResourcePreference__isset __isset;
 
@@ -186,17 +244,13 @@ class GroupComputeResourcePreference : public virtual ::apache::thrift::TBase {
 
   void __set_qualityOfService(const std::string& val);
 
-  void __set_reservation(const std::string& val);
-
-  void __set_reservationStartTime(const int64_t val);
-
-  void __set_reservationEndTime(const int64_t val);
-
   void __set_sshAccountProvisioner(const std::string& val);
 
   void __set_groupSSHAccountProvisionerConfigs(const std::vector<GroupAccountSSHProvisionerConfig> & val);
 
   void __set_sshAccountProvisionerAdditionalInfo(const std::string& val);
+
+  void __set_reservations(const std::vector<ComputeResourceReservation> & val);
 
   bool operator == (const GroupComputeResourcePreference & rhs) const
   {
@@ -242,18 +296,6 @@ class GroupComputeResourcePreference : public virtual ::apache::thrift::TBase {
       return false;
     else if (__isset.qualityOfService && !(qualityOfService == rhs.qualityOfService))
       return false;
-    if (__isset.reservation != rhs.__isset.reservation)
-      return false;
-    else if (__isset.reservation && !(reservation == rhs.reservation))
-      return false;
-    if (__isset.reservationStartTime != rhs.__isset.reservationStartTime)
-      return false;
-    else if (__isset.reservationStartTime && !(reservationStartTime == rhs.reservationStartTime))
-      return false;
-    if (__isset.reservationEndTime != rhs.__isset.reservationEndTime)
-      return false;
-    else if (__isset.reservationEndTime && !(reservationEndTime == rhs.reservationEndTime))
-      return false;
     if (__isset.sshAccountProvisioner != rhs.__isset.sshAccountProvisioner)
       return false;
     else if (__isset.sshAccountProvisioner && !(sshAccountProvisioner == rhs.sshAccountProvisioner))
@@ -265,6 +307,10 @@ class GroupComputeResourcePreference : public virtual ::apache::thrift::TBase {
     if (__isset.sshAccountProvisionerAdditionalInfo != rhs.__isset.sshAccountProvisionerAdditionalInfo)
       return false;
     else if (__isset.sshAccountProvisionerAdditionalInfo && !(sshAccountProvisionerAdditionalInfo == rhs.sshAccountProvisionerAdditionalInfo))
+      return false;
+    if (__isset.reservations != rhs.__isset.reservations)
+      return false;
+    else if (__isset.reservations && !(reservations == rhs.reservations))
       return false;
     return true;
   }

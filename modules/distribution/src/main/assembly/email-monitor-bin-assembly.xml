@@ -92,7 +92,8 @@
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>org.apache.thrift:libthrift:jar</include>
 
-                <include>javax.mail:mail:jar</include>
+                <include>jakarta.mail:jakarta.mail-api:jar</include>
+                <include>jakarta.mail:jakarta.mail:jar</include>
                 <include>javax.activation:activation:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
 
@@ -106,8 +107,10 @@
                 <include>org.apache.curator:curator-client:jar</include>
                 <include>com.google.guava:guava:jar</include>
                 <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>org.apache.zookeeper:zookeeper-jute:jar</include>
                 <include>jline:jline:jar</include>
                 <include>org.jboss.netty:netty:jar</include>
+                <include>io.netty:netty-handler:jar</include>
 
                 <include>com.google.code.gson:gson:jar</include>
 
@@ -116,8 +119,8 @@
                 <include>org.slf4j:log4j-over-slf4j:jar</include>
                 <include>org.apache.logging.log4j:log4j-api</include>
                 <include>org.apache.logging.log4j:log4j-core</include>
-                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
                 <include>org.apache.logging.log4j:log4j-1.2-api</include>
+                <include>org.apache.logging.log4j:log4j-slf4j2-impl:jar</include>
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.apache.commons:commons-pool2:jar</include>

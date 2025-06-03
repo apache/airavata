@@ -86,7 +86,7 @@ class ExperimentSummaryModel;
 class ExperimentStatistics;
 
 typedef struct _UserConfigurationDataModel__isset {
-  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false), experimentDataDir(false), useUserCRPref(false), groupResourceProfileId(false) {}
+  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false), experimentDataDir(false), useUserCRPref(false), groupResourceProfileId(false), autoScheduledCompResourceSchedulingList(false) {}
   bool shareExperimentPublicly :1;
   bool computationalResourceScheduling :1;
   bool throttleResources :1;
@@ -96,6 +96,7 @@ typedef struct _UserConfigurationDataModel__isset {
   bool experimentDataDir :1;
   bool useUserCRPref :1;
   bool groupResourceProfileId :1;
+  bool autoScheduledCompResourceSchedulingList :1;
 } _UserConfigurationDataModel__isset;
 
 class UserConfigurationDataModel : public virtual ::apache::thrift::TBase {
@@ -118,6 +119,7 @@ class UserConfigurationDataModel : public virtual ::apache::thrift::TBase {
   std::string experimentDataDir;
   bool useUserCRPref;
   std::string groupResourceProfileId;
+  std::vector< ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel>  autoScheduledCompResourceSchedulingList;
 
   _UserConfigurationDataModel__isset __isset;
 
@@ -142,6 +144,8 @@ class UserConfigurationDataModel : public virtual ::apache::thrift::TBase {
   void __set_useUserCRPref(const bool val);
 
   void __set_groupResourceProfileId(const std::string& val);
+
+  void __set_autoScheduledCompResourceSchedulingList(const std::vector< ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel> & val);
 
   bool operator == (const UserConfigurationDataModel & rhs) const
   {
@@ -184,6 +188,10 @@ class UserConfigurationDataModel : public virtual ::apache::thrift::TBase {
     if (__isset.groupResourceProfileId != rhs.__isset.groupResourceProfileId)
       return false;
     else if (__isset.groupResourceProfileId && !(groupResourceProfileId == rhs.groupResourceProfileId))
+      return false;
+    if (__isset.autoScheduledCompResourceSchedulingList != rhs.__isset.autoScheduledCompResourceSchedulingList)
+      return false;
+    else if (__isset.autoScheduledCompResourceSchedulingList && !(autoScheduledCompResourceSchedulingList == rhs.autoScheduledCompResourceSchedulingList))
       return false;
     return true;
   }

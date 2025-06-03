@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Delete files that are older than 7 days
+find {{ tusd_upload_dir }} -mtime +7 -exec rm -rf {} \;

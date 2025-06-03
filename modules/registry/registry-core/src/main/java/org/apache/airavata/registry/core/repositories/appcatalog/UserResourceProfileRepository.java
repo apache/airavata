@@ -200,6 +200,16 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         return isExists(userResourceProfilePK);
     }
 
+    @Override
+    public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
+        UserComputeResourcePreferenceRepository userComputeResourcePreferenceRepository = new UserComputeResourcePreferenceRepository();
+        UserComputeResourcePreferencePK userComputeResourcePreferencePK = new UserComputeResourcePreferencePK();
+        userComputeResourcePreferencePK.setUserId(userId);
+        userComputeResourcePreferencePK.setGatewayId(gatewayId);
+        userComputeResourcePreferencePK.setComputeResourceId(preferenceId);
+        return userComputeResourcePreferenceRepository.isExists(userComputeResourcePreferencePK);
+    }
+
     public static Logger getLogger() {
         return logger;
     }

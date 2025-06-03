@@ -1,48 +1,45 @@
-# inventory file : scigap develop deployment
+# inventory file : scigap js2 develop deployment
 
 [zookeeper]
-149.165.157.37
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [rabbitmq]
-149.165.156.195
+apidev.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [database]
-149.165.156.27
+db.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [api-orch]
-149.165.156.195
-
-[gfac]
-149.165.157.37
-
-[pga]
-149.165.156.46
+apidev.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [keycloak]
-149.165.156.151
-
-[django]
-seagrid ansible_host=149.165.156.46
-simvascular ansible_host=149.165.156.46
-simccs ansible_host=149.165.156.46
-interactwel ansible_host=149.165.156.46
-usd ansible_host=149.165.156.46
-csbglsu ansible_host=149.165.156.46
-nexttdb ansible_host=149.165.156.46
-saver-x ansible_host=149.165.156.46
-pfec-hydro ansible_host=149.165.156.46
-cyberwater ansible_host=149.165.156.46
-mines ansible_host=149.165.156.46
-amp ansible_host=149.165.170.199
-geo ansible_host=149.165.156.46
-delta ansible_host=149.165.169.250
-custos-testdrive ansible_host=pgadev.scigap.org
-rnamake ansible_host=149.165.156.46
-
-#149.165.169.129
+iamdev.scigap.org ansible_python_interpreter=/usr/bin/python3 public_ipv4=149.165.152.23
 
 [helix]
-149.165.157.37
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
 
 [kafka]
-149.165.157.37
+helix.js2.scigap.org ansible_python_interpreter=/usr/bin/python3
+
+[django]
+seagrid ansible_host=web.dev.scigap.org
+; simvascular ansible_host=149.165.156.46
+simccs ansible_host=web.dev.scigap.org
+interactwel ansible_host=web.dev.scigap.org
+; usd ansible_host=149.165.156.46
+; csbglsu ansible_host=149.165.156.46
+; nexttdb ansible_host=149.165.156.46
+; saver-x ansible_host=149.165.156.46
+; pfec-hydro ansible_host=149.165.156.46
+cyberwater ansible_host=web.dev.scigap.org
+; mines ansible_host=149.165.156.46
+amp ansible_host=149.165.153.222
+geo ansible_host=web.dev.scigap.org
+delta ansible_host=149.165.153.181
+; custos-testdrive ansible_host=pgadev.scigap.org
+rnamake ansible_host=web.dev.scigap.org
+dev-ultrascan ansible_host=web.dev.scigap.org
+dev-gkeyll ansible_host=149.165.152.93
+
+[pga]
+scigap ansible_host=149.165.155.229

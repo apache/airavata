@@ -19,6 +19,6 @@
 #
 ---
 
-- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+- include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 ...

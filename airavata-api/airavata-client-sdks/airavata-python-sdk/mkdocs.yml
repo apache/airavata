@@ -1,0 +1,19 @@
+site_name: Airavata Python SDK
+repo_url: https://github.com/apache/airavata
+repo_name: Apache Airavata
+
+nav:
+  - Home: index.md
+  - API Docs:
+      - reference/airavata_experiments.md
+      - reference/airavata_jupyter_magic.md
+      - reference/airavata_sdk.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          setup_commands:
+            - "import sys; sys.path.insert(0, '.')"

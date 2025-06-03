@@ -43,6 +43,7 @@
     - role: common
       become: yes
       become_user: "{{user}}"
+    - letsencrypt
     - role: api-orch
       become: yes
       become_user: "{{user}}"

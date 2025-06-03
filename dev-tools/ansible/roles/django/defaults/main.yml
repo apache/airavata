@@ -40,6 +40,11 @@ httpd_log_dir:
  Debian: /var/log/apache2
  RedHat: /var/log/httpd
 
+# User data archive related variables
+django_user_data_archive_max_age_days:
+django_user_data_archive_directory: "/tmp"
+django_user_data_archive_minimum_archive_size_gb: 1
+
 django_vhost_template: "django-vhost.conf.j2"
 django_ssl_vhost_template: "django-ssl-vhost.conf.j2"
 django_settings_local_template: "settings_local.py.j2"
@@ -54,7 +59,7 @@ django_database_host_ip_address: "{{ groups['database'][0] }}"
 
 # Should be a python expression that evaluates to a string representing a file path. For example:
 # django_keycloak_ca_certfile_path: "/etc/ca.pem"
-# or 
+# or
 # django_keycloak_ca_certfile_path: 'os.path.join(BASE_DIR, "django_airavata", "resources", "incommon_rsa_server_ca.pem")'
 # By default it has no value meaning system default CA certs will be used for validation.
 django_keycloak_ca_certfile_path:

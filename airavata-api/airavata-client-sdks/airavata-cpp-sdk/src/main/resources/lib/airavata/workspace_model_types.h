@@ -71,6 +71,8 @@ class User;
 
 class Gateway;
 
+class GatewayUsageReportingCommand;
+
 class Notification;
 
 typedef struct _Group__isset {
@@ -489,6 +491,56 @@ class Gateway : public virtual ::apache::thrift::TBase {
 void swap(Gateway &a, Gateway &b);
 
 inline std::ostream& operator<<(std::ostream& out, const Gateway& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class GatewayUsageReportingCommand : public virtual ::apache::thrift::TBase {
+ public:
+
+  GatewayUsageReportingCommand(const GatewayUsageReportingCommand&);
+  GatewayUsageReportingCommand& operator=(const GatewayUsageReportingCommand&);
+  GatewayUsageReportingCommand() : gatewayId(), computeResourceId(), command() {
+  }
+
+  virtual ~GatewayUsageReportingCommand() throw();
+  std::string gatewayId;
+  std::string computeResourceId;
+  std::string command;
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_computeResourceId(const std::string& val);
+
+  void __set_command(const std::string& val);
+
+  bool operator == (const GatewayUsageReportingCommand & rhs) const
+  {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(command == rhs.command))
+      return false;
+    return true;
+  }
+  bool operator != (const GatewayUsageReportingCommand &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GatewayUsageReportingCommand & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GatewayUsageReportingCommand &a, GatewayUsageReportingCommand &b);
+
+inline std::ostream& operator<<(std::ostream& out, const GatewayUsageReportingCommand& obj)
 {
   obj.printTo(out);
   return out;

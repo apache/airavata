@@ -62,6 +62,7 @@ interface SharingRegistryServiceIf extends \Airavata\Base\API\BaseAPIIf {
    * <li>description : A short description for the domain</li>
    * <li>createdTime : Will be set by the system</li>
    * <li>updatedTime : Will be set by the system</li>
+   * <li>initialUserGroupId : New users will automatically be added to this group</li>
    * 
    * 
    * @throws \Airavata\Model\Sharing\SharingRegistryException

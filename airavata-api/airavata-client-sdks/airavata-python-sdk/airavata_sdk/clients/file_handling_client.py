@@ -15,6 +15,8 @@
 #
 
 import logging
+from typing import Optional
+
 import paramiko
 from paramiko import SSHClient
 from scp import SCPClient
@@ -37,25 +39,29 @@ logger.addHandler(handler)
 
 class FileHandler(object):
 
-    def __init__(self, host, port, username, passphrase, privateKeyFilePath):
+    def __init__(self, host: str, port: int, username: str, passphrase: Optional[str], pkey: Optional[paramiko.RSAKey]):
         self.host = host
         self.port = port
         self.username = username
         self.password = passphrase
-        self.filePath = privateKeyFilePath
+        self.pkey = None
 
     def upload_file(self, files, remote_path, recursive, preserve_item):
         try:
-            ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
-            with SCPClient(ssh.get_transport()) as scp:
+            ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.pkey)
+            transport = ssh.get_transport()
+            assert transport is not None
+            with SCPClient(transport) as scp:
                 scp.put(files, remote_path, recursive, preserve_item)
         finally:
             scp.close()
 
     def download_file(self, remote_path, local_path, recursive, preserve_item):
         try:
-            ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.filePath)
-            with SCPClient(ssh.get_transport()) as scp:
+            ssh.connect(self.host, self.port, self.username, passphrase=self.password, pkey=self.pkey)
+            transport = ssh.get_transport()
+            assert transport is not None
+            with SCPClient(transport) as scp:
                 scp.get(remote_path, local_path, recursive, preserve_item)
         finally:
             scp.close()

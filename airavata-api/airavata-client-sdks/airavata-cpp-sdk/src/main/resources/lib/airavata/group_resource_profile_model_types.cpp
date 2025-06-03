@@ -188,6 +188,204 @@ void GroupAccountSSHProvisionerConfig::printTo(std::ostream& out) const {
 }
 
 
+ComputeResourceReservation::~ComputeResourceReservation() throw() {
+}
+
+
+void ComputeResourceReservation::__set_reservationId(const std::string& val) {
+  this->reservationId = val;
+}
+
+void ComputeResourceReservation::__set_reservationName(const std::string& val) {
+  this->reservationName = val;
+}
+
+void ComputeResourceReservation::__set_queueNames(const std::vector<std::string> & val) {
+  this->queueNames = val;
+}
+
+void ComputeResourceReservation::__set_startTime(const int64_t val) {
+  this->startTime = val;
+}
+
+void ComputeResourceReservation::__set_endTime(const int64_t val) {
+  this->endTime = val;
+}
+
+uint32_t ComputeResourceReservation::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_reservationId = false;
+  bool isset_reservationName = false;
+  bool isset_queueNames = false;
+  bool isset_startTime = false;
+  bool isset_endTime = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->reservationId);
+          isset_reservationId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->reservationName);
+          isset_reservationName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->queueNames.clear();
+            uint32_t _size2;
+            ::apache::thrift::protocol::TType _etype5;
+            xfer += iprot->readListBegin(_etype5, _size2);
+            this->queueNames.resize(_size2);
+            uint32_t _i6;
+            for (_i6 = 0; _i6 < _size2; ++_i6)
+            {
+              xfer += iprot->readString(this->queueNames[_i6]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          isset_queueNames = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->startTime);
+          isset_startTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->endTime);
+          isset_endTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_reservationId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_reservationName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_queueNames)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_startTime)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_endTime)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ComputeResourceReservation::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("ComputeResourceReservation");
+
+  xfer += oprot->writeFieldBegin("reservationId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->reservationId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("reservationName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->reservationName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("queueNames", ::apache::thrift::protocol::T_LIST, 3);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->queueNames.size()));
+    std::vector<std::string> ::const_iterator _iter7;
+    for (_iter7 = this->queueNames.begin(); _iter7 != this->queueNames.end(); ++_iter7)
+    {
+      xfer += oprot->writeString((*_iter7));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("startTime", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->startTime);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("endTime", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->endTime);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(ComputeResourceReservation &a, ComputeResourceReservation &b) {
+  using ::std::swap;
+  swap(a.reservationId, b.reservationId);
+  swap(a.reservationName, b.reservationName);
+  swap(a.queueNames, b.queueNames);
+  swap(a.startTime, b.startTime);
+  swap(a.endTime, b.endTime);
+}
+
+ComputeResourceReservation::ComputeResourceReservation(const ComputeResourceReservation& other8) {
+  reservationId = other8.reservationId;
+  reservationName = other8.reservationName;
+  queueNames = other8.queueNames;
+  startTime = other8.startTime;
+  endTime = other8.endTime;
+}
+ComputeResourceReservation& ComputeResourceReservation::operator=(const ComputeResourceReservation& other9) {
+  reservationId = other9.reservationId;
+  reservationName = other9.reservationName;
+  queueNames = other9.queueNames;
+  startTime = other9.startTime;
+  endTime = other9.endTime;
+  return *this;
+}
+void ComputeResourceReservation::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "ComputeResourceReservation(";
+  out << "reservationId=" << to_string(reservationId);
+  out << ", " << "reservationName=" << to_string(reservationName);
+  out << ", " << "queueNames=" << to_string(queueNames);
+  out << ", " << "startTime=" << to_string(startTime);
+  out << ", " << "endTime=" << to_string(endTime);
+  out << ")";
+}
+
+
 GroupComputeResourcePreference::~GroupComputeResourcePreference() throw() {
 }
 
@@ -249,21 +447,6 @@ void GroupComputeResourcePreference::__set_qualityOfService(const std::string& v
 __isset.qualityOfService = true;
 }
 
-void GroupComputeResourcePreference::__set_reservation(const std::string& val) {
-  this->reservation = val;
-__isset.reservation = true;
-}
-
-void GroupComputeResourcePreference::__set_reservationStartTime(const int64_t val) {
-  this->reservationStartTime = val;
-__isset.reservationStartTime = true;
-}
-
-void GroupComputeResourcePreference::__set_reservationEndTime(const int64_t val) {
-  this->reservationEndTime = val;
-__isset.reservationEndTime = true;
-}
-
 void GroupComputeResourcePreference::__set_sshAccountProvisioner(const std::string& val) {
   this->sshAccountProvisioner = val;
 __isset.sshAccountProvisioner = true;
@@ -277,6 +460,11 @@ __isset.groupSSHAccountProvisionerConfigs = true;
 void GroupComputeResourcePreference::__set_sshAccountProvisionerAdditionalInfo(const std::string& val) {
   this->sshAccountProvisionerAdditionalInfo = val;
 __isset.sshAccountProvisionerAdditionalInfo = true;
+}
+
+void GroupComputeResourcePreference::__set_reservations(const std::vector<ComputeResourceReservation> & val) {
+  this->reservations = val;
+__isset.reservations = true;
 }
 
 uint32_t GroupComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -337,9 +525,9 @@ uint32_t GroupComputeResourcePreference::read(::apache::thrift::protocol::TProto
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast2;
-          xfer += iprot->readI32(ecast2);
-          this->preferredJobSubmissionProtocol = ( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)ecast2;
+          int32_t ecast10;
+          xfer += iprot->readI32(ecast10);
+          this->preferredJobSubmissionProtocol = ( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)ecast10;
           this->__isset.preferredJobSubmissionProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -347,9 +535,9 @@ uint32_t GroupComputeResourcePreference::read(::apache::thrift::protocol::TProto
         break;
       case 6:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast3;
-          xfer += iprot->readI32(ecast3);
-          this->preferredDataMovementProtocol = ( ::apache::airavata::model::data::movement::DataMovementProtocol::type)ecast3;
+          int32_t ecast11;
+          xfer += iprot->readI32(ecast11);
+          this->preferredDataMovementProtocol = ( ::apache::airavata::model::data::movement::DataMovementProtocol::type)ecast11;
           this->__isset.preferredDataMovementProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -403,30 +591,6 @@ uint32_t GroupComputeResourcePreference::read(::apache::thrift::protocol::TProto
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->reservation);
-          this->__isset.reservation = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 14:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->reservationStartTime);
-          this->__isset.reservationStartTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 15:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->reservationEndTime);
-          this->__isset.reservationEndTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       case 16:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->sshAccountProvisioner);
@@ -439,14 +603,14 @@ uint32_t GroupComputeResourcePreference::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->groupSSHAccountProvisionerConfigs.clear();
-            uint32_t _size4;
-            ::apache::thrift::protocol::TType _etype7;
-            xfer += iprot->readListBegin(_etype7, _size4);
-            this->groupSSHAccountProvisionerConfigs.resize(_size4);
-            uint32_t _i8;
-            for (_i8 = 0; _i8 < _size4; ++_i8)
+            uint32_t _size12;
+            ::apache::thrift::protocol::TType _etype15;
+            xfer += iprot->readListBegin(_etype15, _size12);
+            this->groupSSHAccountProvisionerConfigs.resize(_size12);
+            uint32_t _i16;
+            for (_i16 = 0; _i16 < _size12; ++_i16)
             {
-              xfer += this->groupSSHAccountProvisionerConfigs[_i8].read(iprot);
+              xfer += this->groupSSHAccountProvisionerConfigs[_i16].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -459,6 +623,26 @@ uint32_t GroupComputeResourcePreference::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->sshAccountProvisionerAdditionalInfo);
           this->__isset.sshAccountProvisionerAdditionalInfo = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 19:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->reservations.clear();
+            uint32_t _size17;
+            ::apache::thrift::protocol::TType _etype20;
+            xfer += iprot->readListBegin(_etype20, _size17);
+            this->reservations.resize(_size17);
+            uint32_t _i21;
+            for (_i21 = 0; _i21 < _size17; ++_i21)
+            {
+              xfer += this->reservations[_i21].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.reservations = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -543,21 +727,6 @@ uint32_t GroupComputeResourcePreference::write(::apache::thrift::protocol::TProt
     xfer += oprot->writeString(this->qualityOfService);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.reservation) {
-    xfer += oprot->writeFieldBegin("reservation", ::apache::thrift::protocol::T_STRING, 13);
-    xfer += oprot->writeString(this->reservation);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.reservationStartTime) {
-    xfer += oprot->writeFieldBegin("reservationStartTime", ::apache::thrift::protocol::T_I64, 14);
-    xfer += oprot->writeI64(this->reservationStartTime);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.reservationEndTime) {
-    xfer += oprot->writeFieldBegin("reservationEndTime", ::apache::thrift::protocol::T_I64, 15);
-    xfer += oprot->writeI64(this->reservationEndTime);
-    xfer += oprot->writeFieldEnd();
-  }
   if (this->__isset.sshAccountProvisioner) {
     xfer += oprot->writeFieldBegin("sshAccountProvisioner", ::apache::thrift::protocol::T_STRING, 16);
     xfer += oprot->writeString(this->sshAccountProvisioner);
@@ -567,10 +736,10 @@ uint32_t GroupComputeResourcePreference::write(::apache::thrift::protocol::TProt
     xfer += oprot->writeFieldBegin("groupSSHAccountProvisionerConfigs", ::apache::thrift::protocol::T_LIST, 17);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->groupSSHAccountProvisionerConfigs.size()));
-      std::vector<GroupAccountSSHProvisionerConfig> ::const_iterator _iter9;
-      for (_iter9 = this->groupSSHAccountProvisionerConfigs.begin(); _iter9 != this->groupSSHAccountProvisionerConfigs.end(); ++_iter9)
+      std::vector<GroupAccountSSHProvisionerConfig> ::const_iterator _iter22;
+      for (_iter22 = this->groupSSHAccountProvisionerConfigs.begin(); _iter22 != this->groupSSHAccountProvisionerConfigs.end(); ++_iter22)
       {
-        xfer += (*_iter9).write(oprot);
+        xfer += (*_iter22).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -579,6 +748,19 @@ uint32_t GroupComputeResourcePreference::write(::apache::thrift::protocol::TProt
   if (this->__isset.sshAccountProvisionerAdditionalInfo) {
     xfer += oprot->writeFieldBegin("sshAccountProvisionerAdditionalInfo", ::apache::thrift::protocol::T_STRING, 18);
     xfer += oprot->writeString(this->sshAccountProvisionerAdditionalInfo);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.reservations) {
+    xfer += oprot->writeFieldBegin("reservations", ::apache::thrift::protocol::T_LIST, 19);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->reservations.size()));
+      std::vector<ComputeResourceReservation> ::const_iterator _iter23;
+      for (_iter23 = this->reservations.begin(); _iter23 != this->reservations.end(); ++_iter23)
+      {
+        xfer += (*_iter23).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -600,56 +782,50 @@ void swap(GroupComputeResourcePreference &a, GroupComputeResourcePreference &b) 
   swap(a.resourceSpecificCredentialStoreToken, b.resourceSpecificCredentialStoreToken);
   swap(a.usageReportingGatewayId, b.usageReportingGatewayId);
   swap(a.qualityOfService, b.qualityOfService);
-  swap(a.reservation, b.reservation);
-  swap(a.reservationStartTime, b.reservationStartTime);
-  swap(a.reservationEndTime, b.reservationEndTime);
   swap(a.sshAccountProvisioner, b.sshAccountProvisioner);
   swap(a.groupSSHAccountProvisionerConfigs, b.groupSSHAccountProvisionerConfigs);
   swap(a.sshAccountProvisionerAdditionalInfo, b.sshAccountProvisionerAdditionalInfo);
+  swap(a.reservations, b.reservations);
   swap(a.__isset, b.__isset);
 }
 
-GroupComputeResourcePreference::GroupComputeResourcePreference(const GroupComputeResourcePreference& other10) {
-  computeResourceId = other10.computeResourceId;
-  groupResourceProfileId = other10.groupResourceProfileId;
-  overridebyAiravata = other10.overridebyAiravata;
-  loginUserName = other10.loginUserName;
-  preferredJobSubmissionProtocol = other10.preferredJobSubmissionProtocol;
-  preferredDataMovementProtocol = other10.preferredDataMovementProtocol;
-  preferredBatchQueue = other10.preferredBatchQueue;
-  scratchLocation = other10.scratchLocation;
-  allocationProjectNumber = other10.allocationProjectNumber;
-  resourceSpecificCredentialStoreToken = other10.resourceSpecificCredentialStoreToken;
-  usageReportingGatewayId = other10.usageReportingGatewayId;
-  qualityOfService = other10.qualityOfService;
-  reservation = other10.reservation;
-  reservationStartTime = other10.reservationStartTime;
-  reservationEndTime = other10.reservationEndTime;
-  sshAccountProvisioner = other10.sshAccountProvisioner;
-  groupSSHAccountProvisionerConfigs = other10.groupSSHAccountProvisionerConfigs;
-  sshAccountProvisionerAdditionalInfo = other10.sshAccountProvisionerAdditionalInfo;
-  __isset = other10.__isset;
+GroupComputeResourcePreference::GroupComputeResourcePreference(const GroupComputeResourcePreference& other24) {
+  computeResourceId = other24.computeResourceId;
+  groupResourceProfileId = other24.groupResourceProfileId;
+  overridebyAiravata = other24.overridebyAiravata;
+  loginUserName = other24.loginUserName;
+  preferredJobSubmissionProtocol = other24.preferredJobSubmissionProtocol;
+  preferredDataMovementProtocol = other24.preferredDataMovementProtocol;
+  preferredBatchQueue = other24.preferredBatchQueue;
+  scratchLocation = other24.scratchLocation;
+  allocationProjectNumber = other24.allocationProjectNumber;
+  resourceSpecificCredentialStoreToken = other24.resourceSpecificCredentialStoreToken;
+  usageReportingGatewayId = other24.usageReportingGatewayId;
+  qualityOfService = other24.qualityOfService;
+  sshAccountProvisioner = other24.sshAccountProvisioner;
+  groupSSHAccountProvisionerConfigs = other24.groupSSHAccountProvisionerConfigs;
+  sshAccountProvisionerAdditionalInfo = other24.sshAccountProvisionerAdditionalInfo;
+  reservations = other24.reservations;
+  __isset = other24.__isset;
 }
-GroupComputeResourcePreference& GroupComputeResourcePreference::operator=(const GroupComputeResourcePreference& other11) {
-  computeResourceId = other11.computeResourceId;
-  groupResourceProfileId = other11.groupResourceProfileId;
-  overridebyAiravata = other11.overridebyAiravata;
-  loginUserName = other11.loginUserName;
-  preferredJobSubmissionProtocol = other11.preferredJobSubmissionProtocol;
-  preferredDataMovementProtocol = other11.preferredDataMovementProtocol;
-  preferredBatchQueue = other11.preferredBatchQueue;
-  scratchLocation = other11.scratchLocation;
-  allocationProjectNumber = other11.allocationProjectNumber;
-  resourceSpecificCredentialStoreToken = other11.resourceSpecificCredentialStoreToken;
-  usageReportingGatewayId = other11.usageReportingGatewayId;
-  qualityOfService = other11.qualityOfService;
-  reservation = other11.reservation;
-  reservationStartTime = other11.reservationStartTime;
-  reservationEndTime = other11.reservationEndTime;
-  sshAccountProvisioner = other11.sshAccountProvisioner;
-  groupSSHAccountProvisionerConfigs = other11.groupSSHAccountProvisionerConfigs;
-  sshAccountProvisionerAdditionalInfo = other11.sshAccountProvisionerAdditionalInfo;
-  __isset = other11.__isset;
+GroupComputeResourcePreference& GroupComputeResourcePreference::operator=(const GroupComputeResourcePreference& other25) {
+  computeResourceId = other25.computeResourceId;
+  groupResourceProfileId = other25.groupResourceProfileId;
+  overridebyAiravata = other25.overridebyAiravata;
+  loginUserName = other25.loginUserName;
+  preferredJobSubmissionProtocol = other25.preferredJobSubmissionProtocol;
+  preferredDataMovementProtocol = other25.preferredDataMovementProtocol;
+  preferredBatchQueue = other25.preferredBatchQueue;
+  scratchLocation = other25.scratchLocation;
+  allocationProjectNumber = other25.allocationProjectNumber;
+  resourceSpecificCredentialStoreToken = other25.resourceSpecificCredentialStoreToken;
+  usageReportingGatewayId = other25.usageReportingGatewayId;
+  qualityOfService = other25.qualityOfService;
+  sshAccountProvisioner = other25.sshAccountProvisioner;
+  groupSSHAccountProvisionerConfigs = other25.groupSSHAccountProvisionerConfigs;
+  sshAccountProvisionerAdditionalInfo = other25.sshAccountProvisionerAdditionalInfo;
+  reservations = other25.reservations;
+  __isset = other25.__isset;
   return *this;
 }
 void GroupComputeResourcePreference::printTo(std::ostream& out) const {
@@ -667,12 +843,10 @@ void GroupComputeResourcePreference::printTo(std::ostream& out) const {
   out << ", " << "resourceSpecificCredentialStoreToken="; (__isset.resourceSpecificCredentialStoreToken ? (out << to_string(resourceSpecificCredentialStoreToken)) : (out << "<null>"));
   out << ", " << "usageReportingGatewayId="; (__isset.usageReportingGatewayId ? (out << to_string(usageReportingGatewayId)) : (out << "<null>"));
   out << ", " << "qualityOfService="; (__isset.qualityOfService ? (out << to_string(qualityOfService)) : (out << "<null>"));
-  out << ", " << "reservation="; (__isset.reservation ? (out << to_string(reservation)) : (out << "<null>"));
-  out << ", " << "reservationStartTime="; (__isset.reservationStartTime ? (out << to_string(reservationStartTime)) : (out << "<null>"));
-  out << ", " << "reservationEndTime="; (__isset.reservationEndTime ? (out << to_string(reservationEndTime)) : (out << "<null>"));
   out << ", " << "sshAccountProvisioner="; (__isset.sshAccountProvisioner ? (out << to_string(sshAccountProvisioner)) : (out << "<null>"));
   out << ", " << "groupSSHAccountProvisionerConfigs="; (__isset.groupSSHAccountProvisionerConfigs ? (out << to_string(groupSSHAccountProvisionerConfigs)) : (out << "<null>"));
   out << ", " << "sshAccountProvisionerAdditionalInfo="; (__isset.sshAccountProvisionerAdditionalInfo ? (out << to_string(sshAccountProvisionerAdditionalInfo)) : (out << "<null>"));
+  out << ", " << "reservations="; (__isset.reservations ? (out << to_string(reservations)) : (out << "<null>"));
   out << ")";
 }
 
@@ -750,14 +924,14 @@ uint32_t ComputeResourcePolicy::read(::apache::thrift::protocol::TProtocol* ipro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->allowedBatchQueues.clear();
-            uint32_t _size12;
-            ::apache::thrift::protocol::TType _etype15;
-            xfer += iprot->readListBegin(_etype15, _size12);
-            this->allowedBatchQueues.resize(_size12);
-            uint32_t _i16;
-            for (_i16 = 0; _i16 < _size12; ++_i16)
+            uint32_t _size26;
+            ::apache::thrift::protocol::TType _etype29;
+            xfer += iprot->readListBegin(_etype29, _size26);
+            this->allowedBatchQueues.resize(_size26);
+            uint32_t _i30;
+            for (_i30 = 0; _i30 < _size26; ++_i30)
             {
-              xfer += iprot->readString(this->allowedBatchQueues[_i16]);
+              xfer += iprot->readString(this->allowedBatchQueues[_i30]);
             }
             xfer += iprot->readListEnd();
           }
@@ -805,10 +979,10 @@ uint32_t ComputeResourcePolicy::write(::apache::thrift::protocol::TProtocol* opr
     xfer += oprot->writeFieldBegin("allowedBatchQueues", ::apache::thrift::protocol::T_LIST, 4);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->allowedBatchQueues.size()));
-      std::vector<std::string> ::const_iterator _iter17;
-      for (_iter17 = this->allowedBatchQueues.begin(); _iter17 != this->allowedBatchQueues.end(); ++_iter17)
+      std::vector<std::string> ::const_iterator _iter31;
+      for (_iter31 = this->allowedBatchQueues.begin(); _iter31 != this->allowedBatchQueues.end(); ++_iter31)
       {
-        xfer += oprot->writeString((*_iter17));
+        xfer += oprot->writeString((*_iter31));
       }
       xfer += oprot->writeListEnd();
     }
@@ -828,19 +1002,19 @@ void swap(ComputeResourcePolicy &a, ComputeResourcePolicy &b) {
   swap(a.__isset, b.__isset);
 }
 
-ComputeResourcePolicy::ComputeResourcePolicy(const ComputeResourcePolicy& other18) {
-  resourcePolicyId = other18.resourcePolicyId;
-  computeResourceId = other18.computeResourceId;
-  groupResourceProfileId = other18.groupResourceProfileId;
-  allowedBatchQueues = other18.allowedBatchQueues;
-  __isset = other18.__isset;
+ComputeResourcePolicy::ComputeResourcePolicy(const ComputeResourcePolicy& other32) {
+  resourcePolicyId = other32.resourcePolicyId;
+  computeResourceId = other32.computeResourceId;
+  groupResourceProfileId = other32.groupResourceProfileId;
+  allowedBatchQueues = other32.allowedBatchQueues;
+  __isset = other32.__isset;
 }
-ComputeResourcePolicy& ComputeResourcePolicy::operator=(const ComputeResourcePolicy& other19) {
-  resourcePolicyId = other19.resourcePolicyId;
-  computeResourceId = other19.computeResourceId;
-  groupResourceProfileId = other19.groupResourceProfileId;
-  allowedBatchQueues = other19.allowedBatchQueues;
-  __isset = other19.__isset;
+ComputeResourcePolicy& ComputeResourcePolicy::operator=(const ComputeResourcePolicy& other33) {
+  resourcePolicyId = other33.resourcePolicyId;
+  computeResourceId = other33.computeResourceId;
+  groupResourceProfileId = other33.groupResourceProfileId;
+  allowedBatchQueues = other33.allowedBatchQueues;
+  __isset = other33.__isset;
   return *this;
 }
 void ComputeResourcePolicy::printTo(std::ostream& out) const {
@@ -1042,25 +1216,25 @@ void swap(BatchQueueResourcePolicy &a, BatchQueueResourcePolicy &b) {
   swap(a.__isset, b.__isset);
 }
 
-BatchQueueResourcePolicy::BatchQueueResourcePolicy(const BatchQueueResourcePolicy& other20) {
-  resourcePolicyId = other20.resourcePolicyId;
-  computeResourceId = other20.computeResourceId;
-  groupResourceProfileId = other20.groupResourceProfileId;
-  queuename = other20.queuename;
-  maxAllowedNodes = other20.maxAllowedNodes;
-  maxAllowedCores = other20.maxAllowedCores;
-  maxAllowedWalltime = other20.maxAllowedWalltime;
-  __isset = other20.__isset;
+BatchQueueResourcePolicy::BatchQueueResourcePolicy(const BatchQueueResourcePolicy& other34) {
+  resourcePolicyId = other34.resourcePolicyId;
+  computeResourceId = other34.computeResourceId;
+  groupResourceProfileId = other34.groupResourceProfileId;
+  queuename = other34.queuename;
+  maxAllowedNodes = other34.maxAllowedNodes;
+  maxAllowedCores = other34.maxAllowedCores;
+  maxAllowedWalltime = other34.maxAllowedWalltime;
+  __isset = other34.__isset;
 }
-BatchQueueResourcePolicy& BatchQueueResourcePolicy::operator=(const BatchQueueResourcePolicy& other21) {
-  resourcePolicyId = other21.resourcePolicyId;
-  computeResourceId = other21.computeResourceId;
-  groupResourceProfileId = other21.groupResourceProfileId;
-  queuename = other21.queuename;
-  maxAllowedNodes = other21.maxAllowedNodes;
-  maxAllowedCores = other21.maxAllowedCores;
-  maxAllowedWalltime = other21.maxAllowedWalltime;
-  __isset = other21.__isset;
+BatchQueueResourcePolicy& BatchQueueResourcePolicy::operator=(const BatchQueueResourcePolicy& other35) {
+  resourcePolicyId = other35.resourcePolicyId;
+  computeResourceId = other35.computeResourceId;
+  groupResourceProfileId = other35.groupResourceProfileId;
+  queuename = other35.queuename;
+  maxAllowedNodes = other35.maxAllowedNodes;
+  maxAllowedCores = other35.maxAllowedCores;
+  maxAllowedWalltime = other35.maxAllowedWalltime;
+  __isset = other35.__isset;
   return *this;
 }
 void BatchQueueResourcePolicy::printTo(std::ostream& out) const {
@@ -1175,14 +1349,14 @@ uint32_t GroupResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->computePreferences.clear();
-            uint32_t _size22;
-            ::apache::thrift::protocol::TType _etype25;
-            xfer += iprot->readListBegin(_etype25, _size22);
-            this->computePreferences.resize(_size22);
-            uint32_t _i26;
-            for (_i26 = 0; _i26 < _size22; ++_i26)
+            uint32_t _size36;
+            ::apache::thrift::protocol::TType _etype39;
+            xfer += iprot->readListBegin(_etype39, _size36);
+            this->computePreferences.resize(_size36);
+            uint32_t _i40;
+            for (_i40 = 0; _i40 < _size36; ++_i40)
             {
-              xfer += this->computePreferences[_i26].read(iprot);
+              xfer += this->computePreferences[_i40].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1195,14 +1369,14 @@ uint32_t GroupResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->computeResourcePolicies.clear();
-            uint32_t _size27;
-            ::apache::thrift::protocol::TType _etype30;
-            xfer += iprot->readListBegin(_etype30, _size27);
-            this->computeResourcePolicies.resize(_size27);
-            uint32_t _i31;
-            for (_i31 = 0; _i31 < _size27; ++_i31)
+            uint32_t _size41;
+            ::apache::thrift::protocol::TType _etype44;
+            xfer += iprot->readListBegin(_etype44, _size41);
+            this->computeResourcePolicies.resize(_size41);
+            uint32_t _i45;
+            for (_i45 = 0; _i45 < _size41; ++_i45)
             {
-              xfer += this->computeResourcePolicies[_i31].read(iprot);
+              xfer += this->computeResourcePolicies[_i45].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1215,14 +1389,14 @@ uint32_t GroupResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->batchQueueResourcePolicies.clear();
-            uint32_t _size32;
-            ::apache::thrift::protocol::TType _etype35;
-            xfer += iprot->readListBegin(_etype35, _size32);
-            this->batchQueueResourcePolicies.resize(_size32);
-            uint32_t _i36;
-            for (_i36 = 0; _i36 < _size32; ++_i36)
+            uint32_t _size46;
+            ::apache::thrift::protocol::TType _etype49;
+            xfer += iprot->readListBegin(_etype49, _size46);
+            this->batchQueueResourcePolicies.resize(_size46);
+            uint32_t _i50;
+            for (_i50 = 0; _i50 < _size46; ++_i50)
             {
-              xfer += this->batchQueueResourcePolicies[_i36].read(iprot);
+              xfer += this->batchQueueResourcePolicies[_i50].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1293,10 +1467,10 @@ uint32_t GroupResourceProfile::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("computePreferences", ::apache::thrift::protocol::T_LIST, 4);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->computePreferences.size()));
-      std::vector<GroupComputeResourcePreference> ::const_iterator _iter37;
-      for (_iter37 = this->computePreferences.begin(); _iter37 != this->computePreferences.end(); ++_iter37)
+      std::vector<GroupComputeResourcePreference> ::const_iterator _iter51;
+      for (_iter51 = this->computePreferences.begin(); _iter51 != this->computePreferences.end(); ++_iter51)
       {
-        xfer += (*_iter37).write(oprot);
+        xfer += (*_iter51).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1306,10 +1480,10 @@ uint32_t GroupResourceProfile::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("computeResourcePolicies", ::apache::thrift::protocol::T_LIST, 5);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->computeResourcePolicies.size()));
-      std::vector<ComputeResourcePolicy> ::const_iterator _iter38;
-      for (_iter38 = this->computeResourcePolicies.begin(); _iter38 != this->computeResourcePolicies.end(); ++_iter38)
+      std::vector<ComputeResourcePolicy> ::const_iterator _iter52;
+      for (_iter52 = this->computeResourcePolicies.begin(); _iter52 != this->computeResourcePolicies.end(); ++_iter52)
       {
-        xfer += (*_iter38).write(oprot);
+        xfer += (*_iter52).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1319,10 +1493,10 @@ uint32_t GroupResourceProfile::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeFieldBegin("batchQueueResourcePolicies", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->batchQueueResourcePolicies.size()));
-      std::vector<BatchQueueResourcePolicy> ::const_iterator _iter39;
-      for (_iter39 = this->batchQueueResourcePolicies.begin(); _iter39 != this->batchQueueResourcePolicies.end(); ++_iter39)
+      std::vector<BatchQueueResourcePolicy> ::const_iterator _iter53;
+      for (_iter53 = this->batchQueueResourcePolicies.begin(); _iter53 != this->batchQueueResourcePolicies.end(); ++_iter53)
       {
-        xfer += (*_iter39).write(oprot);
+        xfer += (*_iter53).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1362,29 +1536,29 @@ void swap(GroupResourceProfile &a, GroupResourceProfile &b) {
   swap(a.__isset, b.__isset);
 }
 
-GroupResourceProfile::GroupResourceProfile(const GroupResourceProfile& other40) {
-  gatewayId = other40.gatewayId;
-  groupResourceProfileId = other40.groupResourceProfileId;
-  groupResourceProfileName = other40.groupResourceProfileName;
-  computePreferences = other40.computePreferences;
-  computeResourcePolicies = other40.computeResourcePolicies;
-  batchQueueResourcePolicies = other40.batchQueueResourcePolicies;
-  creationTime = other40.creationTime;
-  updatedTime = other40.updatedTime;
-  defaultCredentialStoreToken = other40.defaultCredentialStoreToken;
-  __isset = other40.__isset;
+GroupResourceProfile::GroupResourceProfile(const GroupResourceProfile& other54) {
+  gatewayId = other54.gatewayId;
+  groupResourceProfileId = other54.groupResourceProfileId;
+  groupResourceProfileName = other54.groupResourceProfileName;
+  computePreferences = other54.computePreferences;
+  computeResourcePolicies = other54.computeResourcePolicies;
+  batchQueueResourcePolicies = other54.batchQueueResourcePolicies;
+  creationTime = other54.creationTime;
+  updatedTime = other54.updatedTime;
+  defaultCredentialStoreToken = other54.defaultCredentialStoreToken;
+  __isset = other54.__isset;
 }
-GroupResourceProfile& GroupResourceProfile::operator=(const GroupResourceProfile& other41) {
-  gatewayId = other41.gatewayId;
-  groupResourceProfileId = other41.groupResourceProfileId;
-  groupResourceProfileName = other41.groupResourceProfileName;
-  computePreferences = other41.computePreferences;
-  computeResourcePolicies = other41.computeResourcePolicies;
-  batchQueueResourcePolicies = other41.batchQueueResourcePolicies;
-  creationTime = other41.creationTime;
-  updatedTime = other41.updatedTime;
-  defaultCredentialStoreToken = other41.defaultCredentialStoreToken;
-  __isset = other41.__isset;
+GroupResourceProfile& GroupResourceProfile::operator=(const GroupResourceProfile& other55) {
+  gatewayId = other55.gatewayId;
+  groupResourceProfileId = other55.groupResourceProfileId;
+  groupResourceProfileName = other55.groupResourceProfileName;
+  computePreferences = other55.computePreferences;
+  computeResourcePolicies = other55.computeResourcePolicies;
+  batchQueueResourcePolicies = other55.batchQueueResourcePolicies;
+  creationTime = other55.creationTime;
+  updatedTime = other55.updatedTime;
+  defaultCredentialStoreToken = other55.defaultCredentialStoreToken;
+  __isset = other55.__isset;
   return *this;
 }
 void GroupResourceProfile::printTo(std::ostream& out) const {

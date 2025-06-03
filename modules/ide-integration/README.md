@@ -60,12 +60,15 @@ Using this module, you can setup a full Airavata installation inside Intelij IDE
 * Apply any database migrations. Go to src/main/containers directory and run
 
   ```
-  cat ./database_scripts/init/*-migrations.sql | docker exec -i resources_db_1 mysql -p123456
+  cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 mysql -p123456
   ```
 
 * Wait until all the services come up. This will initialize all utilities required to start Airavata server
 
 ### Starting API Server
+
+#### Note: For JDK 11+
+you have to add ``--add-opens java.base/java.lang=ALL-UNNAMED`` as a JVM argument
 
 * Go to org.apache.airavata.ide.integration.APIServerStarter class and right click on the editor and click Run option. This will start Airavata server
 
@@ -80,10 +83,10 @@ Post Workflow Manager
 * This will start the Email Based Job Monitoring agent. Before starting this, you have to create a new gmail account by going to 
 https://accounts.google.com/signup
 
-* Once the account is created, turn on Less Security App access for that gmail account 
-https://support.google.com/accounts/answer/6010255?hl=en
+* Once the account is created, turn on 2-Step Verification and create an App Password (Use the type "Other" from the App type selection and give the name as "Airavata")
+https://myaccount.google.com/security
 
-* Update the email account credentials in src/main/resources/airavata-server.properties file
+* Update the email address and App Password in src/main/resources/airavata-server.properties file
 
   email.based.monitor.address=CHANGEME
   email.based.monitor.password=CHANGEME
@@ -186,40 +189,21 @@ https://support.google.com/accounts/answer/6010255?hl=en
 ### NOTE: (Optional) Creating certificates if expired 
   
   * This is required only when the self signed certificate for keycloak is expired
-  * Go to src/main/resources/keystores
+  * Go to <PROJECT_ROOT>/keystores
   * Provide password as airavata for all key stores
 
-  ```  
-  rm airavata.jks
-  
-  rm client_truststore.jks
-  
-  keytool -genkey -keyalg RSA -alias selfsigned -keystore keystore.jks -storepass airavata -validity 360 -keysize 2048
-  What is your first and last name?
-    [Unknown]:  airavata.host
-  What is the name of your organizational unit?
-    [Unknown]:  airavata.host
-  What is the name of your organization?
-    [Unknown]:  airavata.host
-  What is the name of your City or Locality?
-    [Unknown]:  airavata.host
-  What is the name of your State or Province?
-    [Unknown]:  airavata.host
-  What is the two-letter country code for this unit?
-    [Unknown]:  airavata.host
-  Is CN=airavata.host, OU=airavata.host, O=airavata.host, L=airavata.host, ST=airavata.host, C=airavata.host correct?
-    [no]:  yes
+    ```sh
 
+    # Remove existing key stores
+    rm -f airavata.jks client_truststore.jks
 
-  keytool -importkeystore -srckeystore keystore.jks -destkeystore airavata.jks -deststoretype pkcs12
+    # Generate a PKCS12 keystore with a self-signed certificate
+    keytool -genkey -keyalg RSA -alias selfsigned -keystore airavata.jks -storetype pkcs12 -storepass airavata -validity 360 -keysize 2048 \
+      -dname "CN=airavata.host, OU=airavata.host, O=airavata.host, L=airavata.host, ST=airavata.host, C=airavata.host"
 
-  rm keystore.jks
+    # Also generate a JKS keystore with that certificate (for backward-compatibility)
+    keytool -importkeystore -noprompt \
+      -srckeystore airavata.jks -srcstoretype pkcs12 -srcstorepass airavata \
+      -destkeystore client_truststore.jks -deststoretype jks -deststorepass airavata
 
-  keytool  -export -alias selfsigned -file root.cer -keystore airavata.jks -storepass airavata
-
-  keytool -import -alias mykey -file root.cer -keystore client_truststore.jks -storepass airavata
-
-  rm root.cer
-
-```
-
+    ```
