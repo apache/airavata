@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-ansible==6.0.0
+ansible==8.5.0
 ansible-core==2.13.1
 certifi==2024.7.4
 cffi==1.15.0
