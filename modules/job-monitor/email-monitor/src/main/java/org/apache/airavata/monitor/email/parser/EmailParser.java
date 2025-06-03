@@ -21,9 +21,10 @@ package org.apache.airavata.monitor.email.parser;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.registry.api.RegistryService;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 public interface EmailParser {
     static final String STATUS = "status";
@@ -31,5 +32,5 @@ public interface EmailParser {
     static final String JOBNAME = "jobName";
     static final String EXIT_STATUS = "exitStatus";
 
-    JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException;
+    JobStatusResult parseEmail(Message message, RegistryService.Client registryClient) throws MessagingException, AiravataException;
 }

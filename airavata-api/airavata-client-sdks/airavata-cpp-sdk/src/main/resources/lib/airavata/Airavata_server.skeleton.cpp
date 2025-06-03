@@ -496,6 +496,12 @@ class AiravataHandler : virtual public AiravataIf {
    * @param resourceHostName
    *       Hostname id substring with which to further filter statistics.
    * 
+   * @param limit
+   *       Amount of results to be fetched.
+   * 
+   * @param offset
+   *       The starting point of the results to be fetched.
+   * 
    * 
    * 
    * @param authzToken
@@ -505,8 +511,10 @@ class AiravataHandler : virtual public AiravataIf {
    * @param userName
    * @param applicationName
    * @param resourceHostName
+   * @param limit
+   * @param offset
    */
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getExperimentStatistics\n");
   }
@@ -969,6 +977,50 @@ class AiravataHandler : virtual public AiravataIf {
   void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getIntermediateOutputs\n");
+  }
+
+  /**
+   * Request fetching of output files for an experiment that is still executing.
+   * This method results in a new Process being created for the Experiment with
+   * tasks for fetching each output file.
+   * 
+   * @param authzToken
+   * 
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   * 
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   * @param outputNames
+   */
+  void fetchIntermediateOutputs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames) {
+    // Your implementation goes here
+    printf("fetchIntermediateOutputs\n");
+  }
+
+  /**
+   * Get the status of the most recent intermediate output fetching process for the given output names.
+   * 
+   * @param authzToken
+   * 
+   * @param airavataExperimentId
+   *     Experiment ID of the experiment
+   * 
+   * @param outputNames
+   *     List of names of the experiment's outputs to fetch.
+   * 
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   * @param outputNames
+   */
+  void getIntermediateOutputProcessStatus( ::apache::airavata::model::status::ProcessStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::vector<std::string> & outputNames) {
+    // Your implementation goes here
+    printf("getIntermediateOutputProcessStatus\n");
   }
 
   /**

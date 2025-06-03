@@ -145,6 +145,7 @@ public class ApplicationSettings {
      * @throws ApplicationSettingsException If an error occurred while reading configurations.
      * @deprecated use #getSetting(String) instead
      */
+    @Deprecated
     public String getAbsoluteSetting(String key) throws ApplicationSettingsException {
 
         String configurationValueWithVariables = ApplicationSettings.getSetting(key);
@@ -290,6 +291,7 @@ public class ApplicationSettings {
      * @deprecated use {{@link #getSetting(String)}}
      * @return
      */
+    @Deprecated
     public Properties getPropertiesImpl() {
         return properties;
     }
@@ -453,12 +455,19 @@ public class ApplicationSettings {
         return getSetting("super.tenant.gatewayId");
     }
 
-    public static String getClusterStatusMonitoringRepatTime() throws ApplicationSettingsException {
+    public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
         return getSetting("cluster.status.monitoring.repeat.time");
     }
 
     public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
         return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
+    }
+
+    public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
+        return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
+    }
+    public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
+        return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
     }
 
     public static String getUserProfileServerHost() throws ApplicationSettingsException {
@@ -494,6 +503,7 @@ public class ApplicationSettings {
      * @return
      * @throws ApplicationSettingsException 
      */
+    @Deprecated
     public static Properties getProperties() throws ApplicationSettingsException {
         return getInstance().properties;
     }

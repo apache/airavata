@@ -114,4 +114,9 @@ public class HTCondorJobConfiguration implements JobManagerConfiguration {
     public String getBaseSubmitCommand() {
         return jMCommands.get(JobManagerCommand.SUBMISSION).trim();
     }
+
+    @Override
+    public String getLivenessCheckCommand(String queueName, String partition) {
+        return null;
+    }
 }

@@ -47,6 +47,12 @@ do
             JAVA_OPTS="${JAVA_OPTS} -Djava.security.manager -Djava.security.policy=${AIRAVATA_HOME}/conf/axis2.policy -Daxis2.home=${AIRAVATA_HOME}"
             shift
         ;;
+        -enableLegacyTLS)
+            # Enable TLS v1 and v1.1.  disableSystemPropertiesFile is needed
+            # because the system properties file takes precedence. See 'man update-crypto-policies' for more info.
+            JAVA_OPTS="${JAVA_OPTS} -Djava.security.policy=${AIRAVATA_HOME}/bin/enableLegacyTLS.security -Djava.security.disableSystemPropertiesFile=true"
+            shift
+        ;;
 	    apiserver | gfac | orchestrator | credentialstore | regserver)
 	        if [ -z ${SERVERS} ] ; then
 	            SERVERS="${var}"

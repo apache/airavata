@@ -47,7 +47,7 @@ import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.json.JSONException;
@@ -96,6 +96,9 @@ public abstract class AiravataTask extends AbstractTask {
 
     @TaskParam(name ="Force Run Task")
     private boolean forceRunTask = false;
+
+    @TaskParam(name ="Auto Schedule")
+    private boolean autoSchedule = false;
 
     protected TaskResult onSuccess(String message) {
         logger.info(message);
@@ -183,6 +186,11 @@ public abstract class AiravataTask extends AbstractTask {
             }
 
             cleanup();
+
+            if (autoSchedule){
+                ProcessStatus requeueStatus = new ProcessStatus(ProcessState.REQUEUED);
+                saveAndPublishProcessStatus(requeueStatus);
+            }
 
             return onFail(errorMessage, fatal);
         } else {
@@ -488,7 +496,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    private void loadContext() throws TaskOnFailException {
+    protected void loadContext() throws TaskOnFailException {
         try {
             logger.info("Loading context for task " + getTaskId());
             processModel = getRegistryServiceClient().getProcess(processId);
@@ -596,6 +604,14 @@ public abstract class AiravataTask extends AbstractTask {
 
     public void setForceRunTask(boolean forceRunTask) {
         this.forceRunTask = forceRunTask;
+    }
+
+    public boolean isAutoSchedule() {
+        return autoSchedule;
+    }
+
+    public void setAutoSchedule(boolean autoSchedule) {
+        this.autoSchedule = autoSchedule;
     }
 
     // TODO this is inefficient. Try to use a connection pool

@@ -133,7 +133,7 @@
                 <include>com.github.danielwegener:logback-kafka-appender:jar</include>
                 <include>net.logstash.logback:logstash-logback-encoder:jar</include>
                 <include>org.lz4:lz4-java:jar</include>
-                <include>javax.mail:mail:jar</include>
+                <include>jakarta.mail:jakarta.mail:jar</include>
                 <include>io.dropwizard.metrics:metrics-core:jar</include>
                 <include>org.jboss.netty:netty:jar</include>
                 <include>org.apache.openjpa:openjpa:jar</include>
@@ -144,7 +144,7 @@
                 <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.apache.logging.log4j:log4j-api</include>
                 <include>org.apache.logging.log4j:log4j-core</include>
-                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
+                <include>org.apache.logging.log4j:log4j-slf4j2-impl</include>
                 <include>org.apache.logging.log4j:log4j-1.2-api</include>
                 <include>org.yaml:snakeyaml:jar</include>
                 <include>org.xerial.snappy:snappy-java:jar</include>
@@ -159,6 +159,10 @@
                 <include>org.ogce:xpp5:jar</include>
                 <include>com.101tec:zkclient:jar</include>
                 <include>org.apache.zookeeper:zookeeper:jar</include>
+                <include>org.apache.zookeeper:zookeeper-jute:jar</include>
+                <include>io.netty:netty-handler:jar</include>
+                <include>org.apache.logging.log4j:log4j-slf4j2-impl:jar</include>
+
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
 

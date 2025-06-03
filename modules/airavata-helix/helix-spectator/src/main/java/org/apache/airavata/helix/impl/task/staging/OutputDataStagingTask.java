@@ -171,9 +171,11 @@ public class OutputDataStagingTask extends DataStagingTask {
                 }
                 if (!destinationURIs.isEmpty()) {
                     if (processOutput.getType() == DataType.URI) {
-                        saveExperimentOutput(processOutput.getName(), destinationURIs.get(0).toString());
+                        saveExperimentOutput(processOutput.getName(), escapeSpecialCharacters(destinationURIs.get(0).toString()));
                     } else if (processOutput.getType() == DataType.URI_COLLECTION) {
-                        saveExperimentOutputCollection(processOutput.getName(), destinationURIs.stream().map(URI::toString).collect(Collectors.toList()));
+                        saveExperimentOutputCollection(processOutput.getName(), destinationURIs.stream()
+                                .map(URI::toString)
+                                .map(this::escapeSpecialCharacters).collect(Collectors.toList()));
                     }
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
@@ -181,9 +183,10 @@ public class OutputDataStagingTask extends DataStagingTask {
             } else {
                 // Uploading output file to the storage resource
                 assert processOutput != null;
-                boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(),
+                        sourceFileName, adaptor, storageResourceAdaptor);
                 if (transferred) {
-                    saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                    saveExperimentOutput(processOutput.getName(), escapeSpecialCharacters(destinationURI.toString()));
                 } else {
                     logger.warn("File " + sourceFileName + " did not transfer");
                 }

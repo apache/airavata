@@ -59,7 +59,7 @@ public class AiravataAPIServer implements IServer{
 	public AiravataAPIServer() {
 		setStatus(ServerStatus.STOPPED);
 	}
-	
+
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer) throws AiravataSystemException {
         try {
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
@@ -110,6 +110,7 @@ public class AiravataAPIServer implements IServer{
 							setStatus(ServerStatus.STARTED);
 							logger.info("Starting Airavata API Server on Port " + serverPort);
 							logger.info("Listening to Airavata Clients ....");
+
 						}
 					}
 				}.start();
@@ -211,14 +212,14 @@ public class AiravataAPIServer implements IServer{
 	@Override
 	public void configure() throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public ServerStatus getStatus() throws Exception {
 		return status;
 	}
-	
+
 	private void setStatus(ServerStatus stat){
 		status=stat;
 		status.updateTime();

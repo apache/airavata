@@ -155,4 +155,14 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         delete(taskId);
     }
 
+    public void  deleteTasks(String processId) throws RegistryException {
+        TaskRepository taskRepository = new TaskRepository();
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.Task.PARENT_PROCESS_ID, processId);
+        List<TaskModel> taskModelList =
+                taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
+        for(TaskModel taskModel: taskModelList){
+            delete(taskModel.getTaskId());
+        }
+    }
 }

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "airavata-python-sdk"
+version = "2.1.4.post4"
+description = "Apache Airavata Python SDK"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "Airavata Developers", email = "dev@airavata.apache.org" }]
+requires-python = ">=3.10"
+dependencies = [
+  "oauthlib",
+  "requests",
+  "requests-oauthlib",
+  "thrift",
+  "thrift_connector",
+  "paramiko",
+  "scp",
+  "pysftp",
+  "configparser",
+  "urllib3",
+  "pyjwt",
+  "pydantic",
+  "rich",
+  "pandas",
+  "pyyaml",
+]
+
+[project.optional-dependencies]
+notebook = [
+  "ipywidgets",
+  "ipython"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["airavata*"]
+exclude = ["*.egg-info"]
+
+[tool.setuptools.package-data]
+"airavata_sdk.transport" = ["*.ini"]
+"airavata_sdk.samples.resources" = ["*.pem"]

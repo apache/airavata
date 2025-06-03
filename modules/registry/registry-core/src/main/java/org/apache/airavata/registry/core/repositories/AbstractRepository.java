@@ -26,8 +26,8 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +152,66 @@ public abstract class AbstractRepository<T, E, Id> {
                 entityManager.close();
             }
         }
+    }
+
+
+    public void executeWithNativeQuery(String query, String... params) {
+        EntityManager entityManager = null;
+        try {
+            entityManager = getEntityManager();
+        } catch (Exception e) {
+            logger.error("Failed to get EntityManager", e);
+            throw new RuntimeException("Failed to get EntityManager", e);
+        }
+        try {
+           Query nativeQuery =  entityManager.createNativeQuery(query);
+           for(int i=0;i<params.length;i++){
+               nativeQuery.setParameter((i+1),params[i]);
+           }
+           entityManager.getTransaction().begin();
+           nativeQuery.executeUpdate();
+           entityManager.getTransaction().commit();
+        } catch(Exception e) {
+            logger.error("Failed to execute transaction", e);
+            throw e;
+        }finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                }
+                entityManager.close();
+            }
+        }
+
+    }
+
+
+    public List selectWithNativeQuery(String query, String... params) {
+        EntityManager entityManager = null;
+        try {
+            entityManager = getEntityManager();
+        } catch (Exception e) {
+            logger.error("Failed to get EntityManager", e);
+            throw new RuntimeException("Failed to get EntityManager", e);
+        }
+        try {
+            Query nativeQuery =  entityManager.createNativeQuery(query);
+            for(int i=0;i<params.length;i++){
+                nativeQuery.setParameter((i+1),params[i]);
+            }
+           return nativeQuery.getResultList();
+        } catch(Exception e) {
+            logger.error("Failed to execute transaction", e);
+            throw e;
+        }finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                }
+                entityManager.close();
+            }
+        }
+
     }
 
     abstract protected EntityManager getEntityManager();

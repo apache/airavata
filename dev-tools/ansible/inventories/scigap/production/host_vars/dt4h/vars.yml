@@ -1,0 +1,57 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# TODO: tus not setup yet
+tusd_vhost_servername:
+
+vhost_servername: "dt4h.scigap.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# Increase max upload size to 200MB
+#django_file_upload_max_file_size_mb: 200
+
+## Keycloak related variables
+tenant_domain: "dth-gateway"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "DT4H Gateway"
+  external:
+    - name: "Existing Institution Credentials"
+      idp_alias: "cilogon"
+      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "dth-gateway"
+experiment_data_dir: "{{ user_data_dir }}/dth-gateway"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCezRunCKlTfDr4src/q6jSFXjQXI8T6MDlm2awEbL88XWVQl2aLNlKcime7a6ZZVcaEjjzs1w/v1clIieVwc+WPRXs04xROFtvfG+M064WYghAk2J6RhoDhw+W+6H0xmOlbDsKPLm8FZNA2lyDEXshZxXf66S1KLVuW7Bdq864szt3N4iCBTnxtjZ/nF7c0jV7FYhVt7hs+Xh5edIeGztjONf/Pfhe5J0tSA1i8cY0oqzmfB2oh88+l/P6VkmtPznMG4cRqFnGVYq3QnpEm2/iUQ5BxvTY8jOuByykb5wy3HPGsgRy/mWA0hDls12drUazos+Y8MXu6PwqHFPHY7gx"
+#django_user_data_archive_max_age_days: 180
+
+admin_emails: "[('Rob Quick','rquick@iu.edu'),('Eroma Abeysinghe','eroma@gatech.edu')]"
+portal_title: "DT4H Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...

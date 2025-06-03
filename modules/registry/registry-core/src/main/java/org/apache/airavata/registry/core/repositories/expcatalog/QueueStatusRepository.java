@@ -17,11 +17,12 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.core.entities.expcatalog.QueueStatusEntity;
+import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -29,12 +30,17 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class QueueStatusRepository extends ExpCatAbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(QueueStatusRepository.class);
 
-    public QueueStatusRepository() { super(QueueStatusModel.class, QueueStatusEntity.class); }
+    public QueueStatusRepository() {
+        super(QueueStatusModel.class, QueueStatusEntity.class);
+    }
 
     public boolean createQueueStatuses(List<QueueStatusModel> queueStatusModels) throws RegistryException {
 
@@ -52,4 +58,15 @@ public class QueueStatusRepository extends ExpCatAbstractRepository<QueueStatusM
         return queueStatusModelList;
     }
 
+
+    public Optional<QueueStatusModel> getQueueStatus(String hostName, String queueName) throws RegistryException{
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.QueueStatus.HOST_NAME, hostName);
+        queryParameters.put(DBConstants.QueueStatus.QUEUE_NAME, queueName);
+        List<QueueStatusModel> queueStatusModels = select(QueryConstants.FIND_QUEUE_STATUS, 1, 0, queryParameters);
+        if (queueStatusModels != null && !queueStatusModels.isEmpty()) {
+            return Optional.of(queueStatusModels.get(0));
+        }
+        return Optional.empty();
+    }
 }

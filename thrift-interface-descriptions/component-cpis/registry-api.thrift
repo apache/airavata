@@ -737,6 +737,16 @@ service RegistryService extends base_api.BaseAPI {
            void addJob (1: required job_model.JobModel jobModel, 2: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
+           void deleteJobs (1: required string processId)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
+           i32 getJobCount(1: required status_models.JobStatus jobStatus, 2: required string gatewayId,
+            3:  required double  searchBackTimeInMinutes) throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+           map<string,double> getAVGTimeDistribution(1: required string gatewayId,
+            3:  required double  searchBackTimeInMinutes) throws (1: registry_api_errors.RegistryServiceException rse)
+
            string addProcess (1: required process_model.ProcessModel processModel, 2: required string experimentId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
@@ -745,6 +755,10 @@ service RegistryService extends base_api.BaseAPI {
 
            string addTask (1: required task_model.TaskModel taskModel, 2: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+            void deleteTasks (1: required string processId)
+                                    throws (1: registry_api_errors.RegistryServiceException rse)
 
            experiment_model.UserConfigurationDataModel getUserConfigurationData(1: required string experimentId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
@@ -757,6 +771,13 @@ service RegistryService extends base_api.BaseAPI {
 
            status_models.ProcessStatus getProcessStatus(1: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+           list<process_model.ProcessModel> getProcessListInState(1: required  status_models.ProcessState processState)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
+           list<status_models.ProcessStatus> getProcessStatusList(1: required  string processId)
+                                              throws (1: registry_api_errors.RegistryServiceException rse)
 
            /*
            * queryType can be TASK_ID OR PROCESS_ID
@@ -2268,6 +2289,52 @@ service RegistryService extends base_api.BaseAPI {
                */
                bool isUserResourceProfileExists(1: required string userId, 2: required string gatewayID)
                      throws (1: registry_api_errors.RegistryServiceException rse)
+               /**
+                * Check if the given Compute Resource Preference exists.
+                *
+                * @param userId
+                *   The identifier for the requested User.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource Profile.
+                * @param computeResourceId
+                *   The identifier for the requested computeResourcePreference.
+                *
+                * @return true if compute resource preference exisists.
+                *
+               */
+               bool isUserComputeResourcePreferenceExists(1: required string userId, 2: required string gatewayID,
+                3: required string computeResourceId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+               /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param computeResourceId
+                *   The identifier for the requested compute resource.
+                *
+                * @param groupResourceProfileId
+                *   The identifier for the groupResourceProfileId.
+                *
+                * @return true if groupComputeResourcePreference exists.
+                *
+               */
+               bool isGroupComputeResourcePreferenceExists(1: required string computeResourceId, 2: required string groupResourceProfileId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Check if the given User Resource Profile exists.
+                *
+                * @param groupResourceProfileId
+                *   The identifier for the requested groupResourceProfileId.
+                *
+                * @return true if groupResourceProfile exists.
+                *
+               */
+               bool isGroupResourceProfileExists(1: required string groupResourceProfileId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
 
                /**
                 * Fetch the given User Resource Resource Profile.
@@ -2579,8 +2646,11 @@ service RegistryService extends base_api.BaseAPI {
                list<status_models.QueueStatusModel> getLatestQueueStatuses()
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
-               void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
+              void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
                                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+              status_models.QueueStatusModel getQueueStatus(1: required string hostName,2: required string queueName)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
 
               /**
               * API Methods related to replica catalog

@@ -16,22 +16,8 @@
 
 import logging
 
-from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
-
 from airavata_sdk.clients.api_server_client import APIServerClient
-
-from airavata.model.workspace.ttypes import Gateway, Notification, Project
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
-from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
-from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, \
-    ReplicaLocationCategory, ReplicaPersistentType
-
-from airavata.model.application.io.ttypes import InputDataObjectType
-
-from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
-
-from airavata.api.error.ttypes import TException, InvalidRequestException, AiravataSystemException, \
-    AiravataClientException, AuthorizationException
+from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
 logger = logging.getLogger(__name__)
 

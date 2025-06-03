@@ -38,9 +38,6 @@ const string USER_PROFILE_CPI_NAME = "UserProfileService"
 
 service UserProfileService extends base_api.BaseAPI {
 
-  string getAPIVersion ()
-                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe)
-
   /**
    * Create an initial UserProfile based on information in the IAM service for this user.
    */

@@ -1,0 +1,53 @@
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+grpc:
+  server:
+    port: 19900
+
+server:
+  port: 18880
+  address: 0.0.0.0
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  datasource:
+    url: "jdbc:mariadb://airavata.host:13306/app_catalog"
+    username: "root"
+    password: "123456"
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: AppCatalogPool
+      leak-detection-threshold: 20000
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+
+airavata:
+  server:
+    url: scigap02.sciencegateways.iu.edu
+    port: 9930
+    truststore:
+      path: /Users/lahiruj/Projects/airavata/lahiruj/modules/agent-framework/agent-service/src/main/resources/trustore.jks
+  storageResourceId: gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6
+  cluster:
+    applicationInterfaceId:
+      expanse: AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6
+      jetstream: AiravataAgent_f4313e4d-20c2-4bf6-bff1-xcver3343

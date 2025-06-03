@@ -23,14 +23,18 @@
 # NOTE: futurewater is deployed to a Jetstream VM
 
 gateway_data_store_hostname: "gateway.futurewater.indiana.edu"
+# TODO: update host name of this storage resource to point to the new futurewater VM
 gateway_data_store_resource_id: "js-171-92.jetstream-cloud.org_1a76397d-cc28-4ec9-82e8-d27c5cf80c79"
+real_user_data_dir: "/media/volume/sdb/gateway-user-data"
+# Keep user_data_dir same as it was on old VM
+user_data_dir: "/var/www/portals/gateway-user-data"
 tusd_vhost_servername: "tus.scigap.org"
 
 vhost_servername: "gateway.futurewater.indiana.edu"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.futurewater.indiana.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
 
 django_file_upload_max_file_size_mb: 6000
 
@@ -51,7 +55,7 @@ gateway_id: "pfec-hydro"
 experiment_data_dir: "{{ user_data_dir }}/pfec-hydro"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9qczDIVUhTxPmMsvF2J/NGIWo35HDgm3IUL41w1bUi5FX3CzuKwWtBh6IGoY4l+ibvWiRw2w9+MLWPhAWglLjXXekHCc/C5LuU8qi6zGZgQfD6U4yFpHXmkZLUHt30iKbLJXgypy7MaQ4n3sWDXJe2Dbsc4FMSK+KXFQ5KNZ/meOCCurEswcDyz4Mrvf9ZSZWzq6vPTXtdHo+/oRMmiGNZqhcBkqIWfz5alzyq4HTAidz5uc6fD8mqj1hg87qywv6OwMUAxB84S8glcLs5ZzuTbpGl3sdftVH9zqabx6eAGXX9V389qdLp1k//u45ph+INOk11HFCCxmh/YmqQM9f"
 
-admin_emails: "[('SGRC', 'sgrc-iu-group@iu.edu'),('Jen Brand','jbrand@uwsp.edu'),('Chen Zhu','chenzhu@indiana.edu'),('Lei Gong','lgong@indiana.edu'),('Bidisha Faruque','bidabesh@iu.edu')]"
+admin_emails: "[('Rob Quick', 'rquick@iu.edu'),('Jun Wang','wang208@iu.edu'),('Eroma Abeysinghe','eroma@gatech.edu'),('Jen Brand','jbrand@uwsp.edu'),('Chen Zhu','chenzhu@indiana.edu'),('Lei Gong','lgong@indiana.edu'),('Bidisha Faruque','bidabesh@iu.edu')]"
 portal_title: "Future Water Gateway"
 
 ...

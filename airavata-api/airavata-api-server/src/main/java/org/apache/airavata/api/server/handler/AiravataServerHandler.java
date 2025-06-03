@@ -327,6 +327,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client client = registryClientPool.getResource();
         try {
             boolean isExists = client.isUserExists(gatewayId, userName);
+            logger.debug("Checking if the user" + userName + "exists in the gateway" + gatewayId);
             registryClientPool.returnResource(client);
             return isExists;
         } catch (Exception e) {
@@ -413,6 +414,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             registryClientPool.returnResource(registryClient);
             sharingClientPool.returnResource(sharingClient);
+            logger.debug("Airavata successfully created the gateway with " + gatewayId);
 
             return gatewayId;
         } catch (Exception e) {
@@ -482,6 +484,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             Gateway result = regClient.getGateway(gatewayId);
             registryClientPool.returnResource(regClient);
+            logger.debug("Airavata found the gateway with " + gatewayId);
             return result;
         } catch (Exception e) {
             logger.error("Error while getting the gateway", e);
@@ -518,6 +521,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
+            logger.debug("Airavata searching for all gateways");
             List<Gateway> result = regClient.getAllGateways();
             registryClientPool.returnResource(regClient);
             return result;
@@ -537,6 +541,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
+            logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits");
             boolean result = regClient.isGatewayExist(gatewayId);
             registryClientPool.returnResource(regClient);
             return result;
@@ -770,6 +775,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             CredentialSummary credentialSummary = csClient.getCredentialSummary(tokenId, gatewayId);
             csClientPool.returnResource(csClient);
             sharingClientPool.returnResource(sharingClient);
+            logger.debug("Airavata retrived the credential summary for token " + tokenId + "GatewayId: "+ gatewayId);
             return credentialSummary;
         } catch (AuthorizationException ae) {
             String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -809,6 +815,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<CredentialSummary> credentialSummaries = csClient.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
             csClientPool.returnResource(csClient);
             sharingClientPool.returnResource(sharingClient);
+            logger.debug("Airavata successfully retrived credential summaries of type " + type + " GatewayId: " + gatewayId);
             return credentialSummaries;
         } catch (Exception e) {
             String msg = "Error retrieving credential summaries of type " + type + ". GatewayId: "+ gatewayId;
@@ -1639,6 +1646,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClientPool.returnResource(sharingClient);
                 return null;
             }
+        } catch (ExperimentNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            throw e;
         } catch (Exception e) {
             logger.error("Error while getting the experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2185,12 +2197,18 @@ public class AiravataServerHandler implements Airavata.Iface {
 
             // Verify user has READ access to Application Deployment
             final String appInterfaceId = experiment.getExecutionId();
-            final String resourceHostId = experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId();
             ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
+
             List<String> appModuleIds = applicationInterfaceDescription.getApplicationModules();
             // Assume that there is only one app module for this interface (otherwise, how could we figure out the deployment)
             String appModuleId = appModuleIds.get(0);
             List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = regClient.getApplicationDeployments(appModuleId);
+
+
+            if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
+            final String resourceHostId = experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId();
+
+
             Optional<ApplicationDeploymentDescription> applicationDeploymentDescription = applicationDeploymentDescriptions
                     .stream()
                     .filter(dep -> dep.getComputeHostId().equals(resourceHostId))
@@ -2200,8 +2218,25 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if (!sharingClient.userHasAccess(gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
                     throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to app deployment " + appDeploymentId);
                 }
-            } else {
+            }
+            else {
                 throw new InvalidRequestException("Application deployment doesn't exist for application interface " + appInterfaceId + " and host " + resourceHostId + " in gateway " + gatewayId);
+            }} else if (experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null &&
+                    !experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList().isEmpty()) {
+               List<ComputationalResourceSchedulingModel> compResourceSchedulingList  =  experiment.
+                       getUserConfigurationData().getAutoScheduledCompResourceSchedulingList();
+               for(ComputationalResourceSchedulingModel crScheduling: compResourceSchedulingList){
+                   Optional<ApplicationDeploymentDescription> applicationDeploymentDescription = applicationDeploymentDescriptions
+                           .stream()
+                           .filter(dep -> dep.getComputeHostId().equals(crScheduling.getResourceHostId()))
+                           .findFirst();
+                   if (applicationDeploymentDescription.isPresent()) {
+                       final String appDeploymentId = applicationDeploymentDescription.get().getAppDeploymentId();
+                       if (!sharingClient.userHasAccess(gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
+                           throw new AuthorizationException("User " + username + " in gateway " + gatewayId + " doesn't have access to app deployment " + appDeploymentId);
+                       }
+                   }
+               }
             }
             submitExperiment(gatewayId, airavataExperimentId);
             logger.info("Experiment with ExpId: " + airavataExperimentId + " was submitted in gateway with gatewayID: " + gatewayId);

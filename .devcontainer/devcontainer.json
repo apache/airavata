@@ -1,0 +1,27 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+  "name": "Airavata",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "features": {},
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "foxundermoon.shell-format",
+        "golang.go",
+        "lkrms.inifmt",
+        "ms-python.python",
+        "ms-python.autopep8",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        "njpwerner.autodocstring",
+        "vscjava.vscode-java-pack",
+      ]
+    },
+  }
+}

@@ -1,0 +1,75 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# TODO: tus not setup yet
+tusd_vhost_servername:
+
+# NOTE: Dev SMILES portal is deployed to a Jetstream2 VM
+real_user_data_dir: "/media/volume/sdb/data/gateway-user-data"
+user_data_dir: "/var/www/portals/gateway-user-data"
+gateway_data_store_hostname: "dev.smiles.js2.seagrid.org"
+gateway_data_store_resource_id: "dev.smiles.js2.seagrid.org_cbaeea2b-b30a-47c4-b9dd-98d67ec6c7e4"
+
+vhost_servername: "dev.smiles.seagrid.org"
+vhost_ssl: True
+ssl_certificate_file: "/etc/letsencrypt/live/{{ vhost_servername }}/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ vhost_servername }}/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.pem"
+
+# TODO: fix frontend build on install, for now install/update manually
+# airavata_django_extra_dependencies:
+#   - name: "git+https://github.com/SciGaP/smiles-django-portal.git#egg=smiles-django-portal"
+#     editable: true
+
+# Increase max upload size to 2GB
+#django_file_upload_max_file_size_mb: 2000
+
+#django_extra_settings:
+#  CELERY_BROKER_URL: "redis://localhost:6379"
+#  CELERY_RESULT_BACKEND: "redis://localhost:6379"
+#  LOGIN_REDIRECT_URL: "/smiles/home/lit-dp-list"
+#  GATEWAY_DATA_SHARED_DIRECTORIES:
+#    shared:
+#      path: /var/www/portals/gateway-user-data/dev-smiles/Shared
+
+## Keycloak related variables
+tenant_domain: "dev-smiles"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+auth_options:
+  password:
+    name: "Dev SMILES Gateway"
+#  external:
+#    - name: "Existing Institution Credentials"
+#      idp_alias: "cilogon"
+#      logo: "images/cilogon-logo-24x24-b.png"
+
+gateway_id: "dev-smiles"
+experiment_data_dir: "{{ user_data_dir }}/dev-smiles"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC0f7ibDSSaaXNOb8CCGtIfwlifSiE3TVkWs4/NsaaGuR03WJitSOhiIaS1oZFne39xQIOGZLPsJjO4WzA5/JVhO1JxvoDVjyK5zBQD2K95RXyEXOJH68Qp8GtL08juXepsqiLDXAO/1pM4T1Pyvv+lkGbxxNeaeUw6N+fX4guxny/yGZyESJmwX14bPMvKre0r1QJRNbI1oH+JYxT1icEJucqDDYVxVaG+h97SY5gyy5mxm1QZO9g17CaAzBCwc0ZhERUtEaECmqjzFxndql5lob86UfYCZa4CY2GJko+FBEh4GDRBHSSjF7S2lrHoTNMSUu8Um/9eBv1Q2I7iVeMF"
+
+admin_emails: "[('Sudhakar Pamidighantam', 'spamidig@gatech.edu'), ('Eroma Abeysinghe', 'eroma@gatech.edu'), ('Lahiru Jayathilake', 'ljayathilake3@gatech.edu')]"
+portal_title: "Dev SMILES Gateway"
+
+#django_google_analytics_tracking_id: "UA-66348921-1"
+...

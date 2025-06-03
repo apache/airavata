@@ -161,6 +161,199 @@ class GroupAccountSSHProvisionerConfig {
 
 }
 
+class ComputeResourceReservation {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $reservationId = "DO_NOT_SET_AT_CLIENTS";
+  /**
+   * @var string
+   */
+  public $reservationName = null;
+  /**
+   * @var string[]
+   */
+  public $queueNames = null;
+  /**
+   * @var int
+   */
+  public $startTime = null;
+  /**
+   * @var int
+   */
+  public $endTime = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'reservationId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'reservationName',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'queueNames',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        4 => array(
+          'var' => 'startTime',
+          'type' => TType::I64,
+          ),
+        5 => array(
+          'var' => 'endTime',
+          'type' => TType::I64,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['reservationId'])) {
+        $this->reservationId = $vals['reservationId'];
+      }
+      if (isset($vals['reservationName'])) {
+        $this->reservationName = $vals['reservationName'];
+      }
+      if (isset($vals['queueNames'])) {
+        $this->queueNames = $vals['queueNames'];
+      }
+      if (isset($vals['startTime'])) {
+        $this->startTime = $vals['startTime'];
+      }
+      if (isset($vals['endTime'])) {
+        $this->endTime = $vals['endTime'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ComputeResourceReservation';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->reservationId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->reservationName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::LST) {
+            $this->queueNames = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $xfer += $input->readString($elem5);
+              $this->queueNames []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->startTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->endTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ComputeResourceReservation');
+    if ($this->reservationId !== null) {
+      $xfer += $output->writeFieldBegin('reservationId', TType::STRING, 1);
+      $xfer += $output->writeString($this->reservationId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reservationName !== null) {
+      $xfer += $output->writeFieldBegin('reservationName', TType::STRING, 2);
+      $xfer += $output->writeString($this->reservationName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->queueNames !== null) {
+      if (!is_array($this->queueNames)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('queueNames', TType::LST, 3);
+      {
+        $output->writeListBegin(TType::STRING, count($this->queueNames));
+        {
+          foreach ($this->queueNames as $iter6)
+          {
+            $xfer += $output->writeString($iter6);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->startTime !== null) {
+      $xfer += $output->writeFieldBegin('startTime', TType::I64, 4);
+      $xfer += $output->writeI64($this->startTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->endTime !== null) {
+      $xfer += $output->writeFieldBegin('endTime', TType::I64, 5);
+      $xfer += $output->writeI64($this->endTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class GroupComputeResourcePreference {
   static $_TSPEC;
 
@@ -215,18 +408,6 @@ class GroupComputeResourcePreference {
   /**
    * @var string
    */
-  public $reservation = null;
-  /**
-   * @var int
-   */
-  public $reservationStartTime = null;
-  /**
-   * @var int
-   */
-  public $reservationEndTime = null;
-  /**
-   * @var string
-   */
   public $sshAccountProvisioner = null;
   /**
    * @var \Airavata\Model\AppCatalog\GroupResourceProfile\GroupAccountSSHProvisionerConfig[]
@@ -236,6 +417,10 @@ class GroupComputeResourcePreference {
    * @var string
    */
   public $sshAccountProvisionerAdditionalInfo = null;
+  /**
+   * @var \Airavata\Model\AppCatalog\GroupResourceProfile\ComputeResourceReservation[]
+   */
+  public $reservations = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -288,18 +473,6 @@ class GroupComputeResourcePreference {
           'var' => 'qualityOfService',
           'type' => TType::STRING,
           ),
-        13 => array(
-          'var' => 'reservation',
-          'type' => TType::STRING,
-          ),
-        14 => array(
-          'var' => 'reservationStartTime',
-          'type' => TType::I64,
-          ),
-        15 => array(
-          'var' => 'reservationEndTime',
-          'type' => TType::I64,
-          ),
         16 => array(
           'var' => 'sshAccountProvisioner',
           'type' => TType::STRING,
@@ -316,6 +489,15 @@ class GroupComputeResourcePreference {
         18 => array(
           'var' => 'sshAccountProvisionerAdditionalInfo',
           'type' => TType::STRING,
+          ),
+        19 => array(
+          'var' => 'reservations',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\GroupResourceProfile\ComputeResourceReservation',
+            ),
           ),
         );
     }
@@ -356,15 +538,6 @@ class GroupComputeResourcePreference {
       if (isset($vals['qualityOfService'])) {
         $this->qualityOfService = $vals['qualityOfService'];
       }
-      if (isset($vals['reservation'])) {
-        $this->reservation = $vals['reservation'];
-      }
-      if (isset($vals['reservationStartTime'])) {
-        $this->reservationStartTime = $vals['reservationStartTime'];
-      }
-      if (isset($vals['reservationEndTime'])) {
-        $this->reservationEndTime = $vals['reservationEndTime'];
-      }
       if (isset($vals['sshAccountProvisioner'])) {
         $this->sshAccountProvisioner = $vals['sshAccountProvisioner'];
       }
@@ -373,6 +546,9 @@ class GroupComputeResourcePreference {
       }
       if (isset($vals['sshAccountProvisionerAdditionalInfo'])) {
         $this->sshAccountProvisionerAdditionalInfo = $vals['sshAccountProvisionerAdditionalInfo'];
+      }
+      if (isset($vals['reservations'])) {
+        $this->reservations = $vals['reservations'];
       }
     }
   }
@@ -480,27 +656,6 @@ class GroupComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->reservation);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 14:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->reservationStartTime);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 15:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->reservationEndTime);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         case 16:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->sshAccountProvisioner);
@@ -511,15 +666,15 @@ class GroupComputeResourcePreference {
         case 17:
           if ($ftype == TType::LST) {
             $this->groupSSHAccountProvisionerConfigs = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\AppCatalog\GroupResourceProfile\GroupAccountSSHProvisionerConfig();
-              $xfer += $elem5->read($input);
-              $this->groupSSHAccountProvisionerConfigs []= $elem5;
+              $elem12 = null;
+              $elem12 = new \Airavata\Model\AppCatalog\GroupResourceProfile\GroupAccountSSHProvisionerConfig();
+              $xfer += $elem12->read($input);
+              $this->groupSSHAccountProvisionerConfigs []= $elem12;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -529,6 +684,24 @@ class GroupComputeResourcePreference {
         case 18:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->sshAccountProvisionerAdditionalInfo);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 19:
+          if ($ftype == TType::LST) {
+            $this->reservations = array();
+            $_size13 = 0;
+            $_etype16 = 0;
+            $xfer += $input->readListBegin($_etype16, $_size13);
+            for ($_i17 = 0; $_i17 < $_size13; ++$_i17)
+            {
+              $elem18 = null;
+              $elem18 = new \Airavata\Model\AppCatalog\GroupResourceProfile\ComputeResourceReservation();
+              $xfer += $elem18->read($input);
+              $this->reservations []= $elem18;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -606,21 +779,6 @@ class GroupComputeResourcePreference {
       $xfer += $output->writeString($this->qualityOfService);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->reservation !== null) {
-      $xfer += $output->writeFieldBegin('reservation', TType::STRING, 13);
-      $xfer += $output->writeString($this->reservation);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->reservationStartTime !== null) {
-      $xfer += $output->writeFieldBegin('reservationStartTime', TType::I64, 14);
-      $xfer += $output->writeI64($this->reservationStartTime);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->reservationEndTime !== null) {
-      $xfer += $output->writeFieldBegin('reservationEndTime', TType::I64, 15);
-      $xfer += $output->writeI64($this->reservationEndTime);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->sshAccountProvisioner !== null) {
       $xfer += $output->writeFieldBegin('sshAccountProvisioner', TType::STRING, 16);
       $xfer += $output->writeString($this->sshAccountProvisioner);
@@ -634,9 +792,9 @@ class GroupComputeResourcePreference {
       {
         $output->writeListBegin(TType::STRUCT, count($this->groupSSHAccountProvisionerConfigs));
         {
-          foreach ($this->groupSSHAccountProvisionerConfigs as $iter6)
+          foreach ($this->groupSSHAccountProvisionerConfigs as $iter19)
           {
-            $xfer += $iter6->write($output);
+            $xfer += $iter19->write($output);
           }
         }
         $output->writeListEnd();
@@ -646,6 +804,23 @@ class GroupComputeResourcePreference {
     if ($this->sshAccountProvisionerAdditionalInfo !== null) {
       $xfer += $output->writeFieldBegin('sshAccountProvisionerAdditionalInfo', TType::STRING, 18);
       $xfer += $output->writeString($this->sshAccountProvisionerAdditionalInfo);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->reservations !== null) {
+      if (!is_array($this->reservations)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('reservations', TType::LST, 19);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->reservations));
+        {
+          foreach ($this->reservations as $iter20)
+          {
+            $xfer += $iter20->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -759,14 +934,14 @@ class ComputeResourcePolicy {
         case 4:
           if ($ftype == TType::LST) {
             $this->allowedBatchQueues = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size21 = 0;
+            $_etype24 = 0;
+            $xfer += $input->readListBegin($_etype24, $_size21);
+            for ($_i25 = 0; $_i25 < $_size21; ++$_i25)
             {
-              $elem12 = null;
-              $xfer += $input->readString($elem12);
-              $this->allowedBatchQueues []= $elem12;
+              $elem26 = null;
+              $xfer += $input->readString($elem26);
+              $this->allowedBatchQueues []= $elem26;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -809,9 +984,9 @@ class ComputeResourcePolicy {
       {
         $output->writeListBegin(TType::STRING, count($this->allowedBatchQueues));
         {
-          foreach ($this->allowedBatchQueues as $iter13)
+          foreach ($this->allowedBatchQueues as $iter27)
           {
-            $xfer += $output->writeString($iter13);
+            $xfer += $output->writeString($iter27);
           }
         }
         $output->writeListEnd();
@@ -1229,15 +1404,15 @@ class GroupResourceProfile {
         case 4:
           if ($ftype == TType::LST) {
             $this->computePreferences = array();
-            $_size14 = 0;
-            $_etype17 = 0;
-            $xfer += $input->readListBegin($_etype17, $_size14);
-            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            $_size28 = 0;
+            $_etype31 = 0;
+            $xfer += $input->readListBegin($_etype31, $_size28);
+            for ($_i32 = 0; $_i32 < $_size28; ++$_i32)
             {
-              $elem19 = null;
-              $elem19 = new \Airavata\Model\AppCatalog\GroupResourceProfile\GroupComputeResourcePreference();
-              $xfer += $elem19->read($input);
-              $this->computePreferences []= $elem19;
+              $elem33 = null;
+              $elem33 = new \Airavata\Model\AppCatalog\GroupResourceProfile\GroupComputeResourcePreference();
+              $xfer += $elem33->read($input);
+              $this->computePreferences []= $elem33;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1247,15 +1422,15 @@ class GroupResourceProfile {
         case 5:
           if ($ftype == TType::LST) {
             $this->computeResourcePolicies = array();
-            $_size20 = 0;
-            $_etype23 = 0;
-            $xfer += $input->readListBegin($_etype23, $_size20);
-            for ($_i24 = 0; $_i24 < $_size20; ++$_i24)
+            $_size34 = 0;
+            $_etype37 = 0;
+            $xfer += $input->readListBegin($_etype37, $_size34);
+            for ($_i38 = 0; $_i38 < $_size34; ++$_i38)
             {
-              $elem25 = null;
-              $elem25 = new \Airavata\Model\AppCatalog\GroupResourceProfile\ComputeResourcePolicy();
-              $xfer += $elem25->read($input);
-              $this->computeResourcePolicies []= $elem25;
+              $elem39 = null;
+              $elem39 = new \Airavata\Model\AppCatalog\GroupResourceProfile\ComputeResourcePolicy();
+              $xfer += $elem39->read($input);
+              $this->computeResourcePolicies []= $elem39;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1265,15 +1440,15 @@ class GroupResourceProfile {
         case 6:
           if ($ftype == TType::LST) {
             $this->batchQueueResourcePolicies = array();
-            $_size26 = 0;
-            $_etype29 = 0;
-            $xfer += $input->readListBegin($_etype29, $_size26);
-            for ($_i30 = 0; $_i30 < $_size26; ++$_i30)
+            $_size40 = 0;
+            $_etype43 = 0;
+            $xfer += $input->readListBegin($_etype43, $_size40);
+            for ($_i44 = 0; $_i44 < $_size40; ++$_i44)
             {
-              $elem31 = null;
-              $elem31 = new \Airavata\Model\AppCatalog\GroupResourceProfile\BatchQueueResourcePolicy();
-              $xfer += $elem31->read($input);
-              $this->batchQueueResourcePolicies []= $elem31;
+              $elem45 = null;
+              $elem45 = new \Airavata\Model\AppCatalog\GroupResourceProfile\BatchQueueResourcePolicy();
+              $xfer += $elem45->read($input);
+              $this->batchQueueResourcePolicies []= $elem45;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1337,9 +1512,9 @@ class GroupResourceProfile {
       {
         $output->writeListBegin(TType::STRUCT, count($this->computePreferences));
         {
-          foreach ($this->computePreferences as $iter32)
+          foreach ($this->computePreferences as $iter46)
           {
-            $xfer += $iter32->write($output);
+            $xfer += $iter46->write($output);
           }
         }
         $output->writeListEnd();
@@ -1354,9 +1529,9 @@ class GroupResourceProfile {
       {
         $output->writeListBegin(TType::STRUCT, count($this->computeResourcePolicies));
         {
-          foreach ($this->computeResourcePolicies as $iter33)
+          foreach ($this->computeResourcePolicies as $iter47)
           {
-            $xfer += $iter33->write($output);
+            $xfer += $iter47->write($output);
           }
         }
         $output->writeListEnd();
@@ -1371,9 +1546,9 @@ class GroupResourceProfile {
       {
         $output->writeListBegin(TType::STRUCT, count($this->batchQueueResourcePolicies));
         {
-          foreach ($this->batchQueueResourcePolicies as $iter34)
+          foreach ($this->batchQueueResourcePolicies as $iter48)
           {
-            $xfer += $iter34->write($output);
+            $xfer += $iter48->write($output);
           }
         }
         $output->writeListEnd();

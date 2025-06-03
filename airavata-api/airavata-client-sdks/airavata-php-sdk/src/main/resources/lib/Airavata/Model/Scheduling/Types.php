@@ -73,6 +73,10 @@ class ComputationalResourceSchedulingModel {
    * @var string
    */
   public $overrideAllocationProjectNumber = null;
+  /**
+   * @var int
+   */
+  public $mGroupCount = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -125,6 +129,10 @@ class ComputationalResourceSchedulingModel {
           'var' => 'overrideAllocationProjectNumber',
           'type' => TType::STRING,
           ),
+        13 => array(
+          'var' => 'mGroupCount',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -163,6 +171,9 @@ class ComputationalResourceSchedulingModel {
       }
       if (isset($vals['overrideAllocationProjectNumber'])) {
         $this->overrideAllocationProjectNumber = $vals['overrideAllocationProjectNumber'];
+      }
+      if (isset($vals['mGroupCount'])) {
+        $this->mGroupCount = $vals['mGroupCount'];
       }
     }
   }
@@ -270,6 +281,13 @@ class ComputationalResourceSchedulingModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 13:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->mGroupCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -341,6 +359,11 @@ class ComputationalResourceSchedulingModel {
     if ($this->overrideAllocationProjectNumber !== null) {
       $xfer += $output->writeFieldBegin('overrideAllocationProjectNumber', TType::STRING, 12);
       $xfer += $output->writeString($this->overrideAllocationProjectNumber);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->mGroupCount !== null) {
+      $xfer += $output->writeFieldBegin('mGroupCount', TType::I32, 13);
+      $xfer += $output->writeI32($this->mGroupCount);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

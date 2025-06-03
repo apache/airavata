@@ -1,0 +1,183 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package org.apache.airavata.fuse;
+
+option java_multiple_files = true;
+option java_package = "org.apache.airavata.fuse";
+option java_outer_classname = "AiravataFUSEServiceProto";
+
+import "google/protobuf/timestamp.proto";
+
+
+// RPC Helper Context - Define as needed
+message RPCContext {
+  string GatewayId = 1;
+  string AccessToken = 2;
+  string AgentId = 3;
+}
+
+// Primitive
+message OpContext {
+  uint64 FuseId = 1;
+  uint64 Pid = 2;
+  uint64 Uid = 3;
+}
+
+// Toplevel
+message StatFs {
+  uint32 BlockSize = 1;
+  uint64 Blocks = 2;
+  uint64 BlocksFree = 3;
+  uint64 BlocksAvailable = 4;
+  uint32 IoSize = 5;
+  uint64 Inodes = 6;
+  uint64 InodesFree = 7;
+}
+
+message FileInfo {
+  string Name = 1;
+  int64 Size = 2;
+  uint32 Mode = 3;
+  google.protobuf.Timestamp ModTime = 4;
+  bool IsDir = 5;
+  uint64 Ino = 6;
+}
+
+message OpenedDir {
+  uint64 Inode = 1;
+  uint64 Handle = 2;
+  OpContext OpContext = 3;
+  bool CacheDir = 4;
+  bool KeepCache = 5;
+}
+
+message OpenedFile {
+  uint64 Inode = 1;
+  uint64 Handle = 2;
+  bool KeepPageCache = 3;
+  bool UseDirectIO = 4;
+  uint32 OpenFlags = 5;
+  OpContext OpContext = 6;
+}
+
+message DirEntry {
+  string Name = 1;
+  bool IsDir = 2;
+  uint32 FileMode = 3;
+  FileInfo Info = 4;
+}
+
+message FileEntry {
+  uint64 Inode = 1;
+  uint64 Handle = 2;
+  int64 Offset = 3;
+  int64 Size = 4;
+  bytes Dst = 5;
+  repeated bytes Data = 6;
+  int32 BytesRead = 7;
+  OpContext OpContext = 8;
+}
+
+message InodeAtt {
+  uint64 Size = 1;
+  uint32 Nlink = 2;
+  uint32 FileMode = 3;
+  google.protobuf.Timestamp Atime = 5;
+  google.protobuf.Timestamp Mtime = 6;
+  google.protobuf.Timestamp Ctime = 7;
+}
+
+// Request Bodies
+message StatFsReq {
+  string Name = 1;
+  RPCContext Context = 2;
+}
+message FileInfoReq {
+  string Name = 1;
+  RPCContext Context = 2;
+}
+message OpenDirReq {
+  string Name = 1;
+  RPCContext Context = 2;
+}
+message OpenFileReq {
+  string Name = 1;
+  RPCContext Context = 2;
+}
+message ReadDirReq {
+  string Name = 1;
+  RPCContext Context = 2;
+}
+message ReadFileReq {
+  string Name = 1;
+  RPCContext Context = 2;
+}
+message WriteFileReq {
+  string Name = 1;
+  RPCContext Context = 2;
+  bytes Data = 3;
+  int64 Offset = 4;
+}
+message SetInodeAttReq {
+  string Name = 1;
+  RPCContext Context = 2;
+  optional uint64 Size = 3;
+  optional uint32 FileMode = 4;
+  optional google.protobuf.Timestamp ATime = 5;
+  optional google.protobuf.Timestamp MTime = 6;
+}
+
+// Response Bodies
+message StatFsRes {
+  StatFs Result = 1;
+}
+message FileInfoRes {
+  FileInfo Result = 1;
+}
+message OpenDirRes {
+  OpenedDir Result = 1;
+}
+message OpenFileRes {
+  OpenedFile Result = 1;
+}
+message ReadDirRes {
+  repeated DirEntry Result = 1;
+}
+message ReadFileRes {
+  FileEntry Result = 1;
+}
+message WriteFileRes {
+  bool Result = 1;
+}
+message SetInodeAttRes {
+  InodeAtt Result = 1;
+}
+
+// Service Definition
+service FuseService {
+  rpc StatFs(StatFsReq) returns (StatFsRes) {}
+  rpc FileInfo(FileInfoReq) returns (FileInfoRes) {}
+  rpc OpenDir(OpenDirReq) returns (OpenDirRes) {}
+  rpc OpenFile(OpenFileReq) returns (OpenFileRes) {}
+  rpc ReadDir(ReadDirReq) returns (ReadDirRes) {}
+  rpc ReadFile(ReadFileReq) returns (ReadFileRes) {}
+  rpc WriteFile(WriteFileReq) returns (WriteFileRes) {}
+  rpc SetInodeAtt(SetInodeAttReq) returns (SetInodeAttRes) {}
+}

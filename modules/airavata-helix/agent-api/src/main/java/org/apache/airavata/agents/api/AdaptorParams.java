@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO: Class level comments please
+ * This class provides methods to serialize and deserialize its instances to and from JSON files using Jackson's ObjectMapper
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

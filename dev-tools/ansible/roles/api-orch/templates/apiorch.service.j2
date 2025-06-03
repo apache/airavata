@@ -29,7 +29,7 @@ Wants=rabbitmq-server.service zookeeper.service mysql.service
 
 [Service]
 Type=forking
-ExecStart={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh -d api-orch -log "{{ api_orch_log_dir }}/output.log"
+ExecStart={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh -d api-orch -log "{{ api_orch_log_dir }}/output.log" -enableLegacyTLS
 ExecStop={{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-stop.sh
 Restart=always
 TimeoutSec=60

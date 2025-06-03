@@ -1172,6 +1172,138 @@ void Gateway::printTo(std::ostream& out) const {
 }
 
 
+GatewayUsageReportingCommand::~GatewayUsageReportingCommand() throw() {
+}
+
+
+void GatewayUsageReportingCommand::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
+void GatewayUsageReportingCommand::__set_computeResourceId(const std::string& val) {
+  this->computeResourceId = val;
+}
+
+void GatewayUsageReportingCommand::__set_command(const std::string& val) {
+  this->command = val;
+}
+
+uint32_t GatewayUsageReportingCommand::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+  bool isset_computeResourceId = false;
+  bool isset_command = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->computeResourceId);
+          isset_computeResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->command);
+          isset_command = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_computeResourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_command)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t GatewayUsageReportingCommand::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("GatewayUsageReportingCommand");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("command", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->command);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(GatewayUsageReportingCommand &a, GatewayUsageReportingCommand &b) {
+  using ::std::swap;
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.computeResourceId, b.computeResourceId);
+  swap(a.command, b.command);
+}
+
+GatewayUsageReportingCommand::GatewayUsageReportingCommand(const GatewayUsageReportingCommand& other21) {
+  gatewayId = other21.gatewayId;
+  computeResourceId = other21.computeResourceId;
+  command = other21.command;
+}
+GatewayUsageReportingCommand& GatewayUsageReportingCommand::operator=(const GatewayUsageReportingCommand& other22) {
+  gatewayId = other22.gatewayId;
+  computeResourceId = other22.computeResourceId;
+  command = other22.command;
+  return *this;
+}
+void GatewayUsageReportingCommand::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "GatewayUsageReportingCommand(";
+  out << "gatewayId=" << to_string(gatewayId);
+  out << ", " << "computeResourceId=" << to_string(computeResourceId);
+  out << ", " << "command=" << to_string(command);
+  out << ")";
+}
+
+
 Notification::~Notification() throw() {
 }
 
@@ -1295,9 +1427,9 @@ uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast21;
-          xfer += iprot->readI32(ecast21);
-          this->priority = (NotificationPriority::type)ecast21;
+          int32_t ecast23;
+          xfer += iprot->readI32(ecast23);
+          this->priority = (NotificationPriority::type)ecast23;
           this->__isset.priority = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1381,27 +1513,27 @@ void swap(Notification &a, Notification &b) {
   swap(a.__isset, b.__isset);
 }
 
-Notification::Notification(const Notification& other22) {
-  notificationId = other22.notificationId;
-  gatewayId = other22.gatewayId;
-  title = other22.title;
-  notificationMessage = other22.notificationMessage;
-  creationTime = other22.creationTime;
-  publishedTime = other22.publishedTime;
-  expirationTime = other22.expirationTime;
-  priority = other22.priority;
-  __isset = other22.__isset;
+Notification::Notification(const Notification& other24) {
+  notificationId = other24.notificationId;
+  gatewayId = other24.gatewayId;
+  title = other24.title;
+  notificationMessage = other24.notificationMessage;
+  creationTime = other24.creationTime;
+  publishedTime = other24.publishedTime;
+  expirationTime = other24.expirationTime;
+  priority = other24.priority;
+  __isset = other24.__isset;
 }
-Notification& Notification::operator=(const Notification& other23) {
-  notificationId = other23.notificationId;
-  gatewayId = other23.gatewayId;
-  title = other23.title;
-  notificationMessage = other23.notificationMessage;
-  creationTime = other23.creationTime;
-  publishedTime = other23.publishedTime;
-  expirationTime = other23.expirationTime;
-  priority = other23.priority;
-  __isset = other23.__isset;
+Notification& Notification::operator=(const Notification& other25) {
+  notificationId = other25.notificationId;
+  gatewayId = other25.gatewayId;
+  title = other25.title;
+  notificationMessage = other25.notificationMessage;
+  creationTime = other25.creationTime;
+  publishedTime = other25.publishedTime;
+  expirationTime = other25.expirationTime;
+  priority = other25.priority;
+  __isset = other25.__isset;
   return *this;
 }
 void Notification::printTo(std::ostream& out) const {

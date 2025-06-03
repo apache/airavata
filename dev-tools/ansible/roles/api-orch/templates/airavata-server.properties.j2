@@ -338,3 +338,27 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 api.server.monitoring.enabled={{ api_server_monitoring_enabled }}
 api.server.monitoring.host={{ api_server_monitoring_host }}
 api.server.monitoring.port={{ api_server_monitoring_port }}
+
+
+###########################################################################
+# Metascheduler And Compute Resource Monitoring Configuration
+###########################################################################
+cluster.status.monitoring.enable={{ cluster_monitoring_enabled }}
+compute.resource.selection.policy.class={{ metascheduler_resource_selection_policy_class }}
+metascheduler.gateway={{ metascheduler_gateway }}
+metascheduler.group.resource.profile={{ metascheduler_group_resource_profile }}
+metascheduler.username={{ metascheduler_username }}
+cluster.scanning.interval={{ cluster_scanning_interval }}
+job.scanning.interval={{job_scanning_interval}}
+cluster.scanning.parallel.jobs={{ cluster_scanning_parallel_jobs }}
+metaschedluer.job.scanning.enable={{ metaschedluer_job_scanning_enable }}
+metascheduler.maximum.rescheduler.threshold = {{ metascheduler_maximum_rescheduler_threshold }}
+compute.resource.rescheduler.policy.class = {{ compute_resource_rescheduler_policy_class }}
+data.analyzer.scanning.interval=3600
+data.analyzer.scanning.parallel.jobs=1
+data.analyzer.enabled.gateways=dev-ultrascan
+data.analyzer.time.step.seconds=5
+data.analyzer.job.scanning.enable=False
+metascheduler.multiple.cr.enabling.factor=1
+
+

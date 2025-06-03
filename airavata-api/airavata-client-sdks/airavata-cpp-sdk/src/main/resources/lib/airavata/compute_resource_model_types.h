@@ -48,7 +48,8 @@ struct ResourceJobManagerType {
     LSF = 3,
     UGE = 4,
     CLOUD = 5,
-    AIRAVATA_CUSTOM = 6
+    AIRAVATA_CUSTOM = 6,
+    HTCONDOR = 7
   };
 };
 
@@ -62,7 +63,10 @@ struct JobManagerCommand {
     CHECK_JOB = 3,
     SHOW_QUEUE = 4,
     SHOW_RESERVATION = 5,
-    SHOW_START = 6
+    SHOW_START = 6,
+    SHOW_CLUSTER_INFO = 7,
+    SHOW_NO_OF_RUNNING_JOBS = 8,
+    SHOW_NO_OF_PENDING_JOBS = 9
   };
 };
 

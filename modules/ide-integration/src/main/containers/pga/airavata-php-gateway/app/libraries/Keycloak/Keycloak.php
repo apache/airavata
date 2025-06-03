@@ -88,7 +88,7 @@ class Keycloak {
 
         // Assemble POST parameters for the request.
         $post_fields = "client_id=" . urlencode($this->client_id) . "&client_secret=" . urlencode($this->client_secret) . "&grant_type=password";
-        $post_fields .= "&username=" . urlencode($username) . "&password=" . urlencode($password);
+        $post_fields .= "&username=" . urlencode($username) . "&password=" . urlencode($password) . '&scope=openid';
 
         // Obtain and return the access token from the response.
         curl_setopt($r, CURLOPT_POST, true);

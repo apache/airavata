@@ -23,7 +23,7 @@
 #    and Data Model java beans in java, C++, PHP and Python.
 
 show_usage() {
-	echo -e "Usage: $0 [docker-machine start--native-thrift] [Language to generate stubs]"
+	echo -e "Usage: $0 [Language to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tjava Generate/Update Java Stubs"
@@ -32,7 +32,6 @@ show_usage() {
 	echo -e "\tpython Generate/Update Python Stubs."
 	echo -e "\tall Generate/Update all stubs (Java, PHP, C++, Python)."
 	echo -e "\t-h[elp] Print the usage options of this script"
-	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
 
 if [ $# -lt 1 ]
@@ -47,24 +46,18 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.10.0'
-THRIFT_DOCKER_IMAGE='thrift'
-THRIFT_NATIVE="false"
+REQUIRED_THRIFT_VERSION='0.21.0'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 AIRAVATA_DIR=`dirname "$SCRIPT_DIR"`
 
 setup() {
-    if [[ $THRIFT_NATIVE == "true" ]]; then
-        if hash thrift &> /dev/null; then
-          THRIFT_EXEC=$(which thrift)
-        else
-          THRIFT_EXEC=/usr/local/bin/thrift
-        fi
-        BASEDIR="$AIRAVATA_DIR"
+    if hash thrift &> /dev/null; then
+        THRIFT_EXEC=$(which thrift)
     else
-        BASEDIR="/data"
-        THRIFT_EXEC="docker run --rm -v $AIRAVATA_DIR:$BASEDIR $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
+        THRIFT_EXEC=/usr/local/bin/thrift
     fi
+    BASEDIR="$AIRAVATA_DIR"
+    THRIFTDIR="${BASEDIR}/thrift-interface-descriptions"
 
     VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
     if [ "$VERSION" -ne 1 ] ; then
@@ -78,16 +71,16 @@ setup() {
     BASE_TARGET_DIR="$SCRIPT_DIR/target"
 
     # Thrift files
-    AIRAVATA_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/airavata-apis/airavata_api.thrift"
-    SHARING_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/component-cpis/sharing_cpi.thrift"
-    CREDENTIAL_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/component-cpis/credential-store-cpi.thrift"
-    DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/airavata_data_models.thrift"
-    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/sharing-models/sharing_models.thrift"
-    CREDENTIAL_DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/credential-store-models/credential_store_data_models.thrift"
-    APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"
-    RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/resource-catalog-models/resource_catalog_models.thrift"
-    WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-models/workflow_data_model.thrift"
-    PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/service-cpis/profile-service/profile-service-cpi.thrift"
+    AIRAVATA_API_THRIFT_FILE="${THRIFTDIR}/airavata-apis/airavata_api.thrift"
+    CREDENTIAL_API_THRIFT_FILE="${THRIFTDIR}/component-cpis/credential-store-cpi.thrift"
+    SHARING_API_THRIFT_FILE="${THRIFTDIR}/component-cpis/sharing_cpi.thrift"
+    PROFILE_SERVICE_THRIFT_FILE="${THRIFTDIR}/service-cpis/profile-service/profile-service-cpi.thrift"
+
+    DATAMODEL_THRIFT_FILE="${THRIFTDIR}/data-models/airavata_data_models.thrift"
+    APP_CATALOG_DM_THRIFT_FILE="${THRIFTDIR}/data-models/app-catalog-models/app_catalog_models.thrift"
+    RESOURCE_CATALOG_DM_THRIFT_FILE="${THRIFTDIR}/data-models/resource-catalog-models/resource_catalog_models.thrift"
+    SHARING_DM_THRIFT_FILE="${THRIFTDIR}/data-models/sharing-models/sharing_models.thrift"
+    WORKFLOW_THRIFT_FILE="${THRIFTDIR}/data-models/workflow-models/workflow_data_model.thrift"
 
     DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
     SHARING_DATAMODEL_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models'
@@ -185,12 +178,6 @@ generate_java_stubs() {
     #   The airavata_data_models.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${APP_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
-
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${RESOURCE_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
-
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
-
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
 
@@ -199,14 +186,6 @@ generate_java_stubs() {
 
     # Clear Bean generation directory as sharing data models are transferred to a different directory
     rm -rf ${JAVA_BEAN_GEN_DIR}
-
-    # Generate data models for sharing registry
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${SHARING_DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on sharing registry model
-
-    add_license_header $JAVA_BEAN_GEN_DIR
-
-    mkdir -p ${SHARING_DATAMODEL_SRC_DIR}
-    copy_changed_files ${JAVA_BEAN_GEN_DIR}/org/apache/airavata/sharing/registry/models ${SHARING_DATAMODEL_SRC_DIR}
 
     ###############################################################################
     # Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #
@@ -252,9 +231,9 @@ generate_php_stubs() {
     # Using thrift Java generator, generate the PHP classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_DM_THRIFT_FILE}  || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${APP_CATALOG_DM_THRIFT_FILE}  || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${RESOURCE_CATALOG_DM_THRIFT_FILE}   || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
@@ -307,13 +286,13 @@ generate_python_stubs() {
 
     # Using thrift Python generator, generate the python classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${CREDENTIAL_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${CREDENTIAL_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate Python thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py:enum,type_hints ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate Python thrift classes
 
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR
@@ -349,9 +328,6 @@ do
     python)    echo "Generate Python Stubs"
             setup
             generate_python_stubs
-            ;;
-    --native-thrift)
-            THRIFT_NATIVE="true"
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage

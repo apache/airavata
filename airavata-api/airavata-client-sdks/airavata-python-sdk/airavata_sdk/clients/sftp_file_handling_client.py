@@ -16,20 +16,15 @@
 
 import logging
 import os
+from datetime import datetime
+
 import paramiko
+from paramiko import SFTPClient, Transport
 from scp import SCPClient
 
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 
 class SFTPConnector(object):
@@ -42,26 +37,49 @@ class SFTPConnector(object):
 
         ssh = paramiko.SSHClient()
         self.ssh = ssh
+        # self.sftp = paramiko.SFTPClient()
         # Trust all key policy on remote host
 
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 
-    def upload_files(self, local_path, project_name, exprement_id):
+    def upload_files(self, local_path: str, project_name: str, exprement_id: str):
+        project_name = project_name.replace(" ", "_")
+        time = datetime.now().strftime('%Y-%m-%d %H:%M:%S').replace(" ", "_")
+        time = time.replace(":", "_")
+        time = time.replace("-", "_")
+        exprement_id = exprement_id+"_"+time
         remote_path = "/" + project_name + "/" + exprement_id + "/"
-
-        self.ssh.connect(self.host, self.port, self.username, password = self.password)
-        with SCPClient(self.ssh.get_transport()) as conn:
-            conn.put(local_path, remote_path, recursive=True)
-        self.ssh.close()
-
-        pathsuffix = "/" + self.username + remote_path
+        pathsuffix = self.username + remote_path
+        files = os.listdir(local_path)
+        for file in files:
+                try:
+                    transport = Transport(sock=(self.host, int(self.port)))
+                    transport.connect(username=self.username, password=self.password)
+                    connection = SFTPClient.from_transport(transport)
+                    assert connection is not None
+                    try:
+                        base_path = "/" + project_name
+                        connection.chdir(base_path)  # Test if remote_path exists
+                    except IOError:
+                        connection.mkdir(base_path)
+                    try:
+                        connection.chdir(remote_path)  # Test if remote_path exists
+                    except IOError:
+                        connection.mkdir(remote_path)
+                    connection.put(os.path.join(local_path, file), remote_path + "/" + file)
+                finally:
+                    transport.close()
         return pathsuffix
 
-    def download_files(self, local_path, project_name, exprement_id):
-        remote_path = "/" + project_name + "/" + exprement_id + "/"
-
+    def download_files(self, local_path: str, remote_path: str):
         self.ssh.connect(self.host, self.port, self.username, password = self.password)
-        with SCPClient(self.ssh.get_transport()) as conn:
+        transport = self.ssh.get_transport()
+        assert transport is not None
+        with SCPClient(transport) as conn:
             conn.get(remote_path=remote_path, local_path= local_path, recursive= True)
         self.ssh.close()
+
+    @staticmethod
+    def uploading_info(uploaded_file_size: str, total_file_size: str):
+        logging.info('uploaded_file_size : {} total_file_size : {}'.format(uploaded_file_size, total_file_size))

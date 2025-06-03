@@ -14,12 +14,12 @@
 #  limitations under the License.
 #
 
-import logging
 import configparser
+import logging
+from typing import Optional
 
-from airavata_sdk.transport.settings import CredentialStoreAPIClientSettings
 from airavata_sdk.transport import utils
-from airavata.api.credential.store.error.ttypes import CredentialStoreException
+from airavata_sdk.transport.settings import CredentialStoreServerSettings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -27,34 +27,21 @@ logger.setLevel(logging.DEBUG)
 
 class CredentialStoreClient(object):
 
-    def __init__(self, configuration_file_location=None):
-        self.credential_store_server_settings = CredentialStoreAPIClientSettings(configuration_file_location)
+    def __init__(self, configuration_file_location: Optional[str] = None):
+        self.settings = CredentialStoreServerSettings(configuration_file_location)
         self._load_settings(configuration_file_location)
-        self.credential_store_client_pool = utils.initialize_credential_store_client(
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_HOST,
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_PORT,
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_SECURE)
+        self.client = utils.initialize_credential_store_client(
+            self.settings.CREDENTIAL_STORE_API_HOST,
+            self.settings.CREDENTIAL_STORE_API_PORT,
+            self.settings.CREDENTIAL_STORE_API_SECURE,
+        )
+        # expose the needed functions
+        self.get_SSH_credential = self.client.getSSHCredential
 
-    def get_SSH_credential(self, token_id, gateway_id):
-        """
-        :param token_id:
-        :param gateway_id
-        :return: credential
-        """
-        try:
-            return self.credential_store_client_pool.getSSHCredential(token_id, gateway_id)
-        except CredentialStoreException:
-            logger.exception("Error occurred in get_SSH_credential, probably due to invalid parameters ")
-            raise
-
-    def _load_settings(self, configuration_file_location):
+    def _load_settings(self, configuration_file_location: Optional[str]):
         if configuration_file_location is not None:
             config = configparser.ConfigParser()
             config.read(configuration_file_location)
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer',
-                                                                                         'CREDENTIAL_STORE_API_HOST')
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_PORT = config.getint('CredentialStoreServer',
-                                                                                            'CREDENTIAL_STORE_API_PORT')
-            self.credential_store_server_settings.CREDENTIAL_STORE_API_SECURE = config.getboolean(
-                'CredentialStoreServer',
-                'CREDENTIAL_STORE_API_SECURE')
+            self.settings.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer', 'CREDENTIAL_STORE_API_HOST')
+            self.settings.CREDENTIAL_STORE_API_PORT = config.getint('CredentialStoreServer', 'CREDENTIAL_STORE_API_PORT')
+            self.settings.CREDENTIAL_STORE_API_SECURE = config.getboolean('CredentialStoreServer', 'CREDENTIAL_STORE_API_SECURE')

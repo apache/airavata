@@ -95,6 +95,11 @@ void ComputationalResourceSchedulingModel::__set_overrideAllocationProjectNumber
 __isset.overrideAllocationProjectNumber = true;
 }
 
+void ComputationalResourceSchedulingModel::__set_mGroupCount(const int32_t val) {
+  this->mGroupCount = val;
+__isset.mGroupCount = true;
+}
+
 uint32_t ComputationalResourceSchedulingModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -212,6 +217,14 @@ uint32_t ComputationalResourceSchedulingModel::read(::apache::thrift::protocol::
           xfer += iprot->skip(ftype);
         }
         break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->mGroupCount);
+          this->__isset.mGroupCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -289,6 +302,11 @@ uint32_t ComputationalResourceSchedulingModel::write(::apache::thrift::protocol:
     xfer += oprot->writeString(this->overrideAllocationProjectNumber);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.mGroupCount) {
+    xfer += oprot->writeFieldBegin("mGroupCount", ::apache::thrift::protocol::T_I32, 13);
+    xfer += oprot->writeI32(this->mGroupCount);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -308,6 +326,7 @@ void swap(ComputationalResourceSchedulingModel &a, ComputationalResourceScheduli
   swap(a.overrideLoginUserName, b.overrideLoginUserName);
   swap(a.overrideScratchLocation, b.overrideScratchLocation);
   swap(a.overrideAllocationProjectNumber, b.overrideAllocationProjectNumber);
+  swap(a.mGroupCount, b.mGroupCount);
   swap(a.__isset, b.__isset);
 }
 
@@ -324,6 +343,7 @@ ComputationalResourceSchedulingModel::ComputationalResourceSchedulingModel(const
   overrideLoginUserName = other0.overrideLoginUserName;
   overrideScratchLocation = other0.overrideScratchLocation;
   overrideAllocationProjectNumber = other0.overrideAllocationProjectNumber;
+  mGroupCount = other0.mGroupCount;
   __isset = other0.__isset;
 }
 ComputationalResourceSchedulingModel& ComputationalResourceSchedulingModel::operator=(const ComputationalResourceSchedulingModel& other1) {
@@ -339,6 +359,7 @@ ComputationalResourceSchedulingModel& ComputationalResourceSchedulingModel::oper
   overrideLoginUserName = other1.overrideLoginUserName;
   overrideScratchLocation = other1.overrideScratchLocation;
   overrideAllocationProjectNumber = other1.overrideAllocationProjectNumber;
+  mGroupCount = other1.mGroupCount;
   __isset = other1.__isset;
   return *this;
 }
@@ -357,6 +378,7 @@ void ComputationalResourceSchedulingModel::printTo(std::ostream& out) const {
   out << ", " << "overrideLoginUserName="; (__isset.overrideLoginUserName ? (out << to_string(overrideLoginUserName)) : (out << "<null>"));
   out << ", " << "overrideScratchLocation="; (__isset.overrideScratchLocation ? (out << to_string(overrideScratchLocation)) : (out << "<null>"));
   out << ", " << "overrideAllocationProjectNumber="; (__isset.overrideAllocationProjectNumber ? (out << to_string(overrideAllocationProjectNumber)) : (out << "<null>"));
+  out << ", " << "mGroupCount="; (__isset.mGroupCount ? (out << to_string(mGroupCount)) : (out << "<null>"));
   out << ")";
 }
 

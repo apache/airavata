@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessErrorPK;
 import org.apache.airavata.model.commons.ErrorModel;
@@ -70,5 +71,6 @@ public class ProcessErrorRepository extends ExpCatAbstractRepository<ErrorModel,
         ProcessModel processModel = processRepository.getProcess(processId);
         return processModel.getProcessErrors();
     }
+
 
 }
