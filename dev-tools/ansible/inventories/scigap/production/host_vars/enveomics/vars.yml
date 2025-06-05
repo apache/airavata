@@ -50,7 +50,7 @@ experiment_data_dir: "{{ user_data_dir }}/enveomics"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCPZ6+D+iJH7SPuT2p4pyxRC3ooEjuA59/d5QI3NWD9FJ9P0z1+FJpjAvhnosWjnNUPrQxiyBQg9fJHAlPnWh3LgQB9h+Xy/uiy8CXiINu3J6cdu0amMyGumIc5gWHE1MkexNiq1itQuIFrBaqWdW22NTKefhpU1RIZ1pOk8fxfRyAVDsGV/tNoAsGp82Es86QOKexHbxQJG2wtnnGlWyv9axjsTo/8pTZUT5ikU49uY/7yx58UAVCeqx1LOi62EN/NR4tCCrpu9NtyKuUqkQmhidapDDCiyy3nwD/7WphE+tXoPu51+ltrGv0R3uFQpm6FfdP4oocaK8DqtjAVjidR"
 #django_user_data_archive_max_age_days: 180
 
-admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu'),('Eroma Abeysinghe','eroma@gatech.edu')]"
+admin_emails: "[('Sudhakar Pamidighantam','spamidig@gatech.edu'),('Eroma Abeysinghe','eroma@gatech.edu'), ('Kostas Konstantinidis','kostas.konstantinidis@gatech.edu')]"
 portal_title: "Enveomics Gateway"
 
 #django_google_analytics_tracking_id: "UA-66348921-1"
