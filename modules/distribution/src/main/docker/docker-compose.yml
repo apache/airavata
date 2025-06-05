@@ -173,7 +173,7 @@ services:
       - profile.service.jdbc.password=123456
       - profile.service.jdbc.driver=org.mariadb.jdbc.Driver
       - profile.service.validationQuery=SELECT 1
-      - iam.server.url=https://airavata.host:8443/auth
+      - iam.server.url=https://airavata.host:8443
       - iam.server.super.admin.username=admin
       - iam.server.super.admin.password=admin
       - db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner

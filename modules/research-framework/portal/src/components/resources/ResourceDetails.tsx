@@ -64,7 +64,15 @@ const ResourceDetails = () => {
     <>
       <Container maxW="breakpoint-lg" mx="auto" p={4} mt={16}>
         <Box>
-          <Button variant="plain" p={0} onClick={() => navigate(-1)}>
+          <Button
+            variant="plain"
+            p={0}
+            onClick={() =>
+              navigate(
+                "/resources?resourceTypes=REPOSITORY%2CNOTEBOOK%2CDATASET%2CMODEL"
+              )
+            }
+          >
             <HStack
               alignItems="center"
               mb={4}

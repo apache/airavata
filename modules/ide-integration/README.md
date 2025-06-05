@@ -189,6 +189,7 @@ For registering compute resources and storage resources:
 ```bash
 cd modules/ide-integration/src/main/containers/pga
 docker-compose up -d
+```
 
 ### 2️⃣ Configure Host Resolution
 
@@ -205,7 +206,7 @@ docker-compose exec pga getent hosts host.docker.internal
 ```
 
 **Update container hosts:**
-    *Replace <host-machine-ip> with the actual IP*
+*Replace <host-machine-ip> with the actual IP*
 ```bash
 docker-compose exec pga /bin/sh -c "echo '<host-machine-ip> airavata.host' >> /etc/hosts"
 ```
@@ -236,25 +237,18 @@ Only needed when Keycloak certificates expire:
 ```bash
 cd modules/ide-integration/src/main/resources/keystores
 
-# Remove old certificates
+# Remove old keystores
 rm airavata.jks client_truststore.jks
 
-# Generate new keystore
-keytool -genkey -keyalg RSA -alias selfsigned -keystore keystore.jks \
-        -storepass airavata -validity 360 -keysize 2048 \
+# Generate new keystores
+# airavata.jks (PKCS12, preferred)
+keytool -genkey -keyalg RSA -alias selfsigned -keystore airavata.jks \
+        -storetype pkcs12 -storepass airavata -validity 360 -keysize 2048 \
         -dname "CN=airavata.host,OU=airavata.host,O=airavata.host,L=airavata.host,ST=airavata.host,C=airavata.host"
-
-# Convert to PKCS12
-keytool -importkeystore -srckeystore keystore.jks -destkeystore airavata.jks -deststoretype pkcs12
-
-# Export certificate
-keytool -export -alias selfsigned -file root.cer -keystore airavata.jks -storepass airavata
-
-# Create truststore
-keytool -import -alias mykey -file root.cer -keystore client_truststore.jks -storepass airavata -noprompt
-
-# Cleanup
-rm keystore.jks root.cer
+# client_truststore.jks (JKS, legacy)
+keytool -importkeystore -noprompt \
+        -srckeystore airavata.jks -srcstoretype pkcs12 -srcstorepass airavata \
+        -destkeystore client_truststore.jks -deststoretype jks -deststorepass airavata
 ```
 
 ## 📊 Service Status Overview
