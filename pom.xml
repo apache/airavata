@@ -416,7 +416,7 @@ under the License.
                 <version>2.44.5</version>
                 <configuration>
                     <java>
-                        <!-- <googleJavaFormat/> -->
+                        <palantirJavaFormat/>
                         <licenseHeader>
                             <file>apache-license-header-java.txt</file>
                         </licenseHeader>
