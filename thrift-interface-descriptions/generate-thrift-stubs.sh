@@ -71,25 +71,20 @@ setup() {
     BASE_TARGET_DIR="$SCRIPT_DIR/target"
 
     # Thrift files
-    AIRAVATA_API_THRIFT_FILE="${THRIFTDIR}/airavata-apis/airavata_api.thrift"
-    CREDENTIAL_API_THRIFT_FILE="${THRIFTDIR}/component-cpis/credential-store-cpi.thrift"
-    SHARING_API_THRIFT_FILE="${THRIFTDIR}/component-cpis/sharing_cpi.thrift"
-    PROFILE_SERVICE_THRIFT_FILE="${THRIFTDIR}/service-cpis/profile-service/profile-service-cpi.thrift"
+    CREDENTIAL_API_THRIFT_FILE="${THRIFTDIR}/service-cpis/credential-store-cpi.thrift"
+    ORCHESTRATOR_THRIFT_FILE="${THRIFTDIR}/service-cpis/orchestrator-cpi.thrift"
+    REGISTRY_THRIFT_FILE="${THRIFTDIR}/service-cpis/registry-api.thrift"
+    SHARING_API_THRIFT_FILE="${THRIFTDIR}/service-cpis/sharing_cpi.thrift"
+    PROFILE_SERVICE_THRIFT_FILE="${THRIFTDIR}/service-cpis/profile-service-cpi.thrift"
 
-    DATAMODEL_THRIFT_FILE="${THRIFTDIR}/data-models/airavata_data_models.thrift"
-    APP_CATALOG_DM_THRIFT_FILE="${THRIFTDIR}/data-models/app-catalog-models/app_catalog_models.thrift"
-    RESOURCE_CATALOG_DM_THRIFT_FILE="${THRIFTDIR}/data-models/resource-catalog-models/resource_catalog_models.thrift"
-    SHARING_DM_THRIFT_FILE="${THRIFTDIR}/data-models/sharing-models/sharing_models.thrift"
-    WORKFLOW_THRIFT_FILE="${THRIFTDIR}/data-models/workflow-models/workflow_data_model.thrift"
+    PHP_THRIFT_FILE="${THRIFTDIR}/stubs_php.thrift"
+    JAVA_THRIFT_FILE="${THRIFTDIR}/stubs_java.thrift"
 
-    DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
-    SHARING_DATAMODEL_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/org/apache/airavata/sharing/registry/models'
-    JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
+    JAVA_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
     PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/airavata/'
 
-    BASE_API_SRC_DIR='../airavata-api/airavata-base-api/src/main/java'
 
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -97,6 +92,13 @@ setup() {
     THRIFT_ARGS="-r -o ${BASEDIR}/thrift-interface-descriptions/target"
     # Ensure the required target directories exists, if not create.
     mkdir -p ${BASE_TARGET_DIR}
+
+    # Java stub target directories for components/services
+    CS_SRC_DIR='../modules/credential-store/credential-store-stubs/src/main/java'
+    ORCHESTRATOR_SRC_DIR='../modules/orchestrator/orchestrator-client/src/main/java'
+    REGISTRY_SRC_DIR='../modules/registry/registry-server/registry-api-stubs/src/main/java/'
+    SHARING_REGISTRY_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/'
+    PROFILE_SERVICE_SRC_DIR='../airavata-services/profile-service/profile-service-stubs/src/main/java'
 }
 
 
@@ -175,45 +177,26 @@ generate_java_stubs() {
 
     # Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
     #   with members being private and setters returning voids.
-    #   The airavata_data_models.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${JAVA_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
 
     # Compare the newly generated beans with existing sources and replace the changed ones.
-    copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
+    copy_changed_files ${JAVA_BEAN_GEN_DIR} ${JAVA_SRC_DIR}
 
     # Clear Bean generation directory as sharing data models are transferred to a different directory
     rm -rf ${JAVA_BEAN_GEN_DIR}
 
-    ###############################################################################
-    # Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #
-    #  JAVA server and client both use generated api-boilerplate-code             #
-    ###############################################################################
-
-    #Java generation directory
-    JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
-
-    # As a precaution  remove and previously generated files if exists
-    rm -rf ${JAVA_GEN_DIR}
-
-    # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate java thrift classes on AiravataAPI
-
-    # For the generated java classes add the ASF V2 License header
-    add_license_header $JAVA_GEN_DIR
-
-    # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
-    #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
-    copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/org/apache/airavata/api
-
-    # This will copy the base API java stubs to airavata-base-api module
-    mkdir -p ${BASE_API_SRC_DIR}/org/apache/airavata/base
-    copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/base ${BASE_API_SRC_DIR}/org/apache/airavata/base
-
     echo "Successfully generated new java sources, compared against exiting code and replaced the changed files"
+
+    # --- Generate Java stubs for all component/service CPIs ---
+    generate_component_java_stubs ${CREDENTIAL_API_THRIFT_FILE} ${CS_SRC_DIR}
+    generate_component_java_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
+    generate_component_java_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+    generate_component_java_stubs ${SHARING_API_THRIFT_FILE} ${SHARING_REGISTRY_SRC_DIR}
+    generate_component_java_stubs ${PROFILE_SERVICE_THRIFT_FILE} ${PROFILE_SERVICE_SRC_DIR}
+    echo "Successfully generated all Java stubs (API, CPI, and service)"
 }
 
 ####################################
@@ -230,10 +213,7 @@ generate_php_stubs() {
 
     # Using thrift Java generator, generate the PHP classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_DM_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${APP_CATALOG_DM_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${RESOURCE_CATALOG_DM_THRIFT_FILE}   || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PHP_THRIFT_FILE}  || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
@@ -301,6 +281,29 @@ generate_python_stubs() {
     #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
     copy_changed_files ${PYTHON_GEN_DIR} ${PYTHON_SDK_DIR}
 
+}
+
+# Helper to generate Java stubs for a component/service CPI
+# Usage: generate_component_java_stubs <thrift_file> <target_dir>
+generate_component_java_stubs() {
+    COMPONENT_THRIFT_FILE=$1
+    COMPONENT_SRC_DIR=$2
+    #Java generation directory
+    JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
+    BASE_API_DIR=org/apache/airavata/base
+    # Remove any previously generated files
+    rm -rf ${JAVA_GEN_DIR}
+    # Generate Java stubs
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes for ${COMPONENT_THRIFT_FILE}
+    # Remove generated model classes, airavata api thrift file will generate those.
+    rm -rf ${JAVA_GEN_DIR}/org/apache/airavata/model
+    # Add license header
+    add_license_header $JAVA_GEN_DIR
+    # Copy changed files, excluding base API dir
+    rsync -auv --exclude org/apache/airavata/base ${JAVA_GEN_DIR}/ ${COMPONENT_SRC_DIR}
+    # Copy base API stubs
+    mkdir -p ${JAVA_SRC_DIR}/org/apache/airavata/base
+    copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/base ${JAVA_SRC_DIR}/org/apache/airavata/base
 }
 
 for arg in "$@"
