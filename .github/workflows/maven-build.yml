@@ -21,7 +21,7 @@ jobs:
           wget -q https://dlcdn.apache.org/thrift/0.22.0/thrift-0.22.0.tar.gz
           tar -xzf thrift-0.22.0.tar.gz
           cd thrift-0.22.0
-          ./configure --without-rs
+          ./configure --without-rs --enable-libs=no --enable-tests=no
           make -j$(nproc)
           sudo make install
           thrift --version
