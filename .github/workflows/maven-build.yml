@@ -1,4 +1,4 @@
-name: Maven Build (PR to master)
+name: Maven Build
 
 on:
   pull_request:
