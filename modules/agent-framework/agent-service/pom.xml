@@ -126,7 +126,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-api-stubs</artifactId>
+            <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -186,8 +186,7 @@
               <artifactId>maven-compiler-plugin</artifactId>
               <version>${maven.compiler.plugin.version}</version>
               <configuration>
-                <source>17</source>
-                <target>17</target>
+                <release>17</release>
                 <generatedSourcesDirectory>${project.build.directory}/generated-sources/protobuf</generatedSourcesDirectory>
                 <includes>
                   <include>${project.build.directory}/generated-sources/**/*.java</include>

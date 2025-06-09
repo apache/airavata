@@ -23,13 +23,13 @@
  *
 */
 
+include "iam_admin_services_cpi_errors.thrift"
 include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
-include "../../../data-models/experiment-catalog-models/workspace_model.thrift"
-include "../../../data-models/user-tenant-group-models/user_profile_model.thrift"
-include "../../../data-models/credential-store-models/credential_store_models.thrift"
-include "iam_admin_services_cpi_errors.thrift"
 include "../../../base-api/base_api.thrift"
+include "../../../data-models/credential_store_models.thrift"
+include "../../../data-models/user_profile_model.thrift"
+include "../../../data-models/workspace_model.thrift"
 
 namespace java org.apache.airavata.service.profile.iam.admin.services.cpi
 namespace php Airavata.Service.Iam.Admin.Services.CPI

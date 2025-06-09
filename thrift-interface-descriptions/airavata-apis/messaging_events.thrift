@@ -18,9 +18,10 @@
  *
  */
 
-include "../data-models/experiment-catalog-models/status_models.thrift"
-include "../data-models/app-catalog-models/application_io_models.thrift"
 include "airavata_commons.thrift"
+
+include "../data-models/status_models.thrift"
+include "../data-models/application_io_models.thrift"
 
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
