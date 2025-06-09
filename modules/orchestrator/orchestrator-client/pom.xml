@@ -44,11 +44,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-base-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-      	<dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -69,4 +64,53 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>generate-thrift-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${project.build.directory}/generated-sources/thrift"/>
+                                <exec executable="thrift">
+                                    <arg value="-r"/>
+                                    <arg value="--gen"/>
+                                    <arg value="java:beans,generated_annotations=undated"/>
+                                    <arg value="-out"/>
+                                    <arg value="${project.build.directory}/generated-sources/thrift"/>
+                                    <arg value="${project.basedir}/../../../thrift-interface-descriptions/service-cpis/orchestrator-cpi.thrift"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>add-thrift-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/thrift</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -25,14 +25,15 @@
 */
 
 include "airavata_errors.thrift"
-include "airavata_data_models.thrift"
-include "experiment_model.thrift"
-include "workspace_model.thrift"
-include "compute_resource_model.thrift"
-include "application_deployment_model.thrift"
-include "application_interface_model.thrift"
-include "workflow_data_model.thrift"
+
 include "../base-api/base_api.thrift"
+
+include "../data-models/experiment_model.thrift"
+include "../data-models/workspace_model.thrift"
+include "../data-models/compute_resource_model.thrift"
+include "../data-models/application_deployment_model.thrift"
+include "../data-models/application_interface_model.thrift"
+include "../data-models/workflow_data_model.thrift"
 
 namespace java org.apache.airavata.api.workflow
 namespace php Airavata.API.Workflow
@@ -50,7 +51,7 @@ service Workflow extends base_api.BaseAPI {
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase)
   
-  workflow_data_model.Workflow getWorkflow (1: required string workflowTemplateId)
+  workflow_data_model.WorkflowModel getWorkflow (1: required string workflowTemplateId)
       throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase)
@@ -60,12 +61,12 @@ service Workflow extends base_api.BaseAPI {
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase)
 
-  string registerWorkflow(1: required workflow_data_model.Workflow workflow)
+  string registerWorkflow(1: required workflow_data_model.WorkflowModel workflow)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase)
 
-  void updateWorkflow (1: required string workflowTemplateId, 2: required workflow_data_model.Workflow workflow)
+  void updateWorkflow (1: required string workflowTemplateId, 2: required workflow_data_model.WorkflowModel workflow)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase)

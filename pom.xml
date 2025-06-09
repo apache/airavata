@@ -25,10 +25,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
@@ -348,8 +344,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <release>17</release>
                     <!--</configuration>-->
                     <!--&lt;!&ndash;<version>3.8.0</version>&ndash;&gt;-->
                     <!--<configuration>-->
@@ -395,17 +390,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
-                        <id>enforce-versions</id>
+                        <id>enforce-maven</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.0</version>
+                                    <version>[3.0,)</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
