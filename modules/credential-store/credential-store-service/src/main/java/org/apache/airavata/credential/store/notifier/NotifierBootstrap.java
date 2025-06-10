@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.credential.store.notifier;
 
 /**
@@ -24,7 +24,8 @@ package org.apache.airavata.credential.store.notifier;
  * Date: 12/27/13
  * Time: 2:22 PM
  */
-
+import java.text.ParseException;
+import java.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
@@ -39,9 +40,6 @@ import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.util.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.*;
 
 /**
  * This class runs a timer. Periodically it checks for expiring credentials.
@@ -60,7 +58,6 @@ public class NotifierBootstrap extends TimerTask {
 
     protected static Logger log = LoggerFactory.getLogger(NotifierBootstrap.class);
 
-
     private CredentialStoreNotifier credentialStoreNotifier;
 
     public NotifierBootstrap(long period, DBUtil db, EmailNotifierConfiguration configuration) {
@@ -76,8 +73,6 @@ public class NotifierBootstrap extends TimerTask {
 
         this.credentialStoreNotifier = new EmailNotifier(configuration);
     }
-
-
 
     public long getPeriod() {
         return period;
@@ -98,33 +93,31 @@ public class NotifierBootstrap extends TimerTask {
     @Override
     public void run() {
 
-        if (!enabled)
-            return;
+        if (!enabled) return;
 
         // retrieve OA4MP credentials
         try {
             CredentialReader credentialReader = new CredentialReaderImpl(this.dbUtil);
             List<Credential> credentials = credentialReader.getAllCredentials();
 
-            for(Credential credential : credentials) {
+            for (Credential credential : credentials) {
                 if (credential instanceof CertificateCredential) {
-                    CertificateCredential certificateCredential = (CertificateCredential)credential;
+                    CertificateCredential certificateCredential = (CertificateCredential) credential;
 
                     Date date = Utility.convertStringToDate(certificateCredential.getNotAfter());
-                    date.setDate(date.getDate() + 1);    // gap is 1 days
+                    date.setDate(date.getDate() + 1); // gap is 1 days
 
                     Date currentDate = new Date();
                     if (currentDate.after(date)) {
                         // Send an email
                         CommunityUser communityUser = certificateCredential.getCommunityUser();
-                        String body =
-                                String.format(MESSAGE, communityUser.getUserName(), certificateCredential.getNotAfter());
+                        String body = String.format(
+                                MESSAGE, communityUser.getUserName(), certificateCredential.getNotAfter());
                         String subject = String.format(SUBJECT, communityUser.getUserName());
-                        NotificationMessage notificationMessage
-                                = new EmailNotificationMessage(subject, communityUser.getUserEmail(), body);
+                        NotificationMessage notificationMessage =
+                                new EmailNotificationMessage(subject, communityUser.getUserEmail(), body);
 
                         this.credentialStoreNotifier.notifyMessage(notificationMessage);
-
                     }
                 }
             }
@@ -136,6 +129,5 @@ public class NotifierBootstrap extends TimerTask {
         } catch (ParseException e) {
             log.error("Error parsing date time when sending emails", e);
         }
-
     }
 }

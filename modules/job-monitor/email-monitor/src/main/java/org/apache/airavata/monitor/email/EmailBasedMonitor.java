@@ -1,37 +1,23 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.monitor.email;
-
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.monitor.AbstractMonitor;
-import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.monitor.kafka.MessageProducer;
-import org.apache.airavata.monitor.email.parser.EmailParser;
-import org.apache.airavata.monitor.email.parser.ResourceConfig;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.registry.api.RegistryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 import jakarta.mail.Address;
 import jakarta.mail.Flags;
@@ -44,6 +30,18 @@ import jakarta.mail.search.FlagTerm;
 import jakarta.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.util.*;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.monitor.AbstractMonitor;
+import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.monitor.email.parser.EmailParser;
+import org.apache.airavata.monitor.email.parser.ResourceConfig;
+import org.apache.airavata.registry.api.RegistryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
@@ -53,17 +51,17 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private static final String POP3 = "pop3";
 
     private boolean stopMonitoring = false;
-    private Session session ;
+    private Session session;
     private Store store;
     private Folder emailFolder;
     private Properties properties;
-    private String host, emailAddress, password, storeProtocol, folderName ;
-    private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
+    private String host, emailAddress, password, storeProtocol, folderName;
+    private Map<ResourceJobManagerType, EmailParser> emailParserMap =
+            new HashMap<ResourceJobManagerType, EmailParser>();
     private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
     private long emailExpirationTimeMinutes;
-
 
     public EmailBasedMonitor() throws Exception {
         init();
@@ -79,8 +77,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         folderName = ServerSettings.getEmailBasedMonitorFolderName();
         emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("email.expiration.minutes"));
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
-            throw new AiravataException("Unsupported store protocol , expected " +
-                    IMAPS + " or " + POP3 + " but found " + storeProtocol);
+            throw new AiravataException(
+                    "Unsupported store protocol , expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);
         }
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
@@ -89,7 +87,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
-        InputStream emailConfigStream = ApplicationSettings.loadFile("email-config.yaml").openStream();
+        InputStream emailConfigStream =
+                ApplicationSettings.loadFile("email-config.yaml").openStream();
         Object load = yaml.load(emailConfigStream);
 
         if (load == null) {
@@ -99,14 +98,14 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         if (load instanceof Map) {
             Map<String, Object> loadMap = (Map<String, Object>) load;
             Map<String, Object> configMap = (Map<String, Object>) loadMap.get("config");
-            List<Map<String,Object >> resourceObjs = (List<Map<String, Object>>) configMap.get("resources");
+            List<Map<String, Object>> resourceObjs = (List<Map<String, Object>>) configMap.get("resources");
             if (resourceObjs != null) {
                 resourceObjs.forEach(resource -> {
                     ResourceConfig resourceConfig = new ResourceConfig();
                     String identifier = resource.get("jobManagerType").toString();
                     resourceConfig.setJobManagerType(ResourceJobManagerType.valueOf(identifier));
                     Object emailParser = resource.get("emailParser");
-                    if (emailParser != null){
+                    if (emailParser != null) {
                         resourceConfig.setEmailParser(emailParser.toString());
                     }
                     List<String> emailAddressList = (List<String>) resource.get("resourceEmailAddresses");
@@ -118,17 +117,19 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         populateAddressAndParserMap(resourceConfigs);
     }
 
-    private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
+    private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs)
+            throws AiravataException {
         for (Map.Entry<ResourceJobManagerType, ResourceConfig> resourceConfigEntry : resourceConfigs.entrySet()) {
             ResourceJobManagerType type = resourceConfigEntry.getKey();
             ResourceConfig config = resourceConfigEntry.getValue();
             List<String> resourceEmailAddresses = config.getResourceEmailAddresses();
-            if (resourceEmailAddresses != null && !resourceEmailAddresses.isEmpty()){
+            if (resourceEmailAddresses != null && !resourceEmailAddresses.isEmpty()) {
                 for (String resourceEmailAddress : resourceEmailAddresses) {
                     addressMap.put(resourceEmailAddress, type);
                 }
                 try {
-                    Class<? extends EmailParser> emailParserClass = Class.forName(config.getEmailParser()).asSubclass(EmailParser.class);
+                    Class<? extends EmailParser> emailParserClass =
+                            Class.forName(config.getEmailParser()).asSubclass(EmailParser.class);
                     EmailParser emailParser = emailParserClass.getConstructor().newInstance();
                     emailParserMap.put(type, emailParser);
                 } catch (Exception e) {
@@ -136,7 +137,6 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 }
             }
         }
-
     }
 
     public void monitor(String jobId) {
@@ -149,8 +149,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         ResourceJobManagerType jobMonitorType = getJobMonitorType(addressStr);
         EmailParser emailParser = emailParserMap.get(jobMonitorType);
         if (emailParser == null) {
-            throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType
-                    .toString() + " for email monitoring -->  " + addressStr);
+            throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
+                    + " for email monitoring -->  " + addressStr);
         }
         RegistryService.Client regClient = getRegistryClientPool().getResource();
 
@@ -187,7 +187,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 // first time we search for all unread messages.
                 SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
                 while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
-                    Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
+                    Thread.sleep(ServerSettings.getEmailMonitorPeriod()); // sleep a bit - get a rest till job finishes
                     if (!store.isConnected()) {
                         store.connect();
                         emailFolder = store.getFolder(folderName);
@@ -227,7 +227,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 log.error("[EJM]: Interrupt exception while sleep ", e);
             } catch (AiravataException e) {
                 log.error("[EJM]: UnHandled arguments ", e);
-            } catch (Throwable e)  {
+            } catch (Throwable e) {
                 log.error("[EJM]: Caught a throwable ", e);
             } finally {
                 try {
@@ -254,18 +254,21 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             try {
                 log.info("Parsing the job status message");
                 JobStatusResult jobStatusResult = parse(message);
-                log.info("Job message parsed. Job Id " + jobStatusResult.getJobId() + ", Job Name " + jobStatusResult.getJobName() + ", Job State " + jobStatusResult.getState().getValue());
+                log.info("Job message parsed. Job Id " + jobStatusResult.getJobId() + ", Job Name "
+                        + jobStatusResult.getJobName() + ", Job State "
+                        + jobStatusResult.getState().getValue());
                 submitJobStatus(jobStatusResult);
                 log.info("Submitted the job {} status to queue", jobStatusResult.getJobId());
                 processedMessages.add(message);
             } catch (Exception e) {
                 log.error("Error in submitting job status to queue", e);
-                if ((System.currentTimeMillis() - message.getReceivedDate().getTime()) > emailExpirationTimeMinutes * 60 * 1000) {
+                if ((System.currentTimeMillis() - message.getReceivedDate().getTime())
+                        > emailExpirationTimeMinutes * 60 * 1000) {
                     log.warn("Marking job status email as read as it was expired");
                     processedMessages.add(message);
                 } else {
-                    log.warn("Keeping job status email as unread untill it is expired in " + emailExpirationTimeMinutes +
-                            " minutes. Email received time " + message.getReceivedDate());
+                    log.warn("Keeping job status email as unread untill it is expired in " + emailExpirationTimeMinutes
+                            + " minutes. Email received time " + message.getReceivedDate());
                     unreadMessages.add(message);
                 }
             }
@@ -281,7 +284,6 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                     emailFolder.setFlags(seenMessages, new Flags(Flags.Flag.SEEN), true);
                 }
             }
-
         }
         if (!unreadMessages.isEmpty()) {
             Message[] unseenMessages = new Message[unreadMessages.size()];
@@ -305,6 +307,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         t.start();
         t.join();
     }
+
     public static void main(String args[]) throws Exception {
         EmailBasedMonitor monitor = new EmailBasedMonitor();
         monitor.startServer();

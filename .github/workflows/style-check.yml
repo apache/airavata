@@ -1,0 +1,23 @@
+name: Style Check
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build with Maven (skip tests)
+        run: mvn spotless:check

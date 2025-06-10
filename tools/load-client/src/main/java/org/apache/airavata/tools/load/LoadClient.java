@@ -1,14 +1,23 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.tools.load;
-
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.commons.cli.*;
-import org.keycloak.authorization.client.AuthzClient;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -18,6 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.Future;
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.commons.cli.*;
+import org.yaml.snakeyaml.Yaml;
 
 public class LoadClient {
 
@@ -56,12 +71,20 @@ public class LoadClient {
     public void start() throws Exception {
         for (Configuration configuration : configurations.getConfigurations()) {
 
-            UnitLoad unitLoad = new UnitLoad(configurations.getApiHost(), configurations.getApiPort(),
-                    securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(),
-                    storageResourceManagerStore.get(configuration.getStorageResourceId()), configuration.getAuthzToken());
+            UnitLoad unitLoad = new UnitLoad(
+                    configurations.getApiHost(),
+                    configurations.getApiPort(),
+                    securityManager.getTrustStorePath(),
+                    securityManager.getTrustStorePassword(),
+                    storageResourceManagerStore.get(configuration.getStorageResourceId()),
+                    configuration.getAuthzToken());
 
-            StatusMonitor statusMonitor = new StatusMonitor(configurations.getApiHost(), configurations.getApiPort(),
-                    securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), configuration.getAuthzToken());
+            StatusMonitor statusMonitor = new StatusMonitor(
+                    configurations.getApiHost(),
+                    configurations.getApiPort(),
+                    securityManager.getTrustStorePath(),
+                    securityManager.getTrustStorePassword(),
+                    configuration.getAuthzToken());
 
             CompletionService<List<String>> completion = unitLoad.execute(configuration);
 
@@ -71,7 +94,7 @@ public class LoadClient {
                 Future<List<String>> experimentsPerUser = completion.take();
                 allExperiments.addAll(experimentsPerUser.get());
             }
-            System.out.println("All experiments " );
+            System.out.println("All experiments ");
             System.out.println(allExperiments);
             statusMonitor.monitorExperiments(allExperiments);
         }
@@ -82,23 +105,25 @@ public class LoadClient {
 
     private void createStorageResourceManagers(Configurations configurations) throws Exception {
 
-
-        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(configurations.getApiHost(), configurations.getApiPort(),
-                securityManager.getTrustStorePath(), securityManager.getTrustStorePassword(), 100000);
+        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(
+                configurations.getApiHost(),
+                configurations.getApiPort(),
+                securityManager.getTrustStorePath(),
+                securityManager.getTrustStorePassword(),
+                100000);
 
         for (Configuration configuration : configurations.getConfigurations()) {
             String storageResourceId = configuration.getStorageResourceId();
 
             if (!storageResourceManagerStore.containsKey(storageResourceId)) {
-                StorageResourceDescription storageResource = airavataClient
-                        .getStorageResource(configuration.getAuthzToken(), storageResourceId);
+                StorageResourceDescription storageResource =
+                        airavataClient.getStorageResource(configuration.getAuthzToken(), storageResourceId);
 
-                StoragePreference gatewayStoragePreference = airavataClient
-                        .getGatewayStoragePreference(configuration.getAuthzToken(),
-                                configuration.getGatewayId(), storageResourceId);
+                StoragePreference gatewayStoragePreference = airavataClient.getGatewayStoragePreference(
+                        configuration.getAuthzToken(), configuration.getGatewayId(), storageResourceId);
 
-                StorageResourceManager storageResourceManager = new StorageResourceManager(gatewayStoragePreference,
-                        storageResource, privateKeyFile, publicKeyFile, passPhrase);
+                StorageResourceManager storageResourceManager = new StorageResourceManager(
+                        gatewayStoragePreference, storageResource, privateKeyFile, publicKeyFile, passPhrase);
                 storageResourceManager.init();
 
                 storageResourceManagerStore.put(storageResourceId, storageResourceManager);
@@ -116,12 +141,18 @@ public class LoadClient {
         options.addOption("config", true, "Load configuration file in yaml format");
         options.addOption("apiHost", true, "API Server host name");
         options.addOption("apiPort", true, "API Server port");
-        options.addOption("privateKeyPath", true, "SSH private key path to communicate with storage resources (Defaults to user private key in ~/.ssh/id_rsa)");
-        options.addOption("publicKeyPath", true, "SSH public key path to communicate with storage resources (Defaults to user public key in ~/.ssh/id_rsa.pub)");
+        options.addOption(
+                "privateKeyPath",
+                true,
+                "SSH private key path to communicate with storage resources (Defaults to user private key in ~/.ssh/id_rsa)");
+        options.addOption(
+                "publicKeyPath",
+                true,
+                "SSH public key path to communicate with storage resources (Defaults to user public key in ~/.ssh/id_rsa.pub)");
         options.addOption("passPhrase", true, "SSH private key pass phrase (if any)");
 
         CommandLineParser parser = new GnuParser();
-        CommandLine cmd = parser.parse( options, args);
+        CommandLine cmd = parser.parse(options, args);
 
         LoadClient loadClient = new LoadClient();
 

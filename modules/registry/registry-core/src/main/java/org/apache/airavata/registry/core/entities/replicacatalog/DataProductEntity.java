@@ -1,32 +1,30 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
-
-import org.apache.airavata.model.data.replica.DataProductType;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.model.data.replica.DataProductType;
 
 /**
  * The persistent class for the data_product database table.
@@ -70,13 +68,16 @@ public class DataProductEntity implements Serializable {
     private DataProductType dataProductType;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="DATA_PRODUCT_METADATA", joinColumns = @JoinColumn(name="PRODUCT_URI"))
+    @CollectionTable(name = "DATA_PRODUCT_METADATA", joinColumns = @JoinColumn(name = "PRODUCT_URI"))
     @MapKeyColumn(name = "METADATA_KEY")
     @Column(name = "METADATA_VALUE")
     private Map<String, String> productMetadata;
 
-    @OneToMany(targetEntity = DataReplicaLocationEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "dataProduct", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = DataReplicaLocationEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "dataProduct",
+            fetch = FetchType.EAGER)
     private List<DataReplicaLocationEntity> replicaLocations;
 
     public String getProductUri() {
@@ -159,9 +160,13 @@ public class DataProductEntity implements Serializable {
         this.dataProductType = dataProductType;
     }
 
-    public Map<String, String> getProductMetadata() { return productMetadata; }
+    public Map<String, String> getProductMetadata() {
+        return productMetadata;
+    }
 
-    public void setProductMetadata(Map<String, String> productMetadata) { this.productMetadata = productMetadata; }
+    public void setProductMetadata(Map<String, String> productMetadata) {
+        this.productMetadata = productMetadata;
+    }
 
     public List<DataReplicaLocationEntity> getReplicaLocations() {
         return replicaLocations;
@@ -170,5 +175,4 @@ public class DataProductEntity implements Serializable {
     public void setReplicaLocations(List<DataReplicaLocationEntity> replicaLocations) {
         this.replicaLocations = replicaLocations;
     }
-
 }

@@ -1,25 +1,23 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
-
 
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -96,41 +94,61 @@ public class ProcessEntity implements Serializable {
     @Column(name = "USE_USER_CR_PREF")
     private boolean useUserCRPref;
 
-    @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = ProcessStatusEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     @OrderBy("timeOfStateChange ASC")
     private List<ProcessStatusEntity> processStatuses;
 
-    @OneToMany(targetEntity = ProcessErrorEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = ProcessErrorEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     private List<ProcessErrorEntity> processErrors;
 
-    @OneToMany(targetEntity = ProcessInputEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = ProcessInputEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     private List<ProcessInputEntity> processInputs;
 
-    @OneToMany(targetEntity = ProcessOutputEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = ProcessOutputEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     private List<ProcessOutputEntity> processOutputs;
 
-    @OneToOne(targetEntity = ProcessResourceScheduleEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToOne(
+            targetEntity = ProcessResourceScheduleEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     private ProcessResourceScheduleEntity processResourceSchedule;
 
-    @OneToMany(targetEntity = TaskEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = TaskEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
     private ExperimentEntity experiment;
 
-    @OneToMany(targetEntity = ProcessWorkflowEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = ProcessWorkflowEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "process",
+            fetch = FetchType.EAGER)
     private Collection<ProcessWorkflowEntity> processWorkflows;
 
-    public ProcessEntity() {
-    }
+    public ProcessEntity() {}
 
     public String getProcessId() {
         return processId;

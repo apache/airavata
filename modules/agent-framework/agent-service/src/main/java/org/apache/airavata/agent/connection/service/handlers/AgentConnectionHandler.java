@@ -1,44 +1,43 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.agent.connection.service.handlers;
 
+import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.agent.*;
 import org.apache.airavata.agent.AsyncCommand;
 import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Value;
 
 @GrpcService
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
 
-    private final static Logger logger = LoggerFactory.getLogger(AgentConnectionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AgentConnectionHandler.class);
 
     // <streamId, StreamObserver>
     private final Map<String, StreamObserver<ServerMessage>> ACTIVE_STREAMS = new ConcurrentHashMap<>();
@@ -48,9 +47,11 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
     private final Map<String, EnvSetupResponse> ENV_SETUP_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, CommandExecutionResponse> COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
-    private final Map<String, AsyncCommandExecutionResponse> ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, AsyncCommandExecutionResponse> ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE =
+            new ConcurrentHashMap<>();
     private final Map<String, AsyncCommandListResponse> ASYNC_COMMAND_LIST_RESPONSE_CACHE = new ConcurrentHashMap<>();
-    private final Map<String, AsyncCommandTerminateResponse> ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, AsyncCommandTerminateResponse> ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE =
+            new ConcurrentHashMap<>();
     private final Map<String, JupyterExecutionResponse> JUPYTER_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, KernelRestartResponse> KERNEL_RESTART_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
@@ -81,7 +82,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     public AgentEnvSetupResponse getEnvSetupResponse(String executionId) {
         AgentEnvSetupResponse envCreationResponse = new AgentEnvSetupResponse();
         if (ENV_SETUP_RESPONSE_CACHE.containsKey(executionId)) {
-            envCreationResponse.setStatus(ENV_SETUP_RESPONSE_CACHE.get(executionId).getStatus());
+            envCreationResponse.setStatus(
+                    ENV_SETUP_RESPONSE_CACHE.get(executionId).getStatus());
             envCreationResponse.setExecutionId(executionId);
             envCreationResponse.setSetup(true);
             ENV_SETUP_RESPONSE_CACHE.remove(executionId);
@@ -94,7 +96,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     public AgentCommandExecutionResponse getCommandExecutionResponse(String executionId) {
         AgentCommandExecutionResponse agentCommandResponse = new AgentCommandExecutionResponse();
         if (COMMAND_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
-            agentCommandResponse.setResponseString(COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+            agentCommandResponse.setResponseString(
+                    COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
             agentCommandResponse.setExecutionId(executionId);
             agentCommandResponse.setExecuted(true);
             COMMAND_EXECUTION_RESPONSE_CACHE.remove(executionId);
@@ -107,7 +110,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     public AgentAsyncCommandExecutionResponse getAsyncCommandExecutionResponse(String executionId) {
         AgentAsyncCommandExecutionResponse agentCommandResponse = new AgentAsyncCommandExecutionResponse();
         if (ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
-            AsyncCommandExecutionResponse asyncCommandExecutionResponse = ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId);
+            AsyncCommandExecutionResponse asyncCommandExecutionResponse =
+                    ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId);
             agentCommandResponse.setProcessId(asyncCommandExecutionResponse.getProcessId());
             agentCommandResponse.setExecutionId(executionId);
             agentCommandResponse.setErrorMessage(asyncCommandExecutionResponse.getErrorMessage());
@@ -126,12 +130,15 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             agentCommandListResponse.setExecutionId(executionId);
             List<AsyncCommand> commandsList = asyncCommandListResponse.getCommandsList();
 
-            agentCommandListResponse.setCommands(commandsList.stream().map(c -> {
-                org.apache.airavata.agent.connection.service.models.AsyncCommand cmd = new org.apache.airavata.agent.connection.service.models.AsyncCommand();
-                cmd.setProcessId(c.getProcessId());
-                cmd.setArguments(c.getArgumentsList());
-                return cmd;
-            }).collect(Collectors.toList()));
+            agentCommandListResponse.setCommands(commandsList.stream()
+                    .map(c -> {
+                        org.apache.airavata.agent.connection.service.models.AsyncCommand cmd =
+                                new org.apache.airavata.agent.connection.service.models.AsyncCommand();
+                        cmd.setProcessId(c.getProcessId());
+                        cmd.setArguments(c.getArgumentsList());
+                        return cmd;
+                    })
+                    .collect(Collectors.toList()));
             ASYNC_COMMAND_LIST_RESPONSE_CACHE.remove(executionId);
         } else {
             agentCommandListResponse.setError("Not Ready");
@@ -140,9 +147,11 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentAsyncCommandTerminateResponse getAsyncCommandTerminateResponse(String executionId) {
-        AgentAsyncCommandTerminateResponse agentAsyncCommandTerminateResponse = new AgentAsyncCommandTerminateResponse();
+        AgentAsyncCommandTerminateResponse agentAsyncCommandTerminateResponse =
+                new AgentAsyncCommandTerminateResponse();
         if (ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.containsKey(executionId)) {
-            AsyncCommandTerminateResponse asyncCommandTerminateResponse = ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.get(executionId);
+            AsyncCommandTerminateResponse asyncCommandTerminateResponse =
+                    ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.get(executionId);
             agentAsyncCommandTerminateResponse.setExecutionId(executionId);
             agentAsyncCommandTerminateResponse.setStatus(asyncCommandTerminateResponse.getStatus());
             ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.remove(executionId);
@@ -155,7 +164,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     public AgentJupyterExecutionResponse getJupyterExecutionResponse(String executionId) {
         AgentJupyterExecutionResponse executionResponse = new AgentJupyterExecutionResponse();
         if (JUPYTER_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
-            executionResponse.setResponseString(JUPYTER_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+            executionResponse.setResponseString(
+                    JUPYTER_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
             executionResponse.setExecutionId(executionId);
             executionResponse.setExecuted(true);
             JUPYTER_EXECUTION_RESPONSE_CACHE.remove(executionId);
@@ -168,7 +178,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     public AgentKernelRestartResponse getKernelRestartResponse(String executionId) {
         AgentKernelRestartResponse kernelRestartResponse = new AgentKernelRestartResponse();
         if (KERNEL_RESTART_RESPONSE_CACHE.containsKey(executionId)) {
-            kernelRestartResponse.setStatus(KERNEL_RESTART_RESPONSE_CACHE.get(executionId).getStatus());
+            kernelRestartResponse.setStatus(
+                    KERNEL_RESTART_RESPONSE_CACHE.get(executionId).getStatus());
             kernelRestartResponse.setExecutionId(executionId);
             kernelRestartResponse.setRestarted(true);
             KERNEL_RESTART_RESPONSE_CACHE.remove(executionId);
@@ -183,7 +194,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         if (PYTHON_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
             runResponse.setExecutionId(executionId);
             runResponse.setExecuted(true);
-            runResponse.setResponseString(PYTHON_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
+            runResponse.setResponseString(
+                    PYTHON_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
             PYTHON_EXECUTION_RESPONSE_CACHE.remove(executionId);
         } else {
             runResponse.setExecuted(false);
@@ -196,22 +208,28 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         String executionId = UUID.randomUUID().toString();
         AgentEnvSetupAck ack = new AgentEnvSetupAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(envSetupRequest.getAgentId());
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
+                getAgentStreamObserver(envSetupRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running an env setup on agent {}", envSetupRequest.getAgentId());
-                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setEnvSetupRequest(
-                        org.apache.airavata.agent.EnvSetupRequest.newBuilder()
-                                .setExecutionId(executionId)
-                                .setEnvName(envSetupRequest.getEnvName())
-                                .addAllLibraries(envSetupRequest.getLibraries())
-                                .addAllPip(envSetupRequest.getPip())
-                                .build()
-                ).build());
+                agentStreamObserver
+                        .get()
+                        .onNext(ServerMessage.newBuilder()
+                                .setEnvSetupRequest(org.apache.airavata.agent.EnvSetupRequest.newBuilder()
+                                        .setExecutionId(executionId)
+                                        .setEnvName(envSetupRequest.getEnvName())
+                                        .addAllLibraries(envSetupRequest.getLibraries())
+                                        .addAllPip(envSetupRequest.getPip())
+                                        .build())
+                                .build());
 
             } catch (Exception e) {
-                logger.error("Failed to submit env setup request {} on agent {}",
-                        executionId, envSetupRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit env setup request {} on agent {}",
+                        executionId,
+                        envSetupRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -231,15 +249,20 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running a command on agent {}", commandRequest.getAgentId());
-                streamObserver.onNext(ServerMessage.newBuilder().setCommandExecutionRequest(
-                        CommandExecutionRequest.newBuilder()
+                streamObserver.onNext(ServerMessage.newBuilder()
+                        .setCommandExecutionRequest(CommandExecutionRequest.newBuilder()
                                 .setExecutionId(executionId)
                                 .setEnvName(commandRequest.getEnvName())
                                 .setWorkingDir(commandRequest.getWorkingDir())
-                                .addAllArguments(commandRequest.getArguments()).build()).build());
+                                .addAllArguments(commandRequest.getArguments())
+                                .build())
+                        .build());
             } catch (Exception e) {
-                logger.error("Failed to submit command execution request {} on agent {}",
-                        executionId, commandRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit command execution request {} on agent {}",
+                        executionId,
+                        commandRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -259,15 +282,20 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running an async command on agent {}", commandRequest.getAgentId());
-                streamObserver.onNext(ServerMessage.newBuilder().setAsyncCommandExecutionRequest(
-                        AsyncCommandExecutionRequest.newBuilder()
+                streamObserver.onNext(ServerMessage.newBuilder()
+                        .setAsyncCommandExecutionRequest(AsyncCommandExecutionRequest.newBuilder()
                                 .setExecutionId(executionId)
                                 .setEnvName(commandRequest.getEnvName())
                                 .setWorkingDir(commandRequest.getWorkingDir())
-                                .addAllArguments(commandRequest.getArguments()).build()).build());
+                                .addAllArguments(commandRequest.getArguments())
+                                .build())
+                        .build());
             } catch (Exception e) {
-                logger.error("Failed to submit async command execution request {} on agent {}",
-                        executionId, commandRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit async command execution request {} on agent {}",
+                        executionId,
+                        commandRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -287,12 +315,17 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running an async command list on agent {}", commandRequest.getAgentId());
-                streamObserver.onNext(ServerMessage.newBuilder().setAsyncCommandListRequest(
-                        AsyncCommandListRequest.newBuilder()
-                                .setExecutionId(executionId).build()).build());
+                streamObserver.onNext(ServerMessage.newBuilder()
+                        .setAsyncCommandListRequest(AsyncCommandListRequest.newBuilder()
+                                .setExecutionId(executionId)
+                                .build())
+                        .build());
             } catch (Exception e) {
-                logger.error("Failed to submit async command list execution request {} on agent {}",
-                        executionId, commandRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit async command list execution request {} on agent {}",
+                        executionId,
+                        commandRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -312,13 +345,18 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running an async command terminate on agent {}", commandRequest.getAgentId());
-                streamObserver.onNext(ServerMessage.newBuilder().setAsyncCommandTerminateRequest(
-                        AsyncCommandTerminateRequest.newBuilder()
+                streamObserver.onNext(ServerMessage.newBuilder()
+                        .setAsyncCommandTerminateRequest(AsyncCommandTerminateRequest.newBuilder()
                                 .setExecutionId(executionId)
-                                .setProcessId(commandRequest.getProcessId()).build()).build());
+                                .setProcessId(commandRequest.getProcessId())
+                                .build())
+                        .build());
             } catch (Exception e) {
-                logger.error("Failed to submit async command terminate execution request {} on agent {}",
-                        executionId, commandRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit async command terminate execution request {} on agent {}",
+                        executionId,
+                        commandRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -328,26 +366,31 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         return ack;
     }
 
-
-
     public AgentJupyterExecutionAck runJupyterOnAgent(AgentJupyterExecutionRequest jupyterExecutionRequest) {
         String executionId = UUID.randomUUID().toString();
         AgentJupyterExecutionAck ack = new AgentJupyterExecutionAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(jupyterExecutionRequest.getAgentId());
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
+                getAgentStreamObserver(jupyterExecutionRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running a jupyter on agent {}", jupyterExecutionRequest.getAgentId());
-                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setJupyterExecutionRequest(
-                        org.apache.airavata.agent.JupyterExecutionRequest.newBuilder()
-                                .setExecutionId(executionId)
-                                .setEnvName(jupyterExecutionRequest.getEnvName())
-                                .setCode(jupyterExecutionRequest.getCode())
-                                .build()
-                ).build());
+                agentStreamObserver
+                        .get()
+                        .onNext(ServerMessage.newBuilder()
+                                .setJupyterExecutionRequest(
+                                        org.apache.airavata.agent.JupyterExecutionRequest.newBuilder()
+                                                .setExecutionId(executionId)
+                                                .setEnvName(jupyterExecutionRequest.getEnvName())
+                                                .setCode(jupyterExecutionRequest.getCode())
+                                                .build())
+                                .build());
             } catch (Exception e) {
-                logger.error("Failed to submit jupyter execution request {} on agent {}",
-                        executionId, jupyterExecutionRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit jupyter execution request {} on agent {}",
+                        executionId,
+                        jupyterExecutionRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -361,21 +404,27 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         String executionId = UUID.randomUUID().toString();
         AgentPythonExecutionAck ack = new AgentPythonExecutionAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(pythonRunRequest.getAgentId());
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
+                getAgentStreamObserver(pythonRunRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running a python on agent {}", pythonRunRequest.getAgentId());
-                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setPythonExecutionRequest(
-                        PythonExecutionRequest.newBuilder()
-                                .setExecutionId(executionId)
-                                .setEnvName(pythonRunRequest.getEnvName())
-                                .setWorkingDir(pythonRunRequest.getWorkingDir())
-                                .setCode(pythonRunRequest.getCode())
-                                .build()
-                ).build());
+                agentStreamObserver
+                        .get()
+                        .onNext(ServerMessage.newBuilder()
+                                .setPythonExecutionRequest(PythonExecutionRequest.newBuilder()
+                                        .setExecutionId(executionId)
+                                        .setEnvName(pythonRunRequest.getEnvName())
+                                        .setWorkingDir(pythonRunRequest.getWorkingDir())
+                                        .setCode(pythonRunRequest.getCode())
+                                        .build())
+                                .build());
             } catch (Exception e) {
-                logger.error("Failed to submit python execution request {} on agent {}",
-                        executionId, pythonRunRequest.getAgentId(), e);
+                logger.error(
+                        "Failed to submit python execution request {} on agent {}",
+                        executionId,
+                        pythonRunRequest.getAgentId(),
+                        e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -395,17 +444,17 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
             String agentId = AGENT_STREAM_MAPPING.get(tunnelTerminateRequest.getAgentId());
             StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(agentId);
-             try {
-                 streamObserver.onNext(ServerMessage.newBuilder().setTunnelTerminationRequest(
-                         TunnelTerminationRequest.newBuilder()
-                                 .setTunnelId(tunnelTerminateRequest.getTunnelId())
-                                 .setExecutionId(executionId)
-                                 .build()
-                 ).build());
-             } catch (Exception e) {
-                 logger.error("Failed to submit tunnel termination request on agent {}", agentId, e);
-                 ack.setError(e.getMessage());
-             }
+            try {
+                streamObserver.onNext(ServerMessage.newBuilder()
+                        .setTunnelTerminationRequest(TunnelTerminationRequest.newBuilder()
+                                .setTunnelId(tunnelTerminateRequest.getTunnelId())
+                                .setExecutionId(executionId)
+                                .build())
+                        .build());
+            } catch (Exception e) {
+                logger.error("Failed to submit tunnel termination request on agent {}", agentId, e);
+                ack.setError(e.getMessage());
+            }
 
         } else {
             logger.warn("No agent found to terminate the tunnel for agent id ", tunnelTerminateRequest.getAgentId());
@@ -425,8 +474,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             String agentId = AGENT_STREAM_MAPPING.get(tunnelRequest.getAgentId());
             StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(agentId);
             try {
-                streamObserver.onNext(ServerMessage.newBuilder().setTunnelCreationRequest(
-                        TunnelCreationRequest.newBuilder()
+                streamObserver.onNext(ServerMessage.newBuilder()
+                        .setTunnelCreationRequest(TunnelCreationRequest.newBuilder()
                                 .setExecutionId(executionId)
                                 .setLocalPort(tunnelRequest.getLocalPort())
                                 .setLocalBindHost(tunnelRequest.getLocalBindHost())
@@ -434,8 +483,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                                 .setTunnelServerPort(tunnelServerPort)
                                 .setTunnelServerApiUrl(tunnelServerApiUrl)
                                 .setTunnelServerToken(tunnelServerToken)
-                                .build()
-                ).build());
+                                .build())
+                        .build());
             } catch (Exception e) {
                 logger.error("Failed to submit tunnel creation request on agent {}", agentId, e);
                 ack.setError(e.getMessage());
@@ -467,18 +516,22 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         String executionId = UUID.randomUUID().toString();
         AgentKernelRestartAck ack = new AgentKernelRestartAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver = getAgentStreamObserver(kernelRestartRequest.getAgentId());
+        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
+                getAgentStreamObserver(kernelRestartRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("restarting kernel on env {}...", kernelRestartRequest.getEnvName());
-                agentStreamObserver.get().onNext(ServerMessage.newBuilder().setKernelRestartRequest(
-                        KernelRestartRequest.newBuilder()
-                                .setExecutionId(executionId)
-                                .setEnvName(kernelRestartRequest.getEnvName())
-                                .build()
-                ).build());
+                agentStreamObserver
+                        .get()
+                        .onNext(ServerMessage.newBuilder()
+                                .setKernelRestartRequest(KernelRestartRequest.newBuilder()
+                                        .setExecutionId(executionId)
+                                        .setEnvName(kernelRestartRequest.getEnvName())
+                                        .build())
+                                .build());
             } catch (Exception e) {
-                logger.error("{} Failed to restart kernel on env {}!", executionId, kernelRestartRequest.getEnvName(), e);
+                logger.error(
+                        "{} Failed to restart kernel on env {}!", executionId, kernelRestartRequest.getEnvName(), e);
                 ack.setError(e.getMessage());
             }
         } else {
@@ -505,16 +558,20 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     private void handleTunnelTerminationResponse(TunnelTerminationResponse tunnelTerminationResponse) {
-        logger.info("Received tunnel termination response for execution id {}", tunnelTerminationResponse.getExecutionId());
+        logger.info(
+                "Received tunnel termination response for execution id {}", tunnelTerminationResponse.getExecutionId());
     }
 
     private void handleCommandExecutionResponse(CommandExecutionResponse commandExecutionResponse) {
-        logger.info("Received command execution response for execution id {}", commandExecutionResponse.getExecutionId());
+        logger.info(
+                "Received command execution response for execution id {}", commandExecutionResponse.getExecutionId());
         COMMAND_EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
     }
 
     private void handleAsyncCommandExecutionResponse(AsyncCommandExecutionResponse commandExecutionResponse) {
-        logger.info("Received async command execution response for execution id {}", commandExecutionResponse.getExecutionId());
+        logger.info(
+                "Received async command execution response for execution id {}",
+                commandExecutionResponse.getExecutionId());
         ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.put(commandExecutionResponse.getExecutionId(), commandExecutionResponse);
     }
 
@@ -524,7 +581,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     private void handleAsyncCommandTerminateResponse(AsyncCommandTerminateResponse commandTerminateResponse) {
-        logger.info("Received async command terminate response for execution id {}", commandTerminateResponse.getExecutionId());
+        logger.info(
+                "Received async command terminate response for execution id {}",
+                commandTerminateResponse.getExecutionId());
         ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.put(commandTerminateResponse.getExecutionId(), commandTerminateResponse);
     }
 
@@ -587,9 +646,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                     case TUNNELCREATIONRESPONSE -> {
                         handleTunnelCreationResponse(request.getTunnelCreationResponse());
                     }
-                    case TUNNELTERMINATIONRESPONSE -> {
-
-                    }
+                    case TUNNELTERMINATIONRESPONSE -> {}
 
                     case ASYNCCOMMANDEXECUTIONRESPONSE -> {
                         handleAsyncCommandExecutionResponse(request.getAsyncCommandExecutionResponse());

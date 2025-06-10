@@ -1,44 +1,50 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
 import generators.SQLGenerator;
+import java.util.Arrays;
 import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
-
-import java.util.Arrays;
 
 public class ModuleCMDGenerator {
     private static SQLData createSQLData() {
         SQLData data = new SQLData();
         data.setTableName("MODULE_LOAD_CMD");
-        data.getFieldData().put("CMD", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-        data.getFieldData().put("APP_DEPLOYMENT_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+        data.getFieldData().put("CMD", Arrays.asList(new String[] {"VARCHAR", "(255)", "NOT", "NULL"}));
+        data.getFieldData().put("APP_DEPLOYMENT_ID", Arrays.asList(new String[] {"VARCHAR", "(255)", "NOT", "NULL"}));
         data.getPrimaryKeys().add("APP_DEPLOYMENT_ID");
         data.getPrimaryKeys().add("CMD");
-        data.getForiegnKeys().put("APP_DEPLOYMENT_ID", new SQLData.ForiegnKeyData("APPLICATION_DEPLOYMENT(DEPLOYMENT_ID)","ApplicationDeployment","AppDeploymentResource"));
+        data.getForiegnKeys()
+                .put(
+                        "APP_DEPLOYMENT_ID",
+                        new SQLData.ForiegnKeyData(
+                                "APPLICATION_DEPLOYMENT(DEPLOYMENT_ID)",
+                                "ApplicationDeployment",
+                                "AppDeploymentResource"));
         return data;
     }
+
     public static void testSqlGen() {
         SQLData data = createSQLData();
         SQLGenerator sqlGenerator = new SQLGenerator();
@@ -70,8 +76,8 @@ public class ModuleCMDGenerator {
         System.out.println(jpaResourceClassGenerator.generateAbstractResourceClassUpdates(model2));
         System.out.println(jpaResourceClassGenerator.generateAppCatalogResourceTypeUpdates(model2));
         System.out.println(jpaResourceClassGenerator.generateAppCatalogJPAUtilUpdates(model2));
-
     }
+
     public static void main(String[] args) {
         testSqlGen();
         testJPAClassGen();

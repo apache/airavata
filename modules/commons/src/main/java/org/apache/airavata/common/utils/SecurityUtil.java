@@ -1,32 +1,31 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class which includes security utilities.
@@ -43,7 +42,7 @@ public class SecurityUtil {
 
     /**
      * Creates a hash of given string with the given hash algorithm.
-     * 
+     *
      * @param stringToDigest
      *            The string to digest.
      * @param digestingAlgorithm
@@ -52,7 +51,8 @@ public class SecurityUtil {
      * @throws NoSuchAlgorithmException
      *             If given hash algorithm doesnt exists.
      */
-    public static String digestString(String stringToDigest, String digestingAlgorithm) throws NoSuchAlgorithmException {
+    public static String digestString(String stringToDigest, String digestingAlgorithm)
+            throws NoSuchAlgorithmException {
 
         if (digestingAlgorithm == null || digestingAlgorithm.equals(PASSWORD_HASH_METHOD_PLAINTEXT)) {
             return stringToDigest;
@@ -69,7 +69,7 @@ public class SecurityUtil {
 
     /**
      * Sets the truststore for application. Useful when communicating over HTTPS.
-     * 
+     *
      * @param trustStoreFilePath
      *            Where trust store is located.
      * @param trustStorePassword
@@ -85,31 +85,28 @@ public class SecurityUtil {
         if (System.getProperty("javax.net.ssl.trustStorePassword") == null) {
             System.setProperty("javax.net.ssl.trustStorePassword", trustStoreFilePath);
         }
-
     }
 
-    public static byte[] encryptString(String keyStorePath, String keyAlias,
-                                 KeyStorePasswordCallback passwordCallback, String value)
+    public static byte[] encryptString(
+            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, String value)
             throws GeneralSecurityException, IOException {
         return encrypt(keyStorePath, keyAlias, passwordCallback, value.getBytes(CHARSET_ENCODING));
     }
 
-    public static byte[] encrypt(String keyStorePath, String keyAlias,
-                                 KeyStorePasswordCallback passwordCallback, byte[] value)
+    public static byte[] encrypt(
+            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] value)
             throws GeneralSecurityException, IOException {
 
         Key secretKey = getSymmetricKey(keyStorePath, keyAlias, passwordCallback);
 
         Cipher cipher = Cipher.getInstance(PADDING_MECHANISM);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey,
-                new IvParameterSpec(new byte[16]));
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
         return cipher.doFinal(value);
     }
 
-    private static Key getSymmetricKey(String keyStorePath, String keyAlias,
-                                       KeyStorePasswordCallback passwordCallback)
+    private static Key getSymmetricKey(String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException,
-            UnrecoverableKeyException {
+                    UnrecoverableKeyException {
 
         KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, "jceks", passwordCallback);
 
@@ -118,32 +115,30 @@ public class SecurityUtil {
         }
 
         return ks.getKey(keyAlias, passwordCallback.getSecretKeyPassPhrase(keyAlias));
-
     }
 
-    public static byte[] decrypt(String keyStorePath, String keyAlias,
-                                 KeyStorePasswordCallback passwordCallback, byte[] encrypted)
+    public static byte[] decrypt(
+            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] encrypted)
             throws GeneralSecurityException, IOException {
 
         Key secretKey = getSymmetricKey(keyStorePath, keyAlias, passwordCallback);
 
         Cipher cipher = Cipher.getInstance(PADDING_MECHANISM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey,
-                new IvParameterSpec(new byte[16]));
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
 
         return cipher.doFinal(encrypted);
     }
 
-    public static String decryptString(String keyStorePath, String keyAlias,
-                                       KeyStorePasswordCallback passwordCallback, byte[] encrypted)
+    public static String decryptString(
+            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] encrypted)
             throws GeneralSecurityException, IOException {
 
         byte[] decrypted = decrypt(keyStorePath, keyAlias, passwordCallback, encrypted);
         return new String(decrypted, CHARSET_ENCODING);
     }
 
-    public static KeyStore loadKeyStore(String keyStoreFilePath, String keyStoreType,
-                                        KeyStorePasswordCallback passwordCallback)
+    public static KeyStore loadKeyStore(
+            String keyStoreFilePath, String keyStoreType, KeyStorePasswordCallback passwordCallback)
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
         File keystoreFile = new File(keyStoreFilePath);
@@ -171,8 +166,8 @@ public class SecurityUtil {
         }
     }
 
-    public static KeyStore loadKeyStore(InputStream inputStream, String keyStoreType,
-                                        KeyStorePasswordCallback passwordCallback)
+    public static KeyStore loadKeyStore(
+            InputStream inputStream, String keyStoreType, KeyStorePasswordCallback passwordCallback)
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
         if (keyStoreType == null) {
@@ -184,9 +179,4 @@ public class SecurityUtil {
 
         return ks;
     }
-
-
-
-
-
 }

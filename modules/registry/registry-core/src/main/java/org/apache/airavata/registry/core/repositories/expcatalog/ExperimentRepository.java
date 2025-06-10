@@ -1,25 +1,27 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -27,8 +29,6 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessInputEntity;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -38,12 +38,8 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentModel, ExperimentEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
 
     public ExperimentRepository() {
         super(ExperimentModel.class, ExperimentEntity.class);
@@ -76,7 +72,6 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             experimentModel.setCreationTime(System.currentTimeMillis());
         }
 
-
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentEntity experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
 
@@ -86,31 +81,40 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         }
 
         if (experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null) {
-            logger.debug("Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
-            for(ComputationalResourceSchedulingEntity entity : experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()){
+            logger.debug(
+                    "Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
+            for (ComputationalResourceSchedulingEntity entity :
+                    experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()) {
                 entity.setExperimentId(experimentId);
             }
-
         }
 
         if (experimentEntity.getExperimentInputs() != null) {
             logger.debug("Populating the Primary Key of ExperimentInput objects for the Experiment");
-            experimentEntity.getExperimentInputs().forEach(experimentInputEntity -> experimentInputEntity.setExperimentId(experimentId));
+            experimentEntity
+                    .getExperimentInputs()
+                    .forEach(experimentInputEntity -> experimentInputEntity.setExperimentId(experimentId));
         }
 
         if (experimentEntity.getExperimentOutputs() != null) {
             logger.debug("Populating the Primary Key of ExperimentOutput objects for the Experiment");
-            experimentEntity.getExperimentOutputs().forEach(experimentOutputEntity -> experimentOutputEntity.setExperimentId(experimentId));
+            experimentEntity
+                    .getExperimentOutputs()
+                    .forEach(experimentOutputEntity -> experimentOutputEntity.setExperimentId(experimentId));
         }
 
         if (experimentEntity.getExperimentStatus() != null) {
             logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
-            experimentEntity.getExperimentStatus().forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
+            experimentEntity
+                    .getExperimentStatus()
+                    .forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
         }
 
         if (experimentEntity.getErrors() != null) {
             logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
-            experimentEntity.getErrors().forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
+            experimentEntity
+                    .getErrors()
+                    .forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
         }
         return execute(entityManager -> entityManager.merge(experimentEntity));
     }
@@ -119,7 +123,8 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
 
         ExperimentStatus experimentStatus = new ExperimentStatus();
         experimentStatus.setState(ExperimentState.CREATED);
-        experimentStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        experimentStatus.setTimeOfStateChange(
+                AiravataUtils.getCurrentTimestamp().getTime());
         experimentModel.addToExperimentStatus(experimentStatus);
         String expName = experimentModel.getExperimentName();
         // This is to avoid overflow of experiment id size. Total experiment id length is <= 50 + UUID
@@ -136,14 +141,17 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         return get(experimentId);
     }
 
-    public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId) throws RegistryException {
+    public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId)
+            throws RegistryException {
         ExperimentModel experimentModel = getExperiment(experimentId);
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
         updateExperiment(experimentModel, experimentId);
         return experimentId;
     }
 
-    public String updateUserConfigurationData(UserConfigurationDataModel updatedUserConfigurationDataModel, String experimentId) throws RegistryException {
+    public String updateUserConfigurationData(
+            UserConfigurationDataModel updatedUserConfigurationDataModel, String experimentId)
+            throws RegistryException {
         return addUserConfigurationData(updatedUserConfigurationDataModel, experimentId);
     }
 
@@ -152,8 +160,15 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
         return experimentModel.getUserConfigurationData();
     }
 
-    public List<ExperimentModel> getExperimentList(String gatewayId, String fieldName, Object value, int limit, int offset,
-                                                   Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public List<ExperimentModel> getExperimentList(
+            String gatewayId,
+            String fieldName,
+            Object value,
+            int limit,
+            int offset,
+            Object orderByIdentifier,
+            ResultOrderType resultOrderType)
+            throws RegistryException {
         List<ExperimentModel> experimentModelList;
 
         if (fieldName.equals(DBConstants.Experiment.USER_NAME)) {
@@ -162,17 +177,13 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             queryParameters.put(DBConstants.Experiment.USER_NAME, value);
             queryParameters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
             experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_USER, limit, offset, queryParameters);
-        }
-
-        else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
+        } else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
             logger.debug("Search criteria is ProjectId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Experiment.PROJECT_ID, value);
             queryParameters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
             experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_PROJECT_ID, limit, offset, queryParameters);
-        }
-
-        else {
+        } else {
             logger.error("Unsupported field name for Experiment module.");
             throw new IllegalArgumentException("Unsupported field name for Experiment module.");
         }
@@ -187,5 +198,4 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     public void removeExperiment(String experimentId) throws RegistryException {
         delete(experimentId);
     }
-
 }

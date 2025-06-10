@@ -1,27 +1,32 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.agent.connection.service.services;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.protobuf.Timestamp;
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.airavata.agent.ServerMessage;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
@@ -42,13 +47,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.protobuf.Timestamp;
-
-import io.grpc.Status;
-import io.grpc.stub.StreamObserver;
-
 @Service
 public class AiravataFileService {
 
@@ -57,9 +55,8 @@ public class AiravataFileService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final AiravataService airavataService;
 
-    private final Cache<String, ExperimentStorageResponse> storageCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .build();
+    private final Cache<String, ExperimentStorageResponse> storageCache =
+            CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
     public AiravataFileService(AiravataService airavataService) {
         this.airavataService = airavataService;
@@ -77,10 +74,8 @@ public class AiravataFileService {
 
                 // Handle root directory
                 for (String expId : experimentIds) {
-                    readDirResBuilder.addResult(DirEntry.newBuilder()
-                            .setName(expId)
-                            .setIsDir(true)
-                            .build());
+                    readDirResBuilder.addResult(
+                            DirEntry.newBuilder().setName(expId).setIsDir(true).build());
                 }
 
             } else {
@@ -90,7 +85,9 @@ public class AiravataFileService {
                 ExperimentStorageResponse storageResponse = getExperimentStorage(experimentId, path);
 
                 if (storageResponse == null) {
-                    responseObserver.onError(Status.NOT_FOUND.withDescription("File path not found: " + path).asRuntimeException());
+                    responseObserver.onError(Status.NOT_FOUND
+                            .withDescription("File path not found: " + path)
+                            .asRuntimeException());
                     return;
                 }
 
@@ -113,22 +110,23 @@ public class AiravataFileService {
             }
         } catch (TException | ExecutionException e) {
             LOGGER.error("Failed to fetch experiments when trying to read the directory");
-            responseObserver.onError(Status.INTERNAL.withDescription("Failed to fetch experiments  when trying to read the directory").asRuntimeException());
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("Failed to fetch experiments  when trying to read the directory")
+                    .asRuntimeException());
         }
 
         // responseObserver.onNext(ServerMessage.newBuilder().setReadDirRes(readDirResBuilder.build()).build());
         responseObserver.onCompleted();
     }
 
-
     public ExperimentStorageResponse getExperimentStorage(String experimentId, String path) throws ExecutionException {
         String fullPath = experimentId + (path.equals("/") ? "" : "/" + path);
         return storageCache.get(fullPath, () -> fetchExperimentStorageFromAPI(experimentId, path));
     }
 
-
     private ExperimentStorageResponse fetchExperimentStorageFromAPI(String experimentId, String path) {
-        String url = "https://" + UserContext.gatewayId() + ".cybershuttle.org/api/experiment-storage/" + experimentId + "/" + path;
+        String url = "https://" + UserContext.gatewayId() + ".cybershuttle.org/api/experiment-storage/" + experimentId
+                + "/" + path;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(UserContext.authzToken().getAccessToken());
@@ -136,7 +134,8 @@ public class AiravataFileService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<ExperimentStorageResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, ExperimentStorageResponse.class);
+        ResponseEntity<ExperimentStorageResponse> responseEntity =
+                restTemplate.exchange(url, HttpMethod.GET, entity, ExperimentStorageResponse.class);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             return responseEntity.getBody();
@@ -179,5 +178,4 @@ public class AiravataFileService {
         long hash = value.hashCode();
         return Math.abs(hash);
     }
-
 }

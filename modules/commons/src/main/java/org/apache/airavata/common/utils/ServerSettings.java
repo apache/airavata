@@ -1,31 +1,31 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerSettings extends ApplicationSettings {
 
@@ -99,7 +99,6 @@ public class ServerSettings extends ApplicationSettings {
     public static final String RABBITMQ_DURABLE_QUEUE = "durable.queue";
     public static final String RABBITMQ_PREFETCH_COUNT = "prefetch.count";
 
-
     //    Workflow Enactment Service component configuration.
     private static final String ENACTMENT_THREAD_POOL_SIZE = "enactment.thread.pool.size";
     private static final int DEFAULT_ENACTMENT_THREAD_POOL_SIZE = 10;
@@ -117,7 +116,7 @@ public class ServerSettings extends ApplicationSettings {
     private static final String IS_RUNNING_ON_AWS = "isRunningOnAws";
     private static final String SERVER_ROLES = "server.roles";
 
-    //User Profile onstants
+    // User Profile onstants
 
     public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
     public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
@@ -131,7 +130,6 @@ public class ServerSettings extends ApplicationSettings {
     public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "iam.server.super.admin.username";
     public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
 
-
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
 
@@ -142,8 +140,7 @@ public class ServerSettings extends ApplicationSettings {
     private static boolean emailBaseNotificationEnable;
     private static String outputLocation;
 
-
-    //Airavata Metascheduler
+    // Airavata Metascheduler
     public static final String COMPUTE_RESOURCE_SELECTION_POLICY_CLASS = "compute.resource.selection.policy.class";
     public static final String METASCHEDULER_GATEWAY = "metascheduler.gateway";
     public static final String METASCHEDULER_GRP_ID = "metascheduler.group.resource.profile";
@@ -152,14 +149,13 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "job.scanning.interval";
     public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
-    public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD= "metascheduler.maximum.rescheduler.threshold";
-    public static final String METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR= "metascheduler.multiple.cr.enabling.factor";
+    public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD =
+            "metascheduler.maximum.rescheduler.threshold";
+    public static final String METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR = "metascheduler.multiple.cr.enabling.factor";
     public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
     public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
     public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
     public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
-
-
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
@@ -235,7 +231,6 @@ public class ServerSettings extends ApplicationSettings {
         } catch (ApplicationSettingsException e) {
             return getSetting(REGISTRY_DB_URL);
         }
-
     }
 
     public static boolean isAPIServerTLSEnabled() {
@@ -313,10 +308,8 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(WORKFLOW_PARSER);
     }
 
-
     public static int getEmailMonitorPeriod() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(EMAIL_BASED_MONITORING_PERIOD, "100000"));
-
     }
 
     public static String getEmailBasedMonitorHost() throws ApplicationSettingsException {
@@ -393,12 +386,12 @@ public class ServerSettings extends ApplicationSettings {
             if (threadPoolSize != null && !threadPoolSize.isEmpty()) {
                 return Integer.valueOf(threadPoolSize);
             } else {
-                log.warn("Thread pool size is not configured, use default gfac thread pool size " +
-                        DEFAULT_GFAC_THREAD_POOL_SIZE);
+                log.warn("Thread pool size is not configured, use default gfac thread pool size "
+                        + DEFAULT_GFAC_THREAD_POOL_SIZE);
             }
         } catch (ApplicationSettingsException e) {
-            log.warn("Couldn't read thread pool size from configuration on exception, use default gfac thread pool " +
-                    "size " + DEFAULT_GFAC_THREAD_POOL_SIZE);
+            log.warn("Couldn't read thread pool size from configuration on exception, use default gfac thread pool "
+                    + "size " + DEFAULT_GFAC_THREAD_POOL_SIZE);
         }
         return DEFAULT_GFAC_THREAD_POOL_SIZE;
     }
@@ -511,77 +504,63 @@ public class ServerSettings extends ApplicationSettings {
         return Boolean.valueOf(getSetting(Constants.ENABLE_STREAMING_TRANSFER, "True"));
     }
 
-
     public static String getComputeResourceSelectionPolicyClass() throws ApplicationSettingsException {
-        return getSetting(COMPUTE_RESOURCE_SELECTION_POLICY_CLASS,
+        return getSetting(
+                COMPUTE_RESOURCE_SELECTION_POLICY_CLASS,
                 "org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection.MultipleComputeResourcePolicy");
     }
 
     public static String getReSchedulerPolicyClass() throws ApplicationSettingsException {
-        return getSetting(COMPUTE_RESOURCE_RESCHEDULER_CLASS,
+        return getSetting(
+                COMPUTE_RESOURCE_RESCHEDULER_CLASS,
                 "org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ExponentialBackOffReScheduler");
     }
 
     public static String getMetaschedulerGateway() throws ApplicationSettingsException {
-        return getSetting(METASCHEDULER_GATEWAY,
-                "");
+        return getSetting(METASCHEDULER_GATEWAY, "");
     }
 
     public static String getMetaschedulerGrpId() throws ApplicationSettingsException {
-        return getSetting(METASCHEDULER_GRP_ID,
-                "");
+        return getSetting(METASCHEDULER_GRP_ID, "");
     }
 
-
     public static String getMetaschedulerUsername() throws ApplicationSettingsException {
-        return getSetting(METASCHEDULER_USERNAME,
-                "");
+        return getSetting(METASCHEDULER_USERNAME, "");
     }
 
     public static String getDataAnalyzingEnabledGateways() throws ApplicationSettingsException {
-        return getSetting(DATA_ANALYZER_ENABLED_GATEWAYS,
-                "");
+        return getSetting(DATA_ANALYZER_ENABLED_GATEWAYS, "");
     }
 
     public static int getDataAnalyzerTimeStep() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(DATA_ANALYZER_TIME_STEP_IN_SECONDS,
-                "1"));
+        return Integer.parseInt(getSetting(DATA_ANALYZER_TIME_STEP_IN_SECONDS, "1"));
     }
 
     public static double getMetaschedulerClusterScanningInterval() throws ApplicationSettingsException {
-        return Double.parseDouble(getSetting(METASCHEDULER_CLUSTER_SCANNING_INTERVAL,
-                "1800000"));
+        return Double.parseDouble(getSetting(METASCHEDULER_CLUSTER_SCANNING_INTERVAL, "1800000"));
     }
 
     public static double getMetaschedulerJobScanningInterval() throws ApplicationSettingsException {
-        return Double.parseDouble(getSetting(METASCHEDULER_JOB_SCANNING_INTERVAL,
-                "1800000"));
+        return Double.parseDouble(getSetting(METASCHEDULER_JOB_SCANNING_INTERVAL, "1800000"));
     }
 
     public static int getMetaschedulerNoOfScanningParallelJobs() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS,
-                "1"));
+        return Integer.parseInt(getSetting(METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS, "1"));
     }
 
     public static double getDataAnalyzerScanningInterval() throws ApplicationSettingsException {
-        return Double.parseDouble(getSetting(DATA_ANALYZER_SCANNING_INTERVAL,
-                "1800000"));
+        return Double.parseDouble(getSetting(DATA_ANALYZER_SCANNING_INTERVAL, "1800000"));
     }
 
     public static int getDataAnalyzerNoOfScanningParallelJobs() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS,
-                "1"));
+        return Integer.parseInt(getSetting(DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS, "1"));
     }
 
     public static int getMetaschedulerReschedulingThreshold() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD,
-                "5"));
+        return Integer.parseInt(getSetting(METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD, "5"));
     }
 
     public static int getMetaschedulerMultipleCREnablingFactor() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR,
-                "0.5"));
+        return Integer.parseInt(getSetting(METASCHEDULER_MULTIPLE_CR_ENABLING_FACTOR, "0.5"));
     }
-
-
 }

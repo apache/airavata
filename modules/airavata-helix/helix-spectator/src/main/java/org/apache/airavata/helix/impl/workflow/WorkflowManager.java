@@ -1,5 +1,27 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.workflow;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -28,13 +50,9 @@ import org.apache.helix.manager.zk.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 public class WorkflowManager {
 
-    private final static Logger logger = LoggerFactory.getLogger(WorkflowManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowManager.class);
 
     private Publisher statusPublisher;
     private CuratorFramework curatorClient = null;
@@ -57,13 +75,13 @@ public class WorkflowManager {
         initWorkflowOperators();
         initStatusPublisher();
         initCuratorClient();
-
     }
 
     private void initWorkflowOperators() throws Exception {
 
         if (!loadBalanceClusters) {
-            logger.info("Using default cluster " + ServerSettings.getSetting("helix.cluster.name") + " to submit workflows");
+            logger.info("Using default cluster " + ServerSettings.getSetting("helix.cluster.name")
+                    + " to submit workflows");
             workflowOperators.add(new WorkflowOperator(
                     ServerSettings.getSetting("helix.cluster.name"),
                     workflowManagerName,
@@ -73,10 +91,8 @@ public class WorkflowManager {
             List<String> clusters = zkHelixAdmin.getClusters();
             logger.info("Total available clusters " + clusters.size());
             for (String cluster : clusters) {
-                workflowOperators.add(new WorkflowOperator(
-                        cluster,
-                        workflowManagerName,
-                        ServerSettings.getZookeeperConnection()));
+                workflowOperators.add(
+                        new WorkflowOperator(cluster, workflowManagerName, ServerSettings.getZookeeperConnection()));
             }
         }
     }
@@ -92,10 +108,14 @@ public class WorkflowManager {
     }
 
     private void initHelixAdmin() throws ApplicationSettingsException {
-        ZkClient zkClient = new ZkClient(ServerSettings.getZookeeperConnection(), ZkClient.DEFAULT_SESSION_TIMEOUT,
-                ZkClient.DEFAULT_CONNECTION_TIMEOUT, new ZNRecordSerializer());
+        ZkClient zkClient = new ZkClient(
+                ServerSettings.getZookeeperConnection(),
+                ZkClient.DEFAULT_SESSION_TIMEOUT,
+                ZkClient.DEFAULT_CONNECTION_TIMEOUT,
+                new ZNRecordSerializer());
         zkHelixAdmin = new ZKHelixAdmin(zkClient);
     }
+
     private void initRegistryClientPool() throws ApplicationSettingsException {
 
         GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
@@ -110,7 +130,9 @@ public class WorkflowManager {
         poolConfig.setMaxWaitMillis(3000);
 
         this.registryClientPool = new ThriftClientPool<>(
-                RegistryService.Client::new, poolConfig, ServerSettings.getRegistryServerHost(),
+                RegistryService.Client::new,
+                poolConfig,
+                ServerSettings.getRegistryServerHost(),
                 Integer.parseInt(ServerSettings.getRegistryServerPort()));
     }
 
@@ -154,8 +176,11 @@ public class WorkflowManager {
 
         ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
         ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
-        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
-                AiravataUtils.getId(MessageType.PROCESS.name()), gatewayId);
+        MessageContext msgCtx = new MessageContext(
+                processStatusChangeEvent,
+                MessageType.PROCESS,
+                AiravataUtils.getId(MessageType.PROCESS.name()),
+                gatewayId);
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         getStatusPublisher().publish(msgCtx);
     }
@@ -176,7 +201,10 @@ public class WorkflowManager {
             getRegistryClientPool().returnResource(registryClient);
 
         } catch (Exception e) {
-            logger.error("Failed to save workflow " + workflowName + " of process " + processId + ". This will affect cancellation tasks", e);
+            logger.error(
+                    "Failed to save workflow " + workflowName + " of process " + processId
+                            + ". This will affect cancellation tasks",
+                    e);
             getRegistryClientPool().returnBrokenResource(registryClient);
         }
     }

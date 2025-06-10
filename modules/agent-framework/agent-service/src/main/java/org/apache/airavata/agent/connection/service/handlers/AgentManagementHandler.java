@@ -1,28 +1,28 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.agent.connection.service.handlers;
 
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.config.ClusterApplicationConfig;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AgentManagementHandler {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
 
@@ -68,7 +68,8 @@ public class AgentManagementHandler {
         try {
             Airavata.Client airavata = airavataService.airavata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
-            airavata.terminateExperiment(UserContext.authzToken(), experiment.getExperimentId(), experiment.getGatewayId());
+            airavata.terminateExperiment(
+                    UserContext.authzToken(), experiment.getExperimentId(), experiment.getGatewayId());
             return new AgentTerminateResponse(experimentId, true);
         } catch (Exception e) {
             LOGGER.error("Error terminating experiment {}", experimentId, e);
@@ -80,13 +81,21 @@ public class AgentManagementHandler {
         try {
             Airavata.Client airavata = airavataService.airavata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
-            GroupResourceProfile groupResourceProfile = airavata.getGroupResourceProfile(UserContext.authzToken(), experiment.getUserConfigurationData().getGroupResourceProfileId());
+            GroupResourceProfile groupResourceProfile = airavata.getGroupResourceProfile(
+                    UserContext.authzToken(),
+                    experiment.getUserConfigurationData().getGroupResourceProfileId());
 
             // Always get the Default allocation
             if (!"Default".equalsIgnoreCase(groupResourceProfile.getGroupResourceProfileName())) {
-                List<GroupResourceProfile> groupResourceList = airavata.getGroupResourceList(UserContext.authzToken(), experiment.getGatewayId());
+                List<GroupResourceProfile> groupResourceList =
+                        airavata.getGroupResourceList(UserContext.authzToken(), experiment.getGatewayId());
 
-                groupResourceList.stream().filter(profile -> "Default".equalsIgnoreCase(profile.getGroupResourceProfileName())).findFirst().ifPresent(profile -> experiment.getUserConfigurationData().setGroupResourceProfileId(profile.getGroupResourceProfileId()));
+                groupResourceList.stream()
+                        .filter(profile -> "Default".equalsIgnoreCase(profile.getGroupResourceProfileName()))
+                        .findFirst()
+                        .ifPresent(profile -> experiment
+                                .getUserConfigurationData()
+                                .setGroupResourceProfileId(profile.getGroupResourceProfileId()));
             }
 
             return experiment;
@@ -108,14 +117,28 @@ public class AgentManagementHandler {
         AgentLaunchRequest sortedLaunchRequest = launchRequests.get(0);
 
         for (AgentLaunchRequest req : launchRequests) {
-            String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
-            ExperimentStatistics experimentStatistics = airavataService.airavata().getExperimentStatistics(UserContext.authzToken(), UserContext.gatewayId(),
-                    System.currentTimeMillis() -  60 * 60 * 1000, System.currentTimeMillis(), null,
-                    appInterfaceId, null, 100, 0);
+            String appInterfaceId =
+                    clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
+            ExperimentStatistics experimentStatistics = airavataService
+                    .airavata()
+                    .getExperimentStatistics(
+                            UserContext.authzToken(),
+                            UserContext.gatewayId(),
+                            System.currentTimeMillis() - 60 * 60 * 1000,
+                            System.currentTimeMillis(),
+                            null,
+                            appInterfaceId,
+                            null,
+                            100,
+                            0);
 
             int runningExperimentCount = experimentStatistics.getRunningExperimentCount();
             int failedExperimentCount = experimentStatistics.getFailedExperimentCount();
-            LOGGER.info("Running count {} failed count {} for appInterfaceId {}", runningExperimentCount, failedExperimentCount, appInterfaceId);
+            LOGGER.info(
+                    "Running count {} failed count {} for appInterfaceId {}",
+                    runningExperimentCount,
+                    failedExperimentCount,
+                    appInterfaceId);
             if (runningExperimentCount + failedExperimentCount < leastRunningExpCount) {
                 leastRunningExpCount = runningExperimentCount + failedExperimentCount;
                 sortedLaunchRequest = req;
@@ -125,8 +148,8 @@ public class AgentManagementHandler {
     }
 
     private String generateEnvName(List<String> libraries, List<String> pip) {
-      String key = String.join(",", libraries) + "|" + String.join(",", pip);
-      return Integer.toHexString(key.hashCode());
+        String key = String.join(",", libraries) + "|" + String.join(",", pip);
+        return Integer.toHexString(key.hashCode());
     }
 
     public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
@@ -136,13 +159,18 @@ public class AgentManagementHandler {
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
             ExperimentModel experiment = generateExperiment(req, agentId, envName);
 
-            String experimentId = airavataService.airavata().createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
+            String experimentId = airavataService
+                    .airavata()
+                    .createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
-            airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
+            airavataService
+                    .airavata()
+                    .launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
             return new AgentLaunchResponse(agentId, experimentId, envName);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
-            throw new RuntimeException("Error while creating the experiment with the name: " + req.getExperimentName(), e);
+            throw new RuntimeException(
+                    "Error while creating the experiment with the name: " + req.getExperimentName(), e);
         }
     }
 
@@ -152,14 +180,16 @@ public class AgentManagementHandler {
             airavataService.airavata().terminateExperiment(UserContext.authzToken(), experimentId, gatewayId);
         } catch (Exception e) {
             LOGGER.error("Error while terminating the application with the experiment Id: {}", experimentId);
-            throw new RuntimeException("Error while terminating the application with the experiment Id: " + experimentId, e);
+            throw new RuntimeException(
+                    "Error while terminating the application with the experiment Id: " + experimentId, e);
         }
     }
 
     public ProcessModel getEnvProcessModel(String expId) {
         try {
             LOGGER.info("Extracting the process model for experiment id: {}", expId);
-            ExperimentModel expModel = airavataService.airavata().getDetailedExperimentTree(UserContext.authzToken(), expId);
+            ExperimentModel expModel =
+                    airavataService.airavata().getDetailedExperimentTree(UserContext.authzToken(), expId);
             if (expModel.getProcesses() != null && !expModel.getProcesses().isEmpty()) {
                 return expModel.getProcesses().get(0);
             } else {
@@ -172,7 +202,8 @@ public class AgentManagementHandler {
         }
     }
 
-    private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName) throws TException {
+    private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName)
+            throws TException {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
@@ -182,7 +213,8 @@ public class AgentManagementHandler {
         AuthzToken authzToken = UserContext.authzToken();
         String userName = UserContext.username();
         String gatewayId = UserContext.gatewayId();
-        String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
+        String appInterfaceId =
+                clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setExperimentName(experimentName);
         experimentModel.setProjectId(projectId);
@@ -190,8 +222,10 @@ public class AgentManagementHandler {
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExecutionId(appInterfaceId);
 
-        ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
-        GroupComputeResourcePreference groupCompResourcePref = airavataService.extractGroupComputeResourcePreference(airavataClient, req.getGroup(), req.getRemoteCluster());
+        ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
+                new ComputationalResourceSchedulingModel();
+        GroupComputeResourcePreference groupCompResourcePref = airavataService.extractGroupComputeResourcePreference(
+                airavataClient, req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
@@ -199,7 +233,8 @@ public class AgentManagementHandler {
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
         computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
         computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
-        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(groupCompResourcePref.getAllocationProjectNumber());
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(
+                groupCompResourcePref.getAllocationProjectNumber());
         computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
@@ -207,7 +242,8 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
         userConfigurationDataModel.setStorageId(storageResourceId);
-        String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName).toString();
+        String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
+                .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
         userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());
 
@@ -221,9 +257,11 @@ public class AgentManagementHandler {
                             case "agent_id" -> input.setValue(agentId);
                             case "env_name" -> input.setValue(envName);
                             case "server_url" -> input.setValue(airavataService.getServerUrl());
-                            case "libraries" -> input.setValue(req.getLibraries() != null ? String.join(",", req.getLibraries()) : "");
+                            case "libraries" ->
+                                input.setValue(req.getLibraries() != null ? String.join(",", req.getLibraries()) : "");
                             case "pip" -> input.setValue(req.getPip() != null ? String.join(",", req.getPip()) : "");
-                            case "mounts" -> input.setValue(req.getMounts() != null ? String.join(",", req.getMounts()) : "");
+                            case "mounts" ->
+                                input.setValue(req.getMounts() != null ? String.join(",", req.getMounts()) : "");
                             default -> {}
                         }
                     }
@@ -237,5 +275,4 @@ public class AgentManagementHandler {
 
         return experimentModel;
     }
-
 }

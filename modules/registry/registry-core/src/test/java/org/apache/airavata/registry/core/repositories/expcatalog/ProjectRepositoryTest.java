@@ -1,25 +1,30 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
@@ -28,13 +33,6 @@ import org.apache.airavata.registry.cpi.utils.Constants;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class ProjectRepositoryTest extends TestBase {
 
@@ -79,7 +77,9 @@ public class ProjectRepositoryTest extends TestBase {
         assertEquals("updated projectName", retrievedProject.getName());
         assertEquals("projectDescription", retrievedProject.getDescription());
 
-        assertTrue(projectRepository.getProjectIDs(Constants.FieldConstants.ProjectConstants.OWNER, "user").contains(projectId));
+        assertTrue(projectRepository
+                .getProjectIDs(Constants.FieldConstants.ProjectConstants.OWNER, "user")
+                .contains(projectId));
 
         List<String> accessibleProjectIds = new ArrayList<>();
         accessibleProjectIds.add(projectId);
@@ -90,13 +90,14 @@ public class ProjectRepositoryTest extends TestBase {
         filters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, retrievedProject.getName());
         filters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, retrievedProject.getDescription());
 
-        assertTrue(projectRepository.searchAllAccessibleProjects(accessibleProjectIds, filters,
-                -1, 0, null, null).size() == 1);
+        assertTrue(projectRepository
+                        .searchAllAccessibleProjects(accessibleProjectIds, filters, -1, 0, null, null)
+                        .size()
+                == 1);
 
         projectRepository.removeProject(projectId);
         assertFalse(projectRepository.isProjectExist(projectId));
 
         gatewayRepository.removeGateway(gatewayId);
     }
-
 }

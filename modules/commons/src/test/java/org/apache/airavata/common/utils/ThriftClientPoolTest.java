@@ -1,8 +1,29 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -11,11 +32,6 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
 
 public class ThriftClientPoolTest {
 
@@ -36,8 +52,8 @@ public class ThriftClientPoolTest {
         };
 
         GenericObjectPoolConfig<BaseAPI.Client> poolConfig = new GenericObjectPoolConfig<>();
-        ThriftClientPool<BaseAPI.Client> thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> null,
-                poolConfig);
+        ThriftClientPool<BaseAPI.Client> thriftClientPool =
+                new ThriftClientPool<>((protocol) -> mockClient, () -> null, poolConfig);
         BaseAPI.Client client = thriftClientPool.getResource();
         thriftClientPool.returnResource(client);
         thriftClientPool.close();
@@ -76,8 +92,8 @@ public class ThriftClientPoolTest {
         Assert.assertEquals("Initial length of log is 0", 0, log.toString().length());
         PrintWriter logWriter = new PrintWriter(log);
         abandonedConfig.setLogWriter(logWriter);
-        ThriftClientPool<BaseAPI.Client> thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> null,
-                poolConfig, abandonedConfig);
+        ThriftClientPool<BaseAPI.Client> thriftClientPool =
+                new ThriftClientPool<>((protocol) -> mockClient, () -> null, poolConfig, abandonedConfig);
         thriftClientPool.getResource();
         try {
             // Sleep long enough for the client to be considered abandoned
@@ -129,8 +145,8 @@ public class ThriftClientPoolTest {
         Assert.assertEquals("Initial length of log is 0", 0, log.toString().length());
         PrintWriter logWriter = new PrintWriter(log);
         abandonedConfig.setLogWriter(logWriter);
-        ThriftClientPool<BaseAPI.Client> thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> null,
-                poolConfig, abandonedConfig);
+        ThriftClientPool<BaseAPI.Client> thriftClientPool =
+                new ThriftClientPool<>((protocol) -> mockClient, () -> null, poolConfig, abandonedConfig);
         thriftClientPool.getResource();
         try {
             // Sleep long enough for the client to be considered abandoned
@@ -157,7 +173,7 @@ public class ThriftClientPoolTest {
     /**
      * Just like #{@link #testWithAbandonConfigAndAbandoned()} but using default
      * configuration.
-     * 
+     *
      * @throws TException
      * @throws ApplicationSettingsException
      */
@@ -181,8 +197,8 @@ public class ThriftClientPoolTest {
         // maintenance to run
         poolConfig.setTimeBetweenEvictionRunsMillis(1);
         ServerSettings.setSetting("thrift.client.pool.abandoned.removal.enabled", "true");
-        ThriftClientPool<BaseAPI.Client> thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> null,
-                poolConfig);
+        ThriftClientPool<BaseAPI.Client> thriftClientPool =
+                new ThriftClientPool<>((protocol) -> mockClient, () -> null, poolConfig);
         thriftClientPool.getResource();
         try {
             // Sleep long enough for the client to be considered abandoned
@@ -193,10 +209,14 @@ public class ThriftClientPoolTest {
             Assert.fail("sleep interrupted");
         }
 
-        new Verifications() {{
-            // Verify client is destroyed when abandoned
-            mockClient.getInputProtocol().getTransport().close(); times = 1;
-            mockClient.getOutputProtocol().getTransport().close(); times = 1;
-        }};
+        new Verifications() {
+            {
+                // Verify client is destroyed when abandoned
+                mockClient.getInputProtocol().getTransport().close();
+                times = 1;
+                mockClient.getOutputProtocol().getTransport().close();
+                times = 1;
+            }
+        };
     }
 }
