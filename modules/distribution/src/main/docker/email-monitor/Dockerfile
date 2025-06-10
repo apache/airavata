@@ -15,10 +15,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from adoptopenjdk/openjdk11
+FROM eclipse-temurin:17-jre
 
-ADD ${email.monitor.dist.name}-bin.tar.gz /opt
-RUN mv /opt/${email.monitor.dist.name} /opt/apache-airavata-email-monitor
-RUN rm /opt/apache-airavata-email-monitor/conf/email-config.yaml
-ADD wait-for-it.sh /tmp/wait-for-it.sh
+WORKDIR /opt
+
+COPY ${email.monitor.dist.name}-bin.tar.gz .
+RUN tar -xzf ${email.monitor.dist.name}-bin.tar.gz && \
+    mv ${email.monitor.dist.name} apache-airavata-email-monitor && \
+    rm ${email.monitor.dist.name}-bin.tar.gz
+
+COPY wait-for-it.sh /tmp/
 RUN chmod +x /tmp/wait-for-it.sh
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV AIRAVATA_HOME=/opt/apache-airavata-email-monitor
+
+ENTRYPOINT ["/opt/apache-airavata-email-monitor/bin/email-monitor.sh"]
