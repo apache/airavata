@@ -15,9 +15,32 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from adoptopenjdk/openjdk11
+FROM eclipse-temurin:17-jre
 
-ADD ${api.server.dist.name}-bin.tar.gz /opt
-RUN mv /opt/${api.server.dist.name} /opt/apache-airavata-api-server
-ADD wait-for-it.sh /tmp/wait-for-it.sh
-RUN chmod +x /tmp/wait-for-it.sh
+# Set working directory
+WORKDIR /opt
+
+# Copy the extracted distribution files
+COPY ${api.server.dist.name}-bin.tar.gz /opt/
+RUN tar -xzf /opt/${api.server.dist.name}-bin.tar.gz && \
+    rm /opt/${api.server.dist.name}-bin.tar.gz && \
+    mv /opt/${api.server.dist.name} /opt/apache-airavata
+
+# Copy wait-for-it script for container orchestration
+COPY wait-for-it.sh /opt/apache-airavata/wait-for-it.sh
+RUN chmod +x /opt/apache-airavata/wait-for-it.sh
+
+# Add required configuration
+RUN echo "api.server.monitoring.enabled=false" >> /opt/apache-airavata/bin/airavata-server.properties
+
+# Set environment variables
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+ENV AIRAVATA_HOME=/opt/apache-airavata
+
+# Expose the default API server port
+EXPOSE 8960 9930 7878 8962 8970
+
+# Set the entrypoint to use the shell script
+ENTRYPOINT ["/opt/apache-airavata/bin/airavata-server-start.sh"]
+CMD ["api-orch"]

@@ -15,9 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from adoptopenjdk/openjdk11
+FROM eclipse-temurin:17-jre
 
-ADD ${controller.dist.name}-bin.tar.gz /opt
-RUN mv /opt/${controller.dist.name} /opt/apache-airavata-controller
-ADD wait-for-it.sh /tmp/wait-for-it.sh
+WORKDIR /opt
+
+COPY ${controller.dist.name}-bin.tar.gz .
+RUN tar -xzf ${controller.dist.name}-bin.tar.gz && \
+    mv ${controller.dist.name} apache-airavata-controller && \
+    rm ${controller.dist.name}-bin.tar.gz
+
+
+COPY wait-for-it.sh /tmp/wait-for-it.sh
 RUN chmod +x /tmp/wait-for-it.sh
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV AIRAVATA_HOME=/opt/apache-airavata-controller
+
+ENTRYPOINT ["/opt/apache-airavata-controller/bin/controller.sh"]
