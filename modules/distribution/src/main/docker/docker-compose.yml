@@ -28,6 +28,7 @@ services:
       - keycloak
     environment:
       - zookeeper.server.connection=zookeeper:2181
+    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--" , "/opt/apache-airavata-controller/bin/controller.sh"]
 
   apiserver:
     image: airavata/api-server
@@ -177,6 +178,7 @@ services:
       - iam.server.super.admin.password=admin
       - db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner
       - thrift.client.pool.abandoned.removal.enabled=true
+    command: ["/tmp/wait-for-it.sh", "db:3306", "--", "/tmp/wait-for-it.sh", "rabbitmq:5672", "--" , "/opt/apache-airavata-api-server/bin/airavata-server-start.sh", "api-orch"]
 
   prewm:
     image: airavata/pre-wm
@@ -193,6 +195,7 @@ services:
       - regserver.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - pre.workflow.manager.loadbalance.clusters=false
+    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-pre-wm/bin/pre-wm.sh"]
 
   participant:
     image: airavata/participant
@@ -213,6 +216,7 @@ services:
       - enable.realtime.monitor=false
       - profile.service.server.host=apiserver
       - profile.service.server.port=8962
+    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-participant/bin/participant.sh"]
 
   emailmonitor:
     image: airavata/email-monitor
@@ -231,6 +235,7 @@ services:
       - email.based.monitor.address=CHANGEME
       - email.based.monitor.password=CHANGEME
       - job.monitor.broker.url=kafka:9092
+    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-email-monitor/bin/email-monitor.sh"]
 
   db:
     image: mariadb:10.4.13
