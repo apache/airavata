@@ -23,11 +23,11 @@
  *
 */
 
+include "profile_user_cpi_errors.thrift"
 include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
-include "../../../data-models/user-tenant-group-models/user_profile_model.thrift"
-include "profile_user_cpi_errors.thrift"
 include "../../../base-api/base_api.thrift"
+include "../../../data-models/user_profile_model.thrift"
 
 namespace java org.apache.airavata.service.profile.user.cpi
 namespace php Airavata.Service.Profile.User.CPI

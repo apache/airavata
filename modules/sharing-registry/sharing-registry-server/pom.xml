@@ -103,12 +103,6 @@
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <release>17</release>
-                    <source>17</source>
-                    <target>17</target>
-                    <!--<compilerArgs>-->
-                        <!--<arg>&#45;&#45;add-opens=java.base/java.lang=ALL-UNNAMED</arg>-->
-                    <!--</compilerArgs>-->
-                    <!--<fork>true</fork>-->
                 </configuration>
             </plugin>
             <plugin>

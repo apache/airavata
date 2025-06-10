@@ -23,11 +23,11 @@
  *
 */
 
+include "group_manager_cpi_errors.thrift"
 include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
-include "../../../data-models/user-tenant-group-models/group_manager_model.thrift"
-include "group_manager_cpi_errors.thrift"
 include "../../../base-api/base_api.thrift"
+include "../../../data-models/group_manager_model.thrift"
 
 namespace java org.apache.airavata.service.profile.groupmanager.cpi
 namespace php Airavata.Service.Profile.Groupmanager.CPI

@@ -16,7 +16,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-api-stubs</artifactId>
+            <artifactId>airavata-data-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

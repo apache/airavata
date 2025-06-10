@@ -53,3 +53,8 @@ airavata-local-agent/build.sh
 modules/research-framework/compose
 
 logs
+
+# Ignore Maven build output
+**/target/
+# Ignore generated sources
+**/generated-sources/

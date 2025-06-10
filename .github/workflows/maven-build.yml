@@ -10,14 +10,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Set up OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential automake bison flex libboost-all-dev libevent-dev libssl-dev libtool pkg-config
+      - name: Set up Thrift 0.22.0
+        run: |
+          wget -q https://dlcdn.apache.org/thrift/0.22.0/thrift-0.22.0.tar.gz
+          tar -xzf thrift-0.22.0.tar.gz
+          cd thrift-0.22.0
+          ./configure --without-rs --enable-libs=no --enable-tests=no
+          make -j$(nproc)
+          sudo make install
+          thrift --version
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Build with Maven (skip tests)
-        run: mvn clean install -DskipTests 
+        run: mvn clean install -DskipTests
