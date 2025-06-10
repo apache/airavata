@@ -1,34 +1,32 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
-
-import org.apache.airavata.model.dbevent.EntityType;
 
 /**
  * Created by Ajinkya on 3/22/17.
  */
 public class DBEventManagerConstants {
 
-    private final static String QUEUE_SUFFIX = ".queue";
-    public final static String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
-    public final static String ROUTING_KEY_SEPARATOR = ".";
+    private static final String QUEUE_SUFFIX = ".queue";
+    public static final String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
+    public static final String ROUTING_KEY_SEPARATOR = ".";
 
     /**
      * Get the queue-name of the service, given service-name as enum
@@ -48,7 +46,7 @@ public class DBEventManagerConstants {
      * @return
      */
     public static String getRoutingKey(String serviceName) {
-        if(serviceName.equals(DBEventService.DB_EVENT.toString())) {
+        if (serviceName.equals(DBEventService.DB_EVENT.toString())) {
             return serviceName;
         }
         return "#" + ROUTING_KEY_SEPARATOR + serviceName + ROUTING_KEY_SEPARATOR + "#";
@@ -77,8 +75,8 @@ public class DBEventManagerConstants {
         return null;
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(DBEventManagerConstants.getDbEventServiceName(EntityType.USER_PROFILE));
-//        System.out.println(DBEventService.REGISTRY);
-//    }
+    //    public static void main(String[] args) {
+    //        System.out.println(DBEventManagerConstants.getDbEventServiceName(EntityType.USER_PROFILE));
+    //        System.out.println(DBEventService.REGISTRY);
+    //    }
 }

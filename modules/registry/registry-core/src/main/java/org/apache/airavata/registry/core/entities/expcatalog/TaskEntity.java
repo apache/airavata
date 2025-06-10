@@ -1,31 +1,29 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
-
-import org.apache.airavata.model.task.TaskTypes;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.model.task.TaskTypes;
 
 /**
  * The persistent class for the task database table.
@@ -60,25 +58,29 @@ public class TaskEntity implements Serializable {
     @Column(name = "SUB_TASK_MODEL")
     private byte[] subTaskModel;
 
-    @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "task", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = TaskStatusEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "task",
+            fetch = FetchType.EAGER)
     @OrderBy("timeOfStateChange ASC")
     private List<TaskStatusEntity> taskStatuses;
 
-    @OneToMany(targetEntity = TaskErrorEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "task", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = TaskErrorEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "task",
+            fetch = FetchType.EAGER)
     private List<TaskErrorEntity> taskErrors;
 
-    @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "task", fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL, mappedBy = "task", fetch = FetchType.EAGER)
     private List<JobEntity> jobs;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
     private ProcessEntity process;
 
-    public TaskEntity() {
-    }
+    public TaskEntity() {}
 
     public String getTaskId() {
         return taskId;

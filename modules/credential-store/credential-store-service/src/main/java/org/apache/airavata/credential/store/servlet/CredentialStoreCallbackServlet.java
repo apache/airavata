@@ -1,23 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.credential.store.servlet;
+
+import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_KEY;
 
 import edu.uiuc.ncsa.myproxy.oa4mp.client.AssetResponse;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment;
@@ -25,8 +27,15 @@ import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPService;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.core.exceptions.GeneralException;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
+import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
@@ -38,16 +47,6 @@ import org.apache.airavata.credential.store.util.ConfigurationReader;
 import org.apache.airavata.credential.store.util.CredentialStoreConstants;
 import org.apache.airavata.credential.store.util.PrivateKeyStore;
 import org.apache.airavata.credential.store.util.Utility;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
-
-import static edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment.CALLBACK_URI_KEY;
 
 /**
  * Callback from the portal will come here. In this class we will store incomming certificate to the database. Partly
@@ -81,14 +80,13 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
             throw new ServletException("Error initializing configuration reader.", e);
         }
 
-
         // initialize notifier
         try {
             boolean enabled = Boolean.parseBoolean(ApplicationSettings.getCredentialStoreNotifierEnabled());
 
             if (enabled) {
-                EmailNotifierConfiguration notifierConfiguration
-                        = EmailNotifierConfiguration.getEmailNotifierConfigurations();
+                EmailNotifierConfiguration notifierConfiguration =
+                        EmailNotifierConfiguration.getEmailNotifierConfigurations();
                 long duration = Long.parseLong(ApplicationSettings.getCredentialStoreNotifierDuration());
 
                 notifierBootstrap = new NotifierBootstrap(duration, dbUtil, notifierConfiguration);
@@ -97,7 +95,6 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         } catch (ApplicationSettingsException e) {
             throw new ServletException("Error initializing notifier.", e);
         }
-
 
         info("Credential store callback initialized successfully.");
     }
@@ -189,16 +186,16 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
         CertificateCredential certificateCredential = new CertificateCredential();
 
-        certificateCredential.setNotBefore(Utility.convertDateToString(certificates[0].getNotBefore())); //TODO check this is correct
+        certificateCredential.setNotBefore(
+                Utility.convertDateToString(certificates[0].getNotBefore())); // TODO check this is correct
         certificateCredential.setNotAfter(Utility.convertDateToString(certificates[0].getNotAfter()));
         certificateCredential.setCertificates(certificates);
         certificateCredential.setPrivateKey(privateKey);
-        certificateCredential
-                .setCommunityUser(new CommunityUser(gatewayName, assetResponse.getUsername(), contactEmail));
+        certificateCredential.setCommunityUser(
+                new CommunityUser(gatewayName, assetResponse.getUsername(), contactEmail));
         certificateCredential.setPortalUserName(portalUserName);
         certificateCredential.setLifeTime(duration);
         certificateCredential.setToken(portalTokenId);
-
 
         certificateCredentialWriter.writeCredentials(certificateCredential);
 
@@ -227,13 +224,11 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         }
 
         info("2.a. Completely finished with delegation.");
-
     }
 
     private boolean isUrlInSameServer(String url) {
 
         return !(url.toLowerCase().startsWith("http") || url.toLowerCase().startsWith("https"));
-
     }
 
     private String decorateUrlWithToken(String url, String tokenId) {
@@ -243,8 +238,8 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         return stringBuilder.toString();
     }
 
-    private Map<String, String> createQueryParameters(String gatewayName, String portalUserName, String portalEmail,
-            String tokenId) {
+    private Map<String, String> createQueryParameters(
+            String gatewayName, String portalUserName, String portalEmail, String tokenId) {
 
         String callbackUriKey = getEnvironment().getConstants().get(CALLBACK_URI_KEY);
         ClientEnvironment clientEnvironment = (ClientEnvironment) getEnvironment();
@@ -253,10 +248,23 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
         StringBuilder stringBuilder = new StringBuilder(callbackUri);
 
-        stringBuilder.append("?").append(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER).append("=").append(gatewayName).append("&")
-                .append(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER).append("=").append(portalUserName).append("&")
-                .append(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER).append("=").append(portalEmail).append("&")
-                .append(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED).append("=").append(tokenId);
+        stringBuilder
+                .append("?")
+                .append(CredentialStoreConstants.GATEWAY_NAME_QUERY_PARAMETER)
+                .append("=")
+                .append(gatewayName)
+                .append("&")
+                .append(CredentialStoreConstants.PORTAL_USER_QUERY_PARAMETER)
+                .append("=")
+                .append(portalUserName)
+                .append("&")
+                .append(CredentialStoreConstants.PORTAL_USER_EMAIL_QUERY_PARAMETER)
+                .append("=")
+                .append(portalEmail)
+                .append("&")
+                .append(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED)
+                .append("=")
+                .append(tokenId);
 
         info("Callback URI is set to - " + stringBuilder.toString());
 
@@ -264,6 +272,5 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         parameters.put(callbackUriKey, stringBuilder.toString());
 
         return parameters;
-
     }
 }

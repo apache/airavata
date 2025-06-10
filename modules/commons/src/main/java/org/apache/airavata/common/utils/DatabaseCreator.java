@@ -1,26 +1,23 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +32,8 @@ import java.sql.Statement;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates the database tables required for airavata with default configuration this
@@ -42,10 +41,12 @@ import java.util.regex.Pattern;
  * properties files.
  */
 public class DatabaseCreator {
-    private final static Logger logger = LoggerFactory.getLogger(DatabaseCreator.class);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseCreator.class);
 
     public enum DatabaseType {
-        derby("(?i).*derby.*"), mysql("(?i).*(mysql|mariadb).*"), other("");
+        derby("(?i).*derby.*"),
+        mysql("(?i).*(mysql|mariadb).*"),
+        other("");
 
         private String pattern;
 
@@ -58,7 +59,7 @@ public class DatabaseCreator {
         }
     }
 
-    private static DatabaseType[] supportedDatabase = new DatabaseType[] { DatabaseType.derby, DatabaseType.mysql };
+    private static DatabaseType[] supportedDatabase = new DatabaseType[] {DatabaseType.derby, DatabaseType.mysql};
 
     private static Logger log = LoggerFactory.getLogger(DatabaseCreator.class);
     private static final String delimiter = ";";
@@ -71,8 +72,6 @@ public class DatabaseCreator {
     public static void createRegistryDatabase(String prefix, Connection conn) throws Exception {
         createDatabase(prefix, conn);
     }
-
-
 
     /**
      * Checks whether database tables are created by using select * on given table name
@@ -207,8 +206,7 @@ public class DatabaseCreator {
         try {
             if (text != null) {
                 for (DatabaseType type : supportedDatabase) {
-                    if (text.matches(type.getMatchingPattern()))
-                        return type;
+                    if (text.matches(type.getMatchingPattern())) return type;
                 }
             }
             String msg = "Unsupported database: " + text
@@ -233,7 +231,7 @@ public class DatabaseCreator {
     private static String getScriptLocation(String prefix, DatabaseType databaseType) {
         String scriptName = prefix + "-" + databaseType + ".sql";
         log.debug("Loading database script from :" + scriptName);
-        return  scriptName;
+        return scriptName;
     }
 
     private static void createDatabase(String prefix, Connection conn) throws Exception {
@@ -267,12 +265,12 @@ public class DatabaseCreator {
 
         try {
             InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
-            if(is == null) {
+            if (is == null) {
                 logger.info("Script file not found at " + dbscriptName + ". Uses default database script file");
                 DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
-                is = DatabaseCreator.class.getClassLoader().getResourceAsStream(
-                        getDBScriptFileName(databaseType, dbscriptName)
-                );
+                is = DatabaseCreator.class
+                        .getClassLoader()
+                        .getResourceAsStream(getDBScriptFileName(databaseType, dbscriptName));
             }
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
@@ -376,8 +374,8 @@ public class DatabaseCreator {
         return dbScriptFileName;
     }
 
-//    public static void main(String[] args) throws Exception {
-//        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.derby, "db/db/expcatalog-derby.sql"));
-//        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.mysql, "/expcatalog-mysql.sql"));
-//    }
+    //    public static void main(String[] args) throws Exception {
+    //        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.derby, "db/db/expcatalog-derby.sql"));
+    //        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.mysql, "/expcatalog-mysql.sql"));
+    //    }
 }

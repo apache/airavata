@@ -1,24 +1,33 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.security.configurations;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.airavata.security.AbstractAuthenticator;
 import org.apache.airavata.security.Authenticator;
 import org.apache.airavata.security.UserStore;
@@ -29,16 +38,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * This class will read authenticators.xml and load all configurations related to authenticators.
@@ -51,9 +50,7 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
 
     protected static boolean authenticationEnabled = true;
 
-    public AuthenticatorConfigurationReader() {
-
-    }
+    public AuthenticatorConfigurationReader() {}
 
     public void init(InputStream inputStream) throws IOException, ParserConfigurationException, SAXException {
 
@@ -130,8 +127,14 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
                 Collections.sort(authenticatorList, new AuthenticatorComparator());
 
                 StringBuilder stringBuilder = new StringBuilder("Successfully initialized authenticator ");
-                stringBuilder.append(name).append(" with class ").append(className).append(" enabled? ")
-                        .append(enabled).append(" priority = ").append(priority);
+                stringBuilder
+                        .append(name)
+                        .append(" with class ")
+                        .append(className)
+                        .append(" enabled? ")
+                        .append(enabled)
+                        .append(" priority = ")
+                        .append(priority);
 
                 log.debug(stringBuilder.toString());
             }
@@ -142,20 +145,20 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
         throw new ParserConfigurationException("Error in configuration. Missing mandatory element " + element);
     }
 
-    protected Authenticator createAuthenticator(String name, String className, String enabled, String priority,
-            String userStoreClassName) {
+    protected Authenticator createAuthenticator(
+            String name, String className, String enabled, String priority, String userStoreClassName) {
 
         log.debug("Loading authenticator class " + className + " and name " + name);
 
         // Load a class and instantiate an object
         Class authenticatorClass;
         try {
-            authenticatorClass = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+            authenticatorClass =
+                    Class.forName(className, true, Thread.currentThread().getContextClassLoader());
             // authenticatorClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             log.error("Error loading authenticator class " + className);
             throw new RuntimeException("Error loading authenticator class " + className, e);
-
         }
 
         try {
@@ -185,14 +188,13 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
             log.error(error);
             throw new RuntimeException(error, e);
         }
-
     }
 
     protected UserStore createUserStore(String userStoreClassName) {
 
         try {
-            Class userStoreClass = Class.forName(userStoreClassName, true, Thread.currentThread()
-                    .getContextClassLoader());
+            Class userStoreClass = Class.forName(
+                    userStoreClassName, true, Thread.currentThread().getContextClassLoader());
 
             return (UserStore) userStoreClass.newInstance();
         } catch (ClassNotFoundException e) {
@@ -209,7 +211,6 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
             log.error(error);
             throw new RuntimeException(error, e);
         }
-
     }
 
     public List<Authenticator> getAuthenticatorList() {
@@ -221,7 +222,7 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
      * configuration. AuthenticatorConfigurationReader will read that information and will populate that to static
      * boolean authenticationEnabled. This method will say whether authentication is enabled in the system or disabled
      * in the system.
-     * 
+     *
      * @return <code>true</code> if authentication is enabled. Else <code>false</code>.
      */
     public static boolean isAuthenticationEnabled() {
@@ -238,5 +239,4 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
             return (o1.getPriority() > o2.getPriority() ? -1 : (o1.getPriority() == o2.getPriority() ? 0 : 1));
         }
     }
-
 }

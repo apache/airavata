@@ -1,24 +1,26 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.orchestrator.core.validator.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
@@ -36,11 +38,8 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BatchQueueValidator implements JobMetadataValidator {
-    private final static Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
+    private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
     private RegistryService.Client registryClient;
 
@@ -53,8 +52,8 @@ public class BatchQueueValidator implements JobMetadataValidator {
         validationResults.setValidationState(true);
         try {
             List<ValidatorResult> validatorResultList = validateUserConfiguration(experiment, processModel);
-            for (ValidatorResult result : validatorResultList){
-                if (!result.isResult()){
+            for (ValidatorResult result : validatorResultList) {
+                if (!result.isResult()) {
                     validationResults.setValidationState(false);
                     break;
                 }
@@ -66,10 +65,12 @@ public class BatchQueueValidator implements JobMetadataValidator {
         return validationResults;
     }
 
-    private List<ValidatorResult> validateUserConfiguration (ExperimentModel experiment, ProcessModel processModel) throws TException {
+    private List<ValidatorResult> validateUserConfiguration(ExperimentModel experiment, ProcessModel processModel)
+            throws TException {
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-        ComputationalResourceSchedulingModel computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();
+        ComputationalResourceSchedulingModel computationalResourceScheduling =
+                userConfigurationData.getComputationalResourceScheduling();
         if (userConfigurationData.isAiravataAutoSchedule()) {
             logger.info("User enabled Auto-Schedule. Hence we don't do validation..");
             ValidatorResult validatorResult = new ValidatorResult();
@@ -78,9 +79,13 @@ public class BatchQueueValidator implements JobMetadataValidator {
         } else {
             ComputeResourceDescription computeResource;
             if (processModel == null) {
-                computeResource = registryClient.getComputeResource(experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+                computeResource = registryClient.getComputeResource(experiment
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getResourceHostId());
             } else {
-                computeResource = registryClient.getComputeResource(processModel.getProcessResourceSchedule().getResourceHostId());
+                computeResource = registryClient.getComputeResource(
+                        processModel.getProcessResourceSchedule().getResourceHostId());
             }
 
             List<BatchQueue> batchQueues = computeResource.getBatchQueues();
@@ -88,7 +93,8 @@ public class BatchQueueValidator implements JobMetadataValidator {
             if (computationalResourceScheduling == null) {
                 ValidatorResult queueNameResult = new ValidatorResult();
                 queueNameResult.setResult(false);
-                queueNameResult.setErrorDetails("No compute resource scheduling for experiment " + experiment.getExperimentId());
+                queueNameResult.setErrorDetails(
+                        "No compute resource scheduling for experiment " + experiment.getExperimentId());
                 validatorResultList.add(queueNameResult);
                 return validatorResultList;
             }
@@ -102,16 +108,19 @@ public class BatchQueueValidator implements JobMetadataValidator {
             }
 
             if (batchQueues != null && !batchQueues.isEmpty()) {
-                String experimentQueueName = computationalResourceScheduling.getQueueName().trim();
+                String experimentQueueName =
+                        computationalResourceScheduling.getQueueName().trim();
                 int experimentWallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
                 int experimentNodeCount = computationalResourceScheduling.getNodeCount();
                 int experimentCPUCount = computationalResourceScheduling.getTotalCPUCount();
                 ValidatorResult queueNameResult = new ValidatorResult();
 
-                //Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets passed.
+                // Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets
+                // passed.
                 queueNameResult.setResult(false);
-                queueNameResult.setErrorDetails("The specified queue " + experimentQueueName +
-                        " does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
+                queueNameResult.setErrorDetails(
+                        "The specified queue " + experimentQueueName
+                                + " does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
                 for (BatchQueue queue : batchQueues) {
                     String resourceQueueName = queue.getQueueName();
                     int maxQueueRunTime = queue.getMaxRunTime();
@@ -121,7 +130,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
                         queueNameResult.setResult(true);
                         queueNameResult.setErrorDetails("");
 
-                        //Validate if the specified wall time is within allowable limit
+                        // Validate if the specified wall time is within allowable limit
                         ValidatorResult wallTimeResult = new ValidatorResult();
                         if (experimentWallTimeLimit == 0) {
                             wallTimeResult.setResult(false);
@@ -129,40 +138,43 @@ public class BatchQueueValidator implements JobMetadataValidator {
                         } else {
                             if (maxQueueRunTime == 0) {
                                 wallTimeResult.setResult(true);
-                                wallTimeResult.setErrorDetails("Maximum wall time is not configured for the queue," +
-                                        "Validation is being skipped");
-                                logger.info("Maximum wall time is not configured for the queue" +
-                                        "Validation is being skipped");
+                                wallTimeResult.setErrorDetails("Maximum wall time is not configured for the queue,"
+                                        + "Validation is being skipped");
+                                logger.info("Maximum wall time is not configured for the queue"
+                                        + "Validation is being skipped");
                             } else {
                                 if (maxQueueRunTime < experimentWallTimeLimit) {
                                     wallTimeResult.setResult(false);
-                                    wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit +
-                                            "exceeds the allowable walltime" + maxQueueRunTime +
-                                            "for queue " + resourceQueueName);
+                                    wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit
+                                            + "exceeds the allowable walltime"
+                                            + maxQueueRunTime + "for queue "
+                                            + resourceQueueName);
                                 } else {
                                     wallTimeResult.setResult(true);
                                     wallTimeResult.setErrorDetails("");
                                 }
                             }
                         }
-                        //validate max node count
+                        // validate max node count
                         ValidatorResult nodeCountResult = new ValidatorResult();
                         if (maxNodeCount == 0) {
                             nodeCountResult.setResult(true);
-                            nodeCountResult.setErrorDetails("Max node count is not configured for the queue," +
-                                    "Validation is being skipped");
-                            logger.info("Max node count is not configured for the queue" +
-                                    "Validation is being skipped");
+                            nodeCountResult.setErrorDetails(
+                                    "Max node count is not configured for the queue," + "Validation is being skipped");
+                            logger.info(
+                                    "Max node count is not configured for the queue" + "Validation is being skipped");
                         } else {
                             if (experimentNodeCount == 0) {
                                 nodeCountResult.setResult(false);
-                                nodeCountResult.setErrorDetails("Job Execution node count cannot be zero for queue " + resourceQueueName);
+                                nodeCountResult.setErrorDetails(
+                                        "Job Execution node count cannot be zero for queue " + resourceQueueName);
                             } else {
                                 if (maxNodeCount < experimentNodeCount) {
                                     nodeCountResult.setResult(false);
-                                    nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount +
-                                            "exceeds the allowable node count" + maxNodeCount +
-                                            "for queue " + resourceQueueName);
+                                    nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount
+                                            + "exceeds the allowable node count"
+                                            + maxNodeCount + "for queue "
+                                            + resourceQueueName);
                                 } else {
                                     nodeCountResult.setResult(true);
                                     nodeCountResult.setErrorDetails("");
@@ -173,20 +185,22 @@ public class BatchQueueValidator implements JobMetadataValidator {
                         ValidatorResult cpuCountResult = new ValidatorResult();
                         if (maxcpuCount == 0) {
                             cpuCountResult.setResult(true);
-                            cpuCountResult.setErrorDetails("Max cpu count is not configured for the queue," +
-                                    "Validation is being skipped");
-                            logger.info("Max cpu count is not configured for the queue" +
-                                    "Validation is being skipped");
+                            cpuCountResult.setErrorDetails(
+                                    "Max cpu count is not configured for the queue," + "Validation is being skipped");
+                            logger.info(
+                                    "Max cpu count is not configured for the queue" + "Validation is being skipped");
                         } else {
                             if (experimentCPUCount == 0) {
                                 cpuCountResult.setResult(false);
-                                cpuCountResult.setErrorDetails("Job Execution cpu count cannot be zero for queue " + resourceQueueName);
+                                cpuCountResult.setErrorDetails(
+                                        "Job Execution cpu count cannot be zero for queue " + resourceQueueName);
                             } else {
                                 if (maxcpuCount < experimentCPUCount) {
                                     cpuCountResult.setResult(false);
-                                    cpuCountResult.setErrorDetails("Job Execution cpu count " + experimentCPUCount +
-                                            "exceeds the allowable cpu count" + maxcpuCount +
-                                            "for queue " + resourceQueueName);
+                                    cpuCountResult.setErrorDetails("Job Execution cpu count " + experimentCPUCount
+                                            + "exceeds the allowable cpu count"
+                                            + maxcpuCount + "for queue "
+                                            + resourceQueueName);
                                 } else {
                                     cpuCountResult.setResult(true);
                                     cpuCountResult.setErrorDetails("");
@@ -203,8 +217,8 @@ public class BatchQueueValidator implements JobMetadataValidator {
             } else {
                 // for some compute resources, you dnt need to specify queue names
                 ValidatorResult result = new ValidatorResult();
-                logger.info("There are not queues defined under the compute resource. Airavata assumes this experiment " +
-                        "does not need a queue name...");
+                logger.info("There are not queues defined under the compute resource. Airavata assumes this experiment "
+                        + "does not need a queue name...");
                 result.setResult(true);
                 validatorResultList.add(result);
             }

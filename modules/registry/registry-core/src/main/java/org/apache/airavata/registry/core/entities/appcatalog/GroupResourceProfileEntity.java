@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import jakarta.persistence.CascadeType;
@@ -58,20 +58,31 @@ public class GroupResourceProfileEntity implements Serializable {
     @Column(name = "DEFAULT_CREDENTIAL_STORE_TOKEN")
     private String defaultCredentialStoreToken;
 
-    @OneToMany(targetEntity = GroupComputeResourcePrefEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(
+            targetEntity = GroupComputeResourcePrefEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "groupResourceProfile",
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     private List<GroupComputeResourcePrefEntity> computePreferences;
 
-    @OneToMany(targetEntity = ComputeResourcePolicyEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(
+            targetEntity = ComputeResourcePolicyEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "groupResourceProfile",
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     private List<ComputeResourcePolicyEntity> computeResourcePolicies;
 
-    @OneToMany(targetEntity = BatchQueueResourcePolicyEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "groupResourceProfile", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(
+            targetEntity = BatchQueueResourcePolicyEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "groupResourceProfile",
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     private List<BatchQueueResourcePolicyEntity> batchQueueResourcePolicies;
 
-    public GroupResourceProfileEntity() {
-    }
+    public GroupResourceProfileEntity() {}
 
     public String getGroupResourceProfileId() {
         return groupResourceProfileId;

@@ -1,27 +1,36 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -64,24 +73,13 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 /**
  * Note: process context property use lazy loading approach. In runtime you will see some properties as null
  * unless you have access it previously. Once that property access using the api,it will be set to correct value.
  */
 public class TaskContext {
 
-    private final static Logger logger = LoggerFactory.getLogger(TaskContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskContext.class);
 
     private Publisher statusPublisher;
     private RegistryService.Client registryClient;
@@ -181,8 +179,9 @@ public class TaskContext {
                 workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
             } else {
                 String scratchLocation = getScratchLocation();
-                workingDir = (scratchLocation.endsWith("/") ? scratchLocation + processId : scratchLocation + "/" +
-                        processId);
+                workingDir = (scratchLocation.endsWith("/")
+                        ? scratchLocation + processId
+                        : scratchLocation + "/" + processId);
             }
         }
         return workingDir;
@@ -190,22 +189,23 @@ public class TaskContext {
 
     public String getScratchLocation() throws Exception {
         if (scratchLocation == null) {
-            if (isUseUserCRPref() &&
-                    getUserComputeResourcePreference() != null &&
-                    isValid(getUserComputeResourcePreference().getScratchLocation())) {
+            if (isUseUserCRPref()
+                    && getUserComputeResourcePreference() != null
+                    && isValid(getUserComputeResourcePreference().getScratchLocation())) {
                 scratchLocation = getUserComputeResourcePreference().getScratchLocation();
             } else if (isValid(processModel.getProcessResourceSchedule().getOverrideScratchLocation())) {
                 scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-            } else if (isSetGroupResourceProfile() && getGroupComputeResourcePreference() != null &&
-                    isValid(getGroupComputeResourcePreference().getScratchLocation())) {
+            } else if (isSetGroupResourceProfile()
+                    && getGroupComputeResourcePreference() != null
+                    && isValid(getGroupComputeResourcePreference().getScratchLocation())) {
                 scratchLocation = getGroupComputeResourcePreference().getScratchLocation();
             } else {
-                throw new RuntimeException("Can't find a specified scratch location for compute resource " + getComputeResourceId());
+                throw new RuntimeException(
+                        "Can't find a specified scratch location for compute resource " + getComputeResourceId());
             }
         }
         return scratchLocation;
     }
-
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
@@ -232,7 +232,8 @@ public class TaskContext {
             try {
                 groupResourceProfile = registryClient.getGroupResourceProfile(processModel.getGroupResourceProfileId());
             } catch (TException e) {
-                logger.error("Failed to find a group resource proifle with id {}", processModel.getGroupResourceProfileId());
+                logger.error(
+                        "Failed to find a group resource proifle with id {}", processModel.getGroupResourceProfileId());
                 throw e;
             }
         }
@@ -248,11 +249,12 @@ public class TaskContext {
         if (groupComputeResourcePreference == null) {
             try {
                 groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+                        processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
+            } catch (TException e) {
+                logger.error(
+                        "Failed to find group compute resource preference for compute  {}, and group resource profile {}",
                         processModel.getComputeResourceId(),
                         processModel.getGroupResourceProfileId());
-            } catch (TException e) {
-                logger.error("Failed to find group compute resource preference for compute  {}, and group resource profile {}",
-                        processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
                 throw e;
             }
         }
@@ -269,8 +271,11 @@ public class TaskContext {
             try {
                 this.userResourceProfile = registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId);
             } catch (TException e) {
-                logger.error("Failed to fetch user resource profile for user {} in gateway {}",
-                        processModel.getUserName(), gatewayId, e);
+                logger.error(
+                        "Failed to fetch user resource profile for user {} in gateway {}",
+                        processModel.getUserName(),
+                        gatewayId,
+                        e);
                 throw e;
             }
         }
@@ -285,13 +290,15 @@ public class TaskContext {
         if (this.userComputeResourcePreference == null && processModel.isUseUserCRPref()) {
             try {
                 this.userComputeResourcePreference = registryClient.getUserComputeResourcePreference(
-                        processModel.getUserName(),
-                        gatewayId,
-                        processModel.getComputeResourceId());
+                        processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
             } catch (TException e) {
-                logger.error("Failed to fetch user compute resource preference for user {} compute resource {} in gateway {}",
-                        processModel.getUserName(), processModel.getComputeResourceId(), gatewayId, e);
-                throw  e;
+                logger.error(
+                        "Failed to fetch user compute resource preference for user {} compute resource {} in gateway {}",
+                        processModel.getUserName(),
+                        processModel.getComputeResourceId(),
+                        gatewayId,
+                        e);
+                throw e;
             }
         }
         return this.userComputeResourcePreference;
@@ -312,13 +319,14 @@ public class TaskContext {
     public StoragePreference getGatewayStorageResourcePreference() throws Exception {
         if (this.gatewayStorageResourcePreference == null) {
             try {
-                this.gatewayStorageResourcePreference = registryClient.getGatewayStoragePreference(
-                        gatewayId,
-                        processModel.getStorageResourceId());
+                this.gatewayStorageResourcePreference =
+                        registryClient.getGatewayStoragePreference(gatewayId, processModel.getStorageResourceId());
             } catch (TException e) {
-                logger.error("Failed to fetch gateway storage preference for gateway {} and storage {}",
+                logger.error(
+                        "Failed to fetch gateway storage preference for gateway {} and storage {}",
                         gatewayId,
-                        processModel.getStorageResourceId(), e);
+                        processModel.getStorageResourceId(),
+                        e);
                 throw e;
             }
         }
@@ -343,30 +351,33 @@ public class TaskContext {
     public ApplicationDeploymentDescription getApplicationDeploymentDescription() throws Exception {
         if (this.applicationDeploymentDescription == null) {
             try {
-                this.applicationDeploymentDescription = registryClient.getApplicationDeployment(
-                        processModel.getApplicationDeploymentId());
+                this.applicationDeploymentDescription =
+                        registryClient.getApplicationDeployment(processModel.getApplicationDeploymentId());
             } catch (TException e) {
-                logger.error("Failed to fetch application deployment with id {}",
-                        processModel.getApplicationDeploymentId(), e);
+                logger.error(
+                        "Failed to fetch application deployment with id {}",
+                        processModel.getApplicationDeploymentId(),
+                        e);
                 throw e;
             }
         }
         return applicationDeploymentDescription;
     }
 
-    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription
-                                                            applicationDeploymentDescription) {
+    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription applicationDeploymentDescription) {
         this.applicationDeploymentDescription = applicationDeploymentDescription;
     }
 
     public ApplicationInterfaceDescription getApplicationInterfaceDescription() throws Exception {
         if (this.applicationInterfaceDescription == null) {
             try {
-                this.applicationInterfaceDescription = registryClient.getApplicationInterface(
-                        processModel.getApplicationInterfaceId());
+                this.applicationInterfaceDescription =
+                        registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
             } catch (TException e) {
-                logger.error("Failed to fetch application interface with id {}",
-                        processModel.getApplicationInterfaceId(), e);
+                logger.error(
+                        "Failed to fetch application interface with id {}",
+                        processModel.getApplicationInterfaceId(),
+                        e);
                 throw e;
             }
         }
@@ -379,12 +390,16 @@ public class TaskContext {
 
     public String getStdoutLocation() throws Exception {
         if (stdoutLocation == null) {
-            List<OutputDataObjectType> applicationOutputs = getApplicationInterfaceDescription().getApplicationOutputs();
+            List<OutputDataObjectType> applicationOutputs =
+                    getApplicationInterfaceDescription().getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
                 for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
                     if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
-                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stdOut = (getWorkingDir().endsWith(File.separator) ? getWorkingDir() : getWorkingDir() + File.separator)
+                        if (outputDataObjectType.getValue() == null
+                                || outputDataObjectType.getValue().equals("")) {
+                            String stdOut = (getWorkingDir().endsWith(File.separator)
+                                            ? getWorkingDir()
+                                            : getWorkingDir() + File.separator)
                                     + getApplicationInterfaceDescription().getApplicationName() + ".stdout";
                             outputDataObjectType.setValue(stdOut);
                             stdoutLocation = stdOut;
@@ -404,12 +419,16 @@ public class TaskContext {
 
     public String getStderrLocation() throws Exception {
         if (stderrLocation == null) {
-            List<OutputDataObjectType> applicationOutputs = getApplicationInterfaceDescription().getApplicationOutputs();
+            List<OutputDataObjectType> applicationOutputs =
+                    getApplicationInterfaceDescription().getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
                 for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
                     if (outputDataObjectType.getType().equals(DataType.STDERR)) {
-                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stderrLocation = (getWorkingDir().endsWith(File.separator) ? getWorkingDir() : getWorkingDir() + File.separator)
+                        if (outputDataObjectType.getValue() == null
+                                || outputDataObjectType.getValue().equals("")) {
+                            String stderrLocation = (getWorkingDir().endsWith(File.separator)
+                                            ? getWorkingDir()
+                                            : getWorkingDir() + File.separator)
                                     + getApplicationInterfaceDescription().getApplicationName() + ".stderr";
                             outputDataObjectType.setValue(stderrLocation);
                             this.stderrLocation = stderrLocation;
@@ -452,9 +471,10 @@ public class TaskContext {
     public JobSubmissionProtocol getJobSubmissionProtocol() throws Exception {
         if (jobSubmissionProtocol == null) {
             // Take highest priority one
-            List<JobSubmissionInterface> jobSubmissionInterfaces = getComputeResourceDescription()
-                    .getJobSubmissionInterfaces();
-            Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
+            List<JobSubmissionInterface> jobSubmissionInterfaces =
+                    getComputeResourceDescription().getJobSubmissionInterfaces();
+            Collections.sort(
+                    jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
             jobSubmissionProtocol = jobSubmissionInterfaces.get(0).getJobSubmissionProtocol();
         }
         return jobSubmissionProtocol;
@@ -467,7 +487,8 @@ public class TaskContext {
     public DataMovementProtocol getDataMovementProtocol() throws Exception {
         if (dataMovementProtocol == null) {
             // Take highest priority one
-            List<DataMovementInterface> dataMovementInterfaces = getComputeResourceDescription().getDataMovementInterfaces();
+            List<DataMovementInterface> dataMovementInterfaces =
+                    getComputeResourceDescription().getDataMovementInterfaces();
             Collections.sort(dataMovementInterfaces, Comparator.comparingInt(DataMovementInterface::getPriorityOrder));
             dataMovementProtocol = dataMovementInterfaces.get(0).getDataMovementProtocol();
         }
@@ -484,7 +505,7 @@ public class TaskContext {
 
     public List<TaskModel> getTaskList() {
         if (taskList == null) {
-            synchronized (TaskModel.class){
+            synchronized (TaskModel.class) {
                 if (taskList == null) {
                     taskList = getProcessModel().getTasks();
                 }
@@ -492,7 +513,6 @@ public class TaskContext {
         }
         return taskList;
     }
-
 
     public List<String> getTaskExecutionOrder() {
         return taskExecutionOrder;
@@ -531,31 +551,34 @@ public class TaskContext {
     }
 
     public ProcessState getProcessState() {
-        if(processModel.getProcessStatuses() != null && processModel.getProcessStatuses().size() > 0)
+        if (processModel.getProcessStatuses() != null
+                && processModel.getProcessStatuses().size() > 0)
             return processModel.getProcessStatuses().get(0).getState();
-        else
-            return null;
+        else return null;
     }
 
     public void setProcessStatus(ProcessStatus status) {
         if (status != null) {
-            logger.info("expId: {}, processId: {} :- Process status changed {} -> {}", getExperimentId(), processId,
-                    getProcessState().name(), status.getState().name());
+            logger.info(
+                    "expId: {}, processId: {} :- Process status changed {} -> {}",
+                    getExperimentId(),
+                    processId,
+                    getProcessState().name(),
+                    status.getState().name());
             List<ProcessStatus> processStatuses = new ArrayList<>();
             processStatuses.add(status);
             processModel.setProcessStatuses(processStatuses);
         }
     }
 
-    public ProcessStatus getProcessStatus(){
-        if(processModel.getProcessStatuses() != null)
+    public ProcessStatus getProcessStatus() {
+        if (processModel.getProcessStatuses() != null)
             return processModel.getProcessStatuses().get(0);
-        else
-            return null;
+        else return null;
     }
 
     public TaskState getTaskState() {
-        if(getCurrentTaskModel() != null && getCurrentTaskModel().getTaskStatuses() != null) {
+        if (getCurrentTaskModel() != null && getCurrentTaskModel().getTaskStatuses() != null) {
             return getCurrentTaskModel().getTaskStatuses().get(0).getState();
         } else {
             return null;
@@ -563,16 +586,15 @@ public class TaskContext {
     }
 
     public TaskStatus getTaskStatus() {
-        if(getCurrentTaskModel().getTaskStatuses() != null)
+        if (getCurrentTaskModel().getTaskStatuses() != null)
             return getCurrentTaskModel().getTaskStatuses().get(0);
-        else
-            return null;
+        else return null;
     }
 
     public String getComputeResourceId() throws Exception {
-        if (isUseUserCRPref() &&
-                getUserComputeResourcePreference() != null &&
-                isValid(getUserComputeResourcePreference().getComputeResourceId())) {
+        if (isUseUserCRPref()
+                && getUserComputeResourcePreference() != null
+                && isValid(getUserComputeResourcePreference().getComputeResourceId())) {
             return getUserComputeResourcePreference().getComputeResourceId();
         } else {
             return getGroupComputeResourcePreference().getComputeResourceId();
@@ -581,15 +603,15 @@ public class TaskContext {
 
     public String getComputeResourceCredentialToken() throws Exception {
         if (isUseUserCRPref()) {
-            if (getUserComputeResourcePreference() != null &&
-                    isValid(getUserComputeResourcePreference().getResourceSpecificCredentialStoreToken())) {
+            if (getUserComputeResourcePreference() != null
+                    && isValid(getUserComputeResourcePreference().getResourceSpecificCredentialStoreToken())) {
                 return getUserComputeResourcePreference().getResourceSpecificCredentialStoreToken();
             } else {
                 return getUserResourceProfile().getCredentialStoreToken();
             }
-        }  else if (isSetGroupResourceProfile() &&
-                getGroupComputeResourcePreference() != null &&
-                isValid(getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken())) {
+        } else if (isSetGroupResourceProfile()
+                && getGroupComputeResourcePreference() != null
+                && isValid(getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken())) {
             return getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
         } else {
             return getGroupResourceProfile().getDefaultCredentialStoreToken();
@@ -621,31 +643,30 @@ public class TaskContext {
         if (this.resourceJobManager == null) {
             JobSubmissionInterface jsInterface = getPreferredJobSubmissionInterface();
 
-
             if (jsInterface == null) {
                 throw new Exception("Job Submission interface cannot be empty at this point");
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-                SSHJobSubmission sshJobSubmission = getRegistryClient()
-                        .getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission =
+                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localSubmission = getRegistryClient()
-                        .getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                LOCALSubmission localSubmission =
+                        getRegistryClient().getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = localSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
-                SSHJobSubmission sshJobSubmission = getRegistryClient()
-                        .getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission =
+                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
                 return null;
 
             } else {
-                throw new Exception("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
-                        .name());
+                throw new Exception("Unsupported JobSubmissionProtocol - "
+                        + jsInterface.getJobSubmissionProtocol().name());
             }
 
             if (resourceJobManager == null) {
@@ -679,15 +700,15 @@ public class TaskContext {
     }
 
     public String getComputeResourceLoginUserName() throws Exception {
-        if (isUseUserCRPref() &&
-                getUserComputeResourcePreference() != null &&
-                isValid(getUserComputeResourcePreference().getLoginUserName())) {
+        if (isUseUserCRPref()
+                && getUserComputeResourcePreference() != null
+                && isValid(getUserComputeResourcePreference().getLoginUserName())) {
             return getUserComputeResourcePreference().getLoginUserName();
         } else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
             return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
-        } else if (isSetGroupResourceProfile() &&
-                getGroupComputeResourcePreference() != null &&
-                isValid(getGroupComputeResourcePreference().getLoginUserName())){
+        } else if (isSetGroupResourceProfile()
+                && getGroupComputeResourcePreference() != null
+                && isValid(getGroupComputeResourcePreference().getLoginUserName())) {
             return getGroupComputeResourcePreference().getLoginUserName();
         }
         throw new RuntimeException("Can't find login username for compute resource");
@@ -735,10 +756,12 @@ public class TaskContext {
             try {
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(getGatewayId());
-                this.userProfile = getProfileClient().getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
+                this.userProfile = getProfileClient()
+                        .getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
             } catch (Exception e) {
                 logger.error("Failed to fetch the user profile for user id " + processModel.getUserName(), e);
-                throw new TaskOnFailException("Failed to fetch the user profile for user id " + processModel.getUserName(), true, e);
+                throw new TaskOnFailException(
+                        "Failed to fetch the user profile for user id " + processModel.getUserName(), true, e);
             }
         }
         return this.userProfile;
@@ -751,13 +774,13 @@ public class TaskContext {
     public String getAllocationProjectNumber() throws Exception {
         if (isValid(processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber())) {
             return processModel.getProcessResourceSchedule().getOverrideAllocationProjectNumber();
-        } else if (isUseUserCRPref() &&
-                getUserComputeResourcePreference() != null &&
-                getUserComputeResourcePreference().getAllocationProjectNumber() != null) {
+        } else if (isUseUserCRPref()
+                && getUserComputeResourcePreference() != null
+                && getUserComputeResourcePreference().getAllocationProjectNumber() != null) {
             return getUserComputeResourcePreference().getAllocationProjectNumber();
-        } else if (isSetGroupResourceProfile() &&
-                getGroupComputeResourcePreference() != null &&
-                isValid(getGroupComputeResourcePreference().getAllocationProjectNumber())){
+        } else if (isSetGroupResourceProfile()
+                && getGroupComputeResourcePreference() != null
+                && isValid(getGroupComputeResourcePreference().getAllocationProjectNumber())) {
             return getGroupComputeResourcePreference().getAllocationProjectNumber();
         } else {
             return null;
@@ -767,9 +790,9 @@ public class TaskContext {
     public String getReservation() throws Exception {
         long start = 0, end = 0;
         String reservation = null;
-        if (isUseUserCRPref() &&
-                getUserComputeResourcePreference() != null &&
-                isValid(getUserComputeResourcePreference().getReservation())) {
+        if (isUseUserCRPref()
+                && getUserComputeResourcePreference() != null
+                && isValid(getUserComputeResourcePreference().getReservation())) {
             reservation = getUserComputeResourcePreference().getReservation();
             start = getUserComputeResourcePreference().getReservationStartTime();
             end = getUserComputeResourcePreference().getReservationEndTime();
@@ -781,8 +804,9 @@ public class TaskContext {
             }
         }
         String queueName = getQueueName();
-        ComputeResourceReservation computeResourceReservation = GroupComputeResourcePreferenceUtil
-                .getActiveReservationForQueue(getGroupComputeResourcePreference(), queueName);
+        ComputeResourceReservation computeResourceReservation =
+                GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(
+                        getGroupComputeResourcePreference(), queueName);
         if (computeResourceReservation != null) {
             return computeResourceReservation.getReservationName();
         }
@@ -790,29 +814,31 @@ public class TaskContext {
     }
 
     public String getQualityOfService() throws Exception {
-        if (isUseUserCRPref() &&
-                getUserComputeResourcePreference() != null &&
-                isValid(getUserComputeResourcePreference().getQualityOfService())) {
+        if (isUseUserCRPref()
+                && getUserComputeResourcePreference() != null
+                && isValid(getUserComputeResourcePreference().getQualityOfService())) {
             return getUserComputeResourcePreference().getQualityOfService();
         } else {
             return getGroupComputeResourcePreference().getQualityOfService();
         }
     }
 
-
     public String getQueueName() throws Exception {
-        if (isUseUserCRPref() &&
-                getUserComputeResourcePreference() != null &&
-                isValid(getUserComputeResourcePreference().getPreferredBatchQueue())) {
+        if (isUseUserCRPref()
+                && getUserComputeResourcePreference() != null
+                && isValid(getUserComputeResourcePreference().getPreferredBatchQueue())) {
             return getUserComputeResourcePreference().getPreferredBatchQueue();
         } else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
             return processModel.getProcessResourceSchedule().getQueueName();
-        }  else {
-            Optional<BatchQueue> defaultQueue = getComputeResourceDescription().getBatchQueues().stream().filter(q -> q.isIsDefaultQueue()).findFirst();
+        } else {
+            Optional<BatchQueue> defaultQueue = getComputeResourceDescription().getBatchQueues().stream()
+                    .filter(q -> q.isIsDefaultQueue())
+                    .findFirst();
             if (defaultQueue.isPresent()) {
                 return defaultQueue.get().getQueueName();
             } else {
-                throw new RuntimeException("Can't find default queue for resource " + getComputeResourceDescription().getComputeResourceId());
+                throw new RuntimeException("Can't find default queue for resource "
+                        + getComputeResourceDescription().getComputeResourceId());
             }
         }
     }
@@ -820,9 +846,11 @@ public class TaskContext {
     public List<String> getQueueSpecificMacros() throws Exception {
         String queueName = getProcessCRSchedule().getQueueName();
         Optional<BatchQueue> queue = getComputeResourceDescription().getBatchQueues().stream()
-                .filter(x->x.getQueueName().equals(queueName)).findFirst();
-        if(queue.isPresent()){
-            if(queue.get().getQueueSpecificMacros() != null && !queue.get().getQueueSpecificMacros().equals("")){
+                .filter(x -> x.getQueueName().equals(queueName))
+                .findFirst();
+        if (queue.isPresent()) {
+            if (queue.get().getQueueSpecificMacros() != null
+                    && !queue.get().getQueueSpecificMacros().equals("")) {
                 return Arrays.asList(queue.get().getQueueSpecificMacros().split(","));
             }
         }
@@ -836,26 +864,32 @@ public class TaskContext {
         Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
         List<JobSubmissionInterface> interfaces = new ArrayList<>();
         if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-            for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
+            for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces) {
 
-                if (preferredJobSubmissionProtocol != null){
-                    if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
-                        if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
-                            List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
+                if (preferredJobSubmissionProtocol != null) {
+                    if (preferredJobSubmissionProtocol
+                            .toString()
+                            .equals(submissionInterface
+                                    .getJobSubmissionProtocol()
+                                    .toString())) {
+                        if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())) {
+                            List<JobSubmissionInterface> interfaceList =
+                                    orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
                             interfaceList.add(submissionInterface);
-                        }else {
+                        } else {
                             interfaces.add(submissionInterface);
                             orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
                         }
                     }
-                }else {
+                } else {
                     jobSubmissionInterfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
                 }
             }
             interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
             interfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
         } else {
-            throw new TaskOnFailException("Compute resource should have at least one job submission interface defined...", true, null);
+            throw new TaskOnFailException(
+                    "Compute resource should have at least one job submission interface defined...", true, null);
         }
         return interfaces.get(0);
     }
@@ -930,4 +964,3 @@ public class TaskContext {
         }
     }
 }
-

@@ -1,28 +1,28 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import java.util.List;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 
 public interface UsrResourceProfile {
     /**
@@ -38,7 +38,8 @@ public interface UsrResourceProfile {
      * @param gatewayId unique gateway id
      * @param updatedProfile updated profile
      */
-    void updateUserResourceProfile(String userId, String gatewayId, UserResourceProfile updatedProfile) throws AppCatalogException;
+    void updateUserResourceProfile(String userId, String gatewayId, UserResourceProfile updatedProfile)
+            throws AppCatalogException;
 
     /**
      * @param userId
@@ -62,7 +63,8 @@ public interface UsrResourceProfile {
      * @param preferenceId
      * @return true or false
      */
-    boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException;
+    boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId)
+            throws AppCatalogException;
 
     /**
      * This method will remove a user storage preference
@@ -71,7 +73,8 @@ public interface UsrResourceProfile {
      * @param preferenceId
      * @return true or false
      */
-    boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException;
+    boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId)
+            throws AppCatalogException;
 
     /**
      * This method will check whether user resource profile exists
@@ -88,8 +91,8 @@ public interface UsrResourceProfile {
      * @param hostId
      * @return UserComputeResourcePreference
      */
-    UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayId, String hostId) throws AppCatalogException;
-
+    UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayId, String hostId)
+            throws AppCatalogException;
 
     /**
      *
@@ -98,14 +101,16 @@ public interface UsrResourceProfile {
      * @param hostId
      * @return true or false
      */
-    boolean isUserComputeResourcePreferenceExists(String userId, String gatewayId, String hostId) throws AppCatalogException;
+    boolean isUserComputeResourcePreferenceExists(String userId, String gatewayId, String hostId)
+            throws AppCatalogException;
 
     /**
      * @param userId
      * @param gatewayId
      * @return UserStoragePreference
      */
-    UserStoragePreference getUserStoragePreference(String userId, String gatewayId, String storageId) throws AppCatalogException;
+    UserStoragePreference getUserStoragePreference(String userId, String gatewayId, String storageId)
+            throws AppCatalogException;
 
     /**
      * @param gatewayName
@@ -125,14 +130,16 @@ public interface UsrResourceProfile {
      * @param gatewayId
      * @return List of UserComputeResourcePreference for given user and gateway
      */
-    List<UserComputeResourcePreference> getAllUserComputeResourcePreferences (String userId, String gatewayId) throws AppCatalogException;
+    List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayId)
+            throws AppCatalogException;
 
     /**
      * @param userId
      * @param gatewayId
      * @return List of UserStoragePreference for given user and gateway
      */
-    List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId) throws AppCatalogException;
+    List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId)
+            throws AppCatalogException;
 
     /**
      * @return List of user resource profiles

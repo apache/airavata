@@ -1,5 +1,26 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.monitor;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
@@ -13,9 +34,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AbstractMonitor {
 
@@ -47,7 +65,9 @@ public class AbstractMonitor {
         poolConfig.setMaxWaitMillis(3000);
 
         this.registryClientPool = new ThriftClientPool<>(
-                RegistryService.Client::new, poolConfig, ServerSettings.getRegistryServerHost(),
+                RegistryService.Client::new,
+                poolConfig,
+                ServerSettings.getRegistryServerHost(),
                 Integer.parseInt(ServerSettings.getRegistryServerPort()));
     }
 
@@ -60,22 +80,25 @@ public class AbstractMonitor {
 
             if (jobs.size() > 0) {
                 log.info("Filtering total " + jobs.size() + " with target job name " + jobStatusResult.getJobName());
-                jobs = jobs.stream().filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName())).collect(Collectors.toList());
+                jobs = jobs.stream()
+                        .filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName()))
+                        .collect(Collectors.toList());
             }
 
             if (jobs.size() != 1) {
-                log.error("Couldn't find exactly one job with id " + jobStatusResult.getJobId() + " and name " +
-                        jobStatusResult.getJobName() + " in the registry. Count " + jobs.size());
+                log.error("Couldn't find exactly one job with id " + jobStatusResult.getJobId() + " and name "
+                        + jobStatusResult.getJobName() + " in the registry. Count " + jobs.size());
                 validated = false;
 
-            } else  {
+            } else {
                 JobModel jobModel = jobs.get(0);
 
                 String processId = jobModel.getProcessId();
                 String experimentId = registryClient.getProcess(processId).getExperimentId();
 
                 if (experimentId != null && processId != null) {
-                    log.info("Job id " + jobStatusResult.getJobId() + " is owned by process " + processId + " of experiment " + experimentId);
+                    log.info("Job id " + jobStatusResult.getJobId() + " is owned by process " + processId
+                            + " of experiment " + experimentId);
                     validated = true;
                 } else {
                     log.error("Experiment or process is null for job " + jobStatusResult.getJobId());
@@ -90,7 +113,6 @@ public class AbstractMonitor {
             getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
-
     }
 
     public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
@@ -101,7 +123,8 @@ public class AbstractMonitor {
                 throw new MonitoringException("Failed to validate job status for job id " + jobStatusResult.getJobId());
             }
         } catch (Exception e) {
-            throw new MonitoringException("Failed to submit job status for job id " + jobStatusResult.getJobId() + " to status queue", e);
+            throw new MonitoringException(
+                    "Failed to submit job status for job id " + jobStatusResult.getJobId() + " to status queue", e);
         }
     }
 

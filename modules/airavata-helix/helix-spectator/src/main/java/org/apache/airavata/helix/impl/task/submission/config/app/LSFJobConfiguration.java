@@ -1,24 +1,26 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.submission.config.app;
 
+import java.io.File;
+import java.util.Map;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
@@ -27,20 +29,20 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Map;
-
 public class LSFJobConfiguration implements JobManagerConfiguration {
-    private final static Logger logger = LoggerFactory.getLogger(LSFJobConfiguration.class);
-	private final Map<JobManagerCommand, String> jobMangerCommands;
+    private static final Logger logger = LoggerFactory.getLogger(LSFJobConfiguration.class);
+    private final Map<JobManagerCommand, String> jobMangerCommands;
     private String jobDescriptionTemplateName;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public LSFJobConfiguration(String jobDescriptionTemplateName,
-                               String scriptExtension, String installedPath, Map<JobManagerCommand, String>
-		                               jobManagerCommands, OutputParser parser) {
+    public LSFJobConfiguration(
+            String jobDescriptionTemplateName,
+            String scriptExtension,
+            String installedPath,
+            Map<JobManagerCommand, String> jobManagerCommands,
+            OutputParser parser) {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
@@ -49,7 +51,7 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
         } else {
             this.installedPath = installedPath + "/";
         }
-	    this.jobMangerCommands = jobManagerCommands;
+        this.jobMangerCommands = jobManagerCommands;
     }
 
     @Override
@@ -84,8 +86,8 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
 
     @Override
     public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
-        return new RawCommandInfo(this.installedPath + "bsub < " +
-                workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
+        return new RawCommandInfo(this.installedPath + "bsub < " + workingDirectory + File.separator
+                + FilenameUtils.getName(pbsFilePath));
     }
 
     @Override
@@ -102,7 +104,6 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
         return installedPath;
     }
 
-
     @Override
     public String getBaseCancelCommand() {
         return "bkill";
@@ -117,7 +118,6 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
     public String getBaseSubmitCommand() {
         return "bsub";
     }
-
 
     @Override
     public String getLivenessCheckCommand(String queueName, String partition) {

@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.profile.commons.user.entities;
 
 import jakarta.persistence.*;
@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name="USER_PROFILE")
+@Table(name = "USER_PROFILE")
 public class UserProfileEntity {
     private String airavataInternalUserId;
     private String userId;
@@ -92,7 +92,7 @@ public class UserProfileEntity {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="USER_PROFILE_EMAIL", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @CollectionTable(name = "USER_PROFILE_EMAIL", joinColumns = @JoinColumn(name = "AIRAVATA_INTERNAL_USER_ID"))
     @Column(name = "EMAIL")
     public List<String> getEmails() {
         return emails;
@@ -157,7 +157,7 @@ public class UserProfileEntity {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="USER_PROFILE_PHONE", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @CollectionTable(name = "USER_PROFILE_PHONE", joinColumns = @JoinColumn(name = "AIRAVATA_INTERNAL_USER_ID"))
     @Column(name = "PHONE")
     public List<String> getPhones() {
         return phones;
@@ -177,7 +177,7 @@ public class UserProfileEntity {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="USER_PROFILE_NATIONALITY", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @CollectionTable(name = "USER_PROFILE_NATIONALITY", joinColumns = @JoinColumn(name = "AIRAVATA_INTERNAL_USER_ID"))
     @Column(name = "NATIONALITY")
     public List<String> getNationality() {
         return nationality;
@@ -205,7 +205,7 @@ public class UserProfileEntity {
         this.orginationAffiliation = orginationAffiliation;
     }
 
-    @Column(name="CREATION_TIME")
+    @Column(name = "CREATION_TIME")
     public Date getCreationTime() {
         return creationTime;
     }
@@ -252,7 +252,7 @@ public class UserProfileEntity {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="USER_PROFILE_LABELED_URI", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @CollectionTable(name = "USER_PROFILE_LABELED_URI", joinColumns = @JoinColumn(name = "AIRAVATA_INTERNAL_USER_ID"))
     @Column(name = "LABELED_URI")
     public List<String> getLabeledURI() {
         return labeledURI;
@@ -281,8 +281,11 @@ public class UserProfileEntity {
         this.timeZone = timeZone;
     }
 
-    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "userProfile", fetch = FetchType.EAGER)
+    @OneToOne(
+            targetEntity = NSFDemographicsEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "userProfile",
+            fetch = FetchType.EAGER)
     public NSFDemographicsEntity getNsfDemographics() {
         return nsfDemographics;
     }
@@ -291,8 +294,11 @@ public class UserProfileEntity {
         this.nsfDemographics = nsfDemographics;
     }
 
-    @OneToOne(targetEntity = CustomizedDashboardEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "userProfileEntity", fetch = FetchType.EAGER)
+    @OneToOne(
+            targetEntity = CustomizedDashboardEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "userProfileEntity",
+            fetch = FetchType.EAGER)
     public CustomizedDashboardEntity getCustomizedDashboardEntity() {
         return customizedDashboardEntity;
     }
@@ -313,32 +319,31 @@ public class UserProfileEntity {
 
     @Override
     public String toString() {
-        return "UserProfileEntity{" +
-                "airavataInternalUserId='" + airavataInternalUserId + '\'' +
-                ", userId='" + userId + '\'' +
-                ", gatewayId='" + gatewayId + '\'' +
-                ", userModelVersion='" + userModelVersion + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", namePrefix='" + namePrefix + '\'' +
-                ", nameSuffix='" + nameSuffix + '\'' +
-                ", orcidId='" + orcidId + '\'' +
-                ", country='" + country + '\'' +
-                ", homeOrganization='" + homeOrganization + '\'' +
-                ", orginationAffiliation='" + orginationAffiliation + '\'' +
-                ", creationTime=" + creationTime +
-                ", lastAccessTime=" + lastAccessTime +
-                ", validUntil=" + validUntil +
-                ", state='" + state + '\'' +
-                ", comments='" + comments + '\'' +
-                ", labeledURI=" + labeledURI +
-                ", gpgKey='" + gpgKey + '\'' +
-                ", timeZone='" + timeZone + '\'' +
-                ", nationality=" + nationality +
-                ", emails=" + emails +
-                ", phones=" + phones +
-                ", nsfDemographics=" + nsfDemographics +
-                '}';
+        return "UserProfileEntity{" + "airavataInternalUserId='"
+                + airavataInternalUserId + '\'' + ", userId='"
+                + userId + '\'' + ", gatewayId='"
+                + gatewayId + '\'' + ", userModelVersion='"
+                + userModelVersion + '\'' + ", firstName='"
+                + firstName + '\'' + ", lastName='"
+                + lastName + '\'' + ", middleName='"
+                + middleName + '\'' + ", namePrefix='"
+                + namePrefix + '\'' + ", nameSuffix='"
+                + nameSuffix + '\'' + ", orcidId='"
+                + orcidId + '\'' + ", country='"
+                + country + '\'' + ", homeOrganization='"
+                + homeOrganization + '\'' + ", orginationAffiliation='"
+                + orginationAffiliation + '\'' + ", creationTime="
+                + creationTime + ", lastAccessTime="
+                + lastAccessTime + ", validUntil="
+                + validUntil + ", state='"
+                + state + '\'' + ", comments='"
+                + comments + '\'' + ", labeledURI="
+                + labeledURI + ", gpgKey='"
+                + gpgKey + '\'' + ", timeZone='"
+                + timeZone + '\'' + ", nationality="
+                + nationality + ", emails="
+                + emails + ", phones="
+                + phones + ", nsfDemographics="
+                + nsfDemographics + '}';
     }
 }

@@ -1,24 +1,31 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.staging;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.FileMetadata;
@@ -36,23 +43,14 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
-
 @SuppressWarnings("WeakerAccess")
 public abstract class DataStagingTask extends AiravataTask {
 
-    private final static Logger logger = LoggerFactory.getLogger(DataStagingTask.class);
-    private final static CountMonitor transferSizeTaskCounter = new CountMonitor("transfer_data_size_counter");
+    private static final Logger logger = LoggerFactory.getLogger(DataStagingTask.class);
+    private static final CountMonitor transferSizeTaskCounter = new CountMonitor("transfer_data_size_counter");
 
-    private final static ExecutorService PASS_THROUGH_EXECUTOR =
-            new ThreadPoolExecutor(10, 60, 0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>());
+    private static final ExecutorService PASS_THROUGH_EXECUTOR =
+            new ThreadPoolExecutor(10, 60, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     @SuppressWarnings("WeakerAccess")
     protected DataStagingTaskModel getDataStagingTaskModel() throws TaskOnFailException {
@@ -61,10 +59,12 @@ public abstract class DataStagingTask extends AiravataTask {
             if (subTaskModel != null) {
                 return DataStagingTaskModel.class.cast(subTaskModel);
             } else {
-                throw new TaskOnFailException("Data staging task model can not be null for task " + getTaskId(), false, null);
+                throw new TaskOnFailException(
+                        "Data staging task model can not be null for task " + getTaskId(), false, null);
             }
         } catch (Exception e) {
-            throw new TaskOnFailException("Failed while obtaining data staging task model for task " + getTaskId(), false, e);
+            throw new TaskOnFailException(
+                    "Failed while obtaining data staging task model for task " + getTaskId(), false, e);
         }
     }
 
@@ -90,12 +90,15 @@ public abstract class DataStagingTask extends AiravataTask {
                     getTaskContext().getStorageResourceLoginUserName());
 
             if (storageResourceAdaptor == null) {
-                throw new TaskOnFailException("Storage resource adaptor for " + getTaskContext().getStorageResourceId() + " can not be null", true, null);
+                throw new TaskOnFailException(
+                        "Storage resource adaptor for " + getTaskContext().getStorageResourceId() + " can not be null",
+                        true,
+                        null);
             }
             return storageResourceAdaptor;
         } catch (Exception e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for storage resource " + storageId +
-                    " in task " + getTaskId(), false, e);
+            throw new TaskOnFailException(
+                    "Failed to obtain adaptor for storage resource " + storageId + " in task " + getTaskId(), false, e);
         }
     }
 
@@ -111,8 +114,8 @@ public abstract class DataStagingTask extends AiravataTask {
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for compute resource " + computeId +
-                    " in task " + getTaskId(), false, e);
+            throw new TaskOnFailException(
+                    "Failed to obtain adaptor for compute resource " + computeId + " in task " + getTaskId(), false, e);
         }
     }
 
@@ -120,8 +123,8 @@ public abstract class DataStagingTask extends AiravataTask {
     protected String getLocalDataPath(String fileName) throws TaskOnFailException {
         String localDataPath = ServerSettings.getLocalDataLocation();
         localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);
-        localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator) +
-                getProcessId() + File.separator + "temp_inputs" + File.separator;
+        localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator)
+                + getProcessId() + File.separator + "temp_inputs" + File.separator;
         try {
             FileUtils.forceMkdir(new File(localDataPath));
         } catch (IOException e) {
@@ -136,8 +139,8 @@ public abstract class DataStagingTask extends AiravataTask {
         inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
         String experimentDataDir = getProcessModel().getExperimentDataDir();
         String filePath;
-        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if(!experimentDataDir.endsWith(File.separator)){
+        if (experimentDataDir != null && !experimentDataDir.isEmpty()) {
+            if (!experimentDataDir.endsWith(File.separator)) {
                 experimentDataDir += File.separator;
             }
             if (experimentDataDir.startsWith(File.separator)) {
@@ -151,8 +154,8 @@ public abstract class DataStagingTask extends AiravataTask {
         return filePath;
     }
 
-    protected String escapeSpecialCharacters(String inputString){
-        final String[] metaCharacters = {"\\","^","$","{","}","[","]","(",")","?","&","%"};
+    protected String escapeSpecialCharacters(String inputString) {
+        final String[] metaCharacters = {"\\", "^", "$", "{", "}", "[", "]", "(", ")", "?", "&", "%"};
 
         for (String metaCharacter : metaCharacters) {
             if (inputString.contains(metaCharacter)) {
@@ -162,8 +165,9 @@ public abstract class DataStagingTask extends AiravataTask {
         return inputString;
     }
 
-    public void naiveTransfer(AgentAdaptor srcAdaptor, String sourceFile, AgentAdaptor destAdaptor, String destFile,
-                              String tempFile) throws TaskOnFailException {
+    public void naiveTransfer(
+            AgentAdaptor srcAdaptor, String sourceFile, AgentAdaptor destAdaptor, String destFile, String tempFile)
+            throws TaskOnFailException {
 
         sourceFile = escapeSpecialCharacters(sourceFile);
         destFile = escapeSpecialCharacters(destFile);
@@ -174,8 +178,8 @@ public abstract class DataStagingTask extends AiravataTask {
                 logger.info("Downloading file " + sourceFile + " to local temp file " + tempFile);
                 srcAdaptor.downloadFile(sourceFile, tempFile);
             } catch (AgentException e) {
-                throw new TaskOnFailException("Failed downloading file " + sourceFile + " to the local path " +
-                        tempFile, false, e);
+                throw new TaskOnFailException(
+                        "Failed downloading file " + sourceFile + " to the local path " + tempFile, false, e);
             }
 
             File localFile = new File(tempFile);
@@ -189,8 +193,8 @@ public abstract class DataStagingTask extends AiravataTask {
                 logger.info("Uploading file form local temp file " + tempFile + " to " + destFile);
                 destAdaptor.uploadFile(tempFile, destFile);
             } catch (AgentException e) {
-                throw new TaskOnFailException("Failed uploading file to " + destFile + " from local path " +
-                        tempFile, false, e);
+                throw new TaskOnFailException(
+                        "Failed uploading file to " + destFile + " from local path " + tempFile, false, e);
             }
         } finally {
             logger.info("Deleting temporary file " + tempFile);
@@ -198,15 +202,16 @@ public abstract class DataStagingTask extends AiravataTask {
         }
     }
 
-    public static void passThroughTransfer(AgentAdaptor srcAdaptor, String sourceFile, AgentAdaptor destAdaptor,
-                                           String destFile) throws TaskOnFailException {
+    public static void passThroughTransfer(
+            AgentAdaptor srcAdaptor, String sourceFile, AgentAdaptor destAdaptor, String destFile)
+            throws TaskOnFailException {
         logger.info("Using pass through transfer to transfer " + sourceFile + " to " + destFile);
 
         FileMetadata tempMetadata;
         try {
             tempMetadata = srcAdaptor.getFileMetadata(sourceFile);
         } catch (AgentException e) {
-            throw new TaskOnFailException("Failed to obtain metadata for file " + sourceFile, false, e );
+            throw new TaskOnFailException("Failed to obtain metadata for file " + sourceFile, false, e);
         }
 
         final FileMetadata fileMetadata = tempMetadata;
@@ -255,7 +260,8 @@ public abstract class DataStagingTask extends AiravataTask {
             return result;
         };
 
-        CompletionService<TransferResult> completionService = new ExecutorCompletionService<TransferResult>(PASS_THROUGH_EXECUTOR);
+        CompletionService<TransferResult> completionService =
+                new ExecutorCompletionService<TransferResult>(PASS_THROUGH_EXECUTOR);
 
         Map<String, Future<TransferResult>> unResolvedFutures = new HashMap<>();
 
@@ -287,10 +293,13 @@ public abstract class DataStagingTask extends AiravataTask {
             }
 
             if (failed > 0) {
-                logger.error("Transfer from " + sourceFile + " to " + destFile + " failed. " + failedResult.getMessage(),
+                logger.error(
+                        "Transfer from " + sourceFile + " to " + destFile + " failed. " + failedResult.getMessage(),
                         failedResult.getError());
-                throw new TaskOnFailException("Pass through file transfer failed from " + sourceFile + " to " +
-                        destFile, false, failedResult.getError());
+                throw new TaskOnFailException(
+                        "Pass through file transfer failed from " + sourceFile + " to " + destFile,
+                        false,
+                        failedResult.getError());
             } else {
                 logger.info("Transfer from " + sourceFile + " to " + destFile + " completed");
             }
@@ -311,32 +320,39 @@ public abstract class DataStagingTask extends AiravataTask {
         }
     }
 
-    protected void transferFileToComputeResource(String sourcePath, String destPath, AgentAdaptor computeAdaptor,
-                                                 StorageResourceAdaptor storageAdaptor) throws TaskOnFailException {
+    protected void transferFileToComputeResource(
+            String sourcePath, String destPath, AgentAdaptor computeAdaptor, StorageResourceAdaptor storageAdaptor)
+            throws TaskOnFailException {
 
         try {
             FileMetadata fileMetadata = storageAdaptor.getFileMetadata(sourcePath);
             if (fileMetadata.getSize() == 0) {
-                logger.error("File " + sourcePath +" size is 0 so ignoring the upload");
-                throw new TaskOnFailException("Input staging has failed as file " + sourcePath + " size is 0", false, null);
+                logger.error("File " + sourcePath + " size is 0 so ignoring the upload");
+                throw new TaskOnFailException(
+                        "Input staging has failed as file " + sourcePath + " size is 0", false, null);
             }
         } catch (AgentException e) {
             logger.error("Failed to fetch metadata for file " + sourcePath, e);
             throw new TaskOnFailException("Failed to fetch metadata for file " + sourcePath, false, e);
         }
 
-        if  (ServerSettings.isSteamingEnabled()) {
+        if (ServerSettings.isSteamingEnabled()) {
             passThroughTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath);
         } else {
-            String sourceFileName = sourcePath.substring(sourcePath.lastIndexOf(File.separator) + 1, sourcePath.length());
+            String sourceFileName =
+                    sourcePath.substring(sourcePath.lastIndexOf(File.separator) + 1, sourcePath.length());
             String tempPath = getLocalDataPath(sourceFileName);
             naiveTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath, tempPath);
         }
-
     }
 
-    protected boolean transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
-                              StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
+    protected boolean transferFileToStorage(
+            String sourcePath,
+            String destPath,
+            String fileName,
+            AgentAdaptor adaptor,
+            StorageResourceAdaptor storageResourceAdaptor)
+            throws TaskOnFailException {
 
         try {
             boolean fileExists = adaptor.doesFileExist(sourcePath);
@@ -375,10 +391,11 @@ public abstract class DataStagingTask extends AiravataTask {
             }
         } catch (AgentException e) {
             logger.error("Failed in validating the parent directory {} in storage side", parentDir, e);
-            throw new TaskOnFailException("Failed in validating the parent directory " + parentDir + " in storage side", false, e);
+            throw new TaskOnFailException(
+                    "Failed in validating the parent directory " + parentDir + " in storage side", false, e);
         }
 
-        if  (ServerSettings.isSteamingEnabled()) {
+        if (ServerSettings.isSteamingEnabled()) {
             passThroughTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath);
         } else {
             String tempPath = getLocalDataPath(fileName);

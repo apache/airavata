@@ -1,30 +1,33 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -34,10 +37,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static org.junit.Assert.assertTrue;
 
 public class ApplicationDeploymentRepositoryTest extends TestBase {
 
@@ -69,17 +68,50 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         return computeResourceRepository.addComputeResource(computeResourceDescription);
     }
 
-    private boolean deepCompareDeployment(ApplicationDeploymentDescription expected, ApplicationDeploymentDescription actual) {
+    private boolean deepCompareDeployment(
+            ApplicationDeploymentDescription expected, ApplicationDeploymentDescription actual) {
         boolean equals = true;
-        equals = equals && EqualsBuilder.reflectionEquals(expected, actual,
-                "moduleLoadCmds", "libPrependPaths", "libAppendPaths" ,"setEnvironment" ,"preJobCommands"
-                ,"postJobCommands", "__isset_bitfield");
-        equals = equals && deepCompareLists(expected.getSetEnvironment(), actual.getSetEnvironment(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
-        equals = equals && deepCompareLists(expected.getLibPrependPaths(), actual.getLibPrependPaths(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
-        equals = equals && deepCompareLists(expected.getLibAppendPaths(), actual.getLibAppendPaths(), Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
-        equals = equals && deepCompareLists(expected.getModuleLoadCmds(), actual.getModuleLoadCmds(), Comparator.comparingInt(CommandObject::getCommandOrder));
-        equals = equals && deepCompareLists(expected.getPreJobCommands(), actual.getPreJobCommands(), Comparator.comparingInt(CommandObject::getCommandOrder));
-        equals = equals && deepCompareLists(expected.getPostJobCommands(), actual.getPostJobCommands(), Comparator.comparingInt(CommandObject::getCommandOrder));
+        equals = equals
+                && EqualsBuilder.reflectionEquals(
+                        expected,
+                        actual,
+                        "moduleLoadCmds",
+                        "libPrependPaths",
+                        "libAppendPaths",
+                        "setEnvironment",
+                        "preJobCommands",
+                        "postJobCommands",
+                        "__isset_bitfield");
+        equals = equals
+                && deepCompareLists(
+                        expected.getSetEnvironment(),
+                        actual.getSetEnvironment(),
+                        Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
+        equals = equals
+                && deepCompareLists(
+                        expected.getLibPrependPaths(),
+                        actual.getLibPrependPaths(),
+                        Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
+        equals = equals
+                && deepCompareLists(
+                        expected.getLibAppendPaths(),
+                        actual.getLibAppendPaths(),
+                        Comparator.comparingInt(SetEnvPaths::getEnvPathOrder));
+        equals = equals
+                && deepCompareLists(
+                        expected.getModuleLoadCmds(),
+                        actual.getModuleLoadCmds(),
+                        Comparator.comparingInt(CommandObject::getCommandOrder));
+        equals = equals
+                && deepCompareLists(
+                        expected.getPreJobCommands(),
+                        actual.getPreJobCommands(),
+                        Comparator.comparingInt(CommandObject::getCommandOrder));
+        equals = equals
+                && deepCompareLists(
+                        expected.getPostJobCommands(),
+                        actual.getPostJobCommands(),
+                        Comparator.comparingInt(CommandObject::getCommandOrder));
         return equals;
     }
 
@@ -92,7 +124,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         return EqualsBuilder.reflectionEquals(expectedCopy, actualCopy);
     }
 
-    private ApplicationDeploymentDescription prepareSampleDeployment(String tag, String applicationModule, String computeResource) {
+    private ApplicationDeploymentDescription prepareSampleDeployment(
+            String tag, String applicationModule, String computeResource) {
         CommandObject moduleLoadCmd = new CommandObject();
         moduleLoadCmd.setCommand("moduleLoadCmd");
         moduleLoadCmd.setCommandOrder(1);
@@ -145,11 +178,12 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
 
         Assert.assertNull(applicationDeploymentRepository.getApplicationDeployement("appDep1"));
         String applicationModule = addSampleApplicationModule("1");
-        String computeResource =  addSampleComputeResource("1");
+        String computeResource = addSampleComputeResource("1");
 
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
         String deploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
-        ApplicationDeploymentDescription savedDeployment = applicationDeploymentRepository.getApplicationDeployement("appDep1");
+        ApplicationDeploymentDescription savedDeployment =
+                applicationDeploymentRepository.getApplicationDeployement("appDep1");
         Assert.assertNotNull(savedDeployment);
         Assert.assertTrue(deepCompareDeployment(deployment, savedDeployment));
     }
@@ -158,7 +192,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     public void createAppDeploymentWithDefaultIdTest() throws AppCatalogException {
 
         String applicationModule = addSampleApplicationModule("1");
-        String computeResource =  addSampleComputeResource("1");
+        String computeResource = addSampleComputeResource("1");
 
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
         deployment.setAppDeploymentId(airavata_commonsConstants.DEFAULT_ID);
@@ -170,7 +204,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     @Test
     public void updateAppDeploymentTest() throws AppCatalogException {
         String applicationModule = addSampleApplicationModule("1");
-        String computeResource =  addSampleComputeResource("1");
+        String computeResource = addSampleComputeResource("1");
 
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
 
@@ -201,7 +235,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
 
         applicationDeploymentRepository.updateApplicationDeployment(deploymentId, deployment);
 
-        ApplicationDeploymentDescription updatedDeployment = applicationDeploymentRepository.getApplicationDeployement(deploymentId);
+        ApplicationDeploymentDescription updatedDeployment =
+                applicationDeploymentRepository.getApplicationDeployement(deploymentId);
 
         Assert.assertTrue(deepCompareDeployment(deployment, updatedDeployment));
     }
@@ -211,16 +246,18 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
 
         List<ApplicationDeploymentDescription> allDeployments = new ArrayList<>();
 
-        for (int i = 0 ; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             String applicationModule = addSampleApplicationModule(i + "");
             String computeResource = addSampleComputeResource(i + "");
-            ApplicationDeploymentDescription deployment = prepareSampleDeployment(i + "", applicationModule, computeResource);
+            ApplicationDeploymentDescription deployment =
+                    prepareSampleDeployment(i + "", applicationModule, computeResource);
             allDeployments.add(deployment);
             String savedDeploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
             Assert.assertEquals(deployment.getAppDeploymentId(), savedDeploymentId);
         }
 
-        List<ApplicationDeploymentDescription> appDeploymentList = applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
+        List<ApplicationDeploymentDescription> appDeploymentList =
+                applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
         List<String> appDeploymentIds = applicationDeploymentRepository.getAllApplicationDeployementIds();
 
         Assert.assertEquals(allDeployments.size(), appDeploymentList.size());
@@ -236,13 +273,16 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     public void filterApplicationDeploymentsTest() throws AppCatalogException {
 
         String applicationModule1 = addSampleApplicationModule("1");
-        String computeResource1 =  addSampleComputeResource("1");
+        String computeResource1 = addSampleComputeResource("1");
         String applicationModule2 = addSampleApplicationModule("2");
-        String computeResource2 =  addSampleComputeResource("2");
+        String computeResource2 = addSampleComputeResource("2");
 
-        ApplicationDeploymentDescription deployment1 = prepareSampleDeployment( "1", applicationModule1, computeResource1);
-        ApplicationDeploymentDescription deployment2 = prepareSampleDeployment( "2", applicationModule1, computeResource2);
-        ApplicationDeploymentDescription deployment3 = prepareSampleDeployment( "3", applicationModule2, computeResource2);
+        ApplicationDeploymentDescription deployment1 =
+                prepareSampleDeployment("1", applicationModule1, computeResource1);
+        ApplicationDeploymentDescription deployment2 =
+                prepareSampleDeployment("2", applicationModule1, computeResource2);
+        ApplicationDeploymentDescription deployment3 =
+                prepareSampleDeployment("3", applicationModule2, computeResource2);
 
         applicationDeploymentRepository.saveApplicationDeployment(deployment1, gatewayId);
         applicationDeploymentRepository.saveApplicationDeployment(deployment2, gatewayId);
@@ -250,7 +290,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
 
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule1);
-        List<ApplicationDeploymentDescription> filteredDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
+        List<ApplicationDeploymentDescription> filteredDeployments =
+                applicationDeploymentRepository.getApplicationDeployments(filters);
         Assert.assertEquals(2, filteredDeployments.size());
         Assert.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
         Assert.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(1)));
@@ -296,13 +337,14 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     public void deleteApplicationDeploymentTest() throws AppCatalogException {
 
         String applicationModule = addSampleApplicationModule("1");
-        String computeResource =  addSampleComputeResource("1");
-        ApplicationDeploymentDescription deployment = prepareSampleDeployment( "1", applicationModule, computeResource);
+        String computeResource = addSampleComputeResource("1");
+        ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
 
         Assert.assertNull(applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
 
         applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
-        Assert.assertNotNull(applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
+        Assert.assertNotNull(
+                applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
         applicationDeploymentRepository.removeAppDeployment(deployment.getAppDeploymentId());
         Assert.assertNull(applicationInterfaceRepository.getApplicationInterface(deployment.getAppDeploymentId()));
     }
@@ -310,13 +352,16 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     @Test
     public void accessibleDeploymentTest() throws AppCatalogException {
         String applicationModule1 = addSampleApplicationModule("1");
-        String computeResource1 =  addSampleComputeResource("1");
+        String computeResource1 = addSampleComputeResource("1");
         String applicationModule2 = addSampleApplicationModule("2");
-        String computeResource2 =  addSampleComputeResource("2");
+        String computeResource2 = addSampleComputeResource("2");
 
-        ApplicationDeploymentDescription deployment1 = prepareSampleDeployment( "1", applicationModule1, computeResource1);
-        ApplicationDeploymentDescription deployment2 = prepareSampleDeployment( "2", applicationModule1, computeResource2);
-        ApplicationDeploymentDescription deployment3 = prepareSampleDeployment( "3", applicationModule2, computeResource2);
+        ApplicationDeploymentDescription deployment1 =
+                prepareSampleDeployment("1", applicationModule1, computeResource1);
+        ApplicationDeploymentDescription deployment2 =
+                prepareSampleDeployment("2", applicationModule1, computeResource2);
+        ApplicationDeploymentDescription deployment3 =
+                prepareSampleDeployment("3", applicationModule2, computeResource2);
 
         applicationDeploymentRepository.saveApplicationDeployment(deployment1, gatewayId);
         applicationDeploymentRepository.saveApplicationDeployment(deployment2, gatewayId);
@@ -330,8 +375,9 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         List<String> accessibleCompHostIds = new ArrayList<>();
         accessibleCompHostIds.add(computeResource1);
 
-        List<ApplicationDeploymentDescription> accessibleApplicationDeployments = applicationDeploymentRepository
-                .getAccessibleApplicationDeployments(gatewayId, accessibleAppIds, accessibleCompHostIds);
+        List<ApplicationDeploymentDescription> accessibleApplicationDeployments =
+                applicationDeploymentRepository.getAccessibleApplicationDeployments(
+                        gatewayId, accessibleAppIds, accessibleCompHostIds);
 
         assertTrue(accessibleApplicationDeployments.size() == 1);
         assertTrue(deepCompareDeployment(deployment1, accessibleApplicationDeployments.get(0)));
@@ -339,8 +385,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         accessibleCompHostIds = new ArrayList<>();
         accessibleCompHostIds.add(computeResource2);
 
-        accessibleApplicationDeployments = applicationDeploymentRepository
-                .getAccessibleApplicationDeployments(gatewayId, accessibleAppIds, accessibleCompHostIds);
+        accessibleApplicationDeployments = applicationDeploymentRepository.getAccessibleApplicationDeployments(
+                gatewayId, accessibleAppIds, accessibleCompHostIds);
 
         assertTrue(accessibleApplicationDeployments.size() == 2);
         assertTrue(deepCompareDeployment(deployment2, accessibleApplicationDeployments.get(0)));

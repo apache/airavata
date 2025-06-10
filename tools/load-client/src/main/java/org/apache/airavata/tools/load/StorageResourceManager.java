@@ -1,5 +1,30 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.tools.load;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
@@ -8,13 +33,6 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 
 public class StorageResourceManager {
 
@@ -28,8 +46,12 @@ public class StorageResourceManager {
 
     private SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor();
 
-    public StorageResourceManager(StoragePreference gatewayStoragePreference, StorageResourceDescription storageResource,
-                                  String privateKeyFile, String publicKeyFile, String passPhrase) {
+    public StorageResourceManager(
+            StoragePreference gatewayStoragePreference,
+            StorageResourceDescription storageResource,
+            String privateKeyFile,
+            String publicKeyFile,
+            String passPhrase) {
         this.storageResourceId = storageResource.getStorageResourceId();
         this.storageResource = storageResource;
         this.gatewayStoragePreference = gatewayStoragePreference;
@@ -39,8 +61,10 @@ public class StorageResourceManager {
     }
 
     public void init() throws IOException, AgentException {
-        storageAdaptor.init(gatewayStoragePreference.getLoginUserName(),
-                storageResource.getHostName(), 22,
+        storageAdaptor.init(
+                gatewayStoragePreference.getLoginUserName(),
+                storageResource.getHostName(),
+                22,
                 readFile(publicKeyFile, Charset.defaultCharset()),
                 readFile(privateKeyFile, Charset.defaultCharset()),
                 passPhrase);
@@ -50,7 +74,14 @@ public class StorageResourceManager {
         storageAdaptor.destroy();
     }
 
-    public String uploadInputFile(Airavata.Client airavataClient, String filePath, String user, String project, String experiment, String gatewayId) throws TException, AgentException {
+    public String uploadInputFile(
+            Airavata.Client airavataClient,
+            String filePath,
+            String user,
+            String project,
+            String experiment,
+            String gatewayId)
+            throws TException, AgentException {
 
         String experimentDirectory = getExperimentDirectory(user, project, experiment);
 
@@ -70,7 +101,7 @@ public class StorageResourceManager {
         replicaLocationModel.setFilePath("file://" + storageResource.getHostName() + ":" + uploadFilePath);
 
         dataProductModel.setReplicaLocations(Collections.singletonList(replicaLocationModel));
-        System.out.println("Registring " +  uploadFilePath);
+        System.out.println("Registring " + uploadFilePath);
         return airavataClient.registerDataProduct(new AuthzToken(""), dataProductModel);
     }
 
@@ -80,7 +111,8 @@ public class StorageResourceManager {
     }
 
     private String getExperimentDirectory(String user, String project, String experiment) {
-        return gatewayStoragePreference.getFileSystemRootLocation()
+        return gatewayStoragePreference
+                .getFileSystemRootLocation()
                 .concat(File.separator)
                 .concat(user)
                 .concat(File.separator)

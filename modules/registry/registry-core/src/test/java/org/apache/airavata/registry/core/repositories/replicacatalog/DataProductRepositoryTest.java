@@ -1,24 +1,31 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
@@ -29,21 +36,13 @@ import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class DataProductRepositoryTest extends TestBase {
 
     private DataProductRepository dataProductRepository;
     private String gatewayId = "testGateway";
     private String userId = "testUser";
     private String productName = "testProduct";
-    
+
     public DataProductRepositoryTest() {
         super(Database.REPLICA_CATALOG);
     }
@@ -82,7 +81,8 @@ public class DataProductRepositoryTest extends TestBase {
         dataProductMetadataEntity.setMetadataValue("dataValue");
 
         Map<String, String> dataProductMetadataEntityMap = new HashMap<>();
-        dataProductMetadataEntityMap.put(dataProductMetadataEntity.getMetadataKey(), dataProductMetadataEntity.getMetadataValue());
+        dataProductMetadataEntityMap.put(
+                dataProductMetadataEntity.getMetadataKey(), dataProductMetadataEntity.getMetadataValue());
         testDataProductModel2.setProductMetadata(dataProductMetadataEntityMap);
         testDataProductModel2.setParentProductUri(productUri1);
         assertTrue(dataProductRepository.updateDataProduct(testDataProductModel2));
@@ -96,7 +96,8 @@ public class DataProductRepositoryTest extends TestBase {
         List<DataProductModel> childDataProductList = dataProductRepository.getChildDataProducts(productUri1);
         assertTrue(childDataProductList.size() == 1);
 
-        List<DataProductModel> dataProductModelList = dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, -1, 0);
+        List<DataProductModel> dataProductModelList =
+                dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, -1, 0);
         assertTrue(dataProductModelList.size() == 2);
 
         dataProductRepository.removeDataProduct(productUri1);
@@ -130,7 +131,8 @@ public class DataProductRepositoryTest extends TestBase {
         assertEquals(productUri1, retrievedDataProductModel1.getProductUri());
 
         assertEquals(1, retrievedDataProductModel1.getReplicaLocationsSize());
-        DataReplicaLocationModel retrievedReplicaLocationModel1 = retrievedDataProductModel1.getReplicaLocations().get(0);
+        DataReplicaLocationModel retrievedReplicaLocationModel1 =
+                retrievedDataProductModel1.getReplicaLocations().get(0);
         assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());
         // validUntilTime has a default value
         assertEquals(0, retrievedReplicaLocationModel1.getValidUntilTime());
@@ -138,5 +140,4 @@ public class DataProductRepositoryTest extends TestBase {
         dataProductRepository.removeDataProduct(productUri1);
         assertFalse(dataProductRepository.isDataProductExists(productUri1));
     }
-
 }

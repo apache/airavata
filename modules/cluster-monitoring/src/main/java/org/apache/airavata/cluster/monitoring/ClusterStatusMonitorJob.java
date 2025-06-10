@@ -1,36 +1,39 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.cluster.monitoring;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TException;
@@ -45,25 +48,22 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ClusterStatusMonitorJob implements Job {
-    private final static Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        try{
+        try {
             String superTenantGatewayId = ServerSettings.getSuperTenantGatewayId();
             RegistryService.Client registryClient = getRegistryClient();
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
-            try{
-                computeResourcePreferences = registryClient.getAllGatewayComputeResourcePreferences(superTenantGatewayId);
-            }catch (Exception ex){
-                logger.warn("Could not find super tenant compute resources preferences for cluster status monitoring...");
+            try {
+                computeResourcePreferences =
+                        registryClient.getAllGatewayComputeResourcePreferences(superTenantGatewayId);
+            } catch (Exception ex) {
+                logger.warn(
+                        "Could not find super tenant compute resources preferences for cluster status monitoring...");
             }
             if (computeResourcePreferences != null && computeResourcePreferences.size() > 0) {
                 computeResourcePreferences.stream().forEach(p -> {
@@ -73,26 +73,42 @@ public class ClusterStatusMonitorJob implements Job {
                         String loginUserName = p.getLoginUserName();
                         String hostName = null;
                         if (credentialStoreToken == null || credentialStoreToken.equals("")) {
-                            credentialStoreToken = registryClient.getGatewayResourceProfile(superTenantGatewayId).getCredentialStoreToken();
+                            credentialStoreToken = registryClient
+                                    .getGatewayResourceProfile(superTenantGatewayId)
+                                    .getCredentialStoreToken();
                         }
                         int port = -1;
                         ArrayList queueNames = new ArrayList<>();
 
-                        ComputeResourceDescription computeResourceDescription = registryClient.getComputeResource(computeResourceId);
+                        ComputeResourceDescription computeResourceDescription =
+                                registryClient.getComputeResource(computeResourceId);
                         hostName = computeResourceDescription.getHostName();
-                        //FIXME This should come from compute resource description
+                        // FIXME This should come from compute resource description
                         port = 22;
                         computeResourceDescription.getBatchQueues().stream().forEach(q -> {
                             queueNames.add(q.getQueueName());
                         });
 
-                        List<JobSubmissionInterface> jobSubmissionInterfaces = computeResourceDescription.getJobSubmissionInterfaces();
+                        List<JobSubmissionInterface> jobSubmissionInterfaces =
+                                computeResourceDescription.getJobSubmissionInterfaces();
                         if (jobSubmissionInterfaces != null && jobSubmissionInterfaces.size() > 0) {
-                            if (jobSubmissionInterfaces.get(0).getJobSubmissionProtocol().equals(JobSubmissionProtocol.SSH)) {
-                                String resourceManagerType = registryClient.getSSHJobSubmission(jobSubmissionInterfaces.get(0)
-                                        .getJobSubmissionInterfaceId()).getResourceJobManager().getResourceJobManagerType().name();
-                                ComputeResourceProfile computeResourceProfile = new ComputeResourceProfile(hostName,
-                                        loginUserName, port, credentialStoreToken, queueNames, resourceManagerType);
+                            if (jobSubmissionInterfaces
+                                    .get(0)
+                                    .getJobSubmissionProtocol()
+                                    .equals(JobSubmissionProtocol.SSH)) {
+                                String resourceManagerType = registryClient
+                                        .getSSHJobSubmission(
+                                                jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId())
+                                        .getResourceJobManager()
+                                        .getResourceJobManagerType()
+                                        .name();
+                                ComputeResourceProfile computeResourceProfile = new ComputeResourceProfile(
+                                        hostName,
+                                        loginUserName,
+                                        port,
+                                        credentialStoreToken,
+                                        queueNames,
+                                        resourceManagerType);
                                 computeResourceProfiles.add(computeResourceProfile);
                             }
                         }
@@ -113,8 +129,13 @@ public class ClusterStatusMonitorJob implements Job {
                 try {
                     JSch jsch = new JSch();
                     CredentialStoreService.Client credentialClient = getCredentialStoreClient();
-                    SSHCredential sshCredential = credentialClient.getSSHCredential(computeResourceProfile.getCredentialStoreToken(), superTenantGatewayId);
-                    jsch.addIdentity(hostName, sshCredential.getPrivateKey().getBytes(), sshCredential.getPublicKey().getBytes(), sshCredential.getPassphrase().getBytes());
+                    SSHCredential sshCredential = credentialClient.getSSHCredential(
+                            computeResourceProfile.getCredentialStoreToken(), superTenantGatewayId);
+                    jsch.addIdentity(
+                            hostName,
+                            sshCredential.getPrivateKey().getBytes(),
+                            sshCredential.getPublicKey().getBytes(),
+                            sshCredential.getPassphrase().getBytes());
 
                     Session session = jsch.getSession(userName, hostName, port);
                     java.util.Properties config = new java.util.Properties();
@@ -132,7 +153,8 @@ public class ClusterStatusMonitorJob implements Job {
                             command = "qstat -Q " + queue + "| tail -1";
 
                         if (command.equals("")) {
-                            logger.warn("No matching resource manager type found for " + computeResourceProfile.getResourceManagerType());
+                            logger.warn("No matching resource manager type found for "
+                                    + computeResourceProfile.getResourceManagerType());
                             continue;
                         }
 
@@ -171,19 +193,22 @@ public class ClusterStatusMonitorJob implements Job {
                                 sparts = knts.split("/");
                                 int running = Integer.parseInt(sparts[0].trim());
                                 int queued = Integer.parseInt(sparts[1].trim());
-                                queueStatus = new QueueStatusModel(hostName, queue, isUp, running, queued, System.currentTimeMillis());
+                                queueStatus = new QueueStatusModel(
+                                        hostName, queue, isUp, running, queued, System.currentTimeMillis());
 
-                            } else if (computeResourceProfile.getResourceManagerType().equals("PBS")) {
+                            } else if (computeResourceProfile
+                                    .getResourceManagerType()
+                                    .equals("PBS")) {
                                 result = result.replaceAll("\\s+", " ");
                                 String[] sparts = result.split(" ");
                                 boolean isUp = sparts[3].equalsIgnoreCase("yes");
                                 int running = Integer.parseInt(sparts[6].trim());
                                 int queued = Integer.parseInt(sparts[5].trim());
-                                queueStatus = new QueueStatusModel(hostName, queue, isUp, running, queued, System.currentTimeMillis());
+                                queueStatus = new QueueStatusModel(
+                                        hostName, queue, isUp, running, queued, System.currentTimeMillis());
                             }
 
-                            if (queueStatus != null)
-                                queueStatuses.add(queueStatus);
+                            if (queueStatus != null) queueStatuses.add(queueStatus);
                         }
                     }
                     session.disconnect();
@@ -192,24 +217,28 @@ public class ClusterStatusMonitorJob implements Job {
                     logger.error(ex.getMessage(), ex);
                 }
             }
-            if(queueStatuses != null && queueStatuses.size() > 0){
+            if (queueStatuses != null && queueStatuses.size() > 0) {
                 registryClient.registerQueueStatuses(queueStatuses);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new JobExecutionException(e);
         }
-
     }
+
     private static RegistryService.Client getRegistryClient() throws TTransportException, ApplicationSettingsException {
-        TTransport transport = new TSocket(ServerSettings.getRegistryServerHost(), Integer.parseInt(ServerSettings.getRegistryServerPort()));
+        TTransport transport = new TSocket(
+                ServerSettings.getRegistryServerHost(), Integer.parseInt(ServerSettings.getRegistryServerPort()));
         transport.open();
         TProtocol protocol = new TBinaryProtocol(transport);
         RegistryService.Client registryClient = new RegistryService.Client(protocol);
         return registryClient;
     }
 
-    private static CredentialStoreService.Client getCredentialStoreClient() throws TTransportException, ApplicationSettingsException {
-        TTransport transport = new TSocket(ServerSettings.getCredentialStoreServerHost(), Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
+    private static CredentialStoreService.Client getCredentialStoreClient()
+            throws TTransportException, ApplicationSettingsException {
+        TTransport transport = new TSocket(
+                ServerSettings.getCredentialStoreServerHost(),
+                Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
         transport.open();
         TProtocol protocol = new TBinaryProtocol(transport);
         CredentialStoreService.Client credentialServiceClient = new CredentialStoreService.Client(protocol);
@@ -225,7 +254,13 @@ public class ClusterStatusMonitorJob implements Job {
         private List<String> queueNames;
         private String resourceManagerType;
 
-        public ComputeResourceProfile(String hostName, String userName, int port, String credentialStoreToken, List<String> queueNames, String resourceManagerType) {
+        public ComputeResourceProfile(
+                String hostName,
+                String userName,
+                int port,
+                String credentialStoreToken,
+                List<String> queueNames,
+                String resourceManagerType) {
             this.hostName = hostName;
             this.userName = userName;
             this.port = port;

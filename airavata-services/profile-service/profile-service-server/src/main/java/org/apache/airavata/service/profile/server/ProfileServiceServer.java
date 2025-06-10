@@ -1,24 +1,28 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.profile.server;
 
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
@@ -27,12 +31,12 @@ import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.service.profile.handlers.GroupManagerServiceHandler;
 import org.apache.airavata.service.profile.handlers.IamAdminServicesHandler;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
-import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.profile.handlers.TenantProfileServiceHandler;
 import org.apache.airavata.service.profile.handlers.UserProfileServiceHandler;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
+import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.profile.user.core.utils.UserProfileCatalogDBInitConfig;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
@@ -45,34 +49,25 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created by goshenoy on 03/08/2017.
  */
 public class ProfileServiceServer implements IServer {
 
-    private final static Logger logger = LoggerFactory.getLogger(ProfileServiceServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProfileServiceServer.class);
 
     private static final String SERVER_NAME = "Profile Service Server";
     private static final String SERVER_VERSION = "1.0";
 
     private ServerStatus status;
     private TServer server;
-    private List<DBInitConfig> dbInitConfigs = Arrays.asList(
-        new UserProfileCatalogDBInitConfig()
-    );
+    private List<DBInitConfig> dbInitConfigs = Arrays.asList(new UserProfileCatalogDBInitConfig());
 
     public ProfileServiceServer() {
         setStatus(ServerStatus.STOPPED);
     }
 
-    public void updateTime() {
-
-    }
+    public void updateTime() {}
 
     public Date getTime() {
         return null;
@@ -101,17 +96,25 @@ public class ProfileServiceServer implements IServer {
             final String serverHost = ServerSettings.getProfileServiceServerHost();
 
             // create multiple processors for each profile-service
-            UserProfileService.Processor userProfileProcessor = new UserProfileService.Processor(new UserProfileServiceHandler());
-            TenantProfileService.Processor teneantProfileProcessor = new TenantProfileService.Processor(new TenantProfileServiceHandler());
-            IamAdminServices.Processor iamAdminServicesProcessor = new IamAdminServices.Processor(new IamAdminServicesHandler());
-            GroupManagerService.Processor groupmanagerProcessor = new GroupManagerService.Processor(new GroupManagerServiceHandler());
+            UserProfileService.Processor userProfileProcessor =
+                    new UserProfileService.Processor(new UserProfileServiceHandler());
+            TenantProfileService.Processor teneantProfileProcessor =
+                    new TenantProfileService.Processor(new TenantProfileServiceHandler());
+            IamAdminServices.Processor iamAdminServicesProcessor =
+                    new IamAdminServices.Processor(new IamAdminServicesHandler());
+            GroupManagerService.Processor groupmanagerProcessor =
+                    new GroupManagerService.Processor(new GroupManagerServiceHandler());
 
             // create a multiplexed processor
             TMultiplexedProcessor profileServiceProcessor = new TMultiplexedProcessor();
-            profileServiceProcessor.registerProcessor(profile_user_cpiConstants.USER_PROFILE_CPI_NAME, userProfileProcessor);
-            profileServiceProcessor.registerProcessor(profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME, teneantProfileProcessor);
-            profileServiceProcessor.registerProcessor(iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME, iamAdminServicesProcessor);
-            profileServiceProcessor.registerProcessor(group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME, groupmanagerProcessor);
+            profileServiceProcessor.registerProcessor(
+                    profile_user_cpiConstants.USER_PROFILE_CPI_NAME, userProfileProcessor);
+            profileServiceProcessor.registerProcessor(
+                    profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME, teneantProfileProcessor);
+            profileServiceProcessor.registerProcessor(
+                    iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME, iamAdminServicesProcessor);
+            profileServiceProcessor.registerProcessor(
+                    group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME, groupmanagerProcessor);
 
             TServerTransport serverTransport;
 
@@ -168,9 +171,7 @@ public class ProfileServiceServer implements IServer {
         start();
     }
 
-    public void configure() throws Exception {
-
-    }
+    public void configure() throws Exception {}
 
     public ServerStatus getStatus() throws Exception {
         return status;

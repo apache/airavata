@@ -1,25 +1,28 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.entities.expcatalog.TaskEntity;
@@ -32,17 +35,14 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(TaskRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskRepository.class);
 
     private final JobRepository jobRepository = new JobRepository();
 
-    public TaskRepository() { super(TaskModel.class, TaskEntity.class); }
+    public TaskRepository() {
+        super(TaskModel.class, TaskEntity.class);
+    }
 
     protected String saveTaskModelData(TaskModel taskModel) throws RegistryException {
         TaskEntity taskEntity = saveTask(taskModel);
@@ -127,10 +127,9 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
             logger.debug("Search criteria is ParentProcessId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Task.PARENT_PROCESS_ID, value);
-            taskModelList = taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
-        }
-
-        else {
+            taskModelList =
+                    taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
+        } else {
             logger.error("Unsupported field name for Task module.");
             throw new IllegalArgumentException("Unsupported field name for Task module.");
         }
@@ -155,13 +154,13 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         delete(taskId);
     }
 
-    public void  deleteTasks(String processId) throws RegistryException {
+    public void deleteTasks(String processId) throws RegistryException {
         TaskRepository taskRepository = new TaskRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.Task.PARENT_PROCESS_ID, processId);
         List<TaskModel> taskModelList =
                 taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
-        for(TaskModel taskModel: taskModelList){
+        for (TaskModel taskModel : taskModelList) {
             delete(taskModel.getTaskId());
         }
     }
