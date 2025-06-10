@@ -1,33 +1,30 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
-
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 
 /**
  * The persistent class for the compute_resource_preference database table.
@@ -93,15 +90,19 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     @Column(name = "SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO")
     private String sshAccountProvisionerAdditionalInfo;
 
-    @OneToMany(targetEntity = SSHAccountProvisionerConfiguration.class, mappedBy = "computeResourcePreference", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(
+            targetEntity = SSHAccountProvisionerConfiguration.class,
+            mappedBy = "computeResourcePreference",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     private List<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations;
 
     @ManyToOne(targetEntity = GatewayProfileEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "GATEWAY_ID")
     private GatewayProfileEntity gatewayProfileResource;
 
-    public ComputeResourcePreferenceEntity() {
-    }
+    public ComputeResourcePreferenceEntity() {}
 
     public String getGatewayId() {
         return gatewayId;
@@ -191,7 +192,6 @@ public class ComputeResourcePreferenceEntity implements Serializable {
         this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
     }
 
-
     public GatewayProfileEntity getGatewayProfileResource() {
         return gatewayProfileResource;
     }
@@ -252,7 +252,8 @@ public class ComputeResourcePreferenceEntity implements Serializable {
         return sshAccountProvisionerConfigurations;
     }
 
-    public void setSshAccountProvisionerConfigurations(List<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations) {
+    public void setSshAccountProvisionerConfigurations(
+            List<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations) {
         this.sshAccountProvisionerConfigurations = sshAccountProvisionerConfigurations;
     }
 }

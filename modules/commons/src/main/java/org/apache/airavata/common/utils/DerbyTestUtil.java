@@ -1,22 +1,22 @@
-/*
- *
- * Derby - Class org.apache.derbyTesting.junit.JDBC
- *
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
 
 import java.sql.BatchUpdateException;
@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,19 +49,21 @@ public class DerbyTestUtil {
     /**
      * Constant to pass to DatabaseMetaData.getTables() to fetch just synonyms.
      */
-    public static final String[] GET_TABLES_SYNONYM = new String[] { "SYNONYM" };
+    public static final String[] GET_TABLES_SYNONYM = new String[] {"SYNONYM"};
 
     /**
      * Constant to pass to DatabaseMetaData.getTables() to fetch just views.
      */
-    public static final String[] GET_TABLES_VIEW = new String[] { "VIEW" };
+    public static final String[] GET_TABLES_VIEW = new String[] {"VIEW"};
 
     /**
      * Constant to pass to DatabaseMetaData.getTables() to fetch just tables.
      */
-    public static final String[] GET_TABLES_TABLE = new String[] { "TABLE" };
+    public static final String[] GET_TABLES_TABLE = new String[] {"TABLE"};
 
-    private static final String[] CLEAR_DB_PROPERTIES = {"derby.database.classpath",};
+    private static final String[] CLEAR_DB_PROPERTIES = {
+        "derby.database.classpath",
+    };
 
     public static void destroyDatabase(JDBCConfig jdbcConfig) {
 
@@ -82,10 +83,8 @@ public class DerbyTestUtil {
         }
     }
 
-
     private static void clearProperties(Connection conn) throws SQLException {
-        PreparedStatement ps = conn.prepareCall(
-                "CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, NULL)");
+        PreparedStatement ps = conn.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, NULL)");
 
         for (String CLEAR_DB_PROPERTY : CLEAR_DB_PROPERTIES) {
             ps.setString(1, CLEAR_DB_PROPERTY);
@@ -110,12 +109,9 @@ public class DerbyTestUtil {
             while (rs.next()) {
 
                 String schema = rs.getString("TABLE_SCHEM");
-                if (schema.startsWith("SYS"))
-                    continue;
-                if (schema.equals("SQLJ"))
-                    continue;
-                if (schema.equals("NULLID"))
-                    continue;
+                if (schema.startsWith("SYS")) continue;
+                if (schema.equals("SQLJ")) continue;
+                if (schema.equals("NULLID")) continue;
 
                 schemas.add(schema);
             }
@@ -132,8 +128,7 @@ public class DerbyTestUtil {
             }
             // No errors means all the schemas we wanted to
             // drop were dropped, so nothing more to do.
-            if (sqle == null)
-                return;
+            if (sqle == null) return;
         }
         throw sqle;
     }
@@ -144,9 +139,7 @@ public class DerbyTestUtil {
         Statement dropStm = conn.createStatement();
 
         // cast to overcome territory differences in some cases:
-        ResultSet rs = stm.executeQuery(
-                "select roleid from sys.sysroles where " +
-                        "cast(isdef as char(1)) = 'Y'");
+        ResultSet rs = stm.executeQuery("select roleid from sys.sysroles where " + "cast(isdef as char(1)) = 'Y'");
 
         while (rs.next()) {
             dropStm.executeUpdate("DROP ROLE " + escape(rs.getString(1)));
@@ -190,14 +183,14 @@ public class DerbyTestUtil {
         ps.close();
         conn.commit();
     }
+
     public static String escape(String name) {
         StringBuffer buffer = new StringBuffer(name.length() + 2);
         buffer.append('"');
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
             // escape double quote characters with an extra double quote
-            if (c == '"')
-                buffer.append('"');
+            if (c == '"') buffer.append('"');
             buffer.append(c);
         }
         buffer.append('"');
@@ -276,12 +269,10 @@ public class DerbyTestUtil {
             rs = dmd.getExportedKeys((String) null, schema, tablename);
             while (rs.next()) {
                 short keyPosition = rs.getShort("KEY_SEQ");
-                if (keyPosition != 1)
-                    continue;
+                if (keyPosition != 1) continue;
                 String fkName = rs.getString("FK_NAME");
                 // No name, probably can't happen but couldn't drop it anyway.
-                if (fkName == null)
-                    continue;
+                if (fkName == null) continue;
                 String fkSchema = rs.getString("FKTABLE_SCHEM");
                 String fkTable = rs.getString("FKTABLE_NAME");
 
@@ -357,18 +348,13 @@ public class DerbyTestUtil {
         while (rs.next()) {
             String objectName = rs.getString(mdColumn);
             String raw = dropLeadIn + DerbyTestUtil.escape(schema, objectName);
-            if (
-                    "TYPE".equals(dropType) ||
-                            "SEQUENCE".equals(dropType) ||
-                            "DERBY AGGREGATE".equals(dropType)
-                    ) {
+            if ("TYPE".equals(dropType) || "SEQUENCE".equals(dropType) || "DERBY AGGREGATE".equals(dropType)) {
                 raw = raw + " restrict ";
             }
             ddl.add(raw);
         }
         rs.close();
-        if (ddl.isEmpty())
-            return;
+        if (ddl.isEmpty()) return;
 
         // Execute them as a complete batch, hoping they will all succeed.
         s.clearBatch();
@@ -386,14 +372,12 @@ public class DerbyTestUtil {
         try {
             results = s.executeBatch();
             Assert.assertNotNull(results);
-            Assert.assertEquals("Incorrect result length from executeBatch",
-                    batchCount, results.length);
+            Assert.assertEquals("Incorrect result length from executeBatch", batchCount, results.length);
             hadError = false;
         } catch (BatchUpdateException batchException) {
             results = batchException.getUpdateCounts();
             Assert.assertNotNull(results);
-            Assert.assertTrue("Too many results in BatchUpdateException",
-                    results.length <= batchCount);
+            Assert.assertTrue("Too many results in BatchUpdateException", results.length <= batchCount);
             hadError = true;
         }
 
@@ -401,13 +385,11 @@ public class DerbyTestUtil {
         boolean didDrop = false;
         for (int i = 0; i < results.length; i++) {
             int result = results[i];
-            if (result == Statement.EXECUTE_FAILED)
-                hadError = true;
+            if (result == Statement.EXECUTE_FAILED) hadError = true;
             else if (result == Statement.SUCCESS_NO_INFO || result >= 0) {
                 didDrop = true;
                 ddl.set(i, null);
-            } else
-                Assert.fail("Negative executeBatch status");
+            } else Assert.fail("Negative executeBatch status");
         }
         s.clearBatch();
         if (didDrop) {
@@ -438,8 +420,7 @@ public class DerbyTestUtil {
                         }
                     }
                 }
-                if (didDrop)
-                    s.getConnection().commit();
+                if (didDrop) s.getConnection().commit();
             } while (hadError && didDrop);
         }
     }
@@ -451,12 +432,10 @@ public class DerbyTestUtil {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement
-                    (
-                            "select count(*) from sys.systables t, sys.sysschemas s\n" +
-                                    "where t.schemaid = s.schemaid\n" +
-                                    "and ( cast(s.schemaname as varchar(128)))= 'SYS'\n" +
-                                    "and ( cast(t.tablename as varchar(128))) = 'SYSSEQUENCES'");
+            ps = conn.prepareStatement(
+                    "select count(*) from sys.systables t, sys.sysschemas s\n" + "where t.schemaid = s.schemaid\n"
+                            + "and ( cast(s.schemaname as varchar(128)))= 'SYS'\n"
+                            + "and ( cast(t.tablename as varchar(128))) = 'SYSSEQUENCES'");
             rs = ps.executeQuery();
             rs.next();
             return (rs.getInt(1) > 0);

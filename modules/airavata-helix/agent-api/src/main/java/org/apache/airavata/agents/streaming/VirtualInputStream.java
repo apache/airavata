@@ -1,22 +1,22 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.agents.streaming;
 
 import java.io.IOException;
@@ -50,16 +50,16 @@ public class VirtualInputStream extends InputStream {
 
         int c = read();
 
-        b[off] = (byte)c;
+        b[off] = (byte) c;
 
         int i = 1;
         try {
-            for (; i < len ; i++) {
+            for (; i < len; i++) {
                 if (byteCount == streamLength) {
                     break;
                 }
                 c = read();
-                b[off + i] = (byte)c;
+                b[off + i] = (byte) c;
             }
         } catch (IOException ee) {
         }
@@ -69,7 +69,7 @@ public class VirtualInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         try {
-            Integer cont =  queue.poll(10, TimeUnit.SECONDS);
+            Integer cont = queue.poll(10, TimeUnit.SECONDS);
             if (cont == null) {
                 throw new IOException("Timed out reading from the queue");
             }

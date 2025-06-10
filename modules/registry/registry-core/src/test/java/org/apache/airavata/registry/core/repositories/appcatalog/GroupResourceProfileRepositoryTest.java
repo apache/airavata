@@ -1,24 +1,33 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -29,16 +38,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class GroupResourceProfileRepositoryTest extends TestBase {
 
@@ -169,7 +168,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         computeResourcePolicy2.setComputeResourceId(resourceId2);
         computeResourcePolicy2.addToAllowedBatchQueues("cmqueue1");
 
-        List<ComputeResourcePolicy> computeResourcePolicyList =  new ArrayList<>();
+        List<ComputeResourcePolicy> computeResourcePolicyList = new ArrayList<>();
         computeResourcePolicyList.add(computeResourcePolicy);
         computeResourcePolicyList.add(computeResourcePolicy2);
 
@@ -198,7 +197,8 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         String computeResourcePolicyId1 = null;
         String batchQueueResourcePolicyId2 = null;
         if (groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
-            GroupResourceProfile getGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            GroupResourceProfile getGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
 
             assertTrue(getGroupResourceProfile.getGatewayId().equals(gatewayId));
             assertTrue(getGroupResourceProfile.getGroupResourceProfileId().equals(groupResourceProfileId));
@@ -207,79 +207,114 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
             assertTrue(getGroupResourceProfile.getComputePreferences().size() == 2);
             assertTrue(getGroupResourceProfile.getComputeResourcePolicies().size() == 2);
             assertTrue(getGroupResourceProfile.getBatchQueueResourcePolicies().size() == 2);
-            computeResourcePolicyId1 = getGroupResourceProfile.getComputeResourcePolicies()
-                    .stream()
+            computeResourcePolicyId1 = getGroupResourceProfile.getComputeResourcePolicies().stream()
                     .filter(crp -> crp.getComputeResourceId().equals(resourceId1))
                     .map(crp -> crp.getResourcePolicyId())
                     .findFirst()
                     .get();
-            batchQueueResourcePolicyId2 = getGroupResourceProfile.getBatchQueueResourcePolicies()
-                    .stream()
+            batchQueueResourcePolicyId2 = getGroupResourceProfile.getBatchQueueResourcePolicies().stream()
                     .filter(bqrp -> bqrp.getComputeResourceId().equals(resourceId2))
                     .map(bqrp -> bqrp.getResourcePolicyId())
                     .findFirst()
                     .get();
         }
 
-        assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId) != null);
-        assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId).getGroupSSHAccountProvisionerConfigs().size() == 1);
+        assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1, groupResourceProfileId)
+                != null);
+        assertTrue(groupResourceProfileRepository
+                        .getGroupComputeResourcePreference(resourceId1, groupResourceProfileId)
+                        .getGroupSSHAccountProvisionerConfigs()
+                        .size()
+                == 1);
         // verify reservation1
-        assertEquals(2, groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId).getReservations().size());
-        ComputeResourceReservation retrievedReservation1 = groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1, groupResourceProfileId).getReservations().get(0);
+        assertEquals(
+                2,
+                groupResourceProfileRepository
+                        .getGroupComputeResourcePreference(resourceId1, groupResourceProfileId)
+                        .getReservations()
+                        .size());
+        ComputeResourceReservation retrievedReservation1 = groupResourceProfileRepository
+                .getGroupComputeResourcePreference(resourceId1, groupResourceProfileId)
+                .getReservations()
+                .get(0);
         assertEquals(reservation1.getReservationName(), retrievedReservation1.getReservationName());
         assertEquals(reservation1.getStartTime(), retrievedReservation1.getStartTime());
         assertEquals(reservation1.getEndTime(), retrievedReservation1.getEndTime());
 
-        ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy(computeResourcePolicyId1);
+        ComputeResourcePolicy getComputeResourcePolicy =
+                groupResourceProfileRepository.getComputeResourcePolicy(computeResourcePolicyId1);
         assertTrue(getComputeResourcePolicy.getAllowedBatchQueues().get(0).equals("queue1"));
 
-        BatchQueueResourcePolicy getBatchQueuePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy(batchQueueResourcePolicyId2);
+        BatchQueueResourcePolicy getBatchQueuePolicy =
+                groupResourceProfileRepository.getBatchQueueResourcePolicy(batchQueueResourcePolicyId2);
         assertTrue(getBatchQueuePolicy != null);
         assertTrue(getBatchQueuePolicy.getMaxAllowedCores() == 3);
         assertTrue(getBatchQueuePolicy.getMaxAllowedWalltime() == 12);
 
-        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, null).size() == 0);
-        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, Collections.emptyList()).size() == 0);
-        assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId).size() == 2);
-        assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId).size() == 2);
-        assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
+        assertTrue(groupResourceProfileRepository
+                        .getAllGroupResourceProfiles(gatewayId, null)
+                        .size()
+                == 0);
+        assertTrue(groupResourceProfileRepository
+                        .getAllGroupResourceProfiles(gatewayId, Collections.emptyList())
+                        .size()
+                == 0);
+        assertTrue(groupResourceProfileRepository
+                        .getAllGroupComputeResourcePreferences(groupResourceProfileId)
+                        .size()
+                == 2);
+        assertTrue(groupResourceProfileRepository
+                        .getAllGroupComputeResourcePolicies(groupResourceProfileId)
+                        .size()
+                == 2);
+        assertTrue(groupResourceProfileRepository
+                        .getAllGroupBatchQueueResourcePolicies(groupResourceProfileId)
+                        .size()
+                == 2);
 
         // AIRAVATA-2872 Test setting resourceSpecificCredentialStoreToken to a value and then changing it to null
-        GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
-        GroupComputeResourcePreference retrievedGroupComputeResourcePreference = retrievedGroupResourceProfile.getComputePreferences().stream()
-                .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
-                .findFirst()
-                .get();
+        GroupResourceProfile retrievedGroupResourceProfile =
+                groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupComputeResourcePreference retrievedGroupComputeResourcePreference =
+                retrievedGroupResourceProfile.getComputePreferences().stream()
+                        .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
+                        .findFirst()
+                        .get();
         assertNull(retrievedGroupComputeResourcePreference.getResourceSpecificCredentialStoreToken());
         retrievedGroupComputeResourcePreference.setResourceSpecificCredentialStoreToken("abc123");
         groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile);
 
-        GroupResourceProfile retrievedGroupResourceProfile2 = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
-        GroupComputeResourcePreference retrievedGroupComputeResourcePreference2 = retrievedGroupResourceProfile2.getComputePreferences().stream()
-                .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
-                .findFirst()
-                .get();
+        GroupResourceProfile retrievedGroupResourceProfile2 =
+                groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupComputeResourcePreference retrievedGroupComputeResourcePreference2 =
+                retrievedGroupResourceProfile2.getComputePreferences().stream()
+                        .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
+                        .findFirst()
+                        .get();
         assertEquals("abc123", retrievedGroupComputeResourcePreference2.getResourceSpecificCredentialStoreToken());
         retrievedGroupComputeResourcePreference2.setResourceSpecificCredentialStoreToken(null);
         assertNull(retrievedGroupComputeResourcePreference2.getResourceSpecificCredentialStoreToken());
         groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile2);
 
-        GroupResourceProfile retrievedGroupResourceProfile3 = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
-        GroupComputeResourcePreference retrievedGroupComputeResourcePreference3 = retrievedGroupResourceProfile3.getComputePreferences().stream()
-                .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
-                .findFirst()
-                .get();
+        GroupResourceProfile retrievedGroupResourceProfile3 =
+                groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupComputeResourcePreference retrievedGroupComputeResourcePreference3 =
+                retrievedGroupResourceProfile3.getComputePreferences().stream()
+                        .filter(pref -> pref.getComputeResourceId().equals(resourceId1))
+                        .findFirst()
+                        .get();
         assertNull(retrievedGroupComputeResourcePreference3.getResourceSpecificCredentialStoreToken());
 
         // Orphan removal test
         assertEquals(2, retrievedGroupResourceProfile3.getComputePreferencesSize());
-        retrievedGroupResourceProfile3.setComputePreferences(retrievedGroupResourceProfile3.getComputePreferences().subList(0, 1));
+        retrievedGroupResourceProfile3.setComputePreferences(
+                retrievedGroupResourceProfile3.getComputePreferences().subList(0, 1));
         groupResourceProfileRepository.updateGroupResourceProfile(retrievedGroupResourceProfile3);
-        GroupResourceProfile retrievedGroupResourceProfile4 = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        GroupResourceProfile retrievedGroupResourceProfile4 =
+                groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
         assertEquals(1, retrievedGroupResourceProfile4.getComputePreferencesSize());
 
         groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
-
     }
 
     @Test
@@ -294,10 +329,14 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         // populated by the create operation
         GroupResourceProfile cloneGroupResourceProfile = groupResourceProfile.deepCopy();
         String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
-        long creationTime = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId).getCreationTime();
+        long creationTime = groupResourceProfileRepository
+                .getGroupResourceProfile(groupResourceProfileId)
+                .getCreationTime();
         cloneGroupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
         groupResourceProfileRepository.updateGroupResourceProfile(cloneGroupResourceProfile);
-        long creationTimeAfterUpdate = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId).getCreationTime();
+        long creationTimeAfterUpdate = groupResourceProfileRepository
+                .getGroupResourceProfile(groupResourceProfileId)
+                .getCreationTime();
         Assert.assertEquals("creationTime should be the same after update", creationTime, creationTimeAfterUpdate);
     }
 
@@ -332,10 +371,10 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         // Remove one of the reservations
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(2, retrievedReservations.size());
             retrievedReservations.remove(1);
 
@@ -343,14 +382,15 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
 
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(1, retrievedReservations.size());
-            assertEquals(reservation1.getReservationName(), retrievedReservations.get(0).getReservationName());
+            assertEquals(
+                    reservation1.getReservationName(),
+                    retrievedReservations.get(0).getReservationName());
         }
-
     }
 
     @Test
@@ -383,13 +423,13 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
 
         // Update one of the reservations
-        long newStartTime = AiravataUtils.getCurrentTimestamp().getTime() + 1000*1000;
-        long newEndTime = AiravataUtils.getCurrentTimestamp().getTime() + 2*1000*1000;
+        long newStartTime = AiravataUtils.getCurrentTimestamp().getTime() + 1000 * 1000;
+        long newEndTime = AiravataUtils.getCurrentTimestamp().getTime() + 2 * 1000 * 1000;
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(2, retrievedReservations.size());
             // push into future, should sort second on next retrieval
             retrievedReservations.get(0).setStartTime(newStartTime);
@@ -399,10 +439,10 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
 
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(2, retrievedReservations.size());
             // first reservation should now sort second
             ComputeResourceReservation reservation = retrievedReservations.get(1);
@@ -410,7 +450,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
             assertEquals(newStartTime, reservation.getStartTime());
             assertEquals(newEndTime, reservation.getEndTime());
         }
-
     }
 
     @Test
@@ -436,10 +475,10 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         // add queue to the reservation
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(1, retrievedReservations.size());
             ComputeResourceReservation reservation = retrievedReservations.get(0);
             assertEquals(1, reservation.getQueueNamesSize());
@@ -449,15 +488,15 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
 
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(1, retrievedReservations.size());
             ComputeResourceReservation reservation = retrievedReservations.get(0);
-            assertEquals(new HashSet<>(Arrays.asList(QUEUE1_NAME, QUEUE2_NAME)), new HashSet<>(reservation.getQueueNames()));
+            assertEquals(
+                    new HashSet<>(Arrays.asList(QUEUE1_NAME, QUEUE2_NAME)), new HashSet<>(reservation.getQueueNames()));
         }
-
     }
 
     @Test
@@ -484,13 +523,14 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         // add queue to the reservation
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(1, retrievedReservations.size());
             ComputeResourceReservation reservation = retrievedReservations.get(0);
-            assertEquals(new HashSet<>(Arrays.asList(QUEUE1_NAME, QUEUE2_NAME)), new HashSet<>(reservation.getQueueNames()));
+            assertEquals(
+                    new HashSet<>(Arrays.asList(QUEUE1_NAME, QUEUE2_NAME)), new HashSet<>(reservation.getQueueNames()));
             reservation.unsetQueueNames();
             reservation.addToQueueNames(QUEUE1_NAME);
 
@@ -498,14 +538,13 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
 
         {
-            GroupResourceProfile retrievedGroupResourceProfile = groupResourceProfileRepository
-                    .getGroupResourceProfile(groupResourceProfileId);
-            List<ComputeResourceReservation> retrievedReservations = retrievedGroupResourceProfile
-                    .getComputePreferences().get(0).getReservations();
+            GroupResourceProfile retrievedGroupResourceProfile =
+                    groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+            List<ComputeResourceReservation> retrievedReservations =
+                    retrievedGroupResourceProfile.getComputePreferences().get(0).getReservations();
             assertEquals(1, retrievedReservations.size());
             ComputeResourceReservation reservation = retrievedReservations.get(0);
             assertEquals(new HashSet<>(Arrays.asList(QUEUE1_NAME)), new HashSet<>(reservation.getQueueNames()));
         }
-
     }
 }

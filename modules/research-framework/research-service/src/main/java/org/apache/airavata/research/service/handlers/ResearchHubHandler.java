@@ -1,23 +1,29 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.research.service.handlers;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
@@ -27,18 +33,12 @@ import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class ResearchHubHandler {
@@ -63,7 +63,8 @@ public class ResearchHubHandler {
     @Value("${airavata.research-hub.limit}")
     private int maxRHubSessions;
 
-    public ResearchHubHandler(ProjectHandler projectHandler, SessionHandler sessionHandler, ProjectRepository projectRepository) {
+    public ResearchHubHandler(
+            ProjectHandler projectHandler, SessionHandler sessionHandler, ProjectRepository projectRepository) {
         this.projectHandler = projectHandler;
         this.sessionHandler = sessionHandler;
         this.projectRepository = projectRepository;
@@ -77,12 +78,7 @@ public class ResearchHubHandler {
         headers.set("Authorization", "token " + adminApiKey);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
-        ResponseEntity<Void> response = new RestTemplate().exchange(
-                url,
-                HttpMethod.DELETE,
-                request,
-                Void.class
-        );
+        ResponseEntity<Void> response = new RestTemplate().exchange(url, HttpMethod.DELETE, request, Void.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             LOGGER.info("Successfully stopped/deleted RHub session {} for user {}", sessionId, userId);
@@ -104,12 +100,7 @@ public class ResearchHubHandler {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Void> response = new RestTemplate().exchange(
-                url,
-                HttpMethod.DELETE,
-                request,
-                Void.class
-        );
+        ResponseEntity<Void> response = new RestTemplate().exchange(url, HttpMethod.DELETE, request, Void.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             LOGGER.info("Successfully stopped/deleted RHub session {} for user {}", sessionId, userId);
@@ -119,35 +110,41 @@ public class ResearchHubHandler {
         }
     }
 
-
-
     public String spinRHubSession(String projectId, String sessionName) {
         String userId = UserContext.userId();
         int alreadyCreated = sessionHandler.countSessionsByUserIdAndStatus(userId, SessionStatusEnum.CREATED);
         if (alreadyCreated >= maxRHubSessions) {
-            throw new RuntimeException("Max number of active sessions (10) has already been reached. Please terminate or delete a session to continue.");
+            throw new RuntimeException(
+                    "Max number of active sessions (10) has already been reached. Please terminate or delete a session to continue.");
         }
 
         Project project = projectHandler.findProject(projectId);
-        ArrayList<DatasetResource> datasetResourceArrayList = new ArrayList<DatasetResource>(project.getDatasetResources());
+        ArrayList<DatasetResource> datasetResourceArrayList =
+                new ArrayList<DatasetResource>(project.getDatasetResources());
 
         Session session = sessionHandler.createSession(sessionName, project);
 
-        String baseSpawnUrl = String.format(RH_SPAWN_URL,
+        String baseSpawnUrl = String.format(
+                RH_SPAWN_URL,
                 csHubUrl,
                 UserContext.userId(),
                 session.getId(),
-                project.getRepositoryResource().getRepositoryUrl()
-        );
+                project.getRepositoryResource().getRepositoryUrl());
 
         StringBuilder spawnUrlBuilder = new StringBuilder(baseSpawnUrl);
         for (DatasetResource datasetResource : datasetResourceArrayList) {
-            spawnUrlBuilder.append("&dataPath=").append(URLEncoder.encode(datasetResource.getDatasetUrl(), StandardCharsets.UTF_8));
+            spawnUrlBuilder
+                    .append("&dataPath=")
+                    .append(URLEncoder.encode(datasetResource.getDatasetUrl(), StandardCharsets.UTF_8));
         }
 
         String spawnUrl = spawnUrlBuilder.toString();
 
-        LOGGER.debug("Generated the spawn url: {} for the user: {} against the project: {}", spawnUrl, UserContext.userId(), projectId);
+        LOGGER.debug(
+                "Generated the spawn url: {} for the user: {} against the project: {}",
+                spawnUrl,
+                UserContext.userId(),
+                projectId);
         return spawnUrl;
     }
 

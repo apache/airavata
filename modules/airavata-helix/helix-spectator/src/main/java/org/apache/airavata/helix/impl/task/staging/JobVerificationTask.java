@@ -1,5 +1,25 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.staging;
 
+import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.helix.impl.task.AiravataTask;
@@ -16,12 +36,10 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 @TaskDef(name = "Job Verification Task")
 public class JobVerificationTask extends AiravataTask {
 
-    private final static Logger logger = LoggerFactory.getLogger(JobVerificationTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobVerificationTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
@@ -39,18 +57,20 @@ public class JobVerificationTask extends AiravataTask {
 
             logger.info("Fetching job manager configuration for process " + getProcessId());
 
-            JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
-                    JobFactory.getResourceJobManager(
+            JobManagerConfiguration jobManagerConfiguration =
+                    JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                             getRegistryServiceClient(),
                             getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getPreferredJobSubmissionInterface()));
 
-            AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
-                    getTaskContext().getGatewayId(),
-                    getTaskContext().getComputeResourceId(),
-                    getTaskContext().getJobSubmissionProtocol(),
-                    getTaskContext().getComputeResourceCredentialToken(),
-                    getTaskContext().getComputeResourceLoginUserName());
+            AgentAdaptor adaptor = taskHelper
+                    .getAdaptorSupport()
+                    .fetchAdaptor(
+                            getTaskContext().getGatewayId(),
+                            getTaskContext().getComputeResourceId(),
+                            getTaskContext().getJobSubmissionProtocol(),
+                            getTaskContext().getComputeResourceCredentialToken(),
+                            getTaskContext().getComputeResourceLoginUserName());
 
             for (JobModel job : jobs) {
 
@@ -62,16 +82,18 @@ public class JobVerificationTask extends AiravataTask {
                         CommandOutput jobMonitorOutput = adaptor.executeCommand(monitorCommand.getRawCommand(), null);
 
                         if (jobMonitorOutput.getExitCode() == 0) {
-                            JobStatus jobStatus = jobManagerConfiguration.getParser().parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
+                            JobStatus jobStatus = jobManagerConfiguration
+                                    .getParser()
+                                    .parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
                             if (jobStatus != null) {
                                 logger.info("Status of job id " + job.getJobId() + " " + jobStatus.getJobState());
                             } else {
                                 logger.info("Status for job " + job.getJobId() + " is not available. Ignoring");
                                 break;
                             }
-                            if (jobStatus.getJobState() == JobState.ACTIVE ||
-                                    jobStatus.getJobState() == JobState.QUEUED ||
-                                    jobStatus.getJobState() == JobState.SUBMITTED) {
+                            if (jobStatus.getJobState() == JobState.ACTIVE
+                                    || jobStatus.getJobState() == JobState.QUEUED
+                                    || jobStatus.getJobState() == JobState.SUBMITTED) {
                                 nextWaitingTime = retryDelaySeconds * i;
                                 logger.info("Waiting " + nextWaitingTime + " seconds until the job becomes saturated");
                                 Thread.sleep(nextWaitingTime);
@@ -81,8 +103,9 @@ public class JobVerificationTask extends AiravataTask {
                             }
 
                         } else {
-                            logger.warn("Error while fetching the job " + job.getJobId() + " status. Std out " + jobMonitorOutput.getStdOut() +
-                                    ". Std err " + jobMonitorOutput.getStdError() + ". Job monitor command " + monitorCommand.getRawCommand());
+                            logger.warn("Error while fetching the job " + job.getJobId() + " status. Std out "
+                                    + jobMonitorOutput.getStdOut() + ". Std err " + jobMonitorOutput.getStdError()
+                                    + ". Job monitor command " + monitorCommand.getRawCommand());
                             break;
                         }
                     }
@@ -95,13 +118,15 @@ public class JobVerificationTask extends AiravataTask {
             return onSuccess("Successfully completed job verification task");
 
         } catch (Exception e) {
-            logger.error("Unknown error while verifying jobs of process " + getProcessId() + " but continuing as this is non critical", e);
-            return onSuccess("Unknown error while verifying jobs of process " + getProcessId() + " but continuing as this is non critical");
+            logger.error(
+                    "Unknown error while verifying jobs of process " + getProcessId()
+                            + " but continuing as this is non critical",
+                    e);
+            return onSuccess("Unknown error while verifying jobs of process " + getProcessId()
+                    + " but continuing as this is non critical");
         }
     }
 
     @Override
-    public void onCancel(TaskContext taskContext) {
-
-    }
+    public void onCancel(TaskContext taskContext) {}
 }

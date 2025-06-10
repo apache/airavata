@@ -1,37 +1,35 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.submission.config.app.parser;
-
-import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
-import org.apache.airavata.helix.impl.task.submission.config.app.JobUtil;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
+import org.apache.airavata.helix.impl.task.submission.config.app.JobUtil;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HTCondorOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(HTCondorOutputParser.class);
@@ -58,7 +56,6 @@ public class HTCondorOutputParser implements OutputParser {
         return "";
     }
 
-
     /**
      * Parse output return by job submission task and identify jobSubmission failures.
      * @param rawOutput
@@ -70,7 +67,6 @@ public class HTCondorOutputParser implements OutputParser {
         return matcher.find();
     }
 
-
     /**
      * This can be used to get the job status from the output
      * @param jobID
@@ -79,7 +75,8 @@ public class HTCondorOutputParser implements OutputParser {
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws Exception {
         log.info(rawOutput);
         if (rawOutput != null && !rawOutput.isEmpty()) {
-            Pattern pattern = Pattern.compile("\\s+" + jobID + ".\\d+(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
+            Pattern pattern = Pattern.compile(
+                    "\\s+" + jobID + ".\\d+(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
             Matcher matcher = pattern.matcher(rawOutput);
 
             if (matcher.find()) {
@@ -149,10 +146,11 @@ public class HTCondorOutputParser implements OutputParser {
         String regJobId = "jobId";
         if (jobName == null) {
             return null;
-        } else if(jobName.length() > JOB_NAME_OUTPUT_LENGTH) {
+        } else if (jobName.length() > JOB_NAME_OUTPUT_LENGTH) {
             jobName = jobName.substring(0, JOB_NAME_OUTPUT_LENGTH);
         }
-        Pattern pattern = Pattern.compile("(?=(?<" + regJobId + ">\\d+)\\s+\\w+\\s+" + jobName + ")"); // regex - look ahead and match
+        Pattern pattern = Pattern.compile(
+                "(?=(?<" + regJobId + ">\\d+)\\s+\\w+\\s+" + jobName + ")"); // regex - look ahead and match
         if (rawOutput != null) {
             Matcher matcher = pattern.matcher(rawOutput);
             if (matcher.find()) {
@@ -166,4 +164,4 @@ public class HTCondorOutputParser implements OutputParser {
             return null;
         }
     }
-} 
+}

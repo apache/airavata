@@ -1,23 +1,26 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.orchestrator.server;
 
+import java.text.MessageFormat;
+import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
@@ -74,9 +77,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.text.MessageFormat;
-import java.util.*;
-
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
     private SimpleOrchestratorImpl orchestrator = null;
@@ -118,8 +118,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     private Subscriber getStatusSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
-//			routingKeys.add("*"); // listen for gateway level messages
-//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
+        //			routingKeys.add("*"); // listen for gateway level messages
+        //			routingKeys.add("*.*"); // listen for gateway/experiment level messages
         routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
         return MessagingFactory.getSubscriber(new ProcessStatusHandler(), routingKeys, Type.STATUS);
     }
@@ -145,7 +145,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             // TODO deprecate this approach as we are replacing gfac
             String experimentNodePath = getExperimentNodePath(experimentId);
             ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
-            String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+            String experimentCancelNode =
+                    ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
             ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = registryClient.getExperiment(experimentId);
             if (experiment == null) {
@@ -159,12 +160,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
             }
 
-
-            if ( userConfigurationData.getComputationalResourceScheduling() != null &&
-                    userConfigurationData.getComputationalResourceScheduling().isSet(ComputationalResourceSchedulingModel._Fields.RESOURCE_HOST_ID)) {
-                GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-                        userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-                        groupResourceProfileId);
+            if (userConfigurationData.getComputationalResourceScheduling() != null
+                    && userConfigurationData
+                            .getComputationalResourceScheduling()
+                            .isSet(ComputationalResourceSchedulingModel._Fields.RESOURCE_HOST_ID)) {
+                GroupComputeResourcePreference groupComputeResourcePreference =
+                        registryClient.getGroupComputeResourcePreference(
+                                userConfigurationData
+                                        .getComputationalResourceScheduling()
+                                        .getResourceHostId(),
+                                groupResourceProfileId);
 
                 if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
                     token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
@@ -172,29 +177,36 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             if (token == null || token.isEmpty()) {
                 // try with group resource profile level token
-                GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+                GroupResourceProfile groupResourceProfile =
+                        registryClient.getGroupResourceProfile(groupResourceProfileId);
                 token = groupResourceProfile.getDefaultCredentialStoreToken();
             }
             // still the token is empty, then we fail the experiment
             if (token == null || token.isEmpty()) {
-                throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
-                        " Please provide the correct token at group resource profile or compute resource preference.");
+                throw new Exception(
+                        "You have not configured credential store token at group resource profile or compute resource preference."
+                                + " Please provide the correct token at group resource profile or compute resource preference.");
             }
             ExperimentType executionType = experiment.getExperimentType();
             if (executionType == ExperimentType.SINGLE_APPLICATION) {
-                //its an single application execution experiment
+                // its an single application execution experiment
                 List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
 
                 for (ProcessModel processModel : processes) {
-                    //FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
-                    //FIXME replica resolving logic should come here
+                    // FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A
+                    // full featured
+                    // FIXME replica resolving logic should come here
                     processModel.getProcessInputs().stream().forEach(pi -> {
-                        if (pi.getType().equals(DataType.URI) && pi.getValue() != null && pi.getValue().startsWith("airavata-dp://")) {
+                        if (pi.getType().equals(DataType.URI)
+                                && pi.getValue() != null
+                                && pi.getValue().startsWith("airavata-dp://")) {
                             try {
                                 DataProductModel dataProductModel = registryClient.getDataProduct(pi.getValue());
-                                Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
-                                        .stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
-                                                equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+                                Optional<DataReplicaLocationModel> rpLocation =
+                                        dataProductModel.getReplicaLocations().stream()
+                                                .filter(rpModel -> rpModel.getReplicaLocationCategory()
+                                                        .equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
+                                                .findFirst();
                                 if (rpLocation.isPresent()) {
                                     pi.setValue(rpLocation.get().getFilePath());
                                     pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
@@ -206,16 +218,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             } catch (TException e) {
                                 throw new RuntimeException("Error while launching experiment", e);
                             }
-                        } else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue() != null && pi.getValue().contains("airavata-dp://")) {
+                        } else if (pi.getType().equals(DataType.URI_COLLECTION)
+                                && pi.getValue() != null
+                                && pi.getValue().contains("airavata-dp://")) {
                             try {
                                 String[] uriList = pi.getValue().split(",");
                                 final ArrayList<String> filePathList = new ArrayList<>();
                                 for (String uri : uriList) {
                                     if (uri.startsWith("airavata-dp://")) {
                                         DataProductModel dataProductModel = registryClient.getDataProduct(uri);
-                                        Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
-                                                .stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
-                                                        equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+                                        Optional<DataReplicaLocationModel> rpLocation =
+                                                dataProductModel.getReplicaLocations().stream()
+                                                        .filter(rpModel -> rpModel.getReplicaLocationCategory()
+                                                                .equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
+                                                        .findFirst();
                                         if (rpLocation.isPresent()) {
                                             filePathList.add(rpLocation.get().getFilePath());
                                         } else {
@@ -235,9 +251,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         }
                     });
 
-
-
-
                     if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
                         String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel);
                         processModel.setTaskDag(taskDag);
@@ -245,36 +258,47 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     registryClient.updateProcess(processModel, processModel.getProcessId());
                 }
 
-                if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() && !validateProcess(experimentId, processes)) {
+                if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()
+                        && !validateProcess(experimentId, processes)) {
                     throw new Exception("Validating process fails for given experiment Id : " + experimentId);
                 }
 
                 ProcessScheduler scheduler = new ProcessSchedulerImpl();
-                if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId)) {
-                    createAndValidateTasks(experiment,registryClient, false);
+                if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()
+                        || scheduler.canLaunch(experimentId)) {
+                    createAndValidateTasks(experiment, registryClient, false);
                     runExperimentLauncher(experimentId, gatewayId, token);
                 } else {
                     log.debug(experimentId, "Queuing single application experiment {}.", experimentId);
                     ExperimentStatus status = new ExperimentStatus(ExperimentState.SCHEDULED);
                     status.setReason("Compute resources are not ready");
-                    status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                    status.setTimeOfStateChange(
+                            AiravataUtils.getCurrentTimestamp().getTime());
                     OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                     log.info("expId: {}, Scheduled experiment ", experimentId);
                 }
             } else if (executionType == ExperimentType.WORKFLOW) {
-                //its a workflow execution experiment
+                // its a workflow execution experiment
                 log.debug(experimentId, "Launching workflow experiment {}.", experimentId);
                 launchWorkflowExperiment(experimentId, token, gatewayId);
             } else {
-                log.error(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
-                throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
+                log.error(
+                        experimentId,
+                        "Couldn't identify experiment type, experiment {} is neither single application nor workflow.",
+                        experimentId);
+                throw new TException("Experiment '" + experimentId
+                        + "' launch failed. Unable to figureout execution type for application "
+                        + experiment.getExecutionId());
             }
         } catch (LaunchValidationException launchValidationException) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Validation failed: " + launchValidationException.getErrorMessage());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-            throw new TException("Experiment '" + experimentId + "' launch failed. Experiment failed to validate: " + launchValidationException.getErrorMessage(), launchValidationException);
+            throw new TException(
+                    "Experiment '" + experimentId + "' launch failed. Experiment failed to validate: "
+                            + launchValidationException.getErrorMessage(),
+                    launchValidationException);
         } catch (Exception e) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Unexpected error occurred: " + e.getMessage());
@@ -314,12 +338,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     @Override
-    public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException, TException {
+    public boolean validateProcess(String experimentId, List<ProcessModel> processes)
+            throws LaunchValidationException, TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
             for (ProcessModel processModel : processes) {
-                boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
+                boolean state = orchestrator
+                        .validateProcess(experimentModel, processModel)
+                        .isSetValidationState();
                 if (!state) {
                     return false;
                 }
@@ -366,7 +393,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-    public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames) throws TException {
+    public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
+            throws TException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             submitIntermediateOutputsProcess(registryClient, experimentId, gatewayId, outputNames);
@@ -379,8 +407,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-    private void submitIntermediateOutputsProcess(Client registryClient, String experimentId,
-                                                  String gatewayId, List<String> outputNames) throws Exception {
+    private void submitIntermediateOutputsProcess(
+            Client registryClient, String experimentId, String gatewayId, List<String> outputNames) throws Exception {
 
         ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
         ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
@@ -410,8 +438,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         "Could not find job submission process for experiment {0}, unable to fetch intermediate outputs {1}",
                         experimentId, outputNames));
             }
-            String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(gatewayId, processModel,
-                    jobSubmissionProcess.get());
+            String taskDag = orchestrator.createAndSaveIntermediateOutputFetchingTasks(
+                    gatewayId, processModel, jobSubmissionProcess.get());
             processModel.setTaskDag(taskDag);
 
             registryClient.updateProcess(processModel, processModel.getProcessId());
@@ -423,21 +451,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (groupResourceProfileId == null) {
                 throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
             }
-            GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-                    userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-                    groupResourceProfileId);
+            GroupComputeResourcePreference groupComputeResourcePreference =
+                    registryClient.getGroupComputeResourcePreference(
+                            userConfigurationData
+                                    .getComputationalResourceScheduling()
+                                    .getResourceHostId(),
+                            groupResourceProfileId);
             if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
                 token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
             }
             if (token == null || token.isEmpty()) {
                 // try with group resource profile level token
-                GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+                GroupResourceProfile groupResourceProfile =
+                        registryClient.getGroupResourceProfile(groupResourceProfileId);
                 token = groupResourceProfile.getDefaultCredentialStoreToken();
             }
             // still the token is empty, then we fail the experiment
             if (token == null || token.isEmpty()) {
-                throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
-                        " Please provide the correct token at group resource profile or compute resource preference.");
+                throw new Exception(
+                        "You have not configured credential store token at group resource profile or compute resource preference."
+                                + " Please provide the correct token at group resource profile or compute resource preference.");
             }
             orchestrator.launchProcess(processModel, token);
         } catch (Exception e) {
@@ -483,17 +516,23 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     String applicationId = processModel.getApplicationInterfaceId();
                     if (applicationId == null) {
                         log.error(processId, "Application interface id shouldn't be null.");
-                        throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
+                        throw new OrchestratorException(
+                                "Error executing the job, application interface id shouldn't be null.");
                     }
                     // set application deployment id to process model
-                    ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(registryClient, processModel, applicationId);
+                    ApplicationDeploymentDescription applicationDeploymentDescription =
+                            getAppDeployment(registryClient, processModel, applicationId);
                     if (applicationDeploymentDescription == null) {
-                        log.error("Could not find an application deployment for " + processModel.getComputeResourceId() + " and application " + applicationId);
-                        throw new OrchestratorException("Could not find an application deployment for " + processModel.getComputeResourceId() + " and application " + applicationId);
+                        log.error("Could not find an application deployment for " + processModel.getComputeResourceId()
+                                + " and application " + applicationId);
+                        throw new OrchestratorException("Could not find an application deployment for "
+                                + processModel.getComputeResourceId() + " and application " + applicationId);
                     }
                     processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
-                    // set compute resource id to process model, default we set the same in the user preferred compute host id
-                    processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
+                    // set compute resource id to process model, default we set the same in the user preferred compute
+                    // host id
+                    processModel.setComputeResourceId(
+                            processModel.getProcessResourceSchedule().getResourceHostId());
                     registryClient.updateProcess(processModel, processModel.getProcessId());
                     return orchestrator.launchProcess(processModel, airavataCredStoreToken);
 
@@ -512,31 +551,35 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-    private ApplicationDeploymentDescription getAppDeployment(RegistryService.Client registryClient, ProcessModel processModel, String applicationId)
-            throws OrchestratorException,
-            ClassNotFoundException, ApplicationSettingsException,
-            InstantiationException, IllegalAccessException, TException {
+    private ApplicationDeploymentDescription getAppDeployment(
+            RegistryService.Client registryClient, ProcessModel processModel, String applicationId)
+            throws OrchestratorException, ClassNotFoundException, ApplicationSettingsException, InstantiationException,
+                    IllegalAccessException, TException {
         String selectedModuleId = getModuleId(registryClient, applicationId);
         return getAppDeploymentForModule(registryClient, processModel, selectedModuleId);
     }
 
-    private ApplicationDeploymentDescription getAppDeploymentForModule(RegistryService.Client registryClient, ProcessModel processModel, String selectedModuleId)
-            throws ClassNotFoundException,
-            ApplicationSettingsException, InstantiationException,
-            IllegalAccessException, TException {
+    private ApplicationDeploymentDescription getAppDeploymentForModule(
+            RegistryService.Client registryClient, ProcessModel processModel, String selectedModuleId)
+            throws ClassNotFoundException, ApplicationSettingsException, InstantiationException, IllegalAccessException,
+                    TException {
 
-        List<ApplicationDeploymentDescription> applicationDeployements = registryClient.getApplicationDeployments(selectedModuleId);
-        Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
+        List<ApplicationDeploymentDescription> applicationDeployements =
+                registryClient.getApplicationDeployments(selectedModuleId);
+        Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap =
+                new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
 
         for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
             if (processModel.getComputeResourceId().equals(deploymentDescription.getComputeHostId())) {
-                deploymentMap.put(registryClient.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
+                deploymentMap.put(
+                        registryClient.getComputeResource(deploymentDescription.getComputeHostId()),
+                        deploymentDescription);
             }
         }
-        List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));
-        Class<? extends HostScheduler> aClass = Class.forName(
-                ServerSettings.getHostScheduler()).asSubclass(
-                HostScheduler.class);
+        List<ComputeResourceDescription> computeHostList =
+                Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[] {}));
+        Class<? extends HostScheduler> aClass =
+                Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
         HostScheduler hostScheduler = aClass.newInstance();
         ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
         return deploymentMap.get(ComputeResourceDescription);
@@ -547,23 +590,24 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         ApplicationInterfaceDescription applicationInterface = registryClient.getApplicationInterface(applicationId);
         List<String> applicationModules = applicationInterface.getApplicationModules();
         if (applicationModules.size() == 0) {
-            throw new OrchestratorException(
-                    "No modules defined for application "
-                            + applicationId);
+            throw new OrchestratorException("No modules defined for application " + applicationId);
         }
-//			AiravataAPI airavataAPI = getAiravataAPI();
+        //			AiravataAPI airavataAPI = getAiravataAPI();
         String selectedModuleId = applicationModules.get(0);
         return selectedModuleId;
     }
 
-    private boolean validateStatesAndCancel(RegistryService.Client registryClient, String experimentId, String gatewayId) throws Exception {
+    private boolean validateStatesAndCancel(
+            RegistryService.Client registryClient, String experimentId, String gatewayId) throws Exception {
         ExperimentStatus experimentStatus = registryClient.getExperimentStatus(experimentId);
         switch (experimentStatus.getState()) {
             case COMPLETED:
             case CANCELED:
             case FAILED:
             case CANCELING:
-                log.warn("Can't terminate already {} experiment", experimentStatus.getState().name());
+                log.warn(
+                        "Can't terminate already {} experiment",
+                        experimentStatus.getState().name());
                 return false;
             case CREATED:
                 log.warn("Experiment termination is only allowed for launched experiments.");
@@ -573,33 +617,42 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 final UserConfigurationDataModel userConfigurationData = experimentModel.getUserConfigurationData();
                 final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
 
-                GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-                        userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-                        groupResourceProfileId);
+                GroupComputeResourcePreference groupComputeResourcePreference =
+                        registryClient.getGroupComputeResourcePreference(
+                                userConfigurationData
+                                        .getComputationalResourceScheduling()
+                                        .getResourceHostId(),
+                                groupResourceProfileId);
                 String token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
                 if (token == null || token.isEmpty()) {
                     // try with group resource profile level token
-                    GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+                    GroupResourceProfile groupResourceProfile =
+                            registryClient.getGroupResourceProfile(groupResourceProfileId);
                     token = groupResourceProfile.getDefaultCredentialStoreToken();
                 }
                 // still the token is empty, then we fail the experiment
                 if (token == null || token.isEmpty()) {
-                    log.error("You have not configured credential store token at group resource profile or compute resource preference." +
-                            " Please provide the correct token at group resource profile or compute resource preference.");
+                    log.error(
+                            "You have not configured credential store token at group resource profile or compute resource preference."
+                                    + " Please provide the correct token at group resource profile or compute resource preference.");
                     return false;
                 }
 
                 orchestrator.cancelExperiment(experimentModel, token);
                 // TODO deprecate this approach as we are replacing gfac
-                String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
-                        experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+                String expCancelNodePath = ZKPaths.makePath(
+                        ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId),
+                        ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
                 Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);
                 if (stat != null) {
-                    curatorClient.setData().withVersion(-1).forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST
-                            .getBytes());
+                    curatorClient
+                            .setData()
+                            .withVersion(-1)
+                            .forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST.getBytes());
                     ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
                     status.setReason("Experiment cancel request processed");
-                    status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                    status.setTimeOfStateChange(
+                            AiravataUtils.getCurrentTimestamp().getTime());
                     OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                     log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
                 }
@@ -607,14 +660,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken, String gatewayId) throws TException {
+    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken, String gatewayId)
+            throws TException {
         // FIXME
-//        try {
-//            WorkflowEnactmentService.getInstance().
-//                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(), getRabbitMQProcessPublisher());
-//        } catch (Exception e) {
-//            log.error("Error while launching workflow", e);
-//        }
+        //        try {
+        //            WorkflowEnactmentService.getInstance().
+        //                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(),
+        // getRabbitMQProcessPublisher());
+        //        } catch (Exception e) {
+        //            log.error("Error while launching workflow", e);
+        //        }
     }
 
     private class SingleAppExperimentRunner implements Runnable {
@@ -648,20 +703,22 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 for (String processId : processIds) {
                     launchProcess(processId, airavataCredStoreToken, gatewayId);
                 }
-//				ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
-//				status.setReason("submitted all processes");
-//				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-//				OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status);
-//				log.info("expId: {}, Launched experiment ", experimentId);
+                //				ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
+                //				status.setReason("submitted all processes");
+                //				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                //				OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status);
+                //				log.info("expId: {}, Launched experiment ", experimentId);
             } catch (Exception e) {
                 ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
                 status.setReason("Error while updating task status");
                 OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-                log.error("expId: " + experimentId + ", Error while updating task status, hence updated experiment status to " +
-                        ExperimentState.FAILED, e);
-                ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.FAILED,
-                        experimentId,
-                        gatewayId);
+                log.error(
+                        "expId: " + experimentId
+                                + ", Error while updating task status, hence updated experiment status to "
+                                + ExperimentState.FAILED,
+                        e);
+                ExperimentStatusChangeEvent event =
+                        new ExperimentStatusChangeEvent(ExperimentState.FAILED, experimentId, gatewayId);
                 String messageId = AiravataUtils.getId("EXPERIMENT");
                 MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
                 messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -674,7 +731,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             return true;
         }
-
     }
 
     private class ProcessStatusHandler implements MessageHandler {
@@ -693,26 +749,30 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     ThriftUtils.createThriftFromBytes(bytes, processStatusChangeEvent);
                     ExperimentStatus status = new ExperimentStatus();
                     ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
-                    log.info("expId: {}, processId: {} :- Process status changed event received for status {}",
-                            processIdentity.getExperimentId(), processIdentity.getProcessId(),
+                    log.info(
+                            "expId: {}, processId: {} :- Process status changed event received for status {}",
+                            processIdentity.getExperimentId(),
+                            processIdentity.getProcessId(),
                             processStatusChangeEvent.getState().name());
                     try {
                         ProcessModel process = OrchestratorUtils.getProcess(processIdentity.getProcessId());
-                        boolean isIntermediateOutputFetchingProcess = process.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING);
+                        boolean isIntermediateOutputFetchingProcess =
+                                process.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING);
                         if (isIntermediateOutputFetchingProcess) {
-                            log.info("Not updating experiment status because process is an intermediate output fetching one");
+                            log.info(
+                                    "Not updating experiment status because process is an intermediate output fetching one");
                             return;
                         }
                     } catch (ApplicationSettingsException e) {
                         throw new RuntimeException("Error getting process " + processIdentity.getProcessId(), e);
                     }
                     switch (processStatusChangeEvent.getState()) {
-//						case CREATED:
-//						case VALIDATED:
+                        //						case CREATED:
+                        //						case VALIDATED:
                         case STARTED:
                             try {
-                                ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
-                                        .getExperimentId());
+                                ExperimentStatus stat =
+                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELING);
                                     status.setReason("Process started but experiment cancelling is triggered");
@@ -724,20 +784,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                                 throw new RuntimeException("Error ", e);
                             }
                             break;
-//						case PRE_PROCESSING:
-//							break;
-//						case CONFIGURING_WORKSPACE:
-//						case INPUT_DATA_STAGING:
-//						case EXECUTING:
-//						case MONITORING:
-//						case OUTPUT_DATA_STAGING:
-//						case POST_PROCESSING:
-//						case CANCELLING:
-//							break;
+                        //						case PRE_PROCESSING:
+                        //							break;
+                        //						case CONFIGURING_WORKSPACE:
+                        //						case INPUT_DATA_STAGING:
+                        //						case EXECUTING:
+                        //						case MONITORING:
+                        //						case OUTPUT_DATA_STAGING:
+                        //						case POST_PROCESSING:
+                        //						case CANCELLING:
+                        //							break;
                         case COMPLETED:
                             try {
-                                ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
-                                        .getExperimentId());
+                                ExperimentStatus stat =
+                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELED);
                                     status.setReason("Process competed but experiment cancelling is triggered");
@@ -751,8 +811,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             break;
                         case FAILED:
                             try {
-                                ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
-                                        .getExperimentId());
+                                ExperimentStatus stat =
+                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELED);
                                     status.setReason("Process failed but experiment cancelling is triggered");
@@ -765,7 +825,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             }
                             break;
                         case CANCELED:
-                            // TODO if experiment have more than one process associated with it, then this should be changed.
+                            // TODO if experiment have more than one process associated with it, then this should be
+                            // changed.
                             status.setState(ExperimentState.CANCELED);
                             status.setReason("process  cancelled");
                             break;
@@ -778,32 +839,35 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             status.setReason("Job submission failed,  requeued to resubmit");
                             List<QueueStatusModel> queueStatusModels = new ArrayList<>();
                             final RegistryService.Client registryClient = getRegistryServiceClient();
-                            ExperimentModel experimentModel = registryClient.getExperiment(processIdentity.getExperimentId());
-                            UserConfigurationDataModel userConfigurationDataModel = experimentModel.getUserConfigurationData();
-                            if(userConfigurationDataModel != null) {
-                               ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
-                                       userConfigurationDataModel.getComputationalResourceScheduling();
-                               if(computationalResourceSchedulingModel != null) {
-                                   String queueName = computationalResourceSchedulingModel.getQueueName();
-                                   String resourceId =  computationalResourceSchedulingModel.getResourceHostId();
-                                   ComputeResourceDescription comResourceDes = registryClient.getComputeResource(resourceId);
-                                   QueueStatusModel queueStatusModel = new QueueStatusModel();
-                                   queueStatusModel.setHostName(comResourceDes.getHostName());
-                                   queueStatusModel.setQueueName(queueName);
-                                   queueStatusModel.setQueueUp(false);
-                                   queueStatusModel.setRunningJobs(0);
-                                   queueStatusModel.setQueuedJobs(0);
-                                   queueStatusModel.setTime(System.currentTimeMillis());
-                                   queueStatusModels.add(queueStatusModel);
-                                   registryClient.registerQueueStatuses(queueStatusModels);
-                               }
+                            ExperimentModel experimentModel =
+                                    registryClient.getExperiment(processIdentity.getExperimentId());
+                            UserConfigurationDataModel userConfigurationDataModel =
+                                    experimentModel.getUserConfigurationData();
+                            if (userConfigurationDataModel != null) {
+                                ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
+                                        userConfigurationDataModel.getComputationalResourceScheduling();
+                                if (computationalResourceSchedulingModel != null) {
+                                    String queueName = computationalResourceSchedulingModel.getQueueName();
+                                    String resourceId = computationalResourceSchedulingModel.getResourceHostId();
+                                    ComputeResourceDescription comResourceDes =
+                                            registryClient.getComputeResource(resourceId);
+                                    QueueStatusModel queueStatusModel = new QueueStatusModel();
+                                    queueStatusModel.setHostName(comResourceDes.getHostName());
+                                    queueStatusModel.setQueueName(queueName);
+                                    queueStatusModel.setQueueUp(false);
+                                    queueStatusModel.setRunningJobs(0);
+                                    queueStatusModel.setQueuedJobs(0);
+                                    queueStatusModel.setTime(System.currentTimeMillis());
+                                    queueStatusModels.add(queueStatusModel);
+                                    registryClient.registerQueueStatuses(queueStatusModels);
+                                }
                             }
 
                             break;
                         case DEQUEUING:
                             try {
-                                ExperimentStatus stat = OrchestratorUtils.getExperimentStatus(processIdentity
-                                        .getExperimentId());
+                                ExperimentStatus stat =
+                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELING);
                                     status.setReason("Process started but experiment cancelling is triggered");
@@ -820,23 +884,24 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             return;
                     }
                     if (status.getState() != null) {
-                        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                        OrchestratorUtils.updateAndPublishExperimentStatus(processIdentity.getExperimentId(), status, publisher, processIdentity.getGatewayId());
-                        log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to " +
-                                status.getState());
+                        status.setTimeOfStateChange(
+                                AiravataUtils.getCurrentTimestamp().getTime());
+                        OrchestratorUtils.updateAndPublishExperimentStatus(
+                                processIdentity.getExperimentId(), status, publisher, processIdentity.getGatewayId());
+                        log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to "
+                                + status.getState());
                     }
                 } catch (TException e) {
-                    log.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType() +
-                            "Error" + " while prcessing process status change event");
+                    log.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType()
+                            + "Error" + " while prcessing process status change event");
                     throw new RuntimeException("Error while updating experiment status", e);
                 }
             } else {
-                System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message " +
-                        "type " + message.getType().name());
+                System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message "
+                        + "type " + message.getType().name());
             }
         }
     }
-
 
     private class ExperimentHandler implements MessageHandler {
 
@@ -866,7 +931,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
                 ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
                 ThriftUtils.createThriftFromBytes(bytes, expEvent);
-                log.info("Cancelling experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
+                log.info(
+                        "Cancelling experiment with experimentId: {} gateway Id: {}",
+                        expEvent.getExperimentId(),
+                        expEvent.getGatewayId());
                 terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
             } catch (TException e) {
                 log.error("Error while cancelling experiment", e);
@@ -874,7 +942,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             } finally {
                 experimentSubscriber.sendAck(messageContext.getDeliveryTag());
             }
-
         }
 
         private void handleIntermediateOutputsEvent(MessageContext messageContext) {
@@ -882,7 +949,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
                 ExperimentIntermediateOutputsEvent event = new ExperimentIntermediateOutputsEvent();
                 ThriftUtils.createThriftFromBytes(bytes, event);
-                log.info("INTERMEDIATE_OUTPUTS event for experimentId: {} gateway Id: {} outputs: {}", event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
+                log.info(
+                        "INTERMEDIATE_OUTPUTS event for experimentId: {} gateway Id: {} outputs: {}",
+                        event.getExperimentId(),
+                        event.getGatewayId(),
+                        event.getOutputNames());
                 fetchIntermediateOutputs(event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
             } catch (TException e) {
                 log.error("Error while fetching intermediate outputs", e);
@@ -890,7 +961,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             } finally {
                 experimentSubscriber.sendAck(messageContext.getDeliveryTag());
             }
-
         }
     }
 
@@ -901,10 +971,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
             ThriftUtils.createThriftFromBytes(bytes, expEvent);
             MDC.put(MDCConstants.EXPERIMENT_ID, expEvent.getExperimentId());
-            log.info("Launching experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
+            log.info(
+                    "Launching experiment with experimentId: {} gateway Id: {}",
+                    expEvent.getExperimentId(),
+                    expEvent.getGatewayId());
             if (messageContext.isRedeliver()) {
-                ExperimentModel experimentModel = registryClient.
-                        getExperiment(expEvent.getExperimentId());
+                ExperimentModel experimentModel = registryClient.getExperiment(expEvent.getExperimentId());
                 MDC.put(MDCConstants.EXPERIMENT_NAME, experimentModel.getExperimentName());
                 if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
                     launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
@@ -913,13 +985,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
             }
         } catch (TException e) {
-            String logMessage = expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
-                    String.format("Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
-                            expEvent.getExperimentId(), expEvent.getGatewayId()) : "Experiment launch failed due to Thrift conversion error";
+            String logMessage = expEvent.getExperimentId() != null && expEvent.getGatewayId() != null
+                    ? String.format(
+                            "Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
+                            expEvent.getExperimentId(), expEvent.getGatewayId())
+                    : "Experiment launch failed due to Thrift conversion error";
             log.error(logMessage, e);
         } catch (Exception e) {
-            log.error("An unknown issue while launching experiment " + Optional.ofNullable(expEvent.getExperimentId()).orElse("missing experiment") +
-                    " on gateway " + Optional.ofNullable(expEvent.getGatewayId()).orElse("missing gateway"), e);
+            log.error(
+                    "An unknown issue while launching experiment "
+                            + Optional.ofNullable(expEvent.getExperimentId()).orElse("missing experiment")
+                            + " on gateway "
+                            + Optional.ofNullable(expEvent.getGatewayId()).orElse("missing gateway"),
+                    e);
         } finally {
             experimentSubscriber.sendAck(messageContext.getDeliveryTag());
             MDC.clear();
@@ -956,10 +1034,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
         log.info("expId: {}, Launched experiment ", experimentId);
-        OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
+        OrchestratorServerThreadPoolExecutor.getCachedThreadPool()
+                .execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
     }
 
-    private void launchQueuedExperiment(String experimentId) throws  TException, Exception {
+    private void launchQueuedExperiment(String experimentId) throws TException, Exception {
         ExperimentModel experiment = null;
         final RegistryService.Client registryClient = getRegistryServiceClient();
         // TODO deprecate this approach as we are replacing gfac
@@ -974,9 +1053,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         if (groupResourceProfileId == null) {
             throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
         }
-        GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
-                userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-                groupResourceProfileId);
+        GroupComputeResourcePreference groupComputeResourcePreference =
+                registryClient.getGroupComputeResourcePreference(
+                        userConfigurationData
+                                .getComputationalResourceScheduling()
+                                .getResourceHostId(),
+                        groupResourceProfileId);
         if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
             token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
         }
@@ -987,15 +1069,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
         // still the token is empty, then we fail the experiment
         if (token == null || token.isEmpty()) {
-            throw new Exception("You have not configured credential store token at group resource profile or compute resource preference." +
-                    " Please provide the correct token at group resource profile or compute resource preference.");
+            throw new Exception(
+                    "You have not configured credential store token at group resource profile or compute resource preference."
+                            + " Please provide the correct token at group resource profile or compute resource preference.");
         }
-        createAndValidateTasks(experiment,registryClient, true);
+        createAndValidateTasks(experiment, registryClient, true);
         runExperimentLauncher(experimentId, experiment.getGatewayId(), token);
     }
 
-    private void createAndValidateTasks(ExperimentModel experiment, RegistryService.Client  registryClient, boolean recreateTaskDag) throws Exception {
-        if (experiment.getUserConfigurationData().isAiravataAutoSchedule()){
+    private void createAndValidateTasks(
+            ExperimentModel experiment, RegistryService.Client registryClient, boolean recreateTaskDag)
+            throws Exception {
+        if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             List<ProcessModel> processModels = registryClient.getProcessList(experiment.getExperimentId());
             for (ProcessModel processModel : processModels) {
                 if (processModel.getTaskDag() == null || recreateTaskDag) {
@@ -1006,7 +1091,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
             }
             if (!validateProcess(experiment.getExperimentId(), processModels)) {
-                throw new Exception("Validating process fails for given experiment Id : " + experiment.getExperimentId());
+                throw new Exception(
+                        "Validating process fails for given experiment Id : " + experiment.getExperimentId());
             }
         }
     }

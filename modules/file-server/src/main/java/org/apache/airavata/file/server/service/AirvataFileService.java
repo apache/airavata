@@ -1,5 +1,29 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.file.server.service;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.common.utils.ThriftClientPool;
@@ -13,16 +37,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-
 @Service
 public class AirvataFileService {
 
-    private final static Logger logger = LoggerFactory.getLogger(AirvataFileService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AirvataFileService.class);
 
     @Autowired
     private AdaptorSupport adaptorSupport;
@@ -42,13 +60,13 @@ public class AirvataFileService {
     }
 
     public FileMetadata getInfo(String processId, String subPath) throws Exception {
-      ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
-      AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
-      String absPath = dataManager.getBaseDir() + subPath;
-      
-      logger.info("Getting metadata for path {}", absPath);
-      return agentAdaptor.getFileMetadata(absPath);
-  }
+        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        String absPath = dataManager.getBaseDir() + subPath;
+
+        logger.info("Getting metadata for path {}", absPath);
+        return agentAdaptor.getFileMetadata(absPath);
+    }
 
     public AiravataDirectory listDir(String processId, String subPath) throws Exception {
         ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
@@ -58,9 +76,9 @@ public class AirvataFileService {
         logger.info("Getting metadata for path {}", absPath);
         FileMetadata rm = agentAdaptor.getFileMetadata(absPath);
         if (!rm.isDirectory()) {
-          throw new Exception("Path " + absPath + " is not a directory");
+            throw new Exception("Path " + absPath + " is not a directory");
         }
-        
+
         AiravataDirectory airavataDirectory = AiravataDirectory.fromMetadata(rm);
         logger.info("Listing files in path {}", absPath);
         List<String> fileList = agentAdaptor.listDirectory(absPath);
@@ -68,9 +86,9 @@ public class AirvataFileService {
             logger.info("Getting metadata for path {}", fileOrDir);
             FileMetadata m = agentAdaptor.getFileMetadata(absPath + "/" + fileOrDir);
             if (m.isDirectory()) {
-              airavataDirectory.getInnerDirectories().add(AiravataDirectory.fromMetadata(m));
+                airavataDirectory.getInnerDirectories().add(AiravataDirectory.fromMetadata(m));
             } else {
-              airavataDirectory.getInnerFiles().add(AiravataFile.fromMetadata(m));
+                airavataDirectory.getInnerFiles().add(AiravataFile.fromMetadata(m));
             }
         }
 
@@ -78,13 +96,13 @@ public class AirvataFileService {
     }
 
     public AiravataFile listFile(String processId, String subPath) throws Exception {
-      ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
-      AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
 
-      String absPath = dataManager.getBaseDir() + subPath;
+        String absPath = dataManager.getBaseDir() + subPath;
 
-      var info = agentAdaptor.getFileMetadata(absPath);
-      return AiravataFile.fromMetadata(info);
+        var info = agentAdaptor.getFileMetadata(absPath);
+        return AiravataFile.fromMetadata(info);
     }
 
     public void uploadFile(String processId, String subPath, MultipartFile file) throws Exception {

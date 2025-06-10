@@ -1,24 +1,25 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
+
+import static org.junit.Assert.*;
 
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -34,8 +35,6 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.*;
 
 public class ExperimentRepositoryTest extends TestBase {
 
@@ -99,15 +98,22 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
         assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
-        assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        assertEquals(
+                ExperimentState.CREATED,
+                retrievedExperimentModel.getExperimentStatus().get(0).getState());
         assertEquals(2, retrievedExperimentModel.getEmailAddressesSize());
-        assertEquals("notify@example.com", retrievedExperimentModel.getEmailAddresses().get(0));
-        assertEquals("notify2@example.com", retrievedExperimentModel.getEmailAddresses().get(1));
+        assertEquals(
+                "notify@example.com",
+                retrievedExperimentModel.getEmailAddresses().get(0));
+        assertEquals(
+                "notify2@example.com",
+                retrievedExperimentModel.getEmailAddresses().get(1));
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
-        ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
+        ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
+                new ComputationalResourceSchedulingModel();
         computationalResourceSchedulingModel.setResourceHostId("resource-host-id");
         computationalResourceSchedulingModel.setTotalCPUCount(12);
         computationalResourceSchedulingModel.setNodeCount(13);
@@ -120,22 +126,27 @@ public class ExperimentRepositoryTest extends TestBase {
         computationalResourceSchedulingModel.setTotalPhysicalMemory(1333);
         computationalResourceSchedulingModel.setWallTimeLimit(77);
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
-        assertEquals(experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
+        assertEquals(
+                experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
         userConfigurationDataModel.setStorageId("storage2");
         experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
-        final UserConfigurationDataModel retrievedUserConfigurationDataModel = experimentRepository.getUserConfigurationData(experimentId);
+        final UserConfigurationDataModel retrievedUserConfigurationDataModel =
+                experimentRepository.getUserConfigurationData(experimentId);
         assertEquals("storage2", retrievedUserConfigurationDataModel.getStorageId());
-        final ComputationalResourceSchedulingModel retrievedComputationalResourceScheduling = retrievedUserConfigurationDataModel.getComputationalResourceScheduling();
+        final ComputationalResourceSchedulingModel retrievedComputationalResourceScheduling =
+                retrievedUserConfigurationDataModel.getComputationalResourceScheduling();
         assertNotNull(retrievedComputationalResourceScheduling);
         assertEquals("resource-host-id", retrievedComputationalResourceScheduling.getResourceHostId());
-        assertEquals( 12, retrievedComputationalResourceScheduling.getTotalCPUCount());
+        assertEquals(12, retrievedComputationalResourceScheduling.getTotalCPUCount());
         assertEquals(13, retrievedComputationalResourceScheduling.getNodeCount());
         assertEquals(14, retrievedComputationalResourceScheduling.getNumberOfThreads());
-        assertEquals("override-project-num", retrievedComputationalResourceScheduling.getOverrideAllocationProjectNumber());
+        assertEquals(
+                "override-project-num", retrievedComputationalResourceScheduling.getOverrideAllocationProjectNumber());
         assertEquals("override-login-username", retrievedComputationalResourceScheduling.getOverrideLoginUserName());
-        assertEquals("override-scratch-location", retrievedComputationalResourceScheduling.getOverrideScratchLocation());
+        assertEquals(
+                "override-scratch-location", retrievedComputationalResourceScheduling.getOverrideScratchLocation());
         assertEquals("queue-name", retrievedComputationalResourceScheduling.getQueueName());
         assertEquals("static-working-dir", retrievedComputationalResourceScheduling.getStaticWorkingDir());
         assertEquals(1333, retrievedComputationalResourceScheduling.getTotalPhysicalMemory());
@@ -178,7 +189,8 @@ public class ExperimentRepositoryTest extends TestBase {
 
         ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
         assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
-        InputDataObjectType retrievedInput1 = retrievedExperimentModel.getExperimentInputs().get(0);
+        InputDataObjectType retrievedInput1 =
+                retrievedExperimentModel.getExperimentInputs().get(0);
         assertEquals("name1", retrievedInput1.getName());
         assertTrue(retrievedInput1.isIsRequired());
         assertEquals(DataType.STRING, retrievedInput1.getType());

@@ -1,23 +1,22 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- */
-
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.security;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GatewayGroupsInitializer {
 
-    private final static Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
 
     public static synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
 
@@ -53,7 +52,8 @@ public class GatewayGroupsInitializer {
         RegistryService.Client registryClient = createRegistryClient();
         CredentialStoreService.Client credentialStoreClient = createCredentialStoreClient();
         try {
-            GatewayGroupsInitializer gatewayGroupsInitializer = new GatewayGroupsInitializer(registryClient, sharingRegistryClient, credentialStoreClient);
+            GatewayGroupsInitializer gatewayGroupsInitializer =
+                    new GatewayGroupsInitializer(registryClient, sharingRegistryClient, credentialStoreClient);
             return gatewayGroupsInitializer.initialize(gatewayId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
@@ -68,7 +68,10 @@ public class GatewayGroupsInitializer {
     private SharingRegistryService.Client sharingRegistryClient;
     private CredentialStoreService.Client credentialStoreClient;
 
-    public GatewayGroupsInitializer(RegistryService.Client registryClient, SharingRegistryService.Client sharingRegistryClient, CredentialStoreService.Client credentialStoreClient) {
+    public GatewayGroupsInitializer(
+            RegistryService.Client registryClient,
+            SharingRegistryService.Client sharingRegistryClient,
+            CredentialStoreService.Client credentialStoreClient) {
 
         this.registryClient = registryClient;
         this.sharingRegistryClient = sharingRegistryClient;
@@ -95,17 +98,18 @@ public class GatewayGroupsInitializer {
         }
 
         // Gateway Users
-        UserGroup gatewayUsersGroup = createGroup(sharingRegistryClient, gatewayId, ownerId,
-                "Gateway Users",
-                "Default group for users of the gateway.");
+        UserGroup gatewayUsersGroup = createGroup(
+                sharingRegistryClient, gatewayId, ownerId, "Gateway Users", "Default group for users of the gateway.");
         gatewayGroups.setDefaultGatewayUsersGroupId(gatewayUsersGroup.getGroupId());
         // Admin Users
-        UserGroup adminUsersGroup = createGroup(sharingRegistryClient, gatewayId, ownerId,
-                "Admin Users",
-                "Admin users group.");
+        UserGroup adminUsersGroup =
+                createGroup(sharingRegistryClient, gatewayId, ownerId, "Admin Users", "Admin users group.");
         gatewayGroups.setAdminsGroupId(adminUsersGroup.getGroupId());
         // Read Only Admin Users
-        UserGroup readOnlyAdminsGroup = createGroup(sharingRegistryClient, gatewayId, ownerId,
+        UserGroup readOnlyAdminsGroup = createGroup(
+                sharingRegistryClient,
+                gatewayId,
+                ownerId,
                 "Read Only Admin Users",
                 "Group of admin users with read-only access.");
         gatewayGroups.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.getGroupId());
@@ -113,15 +117,21 @@ public class GatewayGroupsInitializer {
         try {
             registryClient.createGatewayGroups(gatewayGroups);
         } catch (TException e) {
-            logger.error("Gateway groups created in Sharing Catalog failed to save GatewayGroups entity in Registry", e);
+            logger.error(
+                    "Gateway groups created in Sharing Catalog failed to save GatewayGroups entity in Registry", e);
             throw e;
         }
 
         return gatewayGroups;
     }
 
-
-    private UserGroup createGroup(SharingRegistryService.Client sharingRegistryClient, String gatewayId, String ownerId, String groupName, String groupDescription) throws TException {
+    private UserGroup createGroup(
+            SharingRegistryService.Client sharingRegistryClient,
+            String gatewayId,
+            String ownerId,
+            String groupName,
+            String groupDescription)
+            throws TException {
 
         UserGroup userGroup = new UserGroup();
         userGroup.setGroupId(AiravataUtils.getId(groupName));
@@ -138,11 +148,15 @@ public class GatewayGroupsInitializer {
         return userGroup;
     }
 
-    private String getAdminOwnerUsername(RegistryService.Client registryClient, CredentialStoreService.Client credentialStoreClient, String gatewayId) throws TException {
+    private String getAdminOwnerUsername(
+            RegistryService.Client registryClient,
+            CredentialStoreService.Client credentialStoreClient,
+            String gatewayId)
+            throws TException {
 
         GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);
         PasswordCredential credential = credentialStoreClient.getPasswordCredential(
-                    gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayID());
+                gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayID());
         String adminUsername = credential.getLoginUserName();
         return adminUsername;
     }
@@ -162,7 +176,7 @@ public class GatewayGroupsInitializer {
             final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
             final String serverHost = ServerSettings.getRegistryServerHost();
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (ApplicationSettingsException|RegistryServiceException e) {
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
             throw new RuntimeException("Unable to create registry client...", e);
         }
     }
@@ -172,7 +186,7 @@ public class GatewayGroupsInitializer {
             final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
             final String serverHost = ServerSettings.getCredentialStoreServerHost();
             return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (ApplicationSettingsException|CredentialStoreException e) {
+        } catch (ApplicationSettingsException | CredentialStoreException e) {
             throw new RuntimeException("Unable to create credential store client...", e);
         }
     }

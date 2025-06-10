@@ -1,12 +1,29 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +32,9 @@ import org.slf4j.LoggerFactory;
  */
 public class JPAUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(JPAUtils.class);
-    private final static Map<String, String> DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES;
+    private static final Logger logger = LoggerFactory.getLogger(JPAUtils.class);
+    private static final Map<String, String> DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES;
+
     static {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
@@ -30,14 +48,16 @@ public class JPAUtils {
         properties.put("openjpa.jdbc.SynchronizeMappings", "validate");
         properties.put("openjpa.jdbc.QuerySQLCache", "false");
         properties.put("openjpa.DetachState", "all");
-        properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72,"
-                + " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
+        properties.put(
+                "openjpa.ConnectionFactoryProperties",
+                "PrettyPrint=true, PrettyPrintLineLength=72,"
+                        + " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
         DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES = properties;
     }
 
     /**
      * Create an {@link EntityManagerFactory} with the default settings.
-     * 
+     *
      * @param persistenceUnitName
      * @param jdbcConfig
      * @return {@link EntityManagerFactory}
@@ -50,14 +70,14 @@ public class JPAUtils {
     /**
      * Create an {@link EntityManagerFactory}. The given properties will override
      * the default properties.
-     * 
+     *
      * @param persistenceUnitName
      * @param jdbcConfig
      * @param properties
      * @return {@link EntityManagerFactory}
      */
-    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig,
-            Map<String, String> properties) {
+    public static EntityManagerFactory getEntityManagerFactory(
+            String persistenceUnitName, JDBCConfig jdbcConfig, Map<String, String> properties) {
 
         Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
         finalProperties.putAll(createConnectionProperties(jdbcConfig));

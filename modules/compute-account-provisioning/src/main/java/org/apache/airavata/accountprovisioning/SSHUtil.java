@@ -1,29 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.accountprovisioning;
 
 import com.jcraft.jsch.*;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,20 +27,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by machrist on 2/10/17.
  */
 public class SSHUtil {
 
-    private final static Logger logger = LoggerFactory.getLogger(SSHUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(SSHUtil.class);
 
     public static boolean validate(String hostname, int port, String username, SSHCredential sshCredential) {
 
         JSch jSch = new JSch();
         Session session = null;
         try {
-            jSch.addIdentity(UUID.randomUUID().toString(), sshCredential.getPrivateKey().getBytes(), sshCredential.getPublicKey().getBytes(), sshCredential.getPassphrase().getBytes());
+            jSch.addIdentity(
+                    UUID.randomUUID().toString(),
+                    sshCredential.getPrivateKey().getBytes(),
+                    sshCredential.getPublicKey().getBytes(),
+                    sshCredential.getPassphrase().getBytes());
             session = jSch.getSession(username, hostname, port);
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
@@ -60,12 +63,17 @@ public class SSHUtil {
         }
     }
 
-    public static String execute(String hostname, int port, String username, SSHCredential sshCredential, String command) {
+    public static String execute(
+            String hostname, int port, String username, SSHCredential sshCredential, String command) {
         JSch jSch = new JSch();
         Session session = null;
         Channel channel = null;
         try {
-            jSch.addIdentity(UUID.randomUUID().toString(), sshCredential.getPrivateKey().getBytes(), sshCredential.getPublicKey().getBytes(), sshCredential.getPassphrase().getBytes());
+            jSch.addIdentity(
+                    UUID.randomUUID().toString(),
+                    sshCredential.getPrivateKey().getBytes(),
+                    sshCredential.getPublicKey().getBytes(),
+                    sshCredential.getPassphrase().getBytes());
             session = jSch.getSession(username, hostname, port);
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
@@ -73,7 +81,7 @@ public class SSHUtil {
             session.connect();
 
             channel = session.openChannel("exec");
-            ((ChannelExec)channel).setCommand(command);
+            ((ChannelExec) channel).setCommand(command);
             ByteArrayOutputStream errOutputStream = new ByteArrayOutputStream();
             ((ChannelExec) channel).setErrStream(errOutputStream);
             channel.connect();
@@ -108,7 +116,8 @@ public class SSHUtil {
                     if (stderr != null && stderr.length() > 0) {
                         logger.error("STDERR for command [" + command + "]: " + stderr);
                     }
-                    throw new RuntimeException("SSH command [" + command + "] exited with exit status: " + exitStatus + ", STDERR=" + stderr);
+                    throw new RuntimeException("SSH command [" + command + "] exited with exit status: " + exitStatus
+                            + ", STDERR=" + stderr);
                 }
 
                 return result;

@@ -1,5 +1,26 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.orchestrator.core.validator.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
@@ -18,12 +39,9 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GroupResourceProfileValidator implements JobMetadataValidator {
 
-    private final static Logger logger = LoggerFactory.getLogger(GroupResourceProfileValidator.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroupResourceProfileValidator.class);
 
     private RegistryService.Client registryClient;
 
@@ -37,8 +55,8 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         validationResults.setValidationState(true);
         try {
             List<ValidatorResult> validatorResultList = validateGroupResourceProfile(experiment, processModel);
-            for (ValidatorResult result : validatorResultList){
-                if (!result.isResult()){
+            for (ValidatorResult result : validatorResultList) {
+                if (!result.isResult()) {
                     validationResults.setValidationState(false);
                     break;
                 }
@@ -50,10 +68,12 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         return validationResults;
     }
 
-    private List<ValidatorResult> validateGroupResourceProfile(ExperimentModel experiment, ProcessModel processModel) throws TException{
+    private List<ValidatorResult> validateGroupResourceProfile(ExperimentModel experiment, ProcessModel processModel)
+            throws TException {
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-        ComputationalResourceSchedulingModel computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();
+        ComputationalResourceSchedulingModel computationalResourceScheduling =
+                userConfigurationData.getComputationalResourceScheduling();
 
         String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
         String computeResourceId;
@@ -63,11 +83,14 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
             computeResourceId = processModel.getProcessResourceSchedule().getResourceHostId();
         }
 
-        List<BatchQueueResourcePolicy> batchQueueResourcePolicies = registryClient.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
-        List<ComputeResourcePolicy> computeResourcePolicies = registryClient.getGroupComputeResourcePolicyList(groupResourceProfileId);
+        List<BatchQueueResourcePolicy> batchQueueResourcePolicies =
+                registryClient.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+        List<ComputeResourcePolicy> computeResourcePolicies =
+                registryClient.getGroupComputeResourcePolicyList(groupResourceProfileId);
         ComputeResourcePolicy groupComputeResourcePolicy = computeResourcePolicies.stream()
-                                                            .filter(computeResourcePolicy -> computeResourceId.equals(computeResourcePolicy.getComputeResourceId()))
-                                                            .findFirst().get();
+                .filter(computeResourcePolicy -> computeResourceId.equals(computeResourcePolicy.getComputeResourceId()))
+                .findFirst()
+                .get();
 
         if (groupComputeResourcePolicy != null) {
             ValidatorResult queueNameResult = new ValidatorResult();
@@ -75,22 +98,25 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
             String queueName = computationalResourceScheduling.getQueueName().trim();
             if (ComputeResourcePolicyBatchQueues.contains(queueName)) {
                 BatchQueueResourcePolicy batchQueueResourcePolicy = batchQueueResourcePolicies.stream()
-                                                                    .filter(bqResourcePolicy -> computeResourceId.equals(bqResourcePolicy.getComputeResourceId())
-                                                                            && queueName.equals(bqResourcePolicy.getQueuename()))
-                                                                    .findFirst().get();
+                        .filter(bqResourcePolicy -> computeResourceId.equals(bqResourcePolicy.getComputeResourceId())
+                                && queueName.equals(bqResourcePolicy.getQueuename()))
+                        .findFirst()
+                        .get();
 
                 if (batchQueueResourcePolicy != null) {
-                    validatorResultList.addAll(batchQueuePolicyValidate(computationalResourceScheduling, batchQueueResourcePolicy));
+                    validatorResultList.addAll(
+                            batchQueuePolicyValidate(computationalResourceScheduling, batchQueueResourcePolicy));
                 } else {
                     ValidatorResult batchQueuePolicyResult = new ValidatorResult();
-                    logger.info("There is no batch queue resource policy specified for the group resource profile and queue name");
+                    logger.info(
+                            "There is no batch queue resource policy specified for the group resource profile and queue name");
                     batchQueuePolicyResult.setResult(true);
                     validatorResultList.add(batchQueuePolicyResult);
                 }
             } else {
                 queueNameResult.setResult(false);
-                queueNameResult.setErrorDetails("The specified queue " + queueName +
-                        " does not exist in the list of allowed queues for the group resource profile.");
+                queueNameResult.setErrorDetails("The specified queue " + queueName
+                        + " does not exist in the list of allowed queues for the group resource profile.");
                 validatorResultList.add(queueNameResult);
             }
         } else {
@@ -101,17 +127,21 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
 
             // verify if batchQueueResourcePolicy exists without computeResourcePolicy
             if (batchQueueResourcePolicies != null && !batchQueueResourcePolicies.isEmpty()) {
-                String queueName = computationalResourceScheduling.getQueueName().trim();
+                String queueName =
+                        computationalResourceScheduling.getQueueName().trim();
                 BatchQueueResourcePolicy batchQueueResourcePolicy = batchQueueResourcePolicies.stream()
                         .filter(bqResourcePolicy -> computeResourceId.equals(bqResourcePolicy.getComputeResourceId())
                                 && queueName.equals(bqResourcePolicy.getQueuename()))
-                        .findFirst().get();
+                        .findFirst()
+                        .get();
 
                 if (batchQueueResourcePolicy != null) {
-                    validatorResultList.addAll(batchQueuePolicyValidate(computationalResourceScheduling, batchQueueResourcePolicy));
+                    validatorResultList.addAll(
+                            batchQueuePolicyValidate(computationalResourceScheduling, batchQueueResourcePolicy));
                 } else {
                     ValidatorResult batchQueuePolicyResult = new ValidatorResult();
-                    logger.info("There is no batch queue resource policy specified for the group resource profile and queue name");
+                    logger.info(
+                            "There is no batch queue resource policy specified for the group resource profile and queue name");
                     batchQueuePolicyResult.setResult(true);
                     validatorResultList.add(batchQueuePolicyResult);
                 }
@@ -122,7 +152,9 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         return validatorResultList;
     }
 
-    private List<ValidatorResult> batchQueuePolicyValidate(ComputationalResourceSchedulingModel computationalResourceScheduling, BatchQueueResourcePolicy batchQueueResourcePolicy) {
+    private List<ValidatorResult> batchQueuePolicyValidate(
+            ComputationalResourceSchedulingModel computationalResourceScheduling,
+            BatchQueueResourcePolicy batchQueueResourcePolicy) {
         List<ValidatorResult> batchQueuevalidatorResultList = new ArrayList<ValidatorResult>();
         int experimentWallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
         int experimentNodeCount = computationalResourceScheduling.getNodeCount();
@@ -132,9 +164,10 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
 
         if (experimentWallTimeLimit > batchQueueResourcePolicy.getMaxAllowedWalltime()) {
             wallTimeResult.setResult(false);
-            wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit +
-                    " exceeds the allowable walltime for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedWalltime() +
-                    " for queue " + batchQueueResourcePolicy.getQueuename());
+            wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit
+                    + " exceeds the allowable walltime for the group resource profile "
+                    + batchQueueResourcePolicy.getMaxAllowedWalltime() + " for queue "
+                    + batchQueueResourcePolicy.getQueuename());
         } else {
             wallTimeResult.setResult(true);
             wallTimeResult.setErrorDetails("");
@@ -144,9 +177,10 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
 
         if (experimentNodeCount > batchQueueResourcePolicy.getMaxAllowedNodes()) {
             nodeCountResult.setResult(false);
-            nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount +
-                    " exceeds the allowable node count for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedNodes() +
-                    " for queue " + batchQueueResourcePolicy.getQueuename());
+            nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount
+                    + " exceeds the allowable node count for the group resource profile "
+                    + batchQueueResourcePolicy.getMaxAllowedNodes() + " for queue "
+                    + batchQueueResourcePolicy.getQueuename());
         } else {
             nodeCountResult.setResult(true);
             nodeCountResult.setErrorDetails("");
@@ -156,9 +190,10 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
 
         if (experimentCPUCount > batchQueueResourcePolicy.getMaxAllowedCores()) {
             cpuCountResult.setResult(false);
-            cpuCountResult.setErrorDetails("Job Execution cpu count " + experimentCPUCount +
-                    " exceeds the allowable cpu count for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedCores() +
-                    " for queue " + batchQueueResourcePolicy.getQueuename());
+            cpuCountResult.setErrorDetails("Job Execution cpu count " + experimentCPUCount
+                    + " exceeds the allowable cpu count for the group resource profile "
+                    + batchQueueResourcePolicy.getMaxAllowedCores() + " for queue "
+                    + batchQueueResourcePolicy.getQueuename());
         } else {
             cpuCountResult.setResult(true);
             cpuCountResult.setErrorDetails("");

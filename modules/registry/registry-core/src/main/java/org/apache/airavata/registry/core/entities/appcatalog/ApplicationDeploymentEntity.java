@@ -1,31 +1,29 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
-
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 
 /**
  * The persistent class for the application_deployment database table.
@@ -82,32 +80,55 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "EDITABLE_BY_USER")
     private boolean editableByUser;
 
-    @OneToMany(targetEntity = ModuleLoadCmdEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
-            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = ModuleLoadCmdEntity.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "applicationDeployment",
+            fetch = FetchType.EAGER)
     private List<ModuleLoadCmdEntity> moduleLoadCmds;
 
-    @OneToMany(targetEntity = AppEnvironmentEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
-            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = AppEnvironmentEntity.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "applicationDeployment",
+            fetch = FetchType.EAGER)
     private List<AppEnvironmentEntity> setEnvironment;
 
-    @OneToMany(targetEntity = LibraryPrependPathEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
-            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = LibraryPrependPathEntity.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "applicationDeployment",
+            fetch = FetchType.EAGER)
     private List<LibraryPrependPathEntity> libPrependPaths;
 
-    @OneToMany(targetEntity = LibraryApendPathEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
-            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = LibraryApendPathEntity.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "applicationDeployment",
+            fetch = FetchType.EAGER)
     private List<LibraryApendPathEntity> libAppendPaths;
 
-    @OneToMany(targetEntity = PrejobCommandEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
-            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = PrejobCommandEntity.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "applicationDeployment",
+            fetch = FetchType.EAGER)
     private List<PrejobCommandEntity> preJobCommands;
 
-    @OneToMany(targetEntity = PostjobCommandEntity.class, cascade = CascadeType.ALL, orphanRemoval = true,
-            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    @OneToMany(
+            targetEntity = PostjobCommandEntity.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "applicationDeployment",
+            fetch = FetchType.EAGER)
     private List<PostjobCommandEntity> postJobCommands;
 
-    public ApplicationDeploymentEntity() {
-    }
+    public ApplicationDeploymentEntity() {}
 
     public String getAppDeploymentId() {
         return appDeploymentId;
@@ -276,5 +297,4 @@ public class ApplicationDeploymentEntity implements Serializable {
     public void setPostJobCommands(List<PostjobCommandEntity> postJobCommands) {
         this.postJobCommands = postJobCommands;
     }
-
 }

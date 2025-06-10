@@ -1,27 +1,26 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -56,13 +55,13 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         }
     }
 
-    public ThriftClientPool(ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host,
-            int port) {
+    public ThriftClientPool(
+            ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host, int port) {
         this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig);
     }
 
-    public ThriftClientPool(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory,
-            GenericObjectPoolConfig<T> poolConfig) {
+    public ThriftClientPool(
+            ClientFactory<T> clientFactory, ProtocolFactory protocolFactory, GenericObjectPoolConfig<T> poolConfig) {
 
         AbandonedConfig abandonedConfig = null;
         if (ApplicationSettings.isThriftClientPoolAbandonedRemovalEnabled()) {
@@ -76,22 +75,27 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
                 abandonedConfig.setLogAbandoned(false);
             }
         }
-        this.internalPool = new GenericObjectPool<T>(new ThriftClientFactory(clientFactory, protocolFactory),
-                poolConfig, abandonedConfig);
+        this.internalPool = new GenericObjectPool<T>(
+                new ThriftClientFactory(clientFactory, protocolFactory), poolConfig, abandonedConfig);
     }
 
-    public ThriftClientPool(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory,
-            GenericObjectPoolConfig<T> poolConfig, AbandonedConfig abandonedConfig) {
+    public ThriftClientPool(
+            ClientFactory<T> clientFactory,
+            ProtocolFactory protocolFactory,
+            GenericObjectPoolConfig<T> poolConfig,
+            AbandonedConfig abandonedConfig) {
 
-        if (abandonedConfig != null && abandonedConfig.getRemoveAbandonedOnMaintenance()
+        if (abandonedConfig != null
+                && abandonedConfig.getRemoveAbandonedOnMaintenance()
                 && poolConfig.getTimeBetweenEvictionRunsMillis() <= 0) {
-            logger.warn("Abandoned removal is enabled but"
-                    + " removeAbandonedOnMaintenance won't run since"
-                    + " timeBetweenEvictionRunsMillis is not positive, current value: {}",
+            logger.warn(
+                    "Abandoned removal is enabled but"
+                            + " removeAbandonedOnMaintenance won't run since"
+                            + " timeBetweenEvictionRunsMillis is not positive, current value: {}",
                     poolConfig.getTimeBetweenEvictionRunsMillis());
         }
-        this.internalPool = new GenericObjectPool<T>(new ThriftClientFactory(clientFactory, protocolFactory),
-                poolConfig, abandonedConfig);
+        this.internalPool = new GenericObjectPool<T>(
+                new ThriftClientFactory(clientFactory, protocolFactory), poolConfig, abandonedConfig);
     }
 
     class ThriftClientFactory extends BasePooledObjectFactory<T> {
@@ -142,8 +146,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         TProtocol make();
     }
 
-    public static class BinaryOverSocketProtocolFactory implements
-            ProtocolFactory {
+    public static class BinaryOverSocketProtocolFactory implements ProtocolFactory {
 
         private String host;
         private int port;
@@ -174,12 +177,11 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         public ThriftClientException(String message, Exception e) {
             super(message, e);
         }
-
     }
 
     public T getResource() {
         try {
-            for( int i = 0; i < 10 ; i++) {
+            for (int i = 0; i < 10; i++) {
                 // This tries to fetch a client from the pool and validate it before returning.
                 final T client = internalPool.borrowObject();
                 try {
@@ -193,8 +195,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
             }
             throw new Exception("Failed to fetch a client form the pool after validation");
         } catch (Exception e) {
-            throw new ThriftClientException(
-                    "Could not get a resource from the pool", e);
+            throw new ThriftClientException("Could not get a resource from the pool", e);
         }
     }
 
@@ -202,8 +203,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         try {
             internalPool.returnObject(resource);
         } catch (Exception e) {
-            throw new ThriftClientException(
-                    "Could not return the resource to the pool", e);
+            throw new ThriftClientException("Could not return the resource to the pool", e);
         }
     }
 
@@ -219,8 +219,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         try {
             internalPool.invalidateObject(resource);
         } catch (Exception e) {
-            throw new ThriftClientException(
-                    "Could not return the resource to the pool", e);
+            throw new ThriftClientException("Could not return the resource to the pool", e);
         }
     }
 

@@ -1,24 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import java.util.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
@@ -30,8 +31,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 public class ComputeResourceRepositoryTest extends TestBase {
 
@@ -57,22 +56,26 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
 
-        ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+        ComputeResourceDescription computeResourceDescription =
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         List<BatchQueue> batchQueues = computeResourceDescription.getBatchQueues();
         Assert.assertTrue(batchQueues.size() > 0);
 
-        computeResourceRepository.removeBatchQueue(savedComputeResourceId, batchQueues.get(0).getQueueName());
+        computeResourceRepository.removeBatchQueue(
+                savedComputeResourceId, batchQueues.get(0).getQueueName());
 
-        ComputeResourceDescription updatedComputeResource = computeResourceRepository.getComputeResource(savedComputeResourceId);
+        ComputeResourceDescription updatedComputeResource =
+                computeResourceRepository.getComputeResource(savedComputeResourceId);
 
         List<BatchQueue> updatedBatchQueues = updatedComputeResource.getBatchQueues();
 
         Assert.assertEquals(batchQueues.size(), updatedBatchQueues.size() + 1);
         Optional<BatchQueue> searchedInterfaceResult = updatedBatchQueues.stream()
-                .filter(queue -> queue.getQueueName().equals(batchQueues.get(0).getQueueName())).findFirst();
+                .filter(queue -> queue.getQueueName().equals(batchQueues.get(0).getQueueName()))
+                .findFirst();
 
         Assert.assertFalse(searchedInterfaceResult.isPresent());
     }
@@ -90,22 +93,27 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
 
-        ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+        ComputeResourceDescription computeResourceDescription =
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         List<DataMovementInterface> dataMovementInterfaces = computeResourceDescription.getDataMovementInterfaces();
         Assert.assertTrue(dataMovementInterfaces.size() > 0);
 
-        computeResourceRepository.removeDataMovementInterface(savedComputeResourceId, dataMovementInterfaces.get(0).getDataMovementInterfaceId());
+        computeResourceRepository.removeDataMovementInterface(
+                savedComputeResourceId, dataMovementInterfaces.get(0).getDataMovementInterfaceId());
 
-        ComputeResourceDescription updatedComputeResource = computeResourceRepository.getComputeResource(savedComputeResourceId);
+        ComputeResourceDescription updatedComputeResource =
+                computeResourceRepository.getComputeResource(savedComputeResourceId);
 
         List<DataMovementInterface> updatedDataMovementInterfaces = updatedComputeResource.getDataMovementInterfaces();
 
         Assert.assertEquals(dataMovementInterfaces.size(), updatedDataMovementInterfaces.size() + 1);
         Optional<DataMovementInterface> searchedInterfaceResult = updatedDataMovementInterfaces.stream()
-                .filter(iface -> iface.getDataMovementInterfaceId().equals(dataMovementInterfaces.get(0).getDataMovementInterfaceId())).findFirst();
+                .filter(iface -> iface.getDataMovementInterfaceId()
+                        .equals(dataMovementInterfaces.get(0).getDataMovementInterfaceId()))
+                .findFirst();
 
         Assert.assertFalse(searchedInterfaceResult.isPresent());
     }
@@ -123,22 +131,28 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
 
-        ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+        ComputeResourceDescription computeResourceDescription =
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResourceDescription.getJobSubmissionInterfaces();
         Assert.assertTrue(jobSubmissionInterfaces.size() > 0);
 
-        computeResourceRepository.removeJobSubmissionInterface(savedComputeResourceId, jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId());
+        computeResourceRepository.removeJobSubmissionInterface(
+                savedComputeResourceId, jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId());
 
-        ComputeResourceDescription updatedComputeResource = computeResourceRepository.getComputeResource(savedComputeResourceId);
+        ComputeResourceDescription updatedComputeResource =
+                computeResourceRepository.getComputeResource(savedComputeResourceId);
 
-        List<JobSubmissionInterface> updatedJobSubmissionInterfaces = updatedComputeResource.getJobSubmissionInterfaces();
+        List<JobSubmissionInterface> updatedJobSubmissionInterfaces =
+                updatedComputeResource.getJobSubmissionInterfaces();
 
         Assert.assertEquals(jobSubmissionInterfaces.size(), updatedJobSubmissionInterfaces.size() + 1);
         Optional<JobSubmissionInterface> searchedInterfaceResult = updatedJobSubmissionInterfaces.stream()
-                .filter(iface -> iface.getJobSubmissionInterfaceId().equals(jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId())).findFirst();
+                .filter(iface -> iface.getJobSubmissionInterfaceId()
+                        .equals(jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId()))
+                .findFirst();
 
         Assert.assertFalse(searchedInterfaceResult.isPresent());
     }
@@ -160,20 +174,23 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<ComputeResourceDescription> allComputeResources = new ArrayList<>();
         Map<String, String> allComputeResourceMap = new HashMap<>();
         for (int i = 0; i < 5; i++) {
-            ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+            ComputeResourceDescription computeResourceDescription =
+                    prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
             computeResourceDescription.setHostName("Host" + i);
-            computeResourceDescription.setEnabled((i%2 == 0));
+            computeResourceDescription.setEnabled((i % 2 == 0));
             String savedId = computeResourceRepository.addComputeResource(computeResourceDescription);
             allIds.add(savedId);
             allComputeResources.add(computeResourceDescription);
             allComputeResourceMap.put(savedId, computeResourceDescription.getHostName());
         }
 
-        List<ComputeResourceDescription> allSavedComputeResources = computeResourceRepository.getAllComputeResourceList();
+        List<ComputeResourceDescription> allSavedComputeResources =
+                computeResourceRepository.getAllComputeResourceList();
 
         Assert.assertEquals(5, allSavedComputeResources.size());
         for (int i = 0; i < 5; i++) {
-            Assert.assertTrue(deepCompareComputeResourceDescription(allComputeResources.get(i), allSavedComputeResources.get(i)));
+            Assert.assertTrue(
+                    deepCompareComputeResourceDescription(allComputeResources.get(i), allSavedComputeResources.get(i)));
         }
 
         Map<String, String> allSavedComputeResourceIds = computeResourceRepository.getAllComputeResourceIdList();
@@ -207,12 +224,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
-        ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
-
+        ComputeResourceDescription computeResourceDescription =
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         Map<String, String> cfilters = new HashMap<String, String>();
         cfilters.put(DBConstants.ComputeResource.HOST_NAME, "localhost");
-        List<ComputeResourceDescription> computeResourceList = computeResourceRepository.getComputeResourceList(cfilters);
+        List<ComputeResourceDescription> computeResourceList =
+                computeResourceRepository.getComputeResourceList(cfilters);
 
         Assert.assertEquals(0, computeResourceList.size());
 
@@ -245,11 +263,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
-        ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+        ComputeResourceDescription computeResourceDescription =
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
-        ComputeResourceDescription savedComputeResource = computeResourceRepository.getComputeResource(computeResourceId);
+        ComputeResourceDescription savedComputeResource =
+                computeResourceRepository.getComputeResource(computeResourceId);
         savedComputeResource.getHostAliases().add("New Alias");
 
         BatchQueue batchQueue = new BatchQueue();
@@ -273,7 +293,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         computeResourceRepository.updateComputeResource(computeResourceId, savedComputeResource);
 
-        ComputeResourceDescription updatedComputeResource = computeResourceRepository.getComputeResource(computeResourceId);
+        ComputeResourceDescription updatedComputeResource =
+                computeResourceRepository.getComputeResource(computeResourceId);
         Assert.assertTrue(deepCompareComputeResourceDescription(savedComputeResource, updatedComputeResource));
     }
 
@@ -290,7 +311,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
-        ComputeResourceDescription computeResourceDescription = prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+        ComputeResourceDescription computeResourceDescription =
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         computeResourceDescription.setComputeResourceId("manually-entered-id");
 
@@ -298,12 +320,12 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
         Assert.assertEquals("manually-entered-id", computeResourceId);
         Assert.assertTrue(computeResourceRepository.isComputeResourceExists(computeResourceId));
-        ComputeResourceDescription savedComputeResource = computeResourceRepository.getComputeResource("manually-entered-id");
+        ComputeResourceDescription savedComputeResource =
+                computeResourceRepository.getComputeResource("manually-entered-id");
         Assert.assertNotNull(savedComputeResource);
 
         Assert.assertTrue(deepCompareComputeResourceDescription(computeResourceDescription, savedComputeResource));
     }
-
 
     @Test
     public void addResourceJobManagerTest() throws AppCatalogException {
@@ -311,7 +333,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String jobManagerId = computeResourceRepository.addResourceJobManager(resourceJobManager);
         ResourceJobManager savedJobManager = computeResourceRepository.getResourceJobManager(jobManagerId);
         Assert.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
-
     }
 
     @Test
@@ -322,8 +343,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assert.assertNotNull(computeResourceRepository.getResourceJobManager(jobManagerId));
         computeResourceRepository.deleteResourceJobManager(jobManagerId);
         Assert.assertNull(computeResourceRepository.getResourceJobManager(jobManagerId));
-
     }
+
     @Test
     public void updateResourceJobManagerTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -421,7 +442,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId2 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement2);
         GridFTPDataMovement savedDataMovement2 = computeResourceRepository.getGridFTPDataMovement(dataMovementId2);
         Assert.assertTrue(EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
-
     }
 
     @Test
@@ -429,7 +449,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assert.assertNull(computeResourceRepository.getResourceJobManager("INVALID ID"));
         Assert.assertNull(computeResourceRepository.getComputeResource("INVALID ID"));
         Assert.assertNull(computeResourceRepository.getCloudJobSubmission("INVALID ID"));
-        Assert.assertEquals(0, computeResourceRepository.getFileSystems("INVALID ID").size());
+        Assert.assertEquals(
+                0, computeResourceRepository.getFileSystems("INVALID ID").size());
         Assert.assertNull(computeResourceRepository.getGridFTPDataMovement("INVALID ID"));
         Assert.assertNull(computeResourceRepository.getLocalDataMovement("INVALID ID"));
         Assert.assertNull(computeResourceRepository.getLocalJobSubmission("INVALID ID"));
@@ -437,7 +458,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assert.assertNull(computeResourceRepository.getUNICOREDataMovement("INVALID ID"));
     }
 
-    private ComputeResourceDescription prepareComputeResource(String sshSubmissionId, String scpDataMoveId, String gridFTPDataMoveId, int batchQueueCount) {
+    private ComputeResourceDescription prepareComputeResource(
+            String sshSubmissionId, String scpDataMoveId, String gridFTPDataMoveId, int batchQueueCount) {
         ComputeResourceDescription description = new ComputeResourceDescription();
 
         description.setHostName("localhost");
@@ -509,7 +531,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         jobManager.setPushMonitoringEndpoint("monitor ep");
         jobManager.setJobManagerBinPath("/bin");
 
-        Map<ApplicationParallelismType, String> parallelismPrefix =  new HashMap<>();
+        Map<ApplicationParallelismType, String> parallelismPrefix = new HashMap<>();
         parallelismPrefix.put(ApplicationParallelismType.CCM, "ccm parallel");
         jobManager.setParallelismPrefix(parallelismPrefix);
 
@@ -580,13 +602,25 @@ public class ComputeResourceRepositoryTest extends TestBase {
         return dataMovement;
     }
 
-    private boolean deepCompareComputeResourceDescription(ComputeResourceDescription expected, ComputeResourceDescription actual) {
-        boolean equals = EqualsBuilder.reflectionEquals(expected, actual,
-                "__isset_bitfield", "batchQueues", "fileSystems", "jobSubmissionInterfaces", "dataMovementInterfaces", "ipAddresses", "hostAliases");
+    private boolean deepCompareComputeResourceDescription(
+            ComputeResourceDescription expected, ComputeResourceDescription actual) {
+        boolean equals = EqualsBuilder.reflectionEquals(
+                expected,
+                actual,
+                "__isset_bitfield",
+                "batchQueues",
+                "fileSystems",
+                "jobSubmissionInterfaces",
+                "dataMovementInterfaces",
+                "ipAddresses",
+                "hostAliases");
 
         equals = equals & deepCompareArrayList(expected.getBatchQueues(), actual.getBatchQueues(), false);
-        equals = equals & deepCompareArrayList(expected.getJobSubmissionInterfaces(), actual.getJobSubmissionInterfaces(), false);
-        equals = equals & deepCompareArrayList(expected.getDataMovementInterfaces(), actual.getDataMovementInterfaces(), false);
+        equals = equals
+                & deepCompareArrayList(
+                        expected.getJobSubmissionInterfaces(), actual.getJobSubmissionInterfaces(), false);
+        equals = equals
+                & deepCompareArrayList(expected.getDataMovementInterfaces(), actual.getDataMovementInterfaces(), false);
         equals = equals & deepCompareArrayList(expected.getIpAddresses(), actual.getIpAddresses(), false);
         equals = equals & deepCompareArrayList(expected.getHostAliases(), actual.getHostAliases(), false);
         return equals;
@@ -605,7 +639,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
             boolean equals = true;
             if (preferOrder) {
                 for (int i = 0; i < expected.size(); i++) {
-                    equals = equals & EqualsBuilder.reflectionEquals(expected.get(i), actual.get(i), "__isset_bitfield");
+                    equals =
+                            equals & EqualsBuilder.reflectionEquals(expected.get(i), actual.get(i), "__isset_bitfield");
                 }
             } else {
                 boolean checked[] = new boolean[expected.size()];
@@ -615,7 +650,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
                         if (checked[j]) {
                             continue;
                         }
-                        equals = equals | EqualsBuilder.reflectionEquals(expected.get(i), actual.get(j), "__isset_bitfield");
+                        equals = equals
+                                | EqualsBuilder.reflectionEquals(expected.get(i), actual.get(j), "__isset_bitfield");
                         if (equals) {
                             checked[j] = true;
                             break;

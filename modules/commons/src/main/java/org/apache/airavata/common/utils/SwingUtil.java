@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
 
 import java.awt.Color;
@@ -34,7 +34,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.net.URL;
 import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.Spring;
@@ -79,7 +78,7 @@ public class SwingUtil {
 
     /**
      * Creates an icon from an image contained in the "images" directory.
-     * 
+     *
      * @param filename
      * @return the ImageIcon created
      */
@@ -94,12 +93,12 @@ public class SwingUtil {
 
     /**
      * Creates an image from an image contained in the "images" directory.
-     * 
+     *
      * @param filename
      * @return the Image created
      */
     public static Image createImage(String filename) {
-    	Image icon = null;
+        Image icon = null;
         URL imgURL = getImageURL(filename);
         if (imgURL != null) {
             icon = Toolkit.getDefaultToolkit().getImage(imgURL);
@@ -107,18 +106,18 @@ public class SwingUtil {
         return icon;
     }
 
-	public static URL getImageURL(String filename) {
-		String path = "/images/" + filename;
+    public static URL getImageURL(String filename) {
+        String path = "/images/" + filename;
         URL imgURL = SwingUtil.class.getResource(path);
-		return imgURL;
-	}
-    
+        return imgURL;
+    }
+
     /**
      * Return the Frame of a specified component if any.
-     * 
+     *
      * @param component
      *            the specified component
-     * 
+     *
      * @return the Frame of a specified component if any; otherwise null
      */
     public static Frame getFrame(Component component) {
@@ -138,16 +137,16 @@ public class SwingUtil {
     /**
      * Wight none of rows or eolumns. Used by layoutToGrid().
      */
-    public final static int WEIGHT_NONE = -1;
+    public static final int WEIGHT_NONE = -1;
 
     /**
      * Weight all rows or columns equally. Used by layoutToGrid().
      */
-    public final static int WEIGHT_EQUALLY = -2;
+    public static final int WEIGHT_EQUALLY = -2;
 
     /**
      * Layouts the child components of a specified parent component using GridBagLayout.
-     * 
+     *
      * @param parent
      *            The specified parent component
      * @param numRow
@@ -246,9 +245,9 @@ public class SwingUtil {
      * Aligns the first <code>rows</code> * <code>cols</code> components of <code>parent</code> in a grid. Each
      * component in a column is as wide as the maximum preferred width of the components in that column; height is
      * similarly determined for each row. The parent is made just big enough to fit them all.
-     * 
+     *
      * @param parent
-     * 
+     *
      * @param rows
      *            number of rows
      * @param cols
@@ -262,9 +261,9 @@ public class SwingUtil {
      * Aligns the first <code>rows</code> * <code>cols</code> components of <code>parent</code> in a grid. Each
      * component in a column is as wide as the maximum preferred width of the components in that column; height is
      * similarly determined for each row. The parent is made just big enough to fit them all.
-     * 
+     *
      * @param parent
-     * 
+     *
      * @param rows
      *            number of rows
      * @param cols
@@ -278,8 +277,8 @@ public class SwingUtil {
      * @param yPad
      *            y padding between cells
      */
-    private static void makeSpringCompactGrid(Container parent, int rows, int cols, int initialX, int initialY,
-            int xPad, int yPad) {
+    private static void makeSpringCompactGrid(
+            Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
 
         SpringLayout layout = new SpringLayout();
         parent.setLayout(layout);
@@ -289,7 +288,8 @@ public class SwingUtil {
         for (int c = 0; c < cols; c++) {
             Spring width = Spring.constant(0);
             for (int r = 0; r < rows; r++) {
-                width = Spring.max(width, getConstraintsForCell(r, c, parent, cols).getWidth());
+                width = Spring.max(
+                        width, getConstraintsForCell(r, c, parent, cols).getWidth());
             }
             for (int r = 0; r < rows; r++) {
                 SpringLayout.Constraints constraints = getConstraintsForCell(r, c, parent, cols);
@@ -304,7 +304,8 @@ public class SwingUtil {
         for (int r = 0; r < rows; r++) {
             Spring height = Spring.constant(0);
             for (int c = 0; c < cols; c++) {
-                height = Spring.max(height, getConstraintsForCell(r, c, parent, cols).getHeight());
+                height = Spring.max(
+                        height, getConstraintsForCell(r, c, parent, cols).getHeight());
             }
             for (int c = 0; c < cols; c++) {
                 SpringLayout.Constraints constraints = getConstraintsForCell(r, c, parent, cols);
@@ -326,31 +327,30 @@ public class SwingUtil {
         Component c = parent.getComponent(row * cols + col);
         return layout.getConstraints(c);
     }
-    
-    public static void addPlaceHolder(final JTextField field,final String placeHolderText){
-    	field.addFocusListener(new FocusListener(){
-    		private Color fontColor=field.getForeground();
-//    		private String previousText=field.getText();
-    		
-			public void focusGained(FocusEvent arg0) {
-				if (field.getText().equals(placeHolderText)){
-					field.setText("");
-				}
-				field.setForeground(fontColor);
-			}
 
-			public void focusLost(FocusEvent arg0) {
-				if (field.getText().trim().equals("")){
-					fontColor=field.getForeground();
-					field.setForeground(Color.GRAY);
-					field.setText(placeHolderText);
-				}
-			}
-    	});
-    	if (field.getText().trim().equals("")){
-    		field.setText(placeHolderText);
-    		field.setForeground(Color.GRAY);
-    	}
+    public static void addPlaceHolder(final JTextField field, final String placeHolderText) {
+        field.addFocusListener(new FocusListener() {
+            private Color fontColor = field.getForeground();
+            //    		private String previousText=field.getText();
+
+            public void focusGained(FocusEvent arg0) {
+                if (field.getText().equals(placeHolderText)) {
+                    field.setText("");
+                }
+                field.setForeground(fontColor);
+            }
+
+            public void focusLost(FocusEvent arg0) {
+                if (field.getText().trim().equals("")) {
+                    fontColor = field.getForeground();
+                    field.setForeground(Color.GRAY);
+                    field.setText(placeHolderText);
+                }
+            }
+        });
+        if (field.getText().trim().equals("")) {
+            field.setText(placeHolderText);
+            field.setForeground(Color.GRAY);
+        }
     }
-    
 }

@@ -1,29 +1,31 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessStatusPK;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -35,13 +37,9 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessStatus, ProcessStatusEntity, ProcessStatusPK> {
-    private final static Logger logger = LoggerFactory.getLogger(ProcessStatusRepository.class);
+public class ProcessStatusRepository
+        extends ExpCatAbstractRepository<ProcessStatus, ProcessStatusEntity, ProcessStatusPK> {
+    private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepository.class);
 
     public ProcessStatusRepository() {
         super(ProcessStatus.class, ProcessStatusEntity.class);
@@ -97,19 +95,21 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
             ProcessStatus latestProcessStatus = processStatusList.get(0);
 
             for (int i = 1; i < processStatusList.size(); i++) {
-                Timestamp timeOfStateChange = new Timestamp(processStatusList.get(i).getTimeOfStateChange());
+                Timestamp timeOfStateChange =
+                        new Timestamp(processStatusList.get(i).getTimeOfStateChange());
 
                 if (timeOfStateChange != null) {
 
                     if (timeOfStateChange.after(new Timestamp(latestProcessStatus.getTimeOfStateChange()))
-                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.COMPLETED.toString()))
-                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.FAILED.toString()))
-                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange()) && processStatusList.get(i).getState().equals(ProcessState.CANCELED.toString()))) {
+                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange())
+                                    && processStatusList.get(i).getState().equals(ProcessState.COMPLETED.toString()))
+                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange())
+                                    && processStatusList.get(i).getState().equals(ProcessState.FAILED.toString()))
+                            || (timeOfStateChange.equals(latestProcessStatus.getTimeOfStateChange())
+                                    && processStatusList.get(i).getState().equals(ProcessState.CANCELED.toString()))) {
                         latestProcessStatus = processStatusList.get(i);
                     }
-
                 }
-
             }
             return latestProcessStatus;
         }
@@ -118,16 +118,14 @@ public class ProcessStatusRepository extends ExpCatAbstractRepository<ProcessSta
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
         ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
-       return processModel.getProcessStatuses();
-
+        return processModel.getProcessStatuses();
     }
 
-    public List<ProcessStatus> getProcessStatusList(ProcessState processState, int offset, int limit) throws RegistryException {
+    public List<ProcessStatus> getProcessStatusList(ProcessState processState, int offset, int limit)
+            throws RegistryException {
         Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put(DBConstants.ProcessStatus.STATE,processState);
+        queryMap.put(DBConstants.ProcessStatus.STATE, processState);
         ProcessStatusRepository processStatusRepository = new ProcessStatusRepository();
-       return  processStatusRepository.select(QueryConstants.FIND_PROCESS_WITH_STATUS,limit,offset,queryMap);
+        return processStatusRepository.select(QueryConstants.FIND_PROCESS_WITH_STATUS, limit, offset, queryMap);
     }
-
-
 }
