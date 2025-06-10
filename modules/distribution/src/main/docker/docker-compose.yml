@@ -28,7 +28,6 @@ services:
       - keycloak
     environment:
       - zookeeper.server.connection=zookeeper:2181
-    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--" , "/opt/apache-airavata-controller/bin/controller.sh"]
 
   apiserver:
     image: airavata/api-server
@@ -178,7 +177,6 @@ services:
       - iam.server.super.admin.password=admin
       - db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner
       - thrift.client.pool.abandoned.removal.enabled=true
-    command: ["/tmp/wait-for-it.sh", "db:3306", "--", "/tmp/wait-for-it.sh", "rabbitmq:5672", "--" , "/opt/apache-airavata-api-server/bin/airavata-server-start.sh", "api-orch"]
 
   prewm:
     image: airavata/pre-wm
@@ -195,7 +193,6 @@ services:
       - regserver.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - pre.workflow.manager.loadbalance.clusters=false
-    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-pre-wm/bin/pre-wm.sh"]
 
   participant:
     image: airavata/participant
@@ -216,7 +213,6 @@ services:
       - enable.realtime.monitor=false
       - profile.service.server.host=apiserver
       - profile.service.server.port=8962
-    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-participant/bin/participant.sh"]
 
   emailmonitor:
     image: airavata/email-monitor
@@ -228,8 +224,6 @@ services:
       - keycloak
       - apiserver
       - rabbitmq
-    volumes:
-      - ../resources/email-config.yaml:/opt/apache-airavata-email-monitor/conf/email-config.yaml
     environment:
       - zookeeper.server.connection=zookeeper:2181
       - regserver.server.host=apiserver
@@ -237,7 +231,51 @@ services:
       - email.based.monitor.address=CHANGEME
       - email.based.monitor.password=CHANGEME
       - job.monitor.broker.url=kafka:9092
-    command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-email-monitor/bin/email-monitor.sh"]
+
+  db:
+    image: mariadb:10.4.13
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  keycloak:
+    image: keycloak/keycloak:24.0
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: ["start-dev", "--https-port=8443"]
+    ports:
+      - "8443:8443"
+      - "18080:8080"
+
+  rabbitmq:
+    image: rabbitmq:3.12.14-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    command: >
+      bash -c "
+        rabbitmq-server &
+        until rabbitmqctl status > /dev/null 2>&1; do
+          echo 'Waiting for RabbitMQ to be ready...'
+          sleep 2
+        done
+        rabbitmqctl add_vhost develop
+        rabbitmqctl set_permissions -p develop guest '.*' '.*' '.*'
+        wait
+      "
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
 
   kafka:
     image: wurstmeister/kafka
@@ -265,3 +303,6 @@ services:
       - post.workflow.manager.loadbalance.clusters=false
       - kafka.broker.url=kafka:9092
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--",  "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-post-wm/bin/post-wm.sh"]
+
+volumes:
+  mariadb_data:

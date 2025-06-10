@@ -15,9 +15,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from adoptopenjdk/openjdk11
+FROM eclipse-temurin:17-jre
 
-ADD ${pre.wm.dist.name}-bin.tar.gz /opt
-RUN mv /opt/${pre.wm.dist.name} /opt/apache-airavata-pre-wm
-ADD wait-for-it.sh /tmp/wait-for-it.sh
+WORKDIR /opt
+
+COPY ${pre.wm.dist.name}-bin.tar.gz .
+RUN tar -xzf ${pre.wm.dist.name}-bin.tar.gz && \
+    mv ${pre.wm.dist.name} apache-airavata-pre-wm && \
+    rm ${pre.wm.dist.name}-bin.tar.gz
+
+COPY wait-for-it.sh /tmp/
 RUN chmod +x /tmp/wait-for-it.sh
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV AIRAVATA_HOME=/opt/apache-airavata-pre-wm
+
+# Expose monitoring port
+EXPOSE 9093
+
+ENTRYPOINT ["/opt/apache-airavata-pre-wm/bin/pre-wm.sh"]
