@@ -19,5 +19,18 @@ jobs:
           java-version: "17"
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Build with Maven (skip tests)
+      - name: Run Spotless Check
         run: mvn spotless:check
+      - name: Run Spotless Apply if Check Fails
+        if: failure()
+        run: mvn spotless:apply
+      - name: Generate Spotless Patch
+        if: failure()
+        run: |
+          git diff > spotless-fixes.patch
+      - name: Upload Spotless Patch as Artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotless-fixes
+          path: spotless-fixes.patch
