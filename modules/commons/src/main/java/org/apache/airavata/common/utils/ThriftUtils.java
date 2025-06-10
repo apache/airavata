@@ -50,8 +50,7 @@ public class ThriftUtils {
                 MonitorTaskModel monitorTaskModel = new MonitorTaskModel();
                 ThriftUtils.createThriftFromBytes(taskModel.getSubTaskModel(), monitorTaskModel);
                 return monitorTaskModel;
-            case ENV_CLEANUP:
-            // TODO return Environment Clean up task  model
+            case ENV_CLEANUP: // TODO return Environment Clean up task model
             default:
                 return null;
         }
