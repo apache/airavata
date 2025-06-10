@@ -87,7 +87,6 @@ mvn docker:build -pl modules/distribution
 ##Start all supporting services and Airavata microservices (API Server, Helix components, and Job Monitors)
 
 docker-compose \
-  -f modules/ide-integration/src/main/containers/docker-compose.yml \
   -f modules/distribution/src/main/docker/docker-compose.yml \
   up -d
 
