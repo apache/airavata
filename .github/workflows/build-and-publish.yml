@@ -2,6 +2,9 @@ name: Maven Docker Build & Push
 
 on:
   push:
+    branches:
+      - master
+      - improve/cicd
     tags:
       - "v*"
   release:
