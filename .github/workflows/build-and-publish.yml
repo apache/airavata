@@ -9,7 +9,7 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io
-  DOCKER_USERNAME: airavata
+  DOCKER_USERNAME: mryash
   VERSION: ${{ github.ref_name }}
 
 jobs:
@@ -59,6 +59,6 @@ jobs:
       - name: Tag and Push Images
         run: |
           for image in email-monitor participant post-wm pre-wm api-server controller; do
-            docker tag ${DOCKER_USERNAME}/$image ${DOCKER_USERNAME}/$image:${VERSION}
+            docker tag airavata/$image ${DOCKER_USERNAME}/$image:${VERSION}
             docker push ${DOCKER_USERNAME}/$image:${VERSION}
           done
