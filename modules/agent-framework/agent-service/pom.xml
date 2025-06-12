@@ -110,9 +110,9 @@
             <version>${grpc.version}</version>
         </dependency>
         <dependency>
-          <groupId>com.google.protobuf</groupId>
-          <artifactId>protobuf-java</artifactId>
-          <version>${protoc.version}</version>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protoc.version}</version>
         </dependency>
         <dependency>
             <groupId>net.devh</groupId>
@@ -164,34 +164,41 @@
                 </executions>
             </plugin>
             <plugin>
-              <groupId>io.github.ascopes</groupId>
-              <artifactId>protobuf-maven-plugin</artifactId>
-              <version>${protobuf-plugin.version}</version>
-              <configuration>
-                <protocVersion>${protoc.version}</protocVersion>
-                <sourceDirectories>
-                  <sourceDirectory>${project.basedir}/../proto</sourceDirectory>
-                </sourceDirectories>
-              </configuration>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>generate</goal>
-                  </goals>
-                </execution>
-              </executions>
+                <groupId>io.github.ascopes</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>${protobuf-plugin.version}</version>
+                <configuration>
+                    <protocVersion>${protoc.version}</protocVersion>
+                    <sourceDirectories>
+                        <sourceDirectory>${project.parent.basedir}/proto</sourceDirectory>
+                    </sourceDirectories>
+                    <binaryMavenPlugins>
+                        <binaryMavenPlugin>
+                            <groupId>io.grpc</groupId>
+                            <artifactId>protoc-gen-grpc-java</artifactId>
+                            <version>${grpc.version}</version>
+                        </binaryMavenPlugin>
+                    </binaryMavenPlugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <version>${maven.compiler.plugin.version}</version>
-              <configuration>
-                <release>17</release>
-                <generatedSourcesDirectory>${project.build.directory}/generated-sources/protobuf</generatedSourcesDirectory>
-                <includes>
-                  <include>${project.build.directory}/generated-sources/**/*.java</include>
-                </includes>
-              </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <release>17</release>
+                    <includes>
+                        <include>${project.build.directory}/generated-sources/**/*.java</include>
+                    </includes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
