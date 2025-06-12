@@ -170,7 +170,7 @@
                 <configuration>
                     <protocVersion>${protoc.version}</protocVersion>
                     <sourceDirectories>
-                        <sourceDirectory>${project.basedir}/../proto</sourceDirectory>
+                        <sourceDirectory>${project.parent.basedir}/proto</sourceDirectory>
                     </sourceDirectories>
                     <binaryMavenPlugins>
                         <binaryMavenPlugin>
@@ -195,7 +195,6 @@
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <release>17</release>
-                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/protobuf</generatedSourcesDirectory>
                     <includes>
                         <include>${project.build.directory}/generated-sources/**/*.java</include>
                     </includes>
