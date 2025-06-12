@@ -20,6 +20,42 @@ Apache Airavata is a software framework for executing and managing computational
 
 > Learn more at [airavata.apache.org](https://airavata.apache.org)
 
+## 🧱 The Airavata Ecosystem
+
+Apache Airavata is composed of modular components spanning core services, data management, user interfaces, and developer tooling.
+
+### 🔧 Core Services
+- [`airavata`](https://github.com/apache/airavata) – Main microservices and orchestration engine
+- [`airavata-custos`](https://github.com/apache/airavata-custos) – Identity and access management framework
+- [`airavata-mft`](https://github.com/apache/airavata-mft) – Managed file transfer services
+
+### 🖥️ User Interfaces
+- [`airavata-django-portal`](https://github.com/apache/airavata-django-portal) – Primary reference UI
+- [`airavata-django-portal-sdk`](https://github.com/apache/airavata-django-portal-sdk) – SDK for custom portal development
+- [`airavata-django-portal-commons`](https://github.com/apache/airavata-django-portal-commons) – Shared Django utilities
+- [`airavata-cookiecutter-django-app`](https://github.com/apache/airavata-cookiecutter-django-app) – Starter template for apps
+- [`airavata-cookiecutter-django-output-view`](https://github.com/apache/airavata-cookiecutter-django-output-view) – Template for output views
+- [`airavata-custos-portal`](https://github.com/apache/airavata-custos-portal) – UI for Custos
+- [`airavata-php-gateway`](https://github.com/apache/airavata-php-gateway) – Legacy PHP gateway
+- [`airavata-jupyter-kernel`](https://github.com/apache/airavata-jupyter-kernel) – Jupyter integration
+
+### 📦 Data & Metadata Services
+- [`airavata-data-lake`](https://github.com/apache/airavata-data-lake) – Data lake and storage backend
+- [`airavata-data-catalog`](https://github.com/apache/airavata-data-catalog) – Metadata and search services
+- [`airavata-mft-portal`](https://github.com/apache/airavata-mft-portal) – Web UI for file transfers
+
+### 📚 Documentation & Branding
+- [`airavata-docs`](https://github.com/apache/airavata-docs) – Developer documentation
+- [`airavata-user-docs`](https://github.com/apache/airavata-user-docs) – End-user guides
+- [`airavata-admin-user-docs`](https://github.com/apache/airavata-admin-user-docs) – Admin-focused documentation
+- [`airavata-custos-docs`](https://github.com/apache/airavata-custos-docs) – Custos documentation
+- [`airavata-site`](https://github.com/apache/airavata-site) – Project website
+
+### 🧪 Experimental & Research
+- [`airavata-sandbox`](https://github.com/apache/airavata-sandbox) – Prototypes and early-stage work
+- [`airavata-labs`](https://github.com/apache/airavata-labs) – Experimental projects
+- [`airavata-cerebrum`](https://github.com/apache/airavata-cerebrum) – Airavata for Neuroscience
+
 ## 📋 Prerequisites
 
 Before building Apache Airavata, ensure you have:
