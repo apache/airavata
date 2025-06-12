@@ -92,6 +92,7 @@ under the License.
         <module>modules/computer-resource-monitoring-service</module>
         <module>modules/airavata-metascheduler/metadata-analyzer</module>
         <module>modules/agent-framework</module>
+        <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework</module>
         <module>tools</module>
         <module>modules/ide-integration</module>
