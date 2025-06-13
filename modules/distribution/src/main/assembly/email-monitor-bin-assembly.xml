@@ -93,7 +93,7 @@
                 <include>org.apache.thrift:libthrift:jar</include>
 
                 <include>jakarta.mail:jakarta.mail-api:jar</include>
-                <include>jakarta.mail:jakarta.mail:jar</include>
+                <include>org.eclipse.angus:angus-mail:jar</include>
                 <include>javax.activation:activation:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
 
