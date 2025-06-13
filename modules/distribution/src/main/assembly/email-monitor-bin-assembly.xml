@@ -94,7 +94,7 @@
 
                 <include>jakarta.mail:jakarta.mail-api:jar</include>
                 <include>org.eclipse.angus:angus-mail:jar</include>
-                <include>javax.activation:activation:jar</include>
+                <include>jakarta.activation:jakarta.activation-api:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>
 
                 <!-- kafka specific jars -->
