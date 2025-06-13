@@ -37,7 +37,6 @@ Apache Airavata is composed of modular components spanning core services, data m
 - [`airavata-cookiecutter-django-output-view`](https://github.com/apache/airavata-cookiecutter-django-output-view) – Template for output views
 - [`airavata-custos-portal`](https://github.com/apache/airavata-custos-portal) – UI for Custos
 - [`airavata-php-gateway`](https://github.com/apache/airavata-php-gateway) – Legacy PHP gateway
-- [`airavata-jupyter-kernel`](https://github.com/apache/airavata-jupyter-kernel) – Jupyter integration
 
 ### 📦 Data & Metadata Services
 - [`airavata-data-lake`](https://github.com/apache/airavata-data-lake) – Data lake and storage backend
@@ -54,6 +53,7 @@ Apache Airavata is composed of modular components spanning core services, data m
 ### 🧪 Experimental & Research
 - [`airavata-sandbox`](https://github.com/apache/airavata-sandbox) – Prototypes and early-stage work
 - [`airavata-labs`](https://github.com/apache/airavata-labs) – Experimental projects
+- [`airavata-jupyter-kernel`](https://github.com/apache/airavata-jupyter-kernel) – Jupyter integration
 - [`airavata-cerebrum`](https://github.com/apache/airavata-cerebrum) – Airavata for Neuroscience
 
 ## 📋 Prerequisites
