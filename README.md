@@ -37,11 +37,11 @@ Apache Airavata is composed of modular components spanning core services, data m
 - [`airavata-cookiecutter-django-output-view`](https://github.com/apache/airavata-cookiecutter-django-output-view) – Template for output views
 - [`airavata-custos-portal`](https://github.com/apache/airavata-custos-portal) – UI for Custos
 - [`airavata-php-gateway`](https://github.com/apache/airavata-php-gateway) – Legacy PHP gateway
+- [`airavata-mft-portal`](https://github.com/apache/airavata-mft-portal) – Web UI for file transfers
 
 ### 📦 Data & Metadata Services
 - [`airavata-data-lake`](https://github.com/apache/airavata-data-lake) – Data lake and storage backend
 - [`airavata-data-catalog`](https://github.com/apache/airavata-data-catalog) – Metadata and search services
-- [`airavata-mft-portal`](https://github.com/apache/airavata-mft-portal) – Web UI for file transfers
 
 ### 📚 Documentation & Branding
 - [`airavata-docs`](https://github.com/apache/airavata-docs) – Developer documentation
