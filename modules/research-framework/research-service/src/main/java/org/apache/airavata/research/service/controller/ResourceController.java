@@ -111,7 +111,7 @@ public class ResourceController {
     public ResponseEntity<Page<Resource>> getAllResources(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value="nameSearch") String nameSearch,
+            @RequestParam(value = "nameSearch") String nameSearch,
             @RequestParam(value = "type") ResourceTypeEnum[] types,
             @RequestParam(value = "tag", required = false) String[] tags) {
         List<Class<? extends Resource>> typeList = new ArrayList<>();
