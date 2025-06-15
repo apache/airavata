@@ -1,24 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.api.service.messaging;
 
+import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBEventService;
@@ -43,8 +44,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
  * Created by goshenoy on 3/30/17.
  */
@@ -68,7 +67,9 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         poolConfig.setMaxWaitMillis(3000);
 
         registryClientPool = new ThriftClientPool<>(
-                tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),
+                tProtocol -> new RegistryService.Client(tProtocol),
+                poolConfig,
+                ServerSettings.getRegistryServerHost(),
                 Integer.parseInt(ServerSettings.getRegistryServerPort()));
     }
 
@@ -81,10 +82,12 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
             DBEventMessage dbEventMessage = new DBEventMessage();
             ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
-            logger.info("RegistryService received db-event-message from publisher: " + dbEventMessage.getPublisherService());
+            logger.info("RegistryService received db-event-message from publisher: "
+                    + dbEventMessage.getPublisherService());
 
             // get publisher context
-            DBEventPublisherContext publisherContext = dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
+            DBEventPublisherContext publisherContext =
+                    dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
             logger.info("RegistryService, Replicated Entity: " + publisherContext.getEntityType());
 
             RegistryService.Client registryClient = registryClientPool.getResource();
@@ -144,7 +147,8 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 Project defaultProject = createDefaultProject(registryClient, userProfile);
                                 if (defaultProject != null) {
 
-                                    // Publish new PROJECT event (sharing service will listen for it and register this as a shared Entity)
+                                    // Publish new PROJECT event (sharing service will listen for it and register this
+                                    // as a shared Entity)
                                     dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
                                 }
                                 logger.info("addUser Replication Success!");
@@ -152,12 +156,12 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                             }
                             case UPDATE: {
                                 logger.info("Replicating updateGateway in Registry.");
-                                //TODO: find appropriate method
+                                // TODO: find appropriate method
                                 break;
                             }
                             case DELETE: {
                                 logger.info("Replicating deleteGateway in Registry.");
-                                //TODO: find appropriate method
+                                // TODO: find appropriate method
                                 break;
                             }
                         }
@@ -180,7 +184,8 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                 throw ex;
             }
             // send ack for received message
-            logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: " + messageContext.getDeliveryTag());
+            logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: "
+                    + messageContext.getDeliveryTag());
             RegistryServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
         } catch (TException ex) {
             logger.error("Error processing message: " + ex, ex);
@@ -194,9 +199,11 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         }
     }
 
-    private Project createDefaultProject(RegistryService.Client registryClient, UserProfile userProfile) throws TException {
+    private Project createDefaultProject(RegistryService.Client registryClient, UserProfile userProfile)
+            throws TException {
         // Just retrieve the first project to see if the user has any projects
-        List<Project> projects = registryClient.getUserProjects(userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
+        List<Project> projects =
+                registryClient.getUserProjects(userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
         if (projects.isEmpty()) {
             Project defaultProject = new Project();
             defaultProject.setOwner(userProfile.getUserId());

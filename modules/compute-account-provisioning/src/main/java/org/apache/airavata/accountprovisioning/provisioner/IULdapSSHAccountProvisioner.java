@@ -1,24 +1,28 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.accountprovisioning.provisioner;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
@@ -35,30 +39,29 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
 
-public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
-
-    private final static Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
     public static final String LDAP_PUBLIC_KEY_OBJECT_CLASS = "ldapPublicKey";
     public static final String SSH_PUBLIC_KEY_ATTRIBUTE_NAME = "sshPublicKey";
     public static final String GROUP_MEMBER_ATTRIBUTE_NAME = "memberUid";
 
     private String ldapHost, ldapUsername, ldapPassword, ldapBaseDN, canonicalScratchLocation, cybergatewayGroupDN;
     private int ldapPort;
+
     @Override
     public void init(Map<ConfigParam, String> config) {
 
-        ldapHost =  config.get(IULdapSSHAccountProvisionerProvider.LDAP_HOST);//"bazooka.hps.iu.edu"
-        ldapPort = Integer.valueOf(config.get(IULdapSSHAccountProvisionerProvider.LDAP_PORT));//"636"
-        ldapUsername = config.get(IULdapSSHAccountProvisionerProvider.LDAP_USERNAME);//"cn=sgrcusr"
-        ldapPassword = config.get(IULdapSSHAccountProvisionerProvider.LDAP_PASSWORD); //"secret password"
-        ldapBaseDN = config.get(IULdapSSHAccountProvisionerProvider.LDAP_BASE_DN);//"dc=rt,dc=iu,dc=edu"
-        canonicalScratchLocation = config.get(IULdapSSHAccountProvisionerProvider.CANONICAL_SCRATCH_LOCATION); //"/N/dc2/scratch/username/iu-gateway"
-        cybergatewayGroupDN = config.get(IULdapSSHAccountProvisionerProvider.CYBERGATEWAY_GROUP_DN); // "cn=cybergateway,ou=Group,dc=rt,dc=iu,dc=edu"
+        ldapHost = config.get(IULdapSSHAccountProvisionerProvider.LDAP_HOST); // "bazooka.hps.iu.edu"
+        ldapPort = Integer.valueOf(config.get(IULdapSSHAccountProvisionerProvider.LDAP_PORT)); // "636"
+        ldapUsername = config.get(IULdapSSHAccountProvisionerProvider.LDAP_USERNAME); // "cn=sgrcusr"
+        ldapPassword = config.get(IULdapSSHAccountProvisionerProvider.LDAP_PASSWORD); // "secret password"
+        ldapBaseDN = config.get(IULdapSSHAccountProvisionerProvider.LDAP_BASE_DN); // "dc=rt,dc=iu,dc=edu"
+        canonicalScratchLocation = config.get(
+                IULdapSSHAccountProvisionerProvider.CANONICAL_SCRATCH_LOCATION); // "/N/dc2/scratch/username/iu-gateway"
+        cybergatewayGroupDN = config.get(
+                IULdapSSHAccountProvisionerProvider
+                        .CYBERGATEWAY_GROUP_DN); // "cn=cybergateway,ou=Group,dc=rt,dc=iu,dc=edu"
     }
 
     @Override
@@ -82,7 +85,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     private boolean isInCybergatewayGroup(LdapConnection ldapConnection, String username) throws LdapException {
 
         final String filter = "(memberUid=" + username + ")";
-        try(EntryCursor entryCursor = ldapConnection.search(this.cybergatewayGroupDN, filter, SearchScope.OBJECT)) {
+        try (EntryCursor entryCursor = ldapConnection.search(this.cybergatewayGroupDN, filter, SearchScope.OBJECT)) {
 
             int count = 0;
             for (Entry entry : entryCursor) {
@@ -98,11 +101,13 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     @Override
     public String createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
 
-        throw new UnsupportedOperationException("IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
+        throw new UnsupportedOperationException(
+                "IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
     }
 
     @Override
-    public boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey) throws InvalidUsernameException {
+    public boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey)
+            throws InvalidUsernameException {
         String username = getUsername(userId);
         boolean result = withLdapConnection(ldapConnection -> {
             try {
@@ -116,7 +121,8 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
         return result;
     }
 
-    public boolean isSSHKeyInstalled(LdapConnection ldapConnection, String username, String sshPublicKey) throws LdapException {
+    public boolean isSSHKeyInstalled(LdapConnection ldapConnection, String username, String sshPublicKey)
+            throws LdapException {
 
         String ldapPublicKey = getLdapPublicKey(ldapConnection, username);
         return ldapPublicKey != null && ldapPublicKey.equals(sshPublicKey.trim());
@@ -149,17 +155,19 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
 
         ModifyRequest modifyRequest = new ModifyRequestImpl();
         modifyRequest.setName(new Dn(cybergatewayGroupDN));
-        modifyRequest.addModification(new DefaultAttribute(GROUP_MEMBER_ATTRIBUTE_NAME, username),
-                ModificationOperation.ADD_ATTRIBUTE);
+        modifyRequest.addModification(
+                new DefaultAttribute(GROUP_MEMBER_ATTRIBUTE_NAME, username), ModificationOperation.ADD_ATTRIBUTE);
         ModifyResponse modifyResponse = ldapConnection.modify(modifyRequest);
         if (modifyResponse.getLdapResult().getResultCode() != ResultCodeEnum.SUCCESS) {
-            logger.warn("add member to cybergateway group ldap operation reported not being successful: " + modifyResponse);
+            logger.warn(
+                    "add member to cybergateway group ldap operation reported not being successful: " + modifyResponse);
         } else {
             logger.debug("add member to cybergateway group ldap operation was successful: " + modifyResponse);
         }
     }
 
-    private void installLdapPublicKey(LdapConnection ldapConnection, String username, String finalSSHPublicKey) throws LdapException {
+    private void installLdapPublicKey(LdapConnection ldapConnection, String username, String finalSSHPublicKey)
+            throws LdapException {
         String dn = "uid=" + username + "," + ldapBaseDN;
 
         String ldapPublicKey = getLdapPublicKey(ldapConnection, username);
@@ -174,14 +182,18 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
         // Add or Replace, depending on whether there is already an ldapPublicKey on the entry
         if (ldapPublicKey == null) {
 
-            modifyRequest.addModification(new DefaultAttribute("objectclass", LDAP_PUBLIC_KEY_OBJECT_CLASS), ModificationOperation.ADD_ATTRIBUTE);
-            modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, finalSSHPublicKey),
+            modifyRequest.addModification(
+                    new DefaultAttribute("objectclass", LDAP_PUBLIC_KEY_OBJECT_CLASS),
+                    ModificationOperation.ADD_ATTRIBUTE);
+            modifyRequest.addModification(
+                    new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, finalSSHPublicKey),
                     ModificationOperation.ADD_ATTRIBUTE);
         } else {
 
             if (!ldapPublicKey.equals(finalSSHPublicKey)) {
-                 modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME,
-                        finalSSHPublicKey), ModificationOperation.REPLACE_ATTRIBUTE);
+                modifyRequest.addModification(
+                        new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, finalSSHPublicKey),
+                        ModificationOperation.REPLACE_ATTRIBUTE);
             }
         }
         ModifyResponse modifyResponse = ldapConnection.modify(modifyRequest);
@@ -207,11 +219,11 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     @Override
     public String getScratchLocation(String userId) throws InvalidUsernameException {
         String username = getUsername(userId);
-        String scratchLocation = canonicalScratchLocation.replace("${username}",username);
+        String scratchLocation = canonicalScratchLocation.replace("${username}", username);
         return scratchLocation;
     }
 
-    private <R> R withLdapConnection(Function<LdapConnection,R> function) {
+    private <R> R withLdapConnection(Function<LdapConnection, R> function) {
 
         try (LdapConnection connection = new LdapNetworkConnection(ldapHost, ldapPort, true)) {
 
@@ -244,7 +256,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     public static void main(String[] args) throws InvalidUsernameException {
         String ldapPassword = args[0];
         IULdapSSHAccountProvisioner sshAccountProvisioner = new IULdapSSHAccountProvisioner();
-        Map<ConfigParam,String> config = new HashMap<>();
+        Map<ConfigParam, String> config = new HashMap<>();
         // Create SSH tunnel to server that has firewall access to bazooka:
         //   ssh airavata@apidev.scigap.org -L 9000:bazooka.hps.iu.edu:636 -N &
         // Put entry in /etc/hosts with the following
@@ -254,18 +266,24 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_USERNAME, "cn=sgrcusr,dc=rt,dc=iu,dc=edu");
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_PASSWORD, ldapPassword);
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_BASE_DN, "ou=bigred2-sgrc,dc=rt,dc=iu,dc=edu");
-        config.put(IULdapSSHAccountProvisionerProvider.CANONICAL_SCRATCH_LOCATION, "/N/dc2/scratch/${username}/iu-gateway");
-        config.put(IULdapSSHAccountProvisionerProvider.CYBERGATEWAY_GROUP_DN, "cn=cybergateway,ou=Group,dc=rt,dc=iu,dc=edu");
+        config.put(
+                IULdapSSHAccountProvisionerProvider.CANONICAL_SCRATCH_LOCATION,
+                "/N/dc2/scratch/${username}/iu-gateway");
+        config.put(
+                IULdapSSHAccountProvisionerProvider.CYBERGATEWAY_GROUP_DN,
+                "cn=cybergateway,ou=Group,dc=rt,dc=iu,dc=edu");
         sshAccountProvisioner.init(config);
         String userId = "machrist@iu.edu";
         System.out.println("hasAccount=" + sshAccountProvisioner.hasAccount(userId));
         System.out.println("scratchLocation=" + sshAccountProvisioner.getScratchLocation(userId));
         String sshPublicKey = "foobar12345";
-        boolean sshAccountProvisioningComplete = sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
+        boolean sshAccountProvisioningComplete =
+                sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
         System.out.println("isSSHAccountProvisioningComplete=" + sshAccountProvisioningComplete);
         if (!sshAccountProvisioningComplete) {
             sshAccountProvisioner.installSSHKey(userId, sshPublicKey);
-            sshAccountProvisioningComplete = sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
+            sshAccountProvisioningComplete =
+                    sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
             System.out.println("isSSHAccountProvisioningComplete=" + sshAccountProvisioningComplete);
         }
     }

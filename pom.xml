@@ -92,6 +92,7 @@ under the License.
         <module>modules/computer-resource-monitoring-service</module>
         <module>modules/airavata-metascheduler/metadata-analyzer</module>
         <module>modules/agent-framework</module>
+        <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework</module>
         <module>tools</module>
         <module>modules/ide-integration</module>
@@ -411,7 +412,9 @@ under the License.
                 <version>2.44.5</version>
                 <configuration>
                     <java>
-                        <palantirJavaFormat/>
+                        <palantirJavaFormat>
+                            <version>2.68.0</version>
+                        </palantirJavaFormat>
                         <licenseHeader>
                             <file>apache-license-header-java.txt</file>
                         </licenseHeader>

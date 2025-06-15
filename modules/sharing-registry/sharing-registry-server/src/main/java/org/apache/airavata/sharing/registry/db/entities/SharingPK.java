@@ -1,33 +1,32 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.sharing.registry.db.entities;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SharingPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(SharingPK.class);
+    private static final Logger logger = LoggerFactory.getLogger(SharingPK.class);
     private String permissionTypeId;
     private String entityId;
     private String groupId;
@@ -91,13 +90,15 @@ public class SharingPK implements Serializable {
 
         SharingPK that = (SharingPK) o;
 
-        if (getPermissionTypeId() != null ? !getPermissionTypeId().equals(that.getPermissionTypeId()) : that.getPermissionTypeId() != null)
-            return false;
+        if (getPermissionTypeId() != null
+                ? !getPermissionTypeId().equals(that.getPermissionTypeId())
+                : that.getPermissionTypeId() != null) return false;
         if (getEntityId() != null ? !getEntityId().equals(that.getEntityId()) : that.getEntityId() != null)
             return false;
         if (getGroupId() != null ? !getGroupId().equals(that.getGroupId()) : that.getGroupId() != null) return false;
-        if (getInheritedParentId() != null ? !getInheritedParentId().equals(that.getInheritedParentId()) : that.getInheritedParentId() != null)
-            return false;
+        if (getInheritedParentId() != null
+                ? !getInheritedParentId().equals(that.getInheritedParentId())
+                : that.getInheritedParentId() != null) return false;
         if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
             return false;
 
@@ -109,7 +110,8 @@ public class SharingPK implements Serializable {
         int result = getPermissionTypeId() != null ? getPermissionTypeId().hashCode() : 0;
         result = 31 * result + (getEntityId() != null ? getEntityId().hashCode() : 0);
         result = 31 * result + (getGroupId() != null ? getGroupId().hashCode() : 0);
-        result = 31 * result + (getInheritedParentId() != null ? getInheritedParentId().hashCode() : 0);
+        result = 31 * result
+                + (getInheritedParentId() != null ? getInheritedParentId().hashCode() : 0);
         result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }

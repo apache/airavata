@@ -1,25 +1,29 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -35,14 +39,8 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, ProcessEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
 
     private final TaskRepository taskRepository = new TaskRepository();
 
@@ -56,7 +54,8 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     }
 
     protected ProcessEntity saveProcess(ProcessModel processModel) throws RegistryException {
-        if (processModel.getProcessId() == null || processModel.getProcessId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+        if (processModel.getProcessId() == null
+                || processModel.getProcessId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Process's ProcessId");
             processModel.setProcessId(ExpCatalogUtils.getID("PROCESS"));
         }
@@ -100,12 +99,16 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
         if (processEntity.getProcessOutputs() != null) {
             logger.debug("Populating the Primary Key of ProcessOutput objects for the Process");
-            processEntity.getProcessOutputs().forEach(processOutputEntity -> processOutputEntity.setProcessId(processId));
+            processEntity
+                    .getProcessOutputs()
+                    .forEach(processOutputEntity -> processOutputEntity.setProcessId(processId));
         }
 
         if (processEntity.getProcessStatuses() != null) {
             logger.debug("Populating the Primary Key of ProcessStatus objects for the Process");
-            processEntity.getProcessStatuses().forEach(processStatusEntity -> processStatusEntity.setProcessId(processId));
+            processEntity
+                    .getProcessStatuses()
+                    .forEach(processStatusEntity -> processStatusEntity.setProcessId(processId));
         }
 
         if (processEntity.getProcessErrors() != null) {
@@ -140,14 +143,18 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         return processRepository.get(processId);
     }
 
-    public String addProcessResourceSchedule(ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId) throws RegistryException {
+    public String addProcessResourceSchedule(
+            ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId)
+            throws RegistryException {
         ProcessModel processModel = getProcess(processId);
         processModel.setProcessResourceSchedule(computationalResourceSchedulingModel);
         updateProcess(processModel, processId);
         return processId;
     }
 
-    public String updateProcessResourceSchedule(ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId) throws RegistryException {
+    public String updateProcessResourceSchedule(
+            ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId)
+            throws RegistryException {
         return addProcessResourceSchedule(computationalResourceSchedulingModel, processId);
     }
 
@@ -164,7 +171,8 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             logger.debug("Search criteria is ExperimentId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Process.EXPERIMENT_ID, value);
-            processModelList = processRepository.select(QueryConstants.GET_PROCESS_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
+            processModelList =
+                    processRepository.select(QueryConstants.GET_PROCESS_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
         } else {
             logger.error("Unsupported field name for Process module.");
             throw new IllegalArgumentException("Unsupported field name for Process module.");
@@ -190,31 +198,30 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
         delete(processId);
     }
 
-
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
         ProcessRepository processRepository = new ProcessRepository();
         return processRepository.select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
     }
 
-    public Map<String,Double> getAVGTimeDistribution(String gatewayId,double searchTime){
+    public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchTime) {
         ProcessRepository processRepository = new ProcessRepository();
         Map<String, Double> timeDistributions = new HashMap<>();
-       List<Object>  orchTimeList =  processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY,
-                gatewayId,String.valueOf(searchTime));
-        List<Object>  queueingTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_QUEUED_NATIVE_QUERY,
-                gatewayId,String.valueOf(searchTime));
-        List<Object>  helixTimeList = processRepository.selectWithNativeQuery(QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY,
-                gatewayId,String.valueOf(searchTime));
-        if(orchTimeList.size()>0 && orchTimeList.get(0) != null){
-            timeDistributions.put(DBConstants.MetaData.ORCH_TIME, ((BigDecimal)orchTimeList.get(0)).doubleValue());
+        List<Object> orchTimeList = processRepository.selectWithNativeQuery(
+                QueryConstants.FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
+        List<Object> queueingTimeList = processRepository.selectWithNativeQuery(
+                QueryConstants.FIND_AVG_TIME_QUEUED_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
+        List<Object> helixTimeList = processRepository.selectWithNativeQuery(
+                QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
+        if (orchTimeList.size() > 0 && orchTimeList.get(0) != null) {
+            timeDistributions.put(DBConstants.MetaData.ORCH_TIME, ((BigDecimal) orchTimeList.get(0)).doubleValue());
         }
-        if(queueingTimeList.size()>0 && queueingTimeList.get(0) != null){
-            timeDistributions.put(DBConstants.MetaData.QUEUED_TIME,((BigDecimal)queueingTimeList.get(0)).doubleValue());
+        if (queueingTimeList.size() > 0 && queueingTimeList.get(0) != null) {
+            timeDistributions.put(
+                    DBConstants.MetaData.QUEUED_TIME, ((BigDecimal) queueingTimeList.get(0)).doubleValue());
         }
-        if(helixTimeList.size()>0 && helixTimeList.get(0) != null){
-            timeDistributions.put(DBConstants.MetaData.HELIX,((BigDecimal)helixTimeList.get(0)).doubleValue());
+        if (helixTimeList.size() > 0 && helixTimeList.get(0) != null) {
+            timeDistributions.put(DBConstants.MetaData.HELIX, ((BigDecimal) helixTimeList.get(0)).doubleValue());
         }
         return timeDistributions;
     }
-
 }

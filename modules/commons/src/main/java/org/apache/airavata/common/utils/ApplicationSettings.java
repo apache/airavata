@@ -1,28 +1,23 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,105 +28,115 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApplicationSettings {
-    public static final String SERVER_PROPERTIES="airavata-server.properties";
+    public static final String SERVER_PROPERTIES = "airavata-server.properties";
     public static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
 
     public static String ADDITIONAL_SETTINGS_FILES = "external.settings";
 
-	protected Properties properties = new Properties();
+    protected Properties properties = new Properties();
 
     private Exception propertyLoadException;
 
-
-    protected static final String TRUST_STORE_PATH="trust.store";
-    protected static final String TRUST_STORE_PASSWORD="trust.store.password";
+    protected static final String TRUST_STORE_PATH = "trust.store";
+    protected static final String TRUST_STORE_PASSWORD = "trust.store.password";
 
     private static final String REGULAR_EXPRESSION = "\\$\\{[a-zA-Z.-]*\\}";
 
-    private final static Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 
-    private static final String SHUTDOWN_STATEGY_STRING="shutdown.strategy";
+    private static final String SHUTDOWN_STATEGY_STRING = "shutdown.strategy";
 
     // ThriftClientPool Constants
-    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED = "thrift.client.pool.abandoned.removal.enabled";
-    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED = "thrift.client.pool.abandoned.removal.logged";
-    
+    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED =
+            "thrift.client.pool.abandoned.removal.enabled";
+    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED =
+            "thrift.client.pool.abandoned.removal.logged";
+
     protected static ApplicationSettings INSTANCE;
-    public static enum ShutdownStrategy{
-    	NONE,
-    	SELF_TERMINATE
-    }
-    {
-    	loadProperties();
+
+    public static enum ShutdownStrategy {
+        NONE,
+        SELF_TERMINATE
     }
 
-	private void loadProperties() {
-		URL url = getPropertyFileURL();
+    {
+        loadProperties();
+    }
+
+    private void loadProperties() {
+        URL url = getPropertyFileURL();
         try {
             properties.load(url.openStream());
-            logger.info("Settings loaded from "+url.toString());
+            logger.info("Settings loaded from " + url.toString());
             URL[] externalSettingsFileURLs = getExternalSettingsFileURLs();
             for (URL externalSettings : externalSettingsFileURLs) {
-				mergeSettingsImpl(externalSettings.openStream());
-				logger.info("External settings merged from "+url.toString());
-			}
+                mergeSettingsImpl(externalSettings.openStream());
+                logger.info("External settings merged from " + url.toString());
+            }
         } catch (Exception e) {
-        	propertyLoadException=e;
+            propertyLoadException = e;
         }
-	}
+    }
 
-	protected URL getPropertyFileURL() {
-		return ApplicationSettings.loadFile(SERVER_PROPERTIES);
-	}
-	
-	protected URL[] getExternalSettingsFileURLs(){
-		try {
-			List<URL> externalSettingsFileURLs=new ArrayList<URL>();
-			String externalSettingsFileNames = getSettingImpl(ADDITIONAL_SETTINGS_FILES);
-			String[] externalSettingFiles = externalSettingsFileNames.split(",");
-			for (String externalSettingFile : externalSettingFiles) {
-				URL externalSettingFileURL = ApplicationSettings.loadFile(externalSettingFile);
-				if (externalSettingFileURL==null){
-					logger.warn("Could not file external settings file "+externalSettingFile);
-				}else{
-					externalSettingsFileURLs.add(externalSettingFileURL);
-				}
-			}
-			return externalSettingsFileURLs.toArray(new URL[]{});
-		} catch (ApplicationSettingsException e) {
-			return new URL[]{};
-		}
-	}
-	protected static ApplicationSettings getInstance(){
-		if (INSTANCE==null){
-			INSTANCE=new ApplicationSettings();
-		}
-		return INSTANCE;
-	}
-	
-	protected static void setInstance(ApplicationSettings settingsInstance){
-		INSTANCE=settingsInstance;
-	}
-	
-	private void saveProperties() throws ApplicationSettingsException{
-		URL url = getPropertyFileURL();
-		if (url.getProtocol().equalsIgnoreCase("file")){
-			try {
-				properties.store(new FileOutputStream(url.getPath()), Calendar.getInstance().toString());
-			} catch (Exception e) {
-				throw new ApplicationSettingsException(url.getPath(), e);
-			}
-		}else{
-			logger.warn("Properties cannot be updated to location "+url.toString());
-		}
-	}
-	
-    private void validateSuccessfulPropertyFileLoad() throws ApplicationSettingsException{
-    	if (propertyLoadException!=null){
-    		throw new ApplicationSettingsException(propertyLoadException.getMessage(), propertyLoadException);
-    	}
+    protected URL getPropertyFileURL() {
+        return ApplicationSettings.loadFile(SERVER_PROPERTIES);
+    }
+
+    protected URL[] getExternalSettingsFileURLs() {
+        try {
+            List<URL> externalSettingsFileURLs = new ArrayList<URL>();
+            String externalSettingsFileNames = getSettingImpl(ADDITIONAL_SETTINGS_FILES);
+            String[] externalSettingFiles = externalSettingsFileNames.split(",");
+            for (String externalSettingFile : externalSettingFiles) {
+                URL externalSettingFileURL = ApplicationSettings.loadFile(externalSettingFile);
+                if (externalSettingFileURL == null) {
+                    logger.warn("Could not file external settings file " + externalSettingFile);
+                } else {
+                    externalSettingsFileURLs.add(externalSettingFileURL);
+                }
+            }
+            return externalSettingsFileURLs.toArray(new URL[] {});
+        } catch (ApplicationSettingsException e) {
+            return new URL[] {};
+        }
+    }
+
+    protected static ApplicationSettings getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ApplicationSettings();
+        }
+        return INSTANCE;
+    }
+
+    protected static void setInstance(ApplicationSettings settingsInstance) {
+        INSTANCE = settingsInstance;
+    }
+
+    private void saveProperties() throws ApplicationSettingsException {
+        URL url = getPropertyFileURL();
+        if (url.getProtocol().equalsIgnoreCase("file")) {
+            try {
+                properties.store(
+                        new FileOutputStream(url.getPath()),
+                        Calendar.getInstance().toString());
+            } catch (Exception e) {
+                throw new ApplicationSettingsException(url.getPath(), e);
+            }
+        } else {
+            logger.warn("Properties cannot be updated to location " + url.toString());
+        }
+    }
+
+    private void validateSuccessfulPropertyFileLoad() throws ApplicationSettingsException {
+        if (propertyLoadException != null) {
+            throw new ApplicationSettingsException(propertyLoadException.getMessage(), propertyLoadException);
+        }
     }
 
     /**
@@ -150,14 +155,13 @@ public class ApplicationSettings {
 
         String configurationValueWithVariables = ApplicationSettings.getSetting(key);
 
-        List<String> variableList
-                = getAllMatches(configurationValueWithVariables, REGULAR_EXPRESSION);
+        List<String> variableList = getAllMatches(configurationValueWithVariables, REGULAR_EXPRESSION);
 
         if (variableList == null || variableList.isEmpty()) {
             return configurationValueWithVariables;
         }
 
-        for(String variableIdentifier : variableList) {
+        for (String variableIdentifier : variableList) {
             String variableName = getVariableNameOnly(variableIdentifier);
             String value = getAbsoluteSetting(variableName);
 
@@ -165,7 +169,6 @@ public class ApplicationSettings {
         }
 
         return configurationValueWithVariables;
-
     }
 
     private static String getVariableNameOnly(String variableWithIdentifiers) {
@@ -175,64 +178,64 @@ public class ApplicationSettings {
     private static List<String> getAllMatches(String text, String regex) {
         List<String> matches = new ArrayList<String>();
         Matcher m = Pattern.compile("(?=(" + regex + "))").matcher(text);
-        while(m.find()) {
+        while (m.find()) {
             matches.add(m.group(1));
         }
         return matches;
     }
-    
-    public String getSettingImpl(String key) throws ApplicationSettingsException{
-    	String rawValue;
-    	if (System.getProperties().containsKey(key)) {
+
+    public String getSettingImpl(String key) throws ApplicationSettingsException {
+        String rawValue;
+        if (System.getProperties().containsKey(key)) {
             rawValue = System.getProperties().getProperty(key);
 
         } else if (System.getenv().containsKey(key)) {
-    	    rawValue = System.getenv().get(key);
+            rawValue = System.getenv().get(key);
 
-    	} else {
-    		validateSuccessfulPropertyFileLoad();
-	    	if (properties.containsKey(key)){
-	    		rawValue = properties.getProperty(key);
-	    	}else{
-	    		throw new ApplicationSettingsException(key);
-	    	}
-    	}
-    	return deriveAbsoluteValueImpl(rawValue);
-    }
-    
-    public String getSettingImpl(String key, String defaultValue){
-    	try {
-    		return getSettingImpl(key);
-		} catch (ApplicationSettingsException e) {
-			//we'll ignore this error since a default value is provided
-		}
-		return defaultValue;
+        } else {
+            validateSuccessfulPropertyFileLoad();
+            if (properties.containsKey(key)) {
+                rawValue = properties.getProperty(key);
+            } else {
+                throw new ApplicationSettingsException(key);
+            }
+        }
+        return deriveAbsoluteValueImpl(rawValue);
     }
 
-	private String deriveAbsoluteValueImpl(String property){
-		if (property!=null){
-			Map<Integer, String> containedParameters = StringUtil.getContainedParameters(property);
-			List<String> parametersAlreadyProcessed=new ArrayList<String>();
-			for (String parameter : containedParameters.values()) {
-				if (!parametersAlreadyProcessed.contains(parameter)) {
-					String parameterName = parameter.substring(2,parameter.length() - 1);
-					String parameterValue = getSetting(parameterName,parameter);
-					property = property.replaceAll(Pattern.quote(parameter), parameterValue);
-					parametersAlreadyProcessed.add(parameter);
-				}
-			}
-		}
-		return property;
-	}
-    
-    public void setSettingImpl(String key, String value) throws ApplicationSettingsException{
-    	properties.setProperty(key, value);
-    	saveProperties();
+    public String getSettingImpl(String key, String defaultValue) {
+        try {
+            return getSettingImpl(key);
+        } catch (ApplicationSettingsException e) {
+            // we'll ignore this error since a default value is provided
+        }
+        return defaultValue;
     }
-    
-    public boolean isSettingDefinedImpl(String key) throws ApplicationSettingsException{
-    	validateSuccessfulPropertyFileLoad();
-    	return properties.containsKey(key);
+
+    private String deriveAbsoluteValueImpl(String property) {
+        if (property != null) {
+            Map<Integer, String> containedParameters = StringUtil.getContainedParameters(property);
+            List<String> parametersAlreadyProcessed = new ArrayList<String>();
+            for (String parameter : containedParameters.values()) {
+                if (!parametersAlreadyProcessed.contains(parameter)) {
+                    String parameterName = parameter.substring(2, parameter.length() - 1);
+                    String parameterValue = getSetting(parameterName, parameter);
+                    property = property.replaceAll(Pattern.quote(parameter), parameterValue);
+                    parametersAlreadyProcessed.add(parameter);
+                }
+            }
+        }
+        return property;
+    }
+
+    public void setSettingImpl(String key, String value) throws ApplicationSettingsException {
+        properties.setProperty(key, value);
+        saveProperties();
+    }
+
+    public boolean isSettingDefinedImpl(String key) throws ApplicationSettingsException {
+        validateSuccessfulPropertyFileLoad();
+        return properties.containsKey(key);
     }
 
     public String getTrustStorePathImpl() throws ApplicationSettingsException {
@@ -295,49 +298,48 @@ public class ApplicationSettings {
     public Properties getPropertiesImpl() {
         return properties;
     }
-    
-    public void mergeSettingsImpl(Map<String,String> props){
-    	properties.putAll(props);
+
+    public void mergeSettingsImpl(Map<String, String> props) {
+        properties.putAll(props);
     }
-    
-    public void mergeSettingsImpl(InputStream stream) throws IOException{
-    	Properties tmpProp = new Properties();
-    	tmpProp.load(stream);
-    	properties.putAll(tmpProp);
+
+    public void mergeSettingsImpl(InputStream stream) throws IOException {
+        Properties tmpProp = new Properties();
+        tmpProp.load(stream);
+        properties.putAll(tmpProp);
     }
-    
-    public void mergeSettingsCommandLineArgsImpl(String[] args){
-    	properties.putAll(StringUtil.parseCommandLineOptions(args));
+
+    public void mergeSettingsCommandLineArgsImpl(String[] args) {
+        properties.putAll(StringUtil.parseCommandLineOptions(args));
     }
- 
-    public ShutdownStrategy getShutdownStrategyImpl() throws Exception{
-    	String strategy = null;
-    	try {
-			strategy = getSetting(SHUTDOWN_STATEGY_STRING, ShutdownStrategy.SELF_TERMINATE.toString());
-			return ShutdownStrategy.valueOf(strategy);
-		} catch (Exception e) {
-			//if the string mentioned in config is invalid
-			throw new Exception("Invalid shutdown strategy configured : "+strategy);
-		}
+
+    public ShutdownStrategy getShutdownStrategyImpl() throws Exception {
+        String strategy = null;
+        try {
+            strategy = getSetting(SHUTDOWN_STATEGY_STRING, ShutdownStrategy.SELF_TERMINATE.toString());
+            return ShutdownStrategy.valueOf(strategy);
+        } catch (Exception e) {
+            // if the string mentioned in config is invalid
+            throw new Exception("Invalid shutdown strategy configured : " + strategy);
+        }
     }
-    
+
     /*
      * Static methods which will be used by the users
      */
-    
+
     public static String getSetting(String key) throws ApplicationSettingsException {
-    	return getInstance().getSettingImpl(key);
+        return getInstance().getSettingImpl(key);
     }
 
     public static String getSetting(String key, String defaultValue) {
-    	return getInstance().getSettingImpl(key,defaultValue);
+        return getInstance().getSettingImpl(key, defaultValue);
     }
-    
-    public static void setSetting(String key, String value) throws ApplicationSettingsException{
+
+    public static void setSetting(String key, String value) throws ApplicationSettingsException {
         getInstance().properties.setProperty(key, value);
         getInstance().saveProperties();
     }
-
 
     public static int getIntSetting(String key) throws ApplicationSettingsException {
         String val = getInstance().getSettingImpl(key);
@@ -372,8 +374,8 @@ public class ApplicationSettings {
         }
     }
 
-    public static boolean isSettingDefined(String key) throws ApplicationSettingsException{
-    	return getInstance().properties.containsKey(key);
+    public static boolean isSettingDefined(String key) throws ApplicationSettingsException {
+        return getInstance().properties.containsKey(key);
     }
 
     public static boolean isTrustStorePathDefined() throws ApplicationSettingsException {
@@ -411,6 +413,7 @@ public class ApplicationSettings {
     public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
         return getSetting("credential.store.server.port");
     }
+
     public static String getCredentialStoreNotifierEnabled() throws ApplicationSettingsException {
         return getSetting("notifier.enabled");
     }
@@ -466,6 +469,7 @@ public class ApplicationSettings {
     public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
         return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
     }
+
     public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
         return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
     }
@@ -501,38 +505,40 @@ public class ApplicationSettings {
     /**
      * @deprecated use {{@link #getSetting(String)}}
      * @return
-     * @throws ApplicationSettingsException 
+     * @throws ApplicationSettingsException
      */
     @Deprecated
     public static Properties getProperties() throws ApplicationSettingsException {
         return getInstance().properties;
     }
-    
-    public static void mergeSettings(Map<String,String> props) {
-    	getInstance().mergeSettingsImpl(props);
+
+    public static void mergeSettings(Map<String, String> props) {
+        getInstance().mergeSettingsImpl(props);
     }
-    
-    public static void mergeSettings(InputStream stream) throws IOException{
-    	getInstance().mergeSettingsImpl(stream);
+
+    public static void mergeSettings(InputStream stream) throws IOException {
+        getInstance().mergeSettingsImpl(stream);
     }
-    
-    public static void mergeSettingsCommandLineArgs(String[] args){
-    	getInstance().mergeSettingsCommandLineArgsImpl(args);
+
+    public static void mergeSettingsCommandLineArgs(String[] args) {
+        getInstance().mergeSettingsCommandLineArgsImpl(args);
     }
- 
-    public static ShutdownStrategy getShutdownStrategy() throws Exception{
-    	return getInstance().getShutdownStrategyImpl();
+
+    public static ShutdownStrategy getShutdownStrategy() throws Exception {
+        return getInstance().getShutdownStrategyImpl();
     }
 
     public static URL loadFile(String fileName) {
 
-        if(System.getProperty(AIRAVATA_CONFIG_DIR) != null) {
+        if (System.getProperty(AIRAVATA_CONFIG_DIR) != null) {
             String airavataConfigDir = System.getProperty(AIRAVATA_CONFIG_DIR);
             try {
-                airavataConfigDir = airavataConfigDir.endsWith(File.separator) ? airavataConfigDir : airavataConfigDir + File.separator;
+                airavataConfigDir = airavataConfigDir.endsWith(File.separator)
+                        ? airavataConfigDir
+                        : airavataConfigDir + File.separator;
                 String filePath = airavataConfigDir + fileName;
 
-                File asfile  = new File(filePath);
+                File asfile = new File(filePath);
                 if (asfile.exists()) {
 
                     return asfile.toURI().toURL();
@@ -543,6 +549,5 @@ public class ApplicationSettings {
         }
 
         return ApplicationSettings.class.getClassLoader().getResource(fileName);
-
     }
 }

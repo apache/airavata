@@ -1,26 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.profile.handlers;
 
 import java.util.List;
-
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -44,8 +43,8 @@ import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
@@ -54,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
-    private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
     private UserProfileRepository userProfileRepository = new UserProfileRepository();
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
@@ -65,7 +64,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
+    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)
+            throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
         try {
@@ -74,14 +74,16 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             // Load the tenant admin password stored in gateway request
             CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
             // Admin password token should already be stored under requested gateway's gatewayId
-            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
+            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(
+                    gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
-            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway, tenantAdminPasswordCredential.getPassword())) {
+            if (!keycloakclient.createTenantAdminAccount(
+                    isSuperAdminCredentials, gateway, tenantAdminPasswordCredential.getPassword())) {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
-        } catch (TException|ApplicationSettingsException ex) {
+        } catch (TException | ApplicationSettingsException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
             throw iamAdminServicesException;
@@ -90,23 +92,31 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean isUsernameAvailable(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean isUsernameAvailable(AuthzToken authzToken, String username)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
     }
 
-    //ToDo: Will only be secure when using SSL between PGA and Airavata
+    // ToDo: Will only be secure when using SSL between PGA and Airavata
     @Override
     @SecurityCheck
-    public boolean registerUser(AuthzToken authzToken, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException, AuthorizationException {
+    public boolean registerUser(
+            AuthzToken authzToken,
+            String username,
+            String emailAddress,
+            String firstName,
+            String lastName,
+            String newPassword)
+            throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            if (keycloakclient.createUser(authzToken.getAccessToken(), gatewayId, username, emailAddress, firstName, lastName, newPassword))
+            if (keycloakclient.createUser(
+                    authzToken.getAccessToken(), gatewayId, username, emailAddress, firstName, lastName, newPassword))
                 return true;
-            else
-                return false;
+            else return false;
         } catch (TException ex) {
             String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
@@ -116,18 +126,22 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException {
+    public boolean enableUser(AuthzToken authzToken, String username)
+            throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username)) {
                 // Check if user profile exists, if not create it
-                boolean userProfileExists = userProfileRepository.getUserProfileByIdAndGateWay(username, gatewayId) != null;
+                boolean userProfileExists =
+                        userProfileRepository.getUserProfileByIdAndGateWay(username, gatewayId) != null;
                 if (!userProfileExists) {
                     // Load basic user profile information from Keycloak and then save in UserProfileRepository
                     UserProfile userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
-                    userProfile.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-                    userProfile.setLastAccessTime(AiravataUtils.getCurrentTimestamp().getTime());
+                    userProfile.setCreationTime(
+                            AiravataUtils.getCurrentTimestamp().getTime());
+                    userProfile.setLastAccessTime(
+                            AiravataUtils.getCurrentTimestamp().getTime());
                     userProfile.setValidUntil(-1);
                     userProfileRepository.createUserProfile(userProfile);
                     // Dispatch IAM_ADMIN service event for a new USER_PROFILE
@@ -146,7 +160,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean isUserEnabled(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean isUserEnabled(AuthzToken authzToken, String username)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -160,7 +175,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean isUserExist(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean isUserExist(AuthzToken authzToken, String username)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -174,7 +190,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public UserProfile getUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+    public UserProfile getUser(AuthzToken authzToken, String username)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -185,7 +202,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             throw new IamAdminServicesException(msg);
         }
     }
-
 
     @Override
     @SecurityCheck
@@ -204,14 +220,14 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (keycloakclient.resetUserPassword(authzToken.getAccessToken(), gatewayId, username, newPassword))
                 return true;
-            else
-                return false;
+            else return false;
         } catch (TException ex) {
             String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
@@ -221,7 +237,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public List<UserProfile> findUsers(AuthzToken authzToken, String email, String userId) throws IamAdminServicesException, AuthorizationException, TException {
+    public List<UserProfile> findUsers(AuthzToken authzToken, String email, String userId)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -235,7 +252,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails) throws IamAdminServicesException, AuthorizationException, TException {
+    public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails)
+            throws IamAdminServicesException, AuthorizationException, TException {
 
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String username = userDetails.getUserId();
@@ -246,7 +264,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean deleteUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean deleteUser(AuthzToken authzToken, String username)
+            throws IamAdminServicesException, AuthorizationException, TException {
 
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -257,7 +276,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     @Deprecated
-    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -273,7 +293,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     @Deprecated
-    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
+            throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -289,7 +310,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     @Deprecated
-    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
+            throws IamAdminServicesException, AuthorizationException, TException {
 
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -314,7 +336,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         return isSuperAdminCredentials;
     }
 
-    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
+    private PasswordCredential getTenantAdminPasswordCredential(String tenantId)
+            throws TException, ApplicationSettingsException {
 
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
 
@@ -332,7 +355,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
     }
 
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+    private CredentialStoreService.Client getCredentialStoreServiceClient()
+            throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
         final String serverHost = ServerSettings.getCredentialStoreServerHost();
         try {

@@ -1,24 +1,29 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.registry.core.utils.Committer;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -26,14 +31,8 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public abstract class AbstractRepository<T, E, Id> {
-    private final static Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
     private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
@@ -72,17 +71,15 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) {
-        E entity = execute(entityManager -> entityManager
-                .find(dbEntityGenericClass, id));
-        if(entity == null)
-            return null;
+        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
+        if (entity == null) return null;
         Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, thriftGenericClass);
     }
 
     public List<T> select(String query, int offset) {
-        List resultSet = (List) execute(entityManager -> entityManager.createQuery(query).setFirstResult(offset)
-                .getResultList());
+        List resultSet = (List) execute(entityManager ->
+                entityManager.createQuery(query).setFirstResult(offset).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
@@ -90,7 +87,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
-        int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
+        int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
 
         List resultSet = (List) execute(entityManager -> {
             Query jpaQuery = entityManager.createQuery(query);
@@ -101,7 +98,6 @@ public abstract class AbstractRepository<T, E, Id> {
             }
 
             return jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
-
         });
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
@@ -123,12 +119,12 @@ public abstract class AbstractRepository<T, E, Id> {
                 jpaQuery.setParameter(entry.getKey(), entry.getValue());
             }
 
-            return ((Number)jpaQuery.getSingleResult()).intValue();
+            return ((Number) jpaQuery.getSingleResult()).intValue();
         });
         return scalarInt;
     }
 
-    public <R> R execute(Committer<EntityManager, R> committer){
+    public <R> R execute(Committer<EntityManager, R> committer) {
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -140,11 +136,11 @@ public abstract class AbstractRepository<T, E, Id> {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
             entityManager.getTransaction().commit();
-            return  r;
-        } catch(Exception e) {
+            return r;
+        } catch (Exception e) {
             logger.error("Failed to execute transaction", e);
             throw e;
-        }finally {
+        } finally {
             if (entityManager != null && entityManager.isOpen()) {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
@@ -153,7 +149,6 @@ public abstract class AbstractRepository<T, E, Id> {
             }
         }
     }
-
 
     public void executeWithNativeQuery(String query, String... params) {
         EntityManager entityManager = null;
@@ -164,17 +159,17 @@ public abstract class AbstractRepository<T, E, Id> {
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {
-           Query nativeQuery =  entityManager.createNativeQuery(query);
-           for(int i=0;i<params.length;i++){
-               nativeQuery.setParameter((i+1),params[i]);
-           }
-           entityManager.getTransaction().begin();
-           nativeQuery.executeUpdate();
-           entityManager.getTransaction().commit();
-        } catch(Exception e) {
+            Query nativeQuery = entityManager.createNativeQuery(query);
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter((i + 1), params[i]);
+            }
+            entityManager.getTransaction().begin();
+            nativeQuery.executeUpdate();
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
             logger.error("Failed to execute transaction", e);
             throw e;
-        }finally {
+        } finally {
             if (entityManager != null && entityManager.isOpen()) {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
@@ -182,9 +177,7 @@ public abstract class AbstractRepository<T, E, Id> {
                 entityManager.close();
             }
         }
-
     }
-
 
     public List selectWithNativeQuery(String query, String... params) {
         EntityManager entityManager = null;
@@ -195,15 +188,15 @@ public abstract class AbstractRepository<T, E, Id> {
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {
-            Query nativeQuery =  entityManager.createNativeQuery(query);
-            for(int i=0;i<params.length;i++){
-                nativeQuery.setParameter((i+1),params[i]);
+            Query nativeQuery = entityManager.createNativeQuery(query);
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter((i + 1), params[i]);
             }
-           return nativeQuery.getResultList();
-        } catch(Exception e) {
+            return nativeQuery.getResultList();
+        } catch (Exception e) {
             logger.error("Failed to execute transaction", e);
             throw e;
-        }finally {
+        } finally {
             if (entityManager != null && entityManager.isOpen()) {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
@@ -211,9 +204,7 @@ public abstract class AbstractRepository<T, E, Id> {
                 entityManager.close();
             }
         }
-
     }
 
-    abstract protected EntityManager getEntityManager();
-
+    protected abstract EntityManager getEntityManager();
 }

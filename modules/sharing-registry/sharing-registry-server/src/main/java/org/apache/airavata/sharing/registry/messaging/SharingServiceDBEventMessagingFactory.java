@@ -1,24 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.sharing.registry.messaging;
 
+import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
@@ -35,14 +36,12 @@ import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
  * Created by Ajinkya on 3/28/17.
  */
 public class SharingServiceDBEventMessagingFactory {
 
-    private final static Logger log = LoggerFactory.getLogger(SharingServiceDBEventMessagingFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventMessagingFactory.class);
 
     private static Publisher dbEventPublisher;
 
@@ -55,9 +54,9 @@ public class SharingServiceDBEventMessagingFactory {
      * @throws AiravataException
      */
     private static Publisher getDBEventPublisher() throws AiravataException {
-        if(null == dbEventPublisher){
-            synchronized (SharingServiceDBEventMessagingFactory.class){
-                if(null == dbEventPublisher){
+        if (null == dbEventPublisher) {
+            synchronized (SharingServiceDBEventMessagingFactory.class) {
+                if (null == dbEventPublisher) {
                     log.info("Creating DB Event publisher.....");
                     dbEventPublisher = MessagingFactory.getDBEventPublisher();
                     log.info("DB Event publisher created");
@@ -68,11 +67,12 @@ public class SharingServiceDBEventMessagingFactory {
     }
 
     public static Subscriber getDBEventSubscriber() throws AiravataException, SharingRegistryException {
-        if(null == sharingServiceDBEventSubscriber){
-            synchronized (SharingServiceDBEventMessagingFactory.class){
-                if(null == sharingServiceDBEventSubscriber){
+        if (null == sharingServiceDBEventSubscriber) {
+            synchronized (SharingServiceDBEventMessagingFactory.class) {
+                if (null == sharingServiceDBEventSubscriber) {
                     log.info("Creating DB Event publisher.....");
-                    sharingServiceDBEventSubscriber = MessagingFactory.getDBEventSubscriber(new SharingServiceDBEventHandler(), DBEventService.SHARING.toString());
+                    sharingServiceDBEventSubscriber = MessagingFactory.getDBEventSubscriber(
+                            new SharingServiceDBEventHandler(), DBEventService.SHARING.toString());
                     log.info("DB Event publisher created");
                 }
             }
@@ -88,23 +88,24 @@ public class SharingServiceDBEventMessagingFactory {
      */
     public static boolean registerSharingServiceWithPublishers(List<String> publishers) throws AiravataException {
 
-        for(String publisher : publishers){
+        for (String publisher : publishers) {
 
-            log.info("Sending service discovery message. Publisher : " + publisher + ", Subscriber : " + DBEventService.SHARING.toString());
+            log.info("Sending service discovery message. Publisher : " + publisher + ", Subscriber : "
+                    + DBEventService.SHARING.toString());
 
             DBEventSubscriber dbEventSubscriber = new DBEventSubscriber(DBEventService.SHARING.toString());
             DBEventMessageContext dbEventMessageContext = new DBEventMessageContext();
             dbEventMessageContext.setSubscriber(dbEventSubscriber);
 
-            DBEventMessage dbEventMessage = new DBEventMessage(DBEventType.SUBSCRIBER, dbEventMessageContext, publisher);
+            DBEventMessage dbEventMessage =
+                    new DBEventMessage(DBEventType.SUBSCRIBER, dbEventMessageContext, publisher);
 
             MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
 
-            getDBEventPublisher().publish(messageContext, DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString()));
-
+            getDBEventPublisher()
+                    .publish(messageContext, DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString()));
         }
 
         return true;
     }
-
 }

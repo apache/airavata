@@ -1,30 +1,23 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.credential.store.store.impl.db;
-
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.KeyStorePasswordCallback;
-import org.apache.airavata.common.utils.SecurityUtil;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.CredentialOwnerType;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -33,6 +26,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.KeyStorePasswordCallback;
+import org.apache.airavata.common.utils.SecurityUtil;
+import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 
 /**
  * Data access class for credential store.
@@ -43,8 +42,7 @@ public class CredentialsDAO extends ParentDAO {
     private String secretKeyAlias = null;
     private KeyStorePasswordCallback keyStorePasswordCallback = null;
 
-    public CredentialsDAO() {
-    }
+    public CredentialsDAO() {}
 
     public CredentialsDAO(String keyStore, String alias, KeyStorePasswordCallback passwordCallback) {
         this.keyStorePath = keyStore;
@@ -83,11 +81,11 @@ public class CredentialsDAO extends ParentDAO {
      * "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n"
      * + ")";
      */
-
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, CREDENTIAL, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION, CREDENTIAL_OWNER_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, CREDENTIAL, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION, CREDENTIAL_OWNER_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -101,12 +99,12 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setBinaryStream(3, isCert);
 
             preparedStatement.setString(4, credential.getPortalUserName());
-            
+
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
             preparedStatement.setTimestamp(5, timestamp);
 
-            preparedStatement.setString(6,credential.getDescription());
+            preparedStatement.setString(6, credential.getDescription());
 
             preparedStatement.setString(7, credential.getCredentialOwnerType().toString());
 
@@ -125,7 +123,6 @@ public class CredentialsDAO extends ParentDAO {
             DBUtil.cleanup(preparedStatement);
         }
     }
-
 
     public void deleteCredentials(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
@@ -165,7 +162,8 @@ public class CredentialsDAO extends ParentDAO {
     public void updateCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ?, CREDENTIAL_OWNER_TYPE = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
+        String sql =
+                "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ?, CREDENTIAL_OWNER_TYPE = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
         PreparedStatement preparedStatement = null;
 
@@ -183,7 +181,6 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setString(6, gatewayId);
             preparedStatement.setString(7, credential.getToken());
 
-
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -198,7 +195,6 @@ public class CredentialsDAO extends ParentDAO {
 
             DBUtil.cleanup(preparedStatement);
         }
-
     }
 
     /**
@@ -235,7 +231,8 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
-                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
+                certificateCredential.setCredentialOwnerType(
+                        CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 return certificateCredential;
             }
@@ -255,10 +252,9 @@ public class CredentialsDAO extends ParentDAO {
         return null;
     }
     /**
-     * 
+     *
      */
-    public String getGatewayID(String tokenId, Connection connection)
-            throws CredentialStoreException {
+    public String getGatewayID(String tokenId, Connection connection) throws CredentialStoreException {
 
         String sql = "SELECT GATEWAY_ID FROM CREDENTIALS WHERE TOKEN_ID=?";
 
@@ -269,12 +265,12 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, tokenId);
-         
+
             resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-            	return resultSet.getString("GATEWAY_ID");
-              }
+                return resultSet.getString("GATEWAY_ID");
+            }
 
         } catch (SQLException e) {
             StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for user.");
@@ -301,7 +297,8 @@ public class CredentialsDAO extends ParentDAO {
         return getCredentialsInternal(gatewayName, null, connection);
     }
 
-    public List<Credential> getCredentials(String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
+    public List<Credential> getCredentials(String gatewayId, List<String> accessibleTokenIds, Connection connection)
+            throws CredentialStoreException {
 
         if (accessibleTokenIds == null || accessibleTokenIds.isEmpty()) {
             return Collections.emptyList();
@@ -309,12 +306,14 @@ public class CredentialsDAO extends ParentDAO {
         return getCredentialsInternal(gatewayId, accessibleTokenIds, connection);
     }
 
-    private List<Credential> getCredentialsInternal(String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
+    private List<Credential> getCredentialsInternal(
+            String gatewayId, List<String> accessibleTokenIds, Connection connection) throws CredentialStoreException {
         List<Credential> credentialList = new ArrayList<>();
 
         String sql = "SELECT * FROM CREDENTIALS WHERE GATEWAY_ID=?";
         if (accessibleTokenIds != null && !accessibleTokenIds.isEmpty()) {
-            String tokenIdBindParameters = String.join(", ", accessibleTokenIds.stream().map(tokenId -> "?").collect(Collectors.toList()));
+            String tokenIdBindParameters = String.join(
+                    ", ", accessibleTokenIds.stream().map(tokenId -> "?").collect(Collectors.toList()));
             sql += " AND TOKEN_ID IN (" + tokenIdBindParameters + ")";
         }
 
@@ -397,7 +396,8 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
-                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
+                certificateCredential.setCredentialOwnerType(
+                        CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }
@@ -420,9 +420,10 @@ public class CredentialsDAO extends ParentDAO {
         Object o = null;
         try {
             try {
-                //decrypt the data first
+                // decrypt the data first
                 if (encrypt()) {
-                    data = SecurityUtil.decrypt(this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, data);
+                    data = SecurityUtil.decrypt(
+                            this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, data);
                 }
 
                 objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
@@ -471,7 +472,8 @@ public class CredentialsDAO extends ParentDAO {
         if (encrypt()) {
             byte[] array = byteArrayOutputStream.toByteArray();
             try {
-                return SecurityUtil.encrypt(this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, array);
+                return SecurityUtil.encrypt(
+                        this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, array);
             } catch (GeneralSecurityException e) {
                 throw new CredentialStoreException("Error encrypting data", e);
             } catch (IOException e) {
@@ -490,5 +492,4 @@ public class CredentialsDAO extends ParentDAO {
     private boolean encrypt() {
         return this.keyStorePath != null;
     }
-
 }

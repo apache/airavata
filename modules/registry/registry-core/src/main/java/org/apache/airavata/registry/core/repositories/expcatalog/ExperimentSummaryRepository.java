@@ -1,25 +1,32 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import jakarta.persistence.Query;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.status.ExperimentState;
@@ -31,24 +38,23 @@ import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+public class ExperimentSummaryRepository
+        extends ExpCatAbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
+    private static final int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
 
-import jakarta.persistence.Query;
+    public ExperimentSummaryRepository() {
+        super(ExperimentSummaryModel.class, ExperimentSummaryEntity.class);
+    }
 
-public class ExperimentSummaryRepository extends ExpCatAbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
-    private final static int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
-
-    public ExperimentSummaryRepository() { super(ExperimentSummaryModel.class, ExperimentSummaryEntity.class); }
-
-    public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleExperimentIds, Map<String, String> filters, int limit,
-                                                                       int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException, IllegalArgumentException {
+    public List<ExperimentSummaryModel> searchAllAccessibleExperiments(
+            List<String> accessibleExperimentIds,
+            Map<String, String> filters,
+            int limit,
+            int offset,
+            Object orderByIdentifier,
+            ResultOrderType resultOrderType)
+            throws RegistryException, IllegalArgumentException {
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         String whereClause = "";
         Map<String, Object> queryParameters = new HashMap<>();
@@ -89,7 +95,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
         if (filters.get(DBConstants.Experiment.EXPERIMENT_NAME) != null) {
             logger.debug("Filter Experiments by Name");
-            queryParameters.put(DBConstants.Experiment.EXPERIMENT_NAME, filters.get(DBConstants.Experiment.EXPERIMENT_NAME));
+            queryParameters.put(
+                    DBConstants.Experiment.EXPERIMENT_NAME, filters.get(DBConstants.Experiment.EXPERIMENT_NAME));
             whereClause += "ES.name LIKE :" + DBConstants.Experiment.EXPERIMENT_NAME + " AND ";
         }
 
@@ -107,7 +114,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
         if (filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS) != null) {
             logger.debug("Filter Experiments by State");
-            String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS)).toString();
+            String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentSummary.EXPERIMENT_STATUS))
+                    .toString();
             queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, state);
             whereClause += "ES.experimentStatus LIKE :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
         }
@@ -125,7 +133,6 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                 whereClause += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :"
                         + DBConstants.ExperimentSummary.TO_DATE + " AND ";
             }
-
         }
 
         if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
@@ -138,9 +145,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             logger.debug("Filter Experiments by Accessible Experiment IDs");
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIds);
             whereClause += " ES.experimentId IN :" + DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS;
-        }
-
-        else {
+        } else {
             // If no experiments are accessible then immediately return an empty list
             return new ArrayList<ExperimentSummaryModel>();
         }
@@ -154,13 +159,16 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (queryOffset > 0) {
             String countQuery = "SELECT COUNT(ES) FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
             countQuery += whereClause;
-            BatchOffset batchOffset = findInitialAccessibleExperimentsBatchOffset(countQuery, queryOffset, queryParameters, accessibleExperimentIds);
+            BatchOffset batchOffset = findInitialAccessibleExperimentsBatchOffset(
+                    countQuery, queryOffset, queryParameters, accessibleExperimentIds);
             queryOffset = batchOffset.offset;
             accessibleExperimentIdsBatchNum = batchOffset.batchNum;
         }
 
         query += whereClause;
-        if (orderByIdentifier != null && resultOrderType != null && orderByIdentifier.equals(DBConstants.Experiment.CREATION_TIME)) {
+        if (orderByIdentifier != null
+                && resultOrderType != null
+                && orderByIdentifier.equals(DBConstants.Experiment.CREATION_TIME)) {
             String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
             query += " ORDER BY ES." + DBConstants.Experiment.CREATION_TIME + " " + order;
         }
@@ -177,7 +185,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                     batchNum * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE,
                     Math.min(accessibleExperimentIds.size(), (batchNum + 1) * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE));
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIdsBatch);
-            List<ExperimentSummaryModel> experimentSummaryModelList = select(query, queryLimit, queryOffset, queryParameters);
+            List<ExperimentSummaryModel> experimentSummaryModelList =
+                    select(query, queryLimit, queryOffset, queryParameters);
             allExperimentSummaryModels.addAll(experimentSummaryModelList);
             if (allExperimentSummaryModels.size() == limit) {
                 return allExperimentSummaryModels;
@@ -200,9 +209,9 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         }
     }
 
-    private BatchOffset findInitialAccessibleExperimentsBatchOffset(String query, int queryOffset,
-            Map<String, Object> queryParameters, List<String> accessibleExperimentIds) {
-        
+    private BatchOffset findInitialAccessibleExperimentsBatchOffset(
+            String query, int queryOffset, Map<String, Object> queryParameters, List<String> accessibleExperimentIds) {
+
         int accumulator = 0;
 
         double totalBatches = Math.ceil(
@@ -213,7 +222,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                     Math.min(accessibleExperimentIds.size(), (batchNum + 1) * ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE));
             queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIdsBatch);
             int count = scalarInt(query, queryParameters);
-            if (accumulator + count > queryOffset ) {
+            if (accumulator + count > queryOffset) {
                 return new BatchOffset(batchNum, queryOffset - accumulator);
             } else if (accumulator + count == queryOffset) {
                 // The initial batch is the next batch since this batch ends at the queryOffset
@@ -226,7 +235,9 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         return new BatchOffset(Double.valueOf(totalBatches).intValue(), 0);
     }
 
-    public ExperimentStatistics getAccessibleExperimentStatistics(List<String> accessibleExperimentIds, Map<String,String> filters, int limit, int offset) throws RegistryException {
+    public ExperimentStatistics getAccessibleExperimentStatistics(
+            List<String> accessibleExperimentIds, Map<String, String> filters, int limit, int offset)
+            throws RegistryException {
 
         try {
 
@@ -274,81 +285,185 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                     logger.debug("Set the ToDate");
                     toDate = new Timestamp(Long.parseLong(filters.get(field)));
                 }
-
             }
 
-            int allExperimentsCount = getExperimentStatisticsCountForState(null, gatewayId, fromDate, toDate,
-                    userName, applicationName, resourceHostName, accessibleExperimentIds);
-            List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(null, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds, limit, offset);
+            int allExperimentsCount = getExperimentStatisticsCountForState(
+                    null,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds);
+            List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(
+                    null,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds,
+                    limit,
+                    offset);
             experimentStatistics.setAllExperimentCount(allExperimentsCount);
             experimentStatistics.setAllExperiments(allExperiments);
 
             List<ExperimentState> createdStates = Arrays.asList(ExperimentState.CREATED, ExperimentState.VALIDATED);
             int createdExperimentsCount = getExperimentStatisticsCountForState(
-                    createdStates, gatewayId, fromDate, toDate,
-                    userName, applicationName, resourceHostName, accessibleExperimentIds);
-            List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(createdStates, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds, limit, offset);
+                    createdStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds);
+            List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(
+                    createdStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds,
+                    limit,
+                    offset);
             experimentStatistics.setCreatedExperimentCount(createdExperimentsCount);
             experimentStatistics.setCreatedExperiments(createdExperiments);
 
-            List<ExperimentState> runningStates = Arrays.asList(ExperimentState.EXECUTING, ExperimentState.SCHEDULED, ExperimentState.LAUNCHED);
+            List<ExperimentState> runningStates =
+                    Arrays.asList(ExperimentState.EXECUTING, ExperimentState.SCHEDULED, ExperimentState.LAUNCHED);
             int runningExperimentsCount = getExperimentStatisticsCountForState(
-                    runningStates, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
-            List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(runningStates, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds, limit, offset);
+                    runningStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds);
+            List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(
+                    runningStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds,
+                    limit,
+                    offset);
             experimentStatistics.setRunningExperimentCount(runningExperimentsCount);
             experimentStatistics.setRunningExperiments(runningExperiments);
 
             List<ExperimentState> completedStates = Arrays.asList(ExperimentState.COMPLETED);
             int completedExperimentsCount = getExperimentStatisticsCountForState(
-                    completedStates, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
+                    completedStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds);
             List<ExperimentSummaryModel> completedExperiments = getExperimentStatisticsForState(
-                    completedStates, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
-                    accessibleExperimentIds, limit, offset);
+                    completedStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds,
+                    limit,
+                    offset);
             experimentStatistics.setCompletedExperimentCount(completedExperimentsCount);
             experimentStatistics.setCompletedExperiments(completedExperiments);
 
             List<ExperimentState> failedStates = Arrays.asList(ExperimentState.FAILED);
             int failedExperimentsCount = getExperimentStatisticsCountForState(
-                    failedStates, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
-            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(failedStates,
-                    gatewayId, fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds, limit, offset);
+                    failedStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds);
+            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(
+                    failedStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds,
+                    limit,
+                    offset);
             experimentStatistics.setFailedExperimentCount(failedExperimentsCount);
             experimentStatistics.setFailedExperiments(failedExperiments);
 
             List<ExperimentState> cancelledStates = Arrays.asList(ExperimentState.CANCELED, ExperimentState.CANCELING);
             int cancelledExperimentsCount = getExperimentStatisticsCountForState(
-                    cancelledStates, gatewayId,
-                    fromDate, toDate, userName, applicationName, resourceHostName, accessibleExperimentIds);
+                    cancelledStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds);
             List<ExperimentSummaryModel> cancelledExperiments = getExperimentStatisticsForState(
-                    cancelledStates, gatewayId, fromDate, toDate, userName, applicationName, resourceHostName,
-                    accessibleExperimentIds, limit, offset);
+                    cancelledStates,
+                    gatewayId,
+                    fromDate,
+                    toDate,
+                    userName,
+                    applicationName,
+                    resourceHostName,
+                    accessibleExperimentIds,
+                    limit,
+                    offset);
             experimentStatistics.setCancelledExperimentCount(cancelledExperimentsCount);
             experimentStatistics.setCancelledExperiments(cancelledExperiments);
 
             return experimentStatistics;
-        }
-
-        catch (RegistryException e) {
+        } catch (RegistryException e) {
             logger.error("Error while retrieving experiment statistics from registry", e);
             throw new RegistryException(e);
         }
-
     }
 
-    protected int getExperimentStatisticsCountForState(List<ExperimentState> experimentStates, String gatewayId, Timestamp fromDate, Timestamp toDate,
-                                                                           String userName, String applicationName, String resourceHostName, List<String> experimentIds) throws RegistryException, IllegalArgumentException {
-        String query = "SELECT count(ES.experimentId) FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+    protected int getExperimentStatisticsCountForState(
+            List<ExperimentState> experimentStates,
+            String gatewayId,
+            Timestamp fromDate,
+            Timestamp toDate,
+            String userName,
+            String applicationName,
+            String resourceHostName,
+            List<String> experimentIds)
+            throws RegistryException, IllegalArgumentException {
+        String query =
+                "SELECT count(ES.experimentId) FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
-        String finalQuery = filterExperimentStatisticsQuery(query, queryParameters, experimentStates, gatewayId, 
-            fromDate, toDate, userName, applicationName, resourceHostName, experimentIds);
-        
+        String finalQuery = filterExperimentStatisticsQuery(
+                query,
+                queryParameters,
+                experimentStates,
+                gatewayId,
+                fromDate,
+                toDate,
+                userName,
+                applicationName,
+                resourceHostName,
+                experimentIds);
+
         if (finalQuery == null) {
             return 0;
         }
@@ -364,14 +479,33 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         return Long.valueOf(count).intValue();
     }
 
-    protected List<ExperimentSummaryModel> getExperimentStatisticsForState(List<ExperimentState> experimentStates, String gatewayId, Timestamp fromDate, Timestamp toDate,
-                                                                           String userName, String applicationName, String resourceHostName, List<String> experimentIds, int limit, int offset) throws RegistryException, IllegalArgumentException {
+    protected List<ExperimentSummaryModel> getExperimentStatisticsForState(
+            List<ExperimentState> experimentStates,
+            String gatewayId,
+            Timestamp fromDate,
+            Timestamp toDate,
+            String userName,
+            String applicationName,
+            String resourceHostName,
+            List<String> experimentIds,
+            int limit,
+            int offset)
+            throws RegistryException, IllegalArgumentException {
 
         String query = "SELECT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
         Map<String, Object> queryParameters = new HashMap<>();
 
-        query = filterExperimentStatisticsQuery(query, queryParameters, experimentStates, gatewayId, 
-            fromDate, toDate, userName, applicationName, resourceHostName, experimentIds);
+        query = filterExperimentStatisticsQuery(
+                query,
+                queryParameters,
+                experimentStates,
+                gatewayId,
+                fromDate,
+                toDate,
+                userName,
+                applicationName,
+                resourceHostName,
+                experimentIds);
 
         if (query == null) {
             return new ArrayList<ExperimentSummaryModel>();
@@ -382,13 +516,22 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         return experimentSummaryModelList;
     }
 
-    protected String filterExperimentStatisticsQuery(String query, Map<String, Object> queryParameters, 
-            List<ExperimentState> experimentStates, String gatewayId, Timestamp fromDate, 
-            Timestamp toDate, String userName, String applicationName, String resourceHostName, List<String> experimentIds) {
+    protected String filterExperimentStatisticsQuery(
+            String query,
+            Map<String, Object> queryParameters,
+            List<ExperimentState> experimentStates,
+            String gatewayId,
+            Timestamp fromDate,
+            Timestamp toDate,
+            String userName,
+            String applicationName,
+            String resourceHostName,
+            List<String> experimentIds) {
 
         if (experimentStates != null) {
             logger.debug("Filter Experiments by Experiment States");
-            List<String> statesAsStrings = experimentStates.stream().map(s -> s.toString()).collect(Collectors.toList());
+            List<String> statesAsStrings =
+                    experimentStates.stream().map(s -> s.toString()).collect(Collectors.toList());
             queryParameters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, statesAsStrings);
             query += "ES.experimentStatus IN :" + DBConstants.ExperimentSummary.EXPERIMENT_STATUS + " AND ";
         }
@@ -405,7 +548,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
                 logger.debug("Filter Experiments by CreationTime");
                 queryParameters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
                 queryParameters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
-                query += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :" + DBConstants.ExperimentSummary.TO_DATE + " AND ";
+                query += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :"
+                        + DBConstants.ExperimentSummary.TO_DATE + " AND ";
             }
         }
 
@@ -435,14 +579,11 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             logger.debug("Filter Experiments by ResourceHostName");
             queryParameters.put(DBConstants.Experiment.RESOURCE_HOST_ID, resourceHostName);
             query += "ES.resourceHostId = :" + DBConstants.Experiment.RESOURCE_HOST_ID + " ";
-        }
-
-        else {
+        } else {
             logger.debug("Removing the last operator from the query");
             query = query.substring(0, query.length() - 4);
         }
 
         return query;
     }
-
 }

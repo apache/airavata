@@ -1,33 +1,32 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.security.userstore;
 
-import org.apache.airavata.security.UserStoreException;
+import java.sql.SQLException;
 import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.sql.SQLException;
 
 /**
  * User store which works on sessions. Will talk to database to check whether session ids are stored in the database.
@@ -69,7 +68,6 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
          * <specificConfigurations> <sessionTable> </sessionTable> <sessionColumn></sessionColumn>
          * <comparingColumn></comparingColumn> </specificConfigurations>
          */
-
         NodeList databaseNodeList = node.getChildNodes();
 
         Node databaseNode = null;
@@ -106,10 +104,14 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
 
         initializeDatabaseLookup();
 
-        StringBuilder stringBuilder = new StringBuilder(
-                "Configuring DB parameters for authenticator with Session Table - ");
-        stringBuilder.append(sessionTable).append(" Session column - ").append(sessionColumn)
-                .append(" Comparing column - ").append(comparingColumn);
+        StringBuilder stringBuilder =
+                new StringBuilder("Configuring DB parameters for authenticator with Session Table - ");
+        stringBuilder
+                .append(sessionTable)
+                .append(" Session column - ")
+                .append(sessionColumn)
+                .append(" Comparing column - ")
+                .append(comparingColumn);
 
         log.debug(stringBuilder.toString());
     }
@@ -117,7 +119,8 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
     private void initializeDatabaseLookup() throws RuntimeException {
 
         try {
-            this.dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
+            this.dbUtil =
+                    new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Error loading database driver. Driver class not found.", e);
         } catch (InstantiationException e) {

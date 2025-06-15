@@ -1,24 +1,25 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.orchestrator.core.impl;
 
+import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -39,25 +40,24 @@ import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
-
 /**
  * This class can be used to do the communication between orchestrator and gfac to handle using a queue
  */
-public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
-    private final static Logger logger = LoggerFactory.getLogger(GFACPassiveJobSubmitter.class);
+public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
+    private static final Logger logger = LoggerFactory.getLogger(GFACPassiveJobSubmitter.class);
     private static Integer mutex = -1;
     private Publisher publisher;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
-        if(orchestratorContext.getPublisher()!=null){
+        if (orchestratorContext.getPublisher() != null) {
             this.publisher = orchestratorContext.getPublisher();
-        }else {
+        } else {
             try {
                 this.publisher = MessagingFactory.getPublisher(Type.PROCESS_LAUNCH);
             } catch (AiravataException e) {
                 logger.error(e.getMessage(), e);
-                throw new OrchestratorException("Cannot initialize " + GFACPassiveJobSubmitter.class + " need to start Rabbitmq server to use " + GFACPassiveJobSubmitter.class);
+                throw new OrchestratorException("Cannot initialize " + GFACPassiveJobSubmitter.class
+                        + " need to start Rabbitmq server to use " + GFACPassiveJobSubmitter.class);
             }
         }
     }
@@ -85,18 +85,19 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             if (gatewayId == null || gatewayId.isEmpty()) {
                 gatewayId = ServerSettings.getDefaultUserGateway();
             }
-	        ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, experimentId,
-			        tokenId);
-	        MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.LAUNCHPROCESS, "LAUNCH" +
-			        ".PROCESS-" + UUID.randomUUID().toString(), gatewayId);
-	        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, experimentId, tokenId);
+            MessageContext messageContext = new MessageContext(
+                    processSubmitEvent,
+                    MessageType.LAUNCHPROCESS,
+                    "LAUNCH" + ".PROCESS-" + UUID.randomUUID().toString(),
+                    gatewayId);
+            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new OrchestratorException(e);
         }
         return true;
-
     }
 
     /**
@@ -120,10 +121,13 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             if (gatewayId == null || gatewayId.isEmpty()) {
 
                 gatewayId = ServerSettings.getDefaultUserGateway();
-
             }
             ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent(processId, gatewayId, tokenId);
-            MessageContext messageContext = new MessageContext(processTerminateEvent, MessageType.TERMINATEPROCESS, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), gatewayId);
+            MessageContext messageContext = new MessageContext(
+                    processTerminateEvent,
+                    MessageType.TERMINATEPROCESS,
+                    "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(),
+                    gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
             return true;
@@ -132,9 +136,9 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
         }
     }
 
-    synchronized public void process(WatchedEvent event) {
+    public synchronized void process(WatchedEvent event) {
         logger.info(getClass().getName() + event.getPath());
-        logger.info(getClass().getName()+event.getType());
+        logger.info(getClass().getName() + event.getType());
         synchronized (mutex) {
             switch (event.getState()) {
                 case SyncConnected:

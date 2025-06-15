@@ -1,24 +1,28 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.monitor.email.parser;
 
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
@@ -26,28 +30,23 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class PBSEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(PBSEmailParser.class);
     public static final String BEGUN_EXECUTION = "Begun execution";
     public static final String EXECUTION_TERMINATED = "Execution terminated";
     public static final String ABORTED_BY_PBS_SERVER = "Aborted by PBS Server";
 
-    static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" + JOBID + ">[a-zA-Z0-9-_\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<" +
-            JOBNAME + ">[a-zA-Z0-9-\\.]*)\\s[\\S|\\s]*(?<" + STATUS + ">" + BEGUN_EXECUTION + "|" +
-            EXECUTION_TERMINATED + "|" + ABORTED_BY_PBS_SERVER + ")";
+    static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" + JOBID + ">[a-zA-Z0-9-_\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<" + JOBNAME
+            + ">[a-zA-Z0-9-\\.]*)\\s[\\S|\\s]*(?<" + STATUS + ">" + BEGUN_EXECUTION + "|" + EXECUTION_TERMINATED
+            + "|" + ABORTED_BY_PBS_SERVER + ")";
 
     private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
 
     @Override
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient) throws MessagingException, AiravataException {
+    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+            throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
-//        log.info("Parsing -> " + message.getSubject());
+        //        log.info("Parsing -> " + message.getSubject());
         try {
             String content = ((String) message.getContent());
             parseContent(content, jobStatusResult);
@@ -103,5 +102,4 @@ public class PBSEmailParser implements EmailParser {
         }
         return -1;
     }
-
 }

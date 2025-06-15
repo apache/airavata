@@ -1,21 +1,22 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.agent.connection.service.controllers;
 
 import org.apache.airavata.agent.connection.service.handlers.AgentConnectionHandler;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/agent")
 public class AgentController {
 
-    private final static Logger logger = LoggerFactory.getLogger(AgentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AgentController.class);
     private final AgentConnectionHandler agentConnectionHandler;
 
     public AgentController(AgentConnectionHandler agentConnectionHandler) {
@@ -49,25 +50,29 @@ public class AgentController {
     }
 
     @GetMapping("/setup/tunnel/{executionId}")
-    public ResponseEntity<AgentTunnelCreateResponse> getTunnelCreteResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentTunnelCreateResponse> getTunnelCreteResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received tunnel creation response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getTunnelCreateResponse(executionId));
     }
 
     @PostMapping("/setup/tunnel")
-    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Validated @RequestBody AgentTunnelCreateRequest tunnelRequest) {
+    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(
+            @Validated @RequestBody AgentTunnelCreateRequest tunnelRequest) {
         logger.info("Received tunnel creation request to run on agent {}", tunnelRequest.getAgentId());
         return ResponseEntity.accepted().body(agentConnectionHandler.runTunnelOnAgent(tunnelRequest));
     }
 
     @PostMapping("/terminate/tunnel")
-    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(@Validated @RequestBody AgentTunnelTerminateRequest terminateRequest) {
+    public ResponseEntity<AgentTunnelAck> runTunnelCreationOnAgent(
+            @Validated @RequestBody AgentTunnelTerminateRequest terminateRequest) {
         logger.info("Received tunnel termination request to run on agent {}", terminateRequest.getAgentId());
         return ResponseEntity.accepted().body(agentConnectionHandler.terminateTunnelOnAgent(terminateRequest));
     }
 
     @PostMapping("/setup/env")
-    public ResponseEntity<AgentEnvSetupAck> runEnvSetupOnAgent(@Validated @RequestBody AgentEnvSetupRequest envSetupRequest) {
+    public ResponseEntity<AgentEnvSetupAck> runEnvSetupOnAgent(
+            @Validated @RequestBody AgentEnvSetupRequest envSetupRequest) {
         logger.info("Received env setup request to run on agent {}", envSetupRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(envSetupRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runEnvSetupOnAgent(envSetupRequest));
@@ -86,7 +91,8 @@ public class AgentController {
     }
 
     @PostMapping("/setup/restart")
-    public ResponseEntity<AgentKernelRestartAck> runKernelRestartOnAgent(@Validated @RequestBody AgentKernelRestartRequest kernelRestartRequest) {
+    public ResponseEntity<AgentKernelRestartAck> runKernelRestartOnAgent(
+            @Validated @RequestBody AgentKernelRestartRequest kernelRestartRequest) {
         logger.info("Received kernel restart request to run on agent {}", kernelRestartRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(kernelRestartRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runKernelRestartOnAgent(kernelRestartRequest));
@@ -99,13 +105,15 @@ public class AgentController {
     }
 
     @GetMapping("/setup/restart/{executionId}")
-    public ResponseEntity<AgentKernelRestartResponse> getKernelRestartResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentKernelRestartResponse> getKernelRestartResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received kernel restart response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getKernelRestartResponse(executionId));
     }
 
     @PostMapping("/execute/shell")
-    public ResponseEntity<AgentCommandExecutionAck> runCommandOnAgent(@Validated @RequestBody AgentCommandExecutionRequest commandRequest) {
+    public ResponseEntity<AgentCommandExecutionAck> runCommandOnAgent(
+            @Validated @RequestBody AgentCommandExecutionRequest commandRequest) {
         logger.info("Received command request to run on agent {}", commandRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runCommandOnAgent(commandRequest));
@@ -118,14 +126,15 @@ public class AgentController {
     }
 
     @GetMapping("/execute/shell/{executionId}")
-    public ResponseEntity<AgentCommandExecutionResponse> getExecutionResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentCommandExecutionResponse> getExecutionResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getCommandExecutionResponse(executionId));
     }
 
-
     @PostMapping("/execute/asyncshell")
-    public ResponseEntity<AgentCommandExecutionAck> runAsyncCommandOnAgent(@Validated @RequestBody AgentAsyncCommandExecutionRequest commandRequest) {
+    public ResponseEntity<AgentCommandExecutionAck> runAsyncCommandOnAgent(
+            @Validated @RequestBody AgentAsyncCommandExecutionRequest commandRequest) {
         logger.info("Received async command request to run on agent {}", commandRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(commandRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runAsyncCommandOnAgent(commandRequest));
@@ -138,7 +147,8 @@ public class AgentController {
     }
 
     @GetMapping("/execute/asyncshell/{executionId}")
-    public ResponseEntity<AgentAsyncCommandExecutionResponse> getAsyncExecutionResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentAsyncCommandExecutionResponse> getAsyncExecutionResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received async command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandExecutionResponse(executionId));
     }
@@ -148,7 +158,8 @@ public class AgentController {
             @Validated @RequestBody AgentAsyncCommandListRequest commandListRequest) {
         logger.info("Received list async command request to run on agent {}", commandListRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(commandListRequest.getAgentId()).isAgentUp()) {
-            return ResponseEntity.accepted().body(agentConnectionHandler.runAsyncCommandListOnAgent(commandListRequest));
+            return ResponseEntity.accepted()
+                    .body(agentConnectionHandler.runAsyncCommandListOnAgent(commandListRequest));
         } else {
             logger.warn("No agent is available to run on agent {}", commandListRequest.getAgentId());
             AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
@@ -158,7 +169,8 @@ public class AgentController {
     }
 
     @GetMapping("/list/asyncshell/{executionId}")
-    public ResponseEntity<AgentAsyncCommandListResponse> getAsyncCommandListResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentAsyncCommandListResponse> getAsyncCommandListResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received list async command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandListResponse(executionId));
     }
@@ -166,9 +178,13 @@ public class AgentController {
     @PostMapping("/terminate/asyncshell")
     public ResponseEntity<AgentCommandExecutionAck> terminateAsyncCommandOnAgent(
             @Validated @RequestBody AgentAsyncCommandTerminateRequest commandTerminateRequest) {
-        logger.info("Received terminate async command request to run on agent {}", commandTerminateRequest.getAgentId());
-        if (agentConnectionHandler.isAgentUp(commandTerminateRequest.getAgentId()).isAgentUp()) {
-            return ResponseEntity.accepted().body(agentConnectionHandler.runAsyncCommandTerminateOnAgent(commandTerminateRequest));
+        logger.info(
+                "Received terminate async command request to run on agent {}", commandTerminateRequest.getAgentId());
+        if (agentConnectionHandler
+                .isAgentUp(commandTerminateRequest.getAgentId())
+                .isAgentUp()) {
+            return ResponseEntity.accepted()
+                    .body(agentConnectionHandler.runAsyncCommandTerminateOnAgent(commandTerminateRequest));
         } else {
             logger.warn("No agent is available to run on agent {}", commandTerminateRequest.getAgentId());
             AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
@@ -178,13 +194,15 @@ public class AgentController {
     }
 
     @GetMapping("/terminate/asyncshell/{executionId}")
-    public ResponseEntity<AgentAsyncCommandTerminateResponse> getAsyncCommandTerminateResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentAsyncCommandTerminateResponse> getAsyncCommandTerminateResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received terminate async command response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getAsyncCommandTerminateResponse(executionId));
     }
 
     @PostMapping("/execute/jupyter")
-    public ResponseEntity<AgentJupyterExecutionAck> runJupyterOnAgent(@Validated @RequestBody AgentJupyterExecutionRequest executionRequest) {
+    public ResponseEntity<AgentJupyterExecutionAck> runJupyterOnAgent(
+            @Validated @RequestBody AgentJupyterExecutionRequest executionRequest) {
         logger.info("Received jupyter execution request to run on agent {}", executionRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(executionRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runJupyterOnAgent(executionRequest));
@@ -197,13 +215,15 @@ public class AgentController {
     }
 
     @GetMapping("/execute/jupyter/{executionId}")
-    public ResponseEntity<AgentJupyterExecutionResponse> getJupyterResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentJupyterExecutionResponse> getJupyterResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received jupyter execution response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getJupyterExecutionResponse(executionId));
     }
 
     @PostMapping("/execute/python")
-    public ResponseEntity<AgentPythonExecutionAck> runPythonOnAgent(@Validated @RequestBody AgentPythonExecutionRequest pythonRunRequest) {
+    public ResponseEntity<AgentPythonExecutionAck> runPythonOnAgent(
+            @Validated @RequestBody AgentPythonExecutionRequest pythonRunRequest) {
         logger.info("Received python execution request to run on agent {}", pythonRunRequest.getAgentId());
         if (agentConnectionHandler.isAgentUp(pythonRunRequest.getAgentId()).isAgentUp()) {
             return ResponseEntity.accepted().body(agentConnectionHandler.runPythonOnAgent(pythonRunRequest));
@@ -216,9 +236,9 @@ public class AgentController {
     }
 
     @GetMapping("/execute/python/{executionId}")
-    public ResponseEntity<AgentPythonExecutionResponse> getPythonResponse(@PathVariable("executionId") String executionId) {
+    public ResponseEntity<AgentPythonExecutionResponse> getPythonResponse(
+            @PathVariable("executionId") String executionId) {
         logger.info("Received python execution response for execution id {}", executionId);
         return ResponseEntity.accepted().body(agentConnectionHandler.getPythonExecutionResponse(executionId));
     }
-
 }

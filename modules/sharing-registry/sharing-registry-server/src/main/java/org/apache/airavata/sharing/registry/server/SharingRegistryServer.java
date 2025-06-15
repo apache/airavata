@@ -1,24 +1,26 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.sharing.registry.server;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -36,11 +38,8 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
 public class SharingRegistryServer implements IServer {
-    private final static Logger logger = LoggerFactory.getLogger(SharingRegistryServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServer.class);
 
     public static final String SHARING_REG_SERVER_HOST = "sharing.registry.server.host";
     public static final String SHARING_REG_SERVER_PORT = "sharing.registry.server.port";
@@ -84,7 +83,7 @@ public class SharingRegistryServer implements IServer {
                 TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
                 options.minWorkerThreads = 30;
                 server = new TThreadPoolServer(options.processor(processor));
-            }else{
+            } else {
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.requireClientAuth(true);
@@ -93,8 +92,7 @@ public class SharingRegistryServer implements IServer {
                     TLSParams.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
                 }
                 TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort, ServerSettings.getTLSClientTimeout(),
-                        InetAddress.getByName(serverHost), TLSParams);
+                        serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
                 TThreadPoolServer.Args options = new TThreadPoolServer.Args(TLSServerTransport);
                 options.minWorkerThreads = 30;
                 server = new TThreadPoolServer(options.processor(processor));
@@ -120,7 +118,8 @@ public class SharingRegistryServer implements IServer {
 
                         try {
                             logger.info("Register sharing service with DB Event publishers");
-                            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+                            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(
+                                    Constants.PUBLISHERS);
 
                             logger.info("Start sharing service DB Event subscriber");
                             SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
@@ -143,7 +142,7 @@ public class SharingRegistryServer implements IServer {
 
     @Override
     public void stop() throws Exception {
-        if (server!=null && server.isServing()){
+        if (server != null && server.isServing()) {
             setStatus(IServer.ServerStatus.STOPING);
             server.stop();
         }
@@ -156,17 +155,15 @@ public class SharingRegistryServer implements IServer {
     }
 
     @Override
-    public void configure() throws Exception {
-
-    }
+    public void configure() throws Exception {}
 
     @Override
     public IServer.ServerStatus getStatus() throws Exception {
         return status;
     }
 
-    private void setStatus(IServer.ServerStatus stat){
-        status=stat;
+    private void setStatus(IServer.ServerStatus stat) {
+        status = stat;
         status.updateTime();
     }
 

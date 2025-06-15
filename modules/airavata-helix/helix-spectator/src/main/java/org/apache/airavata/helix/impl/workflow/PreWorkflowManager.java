@@ -1,24 +1,26 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.workflow;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -51,18 +53,16 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class PreWorkflowManager extends WorkflowManager {
 
-    private final static Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
-    private final static CountMonitor prewfCounter = new CountMonitor("pre_wf_counter");
+    private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
+    private static final CountMonitor prewfCounter = new CountMonitor("pre_wf_counter");
 
     private Subscriber subscriber;
 
     public PreWorkflowManager() throws ApplicationSettingsException {
-        super(ServerSettings.getSetting("pre.workflow.manager.name"),
+        super(
+                ServerSettings.getSetting("pre.workflow.manager.name"),
                 Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
     }
 
@@ -71,14 +71,13 @@ public class PreWorkflowManager extends WorkflowManager {
         initLaunchSubscriber();
     }
 
-    public void stopServer() {
-
-    }
+    public void stopServer() {}
 
     private void initLaunchSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
-        this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
+        this.subscriber =
+                MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
 
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
@@ -94,16 +93,18 @@ public class PreWorkflowManager extends WorkflowManager {
             getRegistryClientPool().returnResource(registryClient);
 
         } catch (Exception e) {
-            logger.error("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+            logger.error(
+                    "Failed to fetch experiment or process from registry associated with process id " + processId, e);
             getRegistryClientPool().returnBrokenResource(registryClient);
-            throw new Exception("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+            throw new Exception(
+                    "Failed to fetch experiment or process from registry associated with process id " + processId, e);
         }
 
         String taskDag = processModel.getTaskDag();
         List<TaskModel> taskList = processModel.getTasks();
 
-        boolean intermediateTransfer = taskList.stream()
-                .anyMatch(task -> task.getTaskType() == TaskTypes.OUTPUT_FETCHING);
+        boolean intermediateTransfer =
+                taskList.stream().anyMatch(task -> task.getTaskType() == TaskTypes.OUTPUT_FETCHING);
 
         if (intermediateTransfer) {
             logger.info("Process {} contains intermediate file transfers", processId);
@@ -115,7 +116,9 @@ public class PreWorkflowManager extends WorkflowManager {
         boolean jobSubmissionFound = false;
 
         for (String taskId : taskIds) {
-            Optional<TaskModel> model = taskList.stream().filter(taskModel -> taskModel.getTaskId().equals(taskId)).findFirst();
+            Optional<TaskModel> model = taskList.stream()
+                    .filter(taskModel -> taskModel.getTaskId().equals(taskId))
+                    .findFirst();
 
             if (model.isPresent()) {
                 TaskModel taskModel = model.get();
@@ -148,9 +151,11 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask.setProcessId(processModel.getProcessId());
                     airavataTask.setTaskId(taskModel.getTaskId());
                     airavataTask.setRetryCount(taskModel.getMaxRetry());
-                    airavataTask.setAutoSchedule(experimentModel.getUserConfigurationData().isAiravataAutoSchedule());
+                    airavataTask.setAutoSchedule(
+                            experimentModel.getUserConfigurationData().isAiravataAutoSchedule());
                     if (allTasks.size() > 0) {
-                        allTasks.get(allTasks.size() -1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
+                        allTasks.get(allTasks.size() - 1)
+                                .setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
                     }
                     allTasks.add(airavataTask);
                 }
@@ -172,8 +177,9 @@ public class PreWorkflowManager extends WorkflowManager {
             allTasks.add(completingTask);
         }
 
-        String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
-                new ArrayList<>(allTasks), true, false);
+        String workflowName = getWorkflowOperator()
+                .launchWorkflow(
+                        processId + "-PRE-" + UUID.randomUUID().toString(), new ArrayList<>(allTasks), true, false);
 
         registerWorkflowForProcess(processId, workflowName, "PRE");
 
@@ -181,7 +187,6 @@ public class PreWorkflowManager extends WorkflowManager {
     }
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
-
 
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
@@ -199,7 +204,8 @@ public class PreWorkflowManager extends WorkflowManager {
         String experimentId = processModel.getExperimentId();
         final List<AbstractTask> allTasks = new ArrayList<>();
 
-        Optional<List<String>> workflowsOpt = Optional.ofNullable(processModel.getProcessWorkflows()).map(wfs -> wfs.stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList()));
+        Optional<List<String>> workflowsOpt = Optional.ofNullable(processModel.getProcessWorkflows())
+                .map(wfs -> wfs.stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList()));
 
         if (workflowsOpt.isPresent()) {
             List<String> workflows = workflowsOpt.get();
@@ -231,7 +237,7 @@ public class PreWorkflowManager extends WorkflowManager {
         rjct.setSkipAllStatusPublish(true);
 
         if (allTasks.size() > 0) {
-            allTasks.get(allTasks.size() -1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
+            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
         }
         allTasks.add(rjct);
 
@@ -243,11 +249,12 @@ public class PreWorkflowManager extends WorkflowManager {
         cct.setSkipAllStatusPublish(true);
 
         if (allTasks.size() > 0) {
-            allTasks.get(allTasks.size() -1).setNextTask(new OutPort(cct.getTaskId(), cct));
+            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(cct.getTaskId(), cct));
         }
         allTasks.add(cct);
 
-        String workflow = getWorkflowOperator().launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
+        String workflow = getWorkflowOperator()
+                .launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
         logger.info("Started launching workflow " + workflow + " to cancel process " + processId);
         return workflow;
     }
@@ -271,7 +278,8 @@ public class PreWorkflowManager extends WorkflowManager {
 
         @Override
         public void onMessage(MessageContext messageContext) {
-            logger.info(" Message Received with message id " + messageContext.getMessageId() + " and with message type: " + messageContext.getType());
+            logger.info(" Message Received with message id " + messageContext.getMessageId()
+                    + " and with message type: " + messageContext.getType());
 
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
                 ProcessSubmitEvent event = new ProcessSubmitEvent();
@@ -289,12 +297,15 @@ public class PreWorkflowManager extends WorkflowManager {
                 String experimentId = event.getExperimentId();
                 String gateway = event.getGatewayId();
 
-                logger.info("Received process launch message for process " + processId + " of experiment " + experimentId + " in gateway " + gateway);
+                logger.info("Received process launch message for process " + processId + " of experiment "
+                        + experimentId + " in gateway " + gateway);
 
                 try {
-                    logger.info("Launching the pre workflow for process " + processId + " of experiment " + experimentId + " in gateway " + gateway);
+                    logger.info("Launching the pre workflow for process " + processId + " of experiment " + experimentId
+                            + " in gateway " + gateway);
                     String workflowName = createAndLaunchPreWorkflow(processId, false);
-                    logger.info("Completed launching the pre workflow " + workflowName + " for process" + processId + " of experiment " + experimentId + " in gateway " + gateway);
+                    logger.info("Completed launching the pre workflow " + workflowName + " for process" + processId
+                            + " of experiment " + experimentId + " in gateway " + gateway);
 
                     // updating the process status
                     ProcessStatus status = new ProcessStatus();
@@ -303,8 +314,9 @@ public class PreWorkflowManager extends WorkflowManager {
                     publishProcessStatus(processId, experimentId, gateway, ProcessState.STARTED);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {
-                    logger.error("Failed to launch the pre workflow for process " + processId + " in gateway " + gateway, e);
-                    //subscriber.sendAck(messageContext.getDeliveryTag());
+                    logger.error(
+                            "Failed to launch the pre workflow for process " + processId + " in gateway " + gateway, e);
+                    // subscriber.sendAck(messageContext.getDeliveryTag());
                 }
 
             } else if (messageContext.getType().equals(MessageType.TERMINATEPROCESS)) {
@@ -325,13 +337,18 @@ public class PreWorkflowManager extends WorkflowManager {
                 logger.info("Received process cancel message for process " + processId + " in gateway " + gateway);
 
                 try {
-                    logger.info("Launching the process cancel workflow for process " + processId + " in gateway " + gateway);
+                    logger.info("Launching the process cancel workflow for process " + processId + " in gateway "
+                            + gateway);
                     String workflowName = createAndLaunchCancelWorkflow(processId, gateway);
-                    logger.info("Completed process cancel workflow " + workflowName + " for process " + processId + " in gateway " + gateway);
+                    logger.info("Completed process cancel workflow " + workflowName + " for process " + processId
+                            + " in gateway " + gateway);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {
-                    logger.error("Failed to launch process cancel workflow for process " + processId + " in gateway " + gateway, e);
-                    //subscriber.sendAck(messageContext.getDeliveryTag());
+                    logger.error(
+                            "Failed to launch process cancel workflow for process " + processId + " in gateway "
+                                    + gateway,
+                            e);
+                    // subscriber.sendAck(messageContext.getDeliveryTag());
                 }
             } else {
                 logger.warn("Unknown message type");

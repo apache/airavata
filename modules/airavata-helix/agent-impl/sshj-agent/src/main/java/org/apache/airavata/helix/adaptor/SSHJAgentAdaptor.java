@@ -1,24 +1,28 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.adaptor;
 
+import java.io.*;
+import java.security.PublicKey;
+import java.util.*;
+import java.util.stream.Collectors;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.ConnectionException;
@@ -51,18 +55,15 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.security.PublicKey;
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class SSHJAgentAdaptor implements AgentAdaptor {
 
-    private final static Logger logger = LoggerFactory.getLogger(SSHJAgentAdaptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(SSHJAgentAdaptor.class);
 
     private PoolingSSHJClient sshjClient;
 
-    protected void createPoolingSSHJClient(String user, String host, int port, String publicKey, String privateKey, String passphrase) throws IOException {
+    protected void createPoolingSSHJClient(
+            String user, String host, int port, String publicKey, String privateKey, String passphrase)
+            throws IOException {
         DefaultConfig defaultConfig = new DefaultConfig();
         defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
 
@@ -82,7 +83,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
         sshjClient.setMaxSessionsForConnection(1);
 
-        PasswordFinder passwordFinder = passphrase != null ? PasswordUtils.createOneOff(passphrase.toCharArray()) : null;
+        PasswordFinder passwordFinder =
+                passphrase != null ? PasswordUtils.createOneOff(passphrase.toCharArray()) : null;
 
         KeyProvider keyProvider = sshjClient.loadKeys(privateKey, publicKey, passwordFinder);
 
@@ -96,9 +98,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             }
 
             @Override
-            public void init(Resource resource, String name, String instruction) {
-
-            }
+            public void init(Resource resource, String name, String instruction) {}
 
             @Override
             public char[] getResponse(String prompt, boolean echo) {
@@ -114,32 +114,43 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         sshjClient.auth(user, am);
     }
 
-    public void init(String user, String host, int port, String publicKey, String privateKey, String passphrase) throws AgentException {
+    public void init(String user, String host, int port, String publicKey, String privateKey, String passphrase)
+            throws AgentException {
         try {
             createPoolingSSHJClient(user, host, port, publicKey, privateKey, passphrase);
         } catch (IOException e) {
-            logger.error("Error while initializing sshj agent for user " + user + " host " + host + " for key starting with " + publicKey.substring(0,10), e);
-            throw new AgentException("Error while initializing sshj agent for user " + user + " host " + host + " for key starting with " + publicKey.substring(0,10), e);
+            logger.error(
+                    "Error while initializing sshj agent for user " + user + " host " + host + " for key starting with "
+                            + publicKey.substring(0, 10),
+                    e);
+            throw new AgentException(
+                    "Error while initializing sshj agent for user " + user + " host " + host + " for key starting with "
+                            + publicKey.substring(0, 10),
+                    e);
         }
     }
 
     @Override
     public void init(String computeResource, String gatewayId, String userId, String token) throws AgentException {
         try {
-            logger.info("Initializing Compute Resource SSH Adaptor for compute resource : "+ computeResource + ", gateway : " +
-                    gatewayId +", user " + userId + ", token : " + token);
+            logger.info("Initializing Compute Resource SSH Adaptor for compute resource : " + computeResource
+                    + ", gateway : " + gatewayId + ", user " + userId + ", token : " + token);
 
-            ComputeResourceDescription computeResourceDescription = AgentUtils.getRegistryServiceClient().getComputeResource(computeResource);
+            ComputeResourceDescription computeResourceDescription =
+                    AgentUtils.getRegistryServiceClient().getComputeResource(computeResource);
 
             logger.info("Fetching job submission interfaces for compute resource " + computeResource);
 
-            Optional<JobSubmissionInterface> jobSubmissionInterfaceOp = computeResourceDescription.getJobSubmissionInterfaces()
-                    .stream().filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH).findFirst();
+            Optional<JobSubmissionInterface> jobSubmissionInterfaceOp =
+                    computeResourceDescription.getJobSubmissionInterfaces().stream()
+                            .filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH)
+                            .findFirst();
 
-            JobSubmissionInterface sshInterface = jobSubmissionInterfaceOp
-                    .orElseThrow(() -> new AgentException("Could not find a SSH interface for compute resource " + computeResource));
+            JobSubmissionInterface sshInterface = jobSubmissionInterfaceOp.orElseThrow(
+                    () -> new AgentException("Could not find a SSH interface for compute resource " + computeResource));
 
-            SSHJobSubmission sshJobSubmission = AgentUtils.getRegistryServiceClient().getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
+            SSHJobSubmission sshJobSubmission = AgentUtils.getRegistryServiceClient()
+                    .getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
@@ -151,20 +162,34 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
             String alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
-            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))?
-                    computeResourceDescription.getHostName() : alternateHostName;
+            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))
+                    ? computeResourceDescription.getHostName()
+                    : alternateHostName;
 
             int selectedPort = sshJobSubmission.getSshPort() == 0 ? 22 : sshJobSubmission.getSshPort();
 
-            logger.info("Using user {}, Host {}, Port {} to create ssh client for compute resource {}",
-                    userId, selectedHostName, selectedPort, computeResource);
+            logger.info(
+                    "Using user {}, Host {}, Port {} to create ssh client for compute resource {}",
+                    userId,
+                    selectedHostName,
+                    selectedPort,
+                    computeResource);
 
-            createPoolingSSHJClient(userId, selectedHostName, selectedPort,
-                    sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase());
+            createPoolingSSHJClient(
+                    userId,
+                    selectedHostName,
+                    selectedPort,
+                    sshCredential.getPublicKey(),
+                    sshCredential.getPrivateKey(),
+                    sshCredential.getPassphrase());
 
         } catch (Exception e) {
-            logger.error("Error while initializing ssh agent for compute resource " + computeResource + " to token " + token, e);
-            throw new AgentException("Error while initializing ssh agent for compute resource " + computeResource + " to token " + token, e);
+            logger.error(
+                    "Error while initializing ssh agent for compute resource " + computeResource + " to token " + token,
+                    e);
+            throw new AgentException(
+                    "Error while initializing ssh agent for compute resource " + computeResource + " to token " + token,
+                    e);
         }
     }
 
@@ -176,8 +201,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 sshjClient.close();
             }
         } catch (IOException e) {
-            logger.warn("Failed to stop sshj client for host " + sshjClient.getHost() + " and user " +
-                    sshjClient.getUsername() + " due to : " + e.getMessage());
+            logger.warn("Failed to stop sshj client for host " + sshjClient.getHost() + " and user "
+                    + sshjClient.getUsername() + " due to : " + e.getMessage());
             // ignore
         }
     }
@@ -187,7 +212,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         SessionWrapper session = null;
         try {
             session = sshjClient.startSessionWrapper();
-            Session.Command exec = session.exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
+            Session.Command exec =
+                    session.exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
             StandardOutReader standardOutReader = new StandardOutReader();
 
             try {
@@ -195,7 +221,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 standardOutReader.readStdErrFromStream(exec.getErrorStream());
             } finally {
                 exec.close(); // closing the channel before getting the exit status
-                standardOutReader.setExitCode(Optional.ofNullable(exec.getExitStatus()).orElseThrow(() -> new Exception("Exit status received as null")));
+                standardOutReader.setExitCode(Optional.ofNullable(exec.getExitStatus())
+                        .orElseThrow(() -> new Exception("Exit status received as null")));
             }
             return standardOutReader;
 
@@ -210,7 +237,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     ss.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -242,7 +269,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     client.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -266,7 +293,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     scpFileTransferWrapper.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -278,57 +305,60 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
         try {
             fileTransfer = sshjClient.newSCPFileTransferWrapper();
-            fileTransfer.upload(new LocalSourceFile() {
-                @Override
-                public String getName() {
-                    return metadata.getName();
-                }
+            fileTransfer.upload(
+                    new LocalSourceFile() {
+                        @Override
+                        public String getName() {
+                            return metadata.getName();
+                        }
 
-                @Override
-                public long getLength() {
-                    return metadata.getSize();
-                }
+                        @Override
+                        public long getLength() {
+                            return metadata.getSize();
+                        }
 
-                @Override
-                public InputStream getInputStream() throws IOException {
-                    return localInStream;
-                }
+                        @Override
+                        public InputStream getInputStream() throws IOException {
+                            return localInStream;
+                        }
 
-                @Override
-                public int getPermissions() throws IOException {
-                    return 420; //metadata.getPermissions();
-                }
+                        @Override
+                        public int getPermissions() throws IOException {
+                            return 420; // metadata.getPermissions();
+                        }
 
-                @Override
-                public boolean isFile() {
-                    return true;
-                }
+                        @Override
+                        public boolean isFile() {
+                            return true;
+                        }
 
-                @Override
-                public boolean isDirectory() {
-                    return false;
-                }
+                        @Override
+                        public boolean isDirectory() {
+                            return false;
+                        }
 
-                @Override
-                public Iterable<? extends LocalSourceFile> getChildren(LocalFileFilter filter) throws IOException {
-                    return null;
-                }
+                        @Override
+                        public Iterable<? extends LocalSourceFile> getChildren(LocalFileFilter filter)
+                                throws IOException {
+                            return null;
+                        }
 
-                @Override
-                public boolean providesAtimeMtime() {
-                    return false;
-                }
+                        @Override
+                        public boolean providesAtimeMtime() {
+                            return false;
+                        }
 
-                @Override
-                public long getLastAccessTime() throws IOException {
-                    return 0;
-                }
+                        @Override
+                        public long getLastAccessTime() throws IOException {
+                            return 0;
+                        }
 
-                @Override
-                public long getLastModifiedTime() throws IOException {
-                    return 0;
-                }
-            }, remoteFile);
+                        @Override
+                        public long getLastModifiedTime() throws IOException {
+                            return 0;
+                        }
+                    },
+                    remoteFile);
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
                 Optional.ofNullable(fileTransfer).ifPresent(ft -> ft.setErrored(true));
@@ -340,7 +370,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     scpFileTransferWrapper.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -364,14 +394,15 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     scpFileTransferWrapper.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
     }
 
     @Override
-    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata) throws AgentException {
+    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata)
+            throws AgentException {
         SCPFileTransferWrapper fileTransfer = null;
         try {
             fileTransfer = sshjClient.newSCPFileTransferWrapper();
@@ -407,19 +438,13 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 }
 
                 @Override
-                public void setPermissions(int perms) throws IOException {
-
-                }
+                public void setPermissions(int perms) throws IOException {}
 
                 @Override
-                public void setLastAccessedTime(long t) throws IOException {
-
-                }
+                public void setLastAccessedTime(long t) throws IOException {}
 
                 @Override
-                public void setLastModifiedTime(long t) throws IOException {
-
-                }
+                public void setLastModifiedTime(long t) throws IOException {}
             });
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
@@ -432,7 +457,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     scpFileTransferWrapper.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -456,7 +481,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     client.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -479,7 +504,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     client.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -500,10 +525,11 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         }
         */
 
-        CommandOutput commandOutput = executeCommand("ls " + fileName, parentPath); // This has a risk of returning folders also
+        CommandOutput commandOutput =
+                executeCommand("ls " + fileName, parentPath); // This has a risk of returning folders also
         String[] filesTmp = commandOutput.getStdOut().split("\n");
         List<String> files = new ArrayList<>();
-        for (String f: filesTmp) {
+        for (String f : filesTmp) {
             if (!f.isEmpty()) {
                 files.add(f);
             }
@@ -534,7 +560,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 try {
                     scpFileTransferWrapper.close();
                 } catch (IOException e) {
-                    //Ignore
+                    // Ignore
                 }
             });
         }
@@ -556,7 +582,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                 j++;
             } else if (starIndex != -1) {
                 j = starIndex + 1;
-                i = iIndex+1;
+                i = iIndex + 1;
                 iIndex++;
             } else {
                 return false;

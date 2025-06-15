@@ -1,3 +1,22 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.cancel;
 
 import org.apache.airavata.common.utils.ServerSettings;
@@ -18,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @TaskDef(name = "Workflow Cancellation Task")
 public class WorkflowCancellationTask extends AbstractTask {
 
-    private final static Logger logger = LoggerFactory.getLogger(WorkflowCancellationTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowCancellationTask.class);
 
     private TaskDriver taskDriver;
     private HelixManager helixManager;
@@ -34,16 +53,17 @@ public class WorkflowCancellationTask extends AbstractTask {
         super.init(manager, workflowName, jobName, taskName);
 
         try {
-            helixManager = HelixManagerFactory.getZKHelixManager(ServerSettings.getSetting("helix.cluster.name"), taskName,
-                    InstanceType.SPECTATOR, ServerSettings.getZookeeperConnection());
+            helixManager = HelixManagerFactory.getZKHelixManager(
+                    ServerSettings.getSetting("helix.cluster.name"),
+                    taskName,
+                    InstanceType.SPECTATOR,
+                    ServerSettings.getZookeeperConnection());
             helixManager.connect();
-            Runtime.getRuntime().addShutdownHook(
-                    new Thread(() -> {
-                        if (helixManager.isConnected()) {
-                            helixManager.disconnect();
-                        }
-                    })
-            );
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if (helixManager.isConnected()) {
+                    helixManager.disconnect();
+                }
+            }));
             taskDriver = new TaskDriver(helixManager);
         } catch (Exception e) {
             try {
@@ -93,17 +113,24 @@ public class WorkflowCancellationTask extends AbstractTask {
             }
 
             try {
-                logger.info("Waiting maximum " + waitTime + "s for workflow " + cancellingWorkflowName + " state to change");
-                TaskState newWorkflowState = taskDriver.pollForWorkflowState(cancellingWorkflowName, waitTime * 1000,
-                        TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED, TaskState.NOT_STARTED);
+                logger.info("Waiting maximum " + waitTime + "s for workflow " + cancellingWorkflowName
+                        + " state to change");
+                TaskState newWorkflowState = taskDriver.pollForWorkflowState(
+                        cancellingWorkflowName,
+                        waitTime * 1000,
+                        TaskState.COMPLETED,
+                        TaskState.FAILED,
+                        TaskState.STOPPED,
+                        TaskState.ABORTED,
+                        TaskState.NOT_STARTED);
 
                 logger.info("Workflow " + cancellingWorkflowName + " state changed to " + newWorkflowState.name());
                 return onSuccess("Successfully cancelled workflow " + cancellingWorkflowName);
 
             } catch (Exception e) {
                 logger.warn("Failed while watching workflow to stop " + cancellingWorkflowName, e);
-                return onSuccess("Failed while watching workflow to stop " + cancellingWorkflowName + ". But continuing");
-
+                return onSuccess(
+                        "Failed while watching workflow to stop " + cancellingWorkflowName + ". But continuing");
             }
 
         } finally {
@@ -121,9 +148,7 @@ public class WorkflowCancellationTask extends AbstractTask {
     }
 
     @Override
-    public void onCancel() {
-
-    }
+    public void onCancel() {}
 
     public String getCancellingWorkflowName() {
         return cancellingWorkflowName;

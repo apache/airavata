@@ -1,5 +1,27 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.cancel;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.helix.impl.task.AiravataTask;
@@ -17,14 +39,10 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @TaskDef(name = "Remote Job Cancellation Task")
 public class RemoteJobCancellationTask extends AiravataTask {
 
-    private final static Logger logger = LoggerFactory.getLogger(RemoteJobCancellationTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteJobCancellationTask.class);
 
     public static final String JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE = "job-already-cancelled";
 
@@ -50,18 +68,20 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
             logger.info("Fetching job manager configuration for process " + getProcessId());
 
-            JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
-                    JobFactory.getResourceJobManager(
+            JobManagerConfiguration jobManagerConfiguration =
+                    JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                             getRegistryServiceClient(),
                             getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getPreferredJobSubmissionInterface()));
 
-            AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
-                    getTaskContext().getGatewayId(),
-                    getTaskContext().getComputeResourceId(),
-                    getTaskContext().getJobSubmissionProtocol(),
-                    getTaskContext().getComputeResourceCredentialToken(),
-                    getTaskContext().getComputeResourceLoginUserName());
+            AgentAdaptor adaptor = taskHelper
+                    .getAdaptorSupport()
+                    .fetchAdaptor(
+                            getTaskContext().getGatewayId(),
+                            getTaskContext().getComputeResourceId(),
+                            getTaskContext().getJobSubmissionProtocol(),
+                            getTaskContext().getComputeResourceCredentialToken(),
+                            getTaskContext().getComputeResourceLoginUserName());
 
             for (JobModel job : jobs) {
 
@@ -70,8 +90,13 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
                     if (job.getJobStatuses() != null) {
                         // first check the monitoring job status
-                        JobStatus lastReceivedStatus = job.getJobStatuses().stream().sorted(Comparator.comparing(JobStatus::getTimeOfStateChange).reversed()).collect(Collectors.toList()).get(0);
-                        logger.info("Job " + job.getJobId() + " state is " + lastReceivedStatus.getJobState().name() + " according to monitoring");
+                        JobStatus lastReceivedStatus = job.getJobStatuses().stream()
+                                .sorted(Comparator.comparing(JobStatus::getTimeOfStateChange)
+                                        .reversed())
+                                .collect(Collectors.toList())
+                                .get(0);
+                        logger.info("Job " + job.getJobId() + " state is "
+                                + lastReceivedStatus.getJobState().name() + " according to monitoring");
                         switch (lastReceivedStatus.getJobState()) {
                             case FAILED:
                             case CANCELED:
@@ -80,7 +105,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                 // if the job already is in above states, there is no use of trying cancellation
                                 // setting context variable to be used in the Cancel Completing Task
                                 setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
-                                logger.warn("Job " + job.getJobId() + " already is in a saturated state according to monitoring");
+                                logger.warn("Job " + job.getJobId()
+                                        + " already is in a saturated state according to monitoring");
                                 continue;
                         }
                     }
@@ -90,9 +116,12 @@ public class RemoteJobCancellationTask extends AiravataTask {
                     CommandOutput jobMonitorOutput = adaptor.executeCommand(monitorCommand.getRawCommand(), null);
 
                     if (jobMonitorOutput.getExitCode() == 0) {
-                        JobStatus jobStatus = jobManagerConfiguration.getParser().parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
+                        JobStatus jobStatus = jobManagerConfiguration
+                                .getParser()
+                                .parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
                         if (jobStatus != null) {
-                            logger.info("Job " + job.getJobId() + " state is " + jobStatus.getJobState().name() + " according to cluster");
+                            logger.info("Job " + job.getJobId() + " state is "
+                                    + jobStatus.getJobState().name() + " according to cluster");
                             switch (jobStatus.getJobState()) {
                                 case COMPLETE:
                                 case CANCELED:
@@ -101,16 +130,19 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                     // if the job already is in above states, there is no use of trying cancellation
                                     // setting context variable to be used in the Cancel Completing Task
                                     setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
-                                    logger.warn("Job " + job.getJobId() + " already is in a saturated state according to cluster");
+                                    logger.warn("Job " + job.getJobId()
+                                            + " already is in a saturated state according to cluster");
                                     continue;
                             }
                         } else {
-                            logger.warn("Job status for job " + job.getJobId() + " is null. Std out " + jobMonitorOutput.getStdOut() +
-                                    ". Std err " + jobMonitorOutput.getStdError() + ". Job monitor command " + monitorCommand.getRawCommand());
+                            logger.warn("Job status for job " + job.getJobId() + " is null. Std out "
+                                    + jobMonitorOutput.getStdOut() + ". Std err " + jobMonitorOutput.getStdError()
+                                    + ". Job monitor command " + monitorCommand.getRawCommand());
                         }
                     } else {
-                        logger.warn("Error while fetching the job " + job.getJobId() + " status. Std out " + jobMonitorOutput.getStdOut() +
-                                ". Std err " + jobMonitorOutput.getStdError() + ". Job monitor command " + monitorCommand.getRawCommand());
+                        logger.warn("Error while fetching the job " + job.getJobId() + " status. Std out "
+                                + jobMonitorOutput.getStdOut() + ". Std err " + jobMonitorOutput.getStdError()
+                                + ". Job monitor command " + monitorCommand.getRawCommand());
                     }
                 } catch (Exception e) {
                     logger.error("Unknown error while fetching the job status but continuing..", e);
@@ -126,19 +158,32 @@ public class RemoteJobCancellationTask extends AiravataTask {
                     CommandOutput jobCancelOutput = adaptor.executeCommand(cancelCommand.getRawCommand(), null);
 
                     if (jobCancelOutput.getExitCode() != 0) {
-                        logger.warn("Failed to execute job cancellation command for job " + job.getJobId() + " Sout : " +
-                                jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError());
-                        //return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
-                        //        jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true, null);
+                        logger.warn("Failed to execute job cancellation command for job " + job.getJobId() + " Sout : "
+                                + jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError());
+                        // return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
+                        //        jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true,
+                        // null);
                     }
                 } catch (Exception ex) {
-                    logger.error("Unknown error while canceling job " + job.getJobId() + " of process " + getProcessId());
-                    return onFail("Unknown error while canceling job " + job.getJobId() + " of process " + getProcessId(), true, ex);
+                    logger.error(
+                            "Unknown error while canceling job " + job.getJobId() + " of process " + getProcessId());
+                    return onFail(
+                            "Unknown error while canceling job " + job.getJobId() + " of process " + getProcessId(),
+                            true,
+                            ex);
                 }
 
-                // TODO this is temporary fix. Remove this line when the schedulers are configured to notify when an job is externally cancelled
-                // forcefully make the job state as cancelled as some schedulers do not notify when the job is cancelled.
-                saveAndPublishJobStatus(job.getJobId(), job.getTaskId(), getProcessId(), getExperimentId(), getGatewayId(), JobState.CANCELED);
+                // TODO this is temporary fix. Remove this line when the schedulers are configured to notify when an job
+                // is externally cancelled
+                // forcefully make the job state as cancelled as some schedulers do not notify when the job is
+                // cancelled.
+                saveAndPublishJobStatus(
+                        job.getJobId(),
+                        job.getTaskId(),
+                        getProcessId(),
+                        getExperimentId(),
+                        getGatewayId(),
+                        JobState.CANCELED);
             }
 
             logger.info("Successfully completed job cancellation task");
@@ -148,11 +193,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
             logger.error("Unknown error while canceling jobs of process " + getProcessId());
             return onFail("Unknown error while canceling jobs of process " + getProcessId(), true, e);
         }
-
     }
 
     @Override
-    public void onCancel(TaskContext taskContext) {
-
-    }
+    public void onCancel(TaskContext taskContext) {}
 }

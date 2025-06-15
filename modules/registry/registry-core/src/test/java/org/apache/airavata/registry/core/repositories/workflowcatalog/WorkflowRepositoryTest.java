@@ -1,23 +1,25 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
+
+import static org.junit.Assert.assertEquals;
 
 import org.apache.airavata.model.workflow.*;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
@@ -25,8 +27,6 @@ import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 // TODO: fix derby initialization script so that this test can be re-enabled
 @Ignore
@@ -75,14 +75,14 @@ public class WorkflowRepositoryTest extends TestBase {
 
         AiravataWorkflow workflow = workflowRepository.getWorkflow(workflowRepository.getWorkflowId(EXPERIMENT_ID));
 
-        //Assert workflow
+        // Assert workflow
         assertEquals(SAMPLE_DESCRIPTION, workflow.getDescription());
 
         assertEquals(2, workflow.getApplicationsSize());
         assertEquals(2, workflow.getHandlersSize());
         assertEquals(3, workflow.getConnectionsSize());
 
-        //Assert applications
+        // Assert applications
         for (WorkflowApplication app : workflow.getApplications()) {
             assertEquals(SAMPLE_APPLICATION_INTERFACE_ID, app.getApplicationInterfaceId());
             assertEquals(SAMPLE_COMPUTE_RESOURCE_ID, app.getComputeResourceId());
@@ -98,10 +98,10 @@ public class WorkflowRepositoryTest extends TestBase {
 
         AiravataWorkflow workflow = new AiravataWorkflow();
 
-        //Adding basic workflow parameters
+        // Adding basic workflow parameters
         workflow.setDescription(SAMPLE_DESCRIPTION);
 
-        //Adding workflow applications
+        // Adding workflow applications
         WorkflowApplication application1 = new WorkflowApplication();
         application1.setId(APPLICATION_PREFIX + 1);
         application1.setApplicationInterfaceId(SAMPLE_APPLICATION_INTERFACE_ID);
@@ -125,7 +125,7 @@ public class WorkflowRepositoryTest extends TestBase {
         workflow.addToApplications(application1);
         workflow.addToApplications(application2);
 
-        //Adding workflow handlers
+        // Adding workflow handlers
         WorkflowHandler handler1 = new WorkflowHandler();
         handler1.setId(HANDLER_PREFIX + 1);
         handler1.setType(HandlerType.FLOW_STARTER);
@@ -137,7 +137,7 @@ public class WorkflowRepositoryTest extends TestBase {
         workflow.addToHandlers(handler1);
         workflow.addToHandlers(handler2);
 
-        //Adding workflow connections
+        // Adding workflow connections
         WorkflowConnection connection1 = new WorkflowConnection();
         connection1.setFromType(ComponentType.HANDLER);
         connection1.setFromId(HANDLER_PREFIX + 1);

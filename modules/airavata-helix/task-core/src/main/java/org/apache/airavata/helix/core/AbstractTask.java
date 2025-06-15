@@ -1,22 +1,22 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -49,12 +49,12 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTask extends UserContentStore implements Task {
 
-    private final static Logger logger = LoggerFactory.getLogger(AbstractTask.class);
-    private final static CountMonitor taskInitCounter = new CountMonitor("task_init_count");
-    private final static GaugeMonitor taskRunGauge = new GaugeMonitor("task_run_gauge");
-    private final static CountMonitor taskCancelCounter = new CountMonitor("task_cancel_count");
-    private final static CountMonitor taskFailCounter = new CountMonitor("task_fail_count");
-    private final static CountMonitor taskCompleteCounter = new CountMonitor("task_complete_count");
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
+    private static final CountMonitor taskInitCounter = new CountMonitor("task_init_count");
+    private static final GaugeMonitor taskRunGauge = new GaugeMonitor("task_run_gauge");
+    private static final CountMonitor taskCancelCounter = new CountMonitor("task_cancel_count");
+    private static final CountMonitor taskFailCounter = new CountMonitor("task_fail_count");
+    private static final CountMonitor taskCompleteCounter = new CountMonitor("task_complete_count");
 
     private static final String NEXT_JOB = "next-job";
     private static final String WORKFLOW_STARTED = "workflow-started";
@@ -79,7 +79,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         super.init(manager, workflowName, jobName, taskName);
         try {
             taskInitCounter.inc();
-            TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
+            TaskUtil.deserializeTaskData(
+                    this, this.callbackContext.getTaskConfig().getConfigMap());
         } catch (Exception e) {
             taskFailCounter.inc();
             logger.error("Deserialization of task parameters failed", e);
@@ -95,11 +96,16 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     public final TaskResult run() {
         try {
             taskRunGauge.inc();
-            boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
-                    this.callbackContext.getJobConfig().getJobId()
-                            .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
+            boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null
+                    || this.callbackContext
+                            .getJobConfig()
+                            .getJobId()
+                            .equals(this.callbackContext.getJobConfig().getWorkflow() + "_"
+                                    + getUserContent(NEXT_JOB, Scope.WORKFLOW));
 
-            return isThisNextJob ? onRun(this.taskHelper) : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
+            return isThisNextJob
+                    ? onRun(this.taskHelper)
+                    : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
         } finally {
             if (participant != null) {
                 participant.unregisterRunningTask(this);
@@ -132,7 +138,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     protected TaskResult onSuccess(String message) {
         taskRunGauge.dec();
         taskCompleteCounter.inc();
-        String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
+        String successMessage =
+                "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
         return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
     }
@@ -222,7 +229,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         if (curatorClient == null) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
             try {
-                this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
+                this.curatorClient =
+                        CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
                 this.curatorClient.start();
             } catch (ApplicationSettingsException e) {
                 logger.error("Failed to create curator client ", e);

@@ -1,32 +1,31 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.common.utils;
 
+import java.sql.*;
+import java.util.Properties;
+import javax.sql.DataSource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.sql.*;
-import java.util.Properties;
 
 /**
  * Database lookup. Abstracts out JDBC operations.
@@ -42,8 +41,8 @@ public class DBUtil {
 
     private Properties properties;
 
-    public DBUtil(String jdbcUrl, String userName, String password, String driver) throws InstantiationException,
-            IllegalAccessException, ClassNotFoundException {
+    public DBUtil(String jdbcUrl, String userName, String password, String driver)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         this.jdbcUrl = jdbcUrl;
         this.databaseUserName = userName;
@@ -59,7 +58,7 @@ public class DBUtil {
 
     /**
      * Initializes and load driver. Must be called this before calling anyother method.
-     * 
+     *
      * @throws ClassNotFoundException
      *             If DB driver is not found.
      * @throws InstantiationException
@@ -80,7 +79,7 @@ public class DBUtil {
 
     /**
      * Generic method to query values in the database.
-     * 
+     *
      * @param tableName
      *            Table name to query
      * @param selectColumn
@@ -97,7 +96,7 @@ public class DBUtil {
 
     /**
      * Generic method to query values in the database.
-     * 
+     *
      * @param tableName
      *            Table name to query
      * @param selectColumn
@@ -115,8 +114,14 @@ public class DBUtil {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("SELECT ").append(selectColumn).append(" FROM ").append(tableName).append(" WHERE ")
-                .append(whereColumn).append(" = ?");
+        stringBuilder
+                .append("SELECT ")
+                .append(selectColumn)
+                .append(" FROM ")
+                .append(tableName)
+                .append(" WHERE ")
+                .append(whereColumn)
+                .append(" = ?");
 
         String sql = stringBuilder.toString();
 
@@ -152,7 +157,7 @@ public class DBUtil {
 
     /**
      * Create table utility method.
-     * 
+     *
      * @param sql
      *            SQL to be executed.
      * @throws SQLException
@@ -179,7 +184,6 @@ public class DBUtil {
                 log.error("An error occurred while closing database connections ", ignore);
             }
         }
-
     }
 
     private void loadDriver() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
@@ -188,7 +192,7 @@ public class DBUtil {
 
     /**
      * Gets a new DBCP data source.
-     * 
+     *
      * @return A new data source.
      */
     public DataSource getDataSource() {
@@ -203,7 +207,7 @@ public class DBUtil {
 
     /**
      * Creates a new JDBC connections based on provided DBCP properties.
-     * 
+     *
      * @return A new DB connection.
      * @throws SQLException
      *             If an error occurred while creating the connection.
@@ -216,7 +220,7 @@ public class DBUtil {
 
     /**
      * Utility method to close statements and connections.
-     * 
+     *
      * @param preparedStatement
      *            The prepared statement to close.
      * @param connection
@@ -289,7 +293,7 @@ public class DBUtil {
 
     /**
      * Mainly useful for tests.
-     * 
+     *
      * @param tableName
      *            The table name.
      * @param connection
@@ -303,7 +307,6 @@ public class DBUtil {
         preparedStatement.executeUpdate();
 
         connection.commit();
-
     }
 
     /**
@@ -313,15 +316,20 @@ public class DBUtil {
      * @throws Exception
      * If an error occurred while reading configurations or while creating database object.
      */
-    public static DBUtil getCredentialStoreDBUtil() throws ApplicationSettingsException, IllegalAccessException,
-            ClassNotFoundException, InstantiationException {
+    public static DBUtil getCredentialStoreDBUtil()
+            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
+                    InstantiationException {
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String userName = ServerSettings.getCredentialStoreDBUser();
         String password = ServerSettings.getCredentialStoreDBPassword();
         String driverName = ServerSettings.getCredentialStoreDBDriver();
 
         StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
-        stringBuilder.append(jdbcUrl).append(" DB user - ").append(userName).append(" driver name - ")
+        stringBuilder
+                .append(jdbcUrl)
+                .append(" DB user - ")
+                .append(userName)
+                .append(" driver name - ")
                 .append(driverName);
 
         log.debug(stringBuilder.toString());
@@ -331,5 +339,4 @@ public class DBUtil {
 
         return dbUtil;
     }
-
 }
