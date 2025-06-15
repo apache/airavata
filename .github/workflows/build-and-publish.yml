@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - improve/cicd
     tags:
       - "v*"
   release:
@@ -12,8 +11,8 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io
-  DOCKER_USERNAME: mryash
-  VERSION: latest
+  DOCKER_USERNAME: cybershuttle
+  VERSION: ${{ github.ref_name }}
 
 jobs:
   build:
@@ -62,6 +61,6 @@ jobs:
       - name: Tag and Push Images
         run: |
           for image in email-monitor participant post-wm pre-wm api-server controller; do
-            docker tag airavata/$image ${DOCKER_USERNAME}/$image:${VERSION}
-            docker push ${DOCKER_USERNAME}/$image:${VERSION}
+            docker tag airavata/$image ${DOCKER_USERNAME}/airavata-$image:${VERSION}
+            docker push ${DOCKER_USERNAME}/airavata-$image:${VERSION}
           done
