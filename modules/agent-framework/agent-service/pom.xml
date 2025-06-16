@@ -203,9 +203,6 @@ under the License.
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <release>17</release>
-                    <includes>
-                        <include>${project.build.directory}/generated-sources/**/*.java</include>
-                    </includes>
                 </configuration>
             </plugin>
             <plugin>
