@@ -155,7 +155,7 @@ under the License.
                 <version>${maven.assembly.plugin}</version>
                 <executions>
                     <execution>
-                        <id>mft-controller-distribution-package</id>
+                        <id>agent-service-distribution-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
