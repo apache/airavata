@@ -1,28 +1,23 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.research.service.handlers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
@@ -43,6 +38,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ResourceHandler {
@@ -118,7 +119,7 @@ public class ResourceHandler {
 
         resource.setName(createResourceRequest.getName());
         resource.setDescription(createResourceRequest.getDescription());
-        resource.setAuthors(createResourceRequest.getAuthors());
+        resource.setAuthors(createResourceRequest.getAuthors().stream().map(String::toLowerCase).collect(Collectors.toSet()));
         Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
         for (String tag : createResourceRequest.getTags()) {
             org.apache.airavata.research.service.model.entity.Tag t =
@@ -175,6 +176,23 @@ public class ResourceHandler {
         }
 
         return opResource.get();
+    }
+
+    public boolean deleteResourceById(String id) {
+        Optional<Resource> opResource = resourceRepository.findById(id);
+
+        if (opResource.isEmpty()) {
+            throw new RuntimeException("Resource not found: " + id);
+        }
+
+        String userEmail = UserContext.userId();
+        System.out.println("Received request to delete with user: " + userEmail);
+        if (!opResource.get().getAuthors().contains(userEmail.toLowerCase())) {
+            throw new RuntimeException("User " + userEmail + " not authorized to delete resource");
+        }
+
+        resourceRepository.delete(opResource.get());
+        return true;
     }
 
     public Page<Resource> getAllResources(

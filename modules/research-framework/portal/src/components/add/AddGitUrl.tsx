@@ -1,15 +1,15 @@
-import { Button, Code, Input, Text, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import {Button, Code, Input, Text, VStack} from "@chakra-ui/react";
+import {useState} from "react";
 import yaml from "js-yaml";
-import { CreateResourceRequest } from "@/interfaces/Requests/CreateResourceRequest";
+import {CreateResourceRequest} from "@/interfaces/Requests/CreateResourceRequest";
 
 export const AddGitUrl = ({
-  nextStage,
-  createResourceRequest,
-  setCreateResourceRequest,
-  githubUrl,
-  setGithubUrl,
-}: {
+                            nextStage,
+                            createResourceRequest,
+                            setCreateResourceRequest,
+                            githubUrl,
+                            setGithubUrl,
+                          }: {
   nextStage: () => void;
   createResourceRequest: CreateResourceRequest;
   setCreateResourceRequest: (data: CreateResourceRequest) => void;
@@ -65,28 +65,34 @@ export const AddGitUrl = ({
   };
 
   return (
-    <VStack alignItems="flex-start">
-      <Text>Paste GitHub Url</Text>
-      <Text fontSize="sm" color="gray.500">
-        We&apos;ll pull the <Code>cybershuttle.yml</Code> file from the
-        repository to auto-populate the project fields.
-      </Text>
-      <Input
-        placeholder="https://github.com/username/repo.git"
-        value={githubUrl}
-        onChange={(e) => setGithubUrl(e.target.value)}
-        mt={2}
-      />
-      <Button
-        width="full"
-        loading={loadingPull}
-        onClick={onPullCybershuttleYml}
-        mt={4}
-        colorScheme="blue"
-        disabled={!githubUrl}
-      >
-        Pull cybershuttle.yml file
-      </Button>
-    </VStack>
+      <VStack alignItems="flex-start">
+        <Text>Paste GitHub Url</Text>
+        <Text fontSize="sm" color="gray.500">
+          We&apos;ll pull the <Code>cybershuttle.yml</Code> file from the
+          repository to auto-populate the project fields.
+        </Text>
+        <Input
+            placeholder="https://github.com/username/repo"
+            value={githubUrl}
+            onChange={(e) => {
+              let githubUrl = e.target.value;
+              if (githubUrl.endsWith(".git")) {
+                githubUrl = githubUrl.replace(".git", "");
+              }
+              setGithubUrl(githubUrl);
+            }}
+            mt={2}
+        />
+        <Button
+            width="full"
+            loading={loadingPull}
+            onClick={onPullCybershuttleYml}
+            mt={4}
+            colorScheme="blue"
+            disabled={!githubUrl}
+        >
+          Pull cybershuttle.yml file
+        </Button>
+      </VStack>
   );
 };
