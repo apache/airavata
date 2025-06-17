@@ -1,20 +1,14 @@
-import { Box, Heading } from "@chakra-ui/react";
-import { AssociatedProjectsSection } from "../projects/AssociatedProejctsSection";
-import { DatasetResource } from "@/interfaces/ResourceType";
+import {AssociatedProjectsSection} from "../projects/AssociatedProjectsSection.tsx";
+import {DatasetResource} from "@/interfaces/ResourceType";
 
 export const DatasetSpecificDetails = ({
-  dataset,
-}: {
+                                         dataset,
+                                       }: {
   dataset: DatasetResource;
 }) => {
   return (
-    <>
-      <Box>
-        <Heading fontWeight="bold" size="2xl" mb={2}>
-          Associated Projects
-        </Heading>
-        <AssociatedProjectsSection resourceId={dataset.id} />
-      </Box>
-    </>
+      <>
+        <AssociatedProjectsSection resourceId={dataset.id}/>
+      </>
   );
 };
