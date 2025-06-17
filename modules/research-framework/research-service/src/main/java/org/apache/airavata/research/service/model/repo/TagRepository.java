@@ -19,10 +19,25 @@
 */
 package org.apache.airavata.research.service.model.repo;
 
+import java.util.List;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface TagRepository extends JpaRepository<Tag, String> {
 
     Tag findByValue(String value);
+
+    @Query(
+            value =
+                    """
+                      SELECT t.* FROM tag t
+                      JOIN resource_tags rt ON t.id = rt.tag_id
+                      GROUP BY t.id
+                      ORDER BY COUNT(rt.resource_id) DESC
+                      LIMIT :limit
+                    """,
+            nativeQuery = true)
+    List<Tag> findDistinctByPopularity(@Param("limit") int limit);
 }

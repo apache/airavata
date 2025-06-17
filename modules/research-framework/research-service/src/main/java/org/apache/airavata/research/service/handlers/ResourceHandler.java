@@ -178,21 +178,26 @@ public class ResourceHandler {
     }
 
     public Page<Resource> getAllResources(
-            int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag) {
+            int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         if (tag == null || tag.length == 0) {
-            return resourceRepository.findAllByTypes(typeList, pageable);
+            return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
         }
 
-        return resourceRepository.findAllByTypesAndAllTags(typeList, tag, tag.length, pageable);
+        return resourceRepository.findAllByTypesAndAllTags(
+                typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
     }
 
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
 
+    public List<Tag> getAllTagsByPopularity() {
+        return tagRepository.findDistinctByPopularity(100);
+    }
+
     public List<Resource> getAllResourcesByTypeAndName(Class<? extends Resource> type, String name) {
 
-        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name);
+        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase());
     }
 }

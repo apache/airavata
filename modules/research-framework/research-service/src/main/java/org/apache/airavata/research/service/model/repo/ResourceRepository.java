@@ -31,31 +31,44 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, String> {
 
-    @Query("SELECT r FROM #{#entityName} r WHERE TYPE(r) IN :types")
-    Page<Resource> findAllByTypes(@Param("types") List<Class<? extends Resource>> types, Pageable pageable);
-
     @Query(
             """
-    SELECT r
-    FROM Resource r
-    JOIN r.tags t
-    WHERE r.class IN :typeList AND t.value IN :tags
-    GROUP BY r
-    HAVING COUNT(DISTINCT t.value) = :tagCount
-    """)
-    Page<Resource> findAllByTypesAndAllTags(
-            @Param("typeList") List<Class<? extends Resource>> typeList,
-            @Param("tags") String[] tags,
-            @Param("tagCount") long tagCount,
+                    SELECT r
+                    FROM #{#entityName} r
+                    WHERE TYPE(r) IN :types AND r.name LIKE CONCAT('%', :nameSearch, '%')
+                    ORDER BY r.name
+                    """)
+    Page<Resource> findAllByTypes(
+            @Param("types") List<Class<? extends Resource>> types,
+            @Param("nameSearch") String nameSearch,
             Pageable pageable);
 
     @Query(
             """
-    SELECT r
-    FROM Resource r
-    WHERE TYPE(r) = :type
-    AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))
-    """)
+                    SELECT r
+                    FROM Resource r
+                    JOIN r.tags t
+                    WHERE r.class IN :typeList
+                      AND t.value IN :tags
+                      AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
+                    GROUP BY r
+                    HAVING COUNT(DISTINCT t.value) = :tagCount
+                    ORDER BY r.name
+                    """)
+    Page<Resource> findAllByTypesAndAllTags(
+            @Param("typeList") List<Class<? extends Resource>> typeList,
+            @Param("tags") String[] tags,
+            @Param("tagCount") long tagCount,
+            @Param("nameSearch") String nameSearch,
+            Pageable pageable);
+
+    @Query(
+            """
+                    SELECT r
+                    FROM Resource r
+                    WHERE TYPE(r) = :type
+                    AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))
+                    """)
     List<Resource> findByTypeAndNameContainingIgnoreCase(
             @Param("type") Class<? extends Resource> type, @Param("name") String name);
 }
