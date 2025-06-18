@@ -1,5 +1,7 @@
 venv
 airavata_python_sdk.egg-info
+airavata/
+stubs_python/
 *.pyc
 .tox
 dist/

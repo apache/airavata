@@ -1,1 +1,1 @@
-thrift -r --gen php:autoload -out . ../../thrift-interface-descriptions/stubs_php.thrift
+thrift -r --gen php -out . ../../thrift-interface-descriptions/stubs_php.thrift
