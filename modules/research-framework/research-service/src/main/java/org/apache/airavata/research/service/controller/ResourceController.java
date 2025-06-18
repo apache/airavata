@@ -97,7 +97,7 @@ public class ResourceController {
     @Operation(summary = "Get all tags")
     @GetMapping(value = "/tags/all")
     public ResponseEntity<List<org.apache.airavata.research.service.model.entity.Tag>> getTags() {
-        return ResponseEntity.ok(resourceHandler.getAllTags());
+        return ResponseEntity.ok(resourceHandler.getAllTagsByPopularity());
     }
 
     @Operation(summary = "Get dataset, notebook, or repository")
@@ -111,6 +111,7 @@ public class ResourceController {
     public ResponseEntity<Page<Resource>> getAllResources(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            @RequestParam(value = "nameSearch") String nameSearch,
             @RequestParam(value = "type") ResourceTypeEnum[] types,
             @RequestParam(value = "tag", required = false) String[] tags) {
         List<Class<? extends Resource>> typeList = new ArrayList<>();
@@ -125,7 +126,7 @@ public class ResourceController {
                 typeList.add(DatasetResource.class);
             }
         }
-        Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags);
+        Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags, nameSearch);
 
         return ResponseEntity.ok(response);
     }
