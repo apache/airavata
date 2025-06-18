@@ -94,9 +94,10 @@ under the License.
         <module>modules/agent-framework</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework</module>
-        <module>tools</module>
         <module>modules/ide-integration</module>
         <module>modules/file-server</module>
+        <module>examples/java-client-samples</module>
+        <module>airavata-devtools/load-client</module>
     </modules>
 
     <properties>

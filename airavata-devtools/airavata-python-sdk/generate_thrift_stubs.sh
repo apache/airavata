@@ -1,0 +1,1 @@
+thrift -r --gen py:enum,type_hints -out . ../../thrift-interface-descriptions/stubs_python.thrift

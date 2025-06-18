@@ -198,6 +198,18 @@ See the [LICENSE](LICENSE) file for complete license details.
 
 ---
 
+## Powered by Apache Airavata
+
+### Research Software
+
+* [Cybershuttle](https://cybershuttle.org/)
+
+### Workshops and Tutorials
+
+* 04/11/2025 [Cyberinfrastructure and Services for Science & Engineering (CISSE25) Workshop](https://cybershuttle.org/events)
+* 05/07/2025 [Data-Driven and Large-Scale Modeling in Neuroscience (NeuroData25) Workshop](https://cybershuttle.org/events)
+* 12/16/2024 - 12/20/2024 [62nd Hands-On Workshop on Computational Biophysics](https://www.ks.uiuc.edu/Training/Workshop/Auburn2024B/)
+
 <div align="center">
   <strong>Made with ❤️ by the Apache Airavata Community</strong>
 </div>
