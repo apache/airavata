@@ -1,37 +1,37 @@
 import {Box, Button, CloseButton, Dialog, Input, Menu, Portal, Text, useDialog} from "@chakra-ui/react";
 import {BsThreeDots} from "react-icons/bs";
 import {FaTrash} from "react-icons/fa";
-import {Resource} from "@/interfaces/ResourceType.ts";
 import {useAuth} from "react-oidc-context";
-import {isResourceOwner} from "@/lib/util.ts";
+import {isProjectOwner} from "@/lib/util.ts";
 import {useState} from "react";
 import api from "@/lib/api.ts";
 import {CONTROLLER} from "@/lib/controller.ts";
 import {toaster} from "@/components/ui/toaster.tsx";
+import {ProjectType} from "@/interfaces/ProjectType.tsx";
 
-export const DeleteResourceButton = ({
-                                       resource,
-                                       onSuccess,
-                                     }: {
-  resource: Resource
+export const DeleteProjectButton = ({
+                                      project,
+                                      onSuccess,
+                                    }: {
+  project: ProjectType
   onSuccess: () => void;
 }) => {
   const dialog = useDialog();
   const [deleteName, setDeleteName] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const auth = useAuth();
-  const isOwner = isResourceOwner(auth.user?.profile.email || "INVALID", resource);
+  const isOwner = isProjectOwner(auth.user?.profile.email || "INVALID", project);
   if (!isOwner || !auth.isAuthenticated) {
     return null;
   }
 
-  const handleDeleteResource = async () => {
+  const handleDeleteProject = async () => {
     setDeleteLoading(true);
     try {
-      await api.delete(`${CONTROLLER.resources}/${resource.id}`);
+      await api.delete(`${CONTROLLER.projects}/${project.id}`);
       toaster.create({
-        title: "Resource deleted",
-        description: resource.name,
+        title: "Project deleted",
+        description: project.name,
         type: "success",
       })
       onSuccess();
@@ -76,17 +76,17 @@ export const DeleteResourceButton = ({
             <Dialog.Positioner>
               <Dialog.Content>
                 <Dialog.Header>
-                  <Dialog.Title>Delete Resource</Dialog.Title>
+                  <Dialog.Title>Delete Project</Dialog.Title>
                 </Dialog.Header>
                 <Dialog.Body>
                   <Text color="gray.500">
                     This action is irreversible. To confirm, please type:{" "}
-                    <b>{resource.name}</b>.
+                    <b>{project.name}</b>.
                   </Text>
 
                   <Input
                       mt={2}
-                      placeholder="Resource name"
+                      placeholder="Project name"
                       value={deleteName}
                       onChange={(e) => setDeleteName(e.target.value)}
                   />
@@ -95,9 +95,9 @@ export const DeleteResourceButton = ({
                   <Button
                       width="100%"
                       colorPalette="red"
-                      disabled={deleteName !== resource.name || deleteLoading}
+                      disabled={deleteName !== project.name || deleteLoading}
                       loading={deleteLoading}
-                      onClick={handleDeleteResource}
+                      onClick={handleDeleteProject}
                   >
                     Delete
                   </Button>

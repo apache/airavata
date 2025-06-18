@@ -1,36 +1,31 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.research.service.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
@@ -45,6 +40,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ResourceHandler {
@@ -90,6 +91,7 @@ public class ResourceHandler {
         }
         resource.setAuthors(userSet);
         resource.setTags(tags);
+        resource.setState(StateEnum.ACTIVE);
     }
 
     public ResourceResponse createResource(Resource resource, ResourceTypeEnum type) {
@@ -149,6 +151,9 @@ public class ResourceHandler {
         }
 
         Resource resource = resourceOp.get();
+        if (StateEnum.DELETED.equals(resource.getState())) {
+            throw new RuntimeException(String.format("Cannot modify deleted resource: %s", resource.getId()));
+        }
 
         // ensure that the user making the request is one of the current authors
         boolean found = false;
@@ -171,7 +176,7 @@ public class ResourceHandler {
 
     public Resource getResourceById(String id) {
         // Your logic to fetch the resource by ID
-        Optional<Resource> opResource = resourceRepository.findById(id);
+        Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
@@ -181,7 +186,7 @@ public class ResourceHandler {
     }
 
     public boolean deleteResourceById(String id) {
-        Optional<Resource> opResource = resourceRepository.findById(id);
+        Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
@@ -198,6 +203,7 @@ public class ResourceHandler {
             throw new RuntimeException(errorMsg);
         }
 
+        resource.setState(StateEnum.DELETED);
         resourceRepository.delete(resource);
         return true;
     }
@@ -209,8 +215,7 @@ public class ResourceHandler {
             return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
         }
 
-        return resourceRepository.findAllByTypesAndAllTags(
-                typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
+        return resourceRepository.findAllByTypesAndAllTags(typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
     }
 
     public List<Tag> getAllTags() {
