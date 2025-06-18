@@ -1,0 +1,25 @@
+<div class="form-group">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  <input id="{{ field.id_for_label }}" type="{{ field.field.widget.input_type }}"
+    class="form-control{% if field.errors %} is-invalid{% endif %}" name="{{ field.name }}"
+    placeholder="{{ field.field.widget.attrs.placeholder }}"
+    aria-describedby="{{ field.id_for_label }}-help"
+    {% if field.value %} value="{{ field.value }}" {% endif %}
+    {% if field.field.required %} required {% endif %} />
+  {% if field.help_text %}
+  <small id="{{ field.id_for_label }}-help" class="form-text text-muted">
+    {{ field.help_text | escape }}
+  </small>
+  {% endif %}
+  <div class="invalid-feedback">
+    {% if field.errors|length == 1 %}
+      {{ field.errors|first| escape }}
+    {% else %}
+      <ul>
+        {% for error in field.errors %}
+        <li>{{ error | escape }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>

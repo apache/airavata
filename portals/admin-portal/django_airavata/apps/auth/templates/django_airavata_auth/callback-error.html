@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="main-content">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+              {% include "./partials/messages.html" %}
+            </div>
+        </div>
+        {% include "./partials/externals_login_form.html" with title="Failed to process authentication callback. You might want to try logging in again." %}
+        <div class="row">
+            <div class="col">
+                <p>
+                <small>See <a href="{% url 'django_airavata_auth:login' %}" class="text-muted">all login options</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

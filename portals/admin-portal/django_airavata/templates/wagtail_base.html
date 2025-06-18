@@ -1,0 +1,25 @@
+{% load navigation_tags static wagtailuserbar %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+    {% include "includes/head.html" %}
+{% endblock head %}
+
+<body>
+  {% wagtailuserbar %}
+
+  <!-- {% block breadcrumbs %}
+    {# breadcrumbs is defined in base/templatetags/navigation_tags.py #}
+    {% breadcrumbs %}
+  {% endblock breadcrumbs %} -->
+
+  <content role="main">
+    {% block content %}
+    {% endblock content %}
+  </content>
+
+  {% render_bundle 'chunk-vendors' 'js' 'COMMON' %}
+  {% render_bundle 'cms' 'js' 'COMMON' %}
+</body>
+
+</html>

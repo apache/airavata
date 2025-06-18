@@ -1,0 +1,62 @@
+{
+  "name": "django-airavata-api",
+  "description": "Model and service classes for using the Django Airavata REST API",
+  "version": "1.0.0-beta.3",
+  "author": "Marcus Christie <machristie@apache.org>",
+  "private": false,
+  "main": "./static/django_airavata_api/js/index.js",
+  "module": "./static/django_airavata_api/js/index.js",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/apache/airavata-django-portal",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint ./static/django_airavata_api/js/",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "@babel/runtime": "^7.1.2",
+    "browserslist": "^4.16.7",
+    "core-js": "^3.8.3",
+    "stacktrace-js": "^2.0.0",
+    "terser": "^4.1.2",
+    "url-parse": "^1.4.3",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.1.0",
+    "@babel/preset-env": "^7.4.5",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "eslint": "^5.12.0",
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^23.6.0",
+    "prettier": "^2.1.2",
+    "regenerator-runtime": "^0.13.1",
+    "webpack": "^5",
+    "webpack-cli": "^3.3.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2017
+    },
+    "env": {
+      "browser": true,
+      "es6": true,
+      "node": true
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<div id=app></div>
+{% endblock %} {% block css %}
+{% render_bundle 'chunk-vendors' 'css' 'ADMIN' %}
+{% render_bundle 'app' 'css' 'ADMIN' %}
+<link rel=stylesheet type=text/css href={% static 'django_airavata_admin/static/css/admin.css' %}> {% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    {% render_bundle 'chunk-vendors' 'js' 'ADMIN' %}
+    {% render_bundle 'app' 'js' 'ADMIN' %}
+{% endblock %}

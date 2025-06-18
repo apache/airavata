@@ -1,0 +1,1229 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$36000$Vu92lia6lBkr$ljENTjPxNr7wdCpdNNAw/UQ+ykZ/aGO0tLJHLUgVfk4=",
+    "last_login": "2018-04-17T18:00:02.043Z",
+    "is_superuser": true,
+    "username": "stephenpaul2727",
+    "first_name": "",
+    "last_name": "",
+    "email": "stephenpaul2727@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2018-04-17T17:59:42.494Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 1,
+  "fields": {
+    "collection": 1,
+    "title": "iu-logo",
+    "file": "original_images/trident-large_EnFLTsO.png",
+    "width": 129,
+    "height": 150,
+    "created_at": "2018-04-17T18:02:31.568Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 2,
+  "fields": {
+    "collection": 1,
+    "title": "confined-ions",
+    "file": "original_images/confined.ions.png",
+    "width": 175,
+    "height": 179,
+    "created_at": "2018-04-17T18:06:26.311Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 4,
+  "fields": {
+    "collection": 1,
+    "title": "confined-ions-repeat.png",
+    "file": "original_images/confined-ions-repeat.png",
+    "width": 2878,
+    "height": 386,
+    "created_at": "2018-04-17T18:45:32.699Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": 182546
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 5,
+  "fields": {
+    "collection": 1,
+    "title": "workflow",
+    "file": "original_images/workflowimage.png",
+    "width": 1592,
+    "height": 691,
+    "created_at": "2018-04-17T20:04:19.529Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 6,
+  "fields": {
+    "collection": 1,
+    "title": "results",
+    "file": "original_images/sample.results.png",
+    "width": 435,
+    "height": 303,
+    "created_at": "2018-04-17T20:13:40.544Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 1,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/trident-large_EnFLTsO.max-165x165.png",
+    "width": 129,
+    "height": 150,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 2,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/confined.ions.max-165x165.png",
+    "width": 161,
+    "height": 165,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 3,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/trident-large_EnFLTsO.original.png",
+    "width": 129,
+    "height": 150,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 4,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/confined.ions.original.png",
+    "width": 175,
+    "height": 179,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 8,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/confined-ions-repeat.max-165x165.png",
+    "width": 165,
+    "height": 22,
+    "focal_point_key": "",
+    "image": 4
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 9,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/confined-ions-repeat.original.png",
+    "width": 2878,
+    "height": 386,
+    "focal_point_key": "",
+    "image": 4
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 10,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/workflowimage.max-165x165.png",
+    "width": 165,
+    "height": 71,
+    "focal_point_key": "",
+    "image": 5
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 11,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/workflowimage.original.png",
+    "width": 1592,
+    "height": 691,
+    "focal_point_key": "",
+    "image": 5
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 12,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/sample.results.max-165x165.png",
+    "width": 165,
+    "height": 114,
+    "focal_point_key": "",
+    "image": 6
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 13,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/sample.results.original.png",
+    "width": 435,
+    "height": 303,
+    "focal_point_key": "",
+    "image": 6
+  }
+},
+{
+  "model": "wagtailcore.site",
+  "fields": {
+    "hostname": "localhost",
+    "port": 80,
+    "site_name": null,
+    "root_page": 2,
+    "is_default_site": true
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 1,
+    "title": "Root",
+    "draft_title": "Root",
+    "slug": "root",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 2,
+  "fields": {
+    "path": "00010001",
+    "depth": 2,
+    "numchild": 1,
+    "title": "Welcome to your new Wagtail site!",
+    "draft_title": "Welcome to your new Wagtail site!",
+    "slug": "home",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 3,
+  "fields": {
+    "path": "000100010001",
+    "depth": 3,
+    "numchild": 0,
+    "title": "Home",
+    "draft_title": "Home",
+    "slug": "home",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "home",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-17T18:06:59.530Z",
+    "last_published_at": "2018-04-17T20:35:01.898Z",
+    "latest_revision_created_at": "2018-04-17T20:35:01.855Z",
+    "live_revision": 43
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 1,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:06:59.513Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 2, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 p-0\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 2,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:07:22.152Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:06:59.530Z\", \"latest_revision_created_at\": \"2018-04-17T18:06:59.513Z\", \"live_revision\": 1, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 2, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 p-0 banner-image\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 3,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:44:12.673Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:07:22.177Z\", \"latest_revision_created_at\": \"2018-04-17T18:07:22.152Z\", \"live_revision\": 2, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 3, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 p-0 banner-image\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 4,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:45:51.362Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:44:12.694Z\", \"latest_revision_created_at\": \"2018-04-17T18:44:12.673Z\", \"live_revision\": 3, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 p-0 banner-image\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 5,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:47:05.444Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:45:51.392Z\", \"latest_revision_created_at\": \"2018-04-17T18:45:51.362Z\", \"live_revision\": 4, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 p-0 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 6,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:49:10.022Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:47:05.470Z\", \"latest_revision_created_at\": \"2018-04-17T18:47:05.444Z\", \"live_revision\": 5, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 7,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T18:59:06.439Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:49:10.040Z\", \"latest_revision_created_at\": \"2018-04-17T18:49:10.022Z\", \"live_revision\": 6, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-sm-12 col-md- 12 banner-image\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 8,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:01:35.073Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T18:59:06.462Z\", \"latest_revision_created_at\": \"2018-04-17T18:59:06.439Z\", \"live_revision\": 7, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-sm-12 col-md- 12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 9,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:06:49.658Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:01:35.097Z\", \"latest_revision_created_at\": \"2018-04-17T19:01:35.073Z\", \"live_revision\": 8, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 10,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:07:12.265Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:06:49.683Z\", \"latest_revision_created_at\": \"2018-04-17T19:06:49.658Z\", \"live_revision\": 9, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 11,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:29:30.550Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:07:12.289Z\", \"latest_revision_created_at\": \"2018-04-17T19:07:12.265Z\", \"live_revision\": 10, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"f3bcfbb2-6d12-47be-8671-2804fa6d795d\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 12,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:29:43.888Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:29:30.576Z\", \"latest_revision_created_at\": \"2018-04-17T19:29:30.550Z\", \"live_revision\": 11, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"50%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"f3bcfbb2-6d12-47be-8671-2804fa6d795d\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 13,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:30:15.431Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:29:43.911Z\", \"latest_revision_created_at\": \"2018-04-17T19:29:43.888Z\", \"live_revision\": 12, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 col-sm-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"f3bcfbb2-6d12-47be-8671-2804fa6d795d\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 14,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:37:34.166Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:30:15.457Z\", \"latest_revision_created_at\": \"2018-04-17T19:30:15.431Z\", \"live_revision\": 13, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-3 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-3 banner-image no-cf\\\"}, \\\"id\\\": \\\"f3bcfbb2-6d12-47be-8671-2804fa6d795d\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 15,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:38:20.698Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:37:34.196Z\", \"latest_revision_created_at\": \"2018-04-17T19:37:34.166Z\", \"live_revision\": 14, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 16,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:43:15.964Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:38:20.726Z\", \"latest_revision_created_at\": \"2018-04-17T19:38:20.698Z\", \"live_revision\": 15, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson text-center section-1\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 17,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T19:43:32.706Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:43:15.989Z\", \"latest_revision_created_at\": \"2018-04-17T19:43:15.964Z\", \"live_revision\": 16, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section-1\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 18,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:01:20.511Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T19:43:32.732Z\", \"latest_revision_created_at\": \"2018-04-17T19:43:32.706Z\", \"live_revision\": 17, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 19,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:01:57.667Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:01:20.532Z\", \"latest_revision_created_at\": \"2018-04-17T20:01:20.511Z\", \"live_revision\": 18, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"113800ce-ee2d-4a56-8dde-214056d97d74\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 20,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:02:27.848Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:01:57.688Z\", \"latest_revision_created_at\": \"2018-04-17T20:01:57.667Z\", \"live_revision\": 19, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 21,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:04:27.450Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:02:27.875Z\", \"latest_revision_created_at\": \"2018-04-17T20:02:27.848Z\", \"live_revision\": 20, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 22,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:05:20.949Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:04:27.476Z\", \"latest_revision_created_at\": \"2018-04-17T20:04:27.450Z\", \"live_revision\": 21, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 mx-auto\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-10 mx-auto\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 23,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:05:49.852Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:05:20.977Z\", \"latest_revision_created_at\": \"2018-04-17T20:05:20.949Z\", \"live_revision\": 22, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-9 mx-auto\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-9 mx-auto\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 24,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:06:07.750Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:05:49.889Z\", \"latest_revision_created_at\": \"2018-04-17T20:05:49.852Z\", \"live_revision\": 23, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 25,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:06:26.285Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:06:07.786Z\", \"latest_revision_created_at\": \"2018-04-17T20:06:07.750Z\", \"live_revision\": 24, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 26,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:07:55.870Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:06:26.313Z\", \"latest_revision_created_at\": \"2018-04-17T20:06:26.285Z\", \"live_revision\": 25, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 27,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:08:24.297Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:07:55.907Z\", \"latest_revision_created_at\": \"2018-04-17T20:07:55.870Z\", \"live_revision\": 26, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section p-0\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 28,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:08:40.365Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:08:24.340Z\", \"latest_revision_created_at\": \"2018-04-17T20:08:24.297Z\", \"live_revision\": 27, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 29,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:10:46.126Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:08:40.395Z\", \"latest_revision_created_at\": \"2018-04-17T20:08:40.365Z\", \"live_revision\": 28, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-5 bg-crimson section-alt ml-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 30,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:11:02.960Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:10:46.159Z\", \"latest_revision_created_at\": \"2018-04-17T20:10:46.126Z\", \"live_revision\": 29, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt ml-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 31,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:11:30.544Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:11:02.990Z\", \"latest_revision_created_at\": \"2018-04-17T20:11:02.960Z\", \"live_revision\": 30, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 bg-crimson\\\"}, \\\"id\\\": \\\"179df5ca-4b42-4a44-8c4f-165e8d5d388c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-5 bg-crimson section-alt\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 32,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:12:09.640Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:11:30.580Z\", \"latest_revision_created_at\": \"2018-04-17T20:11:30.544Z\", \"live_revision\": 31, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 33,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:13:49.510Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:12:09.666Z\", \"latest_revision_created_at\": \"2018-04-17T20:12:09.640Z\", \"live_revision\": 32, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-4 section\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 34,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:14:37.514Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:13:49.543Z\", \"latest_revision_created_at\": \"2018-04-17T20:13:49.510Z\", \"live_revision\": 33, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-4 section p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 35,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:15:05.770Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:14:37.550Z\", \"latest_revision_created_at\": \"2018-04-17T20:14:37.514Z\", \"live_revision\": 34, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 36,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:15:31.053Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:15:05.804Z\", \"latest_revision_created_at\": \"2018-04-17T20:15:05.770Z\", \"live_revision\": 35, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5 text-dark\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 37,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:15:43.350Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:15:31.089Z\", \"latest_revision_created_at\": \"2018-04-17T20:15:31.053Z\", \"live_revision\": 36, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 38,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:16:01.842Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:15:43.384Z\", \"latest_revision_created_at\": \"2018-04-17T20:15:43.350Z\", \"live_revision\": 37, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section-2 p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 39,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:18:16.222Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:16:01.881Z\", \"latest_revision_created_at\": \"2018-04-17T20:16:01.842Z\", \"live_revision\": 38, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section-2 p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 6, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Contact Information:</h2><p>The Nanoconfinement Science Gateway is operated by Suresh Marru and Vikram Jadhao.</p><p>Lab Website <a href=\\\\\\\"https://jadhaolab.engineering.indiana.edu/\\\\\\\">https://jadhaolab.engineering.indiana.edu/</a></p><p>Email: smarru at iu.edu, vjadhao at iu.edu</p><p>The Gateway is based on <a href=\\\\\\\"https://airavata.apache.org/\\\\\\\">Apache Airavata</a> developed and supported by the <a href=\\\\\\\"https://sgrc.iu.edu/\\\\\\\">IU Science Gateways Research Center.</a></p>\\\"}, \\\"id\\\": \\\"8aef560e-6472-4353-8e31-e1b3901650f7\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 40,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:24:03.714Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:18:16.258Z\", \"latest_revision_created_at\": \"2018-04-17T20:18:16.222Z\", \"live_revision\": 39, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section-2 p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}, {\"pk\": 7, \"sort_order\": 6, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Contact Information:</h2><p>The Nanoconfinement Science Gateway is operated by Suresh Marru and Vikram Jadhao.</p><p>Lab Website <a href=\\\\\\\"https://jadhaolab.engineering.indiana.edu/\\\\\\\">https://jadhaolab.engineering.indiana.edu/</a></p><p>Email: smarru at iu.edu, vjadhao at iu.edu</p><p>The Gateway is based on <a href=\\\\\\\"https://airavata.apache.org/\\\\\\\">Apache Airavata</a> developed and supported by the <a href=\\\\\\\"https://sgrc.iu.edu/\\\\\\\">IU Science Gateways Research Center.</a></p>\\\"}, \\\"id\\\": \\\"8aef560e-6472-4353-8e31-e1b3901650f7\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 7, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 section-2\\\", \\\"body\\\": \\\"<h3>References:</h3><p>The following publications describe the nanoconfinement simulation methods and provide useful background.</p><ul><li><a href=\\\\\\\"http://aip.scitation.org/doi/10.1063/1.4935704\\\\\\\">Jing, Yufei, Vikram Jadhao, Jos W. Zwanikken, and Monica Olvera de la Cruz. &quot;Ionic structure in liquids confined by dielectric interfaces.&quot; The Journal of Chemical Physics 143, no. 19 (2015): 194508.</a></li><li><a href=\\\\\\\"http://aip.scitation.org/doi/abs/10.1063/1.4789955\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;A variational formulation of electrostatics in a medium with spatially varying dielectric permittivity&quot; The Journal of Chemical Physics, 138, (2013): 054119.</a></li><li><a href=\\\\\\\"https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.109.223905\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;Simulation of charged systems in heterogeneous dielectric media via a true energy functional&quot; Physical Review Letters, 109, no. 22 (2012): 223905.</a></li></ul>\\\"}, \\\"id\\\": \\\"96ec9c92-000e-467d-9749-d6939e4fd4bd\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 41,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:24:18.224Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:24:03.754Z\", \"latest_revision_created_at\": \"2018-04-17T20:24:03.714Z\", \"live_revision\": 40, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section-2 p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}, {\"pk\": 7, \"sort_order\": 6, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Contact Information:</h2><p>The Nanoconfinement Science Gateway is operated by Suresh Marru and Vikram Jadhao.</p><p>Lab Website <a href=\\\\\\\"https://jadhaolab.engineering.indiana.edu/\\\\\\\">https://jadhaolab.engineering.indiana.edu/</a></p><p>Email: smarru at iu.edu, vjadhao at iu.edu</p><p>The Gateway is based on <a href=\\\\\\\"https://airavata.apache.org/\\\\\\\">Apache Airavata</a> developed and supported by the <a href=\\\\\\\"https://sgrc.iu.edu/\\\\\\\">IU Science Gateways Research Center.</a></p>\\\"}, \\\"id\\\": \\\"8aef560e-6472-4353-8e31-e1b3901650f7\\\"}]\", \"page\": 3}, {\"pk\": 8, \"sort_order\": 7, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 section-2\\\", \\\"body\\\": \\\"<h3>References:</h3><p>The following publications describe the nanoconfinement simulation methods and provide useful background.</p><ul><li><a href=\\\\\\\"http://aip.scitation.org/doi/10.1063/1.4935704\\\\\\\">Jing, Yufei, Vikram Jadhao, Jos W. Zwanikken, and Monica Olvera de la Cruz. &quot;Ionic structure in liquids confined by dielectric interfaces.&quot; The Journal of Chemical Physics 143, no. 19 (2015): 194508.</a></li><li><a href=\\\\\\\"http://aip.scitation.org/doi/abs/10.1063/1.4789955\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;A variational formulation of electrostatics in a medium with spatially varying dielectric permittivity&quot; The Journal of Chemical Physics, 138, (2013): 054119.</a></li><li><a href=\\\\\\\"https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.109.223905\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;Simulation of charged systems in heterogeneous dielectric media via a true energy functional&quot; Physical Review Letters, 109, no. 22 (2012): 223905.</a></li></ul>\\\"}, \\\"id\\\": \\\"96ec9c92-000e-467d-9749-d6939e4fd4bd\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 42,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:27:00.696Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:24:18.265Z\", \"latest_revision_created_at\": \"2018-04-17T20:24:18.224Z\", \"live_revision\": 41, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section-2 p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}, {\"pk\": 7, \"sort_order\": 6, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Contact Information:</h2><p>The Nanoconfinement Science Gateway is operated by Suresh Marru and Vikram Jadhao.</p><p>Lab Website <a href=\\\\\\\"https://jadhaolab.engineering.indiana.edu/\\\\\\\">https://jadhaolab.engineering.indiana.edu/</a></p><p>Email: smarru at iu.edu, vjadhao at iu.edu</p><p>The Gateway is based on <a href=\\\\\\\"https://airavata.apache.org/\\\\\\\">Apache Airavata</a> developed and supported by the <a href=\\\\\\\"https://sgrc.iu.edu/\\\\\\\">IU Science Gateways Research Center.</a></p>\\\"}, \\\"id\\\": \\\"8aef560e-6472-4353-8e31-e1b3901650f7\\\"}]\", \"page\": 3}, {\"pk\": 8, \"sort_order\": 7, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 section-2\\\", \\\"body\\\": \\\"<h3>References:</h3><p>The following publications describe the nanoconfinement simulation methods and provide useful background.</p><ul><li><a href=\\\\\\\"http://aip.scitation.org/doi/10.1063/1.4935704\\\\\\\">Jing, Yufei, Vikram Jadhao, Jos W. Zwanikken, and Monica Olvera de la Cruz. &quot;Ionic structure in liquids confined by dielectric interfaces.&quot; The Journal of Chemical Physics 143, no. 19 (2015): 194508.</a></li><li><a href=\\\\\\\"http://aip.scitation.org/doi/abs/10.1063/1.4789955\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;A variational formulation of electrostatics in a medium with spatially varying dielectric permittivity&quot; The Journal of Chemical Physics, 138, (2013): 054119.</a></li><li><a href=\\\\\\\"https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.109.223905\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;Simulation of charged systems in heterogeneous dielectric media via a true energy functional&quot; Physical Review Letters, 109, no. 22 (2012): 223905.</a></li></ul>\\\"}, \\\"id\\\": \\\"96ec9c92-000e-467d-9749-d6939e4fd4bd\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 8, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"tag-line\\\", \\\"body\\\": \\\"<p>Fulfilling <i>the</i> Promise</p>\\\"}, \\\"id\\\": \\\"19c0484a-b45b-45a3-8340-42ade818347b\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 43,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-17T20:35:01.855Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-17T18:06:59.530Z\", \"last_published_at\": \"2018-04-17T20:27:00.736Z\", \"latest_revision_created_at\": \"2018-04-17T20:27:00.696Z\", \"live_revision\": 42, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"show_footer\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 4, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 banner-image no-cf\\\"}, \\\"id\\\": \\\"121455ce-0030-4c2e-a615-97a2383ca0f8\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\\\"}, \\\"id\\\": \\\"c191fb24-6c53-41cd-8750-39a0201a48f4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\", \\\"body\\\": \\\"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\\\"}, \\\"id\\\": \\\"be53a096-a406-41ce-a5a4-dfe9581befc2\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 5, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-3\\\"}, \\\"id\\\": \\\"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section\\\", \\\"body\\\": \\\"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\\\"}, \\\"id\\\": \\\"cc2dddda-44ea-4b18-b5c7-5293897722e3\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 bg-crimson section-alt pl-5\\\", \\\"body\\\": \\\"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\\\"}, \\\"id\\\": \\\"0b85eca6-3860-4c6e-9747-a0accfc7fe69\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 section-2 p-5\\\", \\\"body\\\": \\\"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\\\"}, \\\"id\\\": \\\"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 6, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 p-5\\\"}, \\\"id\\\": \\\"0e5e85cd-a10a-4fe2-9129-764f63629088\\\"}]\", \"page\": 3}, {\"pk\": 7, \"sort_order\": 6, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 bg-crimson section\\\", \\\"body\\\": \\\"<h2>Contact Information:</h2><p>The Nanoconfinement Science Gateway is operated by Suresh Marru and Vikram Jadhao.</p><p>Lab Website <a href=\\\\\\\"https://jadhaolab.engineering.indiana.edu/\\\\\\\">https://jadhaolab.engineering.indiana.edu/</a></p><p>Email: smarru at iu.edu, vjadhao at iu.edu</p><p>The Gateway is based on <a href=\\\\\\\"https://airavata.apache.org/\\\\\\\">Apache Airavata</a> developed and supported by the <a href=\\\\\\\"https://sgrc.iu.edu/\\\\\\\">IU Science Gateways Research Center.</a></p>\\\"}, \\\"id\\\": \\\"8aef560e-6472-4353-8e31-e1b3901650f7\\\"}]\", \"page\": 3}, {\"pk\": 8, \"sort_order\": 7, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-10 section-2\\\", \\\"body\\\": \\\"<h3>References:</h3><p>The following publications describe the nanoconfinement simulation methods and provide useful background.</p><ul><li><a href=\\\\\\\"http://aip.scitation.org/doi/10.1063/1.4935704\\\\\\\">Jing, Yufei, Vikram Jadhao, Jos W. Zwanikken, and Monica Olvera de la Cruz. &quot;Ionic structure in liquids confined by dielectric interfaces.&quot; The Journal of Chemical Physics 143, no. 19 (2015): 194508.</a></li><li><a href=\\\\\\\"http://aip.scitation.org/doi/abs/10.1063/1.4789955\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;A variational formulation of electrostatics in a medium with spatially varying dielectric permittivity&quot; The Journal of Chemical Physics, 138, (2013): 054119.</a></li><li><a href=\\\\\\\"https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.109.223905\\\\\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;Simulation of charged systems in heterogeneous dielectric media via a true energy functional&quot; Physical Review Letters, 109, no. 22 (2012): 223905.</a></li></ul>\\\"}, \\\"id\\\": \\\"96ec9c92-000e-467d-9749-d6939e4fd4bd\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.collection",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 0,
+    "name": "Root"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 1,
+  "fields": {
+    "name": "IU",
+    "slug": "iu"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Logo",
+    "slug": "logo"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 3,
+  "fields": {
+    "name": "ions",
+    "slug": "ions"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 4,
+  "fields": {
+    "name": "Confined",
+    "slug": "confined"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Banner",
+    "slug": "banner"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 6,
+  "fields": {
+    "name": "Workflow",
+    "slug": "workflow"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 7,
+  "fields": {
+    "name": "results",
+    "slug": "results"
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 1,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 2,
+  "fields": {
+    "tag": 2,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 3,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 4,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 7,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 4
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 8,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 4
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 9,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 5
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 10,
+  "fields": {
+    "tag": 6,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 5
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 11,
+  "fields": {
+    "tag": 7,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 6
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customcss",
+  "pk": 1,
+  "fields": {
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"----Page Level Body Styles to remove container padding------\"}, \"id\": \"b347d8fd-bfa8-45d2-848a-3c9ca1093300\"}, {\"type\": \"css_block\", \"value\": \"body .row {\\r\\nmargin-left: 0 !important;\\r\\nmargin-right: 0 !important;\\r\\nmin-width: 100%;\\r\\n}\\r\\nbody .container {\\r\\nwidth: 100%;\\r\\nmax-width:none;\\r\\npadding: 0;\\r\\n}\\r\\nbody .container-fluid {\\r\\nwidth: 100%;\\r\\nmax-width:none;\\r\\npadding: 0 ;\\r\\n}\\r\\n\\r\\nbody [class*=\\\"col-\\\"] {\\r\\npadding-left: 0 ;\\r\\npadding-right: 0 ;\\r\\n}\", \"id\": \"cd58ca57-2849-49d8-a508-e98bb08861ff\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Page Level Footer Styles to remove container padding ----\"}, \"id\": \"8782f1e3-e0d4-4114-99c3-56efe03e7be2\"}, {\"type\": \"css_block\", \"value\": \".theme-footer {\\r\\nwidth: 100% !important;\\r\\n}\", \"id\": \"14fff8ec-787c-4dae-ae1c-5f07c9de6d53\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Override Container Flud Styles (Alternate Grid Layout)------\"}, \"id\": \"92f1cf14-e3da-4139-b893-8dfb77c2d7f8\"}, {\"type\": \"css_block\", \"value\": \"/* Apply alt-grid to body tag to get the whole html unaffected by containers and rows */\\r\\n.alt-grid [class*=\\\"col-\\\"] {padding-left:0;padding-right:0}\\r\\n.alt-grid .row {margin-left:0;margin-right:0}\\r\\n\\r\\n/* container adjusted */\\r\\n.alt-grid .container {width:100%;max-width:none;padding:0;}\", \"id\": \"fbba2096-329c-4cf8-aa94-0d47a604696c\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Main Navbar Styles ----\"}, \"id\": \"bbec1d72-9405-44b5-935f-5cbc30f2363f\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #7A1705;\\r\\nborder-top: 5px solid #990000;\\r\\ncolor: #EFEFEF;\\r\\nmargin-bottom: -10px;\\r\\nz-index: 10;\\r\\nheight: 55px !important;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #EFEFEF;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #777;\\r\\n}\\r\\n@media screen and (min-width: 600px) {\\r\\n .main-nav > a {\\r\\n    position: relative;\\r\\n    padding-left: 200px !important;\\r\\n  }\\r\\n .main-nav > a > img {\\r\\n    margin-top: 10px;\\r\\n  }\\r\\n}\\r\\n@media screen and (max-width: 600px) {\\r\\n  .navbar-brand {\\r\\n    display:none;\\r\\n  }\\r\\n}\", \"id\": \"b03d92ce-c287-4fd5-80d6-b700ed66f171\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Secondary Navbar Styles ------\"}, \"id\": \"d5a2a26c-e3a3-4a87-a7f0-28de3757c0cb\"}, {\"type\": \"css_block\", \"value\": \".secondary-nav {\\r\\nbackground: #2c3e50;\\r\\ncolor: #EFEFEF;\\r\\npadding-top: 7px;\\r\\npadding-bottom: 7px;\\r\\nfont-size: 15px;\\r\\n}\\r\\n\\r\\n.secondary-nav a {\\r\\ncolor: #999;\\r\\nmargin-top: 10px;\\r\\n}\\r\\n\\r\\n.nav-item img {\\r\\nvisibility: hidden;\\r\\n}\\r\\n\\r\\n.secondary-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\nmargin-top: 10px;\\r\\n}\\r\\n\\r\\n@media screen and (max-width: 600px) {\\r\\n  .nav-item img {\\r\\n    visibility: visible;\\r\\n  }\\r\\n}\", \"id\": \"0b07c5d5-1733-4282-af76-c2bbb3e41270\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Banner Image on Home-----\"}, \"id\": \"a8836ea8-5ad1-43b6-812b-8e9faeb4f7ef\"}, {\"type\": \"css_block\", \"value\": \".banner-image > img {\\r\\nobject-fit: cover;\\r\\nwidth: 200%:\\r\\nheight: 180px;\\r\\n}\", \"id\": \"b379a21a-df82-480c-b0cd-8e7be6bb8a3b\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Section -----\"}, \"id\": \"3bf86037-0edf-48b3-b14c-da2156008413\"}, {\"type\": \"css_block\", \"value\": \".section {\\r\\npadding-top: 70px !important;\\r\\npadding-bottom: 70px !important;\\r\\ncolor: #FFFFFF !important;\\r\\npadding-left: 15% !important;\\r\\n}\\r\\n\\r\\n.section h2 {\\r\\ncolor: #FFFFFF !important;\\r\\n}\", \"id\": \"efb0e9f4-3cb9-4dbf-bd6b-c8231a5c93d2\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Section Alternate ------\"}, \"id\": \"161a4a2a-80d9-4c63-8182-a11046d9a677\"}, {\"type\": \"css_block\", \"value\": \".section-alt {\\r\\npadding-top: 70px !important;\\r\\npadding-bottom: 70px !important;\\r\\ncolor: #FFFFFF !important;\\r\\n}\\r\\n.section-alt h2 {\\r\\ncolor: #FFFFFF !important;\\r\\n}\", \"id\": \"64659684-2baf-40ad-9ef7-aaa625065301\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Section 2 -----\"}, \"id\": \"b3f9bec1-2c1d-4366-9449-d86e854c818d\"}, {\"type\": \"css_block\", \"value\": \".section-2 {\\r\\npadding-top: 70px !important;\\r\\npadding-bottom: 70px !important;\\r\\ncolor: #000000 !important;\\r\\npadding-left: 15% !important;\\r\\n}\\r\\n\\r\\n.section-2 h2 {\\r\\ncolor: #000000 !important;\\r\\n}\", \"id\": \"b430bc83-2710-4fe7-a891-de0f96423627\"}]"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.footertext",
+  "pk": 1,
+  "fields": {
+    "footer": "[{\"type\": \"iu_footer_block\", \"value\": {\"custom_class\": \"col-md-12\", \"footer_links\": \"<p>The Trustees of <a href=\\\"https://www.iu.edu/\\\">Indiana University</a> | <a href=\\\"https://nanoconfinement.sciencegateways.iu.edu/privacy\\\">Privacy Notice</a> | <a href=\\\"https://accessibility.iu.edu/\\\">Accessibility</a></p>\"}, \"id\": \"0e62c773-231d-4bbc-ba86-55144366f0a8\"}]"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.navbar",
+  "pk": 1,
+  "fields": {
+    "logo": 1,
+    "logo_redirect_link": "/",
+    "logo_with_text": "yes",
+    "logo_width": 65,
+    "logo_height": 76,
+    "logo_text": "NANOCONFINEMENT SCIENCE GATEWAY",
+    "logo_text_color": "#EFEFEF",
+    "logo_text_size": 20
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 1,
+  "fields": {
+    "sort_order": 0,
+    "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 4, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": \"\", \"custom_class\": \"col-md-12 banner-image no-cf\"}, \"id\": \"121455ce-0030-4c2e-a615-97a2383ca0f8\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 2,
+  "fields": {
+    "sort_order": 1,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 bg-crimson section\", \"body\": \"<h2>Nanoconfinement Science Gateway enables you to:</h2><ul><li>Simulate ions confined between biological and synthetic surfaces that are nanometers apart.</li><li>Experiment with various ionic and environmental attributes including ion valency and salt concentration.</li><li>Obtain information about the distribution and assembly of ions in nanoconfinement.</li><li>Run simulations on IU and XSEDE HPC computational resources.</li><li>Share your simulation results with your peers.</li></ul>\"}, \"id\": \"c191fb24-6c53-41cd-8750-39a0201a48f4\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 3,
+  "fields": {
+    "sort_order": 3,
+    "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 5, \"caption\": \"\", \"width\": \"100%\", \"height\": null, \"redirect_url\": \"\", \"custom_class\": \"col-md-8 mx-auto mt-3\"}, \"id\": \"e5ebafb4-ed42-4af8-aac0-c2b94e11533c\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 4,
+  "fields": {
+    "sort_order": 2,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-8 mx-auto mt-5\", \"body\": \"<p>A snapshot showing induced density map produced during a CPMD simulation (center) on one of the interfaces as a result of the instantaneous configuration of ions confined between the two interfaces (left). The induced charges in CPMD match with the exact values (right) signalling the success of the on-the-fly simulation.</p>\"}, \"id\": \"be53a096-a406-41ce-a5a4-dfe9581befc2\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 5,
+  "fields": {
+    "sort_order": 4,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-6 bg-crimson section\", \"body\": \"<p>Molecular Dynamics (MD)</p><p>Standard MD techniques provide an accurate estimate for the ionic distribution in a system with no dielectric mismatch across surfaces (interfaces). The competition between electrostatic and entropic interactions determines the ionic structure in nanoscale confinement.</p>\"}, \"id\": \"cc2dddda-44ea-4b18-b5c7-5293897722e3\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-6 bg-crimson section-alt pl-5\", \"body\": \"<p>Car-Parrinello Molecular Dynamics (CPMD)</p><p>Advanced methods are needed to simulate ions near interfaces exhibiting dielectric mismatch. Taking cues from nature, we developed CPMD, a simulation method that enables on-the-fly movement of ions in tandem with the update of the polarized charges induced on the interfaces.</p>\"}, \"id\": \"0b85eca6-3860-4c6e-9747-a0accfc7fe69\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 6,
+  "fields": {
+    "sort_order": 5,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-6 section-2 p-5\", \"body\": \"<p>The simulation results include information that characterize the equilibrium structure of ions in confinement including thermodynamic data and ionic distributions. A sample result produced by the gateway is shown: distributions of ions associated with monovalent (1:1), divalent (2:1), and trivalent (3:1) salt confined between planar interfaces that are 3 nanometers apart.</p>\"}, \"id\": \"985d474b-2fc8-4e3c-aa3c-2432fdcb88d9\"}, {\"type\": \"image_block\", \"value\": {\"image\": 6, \"caption\": \"\", \"width\": \"100%\", \"height\": null, \"redirect_url\": \"\", \"custom_class\": \"col-md-4 p-5\"}, \"id\": \"0e5e85cd-a10a-4fe2-9129-764f63629088\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 7,
+  "fields": {
+    "sort_order": 6,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 bg-crimson section\", \"body\": \"<h2>Contact Information:</h2><p>The Nanoconfinement Science Gateway is operated by Suresh Marru and Vikram Jadhao.</p><p>Lab Website <a href=\\\"https://jadhaolab.engineering.indiana.edu/\\\">https://jadhaolab.engineering.indiana.edu/</a></p><p>Email: smarru at iu.edu, vjadhao at iu.edu</p><p>The Gateway is based on <a href=\\\"https://airavata.apache.org/\\\">Apache Airavata</a> developed and supported by the <a href=\\\"https://sgrc.iu.edu/\\\">IU Science Gateways Research Center.</a></p>\"}, \"id\": \"8aef560e-6472-4353-8e31-e1b3901650f7\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 8,
+  "fields": {
+    "sort_order": 7,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-10 section-2\", \"body\": \"<h3>References:</h3><p>The following publications describe the nanoconfinement simulation methods and provide useful background.</p><ul><li><a href=\\\"http://aip.scitation.org/doi/10.1063/1.4935704\\\">Jing, Yufei, Vikram Jadhao, Jos W. Zwanikken, and Monica Olvera de la Cruz. &quot;Ionic structure in liquids confined by dielectric interfaces.&quot; The Journal of Chemical Physics 143, no. 19 (2015): 194508.</a></li><li><a href=\\\"http://aip.scitation.org/doi/abs/10.1063/1.4789955\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;A variational formulation of electrostatics in a medium with spatially varying dielectric permittivity&quot; The Journal of Chemical Physics, 138, (2013): 054119.</a></li><li><a href=\\\"https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.109.223905\\\">Vikram Jadhao, Francisco J. Solis, and Monica Olvera de la Cruz. &quot;Simulation of charged systems in heterogeneous dielectric media via a true energy functional&quot; Physical Review Letters, 109, no. 22 (2012): 223905.</a></li></ul>\"}, \"id\": \"96ec9c92-000e-467d-9749-d6939e4fd4bd\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 3,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes",
+    "show_footer": "yes"
+  }
+}
+]

@@ -1,0 +1,94 @@
+{
+  "name": "django-airavata-workspace-views",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Vue.js project",
+  "author": "Marcus Christie <machristie@apache.org>",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "run-s build:vue build:wc",
+    "build:vue": "vue-cli-service build",
+    "lint": "vue-cli-service lint ./static/django_airavata_workspace/js",
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_workspace/js",
+    "test": "npm run test:unit",
+    "test:unit": "vue-cli-service test:unit",
+    "test:unit:watch": "vue-cli-service test:unit --watch",
+    "format": "prettier --write .",
+    "build:wc": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/**/*.vue' --dest ./static/django_airavata_workspace/wc",
+    "build:wc:watch": "cross-env WC_MODE='true' vue-cli-service build --target wc --inline-vue --name adpf './static/django_airavata_workspace/js/web-components/**/*.vue' --dest ./static/django_airavata_workspace/wc --watch"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/vue-fontawesome": "^2.0.2",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.21.2",
+    "browserslist": "^4.16.7",
+    "codemirror": "5.52.2",
+    "core-js": "^3.8.3",
+    "django-airavata-api": "link:../api",
+    "django-airavata-common-ui": "link:../../static/common",
+    "django-airavata-workspace-plugin-api": "link:django-airavata-workspace-plugin-api",
+    "lodash": "^4.17.15",
+    "moment": "^2.21.0",
+    "terser": "^4.1.2",
+    "vue": "^2.5.22",
+    "vue-flatpickr-component": "^8.1.2",
+    "vue-router": "^3.0.6",
+    "vue-slider-component": "^3.2.9-1",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-plugin-unit-jest": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "@vue/test-utils": "^1.0.0-beta.28",
+    "@vue/vue2-jest": "^27",
+    "@vue/web-component-wrapper": "^1.3.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^27.5.1",
+    "babel-loader": "^8.0.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "jest": "^27.1.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.2",
+    "sass": "^1.54.5",
+    "sass-loader": "^10",
+    "vue-loader": "^15.5.1",
+    "vue-template-compiler": "^2.5.22",
+    "webpack": "^4.28.4",
+    "webpack-bundle-tracker": "^0.4.2-beta",
+    "webpack-dev-middleware": "^3.5.1",
+    "webpack-dev-server": "^3.1.14"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "@babel/eslint-parser",
+      "requireConfigFile": false
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

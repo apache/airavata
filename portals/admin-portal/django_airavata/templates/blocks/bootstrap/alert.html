@@ -1,0 +1,7 @@
+<div class="alert text-center {{self.alert_color}} {{self.custom_class}}" role="alert">
+  {% if self.is_link %}
+    <a href="{{self.alert_link}}">{{self.alert_text}}</a>
+  {% else %}
+    {{ self.alert_text }}
+  {% endif %}
+</div>

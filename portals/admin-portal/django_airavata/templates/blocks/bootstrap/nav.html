@@ -1,0 +1,7 @@
+{% load wagtailcore_tags %}
+
+<ul class="nav {{value.custom_class}}">
+  {% for block in value.nav_items %}
+    {% include_block block %}
+  {% endfor %}
+</ul>

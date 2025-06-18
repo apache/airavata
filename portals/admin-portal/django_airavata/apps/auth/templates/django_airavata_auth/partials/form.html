@@ -1,0 +1,17 @@
+
+<form action="{{ url }}" method="post">
+  {% include "./non_field_errors.html" %}
+  {% csrf_token %}
+
+  {% for field in form %}
+  {% if field.is_hidden %}
+    {{ field }}
+  {% else %}
+    {% include './form_field.html' %}
+  {% endif %}
+  {% endfor %}
+
+  <button type="submit" class="btn btn-primary btn-block">
+    {{ submit_text }}
+  </button>
+</form>

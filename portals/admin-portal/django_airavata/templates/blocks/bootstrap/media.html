@@ -1,0 +1,10 @@
+{% load wagtailimages_tags %}
+
+<div class="media {{self.custom_class}}">
+  {% image self.media_img original as tmp_photo %}
+  <img class="mr-3" src="{{tmp_photo.url}}" style="width:{{self.media_img_width}};height:{{self.media_img_height}};" alt="{{self.media_img_alt}}">
+  <div class="media-body">
+    <h5 class="mt-0">{{self.heading_text}}</h5>
+    {{self.body_text}}
+  </div>  
+</div>

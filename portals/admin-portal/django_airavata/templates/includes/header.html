@@ -1,0 +1,21 @@
+{% load navigation_tags %}
+
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-inverse main-nav">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    {% get_navbar %}
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    {% block main_navigation %}
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="nav navbar-nav ml-auto">
+          {# main_menu is defined in base/templatetags/navigation_tags.py #}
+          {% get_site_root as site_root %}
+          {% top_menu parent=site_root calling_page=self %}
+        </ul>
+    </div>
+    {% endblock %}
+    <!-- /.navbar-collapse -->
+</nav>

@@ -1,0 +1,7 @@
+{% extends './base.html' %}
+
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+<div id="dashboard" data-view-all-experiments="{% url 'django_airavata_workspace:experiments' %}" data-username="{{ request.user.username }}" />
+{% endblock content %}

@@ -1,0 +1,917 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$36000$SJTOMtEQR1xN$PTsthwY0cPeXh/LCmIs1wGnGLaxFAU7loXDCdOrDRdg=",
+    "last_login": "2018-04-14T17:23:36.333Z",
+    "is_superuser": true,
+    "username": "stephenpaul2727",
+    "first_name": "",
+    "last_name": "",
+    "email": "stephenpaul2727@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2018-04-14T17:23:15.694Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 1,
+  "fields": {
+    "collection": 1,
+    "title": "iu-logo",
+    "file": "original_images/iu-logo_xRHZTDH.png",
+    "width": 64,
+    "height": 73,
+    "created_at": "2018-04-14T17:49:01.156Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 2,
+  "fields": {
+    "collection": 1,
+    "title": "simccs-overview",
+    "file": "original_images/simccus-overview.png",
+    "width": 907,
+    "height": 710,
+    "created_at": "2018-04-14T18:09:08.678Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 3,
+  "fields": {
+    "collection": 1,
+    "title": "big-red",
+    "file": "original_images/bigred2.png",
+    "width": 703,
+    "height": 474,
+    "created_at": "2018-04-14T18:12:39.409Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 4,
+  "fields": {
+    "collection": 1,
+    "title": "apache-airavata",
+    "file": "original_images/apache-airavata_m82I5aW.png",
+    "width": 1734,
+    "height": 648,
+    "created_at": "2018-04-14T18:14:00.145Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 1,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/iu-logo_xRHZTDH.max-165x165.png",
+    "width": 64,
+    "height": 73,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 2,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/iu-logo_xRHZTDH.original.png",
+    "width": 64,
+    "height": 73,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 3,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/simccus-overview.max-165x165.png",
+    "width": 165,
+    "height": 129,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 4,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/bigred2.max-165x165.png",
+    "width": 165,
+    "height": 111,
+    "focal_point_key": "",
+    "image": 3
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 5,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/apache-airavata_m82I5aW.max-165x165.png",
+    "width": 165,
+    "height": 61,
+    "focal_point_key": "",
+    "image": 4
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 6,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/simccus-overview.original.png",
+    "width": 907,
+    "height": 710,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 7,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/bigred2.original.png",
+    "width": 703,
+    "height": 474,
+    "focal_point_key": "",
+    "image": 3
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 8,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/apache-airavata_m82I5aW.original.png",
+    "width": 1734,
+    "height": 648,
+    "focal_point_key": "",
+    "image": 4
+  }
+},
+{
+  "model": "wagtailcore.site",
+  "fields": {
+    "hostname": "localhost",
+    "port": 8000,
+    "site_name": "SimCCS Gateway",
+    "root_page": 3,
+    "is_default_site": true
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 1,
+    "title": "Root",
+    "draft_title": "Root",
+    "slug": "root",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 2,
+  "fields": {
+    "path": "00010001",
+    "depth": 2,
+    "numchild": 1,
+    "title": "Welcome to your new Wagtail site!",
+    "draft_title": "Welcome to your new Wagtail site!",
+    "slug": "home",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 3,
+  "fields": {
+    "path": "000100010001",
+    "depth": 3,
+    "numchild": 2,
+    "title": "Home",
+    "draft_title": "Home",
+    "slug": "home",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "Home",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-14T17:27:25.483Z",
+    "last_published_at": "2018-04-14T19:01:12.242Z",
+    "latest_revision_created_at": "2018-04-14T19:01:12.199Z",
+    "live_revision": 17
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 4,
+  "fields": {
+    "path": "0001000100010001",
+    "depth": 4,
+    "numchild": 0,
+    "title": "Documentation",
+    "draft_title": "Documentation",
+    "slug": "documentation",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/documentation/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "documentation",
+    "show_in_menus": true,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-14T19:06:51.031Z",
+    "last_published_at": "2018-04-14T19:06:51.031Z",
+    "latest_revision_created_at": "2018-04-14T19:06:51.015Z",
+    "live_revision": 18
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 5,
+  "fields": {
+    "path": "0001000100010002",
+    "depth": 4,
+    "numchild": 0,
+    "title": "About",
+    "draft_title": "About",
+    "slug": "about",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/about/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "about",
+    "show_in_menus": true,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-14T19:07:05.018Z",
+    "last_published_at": "2018-04-14T19:07:05.018Z",
+    "latest_revision_created_at": "2018-04-14T19:07:05.002Z",
+    "live_revision": 19
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 1,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T17:27:25.464Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 2,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T17:36:21.084Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T17:27:25.483Z\", \"latest_revision_created_at\": \"2018-04-14T17:27:25.464Z\", \"live_revision\": 1, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 3,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T17:37:13.676Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T17:36:21.112Z\", \"latest_revision_created_at\": \"2018-04-14T17:36:21.084Z\", \"live_revision\": 2, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 4,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T17:45:11.779Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T17:37:13.706Z\", \"latest_revision_created_at\": \"2018-04-14T17:37:13.676Z\", \"live_revision\": 3, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 5,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:14:33.702Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T17:45:11.810Z\", \"latest_revision_created_at\": \"2018-04-14T17:45:11.779Z\", \"live_revision\": 4, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 6,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:15:31.897Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:14:33.736Z\", \"latest_revision_created_at\": \"2018-04-14T18:14:33.702Z\", \"live_revision\": 5, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 7,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:17:38.068Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:15:31.925Z\", \"latest_revision_created_at\": \"2018-04-14T18:15:31.897Z\", \"live_revision\": 6, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 50, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 50, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 8,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:18:05.700Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:17:38.100Z\", \"latest_revision_created_at\": \"2018-04-14T18:17:38.068Z\", \"live_revision\": 7, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 9,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:19:53.470Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:18:05.731Z\", \"latest_revision_created_at\": \"2018-04-14T18:18:05.700Z\", \"live_revision\": 8, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 10,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:21:45.373Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:19:53.503Z\", \"latest_revision_created_at\": \"2018-04-14T18:19:53.470Z\", \"live_revision\": 9, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 35, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 11,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:52:33.173Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:21:45.409Z\", \"latest_revision_created_at\": \"2018-04-14T18:21:45.373Z\", \"live_revision\": 10, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 12,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:55:29.831Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:52:33.223Z\", \"latest_revision_created_at\": \"2018-04-14T18:52:33.173Z\", \"live_revision\": 11, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 13,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:56:11.998Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:55:29.867Z\", \"latest_revision_created_at\": \"2018-04-14T18:55:29.831Z\", \"live_revision\": 12, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 14,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:59:03.805Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:56:12.031Z\", \"latest_revision_created_at\": \"2018-04-14T18:56:11.998Z\", \"live_revision\": 13, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Contact Us\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-12 text-center\\\"}, \\\"id\\\": \\\"90461267-8079-4c86-a1bb-05ed9cc1e74d\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"font_awesome_icon_block\\\", \\\"value\\\": {\\\"icon_tag\\\": \\\"fas fa-envelope\\\", \\\"icon_size\\\": 10, \\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\"}, \\\"id\\\": \\\"41cc568b-8817-4a9f-a7c1-7598c1e8f6d4\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center\\\", \\\"body\\\": \\\"<p>You can contact Gateway Admin by sending a mail to <a href=\\\\\\\"mailto:geoco2@indiana.edu\\\\\\\">Contact E-mail</a></p>\\\"}, \\\"id\\\": \\\"16bfe0e6-755e-427e-ba6e-a60cf5b26e75\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 15,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:59:31.144Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:59:03.847Z\", \"latest_revision_created_at\": \"2018-04-14T18:59:03.805Z\", \"live_revision\": 14, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Contact Us\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\"}, \\\"id\\\": \\\"90461267-8079-4c86-a1bb-05ed9cc1e74d\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"font_awesome_icon_block\\\", \\\"value\\\": {\\\"icon_tag\\\": \\\"fas fa-envelope\\\", \\\"icon_size\\\": 10, \\\"custom_class\\\": \\\"col-md-12 text-center\\\"}, \\\"id\\\": \\\"41cc568b-8817-4a9f-a7c1-7598c1e8f6d4\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center\\\", \\\"body\\\": \\\"<p>You can contact Gateway Admin by sending a mail to <a href=\\\\\\\"mailto:geoco2@indiana.edu\\\\\\\">Contact E-mail</a></p>\\\"}, \\\"id\\\": \\\"16bfe0e6-755e-427e-ba6e-a60cf5b26e75\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 16,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T18:59:48.916Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:59:31.180Z\", \"latest_revision_created_at\": \"2018-04-14T18:59:31.144Z\", \"live_revision\": 15, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Contact Us\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\"}, \\\"id\\\": \\\"90461267-8079-4c86-a1bb-05ed9cc1e74d\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"font_awesome_icon_block\\\", \\\"value\\\": {\\\"icon_tag\\\": \\\"fas fa-envelope\\\", \\\"icon_size\\\": 8, \\\"custom_class\\\": \\\"col-md-12 text-center\\\"}, \\\"id\\\": \\\"41cc568b-8817-4a9f-a7c1-7598c1e8f6d4\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center\\\", \\\"body\\\": \\\"<p>You can contact Gateway Admin by sending a mail to <a href=\\\\\\\"mailto:geoco2@indiana.edu\\\\\\\">Contact E-mail</a></p>\\\"}, \\\"id\\\": \\\"16bfe0e6-755e-427e-ba6e-a60cf5b26e75\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 17,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T19:01:12.199Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-14T17:27:25.483Z\", \"last_published_at\": \"2018-04-14T18:59:48.955Z\", \"latest_revision_created_at\": \"2018-04-14T18:59:48.916Z\", \"live_revision\": 16, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"14de482d-f4a5-4cdb-8714-b2135de5d064\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimCCS Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-11 hero-description mt-5 padded-top\\\"}, \\\"id\\\": \\\"311cf851-3e10-4f0e-bc80-f4a23052e5fe\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"1d46c930-dfc4-4570-85eb-7659ad93206d\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 hero-description padded-bottom\\\", \\\"body\\\": \\\"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\\\"}, \\\"id\\\": \\\"a0e63c9e-ccfd-459f-b1aa-0569ff208489\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-3 hero-description padded-bottom\\\"}, \\\"id\\\": \\\"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"47f2f39c-fd12-4bef-acaa-c61624cf1eca\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 2, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 204, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"8456a4c1-8226-4e38-a97d-74022a914f1a\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 175, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\\\u2019s ArcGIS and IBM\\\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5 padded-card\\\"}, \\\"id\\\": \\\"0df56a66-d12f-437c-a168-6b45ec652b3e\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f0f161e3-abfb-46cf-be6f-437e39eda67c\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6\\\"}, \\\"id\\\": \\\"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": null, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 260, \\\"card_img_height\\\": 97, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 reduce-top padded-card\\\"}, \\\"id\\\": \\\"2a0be327-146c-441c-b219-f0b6c22c3b8b\\\"}, {\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"009b90a3-3d3e-4c07-af3d-a08027f672d5\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Contact Us\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\"}, \\\"id\\\": \\\"90461267-8079-4c86-a1bb-05ed9cc1e74d\\\"}]\", \"page\": 3}, {\"pk\": 5, \"sort_order\": 4, \"body\": \"[{\\\"type\\\": \\\"font_awesome_icon_block\\\", \\\"value\\\": {\\\"icon_tag\\\": \\\"fas fa-envelope\\\", \\\"icon_size\\\": 8, \\\"custom_class\\\": \\\"col-md-12 text-center\\\"}, \\\"id\\\": \\\"41cc568b-8817-4a9f-a7c1-7598c1e8f6d4\\\"}]\", \"page\": 3}, {\"pk\": 6, \"sort_order\": 5, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center\\\", \\\"body\\\": \\\"<p>You can contact Gateway Admin by sending a mail to <a href=\\\\\\\"mailto:geoco2@indiana.edu\\\\\\\">Contact E-mail</a></p>\\\"}, \\\"id\\\": \\\"16bfe0e6-755e-427e-ba6e-a60cf5b26e75\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 18,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T19:06:51.015Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"Documentation\", \"draft_title\": \"Documentation\", \"slug\": \"documentation\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/documentation/\", \"owner\": 1, \"seo_title\": \"documentation\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": []}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 19,
+  "fields": {
+    "page": 5,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-14T19:07:05.002Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 5, \"path\": \"0001000100010002\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": []}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.collection",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 0,
+    "name": "Root"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 1,
+  "fields": {
+    "name": "IU",
+    "slug": "iu"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Logo",
+    "slug": "logo"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 3,
+  "fields": {
+    "name": "SIMCCS",
+    "slug": "simccs"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 4,
+  "fields": {
+    "name": "Overview",
+    "slug": "overview"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Bigred",
+    "slug": "bigred"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 6,
+  "fields": {
+    "name": "airavata",
+    "slug": "airavata"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 7,
+  "fields": {
+    "name": "apache",
+    "slug": "apache"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 8,
+  "fields": {
+    "name": "logo",
+    "slug": "logo_1"
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 1,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 2,
+  "fields": {
+    "tag": 2,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 3,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 4,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 5,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 3
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 6,
+  "fields": {
+    "tag": 8,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 4
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 7,
+  "fields": {
+    "tag": 6,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 4
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 8,
+  "fields": {
+    "tag": 7,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 4
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customcss",
+  "pk": 1,
+  "fields": {
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"----- Body Styles -----\"}, \"id\": \"7745e855-ba0e-466e-89a0-70aded00cad6\"}, {\"type\": \"css_block\", \"value\": \"body {\\r\\nbackground: #ECF0F1;\\r\\n}\", \"id\": \"639fbd19-2dbb-4065-abd2-3d09e42730c3\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Main Navbar Styles------\"}, \"id\": \"e4a7a77f-8a7e-47b1-9153-7177fc1d661f\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #F8F8F8;\\r\\ncolor: #000000;\\r\\nborder; 1px solid #E7E7E7;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #777 !important;\\r\\n}\\r\\nmain-nav a:hover {\\r\\ncolor: #000000 !important;\\r\\n}\", \"id\": \"e4dff7fd-3436-44b8-9c96-061a3479b0a6\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Hero Description on Home Page-----\"}, \"id\": \"a509d26b-8635-4276-adc0-eb63ebe5fa0c\"}, {\"type\": \"css_block\", \"value\": \".hero-description {\\r\\nbackground: #F5F5F5;\\r\\npadding-left: 0px !important;\\r\\npadding-right: 0px !important;\\r\\n}\", \"id\": \"3911ebbd-d4fe-4634-a64d-dcdab0ef5adb\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Padded Top -----\"}, \"id\": \"6b0c287f-dcb4-47c3-8ff4-2b9898481691\"}, {\"type\": \"css_block\", \"value\": \".padded-top {\\r\\npadding-top: 40px !important;\\r\\nborder-top: 1px solid #E3E3E3;\\r\\n}\", \"id\": \"200e3f77-e1d7-4d29-83fb-238ae06a1a0c\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Padded Bottom-----\"}, \"id\": \"11737367-f542-4eb5-98e2-b71e41313b92\"}, {\"type\": \"css_block\", \"value\": \".padded-bottom {\\r\\npadding-bottom: 40px !important;\\r\\nborder-bottom: 1px solid #E3E3E3;\\r\\n}\", \"id\": \"65b65dcc-fe55-4645-ac62-d0b496f8073f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Secondary Navbar Styles-----\"}, \"id\": \"585ca4da-3865-40b2-8879-1a24a17e191c\"}, {\"type\": \"css_block\", \"value\": \".secondary-nav {\\r\\nbackground: #2C3E50 !important;\\r\\ncolor: #FFFFFF;\\r\\npadding-top: 8px;\\r\\npadding-bottom: 8px;\\r\\n}\\r\\n\\r\\n.secondary-nav a {\\r\\ncolor: #777;\\r\\n}\\r\\n\\r\\n.secondary-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\\r\\n\\r\\n.secondary-nav img {\\r\\nwidth: 60px;\\r\\nheight: 45px;\\r\\n}\", \"id\": \"dd629d17-1a40-41b5-bbb5-ae81e1df9b77\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------ Reduce Top -----\"}, \"id\": \"130105ca-4b8f-46ac-a515-4e374dd0ad96\"}, {\"type\": \"css_block\", \"value\": \"@media screen and (min-width: 800px) { \\r\\n.reduce-top {\\r\\nmargin-top: -320px;\\r\\n}\\r\\n}\", \"id\": \"c233d977-9b43-4cdb-b093-430b72a2fc7b\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Padded Card -----\"}, \"id\": \"0f775d3f-1c33-4d8f-adc1-d079dceaaaf8\"}, {\"type\": \"css_block\", \"value\": \".padded-card > .card {\\r\\npadding-top: 15px !important;\\r\\npadding-bottom: 15px !important;\\r\\n}\", \"id\": \"fc73cfd8-3ae1-4d01-86b7-b04077023961\"}]"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.navbar",
+  "pk": 1,
+  "fields": {
+    "logo": null,
+    "logo_redirect_link": "/",
+    "logo_width": 144,
+    "logo_height": 43,
+    "logo_text": "SimCCS Gateway",
+    "logo_text_color": "#777",
+    "logo_text_size": 20
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customheaderlinks",
+  "pk": 1,
+  "fields": {
+    "header_link_text": "SimCCS Data",
+    "header_link": "https://geosurveyiu.scigap.org/pages/data",
+    "header_sub_link_text1": null,
+    "header_sub_link_text2": null,
+    "header_sub_link_text3": null,
+    "header_sub_link_text4": null,
+    "header_sub_link1": null,
+    "header_sub_link2": null,
+    "header_sub_link3": null,
+    "header_sub_link4": null,
+    "body": null
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 1,
+  "fields": {
+    "sort_order": 0,
+    "body": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1 hero-description mt-5 padded-top\"}, \"id\": \"14de482d-f4a5-4cdb-8714-b2135de5d064\"}, {\"type\": \"heading_block\", \"value\": {\"heading_text\": \"SimCCS Gateway\", \"size\": \"h1\", \"custom_class\": \"col-md-11 hero-description mt-5 padded-top\"}, \"id\": \"311cf851-3e10-4f0e-bc80-f4a23052e5fe\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 2,
+  "fields": {
+    "sort_order": 1,
+    "body": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1 hero-description padded-bottom\"}, \"id\": \"1d46c930-dfc4-4570-85eb-7659ad93206d\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-8 hero-description padded-bottom\", \"body\": \"<p>SimCCS is a decision support tool for integrated assessment of carbon capture, utilization and storage technology developed by members of the U.S.-China Clean Energy Research Center, Advanced Coal Technology Consortium. SimCCS Gateway is a science gateway built from the collaboration between the Indiana Geological &amp; Water Survey and the Science Gateways Group at Indiana University.</p>\"}, \"id\": \"a0e63c9e-ccfd-459f-b1aa-0569ff208489\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-3 hero-description padded-bottom\"}, \"id\": \"b89ee5a9-1cba-43d3-aef6-b3f8022467e8\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 3,
+  "fields": {
+    "sort_order": 2,
+    "body": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1 mt-5\"}, \"id\": \"47f2f39c-fd12-4bef-acaa-c61624cf1eca\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": null, \"is_card_img\": true, \"card_img\": 2, \"card_img_width\": 260, \"card_img_height\": 204, \"card_title\": \"\", \"card_text\": \"<p>SimCCS supports decision making on CO2 mitigation technology deployment by integrating applications in operations research, geographical information systems, CO2 capture modelling, pipeline engineering design, and reservoir engineering and geology. At its core, SimCCS is driven by a mixed-integer linear programming optimization engine for obtaining solutions that drive model decisions.</p><p>SimCCS produces optimal solutions for integrated CCUS infrastructure deployment in three different modes:<br/>(1) SimCCSCAP: the model is given an exogenously-defined amount of CO2 to capture across one or more CO2-emitting sources. Consequently, SimCCS designs the least-cost set of infrastructure to manage the desired CO2 target. This is considered to be the version of SimCCS to operate within an emissions cap, or cap-and-trade environment. Alternatively, the user can define a fixed budget and let the optimization model maximize the amount of CO2 that can be managed within that budget.<br/>(2) SimCCSPRICE: the model deploys infrastructure in response to a price (or tax) on CO2 emissions, essentially building CCUS infrastructure and managing CO2 flows at a cost lower than to simply emit the CO2 to the atmosphere.<br/>(3) SimCCSTIME: the model introduces a temporal aspect to infrastructure deployment, building CCUS infrastructure during discrete time steps. The model can be executed in the context of either the CAP or PRICE mode.</p>\", \"card_bg_color\": \"bg-light\", \"card_text_color\": \"text-dark\", \"btn_text\": \"\", \"btn_color\": \"\", \"btn_link\": \"\", \"custom_class\": \"col-md-5 mt-5 padded-card\"}, \"id\": \"8456a4c1-8226-4e38-a97d-74022a914f1a\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": null, \"is_card_img\": true, \"card_img\": 3, \"card_img_width\": 260, \"card_img_height\": 175, \"card_title\": \"\", \"card_text\": \"<p>SimCCS has been developed as a desktop-level, science-based research tool requiring intimate knowledge of the framework to effectively execute the program, as well as the application of external, proprietary software including ESRI\\u2019s ArcGIS and IBM\\u2019s CPLEX. Here we further develop SimCCS to run on high-performance computing platforms such that robust optimal solutions can be obtained in the face of significant uncertainty. Toward this end, we will develop new algorithms and reduced-order solution methods that will allow thousands of SimCCS solutions to be analyzed to identify critical techno-economic thresholds in CCUS infrastructure deployment.</p>\", \"card_bg_color\": \"bg-light\", \"card_text_color\": \"text-dark\", \"btn_text\": \"\", \"btn_color\": \"\", \"btn_link\": \"\", \"custom_class\": \"col-md-5 mt-5 padded-card\"}, \"id\": \"0df56a66-d12f-437c-a168-6b45ec652b3e\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1 mt-5\"}, \"id\": \"f0f161e3-abfb-46cf-be6f-437e39eda67c\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-6\"}, \"id\": \"1a6f1b26-0d71-4d20-bcf5-e6ea98872c65\"}, {\"type\": \"bootstrap_card\", \"value\": {\"card_width\": null, \"is_card_img\": true, \"card_img\": 4, \"card_img_width\": 260, \"card_img_height\": 97, \"card_title\": \"\", \"card_text\": \"<p>SimCCS Gateway is powered by Apache Airavata. Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p>\", \"card_bg_color\": \"bg-light\", \"card_text_color\": \"\", \"btn_text\": \"\", \"btn_color\": \"\", \"btn_link\": \"\", \"custom_class\": \"col-md-5 reduce-top padded-card\"}, \"id\": \"2a0be327-146c-441c-b219-f0b6c22c3b8b\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1\"}, \"id\": \"009b90a3-3d3e-4c07-af3d-a08027f672d5\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 4,
+  "fields": {
+    "sort_order": 3,
+    "body": "[{\"type\": \"heading_block\", \"value\": {\"heading_text\": \"Contact Us\", \"size\": \"h1\", \"custom_class\": \"col-md-12 text-center mt-5\"}, \"id\": \"90461267-8079-4c86-a1bb-05ed9cc1e74d\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 5,
+  "fields": {
+    "sort_order": 4,
+    "body": "[{\"type\": \"font_awesome_icon_block\", \"value\": {\"icon_tag\": \"fas fa-envelope\", \"icon_size\": 8, \"custom_class\": \"col-md-12 text-center\"}, \"id\": \"41cc568b-8817-4a9f-a7c1-7598c1e8f6d4\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 6,
+  "fields": {
+    "sort_order": 5,
+    "body": "[{\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-12 text-center\", \"body\": \"<p>You can contact Gateway Admin by sending a mail to <a href=\\\"mailto:geoco2@indiana.edu\\\">Contact E-mail</a></p>\"}, \"id\": \"16bfe0e6-755e-427e-ba6e-a60cf5b26e75\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 3,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 4,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 5,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
+}
+]

@@ -1,0 +1,41 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-8 mx-auto mt-4 text-center">
+	    {% if page.contact_mail %}
+			<i class="fa fa-envelope" style="font-size:6em;"></i>
+			<h4>
+				{{ page.contact_mail|richtext }}
+			</h4>
+	    {% endif %}
+
+	    {% if page.contact_phone %}
+			<i class="fa fa-phone" style="font-size:6em;"></i>
+			<h4 class="col-md-12">
+				{{ page.contact_phone|richtext }}
+			</h4>
+	    {% endif %}
+
+	    {% if page.contact_website %}
+			<i class="fa fa-globe" style="font-size:6em;"></i>
+			<h4>
+				{{ page.contact_website|richtext }}
+			</h4>
+	    {% endif %}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-8 mx-auto text-center">
+	    {% if page.body %}
+				{% for block in page.body %}
+			   {% include_block block.value %}
+				{% endfor %}
+	    {% endif %}
+		</div>
+	</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,577 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$36000$JfwxYsMniv37$MXw/lLaFT1yZd2Ren/MzXRKWDlZsELiCz+rI1lQtoDA=",
+    "last_login": "2018-04-12T17:16:13.581Z",
+    "is_superuser": true,
+    "username": "stephenpaul2727",
+    "first_name": "",
+    "last_name": "",
+    "email": "stephenpaul2727@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2018-04-12T17:15:53.798Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 1,
+  "fields": {
+    "collection": 1,
+    "title": "Big Dawg",
+    "file": "original_images/big-dawg.jpg",
+    "width": 1190,
+    "height": 788,
+    "created_at": "2018-04-12T17:21:50.052Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 2,
+  "fields": {
+    "collection": 1,
+    "title": "siu-logo-horizontal",
+    "file": "original_images/siu-logo-horizontal.png",
+    "width": 420,
+    "height": 45,
+    "created_at": "2018-04-12T17:27:05.380Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 1,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/big-dawg.max-165x165.jpg",
+    "width": 165,
+    "height": 109,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 2,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/big-dawg.original.jpg",
+    "width": 1190,
+    "height": 788,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 3,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/siu-logo-horizontal.max-165x165.png",
+    "width": 165,
+    "height": 17,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 4,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/siu-logo-horizontal.original.png",
+    "width": 420,
+    "height": 45,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailcore.site",
+  "fields": {
+    "hostname": "localhost",
+    "port": 8000,
+    "site_name": "Science Gateway | SIU",
+    "root_page": 3,
+    "is_default_site": true
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 1,
+    "title": "Root",
+    "draft_title": "Root",
+    "slug": "root",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 2,
+  "fields": {
+    "path": "00010001",
+    "depth": 2,
+    "numchild": 1,
+    "title": "Welcome to your new Wagtail site!",
+    "draft_title": "Welcome to your new Wagtail site!",
+    "slug": "home",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 3,
+  "fields": {
+    "path": "000100010001",
+    "depth": 3,
+    "numchild": 0,
+    "title": "Home",
+    "draft_title": "Home",
+    "slug": "home",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "Home",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-12T17:20:26.150Z",
+    "last_published_at": "2018-04-12T18:58:19.779Z",
+    "latest_revision_created_at": "2018-04-12T18:58:19.715Z",
+    "live_revision": 12
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 1,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:20:26.133Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 2,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:20:50.767Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:20:26.150Z\", \"latest_revision_created_at\": \"2018-04-12T17:20:26.133Z\", \"live_revision\": 1, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 3,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:22:05.251Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:20:50.794Z\", \"latest_revision_created_at\": \"2018-04-12T17:20:50.767Z\", \"live_revision\": 2, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 4,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:22:26.120Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:22:05.277Z\", \"latest_revision_created_at\": \"2018-04-12T17:22:05.251Z\", \"live_revision\": 3, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 5,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:23:39.625Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:22:26.151Z\", \"latest_revision_created_at\": \"2018-04-12T17:22:26.120Z\", \"live_revision\": 4, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-6 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 6,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:23:56.766Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:23:39.651Z\", \"latest_revision_created_at\": \"2018-04-12T17:23:39.625Z\", \"live_revision\": 5, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-4 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 7,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:25:44.460Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:23:56.795Z\", \"latest_revision_created_at\": \"2018-04-12T17:23:56.766Z\", \"live_revision\": 6, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary mt-5\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 mt-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-4 hero-text mt-5\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 8,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T17:26:05.259Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:25:44.479Z\", \"latest_revision_created_at\": \"2018-04-12T17:25:44.460Z\", \"live_revision\": 7, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary mt-5\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-4 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 9,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T18:12:47.386Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T17:26:05.287Z\", \"latest_revision_created_at\": \"2018-04-12T17:26:05.259Z\", \"live_revision\": 8, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary mt-5\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5 hero-heading\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-5 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 10,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T18:14:59.149Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T18:12:47.415Z\", \"latest_revision_created_at\": \"2018-04-12T18:12:47.386Z\", \"live_revision\": 9, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 text-primary mt-5 hero-heading\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-5 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 11,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T18:16:39.378Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T18:14:59.179Z\", \"latest_revision_created_at\": \"2018-04-12T18:14:59.149Z\", \"live_revision\": 10, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 mt-5 hero-heading\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-5 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 12,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-12T18:58:19.715Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 27, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-12T17:20:26.150Z\", \"last_published_at\": \"2018-04-12T18:16:39.405Z\", \"latest_revision_created_at\": \"2018-04-12T18:16:39.378Z\", \"live_revision\": 11, \"show_navbar\": \"yes\", \"show_nav_extra\": \"no\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"f2b04d9f-bb4c-4e13-9226-2188a5085f97\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SIU SCIENCE GATEWAY\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-4 mt-5 hero-heading\\\"}, \\\"id\\\": \\\"bd667c25-3082-4419-8182-eccafe5368b2\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1 mt-5\\\"}, \\\"id\\\": \\\"e8f919d7-8d98-4109-8a80-09784d31123d\\\"}, {\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-5\\\"}, \\\"id\\\": \\\"fc509217-08d5-4b23-b5ca-d1c7b623ee05\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-5 hero-text\\\", \\\"body\\\": \\\"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\\\\\"http://sciencegateways.org/\\\\\\\">http://sciencegateways.org/</a></li><li><a href=\\\\\\\"http://oit.siu.edu/rcc/bigdog/\\\\\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\\\\\"https://www.xsede.org/gateways-overview\\\\\\\">https://www.xsede.org/gateways-overview</a></li></ul>\\\"}, \\\"id\\\": \\\"15def9f5-5018-4f15-8c09-e34838d7a6c1\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.collection",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 0,
+    "name": "Root"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 1,
+  "fields": {
+    "name": "big",
+    "slug": "big"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Dawg",
+    "slug": "dawg"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 3,
+  "fields": {
+    "name": "SIU",
+    "slug": "siu"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 4,
+  "fields": {
+    "name": "Horizontal",
+    "slug": "horizontal"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Logo",
+    "slug": "logo"
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 1,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 2,
+  "fields": {
+    "tag": 2,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 3,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 4,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 5,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customcss",
+  "pk": 1,
+  "fields": {
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"----Navbar Styles----\"}, \"id\": \"55b49e2c-7cfb-42a3-890e-5ec9c4951d65\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #660000;\\r\\ncolor: #FFFF;\\r\\npadding-top: 20px;\\r\\npadding-bottom: 20px;\\r\\n}\\r\\n.main-nav a:not(.navbar-brand) {\\r\\ncolor: #FFFF !important;\\r\\ntext-transform: uppercase;\\r\\nfont-family: 'Roboto', sans-serif;\\r\\npadding-top: 10px;\\r\\npadding-bottom: 10px;\\r\\npadding-left: 40px !important;\\r\\npadding-right: 40px !important;\\r\\n\\r\\n\\r\\n}\\r\\n.main-nav a:not(.navbar-brand):hover  {\\r\\nbackground-color: #400;\\r\\nfont-family: 'Roboto', sans-serif;\\r\\ntransition: all 300ms ease-in;\\r\\ncolor: #FFFF !important;\\r\\n}\", \"id\": \"cbd22dbb-8c07-44d7-b06c-7ac04c321d98\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Content Area-----\"}, \"id\": \"b083abd3-582b-44c2-a40a-e6044e130930\"}, {\"type\": \"css_block\", \"value\": \"body {\\r\\nbackground-color: #DAD6CB;\\r\\nfont-family: Arial, sans-serif;\\r\\nfont-size: 18px;\\r\\n}\\r\\n.hero-text {\\r\\nbackground: #FFFFFF;\\r\\ncolor: #000000;\\r\\npadding: 30px;\\r\\nheight: auto;\\r\\n}\", \"id\": \"06d1529a-63c2-4f9e-bbbb-305a54bbe7de\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Heading Text----\"}, \"id\": \"c821001d-9f7b-40f6-a0bd-eb6f62b98d45\"}, {\"type\": \"css_block\", \"value\": \".hero-heading > h1{\\r\\ncolor: #246181 !important;\\r\\nfont-family: 'Roboto', sans-serif !important;\\r\\nfont-weight: 800 !important;\\r\\n}\", \"id\": \"ebf94774-45ee-4444-87cd-49304f5b01b5\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----Main Footer Styles-----\"}, \"id\": \"290ba977-eabb-4e70-b359-fb4bc2306d6c\"}, {\"type\": \"css_block\", \"value\": \".main-footer {\\r\\nbackground: #333333;\\r\\npadding-top:50px;\\r\\npadding-bottom: 50px;\\r\\ncolor: #FFFFFF;\\r\\nposition : absolute !important;\\r\\nbottom: 0 !important;\\r\\nleft: 0 !important;\\r\\n}\\r\\n.main-footer a {\\r\\ntext-decoration: none;\\r\\ncolor: #FFFFFF;\\r\\n}\", \"id\": \"ca3351a2-c6d0-46ac-98e9-42c76c4b3f0b\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Custom Footer Styles-----\"}, \"id\": \"0ee81ef4-eae2-4f5b-bc0e-c4d337e7b31e\"}, {\"type\": \"css_block\", \"value\": \".footer-right-column {\\r\\nfont-size: 14px;\\r\\nfont-family: 'Roboto', sans-serif !important;\\r\\n}\", \"id\": \"86a2dce3-5aee-4f1a-b5e9-d12ea1e3973b\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----Secondary Navbar Styles-----\"}, \"id\": \"abf6eeae-5207-4974-8ea5-9cc80a1a4c0d\"}, {\"type\": \"css_block\", \"value\": \".secondary-nav {\\r\\nbackground: #2c3e50;\\r\\npadding: 10px;\\r\\nfont-size: 16px;\\r\\n}\\r\\n.secondary-nav a{\\r\\ncolor: #EFEFEF;\\r\\n}\", \"id\": \"d7c393ee-96e1-4f9f-b529-b5ec5a96d704\"}]"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.footertext",
+  "pk": 1,
+  "fields": {
+    "footer": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1\"}, \"id\": \"617e76d0-7baa-4fb2-b2c6-84dd7324daea\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-3 text-center\", \"body\": \"<p>Webmaster: <a href=\\\"mailto:research-computing@siu.edu\\\">research-computing@siu.edu</a></p>\"}, \"id\": \"5d9a2bf5-4d66-418d-80c8-10c77d30d8a8\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-7 footer-right-column\", \"body\": \"<p><a href=\\\"https://sciencegateway.siu.edu/jobs/\\\">CAREERS</a> | <a href=\\\"https://sciencegateway.siu.edu/eoe/\\\">EQUAL OPPORTUNITY EMPLOYER</a> | <a href=\\\"http://diversity.siu.edu/title9.html\\\">TITLE IX</a> | <a href=\\\"https://sciencegateway.siu.edu/emergency/index.php\\\">EMERGENCY PROCEDURES</a> |<a href=\\\"http://policies.siu.edu/policies/webprivacy.html\\\">WEB PRIVACY POLICY</a></p><p>\\u00a92017 SIU Board of Trustees</p>\"}, \"id\": \"a2e1205b-8ed7-4f1e-8be7-f3ae09028330\"}]"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.navbar",
+  "pk": 1,
+  "fields": {
+    "logo": 2,
+    "logo_redirect_link": "/",
+    "logo_width": 450,
+    "logo_height": 60,
+    "logo_text": null,
+    "logo_text_color": null,
+    "logo_text_size": null
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customheaderlinks",
+  "pk": 1,
+  "fields": {
+    "header_link_text": "CREATE ACCOUNT",
+    "header_link": "https://sciencegateway.siu.edu/create",
+    "header_sub_link_text1": null,
+    "header_sub_link_text2": null,
+    "header_sub_link_text3": null,
+    "header_sub_link_text4": null,
+    "header_sub_link1": null,
+    "header_sub_link2": null,
+    "header_sub_link3": null,
+    "header_sub_link4": null,
+    "body": null
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customheaderlinks",
+  "pk": 2,
+  "fields": {
+    "header_link_text": "Login",
+    "header_link": "/auth/login",
+    "header_sub_link_text1": null,
+    "header_sub_link_text2": null,
+    "header_sub_link_text3": null,
+    "header_sub_link_text4": null,
+    "header_sub_link1": null,
+    "header_sub_link2": null,
+    "header_sub_link3": null,
+    "header_sub_link4": null,
+    "body": null
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 1,
+  "fields": {
+    "sort_order": 0,
+    "body": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1 mt-5\"}, \"id\": \"f2b04d9f-bb4c-4e13-9226-2188a5085f97\"}, {\"type\": \"heading_block\", \"value\": {\"heading_text\": \"SIU SCIENCE GATEWAY\", \"size\": \"h1\", \"custom_class\": \"col-md-4 mt-5 hero-heading\"}, \"id\": \"bd667c25-3082-4419-8182-eccafe5368b2\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 2,
+  "fields": {
+    "sort_order": 1,
+    "body": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-1 mt-5\"}, \"id\": \"e8f919d7-8d98-4109-8a80-09784d31123d\"}, {\"type\": \"image_block\", \"value\": {\"image\": 1, \"caption\": \"\", \"width\": \"100%\", \"height\": null, \"redirect_url\": \"\", \"custom_class\": \"col-md-5\"}, \"id\": \"fc509217-08d5-4b23-b5ca-d1c7b623ee05\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-5 hero-text\", \"body\": \"<p>The SIU Science Gateway provides access to SIU&#x27;s BigDog high performance computing cluster and is part of a network of science gateways used to access numerous state of the art supercomputers at premier universities and research centers. You must have authorization in order to log in to the SIU Science Gateway. For more information, email research-computing@siu.edu or see one of these web sites:</p><ul><li><a href=\\\"http://sciencegateways.org/\\\">http://sciencegateways.org/</a></li><li><a href=\\\"http://oit.siu.edu/rcc/bigdog/\\\">http://oit.siu.edu/rcc/bigdog/</a></li><li><a href=\\\"https://www.xsede.org/gateways-overview\\\">https://www.xsede.org/gateways-overview</a></li></ul>\"}, \"id\": \"15def9f5-5018-4f15-8c09-e34838d7a6c1\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 3,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "no"
+  }
+}
+]

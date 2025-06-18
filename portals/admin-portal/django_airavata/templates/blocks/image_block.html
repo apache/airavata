@@ -1,0 +1,22 @@
+{% load wagtailimages_tags %}
+<div class="{{self.custom_class}}">
+  {% if self.redirect_url %}
+  <a href="{{self.redirect_url}}">
+        {% image self.image original as tmp_photo %}
+        <img src="{{tmp_photo.url}}" style="width:{{self.width}};height:{{self.height}}" alt="image" class="img-fluid"/>
+        {% if self.caption %}
+        <div class="card card-body bg-light text-center">
+      		<figcaption class="text-center">{{ self.caption }}</figcaption>
+      	</div>
+        {% endif %}
+  </a>
+  {% else %}
+        {% image self.image original as tmp_photo %}
+        <img src="{{tmp_photo.url}}" style="width:{{self.width}};height:{{self.height}};" alt="image" class="img-fluid"/>
+        {% if self.caption %}
+        <div class="card card-body bg-light text-center">
+          <figcaption class="text-center">{{ self.caption }}</figcaption>
+        </div>
+        {% endif %}
+  {% endif %}
+</div>

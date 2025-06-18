@@ -1,0 +1,5 @@
+{% extends './base.html' %}
+
+{% block content %}
+<div id="group-edit" data-group-id="{{ group_id }}" {% if next %} data-next="{{ next }}" {% endif %}></div>
+{% endblock content %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="main-content-wrapper">
+  <main class="main-content">
+  <div class="container">
+      {% if options.external %}
+      {% include "./partials/externals_login_form.html" %}
+      {% endif %}
+
+      {% if options.password and not options.password.hidden %}
+      {% include "./partials/username_password_login_form.html" %}
+      {% endif %}
+  </div>
+  </main>
+</div>
+{% endblock content %}

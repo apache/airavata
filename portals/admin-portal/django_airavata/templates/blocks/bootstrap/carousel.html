@@ -1,0 +1,77 @@
+
+{% load wagtailimages_tags %}
+
+<div id="carouselExampleIndicators" class="carousel slide {%if self.custom_class %}{{self.custom_class}}{% endif %}" data-ride="carousel" data-interval="{{self.interval}}">
+  <ol class="carousel-indicators">
+    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+    {% if self.c_image2 %}<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>{% endif %}
+    {% if self.c_image3 %}<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>{% endif %}
+    {% if self.c_image4 %}<li data-target="#carouselExampleIndicators" data-slide-to="3"></li>{% endif %}
+    {% if self.c_image5 %}<li data-target="#carouselExampleIndicators" data-slide-to="4"></li>{% endif %}
+  </ol>
+  <div class="carousel-inner">
+    {% if self.c_image1 %}
+    <div class="carousel-item active">
+      {% image self.c_image1 original class="d-block w-100 img-fluid" %}
+      {% if self.c_image1_title or self.c_image1_body %}
+      <div class="carousel-caption d-none d-md-block">
+        <h3>{{self.c_image1_title}}</h3>
+        <p>{{self.c_image1_body}}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% if self.c_image2 %}
+    <div class="carousel-item">
+      {% image self.c_image2 original class="d-block w-100 img-fluid" %}
+      {% if self.c_image2_title or self.c_image2_body %}
+      <div class="carousel-caption d-none d-md-block">
+        <h3>{{self.c_image2_title}}</h3>
+        <p>{{self.c_image2_body}}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% if self.c_image3 %}
+    <div class="carousel-item">
+      {% image self.c_image3 original class="d-block w-100 img-fluid" %}
+      {% if self.c_image3_title or self.c_image3_body %}
+      <div class="carousel-caption d-none d-md-block">
+        <h3>{{self.c_image3_title}}</h3>
+        <p>{{self.c_image3_body}}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% if self.c_image4 %}
+    <div class="carousel-item">
+      {% image self.c_image4 original class="d-block w-100 img-fluid" %}
+      {% if self.c_image4_title or self.c_image4_body %}
+      <div class="carousel-caption d-none d-md-block">
+        <h3>{{self.c_image4_title}}</h3>
+        <p>{{self.c_image4_body}}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% if self.c_image5 %}
+    <div class="carousel-item">
+      {% image self.c_image5 original class="d-block w-100 img-fluid" %}
+      {% if self.c_image5_title or self.c_image5_body %}
+      <div class="carousel-caption d-none d-md-block">
+        <h3>{{self.c_image5_title}}</h3>
+        <p>{{self.c_image5_body}}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>

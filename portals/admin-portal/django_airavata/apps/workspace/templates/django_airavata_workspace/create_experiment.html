@@ -1,0 +1,10 @@
+{% extends './base.html' %}
+
+{% block content %}
+
+<div id="{{ bundle_name }}" data-app-module-id="{{ app_module_id }}" data-user-input-values="{{ user_input_values }}"
+  {% if experiment_data_dir %}data-experiment-data-dir="{{ experiment_data_dir }}"{% endif %}
+>
+</div>
+
+{% endblock content %}

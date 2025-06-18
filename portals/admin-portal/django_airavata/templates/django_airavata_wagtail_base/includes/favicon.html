@@ -1,0 +1,9 @@
+{% load wagtailimages_tags static %}
+
+{% if not gateway_icon %}
+<link rel="icon" href="{% static 'images/airavata-logo.png' %}">
+{% else %}
+{% image gateway_icon.icon original as tmp_photo %}
+<link rel="icon" href="{{ tmp_photo.url }}">
+{% endif %}
+

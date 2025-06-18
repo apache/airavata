@@ -1,0 +1,65 @@
+{
+  "name": "django-airavata-group-views",
+  "description": "A Vue.js project",
+  "version": "1.0.0",
+  "author": "Stephen Paul <stephenpaul2727@gmail.com>",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint ./static/django_airavata_groups/js",
+    "lint:visualstudio": "vue-cli-service lint --format visualstudio ./static/django_airavata_groups/js",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-beta.2",
+    "browserslist": "^4.16.7",
+    "core-js": "^3.8.3",
+    "django-airavata-api": "link:../api",
+    "django-airavata-common-ui": "link:../../static/common",
+    "moment": "^2.18.1",
+    "terser": "^4.1.2",
+    "vue": "^2.5.22"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "prettier": "^2.1.2",
+    "vue-loader": "^15.5.1",
+    "vue-template-compiler": "^2.5.22",
+    "webpack": "^4.28.4",
+    "webpack-bundle-tracker": "^0.4.2-beta",
+    "webpack-dev-middleware": "^3.5.1",
+    "webpack-dev-server": "^3.1.14",
+    "@babel/eslint-parser": "^7.12.16",
+    "@babel/core": "^7.12.16"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "@babel/eslint-parser",
+      "requireConfigFile": false
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

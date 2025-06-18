@@ -1,0 +1,23 @@
+{% load wagtailimages_tags wagtailcore_tags %}
+
+<div class="{{self.custom_class}}">
+  <div class="card {{self.card_bg_color}} {{self.card_text_color}}" {% if self.card_width %} style="width:{{self.card_width}}rem;" {% endif %}>
+    {% if self.is_card_img %}
+      {% image self.card_img original as tmp_photo %}
+      <img src="{{tmp_photo.url}}" style="width:{{self.card_img_width}};height:{{self.card_img_height}};margin:auto" alt="image" class="card-img-top img-fluid"/>
+    {% endif %}
+    {% if self.is_card_img_overlay %}
+    <div class="card-img-overlay">
+    {% else %}
+    <div class="card-body">
+    {% endif %}
+      <h5 class="card-title">{{self.card_title}}</h5>
+      <p class="card-text">{{self.card_text}}</p>
+      {% if value.buttons %}
+      {% for button in value.buttons %}
+        {% include_block button %}
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>

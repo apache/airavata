@@ -1,0 +1,819 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$36000$8PWMgXlEiVYW$+OIzFTeWKxHkSLsllU0C7lo/D/NcIYylxofejp0FREg=",
+    "last_login": "2018-04-10T23:01:04.682Z",
+    "is_superuser": true,
+    "username": "stephenpaul2727",
+    "first_name": "",
+    "last_name": "",
+    "email": "stephenpaul2727@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2018-04-06T15:41:37.306Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 1,
+  "fields": {
+    "collection": 1,
+    "title": "south-dakota-banner",
+    "file": "original_images/hero_banner_final.png",
+    "width": 1920,
+    "height": 161,
+    "created_at": "2018-04-06T15:47:54.854Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.image",
+  "pk": 2,
+  "fields": {
+    "collection": 1,
+    "title": "sg-logo",
+    "file": "original_images/sglogo.png",
+    "width": 274,
+    "height": 82,
+    "created_at": "2018-04-06T15:49:54.410Z",
+    "uploaded_by_user": [
+      "stephenpaul2727"
+    ],
+    "focal_point_x": null,
+    "focal_point_y": null,
+    "focal_point_width": null,
+    "focal_point_height": null,
+    "file_size": null
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 1,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/hero_banner_final.max-165x165.png",
+    "width": 165,
+    "height": 13,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 2,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/hero_banner_final.original.png",
+    "width": 1920,
+    "height": 161,
+    "focal_point_key": "",
+    "image": 1
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 3,
+  "fields": {
+    "filter_spec": "max-165x165",
+    "file": "images/sglogo.max-165x165.png",
+    "width": 165,
+    "height": 49,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailimages.rendition",
+  "pk": 4,
+  "fields": {
+    "filter_spec": "original",
+    "file": "images/sglogo.original.png",
+    "width": 274,
+    "height": 82,
+    "focal_point_key": "",
+    "image": 2
+  }
+},
+{
+  "model": "wagtailcore.site",
+  "fields": {
+    "hostname": "localhost",
+    "port": 8000,
+    "site_name": "South Dakota Gateway",
+    "root_page": 3,
+    "is_default_site": true
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 1,
+    "title": "Root",
+    "draft_title": "Root",
+    "slug": "root",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 2,
+  "fields": {
+    "path": "00010001",
+    "depth": 2,
+    "numchild": 1,
+    "title": "Welcome to your new Wagtail site!",
+    "draft_title": "Welcome to your new Wagtail site!",
+    "slug": "home",
+    "content_type": [
+      "wagtailcore",
+      "page"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/",
+    "owner": null,
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": null,
+    "last_published_at": null,
+    "latest_revision_created_at": null,
+    "live_revision": null
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 3,
+  "fields": {
+    "path": "000100010001",
+    "depth": 3,
+    "numchild": 1,
+    "title": "Home",
+    "draft_title": "Home",
+    "slug": "home",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "",
+    "show_in_menus": false,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-06T15:48:40.532Z",
+    "last_published_at": "2018-04-10T23:01:15.134Z",
+    "latest_revision_created_at": "2018-04-10T23:01:15.109Z",
+    "live_revision": 242
+  }
+},
+{
+  "model": "wagtailcore.page",
+  "pk": 4,
+  "fields": {
+    "path": "0001000100010001",
+    "depth": 4,
+    "numchild": 0,
+    "title": "About",
+    "draft_title": "About",
+    "slug": "about",
+    "content_type": [
+      "django_airavata_wagtail_base",
+      "blankpage"
+    ],
+    "live": true,
+    "has_unpublished_changes": false,
+    "url_path": "/home/home/about/",
+    "owner": [
+      "stephenpaul2727"
+    ],
+    "seo_title": "about",
+    "show_in_menus": true,
+    "search_description": "",
+    "go_live_at": null,
+    "expire_at": null,
+    "expired": false,
+    "locked": false,
+    "first_published_at": "2018-04-06T16:33:08.917Z",
+    "last_published_at": "2018-04-10T23:02:33.079Z",
+    "latest_revision_created_at": "2018-04-10T23:02:33.051Z",
+    "live_revision": 243
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 1,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T15:48:40.516Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 2,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T15:49:09.634Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T15:48:40.532Z\", \"latest_revision_created_at\": \"2018-04-06T15:48:40.516Z\", \"live_revision\": 1, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 3,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T15:55:09.811Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T15:49:09.659Z\", \"latest_revision_created_at\": \"2018-04-06T15:49:09.634Z\", \"live_revision\": 2, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 4,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:06:24.489Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T15:55:09.837Z\", \"latest_revision_created_at\": \"2018-04-06T15:55:09.811Z\", \"live_revision\": 3, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 mx-auto text-center\\\", \\\"body\\\": \\\"<p>Welcome to research computing</p><p>at the University of South Dakota!</p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.</h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 5,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:07:12.920Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:06:24.519Z\", \"latest_revision_created_at\": \"2018-04-06T16:06:24.489Z\", \"live_revision\": 4, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center\\\", \\\"body\\\": \\\"<h2>Welcome to research computing</h2><h2>at the University of South Dakota!</h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.</h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 6,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:07:45.653Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:07:12.939Z\", \"latest_revision_created_at\": \"2018-04-06T16:07:12.920Z\", \"live_revision\": 5, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-4\\\", \\\"body\\\": \\\"<h2>Welcome to research computing</h2><h2>at the University of South Dakota!</h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.</h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 7,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:07:57.994Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:07:45.742Z\", \"latest_revision_created_at\": \"2018-04-06T16:07:45.653Z\", \"live_revision\": 6, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2>Welcome to research computing</h2><h2>at the University of South Dakota!</h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.</h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 8,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:08:22.038Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:07:58.023Z\", \"latest_revision_created_at\": \"2018-04-06T16:07:57.994Z\", \"live_revision\": 7, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2>Welcome to research computing<br/></h2><h2>at the University of South Dakota!<br/></h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 9,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:08:48.998Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:08:22.064Z\", \"latest_revision_created_at\": \"2018-04-06T16:08:22.038Z\", \"live_revision\": 8, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2>Welcome to research computing<br/></h2><h2>at the University of South Dakota!<br/><br/></h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/><br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 10,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:11:09.051Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:08:49.023Z\", \"latest_revision_created_at\": \"2018-04-06T16:08:48.998Z\", \"live_revision\": 9, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center\\\", \\\"body\\\": \\\"<h2></h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/><br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 11,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:11:54.738Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:11:09.073Z\", \"latest_revision_created_at\": \"2018-04-06T16:11:09.051Z\", \"live_revision\": 10, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2 heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2></h2><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/><br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 12,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:12:26.419Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:11:54.765Z\", \"latest_revision_created_at\": \"2018-04-06T16:11:54.738Z\", \"live_revision\": 11, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2 heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/><br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 13,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:12:37.942Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:12:26.445Z\", \"latest_revision_created_at\": \"2018-04-06T16:12:26.419Z\", \"live_revision\": 12, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2 heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-3\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/><br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 14,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:13:17.149Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:12:37.969Z\", \"latest_revision_created_at\": \"2018-04-06T16:12:37.942Z\", \"live_revision\": 13, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/><br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 15,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:13:37.293Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:13:17.175Z\", \"latest_revision_created_at\": \"2018-04-06T16:13:17.149Z\", \"live_revision\": 14, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 16,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:15:17.049Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:13:37.322Z\", \"latest_revision_created_at\": \"2018-04-06T16:13:37.293Z\", \"live_revision\": 15, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": null, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-12 mx-auto mt-2\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 17,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:15:36.747Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:15:17.077Z\", \"latest_revision_created_at\": \"2018-04-06T16:15:17.049Z\", \"live_revision\": 16, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-6 mx-auto mt-2\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 18,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:17:03.217Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:15:36.780Z\", \"latest_revision_created_at\": \"2018-04-06T16:15:36.747Z\", \"live_revision\": 17, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-12 mx-auto mt-2 login-home\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 19,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:28:08.751Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:17:03.246Z\", \"latest_revision_created_at\": \"2018-04-06T16:17:03.217Z\", \"live_revision\": 18, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-12 mt-2 login-home\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 20,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:28:12.706Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 0, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": true, \"url_path\": \"/home/home/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:17:03.246Z\", \"latest_revision_created_at\": \"2018-04-06T16:28:08.751Z\", \"live_revision\": 18, \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-12 mt-2 login-home\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 21,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:33:08.901Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>About Science Gateway at USD<br/></b></h2><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 22,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:33:21.118Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:33:08.917Z\", \"latest_revision_created_at\": \"2018-04-06T16:33:08.901Z\", \"live_revision\": 21, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>About Science Gateway at USD<br/></b></h2><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 23,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:36:19.924Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:33:21.137Z\", \"latest_revision_created_at\": \"2018-04-06T16:33:21.118Z\", \"live_revision\": 22, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Science Gateway at USD\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"1481119d-4f4d-492b-9b2c-01ff44b77b6c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<h2><b><br/></b></h2><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 24,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:36:32.226Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:36:19.944Z\", \"latest_revision_created_at\": \"2018-04-06T16:36:19.924Z\", \"live_revision\": 23, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Science Gateway at USD\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"1481119d-4f4d-492b-9b2c-01ff44b77b6c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<p><b><br/></b></p><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 25,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:36:42.251Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:36:32.250Z\", \"latest_revision_created_at\": \"2018-04-06T16:36:32.226Z\", \"live_revision\": 24, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Science Gateway at USD\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"1481119d-4f4d-492b-9b2c-01ff44b77b6c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\", \\\"body\\\": \\\"<p></p><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 26,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-06T16:37:01.543Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 1, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:36:42.276Z\", \"latest_revision_created_at\": \"2018-04-06T16:36:42.251Z\", \"live_revision\": 25, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Science Gateway at USD\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"1481119d-4f4d-492b-9b2c-01ff44b77b6c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 242,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:01:15.109Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 1, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 241, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 7, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:28:12.738Z\", \"latest_revision_created_at\": \"2018-04-06T16:28:12.706Z\", \"live_revision\": 20, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-12 mt-2 login-home\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 243,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:02:33.051Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 241, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 7, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:37:01.569Z\", \"latest_revision_created_at\": \"2018-04-06T16:37:01.543Z\", \"live_revision\": 26, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Science Gateway at USD\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"1481119d-4f4d-492b-9b2c-01ff44b77b6c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.collection",
+  "pk": 1,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 0,
+    "name": "Root"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 1,
+  "fields": {
+    "name": "hero-banner",
+    "slug": "hero-banner"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 2,
+  "fields": {
+    "name": "banner",
+    "slug": "banner"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 3,
+  "fields": {
+    "name": "main-logo",
+    "slug": "main-logo"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 4,
+  "fields": {
+    "name": "logo",
+    "slug": "logo"
+  }
+},
+{
+  "model": "taggit.tag",
+  "pk": 5,
+  "fields": {
+    "name": "gateway-logo",
+    "slug": "gateway-logo"
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 1,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 2,
+  "fields": {
+    "tag": 2,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 1
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 3,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 4,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "taggit.taggeditem",
+  "pk": 5,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "wagtailimages",
+      "image"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.customcss",
+  "pk": 1,
+  "fields": {
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"----- navbar styles ----\"}, \"id\": \"17bdcc23-d1bc-418e-b7a3-c454b7ba9d36\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground-color: #C41E3A;\\r\\nborder: 1px solid #000000;\\r\\ncolor: #FFFFFF;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #FFFFFF;\\r\\n}\\r\\n\\r\\n.main-nav ul {\\r\\nfont-size: 16px;\\r\\n}\", \"id\": \"ee3b8ef4-9124-4223-bbb6-bf0f8d22dd35\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- hero banner -----\"}, \"id\": \"44e1beb7-14bb-417e-9ad5-c7b09460742d\"}, {\"type\": \"css_block\", \"value\": \".hero-banner {\\r\\nwidth: 100%;\\r\\nmargin-top: 15px;\\r\\n}\", \"id\": \"d65c6901-8638-465e-b4d6-53240ed4913f\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- container-fluid -----\"}, \"id\": \"e56772b2-e360-44f1-844d-68f393d3521b\"}, {\"type\": \"css_block\", \"value\": \".container-fluid {\\r\\npadding: 0px !important;\\r\\n}\", \"id\": \"96421c9c-bc1b-4faf-9b9c-ff95d2ed1e91\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Second Navbar -----\"}, \"id\": \"0560630b-ede3-438c-ad91-81ce4391ca0e\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\nbackground-color: #C41E3A;\\r\\npadding: 10px;\\r\\n}\\r\\n.second-nav a {\\r\\ncolor: #FFFFFF;\\r\\n}\\r\\n.second-nav a:hover {\\r\\nopacity: 0.5;\\r\\n}\", \"id\": \"e6551b18-8914-4851-85bb-1c9a4424b593\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- log in button on home page-----\"}, \"id\": \"65b4a648-f0a8-42bb-9daa-9bdb9570bda7\"}, {\"type\": \"css_block\", \"value\": \".login-home  > .btn {\\r\\ndisplay:block;\\r\\nmargin: 0px auto;\\r\\nwidth: 100px;\\r\\nborder: none !important;\\r\\n}\", \"id\": \"f38979b7-2938-4ad6-a8ef-19ce048dd095\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"---- Global Horizontal Rule -----\"}, \"id\": \"3690c61c-eff4-4edb-b2d1-299cc2fc1e94\"}, {\"type\": \"css_block\", \"value\": \".global-horizontal-rule {\\r\\nbackground-color: #C41E3A;\\r\\n}\", \"id\": \"a0b15dd9-fce0-4346-8107-10b6da5ef265\"}]"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.navbar",
+  "pk": 1,
+  "fields": {
+    "logo": 2,
+    "logo_redirect_link": "/",
+    "logo_width": 200,
+    "logo_height": 60,
+    "logo_text": null,
+    "logo_text_color": null,
+    "logo_text_size": null
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 1,
+  "fields": {
+    "sort_order": 0,
+    "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 1, \"caption\": \"\", \"width\": \"100%\", \"height\": 150, \"redirect_url\": \"\", \"custom_class\": \"col-md-12 hero-banner\"}, \"id\": \"7307f657-dffc-41a9-b79d-efdd89c3c6f3\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 2,
+  "fields": {
+    "sort_order": 1,
+    "body": "[{\"type\": \"heading_block\", \"value\": {\"heading_text\": \"Welcome to research computing\", \"size\": \"h1\", \"custom_class\": \"col-md-8 mx-auto text-center mt-5 heading-home\"}, \"id\": \"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\"}, {\"type\": \"heading_block\", \"value\": {\"heading_text\": \"at the University of South Dakota!\", \"size\": \"h1\", \"custom_class\": \"col-md-8 mx-auto text-center heading-home\"}, \"id\": \"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-8 mx-auto text-center mt-2\", \"body\": \"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\"http://usdrcg.github.io/\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\"}, \"id\": \"715ea27a-9185-44c3-84cd-2d7669f1416a\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 3,
+  "fields": {
+    "sort_order": 2,
+    "body": "[{\"type\": \"bootstrap_button\", \"value\": {\"button_text\": \"Log In\", \"button_link\": \"https://sciencegateway.usd.edu/login\", \"button_color\": \"btn-secondary\", \"button_size\": \"btn-lg\", \"custom_class\": \"col-md-12 mt-2 login-home\"}, \"id\": \"8758ebe0-6bc4-416c-ad06-ae8188ca0301\"}]",
+    "page": 3
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.rowblankpagerelation",
+  "pk": 4,
+  "fields": {
+    "sort_order": 0,
+    "body": "[{\"type\": \"heading_block\", \"value\": {\"heading_text\": \"About Science Gateway at USD\", \"size\": \"h1\", \"custom_class\": \"col-md-8 mx-auto text-center mt-5\"}, \"id\": \"1481119d-4f4d-492b-9b2c-01ff44b77b6c\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-8 mx-auto text-center mt-2\", \"body\": \"<p></p><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\"}, \"id\": \"2c0084fd-c765-4bc9-b719-8d26f201e6d1\"}]",
+    "page": 4
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 3,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
+},
+{
+  "model": "django_airavata_wagtail_base.blankpage",
+  "pk": 4,
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
+}
+]

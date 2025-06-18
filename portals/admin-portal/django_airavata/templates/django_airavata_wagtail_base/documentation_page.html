@@ -1,0 +1,19 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+<div class="container" style="margin-bottom: 80px;">
+  <h2 class="text-center mt-4">{{ page.documentation_title }}</h2>
+  <hr class="separation-line blue-bg"/>
+
+  {{ page.top_body|richtext }}
+
+  {% if page.focus_text %}
+    <div class="card card-body bg-light breathing-space text-center">
+       {{ page.focus_text|richtext }}
+    </div>
+  {% endif %}
+
+  {{ page.bottom_body|richtext }}
+</div>
+{% endblock content %}

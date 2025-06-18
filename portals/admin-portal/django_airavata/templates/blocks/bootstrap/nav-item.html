@@ -1,0 +1,21 @@
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
+
+{% if value.show == 'logged-in' and request.user.is_authenticated or value.show == 'not-logged-in' and not request.user.is_authenticated or value.show == 'always' %}
+<li class="nav-item {% if value.horizontal_alignment == 'push-right' %}ml-auto{% endif %}">
+  <a class="nav-link" href="{{ value.link }}">
+    {% if value.image %}
+    {% image value.image height-24 as tmp_photo %}
+    <img src="{{tmp_photo.url}}">
+    {% endif %}
+
+    {% if value.icon_class %}
+    <i class="{{ value.icon_class }}"></i>
+    {% endif %}
+
+    {% if value.link_text %}
+    {{ value.link_text }}
+    {% endif %}
+  </a>
+</li>
+{% endif %}

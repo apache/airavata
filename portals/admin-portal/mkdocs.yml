@@ -1,0 +1,39 @@
+site_name: Airavata Django Portal
+
+repo_url: https://github.com/apache/airavata-django-portal/
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - Using the integrated CMS: cms.md
+    - Using the default CMS theme [PDF]: assets/cms_default_theme.pdf
+  - Developer Guide:
+    - Adding a Django App: dev/new_django_app.md
+    - Developing the Frontend: dev/developing_frontend.md
+    - Developing the Backend: dev/developing_backend.md
+    - Developing a Wagtail Export (theme): dev/wagtail_export.md
+  - Customization Guide:
+    - Custom UI Tutorial: tutorial/custom_ui_tutorial.md
+    - Adding a Custom Django App: dev/custom_django_app.md
+    - Adding a Custom Output View Provider: dev/custom_output_view_provider.md
+    - Adding a Queue Settings Calculator: dev/queue_settings_calculator.md
+    - HOWTOs: dev/customization_howto.md
+  - Administrator Guide:
+    - Application Input Customization: admin/app_inputs.md
+    - Tusd Installation: admin/tusd.md
+
+theme: readthedocs
+
+extra_css:
+  - assets/css/pymdownx.tabbed.css
+
+extra_javascript:
+  - assets/js/clipboard.min.js
+  - assets/js/clipboard_init.js
+
+markdown_extensions:
+  - sane_lists # allow restarting numbering of ordered lists
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.tabbed

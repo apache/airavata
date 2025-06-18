@@ -1,0 +1,14 @@
+{% load wagtailimages_tags static %}
+{% if not gateway_icon %}
+<div class=c-header__logo>
+    <a href="/">
+        <img src="{% static 'images/airavata-logo.png' %}" />
+    </a>
+</div>
+{% else %}
+<div class=c-header__logo style="background-color: {{gateway_icon.background_color}}">
+    <a href="/">
+        {% image gateway_icon.icon max-70x70 %}
+    </a>
+</div>
+{% endif %}

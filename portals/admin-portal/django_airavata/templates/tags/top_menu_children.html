@@ -1,0 +1,7 @@
+{% load navigation_tags wagtailcore_tags %}
+
+<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+  {% for child in menuitems_children %}
+    <a class="dropdown-item" href="{% pageurl child %}" role="menuitem">{{ child.title }}</a>
+  {% endfor %}
+</div>

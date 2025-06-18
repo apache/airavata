@@ -1,0 +1,49 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+
+{% if page.show_navbar == "yes" %}
+  {% block header %}
+    {# Header contains the main_navigation block #}
+    {% include "includes/header.html" with parent=site_root calling_page=self %}
+  {% endblock header %}
+{% endif %}
+
+{% if page.show_nav_extra == "yes" %}
+  {% block nav-extra %}
+    {% include "includes/nav-extra.html" %}
+  {% endblock nav-extra %}
+{% endif %}
+
+{% block messages %}
+  {% include "includes/messages.html" %}
+{% endblock messages %}
+
+{% if page.show_announcements == "yes" %}
+  {% get_announcements %}
+{% endif %}
+
+<div class="container-fluid-wrapper">
+  <div class="container-fluid">
+    {% for item in page.row.all %}
+      {% if item.container %}
+        {% comment %} There can only be one container. This will close the previous
+        container and start a new one. {% endcomment %}
+        {% include_block item.container|first %}
+      {% endif %}
+    <div class="row">
+      {% for block in item.body %}
+        {% include_block block.value %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if page.show_footer == "yes" %}
+ <footer class="theme-footer">
+   {% include "includes/footer.html" %}
+ </footer>
+ {% endif %}
+{% endblock content %}

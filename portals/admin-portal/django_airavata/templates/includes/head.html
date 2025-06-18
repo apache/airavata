@@ -1,0 +1,36 @@
+{% load static navigation_tags %}
+{% load render_bundle from webpack_loader %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>
+        {% block title %}
+            {% block title_prefix %}
+                {{get_site_root}}
+            {% endblock %}
+            {% if self.seo_title %}
+                {{ self.seo_title }}
+            {% else %}
+                {{ self.title }}
+            {% endif %}
+        {% endblock %}
+    </title>
+    <meta name="description" content="{% if self.search_description %}{{ self.search_description }}{% endif %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% favicon %}
+
+    {% include "../django_airavata/google_analytics.html" %}
+
+    <!-- Bootstrap Core + Font awesome CSS (see common/js/cms.js) -->
+    {% render_bundle 'chunk-vendors' 'css' 'COMMON' %}
+
+    {% block head-extra %}
+      {% include "includes/head-extra.html" %}
+    {% endblock head-extra %}
+
+    {% extra_web_resources %}
+
+    <style>
+      {% get_css %}
+    </style>
+</head>

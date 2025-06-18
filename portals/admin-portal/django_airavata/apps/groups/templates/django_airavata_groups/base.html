@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block css %}
+{% render_bundle 'chunk-vendors' 'css' 'GROUPS' %}
+{% render_bundle 'chunk-common' 'css' 'GROUPS' %}
+{% render_bundle bundle_name 'css' 'GROUPS' %}
+{% endblock %}
+
+{% block content %}
+<div id="{{ bundle_name }}" {% if next %} data-next="{{ next }}" {% endif %} />
+{% endblock content %}
+
+{% block scripts %}
+{% render_bundle 'chunk-vendors' 'js' 'GROUPS' %}
+{% render_bundle 'chunk-common' 'js' 'GROUPS' %}
+{% render_bundle bundle_name 'js' 'GROUPS' %}
+{% endblock %}

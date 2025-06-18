@@ -1,0 +1,36 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+<div class="container">
+
+<h2 class="text-center mt-4">{{ page.about_title }}</h2>
+<div class="row">
+	<div class="team col-md-3 text-center">
+    {% if page.person_logo %}
+		  <span>{% image page.person_logo fill-248x342 %}</span>
+    {% endif %}
+		<h3>{{ page.person_occupation }}</h3>
+		<h4>{{ page.person_name }}</h4>
+		<p>
+			<strong>Contact:</strong>
+      {% if page.contact_mail %}
+			<a href="mailto:{{page.contact_mail}}">{{page.contact_mail}}</a>
+      {% endif %}
+      {% if page.contact_phone %}
+			<a href="#">{{page.contact_phone}}</a>
+      {% endif %}
+      {% if page.contact_website %}
+			<a href="{{contact_website}}">{{page.contact_website}}</a>
+      {% endif %}
+		</p>
+	</div>
+	{% if page.body %}
+	<div class="col-md-9 mt-4">
+		{{ page.body }}
+	</div>
+	{% endif %}
+
+</div>
+</div>
+{% endblock content %}

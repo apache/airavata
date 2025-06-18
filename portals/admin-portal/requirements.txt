@@ -1,0 +1,31 @@
+# Pin these dependencies
+Django==3.2.18
+requests==2.25.1
+requests-oauthlib==0.7.0
+thrift==0.16.0
+thrift_connector==0.24
+djangorestframework==3.12.4
+django-webpack-loader==0.6.0
+logging-formatter-anticrlf==1.2
+zipstream-new==1.1.8
+
+wagtail==2.13.4
+wagtailfontawesome==1.2.1
+wagtail-draftail-anchors==0.2.0
+wagtailcodeblock==1.17.1.0
+
+jupyter==1.0.0
+papermill==1.0.1
+
+# gRPC libs
+google-api-python-client==1.12.8
+grpcio-tools==1.48.2 ; python_version < "3.7"
+grpcio-tools==1.51.1 ; python_version >= "3.7"
+grpcio==1.48.2 ; python_version < "3.7"
+grpcio==1.51.1 ; python_version >= "3.7"
+
+airavata-django-portal-sdk==1.8.4
+airavata-python-sdk==1.1.6
+airavata-django-portal-commons==1.0.0
+
+-e "."

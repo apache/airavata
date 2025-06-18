@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+  {% block custom-css %}
+  {% endblock %}
+{% endblock css %}
+
+{% block content %}
+<div class="main-content-wrapper">
+    <main class="main-content">
+        <div class="container-fluid">
+          {% block custom-content %}
+
+          {% endblock custom-content %}
+        </div>
+    </main>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'django_airavata_workspace/wc/adpf.chunk-vendors.js' %}"></script>
+<script src="{% static 'django_airavata_workspace/wc/adpf.min.js' %}"></script>
+  {% block custom-scripts %}
+  {% endblock custom-scripts %}
+{% endblock scripts %}

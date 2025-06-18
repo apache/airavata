@@ -1,0 +1,9 @@
+{% load navigation_tags wagtailcore_tags %}
+
+{% if announcements %}
+  <div class="card card-body bg-light text-center mt-3 mb-3">
+  {% for item in announcements %}
+    <a target="_blank" href="{{ item.announcement_link }}" style="font-size:1.25rem;">{{ item.announcement_text }}</a>
+  {% endfor %}
+  </div>
+{% endif %}

@@ -1,0 +1,15 @@
+<div class="{{self.custom_class}}">
+{% if self.size == 'h1' %}
+    <h1 id="{{ self.heading_text | slugify }}">{{ self.heading_text }}</h1>
+
+{% elif self.size == 'h2' %}
+    <h2 id="{{ self.heading_text | slugify }}">{{ self.heading_text }}</h2>
+
+{% elif self.size == 'h3' %}
+    <h3 id="{{ self.heading_text | slugify }}">{{ self.heading_text }}</h3>
+
+{% elif self.size == 'h4' %}
+    <h4 id="{{ self.heading_text | slugify }}">{{ self.heading_text }}</h4>
+
+{% endif %}
+</div>

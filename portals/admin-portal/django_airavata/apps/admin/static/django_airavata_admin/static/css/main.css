@@ -1,0 +1,185 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: #333;
+  background-color: #f7f7f7;
+}
+
+.c-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  background-color: #ffffff;
+}
+.c-header__logo {
+  margin-right: 1rem;
+  width: 70px;
+  background-color: #990000;
+}
+.c-header__logo svg {
+  display: block;
+}
+.c-header__title {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.c-header__title a {
+  color: #333;
+}
+.c-header__controls {
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+.c-nav {
+  background-color: #444;
+  min-width: 70px;
+  min-height: 60px;
+  padding: 1rem 0;
+  margin-top: -1px;
+  display: flex;
+}
+.c-nav__item {
+  color: #ccc;
+  font-size: 1.5rem;
+  display: block;
+  text-align: center;
+  line-height: 1;
+  flex-grow: 1;
+}
+.c-nav__item:hover,
+.c-nav__item:focus {
+  color: #ffffff;
+}
+.c-nav__item:active {
+  color: #bbb;
+}
+.c-nav__item.is-active {
+  color: #ffffff;
+}
+
+@media screen and (min-width: 768px) {
+  .c-nav {
+    height: 100%;
+    flex-direction: column;
+  }
+  .c-nav__item {
+    flex-grow: 0;
+    margin-bottom: 2rem;
+  }
+}
+.stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 768px) {
+  .stage {
+    flex-direction: row;
+  }
+}
+.main-content {
+  flex-grow: 1;
+  padding: 1rem;
+}
+
+.sidebar {
+  flex-basis: 200px;
+  background-color: #ffffff;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+.sidebar-header__title {
+  font-size: 0.825rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04rem;
+  margin: 0;
+}
+.sidebar-header__action {
+  margin-left: auto;
+  font-size: 0.825rem;
+}
+
+@media screen and (min-width: 768px) {
+  .sidebar {
+    min-width: 310px;
+    border-left: 1px solid #ddd;
+  }
+}
+.card {
+  background-color: #fff;
+  border-radius: 4px;
+  border: none;
+  box-shadow: 0 2px 0 #eee;
+  margin-bottom: 30px;
+}
+
+/**
+ * Make a small card text modifier so we can still use
+ * Bootstrap's default styles if needed.
+ */
+.card-text--small {
+  line-height: 1.4;
+  font-size: 0.825rem;
+}
+
+.card.is-disabled {
+  background-color: #ddd;
+}
+.card.is-disabled .card-title {
+  color: #999999;
+}
+.card.is-disabled .badge {
+  background-color: #ccc;
+  color: #999999;
+}
+
+.card-link:hover {
+  text-decoration: none;
+  background-color: #fafafa;
+}
+
+.card.is-disabled .card-link:hover {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+/**
+ * Feed
+ */
+.feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.feed__list-item {
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+.feed__label {
+  font-size: 0.825rem;
+  text-transform: uppercase;
+}
+.feed__title {
+  font-size: 1rem;
+  margin: 0;
+}
+.feed__title a {
+  color: #212529;
+}
+.feed__item-meta {
+  margin: 0;
+  font-size: 0.825rem;
+}
+
+/*# sourceMappingURL=main.css.map */

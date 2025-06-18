@@ -1,0 +1,10 @@
+{% load wagtailcore_tags %}
+
+{% for nav_item in nav_items %}
+  {% if forloop.first %}
+  <div class="dropdown-divider"></div>
+  {% endif %}
+  <a class="dropdown-item" href="{{ nav_item.value.link }}">
+    <i class="fa {{ nav_item.value.icon_class|default:'fa-link' }} mr-2"></i>{{ nav_item.value.link_text }}
+  </a>
+{% endfor %}

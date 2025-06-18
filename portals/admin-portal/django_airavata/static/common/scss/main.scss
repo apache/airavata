@@ -1,0 +1,380 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: #333;
+  background-color: #f7f7f7;
+  overflow: hidden;
+}
+
+$header_height: 70px;
+$header_height_with_border: $header_height + 1px;
+
+.c-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  background-color: #ffffff;
+  margin-bottom: -$header_height_with_border;
+
+  &__logo {
+    margin-right: 1rem;
+    width: 70px;
+    height: 70px;
+    background-color: #eeeeee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    svg {
+      display: block;
+    }
+    img {
+      max-width: 100%;
+    }
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    line-height: 1;
+
+    a {
+      color: #333;
+    }
+  }
+
+  &__controls {
+    margin-left: auto;
+    margin-right: 2rem;
+  }
+}
+
+.c-nav {
+  background-color: #444;
+  min-width: 70px;
+  min-height: 60px;
+  padding: 1rem 0;
+  margin-top: -1px;
+  display: flex;
+
+  &__item {
+    color: #ccc;
+    font-size: 1.5rem;
+    display: block;
+    text-align: center;
+    line-height: 1;
+    flex-grow: 1;
+
+    &:hover,
+    &:focus {
+      color: #ffffff;
+    }
+
+    &:active {
+      color: #bbb;
+    }
+
+    &.is-active {
+      color: #ffffff;
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .c-nav {
+    height: 100%;
+    flex-direction: column;
+
+    &__item {
+      flex-grow: 0;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  // AIRAVATA-3163 Fix the issue with the header scrolling off the page with
+  // scrollIntoView() by making the .stage element have the full height of the
+  // page. The padding-top here is matched by an equal but negative amount of
+  // margin-bottom on .c-header.
+  padding-top: $header_height_with_border;
+}
+
+@media screen and (min-width: 768px) {
+  .stage {
+    flex-direction: row;
+  }
+}
+
+/*
+ * Wrapper around .main-content and .sidebar
+ */
+.main-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 1rem;
+  max-width: 1200px;
+
+  &--with-sidebar {
+    max-width: none;
+    overflow-y: auto;
+  }
+}
+
+.sidebar {
+  flex-basis: 200px;
+  background-color: #ffffff;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+
+  &__title {
+    font-size: 0.825rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04rem;
+    margin: 0;
+  }
+
+  &__action {
+    margin-left: auto;
+    font-size: 0.825rem;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .sidebar {
+    min-width: 310px;
+    border-left: 1px solid #ddd;
+  }
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: 0 2px 0 #eee;
+  margin-bottom: 30px;
+}
+.card.border-default {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/**
+ * Make a small card text modifier so we can still use
+ * Bootstrap's default styles if needed.
+ */
+.card-text--small {
+  line-height: 1.4;
+  font-size: 0.825rem;
+}
+
+.card.is-disabled {
+  background-color: #ddd;
+
+  .card-title {
+    color: #999999;
+  }
+
+  .badge {
+    background-color: #ccc;
+    color: #999999;
+  }
+}
+
+.card-link:hover {
+  text-decoration: none;
+  background-color: #fafafa;
+}
+
+.card.is-disabled .card-link:hover {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+/**
+ * Feed
+ */
+
+.feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__list-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  &__label {
+    font-size: 0.825rem;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    font-size: 1rem;
+    margin: 0;
+
+    a {
+      color: #212529;
+    }
+  }
+
+  &__item-meta {
+    margin: 0;
+    font-size: 0.825rem;
+  }
+}
+
+/**
+ * Vue.js transitions
+ */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-move {
+  transition: transform 0.3s;
+}
+
+/**
+ * spacing between buttons. .btn-container is a class applied to a wrapper
+ * around a button that may be a sibling of a .btn or .action-link
+ */
+.btn-container + .btn,
+.btn + .btn,
+.btn-container + .action-link,
+.action-link + .action-link {
+  margin-left: 0.25rem;
+}
+.btn + .btn-block {
+  margin-left: 0px;
+}
+.action-link {
+  white-space: nowrap;
+}
+
+/**
+  * Styling for the notification dropdown in the header of the website.
+  */
+
+.widget-notifications {
+  max-height: 309px;
+  overflow-y: auto;
+}
+.widget-notifications .notification {
+  position: relative;
+  padding: 7px 12px;
+  text-decoration: none;
+}
+.widget-notifications .notification + .notification {
+  border-top: 1px solid #e4e4e4;
+}
+.widget-notifications .notifications-list {
+  position: relative;
+  width: auto;
+  max-height: 300px;
+}
+.widget-notifications .notification-title {
+  font-size: 12px;
+  font-weight: 700;
+  padding-bottom: 1px;
+  width: 250;
+}
+.widget-notifications .notification-description {
+  font-size: 11px;
+  color: #666;
+}
+.widget-notifications .notification-ago {
+  font-size: 11px;
+  font-style: italic;
+  color: #bbb;
+}
+.widget-notifications:hover {
+  text-decoration: none;
+}
+
+.fa-dot-circle {
+  float: right;
+}
+/* Customize notification dropdown scrollbar */
+.widget-notifications::-webkit-scrollbar {
+  width: 12px;
+}
+/* Track */
+.widget-notifications::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+/* Handle */
+.widget-notifications::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  /* Change scrollbar color using below property */
+  background: #007bff;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+}
+.widget-notifications::-webkit-scrollbar-thumb:window-inactive {
+  background: yellow;
+}
+
+.fa-stack[data-count]:after {
+  position: absolute;
+  right: 1%;
+  top: 0%;
+  content: attr(data-count);
+  font-size: 55%;
+  padding: 0.6em;
+  border-radius: 999px;
+  line-height: 0.75em;
+  color: white;
+  background: #007bff;
+  text-align: center;
+  min-width: 2em;
+  font-weight: bold;
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: 0px;
+  left: 70px;
+  right: 0px;
+  // keep fixed-footer above form controls
+  z-index: 3;
+  padding-left: calc(1rem + 15px);
+  padding-right: calc(1rem + 15px);
+  // Align the right side with the right side of .main-content when wider than 1200px
+  padding-right: max(
+    calc(100% - 1200px - 70px + 1rem + 15px),
+    calc(1rem + 15px)
+  );
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #f7f7f7;
+  border-top: 1px solid #ddd;
+}
+/* Add to elements that contain a .fixed-footer */
+.has-fixed-footer {
+  padding-bottom: 100px;
+}

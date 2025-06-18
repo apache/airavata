@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="main-content-wrapper">
+<main class="main-content">
+<div class="container">
+  {% if options.external %}
+  {% include "./partials/externals_login_form.html" %}
+  {% endif %}
+
+  {% if options.password and not options.password.hidden %}
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          {% if not options.password.name %}
+          <h5 class="card-title">Create an account</h5>
+          {% else %}
+          <h5 class="card-title">Create a{% if options.password.name|first|lower in 'aeiou' %}n{% endif %} {{ options.password.name }} account</h5>
+          {% endif %}
+          {% include "./partials/messages.html" %}
+          {% url 'django_airavata_auth:create_account' as form_url %}
+          {% include "./partials/form.html" with form=form url=form_url submit_text="Create" %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+</main>
+</div>
+
+{% endblock %}
