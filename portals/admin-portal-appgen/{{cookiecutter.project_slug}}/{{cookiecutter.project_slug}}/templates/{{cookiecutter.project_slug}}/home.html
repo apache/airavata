@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="main-content-wrapper">
+    <main class="main-content">
+        <div class="container-fluid">
+            <h1>Welcome to {{ project_name }}</h1>
+        </div>
+    </main>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- Load the AiravataAPI JavaScript SDK (optional) -->
+<script src="{% static 'django_airavata_api/dist/airavata-api.js' %}"></script>
+<script>
+    const { models, services, session, utils } = AiravataAPI;
+
+    // Your code here ...
+    // Example code: AiravataAPI JavaScript SDK
+    // Use the JavaScript SDK to make REST API calls. For example, load the most
+    // recent 5 experiments created by the current user:
+    //
+    // services.ExperimentSearchService
+    //         .list({limit: 5,
+    //             [models.ExperimentSearchFields.USER_NAME.name]: session.Session.username,
+    //         })
+    //         .then(data => {
+    //             const experiments = data.results;
+    //             // Do something with the experiments ...
+    //         });
+    //
+    // See the Custom UI tutorial for more examples:
+    // https://apache-airavata-django-portal.readthedocs.io/en/latest/tutorial/custom_ui_tutorial/#tutorial-exercise-create-a-custom-django-app
+    // To see what is in the `AiravataAPI` JavaScript library, take a look at
+    // it's index.js file:
+    // https://github.com/apache/airavata-django-portal/blob/master/django_airavata/apps/api/static/django_airavata_api/js/index.js
+</script>
+{% endblock scripts %}
