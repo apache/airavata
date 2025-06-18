@@ -1,27 +1,19 @@
-import {
-  Box,
-  Button,
-  Container,
-  Field,
-  Heading,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { FaArrowLeft } from "react-icons/fa";
-import { CreateProjectRequest } from "@/interfaces/Requests/CreateProjectRequest";
+import {Box, Button, Container, Field, Heading, Input, VStack,} from "@chakra-ui/react";
+import {useState} from "react";
+import {useNavigate} from "react-router";
+import {FaArrowLeft} from "react-icons/fa";
+import {CreateProjectRequest} from "@/interfaces/Requests/CreateProjectRequest";
 import RepoSearchInput from "./RepoSearch";
-import { DatasetSearchInput } from "./DatasetSearch";
+import {DatasetSearchInput} from "./DatasetSearch";
 import api from "@/lib/api";
-import { CONTROLLER } from "@/lib/controller";
-import { toaster } from "../ui/toaster";
-import { useAuth } from "react-oidc-context";
+import {CONTROLLER} from "@/lib/controller";
+import {toaster} from "../ui/toaster";
+import {useAuth} from "react-oidc-context";
 
 export const AddProjectMaster = () => {
   const navigate = useNavigate();
   const [createProjectRequest, setCreateProjectRequest] = useState(
-    {} as CreateProjectRequest
+      {} as CreateProjectRequest
   );
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
@@ -39,8 +31,8 @@ export const AddProjectMaster = () => {
         return;
       }
       if (
-        !createProjectRequest.name ||
-        createProjectRequest.name.length === 0
+          !createProjectRequest.name ||
+          createProjectRequest.name.length === 0
       ) {
         toaster.create({
           title: "Error creating project",
@@ -49,8 +41,8 @@ export const AddProjectMaster = () => {
         });
         return;
       } else if (
-        !createProjectRequest.repositoryId ||
-        createProjectRequest.repositoryId.length === 0
+          !createProjectRequest.repositoryId ||
+          createProjectRequest.repositoryId.length === 0
       ) {
         toaster.create({
           title: "Error creating project",
@@ -81,58 +73,57 @@ export const AddProjectMaster = () => {
   };
 
   return (
-    <Container maxW="breakpoint-sm" mt={8}>
-      <Box maxW="breakpoint-sm" mx="auto">
-        <Heading
-          textAlign="center"
-          fontSize={{ base: "4xl", md: "5xl" }}
-          fontWeight="black"
-          lineHeight={1.2}
-        >
-          Add Project
-        </Heading>
-        <Button
-          onClick={() => {
-            navigate("/add");
-          }}
-          variant="ghost"
-          p={0}
-          mb={2}
-        >
-          <FaArrowLeft />
-          Back
-        </Button>
-      </Box>
+      <Container maxW="breakpoint-sm" mt={8}>
+        <Box maxW="breakpoint-sm" mx="auto">
+          <Heading
+              textAlign="center"
+              fontSize={{base: "4xl", md: "5xl"}}
+              fontWeight="black"
+              lineHeight={1.2}
+          >
+            Add Project
+          </Heading>
+          <Button
+              onClick={() => {
+                navigate("/add");
+              }}
+              variant="ghost"
+              p={0}
+              mb={2}
+          >
+            <FaArrowLeft/>
+            Back
+          </Button>
+        </Box>
 
-      <VStack gap={4} alignItems="flex-start">
-        <Field.Root>
-          <Field.Label>Project Name</Field.Label>
-          <Input
-            value={createProjectRequest.name}
-            onChange={(e) => {
-              setCreateProjectRequest({
-                ...createProjectRequest,
-                name: e.target.value,
-              });
-            }}
-            placeholder="Enter project name"
+        <VStack gap={4} alignItems="flex-start">
+          <Field.Root>
+            <Field.Label>Project Name</Field.Label>
+            <Input
+                value={createProjectRequest.name}
+                onChange={(e) => {
+                  setCreateProjectRequest({
+                    ...createProjectRequest,
+                    name: e.target.value,
+                  });
+                }}
+                placeholder="Enter project name"
+            />
+          </Field.Root>
+
+          <RepoSearchInput
+              createResourceRequest={createProjectRequest}
+              setCreateResourceRequest={setCreateProjectRequest}
           />
-        </Field.Root>
 
-        <RepoSearchInput
-          createResourceRequest={createProjectRequest}
-          setCreateResourceRequest={setCreateProjectRequest}
-        />
+          <DatasetSearchInput
+              setCreateResourceRequest={setCreateProjectRequest}
+          />
 
-        <DatasetSearchInput
-          createResourceRequest={createProjectRequest}
-          setCreateResourceRequest={setCreateProjectRequest}
-        />
-
-        <Button onClick={handleSubmit} loading={loading} w="full">
-          Submit
-        </Button>
-      </VStack>
-    </Container>
+          <Button onClick={handleSubmit} loading={loading} w="full">
+            Submit
+          </Button>
+        </VStack>
+      </Container>
   );
 };

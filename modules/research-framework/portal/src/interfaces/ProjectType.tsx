@@ -1,4 +1,4 @@
-import { DatasetResource, RepositoryResource } from "./ResourceType";
+import {DatasetResource, RepositoryResource} from "./ResourceType";
 
 export interface ProjectType {
   id: string;
@@ -7,6 +7,7 @@ export interface ProjectType {
   datasetResources: DatasetResource[];
   createdAt: string;
   updatedAt: string;
+  ownerId: string;
 }
 
 export interface ProjectPostData {
