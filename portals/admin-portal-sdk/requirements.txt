@@ -1,0 +1,24 @@
+airavata-python-sdk==1.0.1
+bcrypt==3.1.7
+cffi==1.15.1
+cryptography==38.0.4
+Django==3.2.16
+djangorestframework==3.11.2
+google-api-python-client==1.12.8
+grpcio-tools==1.48.2 ; python_version < "3.7"
+grpcio-tools==1.51.1 ; python_version >= "3.7"
+grpcio==1.48.2 ; python_version < "3.7"
+grpcio==1.51.1 ; python_version >= "3.7"
+oauthlib==3.1.0
+paramiko==2.10.1
+pycparser==2.21
+PyNaCl==1.4.0
+pysftp==0.2.9
+pytz==2020.1
+requests-oauthlib==0.7.0
+requests==2.20.0
+scp==0.13.2
+six==1.15.0
+thrift-connector==0.24
+thrift==0.10.0
+zipstream-new==1.1.8
