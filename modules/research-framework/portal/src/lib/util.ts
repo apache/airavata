@@ -1,3 +1,6 @@
+import {Resource} from "@/interfaces/ResourceType.ts";
+import {ProjectType} from "@/interfaces/ProjectType.tsx";
+
 export const resourceTypeToColor = (type: string) => {
   if (type === "NOTEBOOK") {
     return "blue";
@@ -26,7 +29,15 @@ export const getGithubOwnerAndRepo = (url: string) => {
   if (match) {
     const owner = match[1];
     const repo = match[2].replace(/\.git$/, "");
-    return { owner, repo };
+    return {owner, repo};
   }
   return null;
+}
+
+export const isResourceOwner = (userEmail: string, resource: Resource) => {
+  return resource.authors.includes(userEmail);
+}
+
+export const isProjectOwner = (userEmail: string, project: ProjectType) => {
+  return project.ownerId.toLowerCase() === userEmail.toLowerCase();
 }

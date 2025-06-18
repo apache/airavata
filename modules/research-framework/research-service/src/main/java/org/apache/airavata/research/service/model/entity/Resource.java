@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -83,6 +84,10 @@ public abstract class Resource {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StateEnum state;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -146,19 +151,27 @@ public abstract class Resource {
         this.tags = tags;
     }
 
-    public org.apache.airavata.research.service.enums.StatusEnum getStatus() {
+    public StatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(org.apache.airavata.research.service.enums.StatusEnum status) {
+    public void setStatus(StatusEnum status) {
         this.status = status;
     }
 
-    public org.apache.airavata.research.service.enums.PrivacyEnum getPrivacy() {
+    public StateEnum getState() {
+        return state;
+    }
+
+    public void setState(StateEnum state) {
+        this.state = state;
+    }
+
+    public PrivacyEnum getPrivacy() {
         return privacy;
     }
 
-    public void setPrivacy(org.apache.airavata.research.service.enums.PrivacyEnum privacy) {
+    public void setPrivacy(PrivacyEnum privacy) {
         this.privacy = privacy;
     }
 

@@ -20,7 +20,9 @@
 package org.apache.airavata.research.service.model.repo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
@@ -39,4 +41,17 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     List<Project> findAllByOwnerId(String ownerId);
 
     List<Project> findAllByOwnerIdOrderByCreatedAtDesc(String ownerId);
+
+    List<Project> findALlByState(StateEnum state);
+
+    List<Project> findProjectsByRepositoryResourceAndState(RepositoryResource repositoryResource, StateEnum state);
+
+    List<Project> findAllByOwnerIdAndStateOrderByCreatedAtDesc(String ownerId, StateEnum state);
+
+    List<Project> findProjectsByDatasetResourcesContainingAndState(
+            Set<DatasetResource> datasetResources, StateEnum state);
+
+    StateEnum State(StateEnum state);
+
+    Optional<Project> findByIdAndState(String id, StateEnum state);
 }

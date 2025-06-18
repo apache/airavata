@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.airavata.research.service.dto.CreateProjectRequest;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
@@ -52,7 +53,7 @@ public class ProjectHandler {
     }
 
     public Project findProject(String projectId) {
-        return projectRepository.findById(projectId).orElseThrow(() -> {
+        return projectRepository.findByIdAndState(projectId, StateEnum.ACTIVE).orElseThrow(() -> {
             LOGGER.error("Unable to find a Project with id: {}", projectId);
             return new EntityNotFoundException("Unable to find a Project with id: " + projectId);
         });
@@ -95,26 +96,46 @@ public class ProjectHandler {
 
         Set<DatasetResource> datasetResourcesSet = new HashSet<>(datasetResourcesList);
         project.setDatasetResources(datasetResourcesSet);
+        project.setState(StateEnum.ACTIVE);
         projectRepository.save(project);
         return project;
     }
 
     public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+        return projectRepository.findALlByState(StateEnum.ACTIVE);
     }
 
     public List<Project> getAllProjectsByOwnerId(String ownerId) {
-        return projectRepository.findAllByOwnerIdOrderByCreatedAtDesc(ownerId);
+        return projectRepository.findAllByOwnerIdAndStateOrderByCreatedAtDesc(ownerId, StateEnum.ACTIVE);
+    }
+
+    public boolean deleteProject(String projectId) {
+        Optional<Project> optionalProject = projectRepository.findByIdAndState(projectId, StateEnum.ACTIVE);
+        if (optionalProject.isEmpty()
+                || StateEnum.DELETED.equals(optionalProject.get().getState())) {
+            throw new EntityNotFoundException("Unable to find a Project with id: " + projectId);
+        }
+
+        Project project = optionalProject.get();
+        String userId = UserContext.userId();
+        if (!project.getOwnerId().equalsIgnoreCase(userId)) {
+            throw new RuntimeException(
+                    String.format("User %s is not authorized to delete project with id: %s", userId, projectId));
+        }
+
+        project.setState(StateEnum.DELETED);
+        projectRepository.save(project);
+        return true;
     }
 
     public List<Project> findProjectsWithRepository(RepositoryResource repositoryResource) {
-        return projectRepository.findProjectsByRepositoryResource(repositoryResource);
+        return projectRepository.findProjectsByRepositoryResourceAndState(repositoryResource, StateEnum.ACTIVE);
     }
 
     public List<Project> findProjectsContainingDataset(DatasetResource datasetResource) {
         Set<DatasetResource> set = new HashSet<>();
         set.add(datasetResource);
 
-        return projectRepository.findProjectsByDatasetResourcesContaining(set);
+        return projectRepository.findProjectsByDatasetResourcesContainingAndState(set, StateEnum.ACTIVE);
     }
 }
