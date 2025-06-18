@@ -29,13 +29,26 @@ import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.handlers.ProjectHandler;
 import org.apache.airavata.research.service.handlers.ResourceHandler;
-import org.apache.airavata.research.service.model.entity.*;
+import org.apache.airavata.research.service.model.entity.DatasetResource;
+import org.apache.airavata.research.service.model.entity.ModelResource;
+import org.apache.airavata.research.service.model.entity.NotebookResource;
+import org.apache.airavata.research.service.model.entity.Project;
+import org.apache.airavata.research.service.model.entity.RepositoryResource;
+import org.apache.airavata.research.service.model.entity.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/rf/resources")

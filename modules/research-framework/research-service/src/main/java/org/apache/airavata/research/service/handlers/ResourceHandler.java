@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.research.service.handlers;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -72,10 +73,9 @@ public class ResourceHandler {
             try {
                 UserProfile fetchedUser = airavataService.getUserProfile(authorId);
                 userSet.add(fetchedUser.getUserId());
-
             } catch (Exception e) {
                 LOGGER.error("Error while fetching user profile with the userId: {}", authorId, e);
-                throw new RuntimeException("Error while fetching user profile with the userId: " + authorId, e);
+                throw new EntityNotFoundException("Error while fetching user profile with the userId: " + authorId, e);
             }
         }
 
@@ -145,7 +145,7 @@ public class ResourceHandler {
     public Resource modifyResource(ModifyResourceRequest resourceRequest) {
         Optional<Resource> resourceOp = resourceRepository.findById(resourceRequest.getId());
         if (resourceOp.isEmpty()) {
-            throw new RuntimeException("Resource not found");
+            throw new EntityNotFoundException("Resource not found");
         }
 
         Resource resource = resourceOp.get();
@@ -174,7 +174,7 @@ public class ResourceHandler {
         Optional<Resource> opResource = resourceRepository.findById(id);
 
         if (opResource.isEmpty()) {
-            throw new RuntimeException("Resource not found: " + id);
+            throw new EntityNotFoundException("Resource not found: " + id);
         }
 
         return opResource.get();
@@ -184,16 +184,21 @@ public class ResourceHandler {
         Optional<Resource> opResource = resourceRepository.findById(id);
 
         if (opResource.isEmpty()) {
-            throw new RuntimeException("Resource not found: " + id);
+            throw new EntityNotFoundException("Resource not found: " + id);
         }
+
+        Resource resource = opResource.get();
 
         String userEmail = UserContext.userId();
-        System.out.println("Received request to delete with user: " + userEmail);
-        if (!opResource.get().getAuthors().contains(userEmail.toLowerCase())) {
-            throw new RuntimeException("User " + userEmail + " not authorized to delete resource");
+        if (!resource.getAuthors().contains(userEmail.toLowerCase())) {
+            String errorMsg = String.format(
+                    "User %s not authorized to delete resource: %s (%s), type: %s",
+                    userEmail, resource.getName(), id, resource.getType().toString());
+            LOGGER.error(errorMsg);
+            throw new RuntimeException(errorMsg);
         }
 
-        resourceRepository.delete(opResource.get());
+        resourceRepository.delete(resource);
         return true;
     }
 

@@ -21,7 +21,7 @@ export const DeleteResourceButton = ({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const auth = useAuth();
   const isOwner = isResourceOwner(auth.user?.profile.email || "INVALID", resource);
-  if (!isOwner) {
+  if (!isOwner || !auth.isAuthenticated) {
     return null;
   }
 
