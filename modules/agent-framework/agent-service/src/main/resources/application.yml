@@ -53,7 +53,6 @@ airavata:
     applicationInterfaceId:
       expanse: AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6
       jetstream: UPDATE
-
   tunnel:
     serverHost: tunnel-server
     serverPort: 17000
