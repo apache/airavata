@@ -30,6 +30,7 @@ airavata:
     limit: 10
   research-portal:
     url: https://catalog.dev.cybershuttle.org
+    dev-url: http://localhost:5173
   openid:
     url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
   user-profile:

@@ -1,17 +1,7 @@
-let BACKEND_URL: string;
-let APP_URL: string;
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+export const APP_URL = import.meta.env.VITE_APP_URL;
+export const API_VERSION = import.meta.env.VITE_API_VERSION;
+export const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+export const OPENID_CONFIG_URL = import.meta.env.VITE_OPENID_CONFIG_URL;
 
-if (process.env.NODE_ENV === 'production') {
-  BACKEND_URL = "https://api.cybershuttle.org:18889";
-  APP_URL = "https://cybershuttle.org";
-} else {
-  BACKEND_URL = "http://localhost:18999";
-  APP_URL = 'http://localhost:5173';
-}
-
-export const API_VERSION = "v1";
-export const CLIENT_ID = 'data-catalog-portal';
 export const APP_REDIRECT_URI = `${APP_URL}/oauth_callback`;
-export const OPENID_CONFIG_URL = `https://auth.cybershuttle.org/realms/default/.well-known/openid-configuration`;
-
-export { BACKEND_URL, APP_URL };

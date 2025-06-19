@@ -28,12 +28,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Value("${airavata.research-portal.url}")
-    private String allowedOrigin;
+    private String deployedOrigin;
+
+    @Value("${airavata.research-portal.dev-url}")
+    private String devOrigin;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(allowedOrigin)
+                .allowedOrigins(deployedOrigin, devOrigin)
                 .allowedMethods("GET", "POST", "OPTIONS", "PATCH", "DELETE", "PUT")
                 .allowedHeaders("*");
     }
