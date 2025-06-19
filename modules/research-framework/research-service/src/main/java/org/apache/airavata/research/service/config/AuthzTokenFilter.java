@@ -59,11 +59,11 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
 
         if (request.getMethod().equalsIgnoreCase("POST")
                 || request.getMethod().equalsIgnoreCase("PUT")
-                || request.getMethod().equalsIgnoreCase("PATCH")) {
+                || request.getMethod().equalsIgnoreCase("PATCH")
+                || request.getMethod().equalsIgnoreCase("DELETE")) {
             return false; // mutation requests should be authenticated
         }
 
-        // TODO: ensure that only GET requests do not need auth
         return path.startsWith("/swagger")
                 || path.startsWith("/v2/api-docs")
                 || path.startsWith("/v3/api-docs")

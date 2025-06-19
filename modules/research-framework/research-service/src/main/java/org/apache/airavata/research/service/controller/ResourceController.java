@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,10 +101,16 @@ public class ResourceController {
         return ResponseEntity.ok(resourceHandler.getAllTagsByPopularity());
     }
 
-    @Operation(summary = "Get dataset, notebook, or repository")
+    @Operation(summary = "Get dataset, notebook, repository, or model")
     @GetMapping(value = "/{id}")
     public ResponseEntity<Resource> getResource(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok(resourceHandler.getResourceById(id));
+    }
+
+    @Operation(summary = "Delete dataset, notebook, repository, or model")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Boolean> deleteResource(@PathVariable(value = "id") String id) {
+        return ResponseEntity.ok(resourceHandler.deleteResourceById(id));
     }
 
     @Operation(summary = "Get all resources")

@@ -22,6 +22,8 @@ package org.apache.airavata.research.service.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -32,6 +34,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -71,6 +74,10 @@ public class Project {
     @Column(nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StateEnum state;
 
     public String getId() {
         return id;
@@ -130,5 +137,13 @@ public class Project {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public StateEnum getState() {
+        return state;
+    }
+
+    public void setState(StateEnum state) {
+        this.state = state;
     }
 }

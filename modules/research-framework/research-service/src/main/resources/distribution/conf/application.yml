@@ -26,12 +26,12 @@ airavata:
   research-hub:
     url: https://hub.dev.cybershuttle.org
     dev-user: "airavata@apache.org"
+    adminApiKey: "JUPYTER_ADMIN_API_KEY"
+    limit: 10
   research-portal:
-    url: http://dev.cybershuttle.org
-
+    url: https://catalog.dev.cybershuttle.org
   openid:
     url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
-
   user-profile:
     server:
       url: api.dev.cybershuttle.org
@@ -52,7 +52,7 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     open-in-view: false
 
 springdoc:
@@ -66,6 +66,4 @@ springdoc:
     oauth:
       use-pkce-with-authorization-code-grant: true
       client-id: data-catalog-portal
-
-
 

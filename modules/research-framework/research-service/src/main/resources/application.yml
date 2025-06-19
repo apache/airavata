@@ -19,25 +19,22 @@ grpc:
     port: 19908
 
 server:
-  port: 18999
+  port: 18889
   address: 0.0.0.0
 
 airavata:
   research-hub:
-    url: https://hub.cybershuttle.org
+    url: https://hub.dev.cybershuttle.org
     dev-user: "airavata@apache.org"
     adminApiKey: "JUPYTER_ADMIN_API_KEY"
     limit: 10
-
   research-portal:
-    url: http://localhost:5173
-
+    url: https://catalog.dev.cybershuttle.org
   openid:
-    url: "https://auth.cybershuttle.org/realms/default/.well-known/openid-configuration"
-
+    url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
   user-profile:
     server:
-      url: api.cybershuttle.org
+      url: api.dev.cybershuttle.org
       port: 8962
 
 spring:
@@ -55,7 +52,7 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     open-in-view: false
 
 springdoc:

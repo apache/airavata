@@ -334,7 +334,6 @@ export const Resources = () => {
                   <ResourceCard
                       resource={resource}
                       key={resource.id}
-                      appendTypeToUrl={true}
                   />
               );
             })}

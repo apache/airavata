@@ -20,6 +20,8 @@
 package org.apache.airavata.research.service.model.repo;
 
 import java.util.List;
+import java.util.Optional;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +37,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             """
                     SELECT r
                     FROM #{#entityName} r
-                    WHERE TYPE(r) IN :types AND r.name LIKE CONCAT('%', :nameSearch, '%')
+                    WHERE TYPE(r) IN :types AND r.name LIKE CONCAT('%', :nameSearch, '%') AND r.state = 'ACTIVE'
                     ORDER BY r.name
                     """)
     Page<Resource> findAllByTypes(
@@ -51,6 +53,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
                     WHERE r.class IN :typeList
                       AND t.value IN :tags
                       AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
+                      AND r.state = 'ACTIVE'
                     GROUP BY r
                     HAVING COUNT(DISTINCT t.value) = :tagCount
                     ORDER BY r.name
@@ -66,9 +69,11 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             """
                     SELECT r
                     FROM Resource r
-                    WHERE TYPE(r) = :type
+                    WHERE TYPE(r) = :type AND r.state = 'ACTIVE'
                     AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))
                     """)
     List<Resource> findByTypeAndNameContainingIgnoreCase(
             @Param("type") Class<? extends Resource> type, @Param("name") String name);
+
+    Optional<Resource> findByIdAndState(String id, StateEnum state);
 }

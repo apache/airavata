@@ -52,6 +52,13 @@ under the License.
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-bom</artifactId>
+                <version>${grpc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -100,12 +107,10 @@ under the License.
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -115,7 +120,7 @@ under the License.
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
-            <version>3.0.0.RELEASE</version>
+            <version>3.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
@@ -125,6 +130,11 @@ under the License.
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-data-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api-client</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -145,7 +155,7 @@ under the License.
                 <version>${maven.assembly.plugin}</version>
                 <executions>
                     <execution>
-                        <id>mft-controller-distribution-package</id>
+                        <id>agent-service-distribution-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -193,9 +203,6 @@ under the License.
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <release>17</release>
-                    <includes>
-                        <include>${project.build.directory}/generated-sources/**/*.java</include>
-                    </includes>
                 </configuration>
             </plugin>
             <plugin>

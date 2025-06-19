@@ -19,16 +19,19 @@
 */
 package org.apache.airavata.research.service.handlers;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
@@ -71,10 +74,9 @@ public class ResourceHandler {
             try {
                 UserProfile fetchedUser = airavataService.getUserProfile(authorId);
                 userSet.add(fetchedUser.getUserId());
-
             } catch (Exception e) {
                 LOGGER.error("Error while fetching user profile with the userId: {}", authorId, e);
-                throw new RuntimeException("Error while fetching user profile with the userId: " + authorId, e);
+                throw new EntityNotFoundException("Error while fetching user profile with the userId: " + authorId, e);
             }
         }
 
@@ -89,6 +91,7 @@ public class ResourceHandler {
         }
         resource.setAuthors(userSet);
         resource.setTags(tags);
+        resource.setState(StateEnum.ACTIVE);
     }
 
     public ResourceResponse createResource(Resource resource, ResourceTypeEnum type) {
@@ -118,7 +121,9 @@ public class ResourceHandler {
 
         resource.setName(createResourceRequest.getName());
         resource.setDescription(createResourceRequest.getDescription());
-        resource.setAuthors(createResourceRequest.getAuthors());
+        resource.setAuthors(createResourceRequest.getAuthors().stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet()));
         Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
         for (String tag : createResourceRequest.getTags()) {
             org.apache.airavata.research.service.model.entity.Tag t =
@@ -142,10 +147,13 @@ public class ResourceHandler {
     public Resource modifyResource(ModifyResourceRequest resourceRequest) {
         Optional<Resource> resourceOp = resourceRepository.findById(resourceRequest.getId());
         if (resourceOp.isEmpty()) {
-            throw new RuntimeException("Resource not found");
+            throw new EntityNotFoundException("Resource not found");
         }
 
         Resource resource = resourceOp.get();
+        if (StateEnum.DELETED.equals(resource.getState())) {
+            throw new RuntimeException(String.format("Cannot modify deleted resource: %s", resource.getId()));
+        }
 
         // ensure that the user making the request is one of the current authors
         boolean found = false;
@@ -168,13 +176,36 @@ public class ResourceHandler {
 
     public Resource getResourceById(String id) {
         // Your logic to fetch the resource by ID
-        Optional<Resource> opResource = resourceRepository.findById(id);
+        Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
-            throw new RuntimeException("Resource not found: " + id);
+            throw new EntityNotFoundException("Resource not found: " + id);
         }
 
         return opResource.get();
+    }
+
+    public boolean deleteResourceById(String id) {
+        Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
+
+        if (opResource.isEmpty()) {
+            throw new EntityNotFoundException("Resource not found: " + id);
+        }
+
+        Resource resource = opResource.get();
+
+        String userEmail = UserContext.userId();
+        if (!resource.getAuthors().contains(userEmail.toLowerCase())) {
+            String errorMsg = String.format(
+                    "User %s not authorized to delete resource: %s (%s), type: %s",
+                    userEmail, resource.getName(), id, resource.getType().toString());
+            LOGGER.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        resource.setState(StateEnum.DELETED);
+        resourceRepository.delete(resource);
+        return true;
     }
 
     public Page<Resource> getAllResources(
