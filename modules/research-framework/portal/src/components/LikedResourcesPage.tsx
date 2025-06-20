@@ -50,13 +50,6 @@ export const LikedResourcesPage = () => {
                 <Spinner/>
             )
         }
-        {
-            !loading && likedResources.length === 0 && (
-                <>
-                  No liked resources found.
-                </>
-            )
-        }
       </Container>
   )
 }

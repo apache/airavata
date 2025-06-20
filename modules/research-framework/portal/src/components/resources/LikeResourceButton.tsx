@@ -14,13 +14,16 @@ export const LikeResourceButton = ({
   resource: Resource,
   onSuccess: (resourceId: string) => void,
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [changeLikeLoading, setChangeLikeLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(false);
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     async function getWhetherUserLiked() {
+      setInitialLoading(true);
       const resp = await api.get(`${CONTROLLER.likes}/resources/${resource.id}`);
       setLiked(resp.data);
+      setInitialLoading(false);
     }
 
     getWhetherUserLiked();
@@ -28,7 +31,7 @@ export const LikeResourceButton = ({
 
   const handleLikeResource = async () => {
     try {
-      setLoading(true);
+      setChangeLikeLoading(true);
       await api.post(`${CONTROLLER.likes}/resources/${resource.id}`);
       toaster.create({
         title: liked ? "Unliked" : "Liked",
@@ -47,9 +50,12 @@ export const LikeResourceButton = ({
         type: "error",
       });
     } finally {
-      setLoading(false);
+      setChangeLikeLoading(false);
     }
+  }
 
+  if (initialLoading) {
+    return null;
   }
 
   return (
@@ -62,7 +68,7 @@ export const LikeResourceButton = ({
             }}
             color={'black'}
             onClick={handleLikeResource}
-            loading={loading}
+            loading={changeLikeLoading}
         >
           {
             liked ? <GoHeartFill color={'red'}/> : <GoHeart/>
