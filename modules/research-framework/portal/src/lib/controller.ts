@@ -3,4 +3,5 @@ export const CONTROLLER = {
   hub: "/hub",
   resources: "/resources",
   sessions: "/sessions",
+  likes: "/likes",
 }

@@ -1,6 +1,4 @@
-import {Box, Button, CloseButton, Dialog, Input, Menu, Portal, Text, useDialog} from "@chakra-ui/react";
-import {BsThreeDots} from "react-icons/bs";
-import {FaTrash} from "react-icons/fa";
+import {Box, Button, CloseButton, Dialog, Input, Portal, Text, useDialog} from "@chakra-ui/react";
 import {Resource} from "@/interfaces/ResourceType.ts";
 import {useAuth} from "react-oidc-context";
 import {isResourceOwner} from "@/lib/util.ts";
@@ -8,6 +6,8 @@ import {useState} from "react";
 import api from "@/lib/api.ts";
 import {CONTROLLER} from "@/lib/controller.ts";
 import {toaster} from "@/components/ui/toaster.tsx";
+import {FaTrash} from "react-icons/fa";
+import {ResourceOptionButton} from "@/components/resources/ResourceOptions.tsx";
 
 export const DeleteResourceButton = ({
                                        resource,
@@ -48,27 +48,21 @@ export const DeleteResourceButton = ({
 
   return (
       <>
-        <Menu.Root>
-          <Menu.Trigger _hover={{
-            cursor: 'pointer',
-          }}>
-            <BsThreeDots/>
-          </Menu.Trigger>
-          <Menu.Positioner>
-            <Menu.Content>
-              <Menu.Item value={"delete"}
-                         color="fg.error"
-                         _hover={{bg: "bg.error", color: "fg.error", cursor: "pointer"}}
-                         onClick={() => dialog.setOpen(true)}
-              >
-                <FaTrash/>
-                <Box flex="1">Delete</Box>
+        <ResourceOptionButton
+            gap={2}
+            color={'red.600'}
+            onClick={() => {
+              dialog.setOpen(true)
+            }}
+            _hover={{
+              cursor: 'pointer',
+              bg: 'red.200',
+            }}
+        >
+          <FaTrash/>
+          <Box>Delete</Box>
+        </ResourceOptionButton>
 
-              </Menu.Item>
-
-            </Menu.Content>
-          </Menu.Positioner>
-        </Menu.Root>
 
         <Dialog.RootProvider size="sm" value={dialog}>
           <Portal>

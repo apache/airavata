@@ -5,18 +5,20 @@ import {Avatar, Badge, Box, Card, HStack, Image, Text,} from "@chakra-ui/react";
 import {ResourceTypeBadge} from "../resources/ResourceTypeBadge";
 import {ResourceTypeEnum} from "@/interfaces/ResourceTypeEnum";
 import {ModelCardButton} from "../models/ModelCardButton";
-import {DeleteResourceButton} from "@/components/resources/DeleteResourceButton.tsx";
 import {useState} from "react";
 import {Link} from 'react-router';
+import {ResourceOptions} from "@/components/resources/ResourceOptions.tsx";
 
 export const ResourceCard = ({
                                resource,
                                size = "sm",
-                               deletable = true
+                               deletable = true,
+                               removeOnUnlike = false,
                              }: {
   resource: Resource;
   size?: "sm" | "md" | "lg";
-  deletable?: boolean
+  deletable?: boolean;
+  removeOnUnlike?: boolean;
 }) => {
   const [hideCard, setHideCard] = useState(false);
   const author = resource.authors[0];
@@ -28,8 +30,12 @@ export const ResourceCard = ({
   const linkToWithType = `${resource.type}/${resource.id}`;
 
   const link = '/resources/' + linkToWithType;
-  const onDeleteSuccess = () => {
+  const hideCardCallback = () => {
     setHideCard(true);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const dummyOnUnlikeSuccess = (_: string) => {
   }
 
   const content = (
@@ -62,7 +68,8 @@ export const ResourceCard = ({
         <Card.Header>
           <HStack justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>
             <Card.Title>{resource.name}</Card.Title>
-            {deletable && <DeleteResourceButton resource={resource} onSuccess={onDeleteSuccess}/>}
+            <ResourceOptions deleteable={deletable} resource={resource} onDeleteSuccess={hideCardCallback}
+                             onUnlikeSuccess={removeOnUnlike ? hideCardCallback : dummyOnUnlikeSuccess}/>
           </HStack>
         </Card.Header>
 

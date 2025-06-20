@@ -85,7 +85,7 @@ const RepoSearchInput = ({
             </HStack>
           </Field.Root>
 
-          <ResourceCard size="sm" resource={selectedRepo} deletable={false}/>
+          <ResourceCard size="sm" resource={selectedRepo} deletable={false} removeOnUnlike={false}/>
         </>
     );
   }

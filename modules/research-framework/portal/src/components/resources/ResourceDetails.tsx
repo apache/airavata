@@ -32,7 +32,7 @@ import {NotebookSpecificDetails} from "../notebooks/NotebookSpecificDetails";
 import {RepositorySpecificDetails} from "../repositories/RepositorySpecificDetails";
 import {CONTROLLER} from "@/lib/controller";
 import {DatasetSpecificDetails} from "../datasets/DatasetSpecificDetails";
-import {DeleteResourceButton} from "@/components/resources/DeleteResourceButton.tsx";
+import {ResourceOptions} from "@/components/resources/ResourceOptions.tsx";
 
 async function getResource(id: string) {
   const response = await api.get(`${CONTROLLER.resources}/${id}`);
@@ -110,7 +110,14 @@ const ResourceDetails = () => {
                   {resource.name}
                 </Heading>
 
-                <DeleteResourceButton resource={resource} onSuccess={goToResources}/>
+                <ResourceOptions
+                    resource={resource}
+                    onDeleteSuccess={goToResources}
+                    deleteable={true}
+                    onUnlikeSuccess={() => {
+                    }}
+                />
+                
               </HStack>
 
               <HStack mt={2}>
