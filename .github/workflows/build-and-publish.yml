@@ -1,0 +1,64 @@
+name: Maven Docker Build & Push
+
+on:
+  push:
+    tags:
+      - "v*"
+  release:
+    types: [published]
+
+env:
+  DOCKER_REGISTRY: docker.io
+  DOCKER_USERNAME: cybershuttle
+  VERSION: ${{ github.ref_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential automake bison flex libboost-all-dev libevent-dev libssl-dev libtool pkg-config
+
+      - name: Set up Thrift 0.22.0
+        run: |
+          wget -q https://dlcdn.apache.org/thrift/0.22.0/thrift-0.22.0.tar.gz
+          tar -xzf thrift-0.22.0.tar.gz
+          cd thrift-0.22.0
+          ./configure --without-rs --enable-libs=no --enable-tests=no
+          make -j$(nproc)
+          sudo make install
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build with Maven (skip tests)
+        run: mvn clean install -DskipTests
+
+      - name: Build Docker Images
+        run: |
+          mvn docker:build -pl modules/distribution
+
+      - name: List Docker Images
+        run: docker images
+
+      - name: Tag and Push Images
+        run: |
+          for image in email-monitor participant post-wm pre-wm api-server controller; do
+            docker tag airavata/$image ${DOCKER_USERNAME}/airavata-$image:${VERSION}
+            docker push ${DOCKER_USERNAME}/airavata-$image:${VERSION}
+          done
