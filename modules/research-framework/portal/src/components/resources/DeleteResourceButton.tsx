@@ -1,6 +1,23 @@
-import {Box, Button, CloseButton, Dialog, Input, Menu, Portal, Text, useDialog} from "@chakra-ui/react";
-import {BsThreeDots} from "react-icons/bs";
-import {FaTrash} from "react-icons/fa";
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied. See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
+
+import {Box, Button, CloseButton, Dialog, Input, Portal, Text, useDialog} from "@chakra-ui/react";
 import {Resource} from "@/interfaces/ResourceType.ts";
 import {useAuth} from "react-oidc-context";
 import {isResourceOwner} from "@/lib/util.ts";
@@ -8,6 +25,8 @@ import {useState} from "react";
 import api from "@/lib/api.ts";
 import {CONTROLLER} from "@/lib/controller.ts";
 import {toaster} from "@/components/ui/toaster.tsx";
+import {FaTrash} from "react-icons/fa";
+import {ResourceOptionButton} from "@/components/resources/ResourceOptions.tsx";
 
 export const DeleteResourceButton = ({
                                        resource,
@@ -48,27 +67,21 @@ export const DeleteResourceButton = ({
 
   return (
       <>
-        <Menu.Root>
-          <Menu.Trigger _hover={{
-            cursor: 'pointer',
-          }}>
-            <BsThreeDots/>
-          </Menu.Trigger>
-          <Menu.Positioner>
-            <Menu.Content>
-              <Menu.Item value={"delete"}
-                         color="fg.error"
-                         _hover={{bg: "bg.error", color: "fg.error", cursor: "pointer"}}
-                         onClick={() => dialog.setOpen(true)}
-              >
-                <FaTrash/>
-                <Box flex="1">Delete</Box>
+        <ResourceOptionButton
+            gap={2}
+            color={'red.600'}
+            onClick={() => {
+              dialog.setOpen(true)
+            }}
+            _hover={{
+              cursor: 'pointer',
+              bg: 'red.200',
+            }}
+        >
+          <FaTrash/>
+          <Box>Delete</Box>
+        </ResourceOptionButton>
 
-              </Menu.Item>
-
-            </Menu.Content>
-          </Menu.Positioner>
-        </Menu.Root>
 
         <Dialog.RootProvider size="sm" value={dialog}>
           <Portal>

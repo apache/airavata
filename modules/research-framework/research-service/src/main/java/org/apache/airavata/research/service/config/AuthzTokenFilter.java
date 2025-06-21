@@ -70,7 +70,7 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/swagger-resources")
                 || path.startsWith("/webjars/")
-                || path.startsWith("/api/v1/rf/resources");
+                || path.startsWith("/api/v1/rf/resources/public");
     }
 
     @Override

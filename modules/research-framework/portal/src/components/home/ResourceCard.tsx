@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied. See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
+
 import {ModelResource, Resource} from "@/interfaces/ResourceType";
 import {Tag} from "@/interfaces/TagType";
 import {isValidImaage, resourceTypeToColor} from "@/lib/util";
@@ -5,18 +24,20 @@ import {Avatar, Badge, Box, Card, HStack, Image, Text,} from "@chakra-ui/react";
 import {ResourceTypeBadge} from "../resources/ResourceTypeBadge";
 import {ResourceTypeEnum} from "@/interfaces/ResourceTypeEnum";
 import {ModelCardButton} from "../models/ModelCardButton";
-import {DeleteResourceButton} from "@/components/resources/DeleteResourceButton.tsx";
 import {useState} from "react";
 import {Link} from 'react-router';
+import {ResourceOptions} from "@/components/resources/ResourceOptions.tsx";
 
 export const ResourceCard = ({
                                resource,
                                size = "sm",
-                               deletable = true
+                               deletable = true,
+                               removeOnUnStar = false,
                              }: {
   resource: Resource;
   size?: "sm" | "md" | "lg";
-  deletable?: boolean
+  deletable?: boolean;
+  removeOnUnStar?: boolean;
 }) => {
   const [hideCard, setHideCard] = useState(false);
   const author = resource.authors[0];
@@ -28,8 +49,12 @@ export const ResourceCard = ({
   const linkToWithType = `${resource.type}/${resource.id}`;
 
   const link = '/resources/' + linkToWithType;
-  const onDeleteSuccess = () => {
+  const hideCardCallback = () => {
     setHideCard(true);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const dummyOnUnStarSuccess = (_: string) => {
   }
 
   const content = (
@@ -62,7 +87,8 @@ export const ResourceCard = ({
         <Card.Header>
           <HStack justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>
             <Card.Title>{resource.name}</Card.Title>
-            {deletable && <DeleteResourceButton resource={resource} onSuccess={onDeleteSuccess}/>}
+            <ResourceOptions deleteable={deletable} resource={resource} onDeleteSuccess={hideCardCallback}
+                             onUnStarSuccess={removeOnUnStar ? hideCardCallback : dummyOnUnStarSuccess}/>
           </HStack>
         </Card.Header>
 
