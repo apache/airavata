@@ -23,6 +23,7 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   Container,
   Heading,
   HStack,
@@ -52,6 +53,7 @@ import {RepositorySpecificDetails} from "../repositories/RepositorySpecificDetai
 import {CONTROLLER} from "@/lib/controller";
 import {DatasetSpecificDetails} from "../datasets/DatasetSpecificDetails";
 import {ResourceOptions} from "@/components/resources/ResourceOptions.tsx";
+import {toaster} from "@/components/ui/toaster.tsx";
 
 async function getResource(id: string) {
   const response = await api.get(`${CONTROLLER.resources}/public/${id}`);
@@ -61,6 +63,7 @@ async function getResource(id: string) {
 const ResourceDetails = () => {
   const {id} = useParams();
   const [resource, setResource] = useState<Resource | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {state} = useLocation();
 
@@ -68,16 +71,33 @@ const ResourceDetails = () => {
     if (!id) return;
 
     async function getData() {
-      // @ts-expect-error This is fine
-      const r = await getResource(id);
-
-      setResource(r);
+      try {
+        setLoading(true);
+        const r = await getResource(id || "INVALID");
+        setResource(r);
+      } catch {
+        toaster.create({
+          title: "Resource not found",
+          description: `id: ${id}`,
+          type: "error"
+        })
+      } finally {
+        setLoading(false);
+      }
     }
 
     getData();
   }, [id, state]);
 
-  if (!resource) return <Spinner/>;
+  if (loading) {
+    return (
+        <Center my={8}>
+          <Spinner/>
+        </Center>
+    );
+  } else if (!resource) {
+    return null;
+  }
 
   const validImage = isValidImaage(resource.headerImage);
 
@@ -86,7 +106,6 @@ const ResourceDetails = () => {
         "/resources?resourceTypes=REPOSITORY%2CNOTEBOOK%2CDATASET%2CMODEL"
     )
   }
-
 
   return (
       <>
