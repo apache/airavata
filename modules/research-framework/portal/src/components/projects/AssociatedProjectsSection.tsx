@@ -7,7 +7,7 @@ import {ProjectCard} from "../home/ProjectCard";
 
 async function fetchProjects(id: string) {
   try {
-    const resp = await api.get(`${CONTROLLER.resources}/${id}/projects`);
+    const resp = await api.get(`${CONTROLLER.resources}/public/${id}/projects`);
     return resp.data;
   } catch (error) {
     console.error("Error fetching projects:", error);
@@ -38,7 +38,7 @@ export const AssociatedProjectsSection = ({
         <Heading fontWeight="bold" size="2xl" mb={2}>
           Associated Projects
         </Heading>
-        
+
         <SimpleGrid columns={{base: 1, md: 2}} gap={2}>
           {projects.map((project) => (
               <ProjectCard key={project.id} project={project}/>

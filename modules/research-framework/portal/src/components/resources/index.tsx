@@ -29,7 +29,7 @@ const getResources = async (
     stringTagsArr: string[],
     searchText: string
 ) => {
-  const response = await api.get(`${CONTROLLER.resources}/`, {
+  const response = await api.get(`${CONTROLLER.resources}/public`, {
     params: {
       type: types.join(","),
       tag: stringTagsArr.join(","),
@@ -43,7 +43,7 @@ const getResources = async (
 
 const getTags = async () => {
   try {
-    const response = await api.get(`${CONTROLLER.resources}/tags/all`);
+    const response = await api.get(`${CONTROLLER.resources}/public/tags/all`);
     return response.data;
   } catch (error) {
     console.error("Error fetching:", error);

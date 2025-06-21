@@ -36,9 +36,11 @@ import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
+import org.apache.airavata.research.service.model.entity.ResourceStar;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
+import org.apache.airavata.research.service.model.repo.ResourceStarRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,16 +58,19 @@ public class ResourceHandler {
     private final TagRepository tagRepository;
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
+    private final ResourceStarRepository resourceStarRepository;
 
     public ResourceHandler(
             AiravataService airavataService,
             TagRepository tagRepository,
             ResourceRepository resourceRepository,
-            ProjectRepository projectRepository) {
+            ProjectRepository projectRepository,
+            ResourceStarRepository resourceStarRepository) {
         this.airavataService = airavataService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
         this.projectRepository = projectRepository;
+        this.resourceStarRepository = resourceStarRepository;
     }
 
     public void initializeResource(Resource resource) {
@@ -174,6 +179,50 @@ public class ResourceHandler {
         return resource;
     }
 
+    public boolean starOrUnstarResource(String resourceId) {
+        Resource resource = getResourceById(resourceId);
+        String userId = UserContext.userId();
+
+        List<ResourceStar> resourceStars = resourceStarRepository.findByResourceAndUserId(resource, userId);
+
+        if (resourceStars.isEmpty()) {
+            // user has not starred the resource yet
+            ResourceStar resourceStar = new ResourceStar();
+            resourceStar.setUserId(userId);
+            resourceStar.setResource(resource);
+            resourceStarRepository.save(resourceStar);
+        } else {
+            ResourceStar resourceStar = resourceStars.get(0);
+            resourceStarRepository.delete(resourceStar);
+        }
+
+        return true;
+    }
+
+    public boolean checkWhetherUserStarredResource(String resourceId) {
+        Resource resource = getResourceById(resourceId);
+        String userId = UserContext.userId();
+
+        return resourceStarRepository.existsByResourceAndUserId(resource, userId);
+    }
+
+    public List<Resource> getAllStarredResources(String userId) {
+        String loggedInUser = UserContext.userId();
+        if (!loggedInUser.equals(userId)) {
+            throw new RuntimeException(
+                    String.format("User %s is not authorized to request stars for %s", loggedInUser, userId));
+        }
+
+        List<ResourceStar> resourceStars =
+                resourceStarRepository.findByUserIdAndResourceState(loggedInUser, StateEnum.ACTIVE);
+        return resourceStars.stream().map(ResourceStar::getResource).collect(Collectors.toList());
+    }
+
+    public long getResourceStarCount(String resourceId) {
+        Resource resource = getResourceById(resourceId);
+        return resourceStarRepository.countResourceStarByResource(resource);
+    }
+
     public Resource getResourceById(String id) {
         // Your logic to fetch the resource by ID
         Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
@@ -204,7 +253,7 @@ public class ResourceHandler {
         }
 
         resource.setState(StateEnum.DELETED);
-        resourceRepository.delete(resource);
+        resourceRepository.save(resource);
         return true;
     }
 

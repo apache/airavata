@@ -37,7 +37,6 @@ import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,11 +56,13 @@ public class ResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceController.class);
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private ResourceHandler resourceHandler;
+    private final ResourceHandler resourceHandler;
+    private final ProjectHandler projectHandler;
 
-    @Autowired
-    private ProjectHandler projectHandler;
+    public ResourceController(ResourceHandler resourceHandler, ProjectHandler projectHandler) {
+        this.resourceHandler = resourceHandler;
+        this.projectHandler = projectHandler;
+    }
 
     @PostMapping("/dataset")
     public ResponseEntity<ResourceResponse> createDatasetResource(@RequestBody DatasetResource datasetResource) {
@@ -96,13 +97,13 @@ public class ResourceController {
     }
 
     @Operation(summary = "Get all tags")
-    @GetMapping(value = "/tags/all")
+    @GetMapping(value = "/public/tags/all")
     public ResponseEntity<List<org.apache.airavata.research.service.model.entity.Tag>> getTags() {
         return ResponseEntity.ok(resourceHandler.getAllTagsByPopularity());
     }
 
     @Operation(summary = "Get dataset, notebook, repository, or model")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/public/{id}")
     public ResponseEntity<Resource> getResource(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok(resourceHandler.getResourceById(id));
     }
@@ -114,7 +115,7 @@ public class ResourceController {
     }
 
     @Operation(summary = "Get all resources")
-    @GetMapping("/")
+    @GetMapping("/public")
     public ResponseEntity<Page<Resource>> getAllResources(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -139,7 +140,7 @@ public class ResourceController {
     }
 
     @Operation(summary = "Get resource by name")
-    @GetMapping("/search")
+    @GetMapping("/public/search")
     public ResponseEntity<List<Resource>> searchResource(
             @RequestParam(value = "type") ResourceTypeEnum type,
             @RequestParam(value = "name", required = false) String name) {
@@ -149,7 +150,7 @@ public class ResourceController {
     }
 
     @Operation(summary = "Get projects associated with a resource")
-    @GetMapping(value = "/{id}/projects")
+    @GetMapping(value = "/public/{id}/projects")
     public ResponseEntity<List<Project>> getProjectsFromResourceId(@PathVariable(value = "id") String id) {
         Resource resouce = resourceHandler.getResourceById(id);
         List<Project> projects;
@@ -163,6 +164,30 @@ public class ResourceController {
         }
 
         return ResponseEntity.ok(projects);
+    }
+
+    @Operation(summary = "Star/unstar a resource")
+    @PostMapping(value = "/{id}/star")
+    public ResponseEntity<Boolean> starOrUnstarResource(@PathVariable(value = "id") String id) {
+        return ResponseEntity.ok(resourceHandler.starOrUnstarResource(id));
+    }
+
+    @Operation(summary = "Check whether a user star-ed a resource")
+    @GetMapping(value = "/{id}/star")
+    public ResponseEntity<Boolean> checkWhetherUserStarredResource(@PathVariable(value = "id") String id) {
+        return ResponseEntity.ok(resourceHandler.checkWhetherUserStarredResource(id));
+    }
+
+    @Operation(summary = "Get resource star count")
+    @GetMapping(value = "/resources/{id}/count")
+    public ResponseEntity<Long> getResourceStarCount(@PathVariable(value = "id") String id) {
+        return ResponseEntity.ok(resourceHandler.getResourceStarCount(id));
+    }
+
+    @Operation(summary = "Get all starred resources of a user")
+    @GetMapping(value = "/{userId}/stars")
+    public ResponseEntity<List<Resource>> getAllStarredResources(@PathVariable(value = "userId") String id) {
+        return ResponseEntity.ok(resourceHandler.getAllStarredResources(id));
     }
 
     private Class<? extends Resource> getResourceType(ResourceTypeEnum resourceTypeEnum) {

@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied. See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
+
 import {useLocation, useNavigate, useParams} from "react-router";
 import {
   Avatar,
@@ -32,10 +51,10 @@ import {NotebookSpecificDetails} from "../notebooks/NotebookSpecificDetails";
 import {RepositorySpecificDetails} from "../repositories/RepositorySpecificDetails";
 import {CONTROLLER} from "@/lib/controller";
 import {DatasetSpecificDetails} from "../datasets/DatasetSpecificDetails";
-import {DeleteResourceButton} from "@/components/resources/DeleteResourceButton.tsx";
+import {ResourceOptions} from "@/components/resources/ResourceOptions.tsx";
 
 async function getResource(id: string) {
-  const response = await api.get(`${CONTROLLER.resources}/${id}`);
+  const response = await api.get(`${CONTROLLER.resources}/public/${id}`);
   return response.data;
 }
 
@@ -110,7 +129,14 @@ const ResourceDetails = () => {
                   {resource.name}
                 </Heading>
 
-                <DeleteResourceButton resource={resource} onSuccess={goToResources}/>
+                <ResourceOptions
+                    resource={resource}
+                    onDeleteSuccess={goToResources}
+                    deleteable={true}
+                    onUnStarSuccess={() => {
+                    }}
+                />
+
               </HStack>
 
               <HStack mt={2}>
