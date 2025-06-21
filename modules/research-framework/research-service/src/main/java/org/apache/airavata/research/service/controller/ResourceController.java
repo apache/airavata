@@ -37,7 +37,6 @@ import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,11 +56,13 @@ public class ResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceController.class);
 
-    @Autowired
-    private ResourceHandler resourceHandler;
+    private final ResourceHandler resourceHandler;
+    private final ProjectHandler projectHandler;
 
-    @Autowired
-    private ProjectHandler projectHandler;
+    public ResourceController(ResourceHandler resourceHandler, ProjectHandler projectHandler) {
+        this.resourceHandler = resourceHandler;
+        this.projectHandler = projectHandler;
+    }
 
     @PostMapping("/dataset")
     public ResponseEntity<ResourceResponse> createDatasetResource(@RequestBody DatasetResource datasetResource) {
