@@ -60,7 +60,7 @@ const RepoSearchInput = ({
 
     const timeout = setTimeout(async () => {
       try {
-        const response = await api.get(`${CONTROLLER.resources}/search`, {
+        const response = await api.get(`${CONTROLLER.resources}/public/search`, {
           params: {
             type: ResourceTypeEnum.REPOSITORY,
             name: repoSearch,
@@ -104,7 +104,7 @@ const RepoSearchInput = ({
             </HStack>
           </Field.Root>
 
-          <ResourceCard size="sm" resource={selectedRepo} deletable={false} removeOnUnlike={false}/>
+          <ResourceCard size="sm" resource={selectedRepo} deletable={false} removeOnUnStar={false}/>
         </>
     );
   }

@@ -1,30 +1,24 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.research.service.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
@@ -36,11 +30,11 @@ import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
-import org.apache.airavata.research.service.model.entity.ResourceLike;
+import org.apache.airavata.research.service.model.entity.ResourceStar;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
-import org.apache.airavata.research.service.model.repo.ResourceLikeRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
+import org.apache.airavata.research.service.model.repo.ResourceStarRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +42,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ResourceHandler {
@@ -58,19 +58,19 @@ public class ResourceHandler {
     private final TagRepository tagRepository;
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
-    private final ResourceLikeRepository resourceLikeRepository;
+    private final ResourceStarRepository resourceStarRepository;
 
     public ResourceHandler(
             AiravataService airavataService,
             TagRepository tagRepository,
             ResourceRepository resourceRepository,
             ProjectRepository projectRepository,
-            ResourceLikeRepository resourceLikeRepository) {
+            ResourceStarRepository resourceStarRepository) {
         this.airavataService = airavataService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
         this.projectRepository = projectRepository;
-        this.resourceLikeRepository = resourceLikeRepository;
+        this.resourceStarRepository = resourceStarRepository;
     }
 
     public void initializeResource(Resource resource) {
@@ -179,48 +179,48 @@ public class ResourceHandler {
         return resource;
     }
 
-    public boolean likeOrUnlikeResource(String resourceId) {
+    public boolean starOrUnstarResource(String resourceId) {
         Resource resource = getResourceById(resourceId);
         String userId = UserContext.userId();
 
-        List<ResourceLike> resourceLikes = resourceLikeRepository.findByResourceAndOwnerId(resource, userId);
+        List<ResourceStar> resourceStars = resourceStarRepository.findByResourceAndUserId(resource, userId);
 
-        if (resourceLikes.isEmpty()) {
-            // user has not liked the resource yet
-            ResourceLike resourceLike = new ResourceLike();
-            resourceLike.setOwnerId(userId);
-            resourceLike.setResource(resource);
-            resourceLikeRepository.save(resourceLike);
+        if (resourceStars.isEmpty()) {
+            // user has not starred the resource yet
+            ResourceStar resourceStar = new ResourceStar();
+            resourceStar.setUserId(userId);
+            resourceStar.setResource(resource);
+            resourceStarRepository.save(resourceStar);
         } else {
-            ResourceLike resourceLike = resourceLikes.get(0);
-            resourceLikeRepository.delete(resourceLike);
+            ResourceStar resourceStar = resourceStars.get(0);
+            resourceStarRepository.delete(resourceStar);
         }
 
         return true;
     }
 
-    public boolean checkWhetherUserLikedResource(String resourceId) {
+    public boolean checkWhetherUserStarredResource(String resourceId) {
         Resource resource = getResourceById(resourceId);
         String userId = UserContext.userId();
 
-        return resourceLikeRepository.existsByResourceAndOwnerId(resource, userId);
+        return resourceStarRepository.existsByResourceAndUserId(resource, userId);
     }
 
-    public List<Resource> getAllLikedResources(String userId) {
+    public List<Resource> getAllStarredResources(String userId) {
         String loggedInUser = UserContext.userId();
         if (!loggedInUser.equals(userId)) {
             throw new RuntimeException(
-                    String.format("User %s is not authorized to request likes for %s", loggedInUser, userId));
+                    String.format("User %s is not authorized to request stars for %s", loggedInUser, userId));
         }
 
-        List<ResourceLike> resourceLikes =
-                resourceLikeRepository.findByOwnerIdAndResourceState(loggedInUser, StateEnum.ACTIVE);
-        return resourceLikes.stream().map(ResourceLike::getResource).collect(Collectors.toList());
+        List<ResourceStar> resourceStars =
+                resourceStarRepository.findByUserIdAndResourceState(loggedInUser, StateEnum.ACTIVE);
+        return resourceStars.stream().map(ResourceStar::getResource).collect(Collectors.toList());
     }
 
-    public long getResourceLikeCount(String resourceId) {
+    public long getResourceStarCount(String resourceId) {
         Resource resource = getResourceById(resourceId);
-        return resourceLikeRepository.countResourceLikeByResource(resource);
+        return resourceStarRepository.countResourceStarByResource(resource);
     }
 
     public Resource getResourceById(String id) {

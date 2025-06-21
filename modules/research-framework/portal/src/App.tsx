@@ -40,7 +40,7 @@ import {Events} from "./components/events";
 import {AddRepoMaster} from "./components/add/AddRepoMaster";
 import {Add} from "./components/add";
 import {AddProjectMaster} from "./components/add/AddProjectMaster";
-import {LikedResourcesPage} from "@/components/LikedResourcesPage.tsx";
+import {StarredResourcesPage} from "@/components/resources/StarredResourcesPage.tsx";
 
 function App() {
   const colorMode = useColorMode();
@@ -119,7 +119,7 @@ function App() {
             <Route
                 element={<ProtectedComponent Component={NavBarFooterLayout}/>}
             >
-              <Route path="/resources/liked" element={<LikedResourcesPage/>}/>
+              <Route path="/resources/starred" element={<StarredResourcesPage/>}/>
               <Route path="/sessions" element={<Home/>}/>
               <Route path="/add" element={<Add/>}/>
               <Route path="/add/repo" element={<AddRepoMaster/>}/>

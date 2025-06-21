@@ -24,40 +24,40 @@ import api from "@/lib/api.ts";
 import {CONTROLLER} from "@/lib/controller.ts";
 import {toaster} from "@/components/ui/toaster.tsx";
 import {useEffect, useState} from "react";
-import {GoHeart, GoHeartFill} from "react-icons/go";
+import {BsStar, BsStarFill} from "react-icons/bs";
 
-export const LikeResourceButton = ({
+export const StarResourceButton = ({
                                      resource,
                                      onSuccess,
                                    }: {
   resource: Resource,
   onSuccess: (resourceId: string) => void,
 }) => {
-  const [changeLikeLoading, setChangeLikeLoading] = useState(false);
+  const [changeStarLoading, setChangeStarLoading] = useState(false);
   const [initialLoad, setinitialLoad] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const [starred, setStarred] = useState(false);
 
   useEffect(() => {
-    async function getWhetherUserLiked() {
+    async function getWhetherUserStarred() {
       setinitialLoad(true);
-      const resp = await api.get(`${CONTROLLER.likes}/resources/${resource.id}`);
-      setLiked(resp.data);
+      const resp = await api.get(`${CONTROLLER.resources}/${resource.id}/star`);
+      setStarred(resp.data);
       setinitialLoad(false);
     }
 
-    getWhetherUserLiked();
+    getWhetherUserStarred();
   }, []);
 
-  const handleLikeResource = async () => {
+  const handleStarResource = async () => {
     try {
-      setChangeLikeLoading(true);
-      await api.post(`${CONTROLLER.likes}/resources/${resource.id}`);
+      setChangeStarLoading(true);
+      await api.post(`${CONTROLLER.resources}/${resource.id}/star`);
       toaster.create({
-        title: liked ? "Unliked" : "Liked",
+        title: starred ? "Unstarred" : "Starred",
         description: resource.name,
         type: "success",
       })
-      setLiked(prev => {
+      setStarred(prev => {
         if (prev) {
           onSuccess(resource.id || "INVALID");
         }
@@ -69,7 +69,7 @@ export const LikeResourceButton = ({
         type: "error",
       });
     } finally {
-      setChangeLikeLoading(false);
+      setChangeStarLoading(false);
     }
   }
 
@@ -86,15 +86,15 @@ export const LikeResourceButton = ({
               bg: 'blue.200',
             }}
             color={'black'}
-            onClick={handleLikeResource}
-            loading={changeLikeLoading}
+            onClick={handleStarResource}
+            loading={changeStarLoading}
         >
           {
-            liked ? <GoHeartFill color={'red'}/> : <GoHeart/>
+            starred ? <BsStarFill color={'#EFBF04'}/> : <BsStar/>
           }
           <Box>
             {
-              liked ? "Unlike" : "Like"
+              starred ? "Unstar" : "Star"
             }
           </Box>
         </ResourceOptionButton>

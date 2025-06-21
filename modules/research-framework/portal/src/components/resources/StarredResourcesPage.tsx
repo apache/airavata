@@ -26,40 +26,40 @@ import {Resource} from "@/interfaces/ResourceType.ts";
 import {ResourceCard} from "@/components/home/ResourceCard.tsx";
 import {PageHeader} from "@/components/PageHeader.tsx";
 
-export const LikedResourcesPage = () => {
-  const [likedResources, setLikedResources] = useState([]);
+export const StarredResourcesPage = () => {
+  const [starredResources, setStarredResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
 
   useEffect(() => {
     if (auth.isLoading) return;
 
-    async function getLikedResources() {
+    async function getStarredResources() {
       setLoading(true);
-      const resp = await api.get(`${CONTROLLER.likes}/users/${auth.user?.profile.email}/resources`)
-      setLikedResources(resp.data);
+      const resp = await api.get(`${CONTROLLER.resources}/${auth.user?.profile.email}/stars`)
+      setStarredResources(resp.data);
       setLoading(false);
     }
 
-    getLikedResources();
+    getStarredResources();
   }, [auth.isLoading]);
 
   return (
       <Container maxW="container.lg" mt={8}>
-        <PageHeader title={"Liked Resources"}
-                    description={"Resources that you have liked will show up here, for easy access."}/>
+        <PageHeader title={"Starred Resources"}
+                    description={"Resources that you have starred will show up here, for easy access."}/>
         <SimpleGrid
             columns={{base: 1, md: 2, lg: 4}}
             mt={4}
             gap={2}
             justifyContent="space-around"
         >
-          {likedResources.map((resource: Resource) => {
+          {starredResources.map((resource: Resource) => {
             return (
                 <ResourceCard
                     resource={resource}
                     key={resource.id}
-                    removeOnUnlike={true}
+                    removeOnUnStar={true}
                 />
             );
           })}

@@ -55,8 +55,8 @@ const NAV_CONTENT = [
     needsAuth: true,
   },
   {
-    title: "Liked",
-    url: "/resources/liked",
+    title: "Starred",
+    url: "/resources/starred",
     needsAuth: true,
   },
   {

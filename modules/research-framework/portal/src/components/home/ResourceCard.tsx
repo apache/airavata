@@ -32,12 +32,12 @@ export const ResourceCard = ({
                                resource,
                                size = "sm",
                                deletable = true,
-                               removeOnUnlike = false,
+                               removeOnUnStar = false,
                              }: {
   resource: Resource;
   size?: "sm" | "md" | "lg";
   deletable?: boolean;
-  removeOnUnlike?: boolean;
+  removeOnUnStar?: boolean;
 }) => {
   const [hideCard, setHideCard] = useState(false);
   const author = resource.authors[0];
@@ -54,7 +54,7 @@ export const ResourceCard = ({
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const dummyOnUnlikeSuccess = (_: string) => {
+  const dummyOnUnStarSuccess = (_: string) => {
   }
 
   const content = (
@@ -88,7 +88,7 @@ export const ResourceCard = ({
           <HStack justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>
             <Card.Title>{resource.name}</Card.Title>
             <ResourceOptions deleteable={deletable} resource={resource} onDeleteSuccess={hideCardCallback}
-                             onUnlikeSuccess={removeOnUnlike ? hideCardCallback : dummyOnUnlikeSuccess}/>
+                             onUnStarSuccess={removeOnUnStar ? hideCardCallback : dummyOnUnStarSuccess}/>
           </HStack>
         </Card.Header>
 

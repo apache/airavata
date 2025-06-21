@@ -54,7 +54,7 @@ import {DatasetSpecificDetails} from "../datasets/DatasetSpecificDetails";
 import {ResourceOptions} from "@/components/resources/ResourceOptions.tsx";
 
 async function getResource(id: string) {
-  const response = await api.get(`${CONTROLLER.resources}/${id}`);
+  const response = await api.get(`${CONTROLLER.resources}/public/${id}`);
   return response.data;
 }
 
@@ -133,7 +133,7 @@ const ResourceDetails = () => {
                     resource={resource}
                     onDeleteSuccess={goToResources}
                     deleteable={true}
-                    onUnlikeSuccess={() => {
+                    onUnStarSuccess={() => {
                     }}
                 />
 

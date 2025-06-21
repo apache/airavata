@@ -21,15 +21,15 @@ import {Resource} from "@/interfaces/ResourceType.ts";
 import {Button, ButtonProps, Menu, VStack} from "@chakra-ui/react";
 import {BsThreeDots} from "react-icons/bs";
 import {DeleteResourceButton} from "@/components/resources/DeleteResourceButton.tsx";
-import {LikeResourceButton} from "@/components/resources/LikeResourceButton.tsx";
+import {StarResourceButton} from "@/components/resources/StarResourceButton.tsx";
 import {useAuth} from "react-oidc-context";
 
-export const ResourceOptions = ({resource, deleteable = true, onDeleteSuccess, onUnlikeSuccess}:
+export const ResourceOptions = ({resource, deleteable = true, onDeleteSuccess, onUnStarSuccess}:
                                 {
                                   resource: Resource,
                                   deleteable: boolean,
                                   onDeleteSuccess: () => void,
-                                  onUnlikeSuccess: (resourceId: string) => void
+                                  onUnStarSuccess: (resourceId: string) => void
                                 }) => {
 
   const auth = useAuth();
@@ -48,7 +48,7 @@ export const ResourceOptions = ({resource, deleteable = true, onDeleteSuccess, o
           <Menu.Positioner>
             <Menu.Content>
               <VStack gap={2} alignItems={'start'}>
-                <LikeResourceButton resource={resource} onSuccess={onUnlikeSuccess}/>
+                <StarResourceButton resource={resource} onSuccess={onUnStarSuccess}/>
                 {deleteable && <DeleteResourceButton resource={resource} onSuccess={onDeleteSuccess}/>}
               </VStack>
             </Menu.Content>
