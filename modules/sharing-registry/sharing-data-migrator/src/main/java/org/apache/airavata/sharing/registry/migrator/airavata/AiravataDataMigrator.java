@@ -1,30 +1,23 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -37,8 +30,10 @@ import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SummaryType;
@@ -57,10 +52,32 @@ import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServic
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.security.AiravataSecurityManager;
 import org.apache.airavata.service.security.SecurityManagerFactory;
-import org.apache.airavata.sharing.registry.models.*;
+import org.apache.airavata.sharing.registry.models.Domain;
+import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntitySearchField;
+import org.apache.airavata.sharing.registry.models.EntityType;
+import org.apache.airavata.sharing.registry.models.GroupCardinality;
+import org.apache.airavata.sharing.registry.models.GroupType;
+import org.apache.airavata.sharing.registry.models.PermissionType;
+import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.sharing.registry.models.User;
+import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AiravataDataMigrator {
 
@@ -826,27 +843,33 @@ public class AiravataDataMigrator {
                 computeResourcePreference.getPreferredJobSubmissionProtocol());
         groupComputeResourcePreference.setPreferredDataMovementProtocol(
                 computeResourcePreference.getPreferredDataMovementProtocol());
-        if (isValid(computeResourcePreference.getPreferredBatchQueue())) {
-            groupComputeResourcePreference.setPreferredBatchQueue(computeResourcePreference.getPreferredBatchQueue());
-        }
-        if (isValid(computeResourcePreference.getScratchLocation())) {
-            groupComputeResourcePreference.setScratchLocation(computeResourcePreference.getScratchLocation());
-        }
-        if (isValid(computeResourcePreference.getAllocationProjectNumber())) {
-            groupComputeResourcePreference.setAllocationProjectNumber(
-                    computeResourcePreference.getAllocationProjectNumber());
-        }
         if (isValid(computeResourcePreference.getResourceSpecificCredentialStoreToken())) {
             groupComputeResourcePreference.setResourceSpecificCredentialStoreToken(
                     computeResourcePreference.getResourceSpecificCredentialStoreToken());
         }
+
+        groupComputeResourcePreference.setResourceType(org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType.SLURM);
+        SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
+        if (isValid(computeResourcePreference.getPreferredBatchQueue())) {
+            slurm.setPreferredBatchQueue(computeResourcePreference.getPreferredBatchQueue());
+        }
+        if (isValid(computeResourcePreference.getScratchLocation())) {
+            slurm.setScratchLocation(computeResourcePreference.getScratchLocation());
+        }
+        if (isValid(computeResourcePreference.getAllocationProjectNumber())) {
+            slurm.setAllocationProjectNumber(computeResourcePreference.getAllocationProjectNumber());
+        }
         if (isValid(computeResourcePreference.getUsageReportingGatewayId())) {
-            groupComputeResourcePreference.setUsageReportingGatewayId(
-                    computeResourcePreference.getUsageReportingGatewayId());
+            slurm.setUsageReportingGatewayId(computeResourcePreference.getUsageReportingGatewayId());
         }
-        if (isValid(groupComputeResourcePreference.getQualityOfService())) {
-            groupComputeResourcePreference.setQualityOfService(computeResourcePreference.getQualityOfService());
+        if (isValid(computeResourcePreference.getQualityOfService())) {
+            slurm.setQualityOfService(computeResourcePreference.getQualityOfService());
         }
+
+        EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
+        esp.setSlurm(slurm);
+        groupComputeResourcePreference.setSpecificPreferences(esp);
+
         // Note: skipping copying of reservation time and ssh account provisioner configuration for now
         return groupComputeResourcePreference;
     }

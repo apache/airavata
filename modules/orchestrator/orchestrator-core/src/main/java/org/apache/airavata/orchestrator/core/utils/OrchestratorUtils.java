@@ -1,26 +1,23 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.orchestrator.core.utils;
 
-import java.io.IOException;
-import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
@@ -29,9 +26,18 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
@@ -47,6 +53,12 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This contains orchestrator specific utilities
@@ -183,6 +195,8 @@ public class OrchestratorUtils {
         try {
             GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
+            String scratchLocation = extractScratchFromGroupPref(computeResourcePreference);
+
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference =
                         registryClient.getUserComputeResourcePreference(
@@ -194,22 +208,22 @@ public class OrchestratorUtils {
                             + "resource scheduling scratch location "
                             + processResourceSchedule.getOverrideScratchLocation());
                     return processResourceSchedule.getOverrideScratchLocation();
-                } else if (isValid(computeResourcePreference.getScratchLocation())) {
+                } else if (isValid(scratchLocation)) {
                     logger.warn("Either User computer resource preference or computer resource scheduling doesn't have "
-                            + "valid scratch location, using  gateway computer resource preference scratch location"
-                            + computeResourcePreference.getScratchLocation());
-                    return computeResourcePreference.getScratchLocation();
+                            + "valid scratch location, using  gateway computer resource preference scratch location "
+                            + scratchLocation);
+                    return scratchLocation;
                 } else {
                     throw new AiravataException("Scratch location is not found");
                 }
             } else {
                 if (isValid(processResourceSchedule.getOverrideScratchLocation())) {
                     return processResourceSchedule.getOverrideScratchLocation();
-                } else if (isValid(computeResourcePreference.getScratchLocation())) {
+                } else if (isValid(scratchLocation)) {
                     logger.warn("Process compute resource scheduling doesn't have valid scratch location, "
-                            + "using  gateway computer resource preference scratch location"
-                            + computeResourcePreference.getScratchLocation());
-                    return computeResourcePreference.getScratchLocation();
+                            + "using  gateway computer resource preference scratch location "
+                            + scratchLocation);
+                    return scratchLocation;
                 } else {
                     throw new AiravataException("Scratch location is not found");
                 }
@@ -427,5 +441,17 @@ public class OrchestratorUtils {
             logger.error("Not able to find driver: " + e.getLocalizedMessage());
             return null;
         }
+    }
+
+    private static String extractScratchFromGroupPref(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM
+                && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                SlurmComputeResourcePreference scp = esp.getSlurm();
+                return scp.getScratchLocation();
+            }
+        }
+        return null;
     }
 }

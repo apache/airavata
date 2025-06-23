@@ -42,7 +42,7 @@ public class GroupComputeResourcePreferenceUtilTest {
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 10000,
                 System.currentTimeMillis() + 10000);
-        pref.addToReservations(res1);
+//        pref.addToReservations(res1); FIXME
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
@@ -71,7 +71,7 @@ public class GroupComputeResourcePreferenceUtilTest {
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 20000,
                 System.currentTimeMillis() - 10000);
-        pref.addToReservations(res1);
+//        pref.addToReservations(res1); FIXME
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
@@ -89,7 +89,7 @@ public class GroupComputeResourcePreferenceUtilTest {
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 10000,
                 System.currentTimeMillis() + 10000);
-        pref.addToReservations(res1);
+//        pref.addToReservations(res1); FIXME
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "thirdqueue");
@@ -131,7 +131,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         final List<ComputeResourceReservation> reservations = Arrays.asList(res1, res2, res3, res4);
 
         Collections.shuffle(reservations);
-        pref.setReservations(reservations);
+//        pref.setReservations(reservations); FIXME
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");

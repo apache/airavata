@@ -1,41 +1,44 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.core.utils.QueryConstants;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity;
-import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
-import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
-import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.QueryConstants;
 
 /**
  * Created by skariyat on 2/8/18.
@@ -58,21 +61,29 @@ public class GroupResourceProfileRepository
 
     private void updateChildren(GroupResourceProfile groupResourceProfile, String groupResourceProfileId) {
         if (groupResourceProfile.getComputePreferences() != null) {
-            for (GroupComputeResourcePreference groupComputeResourcePreference :
-                    groupResourceProfile.getComputePreferences()) {
-                groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
-                if (groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs() != null) {
-                    groupComputeResourcePreference
-                            .getGroupSSHAccountProvisionerConfigs()
-                            .forEach(gssh -> gssh.setGroupResourceProfileId(groupResourceProfileId));
-                }
-                if (groupComputeResourcePreference.getReservations() != null) {
-                    groupComputeResourcePreference.getReservations().forEach(reservation -> {
-                        if (reservation.getReservationId().trim().isEmpty()
-                                || reservation.getReservationId().equals(airavata_commonsConstants.DEFAULT_ID)) {
-                            reservation.setReservationId(AiravataUtils.getId(reservation.getReservationName()));
-                        }
-                    });
+            for (GroupComputeResourcePreference gcrPref : groupResourceProfile.getComputePreferences()) {
+                gcrPref.setGroupResourceProfileId(groupResourceProfileId);
+
+                if (gcrPref.getResourceType() == ResourceType.SLURM
+                        && gcrPref.isSetSpecificPreferences()
+                        && gcrPref.getSpecificPreferences().isSetSlurm()) {
+
+                    SlurmComputeResourcePreference slurm = gcrPref.getSpecificPreferences().getSlurm();
+
+                    // update SSH provisioner configs
+                    if (slurm.getGroupSSHAccountProvisionerConfigs() != null) {
+                        slurm.getGroupSSHAccountProvisionerConfigs()
+                                .forEach(gssh -> gssh.setGroupResourceProfileId(groupResourceProfileId));
+                    }
+
+                    // update reservations
+                    if (slurm.getReservations() != null) {
+                        slurm.getReservations().forEach(res -> {
+                            if (res.getReservationId().trim().isEmpty() || res.getReservationId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                                res.setReservationId(AiravataUtils.getId(res.getReservationName()));
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -108,15 +119,16 @@ public class GroupResourceProfileRepository
 
     private void updateChildrenEntities(GroupResourceProfileEntity groupResourceProfileEntity) {
         if (groupResourceProfileEntity.getComputePreferences() != null) {
-            for (GroupComputeResourcePrefEntity groupComputeResourcePrefEntity :
-                    groupResourceProfileEntity.getComputePreferences()) {
+            for (GroupComputeResourcePrefEntity gcrPref : groupResourceProfileEntity.getComputePreferences()) {
                 // For some reason next line is needed to get OpenJPA to persist
                 // GroupResourceProfileEntity before GroupComputeResourcePrefEntity
-                groupComputeResourcePrefEntity.setGroupResourceProfile(groupResourceProfileEntity);
-                if (groupComputeResourcePrefEntity.getReservations() != null) {
-                    for (ComputeResourceReservationEntity reservationEntity :
-                            groupComputeResourcePrefEntity.getReservations()) {
-                        reservationEntity.setGroupComputeResourcePref(groupComputeResourcePrefEntity);
+                gcrPref.setGroupResourceProfile(groupResourceProfileEntity);
+                if (gcrPref instanceof SlurmGroupComputeResourcePrefEntity) {
+                    SlurmGroupComputeResourcePrefEntity slurm = (SlurmGroupComputeResourcePrefEntity) gcrPref;
+                    if (slurm.getReservations() != null) {
+                        for (ComputeResourceReservationEntity r : slurm.getReservations()) {
+                            r.setGroupComputeResourcePref(slurm);
+                        }
                     }
                 }
             }

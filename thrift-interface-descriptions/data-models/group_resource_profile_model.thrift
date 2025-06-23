@@ -42,6 +42,26 @@ struct ComputeResourceReservation {
     5: required i64 endTime,
 }
 
+enum ResourceType {
+  SLURM = 0,
+}
+
+struct SlurmComputeResourcePreference {
+    1: optional string allocationProjectNumber,
+    2: optional string preferredBatchQueue,
+    3: optional string scratchLocation,
+    4: optional string qualityOfService,
+    5: optional string usageReportingGatewayId,
+    6: optional string sshAccountProvisioner,
+    7: optional list<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs,
+    8: optional string sshAccountProvisionerAdditionalInfo,
+    9: optional list<ComputeResourceReservation> reservations
+}
+
+union EnvironmentSpecificPreferences {
+    1: SlurmComputeResourcePreference slurm,
+}
+
 struct GroupComputeResourcePreference {
     1: required string computeResourceId,
     2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
@@ -49,16 +69,9 @@ struct GroupComputeResourcePreference {
     4: optional string loginUserName,
     5: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
     6: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
-    7: optional string preferredBatchQueue,
-    8: optional string scratchLocation,
-    9: optional string allocationProjectNumber,
-    10: optional string resourceSpecificCredentialStoreToken,
-    11: optional string usageReportingGatewayId,
-    12: optional string qualityOfService,
-    16: optional string sshAccountProvisioner,
-    17: optional list<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs,
-    18: optional string sshAccountProvisionerAdditionalInfo,
-    19: optional list<ComputeResourceReservation> reservations,
+    7: optional string resourceSpecificCredentialStoreToken,
+    8: required ResourceType resourceType,
+    9: optional EnvironmentSpecificPreferences specificPreferences
 }
 
 struct ComputeResourcePolicy {
