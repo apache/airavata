@@ -44,8 +44,10 @@ import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -197,8 +199,8 @@ public class TaskContext {
                 scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
             } else if (isSetGroupResourceProfile()
                     && getGroupComputeResourcePreference() != null
-                    && isValid(getGroupComputeResourcePreference().getScratchLocation())) {
-                scratchLocation = getGroupComputeResourcePreference().getScratchLocation();
+                    && isValid(extractSlurmScratch(getGroupComputeResourcePreference()))) {
+                scratchLocation = extractSlurmScratch(getGroupComputeResourcePreference());
             } else {
                 throw new RuntimeException(
                         "Can't find a specified scratch location for compute resource " + getComputeResourceId());
@@ -780,8 +782,8 @@ public class TaskContext {
             return getUserComputeResourcePreference().getAllocationProjectNumber();
         } else if (isSetGroupResourceProfile()
                 && getGroupComputeResourcePreference() != null
-                && isValid(getGroupComputeResourcePreference().getAllocationProjectNumber())) {
-            return getGroupComputeResourcePreference().getAllocationProjectNumber();
+                && isValid(extractSlurmAllocationProject(getGroupComputeResourcePreference()))) {
+            return extractSlurmAllocationProject(getGroupComputeResourcePreference());
         } else {
             return null;
         }
@@ -819,7 +821,7 @@ public class TaskContext {
                 && isValid(getUserComputeResourcePreference().getQualityOfService())) {
             return getUserComputeResourcePreference().getQualityOfService();
         } else {
-            return getGroupComputeResourcePreference().getQualityOfService();
+            return extractSlurmQoS(getGroupComputeResourcePreference());
         }
     }
 
@@ -962,5 +964,38 @@ public class TaskContext {
         private void throwError(String msg) throws Exception {
             throw new Exception(msg);
         }
+    }
+
+    private String extractSlurmScratch(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM
+                && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                return esp.getSlurm().getScratchLocation();
+            }
+        }
+        return null;
+    }
+
+    private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM
+                && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                return esp.getSlurm().getAllocationProjectNumber();
+            }
+        }
+        return null;
+    }
+
+    private String extractSlurmQoS(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM
+                && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                return esp.getSlurm().getQualityOfService();
+            }
+        }
+        return null;
     }
 }

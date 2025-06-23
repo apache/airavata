@@ -30,8 +30,11 @@ import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
 import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
@@ -232,9 +235,9 @@ public class AgentManagementHandler {
         computationalResourceSchedulingModel.setWallTimeLimit(req.getWallTime());
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
         computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
-        computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
-        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(
-                groupCompResourcePref.getAllocationProjectNumber());
+        // TODO - Support for both HPC & Cloud services --> Need to change the ComputationalResourceSchedulingModel
+        computationalResourceSchedulingModel.setOverrideScratchLocation(extractScratchFromGroupPref(groupCompResourcePref));
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(extractSlurmAllocationProject(groupCompResourcePref));
         computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
@@ -274,5 +277,28 @@ public class AgentManagementHandler {
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());
 
         return experimentModel;
+    }
+
+    private String extractScratchFromGroupPref(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM
+                && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                SlurmComputeResourcePreference scp = esp.getSlurm();
+                return scp.getScratchLocation();
+            }
+        }
+        return null;
+    }
+
+    private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM
+                && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                return esp.getSlurm().getAllocationProjectNumber();
+            }
+        }
+        return null;
     }
 }
