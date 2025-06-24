@@ -138,6 +138,17 @@ public class GroupResourceProfileRepository
 
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) {
         GroupResourceProfile groupResourceProfile = get(groupResourceProfileId);
+
+        GrpComputePrefRepository prefRepo = new GrpComputePrefRepository();
+        List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
+        for (GroupComputeResourcePreference raw : groupResourceProfile.getComputePreferences()) {
+            GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
+            pk.setComputeResourceId(raw.getComputeResourceId());
+            pk.setGroupResourceProfileId(raw.getGroupResourceProfileId());
+            decoratedPrefs.add(prefRepo.get(pk));
+        }
+        groupResourceProfile.setComputePreferences(decoratedPrefs);
+
         return groupResourceProfile;
     }
 
