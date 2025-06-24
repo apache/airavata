@@ -25,6 +25,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.PrimaryKeyJoinColumns;
 import jakarta.persistence.Table;
 
 import java.util.List;
@@ -35,13 +37,14 @@ import java.util.List;
 @Entity
 @DiscriminatorValue("SLURM")
 @Table(name = "SLURM_GROUP_COMPUTE_RESOURCE_PREFERENCE")
+@PrimaryKeyJoinColumns({
+        @PrimaryKeyJoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID"),
+        @PrimaryKeyJoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", referencedColumnName = "GROUP_RESOURCE_PROFILE_ID")
+})
 public class SlurmGroupComputeResourcePrefEntity extends GroupComputeResourcePrefEntity {
 
     @Column(name = "ALLOCATION_PROJECT_NUMBER")
     private String allocationProjectNumber;
-
-    @Column(name = "OVERRIDE_BY_AIRAVATA")
-    private short overridebyAiravata;
 
     @Column(name = "PREFERED_BATCH_QUEUE")
     private String preferredBatchQueue;
@@ -86,14 +89,6 @@ public class SlurmGroupComputeResourcePrefEntity extends GroupComputeResourcePre
 
     public void setAllocationProjectNumber(String allocationProjectNumber) {
         this.allocationProjectNumber = allocationProjectNumber;
-    }
-
-    public short getOverridebyAiravata() {
-        return overridebyAiravata;
-    }
-
-    public void setOverridebyAiravata(short overridebyAiravata) {
-        this.overridebyAiravata = overridebyAiravata;
     }
 
     public String getPreferredBatchQueue() {

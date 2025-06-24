@@ -34,6 +34,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeRe
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -148,15 +149,28 @@ public class GroupResourceProfileRepository
         return isExists(groupResourceProfileId);
     }
 
-    public List<GroupResourceProfile> getAllGroupResourceProfiles(
-            String gatewayId, List<String> accessibleGroupResProfileIds) {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
-
+    public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId, List<String> accessibleGroupResProfileIds) {
         if (accessibleGroupResProfileIds != null && !accessibleGroupResProfileIds.isEmpty()) {
-            queryParameters.put(
-                    DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS, accessibleGroupResProfileIds);
-            return select(QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
+            List<GroupResourceProfile> profiles = select(QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES, -1, 0,
+                    Map.of(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId, DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS, accessibleGroupResProfileIds));
+
+            GrpComputePrefRepository prefRepo = new GrpComputePrefRepository();
+            for (GroupResourceProfile profile : profiles) {
+                List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
+
+                for (GroupComputeResourcePreference rawPref : profile.getComputePreferences()) {
+                    GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
+                    pk.setComputeResourceId(rawPref.getComputeResourceId());
+                    pk.setGroupResourceProfileId(rawPref.getGroupResourceProfileId());
+
+                    GroupComputeResourcePreference fullPref = prefRepo.get(pk);
+                    decoratedPrefs.add(fullPref);
+                }
+
+                profile.setComputePreferences(decoratedPrefs);
+            }
+            return profiles;
+
         } else {
             return Collections.emptyList();
         }
@@ -204,12 +218,21 @@ public class GroupResourceProfileRepository
     }
 
     public List<GroupComputeResourcePreference> getAllGroupComputeResourcePreferences(String groupResourceProfileId) {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId);
-        List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = (new GrpComputePrefRepository()
-                .select(QueryConstants.FIND_ALL_GROUP_COMPUTE_PREFERENCES, -1, 0, queryParameters));
+        List<GroupComputeResourcePreference> rawPrefs = (new GrpComputePrefRepository()
+                .select(QueryConstants.FIND_ALL_GROUP_COMPUTE_PREFERENCES, -1, 0, Map.of(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId)));
 
-        return groupComputeResourcePreferenceList;
+        GrpComputePrefRepository prefRepo = new GrpComputePrefRepository();
+        List<GroupComputeResourcePreference> decorated = new ArrayList<>();
+        for (GroupComputeResourcePreference raw : rawPrefs) {
+            GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
+            pk.setComputeResourceId(raw.getComputeResourceId());
+            pk.setGroupResourceProfileId(raw.getGroupResourceProfileId());
+            // this .get(...) will load the entity, detect SLURM, set resourceType, and populate the specificPreferences union
+            GroupComputeResourcePreference full = prefRepo.get(pk);
+            decorated.add(full);
+        }
+
+        return decorated;
     }
 
     public List<BatchQueueResourcePolicy> getAllGroupBatchQueueResourcePolicies(String groupResourceProfileId) {
