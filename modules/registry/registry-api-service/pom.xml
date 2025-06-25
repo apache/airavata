@@ -17,57 +17,33 @@ specific language governing permissions and limitations
 under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>airavata</artifactId>
+      <parent>
+        <artifactId>registry</artifactId>
         <groupId>org.apache.airavata</groupId>
         <version>0.21-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cluster-monitoring</artifactId>
+    <artifactId>registry-api-service</artifactId>
+    <packaging>jar</packaging>
+    <url>http://airavata.apache.org/</url>
 
     <dependencies>
         <dependency>
-            <artifactId>airavata-api</artifactId>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-registry-cpi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>airavata-server-configuration</artifactId>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${thrift.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-registry-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jobs</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.54</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.9</version>
         </dependency>
     </dependencies>
-
-
 </project>

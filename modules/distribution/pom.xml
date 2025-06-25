@@ -112,11 +112,6 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-orchestrator-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
       <artifactId>registry-api-service</artifactId>
       <version>${project.version}</version>
     </dependency>

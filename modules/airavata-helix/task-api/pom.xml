@@ -47,11 +47,6 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>agent-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

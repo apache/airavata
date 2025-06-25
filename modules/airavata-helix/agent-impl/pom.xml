@@ -27,17 +27,10 @@ under the License.
     <name>Agent Impl</name>
     <artifactId>agent-impl</artifactId>
     <packaging>pom</packaging>
+    
     <modules>
         <module>ssh-agent</module>
         <module>sshj-agent</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>agent-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>

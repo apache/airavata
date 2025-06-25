@@ -30,7 +30,6 @@ under the License.
     <artifactId>airavata-helix</artifactId>
 
     <modules>
-        <module>agent-api</module>
         <module>agent-impl</module>
         <module>task-api</module>
         <module>task-core</module>

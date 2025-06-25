@@ -38,11 +38,6 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
             <version>${dozer.version}</version>
