@@ -68,8 +68,9 @@ under the License.
     </issueManagement>
 
     <modules>
-        <module>modules/configuration</module>
         <module>airavata-api</module>
+        <module>airavata-services</module>
+        <module>modules/configuration</module>
         <module>modules/commons</module>
         <module>modules/messaging</module>
         <module>modules/registry</module>
@@ -79,7 +80,6 @@ under the License.
         <module>modules/server</module>
         <module>modules/sharing-registry</module>
         <module>modules/cluster-monitoring</module>
-        <module>airavata-services</module>
         <module>modules/db-event-manager</module>
         <module>modules/airavata-helix</module>
         <module>modules/compute-account-provisioning</module>
@@ -94,7 +94,6 @@ under the License.
         <module>modules/agent-framework</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework</module>
-        <module>tools</module>
         <module>modules/ide-integration</module>
         <module>modules/file-server</module>
     </modules>
