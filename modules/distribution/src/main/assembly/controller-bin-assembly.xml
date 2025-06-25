@@ -77,7 +77,6 @@
                 <include>javax.activation:activation:jar</include>
                 <include>org.apache.airavata:airavata-api:jar</include>
                 <include>org.apache.airavata:agent-api:jar</include>
-                <include>org.apache.airavata:airavata-messaging-core:jar</include>
                 <include>org.apache.airavata:airavata-registry-core:jar</include>
                 <include>org.apache.airavata:airavata-registry-cpi:jar</include>
                 <include>org.apache.airavata:airavata-server-configuration:jar</include>

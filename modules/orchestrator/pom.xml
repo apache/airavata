@@ -40,7 +40,6 @@ under the License.
             <modules>
                 <module>orchestrator-core</module>
                 <module>orchestrator-service</module>
-                <module>orchestrator-client</module>
             </modules>
         </profile>
     </profiles>

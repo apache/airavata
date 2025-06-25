@@ -71,7 +71,6 @@ under the License.
         <module>airavata-api</module>
         <module>airavata-services</module>
         <module>modules/configuration</module>
-        <module>modules/messaging</module>
         <module>modules/registry</module>
         <module>modules/security</module>
         <module>modules/orchestrator</module>
