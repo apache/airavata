@@ -69,7 +69,7 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
-        <module>airavata-services</module>
+        <module>modules/profile-service</module>
         <module>modules/configuration</module>
         <module>modules/registry</module>
         <module>modules/orchestrator</module>
