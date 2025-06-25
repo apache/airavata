@@ -42,7 +42,6 @@ under the License.
                 <module>airavata-model-utils</module>
                 <module>airavata-api-server</module>
                 <module>airavata-api-client</module>
-                <module>airavata-client-sdks</module>
             </modules>
         </profile>
     </profiles>
