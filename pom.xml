@@ -72,7 +72,6 @@ under the License.
         <module>airavata-services</module>
         <module>modules/configuration</module>
         <module>modules/registry</module>
-        <module>modules/security</module>
         <module>modules/orchestrator</module>
         <module>modules/server</module>
         <module>modules/sharing-registry</module>

@@ -24,27 +24,12 @@
     <!-- Airavata clients & stubs -->
     <dependency>
       <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-security</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-sharing-registry-stubs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
       <artifactId>compute-account-provisioning</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.airavata</groupId>
       <artifactId>profile-service-stubs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-server-configuration</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -57,6 +42,11 @@
     <dependency>
       <groupId>org.apache.airavata</groupId>
       <artifactId>airavata-client-configuration</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.airavata</groupId>
+      <artifactId>airavata-server-configuration</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -286,6 +276,12 @@
       <artifactId>amqp-client</artifactId>
       <version>${amqp.client.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-core</artifactId>
+      <version>1.13.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -339,6 +335,15 @@
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
                     value="${project.basedir}/../thrift-interface-descriptions/service-cpis/orchestrator-cpi.thrift" />
+                </exec>
+                <exec executable="thrift">
+                  <arg value="-r" />
+                  <arg value="--gen" />
+                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="-out" />
+                  <arg value="${project.build.directory}/generated-sources/thrift" />
+                  <arg
+                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/sharing_cpi.thrift" />
                 </exec>
               </tasks>
             </configuration>
