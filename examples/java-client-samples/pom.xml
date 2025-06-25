@@ -28,17 +28,7 @@ under the License.
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-data-models</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-api-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-model-utils</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

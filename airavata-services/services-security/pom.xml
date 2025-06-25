@@ -34,12 +34,7 @@ under the License.
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-credential-store-stubs</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

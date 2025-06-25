@@ -77,7 +77,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../credential-store/credential-store-service/src/main/resources/
+            <directory>../../airavata-api/src/main/resources/
             </directory>
             <outputDirectory>bin/database_scripts
             </outputDirectory>

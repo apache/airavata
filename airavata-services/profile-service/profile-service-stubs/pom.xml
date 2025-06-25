@@ -32,14 +32,6 @@ under the License.
     <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-data-models</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>

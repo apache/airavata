@@ -38,17 +38,12 @@ under the License.
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-data-models</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>registry-api-stubs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

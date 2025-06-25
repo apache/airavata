@@ -31,11 +31,6 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
             <version>1.13.0</version>
