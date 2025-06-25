@@ -1,26 +1,23 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.helix.impl.workflow;
 
-import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -28,17 +25,22 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.helix.impl.task.HelixTaskFactory;
+import org.apache.airavata.helix.impl.task.TaskFactory;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
 import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
-import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
-import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
-import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
-import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
-import org.apache.airavata.messaging.core.*;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
@@ -52,6 +54,13 @@ import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PreWorkflowManager extends WorkflowManager {
 
@@ -71,7 +80,8 @@ public class PreWorkflowManager extends WorkflowManager {
         initLaunchSubscriber();
     }
 
-    public void stopServer() {}
+    public void stopServer() {
+    }
 
     private void initLaunchSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
@@ -87,10 +97,16 @@ public class PreWorkflowManager extends WorkflowManager {
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
+        HelixTaskFactory taskFactory;
         try {
             processModel = registryClient.getProcess(processId);
             experimentModel = registryClient.getExperiment(processModel.getExperimentId());
             getRegistryClientPool().returnResource(registryClient);
+            ResourceType resourceType = registryClient
+                    .getGroupComputeResourcePreference(processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
+                    .getResourceType();
+            taskFactory = TaskFactory.getFactory(resourceType);
+            logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
 
         } catch (Exception e) {
             logger.error(
@@ -126,21 +142,21 @@ public class PreWorkflowManager extends WorkflowManager {
 
                 if (intermediateTransfer) {
                     if (taskModel.getTaskType() == TaskTypes.OUTPUT_FETCHING) {
-                        airavataTask = new OutputDataStagingTask();
+                        airavataTask = taskFactory.createOutputDataStagingTask(processId);
                         airavataTask.setForceRunTask(true);
                         airavataTask.setSkipExperimentStatusPublish(true);
                     }
 
                 } else if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
-                    airavataTask = new EnvSetupTask();
+                    airavataTask = taskFactory.createEnvSetupTask(processId);
                     airavataTask.setForceRunTask(true);
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
-                    airavataTask = new DefaultJobSubmissionTask();
+                    airavataTask = taskFactory.createJobSubmissionTask(processId);
                     airavataTask.setForceRunTask(forceRun);
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (!jobSubmissionFound) {
-                        airavataTask = new InputDataStagingTask();
+                        airavataTask = taskFactory.createInputDataStagingTask(processId);
                         airavataTask.setForceRunTask(true);
                     }
                 }
