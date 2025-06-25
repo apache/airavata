@@ -375,18 +375,7 @@ under the License.
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
         </dependency>
-        <!-- ======================== Sample =================== -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-samples</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>db-event-manager</artifactId>
