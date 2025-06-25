@@ -1,34 +1,23 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.helix.impl.task;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.Publisher;
@@ -75,6 +64,17 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Note: process context property use lazy loading approach. In runtime you will see some properties as null
  * unless you have access it previously. Once that property access using the api,it will be set to correct value.
@@ -111,6 +111,7 @@ public class TaskContext {
     private UserComputeResourcePreference userComputeResourcePreference;
     private UserStoragePreference userStoragePreference;
     private GroupComputeResourcePreference groupComputeResourcePreference;
+    private ResourceType resourceType;
 
     private ComputeResourceDescription computeResourceDescription;
     private ApplicationDeploymentDescription applicationDeploymentDescription;
@@ -267,6 +268,14 @@ public class TaskContext {
         this.groupComputeResourcePreference = groupComputeResourcePreference;
     }
 
+    public ResourceType getResourceType() throws Exception {
+        if (resourceType == null) {
+            GroupComputeResourcePreference pref = getGroupComputeResourcePreference();
+            resourceType = pref.getResourceType();
+        }
+        return resourceType;
+    }
+
     public UserResourceProfile getUserResourceProfile() throws Exception {
 
         if (userResourceProfile == null && processModel.isUseUserCRPref()) {
@@ -400,8 +409,8 @@ public class TaskContext {
                         if (outputDataObjectType.getValue() == null
                                 || outputDataObjectType.getValue().equals("")) {
                             String stdOut = (getWorkingDir().endsWith(File.separator)
-                                            ? getWorkingDir()
-                                            : getWorkingDir() + File.separator)
+                                    ? getWorkingDir()
+                                    : getWorkingDir() + File.separator)
                                     + getApplicationInterfaceDescription().getApplicationName() + ".stdout";
                             outputDataObjectType.setValue(stdOut);
                             stdoutLocation = stdOut;
@@ -429,8 +438,8 @@ public class TaskContext {
                         if (outputDataObjectType.getValue() == null
                                 || outputDataObjectType.getValue().equals("")) {
                             String stderrLocation = (getWorkingDir().endsWith(File.separator)
-                                            ? getWorkingDir()
-                                            : getWorkingDir() + File.separator)
+                                    ? getWorkingDir()
+                                    : getWorkingDir() + File.separator)
                                     + getApplicationInterfaceDescription().getApplicationName() + ".stderr";
                             outputDataObjectType.setValue(stderrLocation);
                             this.stderrLocation = stderrLocation;
