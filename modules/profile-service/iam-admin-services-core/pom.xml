@@ -28,6 +28,7 @@ under the License.
 
     
     <artifactId>iam-admin-services-core</artifactId>
+    <packaging>jar</packaging>
     <name>Iam Admin Services</name>
 
     <dependencies>

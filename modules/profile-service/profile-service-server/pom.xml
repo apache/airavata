@@ -26,6 +26,7 @@ under the License.
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>profile-service-server</artifactId>
+    <packaging>jar</packaging>
     <name>Airavata Profile Service Server</name>
     <description>Module to expose a profile service as a thrift service</description>
 
