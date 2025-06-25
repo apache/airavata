@@ -81,9 +81,9 @@ setup() {
     JAVA_THRIFT_FILE="${THRIFTDIR}/stubs_java.thrift"
 
     JAVA_SRC_DIR='../airavata-api/src/main/java'
-    PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
-    CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
-    PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/airavata/'
+    PHP_SDK_DIR='../dev-tools/airavata-php-sdk/lib'
+    CPP_SDK_DIR='../dev-tools/airavata-cpp-sdk/lib/airavata/'
+    PYTHON_SDK_DIR='../dev-tools/airavata-python-sdk/airavata/'
 
 
     # Initialize the thrift arguments.
@@ -96,7 +96,7 @@ setup() {
     # Java stub target directories for components/services
     CS_SRC_DIR='../airavata-api/src/main/java'
     ORCHESTRATOR_SRC_DIR='../modules/orchestrator/orchestrator-client/src/main/java'
-    REGISTRY_SRC_DIR='../modules/registry/registry-server/registry-api-stubs/src/main/java/'
+    REGISTRY_SRC_DIR='../airavata-api/src/main/java/'
     SHARING_REGISTRY_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/'
     PROFILE_SERVICE_SRC_DIR='../airavata-services/profile-service/profile-service-stubs/src/main/java'
 }

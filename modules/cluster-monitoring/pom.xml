@@ -39,11 +39,6 @@ under the License.
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>registry-api-stubs</artifactId>
-            <groupId>org.apache.airavata</groupId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>2.3.2</version>

@@ -35,11 +35,6 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>registry-api-stubs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
             <exclusions>

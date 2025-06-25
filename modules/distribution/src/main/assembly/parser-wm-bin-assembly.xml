@@ -77,7 +77,6 @@
                 <include>javax.activation:activation:jar</include>
                 <include>org.apache.airavata:airavata-api:jar</include>
                 <include>org.apache.airavata:agent-api:jar</include>
-                <include>org.apache.airavata:airavata-api:jar</include>
                 <include>org.apache.airavata:airavata-messaging-core:jar</include>
                 <include>org.apache.airavata:airavata-registry-core:jar</include>
                 <include>org.apache.airavata:airavata-registry-cpi:jar</include>
@@ -142,7 +141,6 @@
                 <include>org.apache.openjpa:openjpa:jar</include>
                 <include>org.apache.airavata:platform-monitor:jar</include>
                 <include>org.apache.airavata:registry-api-service:jar</include>
-                <include>org.apache.airavata:registry-api-stubs:jar</include>
                 <include>net.sourceforge.serp:serp:jar</include>
                 <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>

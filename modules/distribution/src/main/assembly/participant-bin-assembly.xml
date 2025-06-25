@@ -142,7 +142,6 @@
                 <include>org.apache.openjpa:openjpa:jar</include>
                 <include>org.apache.airavata:platform-monitor:jar</include>
                 <include>org.apache.airavata:registry-api-service:jar</include>
-                <include>org.apache.airavata:registry-api-stubs:jar</include>
                 <include>net.sourceforge.serp:serp:jar</include>
                 <include>org.slf4j:slf4j-api:jar</include>
                 <include>org.yaml:snakeyaml:jar</include>

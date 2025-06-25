@@ -29,7 +29,6 @@ under the License.
     <packaging>pom</packaging>
     <modules>
         <module>registry-api-service</module>
-        <module>registry-api-stubs</module>
     </modules>
 
 
