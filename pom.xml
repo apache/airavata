@@ -78,7 +78,6 @@ under the License.
         <module>modules/cluster-monitoring</module>
         <module>modules/db-event-manager</module>
         <module>modules/airavata-helix</module>
-        <module>modules/compute-account-provisioning</module>
         <module>modules/job-monitor</module>
         <module>modules/distribution</module>
         <module>modules/airavata-metascheduler</module>

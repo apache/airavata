@@ -21,12 +21,6 @@
   </properties>
 
   <dependencies>
-    <!-- Airavata clients & stubs -->
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>compute-account-provisioning</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <!-- Core libraries -->
     <dependency>
@@ -295,6 +289,13 @@
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_pushgateway</artifactId>
       <version>0.9.0</version>
+    </dependency>
+
+    <!-- apache directory ldap api! -->
+    <dependency>
+      <groupId>org.apache.directory.api</groupId>
+      <artifactId>api-all</artifactId>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
 
