@@ -27,16 +27,6 @@
       <artifactId>compute-account-provisioning</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>profile-service-stubs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>platform-monitoring</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <!-- Core libraries -->
     <dependency>
@@ -282,6 +272,30 @@
       <artifactId>shiro-core</artifactId>
       <version>1.13.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient</artifactId>
+      <version>0.9.0</version>
+    </dependency>
+    <!-- Hotspot JVM metrics-->
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_hotspot</artifactId>
+      <version>0.9.0</version>
+    </dependency>
+    <!-- Exposition HTTPServer-->
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_httpserver</artifactId>
+      <version>0.9.0</version>
+    </dependency>
+    <!-- Pushgateway exposition-->
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_pushgateway</artifactId>
+      <version>0.9.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -344,6 +358,15 @@
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
                     value="${project.basedir}/../thrift-interface-descriptions/service-cpis/sharing_cpi.thrift" />
+                </exec>
+                <exec executable="thrift">
+                  <arg value="-r" />
+                  <arg value="--gen" />
+                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="-out" />
+                  <arg value="${project.build.directory}/generated-sources/thrift" />
+                  <arg
+                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/profile-service-cpi.thrift" />
                 </exec>
               </tasks>
             </configuration>

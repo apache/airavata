@@ -37,11 +37,6 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>profile-service-stubs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>profile-user-core</artifactId>
             <version>${project.version}</version>
         </dependency>

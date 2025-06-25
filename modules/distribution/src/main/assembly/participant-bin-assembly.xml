@@ -81,7 +81,6 @@
                 <include>org.apache.airavata:airavata-registry-core:jar</include>
                 <include>org.apache.airavata:airavata-registry-cpi:jar</include>
                 <include>org.apache.airavata:airavata-server-configuration:jar</include>
-                <include>org.apache.airavata:profile-service-stubs:jar</include>
                 <include>com.rabbitmq:amqp-client:jar</include>
                 <include>asm:asm:jar</include>
                 <include>org.bouncycastle:bcpkix-jdk15on:jar</include>
@@ -205,7 +204,6 @@
                 <include>org.apache.commons:commons-pool2:jar</include>
                 <include>org.json:json:jar</include>
 
-                <include>org.apache.airavata:platform-monitoring:jar</include>
                 <include>io.prometheus:simpleclient:jar</include>
                 <include>io.prometheus:simpleclient_httpserver:jar</include>
                 <include>io.prometheus:simpleclient_common:jar</include>

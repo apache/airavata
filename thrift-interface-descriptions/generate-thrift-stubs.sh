@@ -95,10 +95,10 @@ setup() {
 
     # Java stub target directories for components/services
     CS_SRC_DIR='../airavata-api/src/main/java'
-    ORCHESTRATOR_SRC_DIR='../modules/orchestrator/orchestrator-client/src/main/java'
+    ORCHESTRATOR_SRC_DIR='../airavata-api/src/main/java'
     REGISTRY_SRC_DIR='../airavata-api/src/main/java/'
-    SHARING_REGISTRY_SRC_DIR='../modules/sharing-registry/sharing-registry-stubs/src/main/java/'
-    PROFILE_SERVICE_SRC_DIR='../airavata-services/profile-service/profile-service-stubs/src/main/java'
+    SHARING_REGISTRY_SRC_DIR='../airavata-api/src/main/java/'
+    PROFILE_SERVICE_SRC_DIR='../airavata-api/src/main/java'
 }
 
 
