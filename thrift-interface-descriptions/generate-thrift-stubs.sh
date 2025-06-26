@@ -177,7 +177,7 @@ generate_java_stubs() {
 
     # Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
     #   with members being private and setters returning voids.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${JAVA_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,jakarta_annotations=undated ${JAVA_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
@@ -294,7 +294,7 @@ generate_component_java_stubs() {
     # Remove any previously generated files
     rm -rf ${JAVA_GEN_DIR}
     # Generate Java stubs
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes for ${COMPONENT_THRIFT_FILE}
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:jakarta_annotations=undated ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes for ${COMPONENT_THRIFT_FILE}
     # Remove generated model classes, airavata api thrift file will generate those.
     rm -rf ${JAVA_GEN_DIR}/org/apache/airavata/model
     # Add license header

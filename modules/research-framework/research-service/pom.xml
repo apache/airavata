@@ -132,11 +132,11 @@ under the License.
             <artifactId>validation-api</artifactId>
             <version>${javax.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <version>1.3.2</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api</artifactId>
@@ -195,6 +195,7 @@ under the License.
                             <groupId>io.grpc</groupId>
                             <artifactId>protoc-gen-grpc-java</artifactId>
                             <version>${grpc.version}</version>
+                            <options>@generated=omit</options>
                         </binaryMavenPlugin>
                     </binaryMavenPlugins>
                 </configuration>

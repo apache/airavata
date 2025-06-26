@@ -34,7 +34,6 @@ under the License.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jul-to-slf4j.version>1.7.0</jul-to-slf4j.version>
         <json.version>20240303</json.version>
-        <javax.version>2.0.1.Final</javax.version>
         <apache.commons.lang3.version>3.14.0</apache.commons.lang3.version>
         <mysql.connector.java>8.0.31</mysql.connector.java>
         <protoc.version>4.30.1</protoc.version>
@@ -123,11 +122,6 @@ under the License.
             <version>3.1.0.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
@@ -180,6 +174,7 @@ under the License.
                             <groupId>io.grpc</groupId>
                             <artifactId>protoc-gen-grpc-java</artifactId>
                             <version>${grpc.version}</version>
+                            <options>@generated=omit</options>
                         </binaryMavenPlugin>
                     </binaryMavenPlugins>
                 </configuration>

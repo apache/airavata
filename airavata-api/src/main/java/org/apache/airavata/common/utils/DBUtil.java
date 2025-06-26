@@ -23,7 +23,7 @@ import java.sql.*;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

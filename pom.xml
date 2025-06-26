@@ -128,10 +128,9 @@ under the License.
         <openjpa.maven.plugin.version>4.0.1</openjpa.maven.plugin.version>
         <openjpa.version>4.0.1</openjpa.version>
         <dozer.version>5.4.0</dozer.version>
-        <javax.annotation.version>1.3.2</javax.annotation.version>
         <jaxb.version>2.4.0-b180830.0359</jaxb.version>
         <jmockit.version>1.44</jmockit.version>
-        <commons.lang.version>2.6</commons.lang.version>
+        <commons.lang.version>3.17.0</commons.lang.version>
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
         <helix.version>0.9.7</helix.version>
         <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>

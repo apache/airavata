@@ -39,7 +39,6 @@ under the License.
   </properties>
 
   <dependencies>
-
     <!-- Core libraries -->
     <dependency>
       <groupId>org.apache.airavata</groupId>
@@ -57,11 +56,6 @@ under the License.
       <version>${thrift.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>${javax.annotation.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-framework</artifactId>
       <version>${curator.version}</version>
@@ -77,16 +71,6 @@ under the License.
       <version>7.0.0</version>
     </dependency>
     <dependency>
-      <groupId>aopalliance</groupId>
-      <artifactId>aopalliance</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.oltu.oauth2</groupId>
-      <artifactId>org.apache.oltu.oauth2.client</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${fasterxml.jackson.version}</version>
@@ -94,13 +78,14 @@ under the License.
 
     <!-- Database & pooling -->
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.4</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-dbcp2</artifactId>
+      <version>2.13.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-pool2</artifactId>
+      <version>2.12.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -123,18 +108,11 @@ under the License.
       <version>${derby.version}</version>
     </dependency>
 
-    <!-- App server -->
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>7.0.22</version>
-    </dependency>
-
     <!-- CLI & mapping -->
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-      <version>1.2</version>
+      <version>1.9.0</version>
     </dependency>
     <dependency>
       <groupId>net.sf.dozer</groupId>
@@ -172,54 +150,14 @@ under the License.
 
     <!-- Other utilities -->
     <dependency>
-      <groupId>edu.uiuc.ncsa.myproxy</groupId>
-      <artifactId>oa4mp-client-api</artifactId>
-      <version>${oa4mp.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>edu.uiuc.ncsa.myproxy</groupId>
-      <artifactId>oa4mp-client-loader-oauth1</artifactId>
-      <version>${oa4mp.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>net.oauth.core</groupId>
-          <artifactId>oauth-httpclient4</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.oauth.core</groupId>
-          <artifactId>oauth-consumer</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>mysql</groupId>
-          <artifactId>mysql-connector-java</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>postgresql</groupId>
-          <artifactId>postgresql</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.jcraft</groupId>
+      <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.1.54</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
+      <version>2.27.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-email</artifactId>
-      <version>1.5</version>
+      <version>1.6.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -229,19 +167,19 @@ under the License.
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.9</version>
+      <version>1.18.0</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20230227</version>
+      <version>20250517</version>
     </dependency>
 
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.7</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -264,38 +202,38 @@ under the License.
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-core</artifactId>
-      <version>1.13.0</version>
+      <version>2.0.4</version>
     </dependency>
 
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient</artifactId>
-      <version>0.9.0</version>
+      <version>0.16.0</version>
     </dependency>
     <!-- Hotspot JVM metrics-->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_hotspot</artifactId>
-      <version>0.9.0</version>
+      <version>0.16.0</version>
     </dependency>
     <!-- Exposition HTTPServer-->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_httpserver</artifactId>
-      <version>0.9.0</version>
+      <version>0.16.0</version>
     </dependency>
     <!-- Pushgateway exposition-->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_pushgateway</artifactId>
-      <version>0.9.0</version>
+      <version>0.16.0</version>
     </dependency>
 
     <!-- apache directory ldap api! -->
     <dependency>
       <groupId>org.apache.directory.api</groupId>
       <artifactId>api-all</artifactId>
-      <version>1.0.0</version>
+      <version>2.1.7</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
@@ -306,18 +244,13 @@ under the License.
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
-      <version>2.3.2</version>
+      <version>2.5.0</version>
     </dependency>
     <dependency>
       <groupId>com.hierynomus</groupId>
       <artifactId>sshj</artifactId>
-      <version>0.39.0</version>
+      <version>0.40.0</version>
     </dependency>
-    <!-- <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>metascheduler-core</artifactId>
-      <version>${project.version}</version>
-    </dependency> -->
     <dependency>
       <groupId>org.apache.helix</groupId>
       <artifactId>helix-core</artifactId>
@@ -338,16 +271,6 @@ under the License.
       </exclusions>
     </dependency>
 
-    <!-- <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>registry-api-service</artifactId>
-      <version>${project.version}</version>
-    </dependency> -->
-    <!-- <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-registry-core</artifactId>
-      <version>${project.version}</version>
-    </dependency> -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-templates</artifactId>
@@ -356,7 +279,7 @@ under the License.
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
-      <version>3.0.14</version>
+      <version>3.5.1</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>
@@ -367,7 +290,7 @@ under the License.
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>2.0</version>
+      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>jakarta.mail</groupId>
@@ -401,7 +324,7 @@ under the License.
                 <exec executable="thrift">
                   <arg value="-r" />
                   <arg value="--gen" />
-                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg value="${project.basedir}/../thrift-interface-descriptions/stubs_java.thrift" />
@@ -409,7 +332,7 @@ under the License.
                 <exec executable="thrift">
                   <arg value="-r" />
                   <arg value="--gen" />
-                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
@@ -418,7 +341,7 @@ under the License.
                 <exec executable="thrift">
                   <arg value="-r" />
                   <arg value="--gen" />
-                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
@@ -427,7 +350,7 @@ under the License.
                 <exec executable="thrift">
                   <arg value="-r" />
                   <arg value="--gen" />
-                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
@@ -436,7 +359,7 @@ under the License.
                 <exec executable="thrift">
                   <arg value="-r" />
                   <arg value="--gen" />
-                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
@@ -445,7 +368,7 @@ under the License.
                 <exec executable="thrift">
                   <arg value="-r" />
                   <arg value="--gen" />
-                  <arg value="java:beans,generated_annotations=undated" />
+                  <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg
