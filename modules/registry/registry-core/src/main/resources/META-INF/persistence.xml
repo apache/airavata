@@ -67,6 +67,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePolicyEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeResourcePrefEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.AWSGroupComputeResourcePrefEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupSSHAccountProvisionerConfig</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ModuleLoadCmdEntity</class>

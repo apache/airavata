@@ -18,10 +18,12 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
+import org.apache.airavata.registry.core.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
 import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
@@ -65,6 +67,19 @@ public class GrpComputePrefRepository
             EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
             esp.setSlurm(scrp);
             pref.setSpecificPreferences(esp);
+
+        } else if (ent instanceof AWSGroupComputeResourcePrefEntity aws) {
+            pref.setResourceType(ResourceType.AWS);
+
+            AwsComputeResourcePreference awsPref = new AwsComputeResourcePreference();
+            awsPref.setRegion(aws.getRegion());
+            awsPref.setPreferredAmiId(aws.getPreferredAmiId());
+            awsPref.setPreferredInstanceType(aws.getPreferredInstanceType());
+
+            EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
+            esp.setAws(awsPref);
+            pref.setSpecificPreferences(esp);
+            return pref;
         }
 
         return pref;

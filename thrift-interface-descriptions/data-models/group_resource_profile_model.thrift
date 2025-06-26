@@ -44,6 +44,7 @@ struct ComputeResourceReservation {
 
 enum ResourceType {
   SLURM = 0,
+  AWS = 1,
 }
 
 struct SlurmComputeResourcePreference {
@@ -58,8 +59,18 @@ struct SlurmComputeResourcePreference {
     9: optional list<ComputeResourceReservation> reservations
 }
 
+struct AwsComputeResourcePreference {
+    1: optional string preferredAmiId,
+    2: optional string preferredInstanceType,
+    3: optional string region,
+    4: optional string securityGroupId,
+    5: optional string keyPairName,
+    6: optional i64    maxStartupTime,
+}
+
 union EnvironmentSpecificPreferences {
     1: SlurmComputeResourcePreference slurm,
+    2: AwsComputeResourcePreference aws,
 }
 
 struct GroupComputeResourcePreference {
