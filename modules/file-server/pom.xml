@@ -100,6 +100,6 @@ under the License.
     </build>
 
     <properties>
-        <file.service.dist.name>File-Service-0.01</file.service.dist.name>
+        <file.service.dist.name>apache-airavata-file-server-${project.version}</file.service.dist.name>
     </properties>
 </project>

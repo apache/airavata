@@ -19,23 +19,9 @@
     under the License.
 
 -->
-<!DOCTYPE assembly [
-        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
-        <!ELEMENT id (#PCDATA)>
-        <!ELEMENT includeBaseDirectory (#PCDATA)>
-        <!ELEMENT baseDirectory (#PCDATA)>
-        <!ELEMENT formats (format)*>
-        <!ELEMENT format (#PCDATA)>
-        <!ELEMENT fileSets (fileSet)*>
-        <!ELEMENT fileSet (directory|outputDirectory|fileMode|includes)*>
-        <!ELEMENT directory (#PCDATA)>
-        <!ELEMENT outputDirectory (#PCDATA)>
-        <!ELEMENT includes (include)*>
-        <!ELEMENT include (#PCDATA)>
-        <!ELEMENT dependencySets (dependencySet)*>
-        <!ELEMENT dependencySet (outputDirectory|outputFileNameMapping|includes)*>
-        ]>
-<assembly>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
     <id>bin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>${research.service.dist.name}</baseDirectory>

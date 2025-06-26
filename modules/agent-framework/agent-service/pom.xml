@@ -40,7 +40,7 @@ under the License.
         <protoc.version>4.30.1</protoc.version>
         <protobuf-plugin.version>2.12.1</protobuf-plugin.version>
         <grpc.version>1.71.0</grpc.version>
-        <agent.service.dist.name>Agent-Service-0.01</agent.service.dist.name>
+        <agent.service.dist.name>apache-airavata-agent-service-${project.version}</agent.service.dist.name>
     </properties>
 
     <dependencyManagement>
