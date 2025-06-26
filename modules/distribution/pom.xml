@@ -78,32 +78,8 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-standalone-server</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
       <artifactId>airavata-api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>airavata-orchestrator-service</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.ws.commons.schema</groupId>
-          <artifactId>XmlSchema</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.neethi</groupId>
-          <artifactId>neethi</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.airavata</groupId>

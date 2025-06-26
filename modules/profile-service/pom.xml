@@ -58,7 +58,6 @@ under the License.
     <module>profile-user-core</module>
     <module>profile-tenant-core</module>
     <module>profile-service-server</module>
-    <module>profile-service-client-sdks</module>
     <module>iam-admin-services-core</module>
   </modules>
 

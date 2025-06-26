@@ -354,11 +354,6 @@ under the License.
       <version>${groovy.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka-clients</artifactId>
-      <version>${kafka-clients.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
       <version>3.0.14</version>
