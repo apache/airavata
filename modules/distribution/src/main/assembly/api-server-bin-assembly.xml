@@ -19,159 +19,127 @@
     under the License.
 
 -->
-<!DOCTYPE assembly [
-        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
-        <!ELEMENT id (#PCDATA)>
-        <!ELEMENT includeBaseDirectory (#PCDATA)>
-        <!ELEMENT baseDirectory (#PCDATA)>
-        <!ELEMENT formats (format)*>
-        <!ELEMENT format (#PCDATA)>
-        <!ELEMENT fileSets (fileSet)*>
-        <!ELEMENT fileSet (directory|outputDirectory|fileMode|includes)*>
-        <!ELEMENT directory (#PCDATA)>
-        <!ELEMENT outputDirectory (#PCDATA)>
-        <!ELEMENT includes (include)*>
-        <!ELEMENT include (#PCDATA)>
-        <!ELEMENT dependencySets (dependencySet)*>
-        <!ELEMENT dependencySet (outputDirectory|outputFileNameMapping|includes)*>
-        ]>
-<assembly>
-    <id>bin</id>
-    <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${api.server.dist.name}</baseDirectory>
-    <formats>
-        <format>tar.gz</format>
-        <format>zip</format>
-    </formats>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+  <id>bin</id>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>${api.server.dist.name}</baseDirectory>
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
 
-    <fileSets>
+  <fileSets>
 
-        <!-- ********************** copy release notes files ********************** -->
-        <fileSet>
-            <directory>../../../</directory>
-            <outputDirectory>.</outputDirectory>
-            <includes>
-                <include>RELEASE_NOTES</include>
-            </includes>
-        </fileSet>
-        <!-- ********************** copy licenses, readme etc. ********************** -->
-        <fileSet>
-            <directory>src/main/resources/api-server</directory>
-            <outputDirectory>.</outputDirectory>
-            <includes>
-                <include>LICENSE</include>
-                <include>NOTICE</include>
-                <include>README</include>
-                <include>INSTALL</include>
-            </includes>
-        </fileSet>
+    <!-- ********************** copy release notes files ********************** -->
+    <fileSet>
+      <directory>../../../</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>RELEASE_NOTES</include>
+      </includes>
+    </fileSet>
+    <!-- ********************** copy licenses, readme etc. ********************** -->
+    <fileSet>
+      <directory>src/main/resources/api-server</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>LICENSE</include>
+        <include>NOTICE</include>
+        <include>README</include>
+        <include>INSTALL</include>
+      </includes>
+    </fileSet>
 
-        <!-- ********************** copy database scripts ********************** -->
-        <fileSet>
-            <directory>../registry/registry-core/src/main/resources/
+    <!-- ********************** copy database scripts ********************** -->
+    <fileSet>
+      <directory>../registry/registry-core/src/main/resources/
             </directory>
-            <outputDirectory>bin/database_scripts
+      <outputDirectory>bin/database_scripts
             </outputDirectory>
-            <includes>
-                <include>*sql*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../airavata-api/src/main/resources/
+      <includes>
+        <include>*sql*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../airavata-api/src/main/resources/
             </directory>
-            <outputDirectory>bin/database_scripts
+      <outputDirectory>bin/database_scripts
             </outputDirectory>
-            <includes>
-                <include>*sql*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../sharing-registry/sharing-registry-server/src/main/resources/
+      <includes>
+        <include>*sql*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../sharing-registry/sharing-registry-server/src/main/resources/
             </directory>
-            <outputDirectory>bin/database_scripts
+      <outputDirectory>bin/database_scripts
             </outputDirectory>
-            <includes>
-                <include>*sql*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../airavata-services/profile-service/profile-user-core/src/main/resources/
+      <includes>
+        <include>*sql*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../airavata-services/profile-service/profile-user-core/src/main/resources/
             </directory>
-            <outputDirectory>bin/database_scripts
+      <outputDirectory>bin/database_scripts
             </outputDirectory>
-            <includes>
-                <include>*sql*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources/api-server/bin</directory>
-            <outputDirectory>bin</outputDirectory>
-            <fileMode>777</fileMode>
-            <includes>
-                <include>*.sh</include>
-                <include>*.bat</include>
-                <include>logo.txt</include>
-                <include>startNetworkServer</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/conf</directory>
-            <outputDirectory>bin</outputDirectory>
-            <includes>
-                <include>airavata-server.properties</include>
-                <include>zoo.cfg</include>
-                <include>registry.properties</include>
-                <include>log4j2.xml</include>
-                <include>host.xml</include>
-                <include>persistence.xml</include>
-                <include>provenance.sql</include>
-                <include>gfac-config.yaml</include>
-                <include>PBS_Groovy.template</include>
-                <include>SLURM_Groovy.template</include>
-                <include>LSF_Groovy.template</include>
-                <include>UGE_Groovy.template</include>
-                <include>FORK_Groovy.template</include>
-                <include>gsissh.properties</include>
-                <include>airavata.jks</include>
-                <include>client_truststore.jks</include>
-                <include>airavata-default-xacml-policy.xml</include>
-                <include>enableLegacyTLS.properties</include>
-            </includes>
-        </fileSet>
+      <includes>
+        <include>*sql*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/api-server/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+      <fileMode>777</fileMode>
+      <includes>
+        <include>*.sh</include>
+        <include>*.bat</include>
+        <include>logo.txt</include>
+        <include>startNetworkServer</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/conf</directory>
+      <outputDirectory>bin</outputDirectory>
+      <includes>
+        <include>airavata-server.properties</include>
+        <include>zoo.cfg</include>
+        <include>registry.properties</include>
+        <include>log4j2.xml</include>
+        <include>host.xml</include>
+        <include>persistence.xml</include>
+        <include>provenance.sql</include>
+        <include>gfac-config.yaml</include>
+        <include>PBS_Groovy.template</include>
+        <include>SLURM_Groovy.template</include>
+        <include>LSF_Groovy.template</include>
+        <include>UGE_Groovy.template</include>
+        <include>FORK_Groovy.template</include>
+        <include>gsissh.properties</include>
+        <include>airavata.jks</include>
+        <include>client_truststore.jks</include>
+        <include>airavata-default-xacml-policy.xml</include>
+        <include>enableLegacyTLS.properties</include>
+      </includes>
+    </fileSet>
 
-        <!-- Create logs directory -->
-        <fileSet>
-            <directory>./</directory>
-            <outputDirectory>logs</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
-            </excludes>
-        </fileSet>
-    </fileSets>
+    <!-- Create logs directory -->
+    <fileSet>
+      <directory>./</directory>
+      <outputDirectory>logs</outputDirectory>
+      <excludes>
+        <exclude>*/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
 
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>lib</outputDirectory>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-            <includes>
-                <include>org.apache.derby:derby:jar</include>
-                <include>org.apache.derby:derbytools:jar</include>
-                <include>org.apache.derby:derbynet:jar</include>
-                <include>org.apache.derby:derbyclient:jar</include>
-            </includes>
-        </dependencySet>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*:*:jar</include>
-            </includes>
-            <excludes>
-                <exclude>mysql:mysql-connector-java</exclude>
-            </excludes>
-        </dependencySet>
-
-    </dependencySets>
+  <dependencySets>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>lib</outputDirectory>
+    </dependencySet>
+  </dependencySets>
 
 </assembly>
