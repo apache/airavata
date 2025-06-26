@@ -328,7 +328,7 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <id>unpack</id>
@@ -368,7 +368,6 @@ under the License.
               <finalName>${api.server.dist.name}</finalName>
               <descriptors>
                 <descriptor>src/main/assembly/api-server-bin-assembly.xml</descriptor>
-                <!-- <descriptor>src/main/assembly/src-assembly.xml</descriptor> -->
               </descriptors>
               <attach>false</attach>
             </configuration>
@@ -497,7 +496,7 @@ under the License.
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>${project.build.directory}</directory>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
                   <includes>
                     <include>${api.server.dist.name}-bin.tar.gz</include>
                   </includes>
@@ -519,7 +518,7 @@ under the License.
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>${project.build.directory}</directory>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
                   <includes>
                     <include>${controller.dist.name}-bin.tar.gz</include>
                   </includes>
@@ -541,7 +540,7 @@ under the License.
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>${project.build.directory}</directory>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
                   <includes>
                     <include>${pre.wm.dist.name}-bin.tar.gz</include>
                   </includes>
@@ -563,7 +562,7 @@ under the License.
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>${project.build.directory}</directory>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
                   <includes>
                     <include>${post.wm.dist.name}-bin.tar.gz</include>
                   </includes>
@@ -585,7 +584,7 @@ under the License.
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>${project.build.directory}</directory>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
                   <includes>
                     <include>${participant.dist.name}-bin.tar.gz</include>
                   </includes>
@@ -607,7 +606,7 @@ under the License.
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>${project.build.directory}</directory>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
                   <includes>
                     <include>${email.monitor.dist.name}-bin.tar.gz</include>
                   </includes>

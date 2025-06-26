@@ -118,7 +118,7 @@ under the License.
         <snakeyaml.version>1.33</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
-        <maven.assembly.plugin>3.3.0</maven.assembly.plugin>
+        <maven.assembly.plugin>3.5.0</maven.assembly.plugin>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <json.version>20160212</json.version>
@@ -415,6 +415,22 @@ under the License.
             </plugin>
 
         </plugins>
+
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>${maven.assembly.plugin}</version>
+              <configuration>
+                <!-- point all modules at root/target/assemblies -->
+                <outputDirectory>${session.executionRootDirectory}/distribution</outputDirectory>
+                <appendAssemblyId>false</appendAssemblyId>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
     </build>
 
     <developers>
