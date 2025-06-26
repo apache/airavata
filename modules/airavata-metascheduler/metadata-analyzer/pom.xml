@@ -45,11 +45,6 @@ under the License.
             <artifactId>quartz</artifactId>
             <version>2.3.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>metascheduler-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

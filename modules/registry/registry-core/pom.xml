@@ -37,6 +37,11 @@ under the License.
     </properties>
 
     <dependencies>
+          <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
@@ -89,11 +94,6 @@ under the License.
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-cpi</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ibatis</groupId>

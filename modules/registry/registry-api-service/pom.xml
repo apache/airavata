@@ -32,7 +32,7 @@ under the License.
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-cpi</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

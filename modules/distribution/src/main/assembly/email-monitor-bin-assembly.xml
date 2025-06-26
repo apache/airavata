@@ -81,8 +81,6 @@
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>org.apache.airavata:email-monitor:jar</include>
-                <include>org.apache.airavata:job-monitor-api:jar</include>
-                <include>org.apache.airavata:task-core:jar</include>
                 <include>org.apache.airavata:airavata-api:jar</include>
                 <include>commons-cli:commons-cli</include>
                 <include>commons-pool:commons-pool</include>

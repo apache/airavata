@@ -77,7 +77,6 @@
                 <include>javax.activation:activation:jar</include>
                 <include>org.apache.airavata:airavata-api:jar</include>
                 <include>org.apache.airavata:airavata-registry-core:jar</include>
-                <include>org.apache.airavata:airavata-registry-cpi:jar</include>
                 <include>org.apache.airavata:airavata-server-configuration:jar</include>
                 <include>com.rabbitmq:amqp-client:jar</include>
                 <include>asm:asm:jar</include>
@@ -108,8 +107,6 @@
                 <include>com.google.code.gson:gson:jar</include>
                 <include>com.google.guava:guava:jar</include>
                 <include>org.hamcrest:hamcrest-core:jar</include>
-                <include>org.apache.helix:helix-core:jar</include>
-                <include>org.apache.airavata:helix-spectator:jar</include>
                 <include>org.apache.httpcomponents:httpclient:jar</include>
                 <include>org.apache.httpcomponents:httpcore:jar</include>
                 <include>com.fasterxml.jackson.core:jackson-annotations:jar</include>
@@ -119,7 +116,6 @@
                 <include>org.codehaus.jackson:jackson-mapper-asl:jar</include>
                 <include>jakarta-regexp:jakarta-regexp:jar</include>
                 <include>jline:jline:jar</include>
-                <include>org.apache.airavata:job-monitor-api:jar</include>
                 <include>junit:junit:jar</include>
                 <include>com.jcraft:jzlib:jar</include>
                 <include>org.apache.kafka:kafka-clients:jar</include>
@@ -142,11 +138,7 @@
                 <include>org.apache.logging.log4j:log4j-1.2-api</include>
                 <include>org.yaml:snakeyaml:jar</include>
                 <include>org.xerial.snappy:snappy-java:jar</include>
-                <include>org.apache.airavata:ssh-agent:jar</include>
                 <include>com.hierynomus:sshj:jar</include>
-                <include>org.apache.airavata:sshj-agent:jar</include>
-                <include>org.apache.airavata:task-api:jar</include>
-                <include>org.apache.airavata:task-core:jar</include>
                 <include>org.apache.tomcat.embed:tomcat-embed-core:jar</include>
                 <include>org.apache.airavata:workflow-impl:jar</include>
                 <include>org.ogce:xpp3:jar</include>

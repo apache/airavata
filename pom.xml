@@ -76,11 +76,9 @@ under the License.
         <module>modules/server</module>
         <module>modules/sharing-registry</module>
         <module>modules/db-event-manager</module>
-        <module>modules/airavata-helix</module>
         <module>modules/job-monitor</module>
         <module>modules/distribution</module>
         <module>modules/airavata-metascheduler</module>
-        <module>modules/airavata-metascheduler/metascheduler-core</module>
         <module>modules/airavata-metascheduler/process-scheduler</module>
         <module>modules/airavata-metascheduler/metadata-analyzer</module>
         <module>modules/agent-framework</module>
