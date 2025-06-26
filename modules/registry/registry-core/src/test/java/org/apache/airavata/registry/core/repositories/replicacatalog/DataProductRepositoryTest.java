@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +34,7 @@ import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DataProductRepositoryTest extends TestBase {
 

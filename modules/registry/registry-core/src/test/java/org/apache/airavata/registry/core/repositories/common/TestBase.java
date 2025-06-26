@@ -27,8 +27,8 @@ import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.WorkflowCatalogDBInitConfig;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class TestBase {
         this.databases = databases;
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         try {
             DerbyUtil.startDerbyInServerMode("127.0.0.1", 20000, "airavata", "airavata");
@@ -68,7 +68,7 @@ public class TestBase {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         for (Database database : databases) {
             System.out.println("Tearing down database " + database.name());

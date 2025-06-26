@@ -19,20 +19,21 @@
 */
 package org.apache.airavata.credential.store.util;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 8/5/13
  * Time: 4:20 PM
  */
-public class TokenGeneratorTest extends TestCase {
+public class TokenGeneratorTest {
 
+    @Test
     public void testGenerateToken() throws Exception {
 
         String token = TokenGenerator.generateToken("gw1", "admin");
-        Assert.assertNotNull(token);
+        assertNotNull(token);
         System.out.println(token);
     }
 }

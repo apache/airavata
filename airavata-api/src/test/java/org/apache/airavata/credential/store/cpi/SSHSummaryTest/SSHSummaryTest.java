@@ -25,7 +25,6 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
-import junit.framework.Assert;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
@@ -34,11 +33,12 @@ import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.apache.airavata.credential.store.util.TokenGenerator;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by abhandar on 10/24/16.
@@ -51,7 +51,7 @@ public class SSHSummaryTest extends DatabaseTestCases {
     private X509Certificate[] x509Certificates;
     private PrivateKey privateKey;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpDatabase() throws Exception {
         DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
 
@@ -87,12 +87,12 @@ public class SSHSummaryTest extends DatabaseTestCases {
         executeSQL(createTable);
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutDownDatabase() throws Exception {
         DerbyUtil.stopDerbyServer();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         credentialsDAO = new CredentialsDAO();
@@ -180,7 +180,7 @@ public class SSHSummaryTest extends DatabaseTestCases {
             sshCredential.setPublicKey(bFilePub);
             sshCredential.setPassphrase("ultrascan");
             writer.writeCredentials(sshCredential);
-            Assert.assertEquals(token, sshCredential.getToken());
+            assertEquals(token, sshCredential.getToken());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

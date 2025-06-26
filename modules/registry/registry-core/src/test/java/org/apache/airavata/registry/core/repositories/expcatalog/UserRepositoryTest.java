@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,9 +30,9 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.core.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class UserRepositoryTest extends TestBase {
         userRepository = new UserRepository();
     }
 
-    @Before
+    @BeforeEach
     public void createTestData() throws RegistryException {
 
         Gateway gateway = new Gateway();
@@ -63,7 +63,7 @@ public class UserRepositoryTest extends TestBase {
         gatewayId2 = gatewayRepository.addGateway(gateway2);
     }
 
-    @After
+    @AfterEach
     public void deleteTestData() throws RegistryException {
 
         gatewayRepository.removeGateway(gatewayId);

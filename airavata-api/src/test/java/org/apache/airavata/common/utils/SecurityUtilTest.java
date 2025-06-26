@@ -22,8 +22,8 @@ package org.apache.airavata.common.utils;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.KeyStore;
-import junit.framework.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -43,7 +43,7 @@ public class SecurityUtilTest {
                 SecurityUtil.encryptString(uri.getPath(), "mykey", new TestKeyStoreCallback(), stringToEncrypt);
 
         String decrypted = SecurityUtil.decryptString(uri.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
-        Assert.assertTrue(stringToEncrypt.equals(decrypted));
+        assertTrue(stringToEncrypt.equals(decrypted));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class SecurityUtilTest {
                 uri.getPath(), "mykey", new TestKeyStoreCallback(), stringToEncrypt.getBytes("UTF-8"));
 
         byte[] decrypted = SecurityUtil.decrypt(uri.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
-        Assert.assertTrue(stringToEncrypt.equals(new String(decrypted, "UTF-8")));
+        assertTrue(stringToEncrypt.equals(new String(decrypted, "UTF-8")));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class SecurityUtilTest {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("mykeystore.jks");
 
         KeyStore ks = SecurityUtil.loadKeyStore(inputStream, "jceks", new TestKeyStoreCallback());
-        Assert.assertNotNull(ks);
+        assertNotNull(ks);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class SecurityUtilTest {
 
         assert uri != null;
         KeyStore ks = SecurityUtil.loadKeyStore(uri.getPath(), "jceks", new TestKeyStoreCallback());
-        Assert.assertNotNull(ks);
+        assertNotNull(ks);
     }
 
     private class TestKeyStoreCallback implements KeyStorePasswordCallback {

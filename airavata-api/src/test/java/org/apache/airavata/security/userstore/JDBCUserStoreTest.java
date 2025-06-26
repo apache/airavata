@@ -24,7 +24,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.security.UserStore;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -48,7 +49,7 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
      * </specificConfigurations>
      * @throws Exception
      */
-    @BeforeClass
+    @BeforeAll
     public static void setUpDatabase() throws Exception {
         DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
 
@@ -68,12 +69,12 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
         executeSQL(insertSQL);
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutDownDatabase() throws Exception {
         DerbyUtil.stopDerbyServer();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {}
 
     @Test
@@ -88,8 +89,8 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
         UserStore userStore = new JDBCUserStore();
         userStore.configure(configurations.item(0));
 
-        Assert.assertTrue(userStore.authenticate("amilaj", "secret"));
-        Assert.assertFalse(userStore.authenticate("amilaj", "1secret"));
-        Assert.assertFalse(userStore.authenticate("lahiru", "1234"));
+        assertTrue(userStore.authenticate("amilaj", "secret"));
+        assertFalse(userStore.authenticate("amilaj", "1secret"));
+        assertFalse(userStore.authenticate("lahiru", "1234"));
     }
 }

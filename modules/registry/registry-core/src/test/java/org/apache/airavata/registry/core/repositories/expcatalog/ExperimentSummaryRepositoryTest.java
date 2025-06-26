@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -36,7 +36,7 @@ import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,7 +175,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
                 0,
                 DBConstants.Experiment.CREATION_TIME,
                 ResultOrderType.ASC);
-        assertEquals("should return no experiments since none are accessible", 0, experimentSummaryModelList.size());
+        assertEquals(0, experimentSummaryModelList.size(), "should return no experiments since none are accessible");
 
         // Test with a userName filter
         filters.clear();
@@ -183,7 +183,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         filters.put(DBConstants.Experiment.USER_NAME, "userOne");
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, -1, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals("should return only userOne's exp", 1, experimentSummaryModelList.size());
+        assertEquals(1, experimentSummaryModelList.size(), "should return only userOne's exp");
         assertEquals("userOne", experimentSummaryModelList.get(0).getUserName());
 
         // Test with pagination
@@ -191,31 +191,22 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 2, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals("should only return 2 experiments since limit=2", 2, experimentSummaryModelList.size());
+        assertEquals(2, experimentSummaryModelList.size(), "should only return 2 experiments since limit=2");
         assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
         assertEquals(experimentIdTwo, experimentSummaryModelList.get(1).getExperimentId());
         // page 2
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 2, 2, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals(
-                "should only return 1 experiment since limit=2 but partial last page",
-                1,
-                experimentSummaryModelList.size());
+        assertEquals(1, experimentSummaryModelList.size(), "should only return 1 experiment since limit=2 but partial last page");
         assertEquals(experimentIdThree, experimentSummaryModelList.get(0).getExperimentId());
         // Test with offset at the end (should return empty list)
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 3, 3, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals(
-                "should return 0 since we're just past the last page (page size of 3)",
-                0,
-                experimentSummaryModelList.size());
+        assertEquals(0, experimentSummaryModelList.size(), "should return 0 since we're just past the last page (page size of 3)");
         // Test with offset past the end (should return empty list)
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 3, 10, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals(
-                "should return 0 since we're well past the last page (page size of 3)",
-                0,
-                experimentSummaryModelList.size());
+        assertEquals(0, experimentSummaryModelList.size(), "should return 0 since we're well past the last page (page size of 3)");
 
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
@@ -276,13 +267,13 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.CREATED.name());
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, -1, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals("should return only one CREATED exp", 1, experimentSummaryModelList.size());
+        assertEquals(1, experimentSummaryModelList.size(), "should return only one CREATED exp");
         assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
         // Only EXECUTING status
         filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.EXECUTING.name());
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, -1, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals("should return only one EXECUTING exp", 1, experimentSummaryModelList.size());
+        assertEquals(1, experimentSummaryModelList.size(), "should return only one EXECUTING exp");
         assertEquals(experimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
         // Experiment 2 is EXECUTING and should be the only one returned

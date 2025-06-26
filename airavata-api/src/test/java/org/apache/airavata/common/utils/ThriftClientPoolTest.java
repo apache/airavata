@@ -29,9 +29,10 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ThriftClientPoolTest {
 
@@ -89,7 +90,7 @@ public class ThriftClientPoolTest {
         abandonedConfig.setRemoveAbandonedOnMaintenance(true);
         abandonedConfig.setLogAbandoned(true);
         StringWriter log = new StringWriter();
-        Assert.assertEquals("Initial length of log is 0", 0, log.toString().length());
+        assertEquals(0, log.toString().length(), "Initial length of log is 0");
         PrintWriter logWriter = new PrintWriter(log);
         abandonedConfig.setLogWriter(logWriter);
         ThriftClientPool<BaseAPI.Client> thriftClientPool =
@@ -100,12 +101,12 @@ public class ThriftClientPoolTest {
             Thread.sleep(1001);
             thriftClientPool.close();
         } catch (InterruptedException e) {
-            Assert.fail("sleep interrupted");
+            fail("sleep interrupted");
         }
 
-        Assert.assertTrue(log.toString().length() > 0);
+        assertTrue(log.toString().length() > 0);
         // The stack trace should contain this method's name
-        Assert.assertTrue(log.toString().contains("testWithAbandonConfigAndAbandoned"));
+        assertTrue(log.toString().contains("testWithAbandonConfigAndAbandoned"));
 
         new Verifications() {
             {
@@ -142,7 +143,7 @@ public class ThriftClientPoolTest {
         abandonedConfig.setLogAbandoned(false);
         // Setup log writer so we can verify that nothing was logged
         StringWriter log = new StringWriter();
-        Assert.assertEquals("Initial length of log is 0", 0, log.toString().length());
+        assertEquals(0, log.toString().length(), "Initial length of log is 0");
         PrintWriter logWriter = new PrintWriter(log);
         abandonedConfig.setLogWriter(logWriter);
         ThriftClientPool<BaseAPI.Client> thriftClientPool =
@@ -153,11 +154,11 @@ public class ThriftClientPoolTest {
             Thread.sleep(1001);
             thriftClientPool.close();
         } catch (InterruptedException e) {
-            Assert.fail("sleep interrupted");
+            fail("sleep interrupted");
         }
 
         // Verify that nothing was logged
-        Assert.assertEquals(0, log.toString().length());
+        assertEquals(0, log.toString().length());
 
         new Verifications() {
             {
@@ -178,7 +179,7 @@ public class ThriftClientPoolTest {
      * @throws ApplicationSettingsException
      */
     @Test
-    @Ignore("Test requires long wait time to account for default removeAbandonedTimeout")
+    @Disabled("Test requires long wait time to account for default removeAbandonedTimeout")
     public void testWithDefaultAbandonedRemovalEnabled() throws TException, ApplicationSettingsException {
 
         new Expectations() {
@@ -206,7 +207,7 @@ public class ThriftClientPoolTest {
             Thread.sleep(new AbandonedConfig().getRemoveAbandonedTimeout() * 1000 + 1);
             thriftClientPool.close();
         } catch (InterruptedException e) {
-            Assert.fail("sleep interrupted");
+            fail("sleep interrupted");
         }
 
         new Verifications() {

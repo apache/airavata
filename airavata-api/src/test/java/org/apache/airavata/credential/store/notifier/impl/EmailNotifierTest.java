@@ -19,19 +19,22 @@
 */
 package org.apache.airavata.credential.store.notifier.impl;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 12/27/13
  * Time: 1:54 PM
  */
-public class EmailNotifierTest extends TestCase {
+public class EmailNotifierTest {
+    
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
     }
 
     // Test is disabled. Need to fill in parameters to send mails
+    @Test
     public void xtestNotifyMessage() throws Exception {
 
         EmailNotifierConfiguration emailNotifierConfiguration =
@@ -44,5 +47,6 @@ public class EmailNotifierTest extends TestCase {
     }
 
     // Just to ignore test failures.
+    @Test
     public void testIgnore() {}
 }

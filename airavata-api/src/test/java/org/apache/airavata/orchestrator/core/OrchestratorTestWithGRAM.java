@@ -70,9 +70,9 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
     ////        boolean b = orchestrator.launchProcess(experimentID);
     ////
     ////        if (b) {
-    ////            Assert.assertTrue(true);
+    ////            Assertions.assertTrue(true);
     ////        } else {
-    ////            Assert.assertFalse(true);
+    ////            Assertions.assertFalse(true);
     ////        }
     //    }
 

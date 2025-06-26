@@ -34,9 +34,10 @@ import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GatewayGroupsInitializerTest {
     public static final String GATEWAY_ID = "test-gateway";
@@ -55,9 +56,8 @@ public class GatewayGroupsInitializerTest {
 
     GatewayGroupsInitializer gatewayGroupsInitializer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-
         gatewayGroupsInitializer =
                 new GatewayGroupsInitializer(mockRegistryClient, mockSharingRegistryClient, mockCredentialStoreClient);
     }
@@ -94,7 +94,7 @@ public class GatewayGroupsInitializerTest {
         };
 
         GatewayGroups gatewayGroups = gatewayGroupsInitializer.initialize(GATEWAY_ID);
-        Assert.assertEquals(GATEWAY_ID, gatewayGroups.getGatewayId());
+        assertEquals(GATEWAY_ID, gatewayGroups.getGatewayId());
 
         new Verifications() {
             {
@@ -102,29 +102,29 @@ public class GatewayGroupsInitializerTest {
 
                 if (!doesAdminUserExist) {
                     mockSharingRegistryClient.createUser(adminUser = withCapture());
-                    Assert.assertEquals(adminUser.getUserId(), ADMIN_OWNER_ID);
-                    Assert.assertEquals(adminUser.getUserName(), TEST_ADMIN_USERNAME);
-                    Assert.assertEquals(adminUser.getDomainId(), GATEWAY_ID);
+                    assertEquals(adminUser.getUserId(), ADMIN_OWNER_ID);
+                    assertEquals(adminUser.getUserName(), TEST_ADMIN_USERNAME);
+                    assertEquals(adminUser.getDomainId(), GATEWAY_ID);
                 }
 
                 List<UserGroup> groups = new ArrayList<>();
                 mockSharingRegistryClient.createGroup(withCapture(groups));
-                Assert.assertEquals(3, groups.size());
+                assertEquals(3, groups.size());
                 groups.forEach(group -> {
-                    Assert.assertEquals(GATEWAY_ID, group.getDomainId());
-                    Assert.assertEquals(ADMIN_OWNER_ID, group.getOwnerId());
-                    Assert.assertEquals(GroupCardinality.MULTI_USER, group.getGroupCardinality());
+                    assertEquals(GATEWAY_ID, group.getDomainId());
+                    assertEquals(ADMIN_OWNER_ID, group.getOwnerId());
+                    assertEquals(GroupCardinality.MULTI_USER, group.getGroupCardinality());
                 });
-                groups.forEach(group -> Assert.assertEquals(GATEWAY_ID, group.getDomainId()));
+                groups.forEach(group -> assertEquals(GATEWAY_ID, group.getDomainId()));
                 UserGroup gatewayUsersGroup = groups.get(0);
                 UserGroup adminsGroup = groups.get(1);
                 UserGroup readOnlyAdminsGroup = groups.get(2);
-                Assert.assertEquals("Gateway Users", gatewayUsersGroup.getName());
-                Assert.assertEquals(gatewayGroups.getDefaultGatewayUsersGroupId(), gatewayUsersGroup.getGroupId());
-                Assert.assertEquals("Admin Users", adminsGroup.getName());
-                Assert.assertEquals(gatewayGroups.getAdminsGroupId(), adminsGroup.getGroupId());
-                Assert.assertEquals("Read Only Admin Users", readOnlyAdminsGroup.getName());
-                Assert.assertEquals(gatewayGroups.getReadOnlyAdminsGroupId(), readOnlyAdminsGroup.getGroupId());
+                assertEquals("Gateway Users", gatewayUsersGroup.getName());
+                assertEquals(gatewayGroups.getDefaultGatewayUsersGroupId(), gatewayUsersGroup.getGroupId());
+                assertEquals("Admin Users", adminsGroup.getName());
+                assertEquals(gatewayGroups.getAdminsGroupId(), adminsGroup.getGroupId());
+                assertEquals("Read Only Admin Users", readOnlyAdminsGroup.getName());
+                assertEquals(gatewayGroups.getReadOnlyAdminsGroupId(), readOnlyAdminsGroup.getGroupId());
             }
         };
     }

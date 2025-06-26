@@ -20,8 +20,8 @@
 package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ObjectMapperSingletonTest {
 
@@ -44,30 +44,28 @@ public class ObjectMapperSingletonTest {
         testUserConfigurationDataModel.setAiravataAutoSchedule(false);
 
         // Make sure these fields have default values
-        Assert.assertNotNull(
-                "airavataAutoSchedule has default value",
+        Assertions.assertNotNull(
                 new UserConfigurationDataModel()
-                        .getFieldValue(UserConfigurationDataModel._Fields.AIRAVATA_AUTO_SCHEDULE));
-        Assert.assertNotNull(
-                "overrideManualScheduledParams has default value",
+                        .getFieldValue(UserConfigurationDataModel._Fields.AIRAVATA_AUTO_SCHEDULE),
+                "airavataAutoSchedule has default value");
+        Assertions.assertNotNull(
                 new UserConfigurationDataModel()
-                        .getFieldValue(UserConfigurationDataModel._Fields.OVERRIDE_MANUAL_SCHEDULED_PARAMS));
-        Assert.assertNotNull(
-                "shareExperimentPublicly has default value",
+                        .getFieldValue(UserConfigurationDataModel._Fields.OVERRIDE_MANUAL_SCHEDULED_PARAMS),
+                "overrideManualScheduledParams has default value");
+        Assertions.assertNotNull(
                 new UserConfigurationDataModel()
-                        .getFieldValue(UserConfigurationDataModel._Fields.SHARE_EXPERIMENT_PUBLICLY));
+                        .getFieldValue(UserConfigurationDataModel._Fields.SHARE_EXPERIMENT_PUBLICLY),
+                "shareExperimentPublicly has default value");
         UserConfigurationDataModel userConfigurationDataModel = ObjectMapperSingleton.getInstance()
                 .map(testUserConfigurationDataModel, UserConfigurationDataModel.class);
 
-        Assert.assertTrue(userConfigurationDataModel.isSetAiravataAutoSchedule());
-        Assert.assertFalse(userConfigurationDataModel.isAiravataAutoSchedule());
-        Assert.assertTrue(
-                "even though overrideManualScheduledParams isn't a field on the source object, since it has a default value it should be set",
+        Assertions.assertTrue(userConfigurationDataModel.isSetAiravataAutoSchedule());
+        Assertions.assertFalse(userConfigurationDataModel.isAiravataAutoSchedule());
+        Assertions.assertTrue(
                 userConfigurationDataModel.isSetOverrideManualScheduledParams());
-        Assert.assertFalse(userConfigurationDataModel.isOverrideManualScheduledParams());
-        Assert.assertTrue(
-                "even though shareExperimentPublicly isn't a field on the source object, since it has a default value it should be set",
+        Assertions.assertFalse(userConfigurationDataModel.isOverrideManualScheduledParams());
+        Assertions.assertTrue(
                 userConfigurationDataModel.isSetShareExperimentPublicly());
-        Assert.assertFalse(userConfigurationDataModel.isShareExperimentPublicly());
+        Assertions.assertFalse(userConfigurationDataModel.isShareExperimentPublicly());
     }
 }

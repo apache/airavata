@@ -19,35 +19,40 @@
 */
 package org.apache.airavata.credential.store.util;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 8/25/13
  * Time: 10:28 AM
  */
-public class ConfigurationReaderTest extends TestCase {
+public class ConfigurationReaderTest {
+    
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
     }
 
+    @Test
     public void testGetSuccessUrl() throws Exception {
 
         ConfigurationReader configurationReader = new ConfigurationReader();
         System.out.println(configurationReader.getSuccessUrl());
-        Assert.assertEquals("/credential-store/success.jsp", configurationReader.getSuccessUrl());
+        assertEquals("/credential-store/success.jsp", configurationReader.getSuccessUrl());
     }
 
+    @Test
     public void testGetErrorUrl() throws Exception {
 
         ConfigurationReader configurationReader = new ConfigurationReader();
-        Assert.assertEquals("/credential-store/error.jsp", configurationReader.getErrorUrl());
+        assertEquals("/credential-store/error.jsp", configurationReader.getErrorUrl());
     }
 
+    @Test
     public void testRedirectUrl() throws Exception {
 
         ConfigurationReader configurationReader = new ConfigurationReader();
-        Assert.assertEquals("/credential-store/show-redirect.jsp", configurationReader.getPortalRedirectUrl());
+        assertEquals("/credential-store/show-redirect.jsp", configurationReader.getPortalRedirectUrl());
     }
 }

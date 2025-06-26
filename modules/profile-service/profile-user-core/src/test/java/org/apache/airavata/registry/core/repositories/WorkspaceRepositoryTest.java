@@ -63,7 +63,7 @@ public class WorkspaceRepositoryTest {
     //        gateway.setGatewayId(gatewayId);
     //        gateway.setDomain(GATEWAY_DOMAIN);
     //        gateway = gatewayRepository.create(gateway);
-    //        Assert.assertTrue(!gateway.getGatewayId().isEmpty());
+    //        Assertions.assertTrue(!gateway.getGatewayId().isEmpty());
     //
     //
     //
@@ -78,7 +78,7 @@ public class WorkspaceRepositoryTest {
     //         * Workspace UserProfile Repository Insert Operation Test
     //		 */
     //        userProfile = userProfileRepository.create(userProfile);
-    //        Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
+    //        Assertions.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
     //
     //        /*
     //         * Workspace UserProfile Repository Update Operation Test
@@ -87,21 +87,21 @@ public class WorkspaceRepositoryTest {
     //        userProfileRepository.update(userProfile);
     //        userProfile = userProfileRepository.get(userId);
     //        System.out.println(userProfile.getComments());
-    //        Assert.assertEquals(userProfile.getComments(), USER_COMMENT);
+    //        Assertions.assertEquals(userProfile.getComments(), USER_COMMENT);
     //
     //		/*
     //         * Workspace UserProfile Repository Select Operation Test
     //		 */
     //        userProfile = userProfileRepository.get(userId);
-    //        Assert.assertNotNull(userProfile);
+    //        Assertions.assertNotNull(userProfile);
     //
     //		/*
     //         * Workspace UserProfile Repository Delete Operation
     //		 */
     //        boolean deleteResult = userProfileRepository.delete(userId);
-    //        Assert.assertTrue(deleteResult);
+    //        Assertions.assertTrue(deleteResult);
     //        deleteResult = gatewayRepository.delete(gatewayId);
-    //        Assert.assertTrue(deleteResult);
+    //        Assertions.assertTrue(deleteResult);
     //
     //
     //    }
@@ -117,7 +117,7 @@ public class WorkspaceRepositoryTest {
     //        gateway.setGatewayId(gatewayId);
     //        gateway.setDomain(GATEWAY_DOMAIN);
     //        gateway = gatewayRepository.create(gateway);
-    //        Assert.assertTrue(!gateway.getGatewayId().isEmpty());
+    //        Assertions.assertTrue(!gateway.getGatewayId().isEmpty());
     //
     //		/*
     //         * UserProfile Instance creation required for Project Creation
@@ -126,7 +126,7 @@ public class WorkspaceRepositoryTest {
     //        userProfile.setAiravataInternalUserId(userId);
     //        userProfile.setGatewayId(gateway.getGatewayId());
     //        userProfile = userProfileRepository.create(userProfile);
-    //        Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
+    //        Assertions.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
     //
     //        /*
     //         * Project Instance creation
@@ -142,7 +142,7 @@ public class WorkspaceRepositoryTest {
     //         * Workspace Project Repository Insert Operation Test
     //		 */
     //        project = projectRepository.create(project);
-    //        Assert.assertTrue(!project.getProjectID().isEmpty());
+    //        Assertions.assertTrue(!project.getProjectID().isEmpty());
     //
     //        /*
     //         * Workspace Project Repository Update Operation Test
@@ -150,25 +150,25 @@ public class WorkspaceRepositoryTest {
     //        project.setDescription(PROJECT_DESCRIPTION);
     //        projectRepository.update(project);
     //        project = projectRepository.get(projectId);
-    //        Assert.assertEquals(project.getDescription(), PROJECT_DESCRIPTION);
+    //        Assertions.assertEquals(project.getDescription(), PROJECT_DESCRIPTION);
     //
     //		/*
     //         * Workspace Project Repository Select Operation Test
     //		 */
     //        project = projectRepository.get(projectId);
-    //        Assert.assertNotNull(project);
+    //        Assertions.assertNotNull(project);
     //
     //		/*
     //         * Workspace Project Repository Delete Operation
     //		 */
     //        boolean deleteResult = projectRepository.delete(projectId);
-    //        Assert.assertTrue(deleteResult);
+    //        Assertions.assertTrue(deleteResult);
     //
     //        deleteResult = userProfileRepository.delete(userId);
-    //        Assert.assertTrue(deleteResult);
+    //        Assertions.assertTrue(deleteResult);
     //
     //        deleteResult = gatewayRepository.delete(gatewayId);
-    //        Assert.assertTrue(deleteResult);
+    //        Assertions.assertTrue(deleteResult);
     //
     //
     //    }

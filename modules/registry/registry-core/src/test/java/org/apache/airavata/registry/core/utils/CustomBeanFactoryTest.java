@@ -21,38 +21,38 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.thrift.TFieldRequirementType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CustomBeanFactoryTest {
 
     @Test
     public void testRequiredFieldWithDefault() {
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 TFieldRequirementType.REQUIRED,
                 UserConfigurationDataModel.metaDataMap.get(UserConfigurationDataModel._Fields.AIRAVATA_AUTO_SCHEDULE)
                         .requirementType);
         UserConfigurationDataModel fromConstructor = new UserConfigurationDataModel();
-        Assert.assertFalse(fromConstructor.isSetAiravataAutoSchedule());
+        Assertions.assertFalse(fromConstructor.isSetAiravataAutoSchedule());
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
         UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
                 customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName());
-        Assert.assertTrue(fromFactory.isSetAiravataAutoSchedule());
+        Assertions.assertTrue(fromFactory.isSetAiravataAutoSchedule());
     }
 
     @Test
     public void testOptionalFieldWithDefault() {
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 TFieldRequirementType.OPTIONAL,
                 UserConfigurationDataModel.metaDataMap.get(UserConfigurationDataModel._Fields.SHARE_EXPERIMENT_PUBLICLY)
                         .requirementType);
         UserConfigurationDataModel fromConstructor = new UserConfigurationDataModel();
-        Assert.assertFalse(fromConstructor.isSetShareExperimentPublicly());
+        Assertions.assertFalse(fromConstructor.isSetShareExperimentPublicly());
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
         UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
                 customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName());
-        Assert.assertTrue(fromFactory.isSetShareExperimentPublicly());
+        Assertions.assertTrue(fromFactory.isSetShareExperimentPublicly());
     }
 }

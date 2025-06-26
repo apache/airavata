@@ -33,7 +33,7 @@ import java.util.ListIterator;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.common.utils.JDBCConfig;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -221,7 +221,7 @@ public class DerbyTestUtil {
      */
     public static void dropSchema(DatabaseMetaData dmd, String schema) throws SQLException {
         Connection conn = dmd.getConnection();
-        Assert.assertFalse(conn.getAutoCommit());
+        Assertions.assertFalse(conn.getAutoCommit());
         Statement s = dmd.getConnection().createStatement();
 
         // Triggers
@@ -374,13 +374,13 @@ public class DerbyTestUtil {
         boolean hadError;
         try {
             results = s.executeBatch();
-            Assert.assertNotNull(results);
-            Assert.assertEquals("Incorrect result length from executeBatch", batchCount, results.length);
+            Assertions.assertNotNull(results);
+            Assertions.assertEquals(batchCount, results.length, "Incorrect result length from executeBatch");
             hadError = false;
         } catch (BatchUpdateException batchException) {
             results = batchException.getUpdateCounts();
-            Assert.assertNotNull(results);
-            Assert.assertTrue("Too many results in BatchUpdateException", results.length <= batchCount);
+            Assertions.assertNotNull(results);
+            Assertions.assertTrue(results.length <= batchCount, "Too many results in BatchUpdateException");
             hadError = true;
         }
 
@@ -392,7 +392,7 @@ public class DerbyTestUtil {
             else if (result == Statement.SUCCESS_NO_INFO || result >= 0) {
                 didDrop = true;
                 ddl.set(i, null);
-            } else Assert.fail("Negative executeBatch status");
+            } else Assertions.fail("Negative executeBatch status");
         }
         s.clearBatch();
         if (didDrop) {

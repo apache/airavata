@@ -30,9 +30,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * JdbcUtil utility methods for the JUnit tests.
@@ -218,7 +219,7 @@ public class DerbyTestUtil {
      */
     public static void dropSchema(DatabaseMetaData dmd, String schema) throws SQLException {
         Connection conn = dmd.getConnection();
-        Assert.assertFalse(conn.getAutoCommit());
+        assertFalse(conn.getAutoCommit());
         Statement s = dmd.getConnection().createStatement();
 
         // Triggers
@@ -371,13 +372,13 @@ public class DerbyTestUtil {
         boolean hadError;
         try {
             results = s.executeBatch();
-            Assert.assertNotNull(results);
-            Assert.assertEquals("Incorrect result length from executeBatch", batchCount, results.length);
+            assertNotNull(results);
+            assertEquals(batchCount, results.length, "Incorrect result length from executeBatch");
             hadError = false;
         } catch (BatchUpdateException batchException) {
             results = batchException.getUpdateCounts();
-            Assert.assertNotNull(results);
-            Assert.assertTrue("Too many results in BatchUpdateException", results.length <= batchCount);
+            assertNotNull(results);
+            assertTrue(results.length <= batchCount, "Too many results in BatchUpdateException");
             hadError = true;
         }
 
@@ -389,7 +390,7 @@ public class DerbyTestUtil {
             else if (result == Statement.SUCCESS_NO_INFO || result >= 0) {
                 didDrop = true;
                 ddl.set(i, null);
-            } else Assert.fail("Negative executeBatch status");
+            } else fail("Negative executeBatch status");
         }
         s.clearBatch();
         if (didDrop) {

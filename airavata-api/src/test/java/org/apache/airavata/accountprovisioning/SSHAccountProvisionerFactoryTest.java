@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.provisioner.TestSSHAccountProvisioner;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SSHAccountProvisionerFactoryTest {
 
@@ -37,9 +37,9 @@ public class SSHAccountProvisionerFactoryTest {
         List<String> sshAccountProvisionerNames = sshAccountProvisionerProviders.stream()
                 .map(SSHAccountProvisionerProvider::getName)
                 .collect(Collectors.toList());
-        Assert.assertTrue(
-                "names should contain TestSSHAccountProvisioner",
-                sshAccountProvisionerNames.contains("TestSSHAccountProvisioner"));
+        Assertions.assertTrue(
+                sshAccountProvisionerNames.contains("TestSSHAccountProvisioner"),
+                "names should contain TestSSHAccountProvisioner");
     }
 
     @Test
@@ -47,19 +47,19 @@ public class SSHAccountProvisionerFactoryTest {
 
         List<ConfigParam> configParams =
                 SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams("TestSSHAccountProvisioner");
-        Assert.assertEquals(5, configParams.size());
+        Assertions.assertEquals(5, configParams.size());
         ConfigParam ldaphost = configParams.get(0);
-        Assert.assertEquals("ldaphost", ldaphost.getName());
-        Assert.assertEquals(ConfigParam.ConfigParamType.STRING, ldaphost.getType());
+        Assertions.assertEquals("ldaphost", ldaphost.getName());
+        Assertions.assertEquals(ConfigParam.ConfigParamType.STRING, ldaphost.getType());
         ConfigParam ldapport = configParams.get(1);
-        Assert.assertEquals("ldapport", ldapport.getName());
-        Assert.assertEquals(ConfigParam.ConfigParamType.STRING, ldapport.getType());
+        Assertions.assertEquals("ldapport", ldapport.getName());
+        Assertions.assertEquals(ConfigParam.ConfigParamType.STRING, ldapport.getType());
         ConfigParam ldapUsername = configParams.get(2);
-        Assert.assertEquals("ldap_username", ldapUsername.getName());
-        Assert.assertEquals(ConfigParam.ConfigParamType.STRING, ldapUsername.getType());
+        Assertions.assertEquals("ldap_username", ldapUsername.getName());
+        Assertions.assertEquals(ConfigParam.ConfigParamType.STRING, ldapUsername.getType());
         ConfigParam ldapPassword = configParams.get(3);
-        Assert.assertEquals("ldap_password", ldapPassword.getName());
-        Assert.assertEquals(ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN, ldapPassword.getType());
+        Assertions.assertEquals("ldap_password", ldapPassword.getName());
+        Assertions.assertEquals(ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN, ldapPassword.getType());
     }
 
     @Test
@@ -75,8 +75,8 @@ public class SSHAccountProvisionerFactoryTest {
         TestSSHAccountProvisioner sshAccountProvisioner = (TestSSHAccountProvisioner)
                 SSHAccountProvisionerFactory.createSSHAccountProvisioner("TestSSHAccountProvisioner", config);
         // Make sure all of the config params and values were passed to SSHAccountProvisioner
-        Assert.assertTrue(sshAccountProvisioner.getConfig().containsKey(test1));
-        Assert.assertTrue(sshAccountProvisioner.getConfig().containsKey(test2));
-        Assert.assertTrue(sshAccountProvisioner.getConfig().containsKey(test3));
+        Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test1));
+        Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test2));
+        Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test3));
     }
 }

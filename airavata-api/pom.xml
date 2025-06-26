@@ -21,6 +21,7 @@ under the License.
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.apache.airavata</groupId>
     <artifactId>airavata</artifactId>
@@ -36,6 +37,10 @@ under the License.
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <httpclient5.version>5.2.1</httpclient5.version>
+    <junit.version>5.9.3</junit.version>
+    <surefire.version>3.0.0-M9</surefire.version>
+    <enforcer.plugin.version>3.5.0</enforcer.plugin.version>
   </properties>
 
   <dependencies>
@@ -61,9 +66,9 @@ under the License.
       <version>${curator.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>${httpclient5.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.inject</groupId>
@@ -74,6 +79,20 @@ under the License.
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${fasterxml.jackson.version}</version>
+    </dependency>
+
+    <!-- Provided APIs -->
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Database & pooling -->
@@ -177,9 +196,9 @@ under the License.
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -210,35 +229,26 @@ under the License.
       <artifactId>simpleclient</artifactId>
       <version>0.16.0</version>
     </dependency>
-    <!-- Hotspot JVM metrics-->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_hotspot</artifactId>
       <version>0.16.0</version>
     </dependency>
-    <!-- Exposition HTTPServer-->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_httpserver</artifactId>
       <version>0.16.0</version>
     </dependency>
-    <!-- Pushgateway exposition-->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_pushgateway</artifactId>
       <version>0.16.0</version>
     </dependency>
 
-    <!-- apache directory ldap api! -->
     <dependency>
       <groupId>org.apache.directory.api</groupId>
       <artifactId>api-all</artifactId>
       <version>2.1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>${codehaus.jackson.version}</version>
     </dependency>
 
     <dependency>
@@ -306,11 +316,32 @@ under the License.
 
   <build>
     <plugins>
+      <!-- Enforce version convergence -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${enforcer.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>enforce-deps</id>
+            <goals>
+              <!-- <goal>enforce</goal> -->
+            </goals>
+            <configuration>
+              <rules>
+                <RequireUpperBoundDeps />
+                <DependencyConvergence />
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Consolidated Thrift code generation -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
+        <version>3.1.0</version>
         <executions>
           <execution>
             <id>generate-thrift-sources</id>
@@ -319,7 +350,7 @@ under the License.
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <mkdir dir="${project.build.directory}/generated-sources/thrift" />
                 <exec executable="thrift">
                   <arg value="-r" />
@@ -329,52 +360,7 @@ under the License.
                   <arg value="${project.build.directory}/generated-sources/thrift" />
                   <arg value="${project.basedir}/../thrift-interface-descriptions/stubs_java.thrift" />
                 </exec>
-                <exec executable="thrift">
-                  <arg value="-r" />
-                  <arg value="--gen" />
-                  <arg value="java:beans,jakarta_annotations=undated" />
-                  <arg value="-out" />
-                  <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg
-                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/credential-store-cpi.thrift" />
-                </exec>
-                <exec executable="thrift">
-                  <arg value="-r" />
-                  <arg value="--gen" />
-                  <arg value="java:beans,jakarta_annotations=undated" />
-                  <arg value="-out" />
-                  <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg
-                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/registry-api.thrift" />
-                </exec>
-                <exec executable="thrift">
-                  <arg value="-r" />
-                  <arg value="--gen" />
-                  <arg value="java:beans,jakarta_annotations=undated" />
-                  <arg value="-out" />
-                  <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg
-                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/orchestrator-cpi.thrift" />
-                </exec>
-                <exec executable="thrift">
-                  <arg value="-r" />
-                  <arg value="--gen" />
-                  <arg value="java:beans,jakarta_annotations=undated" />
-                  <arg value="-out" />
-                  <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg
-                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/sharing_cpi.thrift" />
-                </exec>
-                <exec executable="thrift">
-                  <arg value="-r" />
-                  <arg value="--gen" />
-                  <arg value="java:beans,jakarta_annotations=undated" />
-                  <arg value="-out" />
-                  <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg
-                    value="${project.basedir}/../thrift-interface-descriptions/service-cpis/profile-service-cpi.thrift" />
-                </exec>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>
@@ -433,7 +419,7 @@ under the License.
             <credential.module.directory>${basedir}</credential.module.directory>
           </systemPropertyVariables>
           <useSystemClassLoader>false</useSystemClassLoader>
-          <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+          <argLine>-Xmx1024m</argLine>
           <reuseForks>false</reuseForks>
           <excludes>
             <exclude>**/DAOBaseTestCase.java</exclude>

@@ -32,16 +32,16 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SharingRegistryServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServiceTest.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         SharingRegistryServer server = new SharingRegistryServer();
         server.setTestMode(true);
@@ -77,7 +77,7 @@ public class SharingRegistryServiceTest {
         domain.setDescription("test domain description");
 
         String domainId = sharingServiceClient.createDomain(domain);
-        Assert.assertTrue(sharingServiceClient.isDomainExists(domainId));
+        Assertions.assertTrue(sharingServiceClient.isDomainExists(domainId));
 
         User user1 = new User();
         // required
@@ -97,7 +97,7 @@ public class SharingRegistryServiceTest {
         // user1.setIcon(icon1);
 
         sharingServiceClient.createUser(user1);
-        Assert.assertTrue(sharingServiceClient.isUserExists(domainId, "test-user-1"));
+        Assertions.assertTrue(sharingServiceClient.isUserExists(domainId, "test-user-1"));
 
         User user2 = new User();
         // required
@@ -158,13 +158,13 @@ public class SharingRegistryServiceTest {
 
         // Test updates to user and how it affects the user's SINGLE_USER group
         UserGroup singleUserGroupUser7 = sharingServiceClient.getGroup(domainId, user7.getUserId());
-        Assert.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
+        Assertions.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
         user7.setFirstName("Johnny");
         sharingServiceClient.updatedUser(user7);
         User updatedUser7 = sharingServiceClient.getUser(domainId, user7.getUserId());
-        Assert.assertEquals("Johnny", updatedUser7.getFirstName());
+        Assertions.assertEquals("Johnny", updatedUser7.getFirstName());
         singleUserGroupUser7 = sharingServiceClient.getGroup(domainId, user7.getUserId());
-        Assert.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
+        Assertions.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
 
         UserGroup userGroup1 = new UserGroup();
         // required
@@ -183,11 +183,11 @@ public class SharingRegistryServiceTest {
         sharingServiceClient.createGroup(userGroup1);
         userGroup1.setDescription("updated description");
         sharingServiceClient.updateGroup(userGroup1);
-        Assert.assertTrue(sharingServiceClient
+        Assertions.assertTrue(sharingServiceClient
                 .getGroup(domainId, userGroup1.getGroupId())
                 .getDescription()
                 .equals("updated description"));
-        Assert.assertTrue(sharingServiceClient.isGroupExists(domainId, "test-group-1"));
+        Assertions.assertTrue(sharingServiceClient.isGroupExists(domainId, "test-group-1"));
 
         UserGroup userGroup2 = new UserGroup();
         // required
@@ -212,25 +212,25 @@ public class SharingRegistryServiceTest {
         sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
 
         // Group roles
-        Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
+        Assertions.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
 
         // user has admin access
-        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
-        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
+        Assertions.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
+        Assertions.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
         UserGroup getGroup = sharingServiceClient.getGroup(domainId, "test-group-1");
-        Assert.assertTrue(getGroup.getGroupAdmins().size() == 1);
+        Assertions.assertTrue(getGroup.getGroupAdmins().size() == 1);
 
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
-        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
+        Assertions.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
         // transfer group ownership
         sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-2"), "test-group-1");
-        Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
-        Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
-        Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));
-        Assert.assertFalse(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
+        Assertions.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
+        Assertions.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
+        Assertions.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));
+        Assertions.assertFalse(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
 
         PermissionType permissionType1 = new PermissionType();
         // required
@@ -242,7 +242,7 @@ public class SharingRegistryServiceTest {
         // optional
         permissionType1.setDescription("READ description");
         sharingServiceClient.createPermissionType(permissionType1);
-        Assert.assertTrue(sharingServiceClient.isPermissionExists(domainId, "READ"));
+        Assertions.assertTrue(sharingServiceClient.isPermissionExists(domainId, "READ"));
 
         PermissionType permissionType2 = new PermissionType();
         permissionType2.setPermissionTypeId("WRITE");
@@ -268,7 +268,7 @@ public class SharingRegistryServiceTest {
         // optional
         entityType1.setDescription("PROJECT entity type description");
         sharingServiceClient.createEntityType(entityType1);
-        Assert.assertTrue(sharingServiceClient.isEntityTypeExists(domainId, "PROJECT"));
+        Assertions.assertTrue(sharingServiceClient.isEntityTypeExists(domainId, "PROJECT"));
 
         EntityType entityType2 = new EntityType();
         entityType2.setEntityTypeId("EXPERIMENT");
@@ -303,7 +303,7 @@ public class SharingRegistryServiceTest {
         // optional - If not set this will be default to current system time
         entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
         sharingServiceClient.createEntity(entity1);
-        Assert.assertTrue(sharingServiceClient.isEntityExists(domainId, "test-project-1"));
+        Assertions.assertTrue(sharingServiceClient.isEntityExists(domainId, "test-project-1"));
 
         Entity entity2 = new Entity();
         entity2.setEntityId("test-experiment-1");
@@ -338,11 +338,11 @@ public class SharingRegistryServiceTest {
         entity4.setFullText("test input file 1 for experiment 2");
         sharingServiceClient.createEntity(entity4);
 
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
         sharingServiceClient.shareEntityWithUsers(
                 domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 1);
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
@@ -350,7 +350,7 @@ public class SharingRegistryServiceTest {
         searchCriteria.setValue("1");
         searchCriteria.setSearchCondition(SearchCondition.GTE);
         filters.add(searchCriteria);
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 1,
                 sharingServiceClient
                         .searchEntities(domainId, "test-user-2", filters, 0, -1)
@@ -358,7 +358,7 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.revokeEntitySharingFromUsers(
                 domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
         sharingServiceClient.shareEntityWithUsers(
                 domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
@@ -369,28 +369,28 @@ public class SharingRegistryServiceTest {
                 domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
 
         // true
-        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
+        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
         // true
-        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
+        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
         // true
-        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
+        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
 
         // false
-        Assert.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
+        Assertions.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
         // true
-        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
+        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
 
         // false
-        Assert.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
+        Assertions.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
         // true
-        Assert.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
+        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
         // false
-        Assert.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+        Assertions.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
 
         // true
-        Assert.assertTrue((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
+        Assertions.assertTrue((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
         // false
-        Assert.assertFalse((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
+        Assertions.assertFalse((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 
         filters = new ArrayList<>();
         searchCriteria = new SearchCriteria();
@@ -411,23 +411,23 @@ public class SharingRegistryServiceTest {
         searchCriteria.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
         filters.add(searchCriteria);
 
-        Assert.assertTrue(sharingServiceClient
+        Assertions.assertTrue(sharingServiceClient
                         .searchEntities(domainId, "test-user-2", filters, 0, -1)
                         .size()
                 == 1);
         Entity persistedEntity = sharingServiceClient
                 .searchEntities(domainId, "test-user-2", filters, 0, -1)
                 .get(0);
-        Assert.assertEquals(entity3.getName(), persistedEntity.getName());
-        Assert.assertEquals(entity3.getDescription(), persistedEntity.getDescription());
-        Assert.assertEquals(entity3.getFullText(), persistedEntity.getFullText());
+        Assertions.assertEquals(entity3.getName(), persistedEntity.getName());
+        Assertions.assertEquals(entity3.getDescription(), persistedEntity.getDescription());
+        Assertions.assertEquals(entity3.getFullText(), persistedEntity.getFullText());
 
         searchCriteria = new SearchCriteria();
         searchCriteria.setSearchCondition(SearchCondition.NOT);
         searchCriteria.setValue("test-user-1");
         searchCriteria.setSearchField(EntitySearchField.OWNER_ID);
         filters.add(searchCriteria);
-        Assert.assertTrue(sharingServiceClient
+        Assertions.assertTrue(sharingServiceClient
                         .searchEntities(domainId, "test-user-2", filters, 0, -1)
                         .size()
                 == 0);

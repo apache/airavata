@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * GroupComputeResourcePreferenceUtilTest
@@ -47,7 +47,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
 
-        Assert.assertSame(res1, result);
+        Assertions.assertSame(res1, result);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
 
-        Assert.assertNull(result);
+        Assertions.assertNull(result);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
 
-        Assert.assertNull(result);
+        Assertions.assertNull(result);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "thirdqueue");
 
-        Assert.assertNull(result);
+        Assertions.assertNull(result);
     }
 
     @Test
@@ -136,6 +136,6 @@ public class GroupComputeResourcePreferenceUtilTest {
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
 
-        Assert.assertSame(res1, result);
+        Assertions.assertSame(res1, result);
     }
 }

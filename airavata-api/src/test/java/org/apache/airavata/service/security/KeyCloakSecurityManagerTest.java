@@ -47,9 +47,9 @@ import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientF
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class KeyCloakSecurityManagerTest {
     public static final String TEST_USERNAME = "test-user";
@@ -80,7 +80,7 @@ public class KeyCloakSecurityManagerTest {
     @Mocked
     private AuthzCacheManager mockAuthzCacheManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
         new Expectations() {
             {
@@ -274,11 +274,9 @@ public class KeyCloakSecurityManagerTest {
         metadata.put(Constants.API_METHOD_NAME, apiMethod);
         boolean authorized = keyCloakSecurityManager.isUserAuthorized(authzToken, metadata);
         if (expectedAuthorization) {
-
-            Assert.assertTrue("User should be authorized for method " + apiMethod, authorized);
+            assertTrue(authorized, "User should be authorized for method " + apiMethod);
         } else {
-
-            Assert.assertFalse("User should NOT be authorized for method " + apiMethod, authorized);
+            assertFalse(authorized, "User should NOT be authorized for method " + apiMethod);
         }
     }
 

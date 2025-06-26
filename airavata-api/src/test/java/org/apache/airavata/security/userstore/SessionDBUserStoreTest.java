@@ -24,7 +24,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -33,7 +34,7 @@ import org.w3c.dom.NodeList;
  */
 public class SessionDBUserStoreTest extends DatabaseTestCases {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpDatabase() throws Exception {
         DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
 
@@ -53,12 +54,12 @@ public class SessionDBUserStoreTest extends DatabaseTestCases {
         executeSQL(insertSQL);
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutDownDatabase() throws Exception {
         DerbyUtil.stopDerbyServer();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         loadConfigurations();
@@ -81,11 +82,11 @@ public class SessionDBUserStoreTest extends DatabaseTestCases {
 
     @Test
     public void testAuthenticate() throws Exception {
-        Assert.assertTrue(sessionDBUserStore.authenticate("1234"));
+        assertTrue(sessionDBUserStore.authenticate("1234"));
     }
 
     @Test
     public void testAuthenticateFailure() throws Exception {
-        Assert.assertFalse(sessionDBUserStore.authenticate("12345"));
+        assertFalse(sessionDBUserStore.authenticate("12345"));
     }
 }

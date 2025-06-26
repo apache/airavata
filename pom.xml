@@ -93,7 +93,7 @@ under the License.
         <log4j2.slf4j.impl>2.24.0</log4j2.slf4j.impl>
         <log4j2.version>2.24.0</log4j2.version>
         <surefire.version>3.0.0-M4</surefire.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>5.9.3</junit.version>
         <curator.version>5.7.0</curator.version>
         <groovy.version>3.0.23</groovy.version>
         <xpp3.version>1.1.6</xpp3.version>
@@ -197,8 +197,8 @@ under the License.
                 <version>${log4j2.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
                 <version>${junit.version}</version>
             </dependency>
             <dependency>

@@ -19,19 +19,20 @@
 */
 package org.apache.airavata.common.utils;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 7/5/13
  * Time: 4:39 PM
  */
-public class ApplicationSettingsTest extends TestCase {
+public class ApplicationSettingsTest {
 
+    @Test
     public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
 
         String url = ServerSettings.getSetting("default.registry.user");
-        Assert.assertEquals("admin", url);
+        assertEquals("admin", url);
     }
 }

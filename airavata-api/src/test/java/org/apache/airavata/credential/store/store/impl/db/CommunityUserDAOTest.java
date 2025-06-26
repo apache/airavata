@@ -25,7 +25,8 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for community user DAO.
@@ -34,13 +35,10 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
 
     private CommunityUserDAO communityUserDAO;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpDatabase() throws Exception {
-
         DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
-
         waitTillServerStarts();
-
         String createTable = "CREATE TABLE COMMUNITY_USER\n" + "                (\n"
                 + "                        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
                 + "                        COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,\n"
@@ -48,29 +46,22 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
                 + "                        COMMUNITY_USER_EMAIL VARCHAR(256) NOT NULL,\n"
                 + "                        PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID)\n"
                 + "                )";
-
         String dropTable = "drop table COMMUNITY_USER";
-
         try {
             executeSQL(dropTable);
-        } catch (Exception e) {
-        }
-
+        } catch (Exception e) {}
         executeSQL(createTable);
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutDownDatabase() throws Exception {
         DerbyUtil.stopDerbyServer();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-
         communityUserDAO = new CommunityUserDAO();
-
         Connection connection = getDbUtil().getConnection();
-
         try {
             DBUtil.truncate("community_user", connection);
         } finally {
@@ -92,22 +83,22 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             communityUserDAO.addCommunityUser(communityUser, "Token2", connection);
 
             CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            Assert.assertNotNull(user);
-            Assert.assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            assertNotNull(user);
+            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
 
             user = communityUserDAO.getCommunityUser("gw1", "ogce2", connection);
-            Assert.assertNotNull(user);
-            Assert.assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            assertNotNull(user);
+            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
 
             user = communityUserDAO.getCommunityUserByToken("gw1", "Token1", connection);
-            Assert.assertNotNull(user);
-            Assert.assertEquals("ogce", user.getUserName());
-            Assert.assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            assertNotNull(user);
+            assertEquals("ogce", user.getUserName());
+            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
 
             user = communityUserDAO.getCommunityUserByToken("gw1", "Token2", connection);
-            Assert.assertNotNull(user);
-            Assert.assertEquals("ogce2", user.getUserName());
-            Assert.assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            assertNotNull(user);
+            assertEquals("ogce2", user.getUserName());
+            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
 
         } finally {
             connection.close();
@@ -124,13 +115,13 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
 
             CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            Assert.assertNotNull(user);
+            assertNotNull(user);
 
             communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
             communityUserDAO.deleteCommunityUser(communityUser, connection);
 
             user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            Assert.assertNull(user);
+            assertNull(user);
 
         } finally {
             connection.close();
@@ -147,13 +138,13 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
 
             CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            Assert.assertNotNull(user);
+            assertNotNull(user);
 
             communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
             communityUserDAO.deleteCommunityUserByToken(communityUser, "Token1", connection);
 
             user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            Assert.assertNull(user);
+            assertNull(user);
 
         } finally {
             connection.close();
@@ -170,8 +161,8 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
 
             CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            Assert.assertNotNull(user);
-            Assert.assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            assertNotNull(user);
+            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
 
         } finally {
             connection.close();
@@ -190,10 +181,10 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
         communityUserDAO.addCommunityUser(communityUser, "Token2", connection);
 
         List<CommunityUser> users = communityUserDAO.getCommunityUsers("gw1", connection);
-        Assert.assertNotNull(users);
-        Assert.assertEquals(2, users.size());
+        assertNotNull(users);
+        assertEquals(2, users.size());
 
-        Assert.assertEquals(users.get(0).getUserName(), "ogce");
-        Assert.assertEquals(users.get(1).getUserName(), "ogce2");
+        assertEquals(users.get(0).getUserName(), "ogce");
+        assertEquals(users.get(1).getUserName(), "ogce2");
     }
 }
