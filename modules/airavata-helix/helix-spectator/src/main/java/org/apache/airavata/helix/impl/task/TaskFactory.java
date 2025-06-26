@@ -29,6 +29,7 @@ public class TaskFactory {
 
     static {
         FACTORIES.put(ResourceType.SLURM, new SlurmTaskFactory());
+        FACTORIES.put(ResourceType.AWS,   new AWSTaskFactory());
     }
 
     public static HelixTaskFactory getFactory(ResourceType type) {

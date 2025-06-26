@@ -31,53 +31,53 @@ import org.slf4j.LoggerFactory;
 
 public class SlurmTaskFactory implements HelixTaskFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(SlurmTaskFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SlurmTaskFactory.class);
 
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
-        logger.info("Creating Slurm EnvSetupTask for process {}...", processId);
+        LOGGER.info("Creating Slurm EnvSetupTask for process {}...", processId);
         return new EnvSetupTask();
     }
 
     @Override
     public AiravataTask createInputDataStagingTask(String processId) {
-        logger.info("Creating Slurm InputDataStagingTask for process {}...", processId);
+        LOGGER.info("Creating Slurm InputDataStagingTask for process {}...", processId);
         return new InputDataStagingTask();
     }
 
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
-        logger.info("Creating Slurm DefaultJobSubmissionTask for process {}...", processId);
+        LOGGER.info("Creating Slurm DefaultJobSubmissionTask for process {}...", processId);
         return new DefaultJobSubmissionTask();
     }
 
     @Override
     public AiravataTask createOutputDataStagingTask(String processId) {
-        logger.info("Creating Slurm OutputDataStagingTask for process {}...", processId);
+        LOGGER.info("Creating Slurm OutputDataStagingTask for process {}...", processId);
         return new OutputDataStagingTask();
     }
 
     @Override
     public AiravataTask createArchiveTask(String processId) {
-        logger.info("Creating Slurm ArchiveTask for process {}...", processId);
+        LOGGER.info("Creating Slurm ArchiveTask for process {}...", processId);
         return new ArchiveTask();
     }
 
     @Override
     public AiravataTask createJobVerificationTask(String processId) {
-        logger.info("Creating Slurm JobVerificationTask for process {}...", processId);
+        LOGGER.info("Creating Slurm JobVerificationTask for process {}...", processId);
         return new JobVerificationTask();
     }
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        logger.info("Creating Slurm CompletingTask for process {}...", processId);
+        LOGGER.info("Creating Slurm CompletingTask for process {}...", processId);
         return new CompletingTask();
     }
 
     @Override
     public AiravataTask createParsingTriggeringTask(String processId) {
-        logger.info("Creating Slurm ParsingTriggeringTask for process {}...", processId);
+        LOGGER.info("Creating Slurm ParsingTriggeringTask for process {}...", processId);
         return new ParsingTriggeringTask();
     }
 }
