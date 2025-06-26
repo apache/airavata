@@ -100,7 +100,21 @@ mvn clean install -DskipTests
 
 # Find your distribution
 ls -la modules/distribution/target/
+
 ```
+
+### Core Service Classes
+
+* API Server - `org.apache.airavata.server.ServerMain`
+* Controller - `org.apache.airavata.helix.impl.controller.HelixController`
+* Participant - `org.apache.airavata.helix.impl.participant.GlobalParticipant`
+
+* Pre WM - `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
+* Parser WM - `org.apache.airavata.helix.impl.workflow.ParserWorkflowManager`
+* Post WM - `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
+
+* Email Monitor - `org.apache.airavata.monitor.email.EmailBasedMonitor`
+* Realtime Monitor - `org.apache.airavata.monitor.realtime.RealtimeMonitor`
 
 ### 🐳 Docker Development (Experimental)
 

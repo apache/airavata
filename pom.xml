@@ -74,7 +74,6 @@ under the License.
         <module>modules/registry</module>
         <module>modules/orchestrator</module>
         <module>modules/sharing-registry</module>
-        <module>modules/job-monitor</module>
         <module>modules/distribution</module>
         <module>modules/airavata-metascheduler</module>
         <module>modules/airavata-metascheduler/process-scheduler</module>
