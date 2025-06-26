@@ -73,9 +73,7 @@ under the License.
         <module>modules/configuration</module>
         <module>modules/registry</module>
         <module>modules/orchestrator</module>
-        <module>modules/server</module>
         <module>modules/sharing-registry</module>
-        <module>modules/db-event-manager</module>
         <module>modules/job-monitor</module>
         <module>modules/distribution</module>
         <module>modules/airavata-metascheduler</module>
