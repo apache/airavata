@@ -42,7 +42,7 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>task-core</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -54,11 +54,6 @@ under the License.
                     <artifactId>logback-core</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>helix-spectator</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -105,6 +100,6 @@ under the License.
     </build>
 
     <properties>
-        <file.service.dist.name>File-Service-0.01</file.service.dist.name>
+        <file.service.dist.name>apache-airavata-file-server-${project.version}</file.service.dist.name>
     </properties>
 </project>

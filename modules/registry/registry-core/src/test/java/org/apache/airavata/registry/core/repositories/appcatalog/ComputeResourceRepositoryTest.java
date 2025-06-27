@@ -27,8 +27,8 @@ import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         List<BatchQueue> batchQueues = computeResourceDescription.getBatchQueues();
-        Assert.assertTrue(batchQueues.size() > 0);
+        Assertions.assertTrue(batchQueues.size() > 0);
 
         computeResourceRepository.removeBatchQueue(
                 savedComputeResourceId, batchQueues.get(0).getQueueName());
@@ -72,12 +72,12 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<BatchQueue> updatedBatchQueues = updatedComputeResource.getBatchQueues();
 
-        Assert.assertEquals(batchQueues.size(), updatedBatchQueues.size() + 1);
+        Assertions.assertEquals(batchQueues.size(), updatedBatchQueues.size() + 1);
         Optional<BatchQueue> searchedInterfaceResult = updatedBatchQueues.stream()
                 .filter(queue -> queue.getQueueName().equals(batchQueues.get(0).getQueueName()))
                 .findFirst();
 
-        Assert.assertFalse(searchedInterfaceResult.isPresent());
+        Assertions.assertFalse(searchedInterfaceResult.isPresent());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         List<DataMovementInterface> dataMovementInterfaces = computeResourceDescription.getDataMovementInterfaces();
-        Assert.assertTrue(dataMovementInterfaces.size() > 0);
+        Assertions.assertTrue(dataMovementInterfaces.size() > 0);
 
         computeResourceRepository.removeDataMovementInterface(
                 savedComputeResourceId, dataMovementInterfaces.get(0).getDataMovementInterfaceId());
@@ -109,13 +109,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<DataMovementInterface> updatedDataMovementInterfaces = updatedComputeResource.getDataMovementInterfaces();
 
-        Assert.assertEquals(dataMovementInterfaces.size(), updatedDataMovementInterfaces.size() + 1);
+        Assertions.assertEquals(dataMovementInterfaces.size(), updatedDataMovementInterfaces.size() + 1);
         Optional<DataMovementInterface> searchedInterfaceResult = updatedDataMovementInterfaces.stream()
                 .filter(iface -> iface.getDataMovementInterfaceId()
                         .equals(dataMovementInterfaces.get(0).getDataMovementInterfaceId()))
                 .findFirst();
 
-        Assert.assertFalse(searchedInterfaceResult.isPresent());
+        Assertions.assertFalse(searchedInterfaceResult.isPresent());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResourceDescription.getJobSubmissionInterfaces();
-        Assert.assertTrue(jobSubmissionInterfaces.size() > 0);
+        Assertions.assertTrue(jobSubmissionInterfaces.size() > 0);
 
         computeResourceRepository.removeJobSubmissionInterface(
                 savedComputeResourceId, jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId());
@@ -148,13 +148,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<JobSubmissionInterface> updatedJobSubmissionInterfaces =
                 updatedComputeResource.getJobSubmissionInterfaces();
 
-        Assert.assertEquals(jobSubmissionInterfaces.size(), updatedJobSubmissionInterfaces.size() + 1);
+        Assertions.assertEquals(jobSubmissionInterfaces.size(), updatedJobSubmissionInterfaces.size() + 1);
         Optional<JobSubmissionInterface> searchedInterfaceResult = updatedJobSubmissionInterfaces.stream()
                 .filter(iface -> iface.getJobSubmissionInterfaceId()
                         .equals(jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId()))
                 .findFirst();
 
-        Assert.assertFalse(searchedInterfaceResult.isPresent());
+        Assertions.assertFalse(searchedInterfaceResult.isPresent());
     }
 
     @Test
@@ -187,28 +187,28 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<ComputeResourceDescription> allSavedComputeResources =
                 computeResourceRepository.getAllComputeResourceList();
 
-        Assert.assertEquals(5, allSavedComputeResources.size());
+        Assertions.assertEquals(5, allSavedComputeResources.size());
         for (int i = 0; i < 5; i++) {
-            Assert.assertTrue(
+            Assertions.assertTrue(
                     deepCompareComputeResourceDescription(allComputeResources.get(i), allSavedComputeResources.get(i)));
         }
 
         Map<String, String> allSavedComputeResourceIds = computeResourceRepository.getAllComputeResourceIdList();
 
-        Assert.assertEquals(5, allSavedComputeResourceIds.size());
+        Assertions.assertEquals(5, allSavedComputeResourceIds.size());
 
         for (String id : allIds) {
             String host = allSavedComputeResourceIds.get(id);
-            Assert.assertNotNull(host);
-            Assert.assertEquals(allComputeResourceMap.get(id), host);
+            Assertions.assertNotNull(host);
+            Assertions.assertEquals(allComputeResourceMap.get(id), host);
         }
 
         Map<String, String> allAvailableIds = computeResourceRepository.getAvailableComputeResourceIdList();
 
-        Assert.assertEquals(3, allAvailableIds.size());
-        Assert.assertNotNull(allAvailableIds.get(allIds.get(0)));
-        Assert.assertNotNull(allAvailableIds.get(allIds.get(2)));
-        Assert.assertNotNull(allAvailableIds.get(allIds.get(4)));
+        Assertions.assertEquals(3, allAvailableIds.size());
+        Assertions.assertNotNull(allAvailableIds.get(allIds.get(0)));
+        Assertions.assertNotNull(allAvailableIds.get(allIds.get(2)));
+        Assertions.assertNotNull(allAvailableIds.get(allIds.get(4)));
     }
 
     @Test
@@ -232,20 +232,20 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<ComputeResourceDescription> computeResourceList =
                 computeResourceRepository.getComputeResourceList(cfilters);
 
-        Assert.assertEquals(0, computeResourceList.size());
+        Assertions.assertEquals(0, computeResourceList.size());
 
         String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
         computeResourceList = computeResourceRepository.getComputeResourceList(cfilters);
 
-        Assert.assertEquals(1, computeResourceList.size());
+        Assertions.assertEquals(1, computeResourceList.size());
 
-        Assert.assertEquals(computeResourceId, computeResourceList.get(0).getComputeResourceId());
+        Assertions.assertEquals(computeResourceId, computeResourceList.get(0).getComputeResourceId());
 
         try {
             cfilters = new HashMap<String, String>();
             cfilters.put("Invalid_filter", "localhost");
             computeResourceRepository.getComputeResourceList(cfilters);
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception e) {
             // ignore
         }
@@ -295,7 +295,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         ComputeResourceDescription updatedComputeResource =
                 computeResourceRepository.getComputeResource(computeResourceId);
-        Assert.assertTrue(deepCompareComputeResourceDescription(savedComputeResource, updatedComputeResource));
+        Assertions.assertTrue(deepCompareComputeResourceDescription(savedComputeResource, updatedComputeResource));
     }
 
     @Test
@@ -316,15 +316,15 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         computeResourceDescription.setComputeResourceId("manually-entered-id");
 
-        Assert.assertNull(computeResourceRepository.getComputeResource("manually-entered-id"));
+        Assertions.assertNull(computeResourceRepository.getComputeResource("manually-entered-id"));
         String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
-        Assert.assertEquals("manually-entered-id", computeResourceId);
-        Assert.assertTrue(computeResourceRepository.isComputeResourceExists(computeResourceId));
+        Assertions.assertEquals("manually-entered-id", computeResourceId);
+        Assertions.assertTrue(computeResourceRepository.isComputeResourceExists(computeResourceId));
         ComputeResourceDescription savedComputeResource =
                 computeResourceRepository.getComputeResource("manually-entered-id");
-        Assert.assertNotNull(savedComputeResource);
+        Assertions.assertNotNull(savedComputeResource);
 
-        Assert.assertTrue(deepCompareComputeResourceDescription(computeResourceDescription, savedComputeResource));
+        Assertions.assertTrue(deepCompareComputeResourceDescription(computeResourceDescription, savedComputeResource));
     }
 
     @Test
@@ -332,7 +332,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
         String jobManagerId = computeResourceRepository.addResourceJobManager(resourceJobManager);
         ResourceJobManager savedJobManager = computeResourceRepository.getResourceJobManager(jobManagerId);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
     }
 
     @Test
@@ -340,9 +340,9 @@ public class ComputeResourceRepositoryTest extends TestBase {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
         String jobManagerId = computeResourceRepository.addResourceJobManager(resourceJobManager);
 
-        Assert.assertNotNull(computeResourceRepository.getResourceJobManager(jobManagerId));
+        Assertions.assertNotNull(computeResourceRepository.getResourceJobManager(jobManagerId));
         computeResourceRepository.deleteResourceJobManager(jobManagerId);
-        Assert.assertNull(computeResourceRepository.getResourceJobManager(jobManagerId));
+        Assertions.assertNull(computeResourceRepository.getResourceJobManager(jobManagerId));
     }
 
     @Test
@@ -359,7 +359,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         ResourceJobManager updatedJobManager = computeResourceRepository.getResourceJobManager(jobManagerId);
 
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(savedJobManager, updatedJobManager, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(savedJobManager, updatedJobManager, "__isset_bitfield"));
     }
 
     @Test
@@ -368,7 +368,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedSubmissionId = computeResourceRepository.addUNICOREJobSubmission(unicoreJobSubmission);
         UnicoreJobSubmission savedSubmission = computeResourceRepository.getUNICOREJobSubmission(savedSubmissionId);
 
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(unicoreJobSubmission, savedSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(unicoreJobSubmission, savedSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -377,7 +378,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedSubmissionId = computeResourceRepository.addCloudJobSubmission(cloudJobSubmission);
         CloudJobSubmission savedSubmission = computeResourceRepository.getCloudJobSubmission(savedSubmissionId);
 
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(cloudJobSubmission, savedSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(cloudJobSubmission, savedSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -389,7 +390,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedSubmissionId = computeResourceRepository.addLocalJobSubmission(localSubmission);
         LOCALSubmission savedSubmission = computeResourceRepository.getLocalJobSubmission(savedSubmissionId);
 
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(localSubmission, savedSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(localSubmission, savedSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -401,7 +402,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String jobSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
         SSHJobSubmission savedJobSubmission = computeResourceRepository.getSSHJobSubmission(jobSubmissionId);
 
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(sshJobSubmission, savedJobSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(sshJobSubmission, savedJobSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -410,7 +411,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
 
         SCPDataMovement savedDataMovement = computeResourceRepository.getSCPDataMovement(dataMovementId);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
@@ -419,7 +420,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId = computeResourceRepository.addLocalDataMovement(localDataMovement);
 
         LOCALDataMovement savedDataMovement = computeResourceRepository.getLocalDataMovement(dataMovementId);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(localDataMovement, savedDataMovement, "__isset_bitfield"));
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(localDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
@@ -428,7 +429,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId = computeResourceRepository.addUnicoreDataMovement(unicoreDataMovement);
 
         UnicoreDataMovement savedDataMovement = computeResourceRepository.getUNICOREDataMovement(dataMovementId);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(unicoreDataMovement, savedDataMovement, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(unicoreDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
@@ -436,26 +438,28 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement1 = prepareGridFTPDataMovement("222.33.43.444", "23.344.44.454");
         String dataMovementId1 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement1);
         GridFTPDataMovement savedDataMovement1 = computeResourceRepository.getGridFTPDataMovement(dataMovementId1);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
 
         GridFTPDataMovement gridFTPDataMovement2 = prepareGridFTPDataMovement("222.33.43.445", "23.344.44.400");
         String dataMovementId2 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement2);
         GridFTPDataMovement savedDataMovement2 = computeResourceRepository.getGridFTPDataMovement(dataMovementId2);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
     }
 
     @Test
     public void fetchNotAvailableResourceTest() throws AppCatalogException {
-        Assert.assertNull(computeResourceRepository.getResourceJobManager("INVALID ID"));
-        Assert.assertNull(computeResourceRepository.getComputeResource("INVALID ID"));
-        Assert.assertNull(computeResourceRepository.getCloudJobSubmission("INVALID ID"));
-        Assert.assertEquals(
+        Assertions.assertNull(computeResourceRepository.getResourceJobManager("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getComputeResource("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getCloudJobSubmission("INVALID ID"));
+        Assertions.assertEquals(
                 0, computeResourceRepository.getFileSystems("INVALID ID").size());
-        Assert.assertNull(computeResourceRepository.getGridFTPDataMovement("INVALID ID"));
-        Assert.assertNull(computeResourceRepository.getLocalDataMovement("INVALID ID"));
-        Assert.assertNull(computeResourceRepository.getLocalJobSubmission("INVALID ID"));
-        Assert.assertNull(computeResourceRepository.getSCPDataMovement("INVALID ID"));
-        Assert.assertNull(computeResourceRepository.getUNICOREDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getGridFTPDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getLocalDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getLocalJobSubmission("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getSCPDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceRepository.getUNICOREDataMovement("INVALID ID"));
     }
 
     private ComputeResourceDescription prepareComputeResource(

@@ -58,3 +58,4 @@ logs
 **/target/
 # Ignore generated sources
 **/generated-sources/
+/distribution

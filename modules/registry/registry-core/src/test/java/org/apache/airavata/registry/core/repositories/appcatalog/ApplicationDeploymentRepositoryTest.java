@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -33,8 +33,8 @@ import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,7 +176,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     @Test
     public void createAppDeploymentTest() throws AppCatalogException {
 
-        Assert.assertNull(applicationDeploymentRepository.getApplicationDeployement("appDep1"));
+        Assertions.assertNull(applicationDeploymentRepository.getApplicationDeployement("appDep1"));
         String applicationModule = addSampleApplicationModule("1");
         String computeResource = addSampleComputeResource("1");
 
@@ -184,8 +184,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         String deploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
         ApplicationDeploymentDescription savedDeployment =
                 applicationDeploymentRepository.getApplicationDeployement("appDep1");
-        Assert.assertNotNull(savedDeployment);
-        Assert.assertTrue(deepCompareDeployment(deployment, savedDeployment));
+        Assertions.assertNotNull(savedDeployment);
+        Assertions.assertTrue(deepCompareDeployment(deployment, savedDeployment));
     }
 
     @Test
@@ -197,8 +197,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
         deployment.setAppDeploymentId(airavata_commonsConstants.DEFAULT_ID);
         String deploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
-        Assert.assertNotEquals(deploymentId, airavata_commonsConstants.DEFAULT_ID);
-        Assert.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
+        Assertions.assertNotEquals(deploymentId, airavata_commonsConstants.DEFAULT_ID);
+        Assertions.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
     }
 
     @Test
@@ -238,7 +238,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         ApplicationDeploymentDescription updatedDeployment =
                 applicationDeploymentRepository.getApplicationDeployement(deploymentId);
 
-        Assert.assertTrue(deepCompareDeployment(deployment, updatedDeployment));
+        Assertions.assertTrue(deepCompareDeployment(deployment, updatedDeployment));
     }
 
     @Test
@@ -253,19 +253,19 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
                     prepareSampleDeployment(i + "", applicationModule, computeResource);
             allDeployments.add(deployment);
             String savedDeploymentId = applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
-            Assert.assertEquals(deployment.getAppDeploymentId(), savedDeploymentId);
+            Assertions.assertEquals(deployment.getAppDeploymentId(), savedDeploymentId);
         }
 
         List<ApplicationDeploymentDescription> appDeploymentList =
                 applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
         List<String> appDeploymentIds = applicationDeploymentRepository.getAllApplicationDeployementIds();
 
-        Assert.assertEquals(allDeployments.size(), appDeploymentList.size());
-        Assert.assertEquals(allDeployments.size(), appDeploymentIds.size());
+        Assertions.assertEquals(allDeployments.size(), appDeploymentList.size());
+        Assertions.assertEquals(allDeployments.size(), appDeploymentIds.size());
 
         for (int i = 0; i < allDeployments.size(); i++) {
-            Assert.assertTrue(deepCompareDeployment(allDeployments.get(i), appDeploymentList.get(i)));
-            Assert.assertEquals(allDeployments.get(i).getAppDeploymentId(), appDeploymentIds.get(i));
+            Assertions.assertTrue(deepCompareDeployment(allDeployments.get(i), appDeploymentList.get(i)));
+            Assertions.assertEquals(allDeployments.get(i).getAppDeploymentId(), appDeploymentIds.get(i));
         }
     }
 
@@ -292,42 +292,42 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule1);
         List<ApplicationDeploymentDescription> filteredDeployments =
                 applicationDeploymentRepository.getApplicationDeployments(filters);
-        Assert.assertEquals(2, filteredDeployments.size());
-        Assert.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
-        Assert.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(1)));
+        Assertions.assertEquals(2, filteredDeployments.size());
+        Assertions.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
+        Assertions.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(1)));
 
         filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule2);
         filteredDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
-        Assert.assertEquals(1, filteredDeployments.size());
-        Assert.assertTrue(deepCompareDeployment(deployment3, filteredDeployments.get(0)));
+        Assertions.assertEquals(1, filteredDeployments.size());
+        Assertions.assertTrue(deepCompareDeployment(deployment3, filteredDeployments.get(0)));
 
         filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, computeResource1);
         filteredDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
-        Assert.assertEquals(1, filteredDeployments.size());
-        Assert.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
+        Assertions.assertEquals(1, filteredDeployments.size());
+        Assertions.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
 
         filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, computeResource2);
         filteredDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
-        Assert.assertEquals(2, filteredDeployments.size());
-        Assert.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(0)));
-        Assert.assertTrue(deepCompareDeployment(deployment3, filteredDeployments.get(1)));
+        Assertions.assertEquals(2, filteredDeployments.size());
+        Assertions.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(0)));
+        Assertions.assertTrue(deepCompareDeployment(deployment3, filteredDeployments.get(1)));
 
         filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule1);
         filters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, computeResource2);
         filteredDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
-        Assert.assertEquals(1, filteredDeployments.size());
-        Assert.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(0)));
+        Assertions.assertEquals(1, filteredDeployments.size());
+        Assertions.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(0)));
 
         filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule1);
         filters.put("INVALID FIELD", computeResource2);
         try {
             filteredDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception e) {
             // ignore
         }
@@ -340,13 +340,14 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         String computeResource = addSampleComputeResource("1");
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
 
-        Assert.assertNull(applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
+        Assertions.assertNull(
+                applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
 
         applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
-        Assert.assertNotNull(
+        Assertions.assertNotNull(
                 applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
         applicationDeploymentRepository.removeAppDeployment(deployment.getAppDeploymentId());
-        Assert.assertNull(applicationInterfaceRepository.getApplicationInterface(deployment.getAppDeploymentId()));
+        Assertions.assertNull(applicationInterfaceRepository.getApplicationInterface(deployment.getAppDeploymentId()));
     }
 
     @Test

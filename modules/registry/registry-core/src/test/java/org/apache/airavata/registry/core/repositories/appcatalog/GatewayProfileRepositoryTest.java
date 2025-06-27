@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,9 +117,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
         if (gwyResourceProfileRepository.isExists(gwId)) {
             retrievedProfile = gwyResourceProfileRepository.getGatewayProfile(gwId);
             System.out.println("************ gateway id ************** :" + retrievedProfile.getGatewayID());
-            assertTrue(
-                    "Retrieved gateway id matched",
-                    retrievedProfile.getGatewayID().equals("testGateway"));
+            assertTrue(retrievedProfile.getGatewayID().equals("testGateway"), "Retrieved gateway id matched");
             assertTrue(retrievedProfile.getCredentialStoreToken().equals("testCredential"));
             assertTrue(retrievedProfile.getIdentityServerPwdCredToken().equals("pwdCredential"));
             assertTrue(retrievedProfile.getIdentityServerTenant().equals("testTenant"));
@@ -127,7 +125,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
         gwyResourceProfileRepository.addGatewayResourceProfile(gf1);
         List<GatewayResourceProfile> getGatewayResourceList = gwyResourceProfileRepository.getAllGatewayProfiles();
-        assertEquals("should be 3 gateway profiles (1 default and 2 just added)", 3, getGatewayResourceList.size());
+        assertEquals(3, getGatewayResourceList.size(), "should be 3 gateway profiles (1 default and 2 just added)");
 
         List<ComputeResourcePreference> preferences =
                 gwyResourceProfileRepository.getAllComputeResourcePreferences(gwId);

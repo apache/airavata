@@ -19,73 +19,58 @@
     under the License.
 
 -->
-<!DOCTYPE assembly [
-        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
-        <!ELEMENT id (#PCDATA)>
-        <!ELEMENT includeBaseDirectory (#PCDATA)>
-        <!ELEMENT baseDirectory (#PCDATA)>
-        <!ELEMENT formats (format)*>
-        <!ELEMENT format (#PCDATA)>
-        <!ELEMENT fileSets (fileSet)*>
-        <!ELEMENT fileSet (directory|outputDirectory|fileMode|includes)*>
-        <!ELEMENT directory (#PCDATA)>
-        <!ELEMENT outputDirectory (#PCDATA)>
-        <!ELEMENT includes (include)*>
-        <!ELEMENT include (#PCDATA)>
-        <!ELEMENT dependencySets (dependencySet)*>
-        <!ELEMENT dependencySet (outputDirectory|outputFileNameMapping|includes)*>
-        ]>
-<assembly>
-    <id>bin</id>
-    <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${agent.service.dist.name}</baseDirectory>
-    <formats>
-        <format>tar.gz</format>
-        <format>zip</format>
-    </formats>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+  <id>bin</id>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>${agent.service.dist.name}</baseDirectory>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
 
-    <fileSets>
-        <fileSet>
-            <directory>src/main/resources/distribution/bin</directory>
-            <outputDirectory>bin</outputDirectory>
-            <fileMode>777</fileMode>
-            <includes>
-                <include>*.sh</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources/distribution/conf</directory>
-            <outputDirectory>conf</outputDirectory>
-            <includes>
-                <include>application.yml</include>
-                <include>truststore.jks</include>
-                <include>log4j2.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>./</directory>
-            <outputDirectory>logs</outputDirectory>
-            <excludes>
-                <exclude>*/**</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>target</directory>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-    </fileSets>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/distribution/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+      <fileMode>777</fileMode>
+      <includes>
+        <include>*.sh</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/distribution/conf</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>application.yml</include>
+        <include>truststore.jks</include>
+        <include>log4j2.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>./</directory>
+      <outputDirectory>logs</outputDirectory>
+      <excludes>
+        <exclude>*/**</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
+  <dependencySets>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
 
 </assembly>

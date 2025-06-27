@@ -21,8 +21,8 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +54,10 @@ public class GatewayGroupsRepositoryTest extends TestBase {
 
         GatewayGroups retrievedGatewayGroups = gatewayGroupsRepository.get(GATEWAY_ID);
 
-        Assert.assertEquals(ADMIN_GROUPS_ID, retrievedGatewayGroups.getAdminsGroupId());
-        Assert.assertEquals(READ_ONLY_ADMINS_GROUP_ID, retrievedGatewayGroups.getReadOnlyAdminsGroupId());
-        Assert.assertEquals(DEFAULT_GATEWAY_USERS_GROUP_ID, retrievedGatewayGroups.getDefaultGatewayUsersGroupId());
-        Assert.assertEquals(gatewayGroups, retrievedGatewayGroups);
+        Assertions.assertEquals(ADMIN_GROUPS_ID, retrievedGatewayGroups.getAdminsGroupId());
+        Assertions.assertEquals(READ_ONLY_ADMINS_GROUP_ID, retrievedGatewayGroups.getReadOnlyAdminsGroupId());
+        Assertions.assertEquals(DEFAULT_GATEWAY_USERS_GROUP_ID, retrievedGatewayGroups.getDefaultGatewayUsersGroupId());
+        Assertions.assertEquals(gatewayGroups, retrievedGatewayGroups);
 
         gatewayGroupsRepository.delete(GATEWAY_ID);
     }
@@ -80,10 +80,10 @@ public class GatewayGroupsRepositoryTest extends TestBase {
 
         GatewayGroups retrievedGatewayGroups = gatewayGroupsRepository.get(GATEWAY_ID);
 
-        Assert.assertEquals(ADMIN_GROUPS_ID, retrievedGatewayGroups.getAdminsGroupId());
-        Assert.assertEquals(READ_ONLY_ADMINS_GROUP_ID, retrievedGatewayGroups.getReadOnlyAdminsGroupId());
-        Assert.assertEquals(defaultGatewayUsersGroupId, retrievedGatewayGroups.getDefaultGatewayUsersGroupId());
-        Assert.assertEquals(gatewayGroups, retrievedGatewayGroups);
+        Assertions.assertEquals(ADMIN_GROUPS_ID, retrievedGatewayGroups.getAdminsGroupId());
+        Assertions.assertEquals(READ_ONLY_ADMINS_GROUP_ID, retrievedGatewayGroups.getReadOnlyAdminsGroupId());
+        Assertions.assertEquals(defaultGatewayUsersGroupId, retrievedGatewayGroups.getDefaultGatewayUsersGroupId());
+        Assertions.assertEquals(gatewayGroups, retrievedGatewayGroups);
 
         gatewayGroupsRepository.delete(GATEWAY_ID);
     }

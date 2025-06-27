@@ -19,60 +19,61 @@
     under the License.
 
 -->
-<assembly>
-    <id>src</id>
-    <includeBaseDirectory>true</includeBaseDirectory> 
-    <baseDirectory>${api.server.dist.name}</baseDirectory>
-    <formats>
-        <format>tar.gz</format>  
-        <format>zip</format>
-    </formats>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+  <id>src</id>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>${api.server.dist.name}</baseDirectory>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
 
-    <fileSets>
-        <fileSet>
-            <directory>../..</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>NOTICE</include>
-                <include>LICENSE</include>
-                <include>README</include>
-                <include>RELEASE_NOTES</include>
-		<include>DISCLAIMER</include>
-		<include>INSTALL</include>
-            </includes>
-            <filtered>true</filtered>
-        </fileSet>
-        <fileSet>
-            <directory>../..</directory>
-            <outputDirectory></outputDirectory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <includes>
-                <include>pom.xml</include>
-                <include>modules/**</include>
-                <include>samples/**</include>
-            </includes>
+  <fileSets>
+    <fileSet>
+      <directory>../..</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>NOTICE</include>
+        <include>LICENSE</include>
+        <include>README</include>
+        <include>RELEASE_NOTES</include>
+        <include>DISCLAIMER</include>
+        <include>INSTALL</include>
+      </includes>
+      <filtered>true</filtered>
+    </fileSet>
+    <fileSet>
+      <directory>../..</directory>
+      <outputDirectory></outputDirectory>
+      <useDefaultExcludes>true</useDefaultExcludes>
+      <includes>
+        <include>pom.xml</include>
+        <include>modules/**</include>
+        <include>samples/**</include>
+      </includes>
 
-            <excludes>
-                                <!-- Exclusions from org.apache.resources:apache-source-release-assembly-descriptor.
+      <excludes>
+        <!-- Exclusions from org.apache.resources:apache-source-release-assembly-descriptor.
                      Note that they assume that all sources are located under an "src" directory. This
                      is not the case for Axis2, which doesn't use the standard Maven 2 conventions.
                      Thus we may still encounter some issues here. -->
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/).*${project.build.directory}.*]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?maven-eclipse\.xml]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.project]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.classpath]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.iws]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.ipr]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.iml]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.settings(/.*)?]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.externalToolBuilders(/.*)?]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.deployables(/.*)?]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.wtpmodules(/.*)?]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?cobertura\.ser]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?pom\.xml\.releaseBackup]</exclude>
-                <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?release\.properties]</exclude>
-            </excludes>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/).*${project.build.directory}.*]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?maven-eclipse\.xml]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.project]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.classpath]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.iws]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.ipr]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.iml]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.settings(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.externalToolBuilders(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.deployables(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.wtpmodules(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?cobertura\.ser]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?pom\.xml\.releaseBackup]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?release\.properties]</exclude>
+      </excludes>
 
-        </fileSet>
-          </fileSets>
+    </fileSet>
+  </fileSets>
 </assembly>
