@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.credential.store.store.impl.db;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,7 +45,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class for credential class

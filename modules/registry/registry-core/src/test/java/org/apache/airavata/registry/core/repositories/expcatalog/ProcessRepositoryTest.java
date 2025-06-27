@@ -120,7 +120,10 @@ public class ProcessRepositoryTest extends TestBase {
         assertEquals("detail", retrievedProcess.getProcessDetail());
         assertTrue(retrievedProcess.isUseUserCRPref());
         assertEquals(1, retrievedProcess.getProcessStatusesSize(), "Added process should automatically have 1 status");
-        assertEquals(ProcessState.CREATED, retrievedProcess.getProcessStatuses().get(0).getState(), "Added process should automatically have 1 status that is CREATED");
+        assertEquals(
+                ProcessState.CREATED,
+                retrievedProcess.getProcessStatuses().get(0).getState(),
+                "Added process should automatically have 1 status that is CREATED");
         assertEquals(2, retrievedProcess.getTasksSize());
         assertEquals(2, retrievedProcess.getEmailAddressesSize());
         assertEquals("notify@example.com", retrievedProcess.getEmailAddresses().get(0));

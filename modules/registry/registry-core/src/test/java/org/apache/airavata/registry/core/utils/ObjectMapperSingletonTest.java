@@ -61,11 +61,9 @@ public class ObjectMapperSingletonTest {
 
         Assertions.assertTrue(userConfigurationDataModel.isSetAiravataAutoSchedule());
         Assertions.assertFalse(userConfigurationDataModel.isAiravataAutoSchedule());
-        Assertions.assertTrue(
-                userConfigurationDataModel.isSetOverrideManualScheduledParams());
+        Assertions.assertTrue(userConfigurationDataModel.isSetOverrideManualScheduledParams());
         Assertions.assertFalse(userConfigurationDataModel.isOverrideManualScheduledParams());
-        Assertions.assertTrue(
-                userConfigurationDataModel.isSetShareExperimentPublicly());
+        Assertions.assertTrue(userConfigurationDataModel.isSetShareExperimentPublicly());
         Assertions.assertFalse(userConfigurationDataModel.isShareExperimentPublicly());
     }
 }

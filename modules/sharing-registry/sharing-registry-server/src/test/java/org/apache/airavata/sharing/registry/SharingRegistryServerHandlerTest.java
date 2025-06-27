@@ -99,7 +99,8 @@ public class SharingRegistryServerHandlerTest {
 
         Assertions.assertNotNull(sharingRegistryServerHandler.createUser(user7));
 
-        Assertions.assertTrue(sharingRegistryServerHandler.getUsers(domainId, 0, 10).size() > 0);
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.getUsers(domainId, 0, 10).size() > 0);
 
         // Creating user groups
         UserGroup userGroup1 = new UserGroup();
@@ -166,7 +167,8 @@ public class SharingRegistryServerHandlerTest {
         // user has admin access
         Assertions.assertTrue(sharingRegistryServerHandler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
         Assertions.assertTrue(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId7));
-        Assertions.assertTrue(sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId7)));
         Assertions.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId7));
 
         // transfer group ownership
@@ -309,10 +311,14 @@ public class SharingRegistryServerHandlerTest {
         String entityId4 = sharingRegistryServerHandler.createEntity(entity4);
         Assertions.assertNotNull(entityId4);
 
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId4, permissionTypeId1));
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId4, permissionTypeId1));
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId1, entityId4, permissionTypeId1));
-        Assertions.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId1, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId4, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId4, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId1, entityId4, permissionTypeId1));
+        Assertions.assertFalse(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId1, permissionTypeId1));
 
         Entity entity5 = new Entity();
         entity5.setEntityId(domainId + ":Entity5");
@@ -333,9 +339,12 @@ public class SharingRegistryServerHandlerTest {
         sharingRegistryServerHandler.shareEntityWithGroups(
                 domainId, entityId5, Arrays.asList(groupId2), permissionTypeId2, true);
 
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId5, permissionTypeId2));
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId5, permissionTypeId1));
-        Assertions.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId5, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId5, permissionTypeId2));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId5, permissionTypeId1));
+        Assertions.assertFalse(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId5, permissionTypeId1));
 
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
@@ -355,7 +364,8 @@ public class SharingRegistryServerHandlerTest {
                         .size()
                 > 0);
 
-        Assertions.assertNotNull(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1));
+        Assertions.assertNotNull(
+                sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1));
         Assertions.assertNotNull(
                 sharingRegistryServerHandler.getListOfSharedGroups(domainId, entityId1, permissionTypeId1));
 
@@ -366,9 +376,12 @@ public class SharingRegistryServerHandlerTest {
 
         // test changing parent - old INDIRECT_CASCADING permissions removed, new is added
         // entityId2's parent is entityId1. entityId1 is shared with userId2
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId1, permissionTypeId1));
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1));
-        Assertions.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId1, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1));
+        Assertions.assertFalse(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
         // create a different parent entity
         Entity entity6 = new Entity();
         entity6.setEntityId(domainId + ":Entity6");
@@ -385,22 +398,28 @@ public class SharingRegistryServerHandlerTest {
 
         sharingRegistryServerHandler.shareEntityWithUsers(
                 domainId, entityId6, Arrays.asList(userId3), permissionTypeId1, true);
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId6, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId6, permissionTypeId1));
         // Make sure entityId2 isn't shared with userId7 and then share it directly
-        Assertions.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
+        Assertions.assertFalse(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
         sharingRegistryServerHandler.shareEntityWithUsers(
                 domainId, entityId2, Arrays.asList(userId7), permissionTypeId1, true);
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
         entity2.setParentEntityId(entityId6);
         logger.debug("Updating entity2");
         Assertions.assertTrue(sharingRegistryServerHandler.updateEntity(entity2));
         Entity entity2Updated = sharingRegistryServerHandler.getEntity(domainId, entityId2);
         Assertions.assertEquals(entityId6, entity2Updated.getParentEntityId());
         // parent changed so entityId2 should now be shared with entityId6's shared users (userId3)
-        Assertions.assertFalse(sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1));
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
+        Assertions.assertFalse(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1));
         // entityId2 should still be shared with userId7 since that was directly shared
-        Assertions.assertTrue(sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
+        Assertions.assertTrue(
+                sharingRegistryServerHandler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1));
 
         Assertions.assertEquals(
                 Arrays.asList(user3),
@@ -411,7 +430,9 @@ public class SharingRegistryServerHandlerTest {
         List<User> entityId2SharedUsers =
                 sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId2, permissionTypeId1);
         Assertions.assertEquals(2, entityId2SharedUsers.size());
-        Assertions.assertTrue(entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7), "user3 and user7 in shared users");
+        Assertions.assertTrue(
+                entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7),
+                "user3 and user7 in shared users");
         Assertions.assertEquals(
                 1,
                 sharingRegistryServerHandler

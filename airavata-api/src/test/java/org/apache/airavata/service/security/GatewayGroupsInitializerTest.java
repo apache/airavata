@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.service.security;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import mockit.Expectations;
@@ -34,10 +36,8 @@ import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GatewayGroupsInitializerTest {
     public static final String GATEWAY_ID = "test-gateway";

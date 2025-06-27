@@ -19,13 +19,14 @@
 */
 package org.apache.airavata.security.userstore;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 

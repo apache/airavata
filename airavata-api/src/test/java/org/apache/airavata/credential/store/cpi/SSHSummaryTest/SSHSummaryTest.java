@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.credential.store.cpi.SSHSummaryTest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
@@ -38,7 +40,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by abhandar on 10/24/16.

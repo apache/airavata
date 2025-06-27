@@ -72,12 +72,8 @@ under the License.
         <module>modules/profile-service</module>
         <module>modules/configuration</module>
         <module>modules/registry</module>
-        <module>modules/orchestrator</module>
         <module>modules/sharing-registry</module>
         <module>modules/distribution</module>
-        <module>modules/airavata-metascheduler</module>
-        <module>modules/airavata-metascheduler/process-scheduler</module>
-        <module>modules/airavata-metascheduler/metadata-analyzer</module>
         <module>modules/agent-framework</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework</module>

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.common.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import mockit.Expectations;
@@ -29,10 +31,8 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ThriftClientPoolTest {
 

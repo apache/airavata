@@ -117,9 +117,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
         if (gwyResourceProfileRepository.isExists(gwId)) {
             retrievedProfile = gwyResourceProfileRepository.getGatewayProfile(gwId);
             System.out.println("************ gateway id ************** :" + retrievedProfile.getGatewayID());
-            assertTrue(
-                    retrievedProfile.getGatewayID().equals("testGateway"),
-                    "Retrieved gateway id matched");
+            assertTrue(retrievedProfile.getGatewayID().equals("testGateway"), "Retrieved gateway id matched");
             assertTrue(retrievedProfile.getCredentialStoreToken().equals("testCredential"));
             assertTrue(retrievedProfile.getIdentityServerPwdCredToken().equals("pwdCredential"));
             assertTrue(retrievedProfile.getIdentityServerTenant().equals("testTenant"));

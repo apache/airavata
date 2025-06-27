@@ -368,7 +368,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedSubmissionId = computeResourceRepository.addUNICOREJobSubmission(unicoreJobSubmission);
         UnicoreJobSubmission savedSubmission = computeResourceRepository.getUNICOREJobSubmission(savedSubmissionId);
 
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(unicoreJobSubmission, savedSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(unicoreJobSubmission, savedSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -428,7 +429,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId = computeResourceRepository.addUnicoreDataMovement(unicoreDataMovement);
 
         UnicoreDataMovement savedDataMovement = computeResourceRepository.getUNICOREDataMovement(dataMovementId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(unicoreDataMovement, savedDataMovement, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(unicoreDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
@@ -436,12 +438,14 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement1 = prepareGridFTPDataMovement("222.33.43.444", "23.344.44.454");
         String dataMovementId1 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement1);
         GridFTPDataMovement savedDataMovement1 = computeResourceRepository.getGridFTPDataMovement(dataMovementId1);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
 
         GridFTPDataMovement gridFTPDataMovement2 = prepareGridFTPDataMovement("222.33.43.445", "23.344.44.400");
         String dataMovementId2 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement2);
         GridFTPDataMovement savedDataMovement2 = computeResourceRepository.getGridFTPDataMovement(dataMovementId2);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
+        Assertions.assertTrue(
+                EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
     }
 
     @Test

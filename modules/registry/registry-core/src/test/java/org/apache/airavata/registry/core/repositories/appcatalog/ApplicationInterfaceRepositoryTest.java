@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -168,8 +167,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
                 applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
         Assertions.assertTrue(
                 interfaceId.startsWith("app_interface_1"),
-                MessageFormat.format("{0} does not start with {1}", interfaceId, "app_interface_1")
-        );
+                MessageFormat.format("{0} does not start with {1}", interfaceId, "app_interface_1"));
     }
 
     @Test

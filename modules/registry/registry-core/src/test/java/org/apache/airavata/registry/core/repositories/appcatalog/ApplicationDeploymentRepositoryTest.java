@@ -340,7 +340,8 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         String computeResource = addSampleComputeResource("1");
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
 
-        Assertions.assertNull(applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
+        Assertions.assertNull(
+                applicationDeploymentRepository.getApplicationDeployement(deployment.getAppDeploymentId()));
 
         applicationDeploymentRepository.addApplicationDeployment(deployment, gatewayId);
         Assertions.assertNotNull(

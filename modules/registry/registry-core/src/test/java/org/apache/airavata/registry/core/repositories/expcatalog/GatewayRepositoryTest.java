@@ -70,7 +70,8 @@ public class GatewayRepositoryTest extends TestBase {
         assertEquals(gateway.getOauthClientId(), retrievedGateway.getOauthClientId());
         assertEquals(gateway.getOauthClientSecret(), retrievedGateway.getOauthClientSecret());
 
-        assertEquals(2, gatewayRepository.getAllGateways().size(), "should be 2 gateways (1 default plus 1 just added)");
+        assertEquals(
+                2, gatewayRepository.getAllGateways().size(), "should be 2 gateways (1 default plus 1 just added)");
 
         gatewayRepository.removeGateway(gatewayId);
         assertFalse(gatewayRepository.isGatewayExist(gatewayId));

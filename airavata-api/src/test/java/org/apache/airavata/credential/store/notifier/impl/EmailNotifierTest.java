@@ -28,10 +28,9 @@ import org.junit.jupiter.api.Test;
  * Time: 1:54 PM
  */
 public class EmailNotifierTest {
-    
+
     @BeforeEach
-    public void setUp() throws Exception {
-    }
+    public void setUp() throws Exception {}
 
     // Test is disabled. Need to fill in parameters to send mails
     @Test

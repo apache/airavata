@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.common.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -30,10 +32,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * JdbcUtil utility methods for the JUnit tests.

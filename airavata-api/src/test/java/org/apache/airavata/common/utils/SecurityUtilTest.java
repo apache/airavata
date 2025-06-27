@@ -19,11 +19,12 @@
 */
 package org.apache.airavata.common.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.security.KeyStore;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: AmilaJ (amilaj@apache.org)

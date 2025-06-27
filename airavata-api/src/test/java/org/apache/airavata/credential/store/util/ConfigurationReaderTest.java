@@ -19,9 +19,10 @@
 */
 package org.apache.airavata.credential.store.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -29,10 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Time: 10:28 AM
  */
 public class ConfigurationReaderTest {
-    
+
     @BeforeEach
-    public void setUp() throws Exception {
-    }
+    public void setUp() throws Exception {}
 
     @Test
     public void testGetSuccessUrl() throws Exception {

@@ -215,7 +215,8 @@ public class SharingRegistryServiceTest {
         Assertions.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
 
         // user has admin access
-        Assertions.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
+        Assertions.assertTrue(
+                sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-7")));
         Assertions.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
         UserGroup getGroup = sharingServiceClient.getGroup(domainId, "test-group-1");
@@ -371,12 +372,15 @@ public class SharingRegistryServiceTest {
         // true
         Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
         // true
-        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
+        Assertions.assertTrue(
+                sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
         // true
-        Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
+        Assertions.assertTrue(
+                sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
 
         // false
-        Assertions.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
+        Assertions.assertFalse(
+                sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
         // true
         Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
 
@@ -385,10 +389,12 @@ public class SharingRegistryServiceTest {
         // true
         Assertions.assertTrue(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
         // false
-        Assertions.assertFalse(sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+        Assertions.assertFalse(
+                sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
 
         // true
-        Assertions.assertTrue((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
+        Assertions.assertTrue(
+                (sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
         // false
         Assertions.assertFalse((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 

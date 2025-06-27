@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.service.security;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -49,7 +51,6 @@ import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class KeyCloakSecurityManagerTest {
     public static final String TEST_USERNAME = "test-user";

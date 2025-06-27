@@ -197,16 +197,25 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         // page 2
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 2, 2, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals(1, experimentSummaryModelList.size(), "should only return 1 experiment since limit=2 but partial last page");
+        assertEquals(
+                1,
+                experimentSummaryModelList.size(),
+                "should only return 1 experiment since limit=2 but partial last page");
         assertEquals(experimentIdThree, experimentSummaryModelList.get(0).getExperimentId());
         // Test with offset at the end (should return empty list)
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 3, 3, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals(0, experimentSummaryModelList.size(), "should return 0 since we're just past the last page (page size of 3)");
+        assertEquals(
+                0,
+                experimentSummaryModelList.size(),
+                "should return 0 since we're just past the last page (page size of 3)");
         // Test with offset past the end (should return empty list)
         experimentSummaryModelList = experimentSummaryRepository.searchAllAccessibleExperiments(
                 allExperimentIds, filters, 3, 10, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
-        assertEquals(0, experimentSummaryModelList.size(), "should return 0 since we're well past the last page (page size of 3)");
+        assertEquals(
+                0,
+                experimentSummaryModelList.size(),
+                "should return 0 since we're well past the last page (page size of 3)");
 
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
