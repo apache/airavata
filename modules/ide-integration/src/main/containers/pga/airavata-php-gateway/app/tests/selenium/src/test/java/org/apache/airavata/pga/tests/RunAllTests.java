@@ -1,8 +1,8 @@
 package org.apache.airavata.pga.tests;
 
 import org.apache.airavata.pga.tests.utils.UserLogin;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Before;
+import org.junit.jupiter.api.Test;
 
 /*
  **********Executing All Tests on Airavata Applications**********

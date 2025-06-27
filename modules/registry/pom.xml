@@ -38,10 +38,9 @@ under the License.
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>registry-cpi</module>
                 <module>registry-core</module>
                 <module>registry-tools</module>
-                <module>registry-server</module>
+                <module>registry-api-service</module>
             </modules>
         </profile>
     </profiles>

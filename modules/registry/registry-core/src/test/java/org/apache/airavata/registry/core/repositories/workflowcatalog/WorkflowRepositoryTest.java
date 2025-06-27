@@ -19,17 +19,17 @@
 */
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.airavata.model.workflow.*;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 // TODO: fix derby initialization script so that this test can be re-enabled
-@Ignore
+@Disabled
 public class WorkflowRepositoryTest extends TestBase {
 
     private WorkflowRepository workflowRepository;
@@ -61,7 +61,7 @@ public class WorkflowRepositoryTest extends TestBase {
         super(Database.WORKFLOW_CATALOG);
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -26,10 +26,10 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.registry.core.entities.appcatalog.JobSubmissionInterfacePK;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         computeResourceRepository = new ComputeResourceRepository();
     }
 
-    @Before
+    @BeforeEach
     public void createTestComputeResource() throws AppCatalogException {
 
         ComputeResourceDescription description = new ComputeResourceDescription();
@@ -56,7 +56,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         computeResourceId = computeResourceRepository.addComputeResource(description);
     }
 
-    @After
+    @AfterEach
     public void removeTestComputeResource() throws AppCatalogException {
 
         computeResourceRepository.removeComputeResource(computeResourceId);
@@ -78,9 +78,9 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         pk.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
 
         JobSubmissionInterface retrievedJobSubmissionInterface = jobSubmissionInterfaceRepository.get(pk);
-        Assert.assertEquals("test", retrievedJobSubmissionInterface.getJobSubmissionInterfaceId());
-        Assert.assertEquals(1, retrievedJobSubmissionInterface.getPriorityOrder());
-        Assert.assertEquals(JobSubmissionProtocol.SSH, retrievedJobSubmissionInterface.getJobSubmissionProtocol());
+        Assertions.assertEquals("test", retrievedJobSubmissionInterface.getJobSubmissionInterfaceId());
+        Assertions.assertEquals(1, retrievedJobSubmissionInterface.getPriorityOrder());
+        Assertions.assertEquals(JobSubmissionProtocol.SSH, retrievedJobSubmissionInterface.getJobSubmissionProtocol());
 
         jobSubmissionInterfaceRepository.delete(pk);
     }

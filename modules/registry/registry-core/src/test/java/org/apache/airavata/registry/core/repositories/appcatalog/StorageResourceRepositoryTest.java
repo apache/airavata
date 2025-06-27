@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +108,7 @@ public class StorageResourceRepositoryTest extends TestBase {
                     "**********Updated Resource name ************* : " + storageResourceDescription.getHostName());
             assertTrue(storageResourceDescription.getHostName().equals("localhost2"));
         }
-        assertTrue("Storage resource save successfully", storageResourceDescription != null);
+        assertTrue(storageResourceDescription != null, "Storage resource save successfully");
     }
 
     public String addSCPDataMovement() {

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.Constants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

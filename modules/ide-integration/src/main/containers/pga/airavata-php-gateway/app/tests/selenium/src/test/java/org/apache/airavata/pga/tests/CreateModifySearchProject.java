@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-//import static org.testng.Assert.fail;
+//import static org.testng.Assertions.fail;
 
 /*
  **********Create, Modify & Search Project**********

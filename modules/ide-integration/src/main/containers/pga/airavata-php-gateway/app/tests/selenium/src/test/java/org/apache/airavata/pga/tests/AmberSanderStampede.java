@@ -2,14 +2,14 @@ package org.apache.airavata.pga.tests;
 
 import org.apache.airavata.pga.tests.utils.UserLogin;
 import org.apache.airavata.pga.tests.utils.ExpFileReadUtils;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /*
  **********Executing Amber Application on Stampede**********

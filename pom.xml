@@ -69,28 +69,11 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
-        <module>airavata-services</module>
+        <module>modules/profile-service</module>
         <module>modules/configuration</module>
-        <module>modules/commons</module>
-        <module>modules/messaging</module>
         <module>modules/registry</module>
-        <module>modules/security</module>
-        <module>modules/credential-store</module>
-        <module>modules/orchestrator</module>
-        <module>modules/server</module>
         <module>modules/sharing-registry</module>
-        <module>modules/cluster-monitoring</module>
-        <module>modules/db-event-manager</module>
-        <module>modules/airavata-helix</module>
-        <module>modules/compute-account-provisioning</module>
-        <module>modules/job-monitor</module>
-        <module>modules/platform-monitoring</module>
         <module>modules/distribution</module>
-        <module>modules/airavata-metascheduler</module>
-        <module>modules/airavata-metascheduler/metascheduler-core</module>
-        <module>modules/airavata-metascheduler/process-scheduler</module>
-        <module>modules/computer-resource-monitoring-service</module>
-        <module>modules/airavata-metascheduler/metadata-analyzer</module>
         <module>modules/agent-framework</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework</module>
@@ -106,7 +89,7 @@ under the License.
         <log4j2.slf4j.impl>2.24.0</log4j2.slf4j.impl>
         <log4j2.version>2.24.0</log4j2.version>
         <surefire.version>3.0.0-M4</surefire.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>5.9.3</junit.version>
         <curator.version>5.7.0</curator.version>
         <groovy.version>3.0.23</groovy.version>
         <xpp3.version>1.1.6</xpp3.version>
@@ -131,20 +114,19 @@ under the License.
         <snakeyaml.version>1.33</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
-        <maven.assembly.plugin>3.3.0</maven.assembly.plugin>
+        <maven.assembly.plugin>3.5.0</maven.assembly.plugin>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <json.version>20160212</json.version>
-        <commons.io.version>2.11.0</commons.io.version>
+        <commons.io.version>2.19.0</commons.io.version>
         <google.guava.version>33.2.1-jre</google.guava.version>
         <jacoco.version>0.8.1</jacoco.version>
         <openjpa.maven.plugin.version>4.0.1</openjpa.maven.plugin.version>
         <openjpa.version>4.0.1</openjpa.version>
         <dozer.version>5.4.0</dozer.version>
-        <javax.annotation.version>1.3.2</javax.annotation.version>
         <jaxb.version>2.4.0-b180830.0359</jaxb.version>
         <jmockit.version>1.44</jmockit.version>
-        <commons.lang.version>2.6</commons.lang.version>
+        <commons.lang.version>3.17.0</commons.lang.version>
         <org.apache.commons.pool2.version>2.7.0</org.apache.commons.pool2.version>
         <helix.version>0.9.7</helix.version>
         <keycloak.admin.client.version>24.0.4</keycloak.admin.client.version>
@@ -211,8 +193,8 @@ under the License.
                 <version>${log4j2.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
                 <version>${junit.version}</version>
             </dependency>
             <dependency>
@@ -428,6 +410,22 @@ under the License.
             </plugin>
 
         </plugins>
+
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>${maven.assembly.plugin}</version>
+              <configuration>
+                <!-- point all modules at root/target/assemblies -->
+                <outputDirectory>${session.executionRootDirectory}/distribution</outputDirectory>
+                <appendAssemblyId>false</appendAssemblyId>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
     </build>
 
     <developers>

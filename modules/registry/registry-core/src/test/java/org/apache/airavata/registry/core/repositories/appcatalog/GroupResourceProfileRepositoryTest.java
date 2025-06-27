@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +34,8 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -337,7 +337,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         long creationTimeAfterUpdate = groupResourceProfileRepository
                 .getGroupResourceProfile(groupResourceProfileId)
                 .getCreationTime();
-        Assert.assertEquals("creationTime should be the same after update", creationTime, creationTimeAfterUpdate);
+        Assertions.assertEquals(creationTime, creationTimeAfterUpdate, "creationTime should be the same after update");
     }
 
     @Test

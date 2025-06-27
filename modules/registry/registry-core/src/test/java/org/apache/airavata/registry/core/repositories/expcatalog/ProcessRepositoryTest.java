@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -35,7 +35,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,11 +119,11 @@ public class ProcessRepositoryTest extends TestBase {
         assertEquals(experimentId, retrievedProcess.getExperimentId());
         assertEquals("detail", retrievedProcess.getProcessDetail());
         assertTrue(retrievedProcess.isUseUserCRPref());
-        assertEquals("Added process should automatically have 1 status", 1, retrievedProcess.getProcessStatusesSize());
+        assertEquals(1, retrievedProcess.getProcessStatusesSize(), "Added process should automatically have 1 status");
         assertEquals(
-                "Added process should automatically have 1 status that is CREATED",
                 ProcessState.CREATED,
-                retrievedProcess.getProcessStatuses().get(0).getState());
+                retrievedProcess.getProcessStatuses().get(0).getState(),
+                "Added process should automatically have 1 status that is CREATED");
         assertEquals(2, retrievedProcess.getTasksSize());
         assertEquals(2, retrievedProcess.getEmailAddressesSize());
         assertEquals("notify@example.com", retrievedProcess.getEmailAddresses().get(0));
