@@ -1,24 +1,18 @@
 # Apache Airavata
+![image](https://github.com/user-attachments/assets/6d908819-cf5e-48d0-bbf7-f031c95adf94)
 
-  ![image](https://github.com/user-attachments/assets/6d908819-cf5e-48d0-bbf7-f031c95adf94)
-
-  [![Build Status](https://github.com/apache/airavata/actions/workflows/maven-build.yml/badge.svg)](https://github.com/apache/airavata/actions/workflows/maven-build.yml)
-  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-  [![Contributors](https://img.shields.io/github/contributors/apache/airavata.svg)](https://github.com/apache/airavata/graphs/contributors)
-</div>
-
-## 🚀 About
+[![Build Status](https://github.com/apache/airavata/actions/workflows/maven-build.yml/badge.svg)](https://github.com/apache/airavata/actions/workflows/maven-build.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Contributors](https://img.shields.io/github/contributors/apache/airavata.svg)](https://github.com/apache/airavata/graphs/contributors)
 
 Apache Airavata is a software framework for executing and managing computational jobs on distributed computing resources including local clusters, supercomputers, national grids, academic and commercial clouds. Airavata builds on general concepts of service oriented computing, distributed messaging, and workflow composition and orchestration. Airavata bundles a server package with an API, client software development Kits and a general purpose reference UI implementation.
 
 **Key Features:**
 - 🔧 Service-oriented architecture with distributed messaging
-- 🔄 Workflow composition and orchestration
+- 🔄 Fully-managed task lifecycle (environment setup, data staging, execution, and output retrieval)
 - ☁️ Multi-cloud and hybrid cloud support
 - 🖥️ Comprehensive API and SDK ecosystem
-- 🌐 Reference UI implementation via [Apache Airavata Django Portal](https://github.com/apache/airavata-django-portal)
-
-> Learn more at [airavata.apache.org](https://airavata.apache.org)
+- 🌐 [Reference UI Implementations](https://github.com/apache/airavata-portals)
 
 ![image](assets/airavata-components.png)
 
@@ -49,93 +43,53 @@ Apache Airavata is composed of modular components spanning core services, data m
 - [`airavata-jupyter-kernel`](https://github.com/apache/airavata-jupyter-kernel) – Jupyter integration
 - [`airavata-cerebrum`](https://github.com/apache/airavata-cerebrum) – Airavata for Neuroscience
 
-## 📋 Prerequisites
-
-Before building Apache Airavata, ensure you have:
-
-| Requirement | Version | Notes |
-|-------------|---------|-------|
-| **Java SDK** | 17+ | Set `JAVA_HOME` environment variable |
-| **Apache Maven** | 3.8+ | Build automation tool |
-| **Git** | Latest | Version control |
-
-### 🔧 Environment Setup
-
-**Ubuntu/Debian:**
-```bash
-export JAVA_HOME=/usr/lib/jvm/openjdk-17-jdk
-```
-
-**macOS:**
-```bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)
-```
-
-**Windows:**
-```powershell
-set JAVA_HOME=C:\Program Files\OpenJDK\openjdk-17
-```
-
-## 🏗️ Building from Source
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone git@github.com:apache/airavata.git
-cd airavata
-
-# Build with tests
-mvn clean install
-
-# Build without tests (faster)
-mvn clean install -DskipTests
-
-# Find your distribution
-ls -la modules/distribution/target/
-
-```
-
 ### Core Airavata Services
 
 ![image](assets/airavata-dataflow.png)
 
 
 #### API Server
-> Class Name: `org.apache.airavata.server.ServerMain`
+> `org.apache.airavata.server.ServerMain`
 
-The API Server is the entrypoint to Airavata, bootstrapping 7 core services that run in parallel. Each service implements the `org.apache.airavata.common.utils.IServer` interface.
+The API Server bootstraps 7 services - each implementing the `org.apache.airavata.common.utils.IServer` interface - and provides the main entrypoint to Airavata.
 
-- API - `org.apache.airavata.api.server.AiravataAPIServer` - public-facing API that is consumed by Airavata SDKs and dashboards. It bridges external clients to internal Airavata services, and is served over Thrift.
-- DB Event Manager - `org.apache.airavata.db.event.manager.DBEventManagerRunner` - Monitors task execution events (launch, transitions, completion/failure) and syncs them to the Airavata DB via pub/sub hooks.
-- Registry - `org.apache.airavata.registry.api.service.RegistryAPIServer` - Manages metadata and definitions for executable tasks and applications.
-- Credential Store - `org.apache.airavata.credential.store.server.CredentialStoreServer` - Manages secure storage and retrieval of credentials for accessing registered compute resources.
-- Sharing Registry - `org.apache.airavata.sharing.registry.server.SharingRegistryServer` - Handles sharing and permissioning of Airavata resources between users and groups.
-- Orchestrator - `org.apache.airavata.orchestrator.server.OrchestratorServer` - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.
-- Profile - `org.apache.airavata.service.profile.server.ProfileServiceServer` - Manages users, tenants, compute resources, and group profiles.
+1. **API** - public-facing API consumed by Airavata SDKs and dashboards. It bridges external clients and internal services, and is served over Thrift.
+   (`org.apache.airavata.api.server.AiravataAPIServer`)
+2. **DB Event Manager** - Monitors task execution events (launch, transitions, completion/failure) and syncs them to the Airavata DB via pub/sub hooks.
+   (`org.apache.airavata.db.event.manager.DBEventManagerRunner`)
+3. **Registry** - Manages metadata and definitions for executable tasks and applications.
+   (`org.apache.airavata.registry.api.service.RegistryAPIServer`)
+4. **Credential Store** - Manages secure storage and retrieval of credentials for accessing registered compute resources.
+   (`org.apache.airavata.credential.store.server.CredentialStoreServer`)
+5. **Sharing Registry** - Handles sharing and permissioning of Airavata resources between users and groups.
+   (`org.apache.airavata.sharing.registry.server.SharingRegistryServer`)
+6. **Orchestrator** - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.
+   (`org.apache.airavata.orchestrator.server.OrchestratorServer`)
+7. **Profile** - Manages users, tenants, compute resources, and group profiles.
+   (`org.apache.airavata.service.profile.server.ProfileServiceServer`)
 
 #### Pre Workflow Manager
-> Class Name: `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
+> `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
 
 The pre-workflow manager listens on the internal MQ (KafkaConsumer) to inbound tasks at **pre-execution** phase. When a task DAG is received, it handles the environment setup and data staging phases of the DAG in a robust manner, which includes fault-handling. All these happen BEFORE the task DAG is submitted to the controller, and subsequently to the participant.
 
 #### Controller
-> Class Name: `org.apache.airavata.helix.impl.controller.HelixController`
+> `org.apache.airavata.helix.impl.controller.HelixController`
 
 The Controller manages the step-by-step transition of task state on *helix-side*. It uses Apache Helix to track step start, completion, and failure paths, ensuring the next step starts upon successful completion or retrying the current step on failure.
 
 #### Participant
-> Class Name: `org.apache.airavata.helix.impl.participant.GlobalParticipant`
+> `org.apache.airavata.helix.impl.participant.GlobalParticipant`
 
 The participant synchronizes the *helix-side* state transition of a task with its concrete execution at *airavata-side*. The currently registered steps are: `EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`, and `MockTask`.
 
 #### Post Workflow Manager
-> Class Name: `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
+> `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
 
 The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-execution** phase. Once a task is received, it handles the cleanup and output fetching phases of the task DAG in a robust manner, which includes fault-handling. Once the main task completes executing, this is announced to the realtime monitor, upon which the post-workflow phase is triggered. Once triggered, it submits this state change to the controller.
 
 #### Parser Workflow Manager (Deprecated)
-> Class Name: `org.apache.airavata.helix.impl.workflow.ParserWorkflowManager`
+> `org.apache.airavata.helix.impl.workflow.ParserWorkflowManager`
 
 The parser-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-completion** phase., which includes transforming generated outputs into different formats. This component is not actively used in airavata.
 
@@ -162,6 +116,54 @@ The Airavata Python SDK primarily utilizes the Agent Service (gRPC) and the Aira
 > Class Name: `org.apache.airavata.research.service.ResearchServiceApplication`
 
 The research service is the backend for the Airavata research catalog. It provides the API to add, list, modify, and publish notebooks, repositories, datasets, and computational models in cybershuttle, and launch interactive remote sessions to utilize them in a research setting.
+
+
+## 🏗️ Building from Source
+
+### Prerequisites
+
+Before building Apache Airavata, ensure you have:
+
+| Requirement | Version | Check Using |
+|-------------|---------|-------|
+| **Java SDK** | 17+ | `java --version` |
+| **Apache Maven** | 3.8+ | `mvn -v` |
+| **Git** | Latest | `git -v` |
+
+### Quick Start
+
+1. Clone the project repository
+```bash
+git clone git@github.com:apache/airavata.git
+cd airavata
+```
+
+2. Build the project
+```bash
+# with tests (slower, but safer)
+mvn clean install
+# OR without tests (faster)
+mvn clean install -DskipTests
+```
+
+Once the build completes, the service bundles will be generated in the `./distributions` folder.
+```bash
+├── airavata-sharing-registry-distribution-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-controller-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-email-monitor-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-file-server-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-parser-wm-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-participant-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-post-wm-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-pre-wm-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-realtime-monitor-0.21-SNAPSHOT.tar.gz
+└── apache-airavata-research-service-0.21-SNAPSHOT.tar.gz
+
+1 directory, 12 files
+```
+
 
 ### 🐳 Docker Development (Experimental)
 
