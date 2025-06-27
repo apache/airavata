@@ -60,12 +60,9 @@ struct SlurmComputeResourcePreference {
 }
 
 struct AwsComputeResourcePreference {
-    1: optional string preferredAmiId,
-    2: optional string preferredInstanceType,
-    3: optional string region,
-    4: optional string securityGroupId,
-    5: optional string keyPairName,
-    6: optional i64    maxStartupTime,
+    1: optional string region,
+    2: optional string preferredAmiId,
+    3: optional string preferredInstanceType,
 }
 
 union EnvironmentSpecificPreferences {

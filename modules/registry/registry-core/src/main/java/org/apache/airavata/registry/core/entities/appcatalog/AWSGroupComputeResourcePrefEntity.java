@@ -19,6 +19,7 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.PrimaryKeyJoinColumns;
@@ -28,6 +29,7 @@ import jakarta.persistence.Table;
  * The persistent class for the aws_group_compute_resource_preference database table.
  */
 @Entity
+@DiscriminatorValue("AWS")
 @Table(name = "AWS_GROUP_COMPUTE_RESOURCE_PREFERENCE")
 @PrimaryKeyJoinColumns({
         @PrimaryKeyJoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID"),

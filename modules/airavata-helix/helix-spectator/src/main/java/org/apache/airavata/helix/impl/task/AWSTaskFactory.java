@@ -19,6 +19,7 @@
 package org.apache.airavata.helix.impl.task;
 
 import org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask;
+import org.apache.airavata.helix.impl.task.aws.NoOperationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,36 +35,36 @@ public class AWSTaskFactory implements HelixTaskFactory {
 
     @Override
     public AiravataTask createInputDataStagingTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 
     @Override
     public AiravataTask createOutputDataStagingTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 
     @Override
     public AiravataTask createArchiveTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 
     @Override
     public AiravataTask createJobVerificationTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 
     @Override
     public AiravataTask createParsingTriggeringTask(String processId) {
-        return null;
+        return new NoOperationTask();
     }
 }
