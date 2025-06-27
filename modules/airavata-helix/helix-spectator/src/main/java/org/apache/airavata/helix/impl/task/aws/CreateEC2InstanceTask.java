@@ -22,6 +22,7 @@ import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
+import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
@@ -43,6 +44,7 @@ import java.util.UUID;
 /**
  * Create all required AWS resources (SecurityGroup, KeyPair) and launches an EC2 instance
  */
+@TaskDef(name = "Create EC2 Instance Task")
 public class CreateEC2InstanceTask extends AiravataTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEC2InstanceTask.class);

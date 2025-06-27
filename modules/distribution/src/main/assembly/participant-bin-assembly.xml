@@ -220,6 +220,19 @@
                 <include>io.prometheus:simpleclient_httpserver:jar</include>
                 <include>io.prometheus:simpleclient_common:jar</include>
                 <include>org.apache.commons:commons-lang3</include>
+
+                <include>software.amazon.awssdk:ec2:jar</include>
+                <include>software.amazon.awssdk:auth:jar</include>
+                <include>software.amazon.awssdk:identity-spi:jar</include>
+                <include>software.amazon.awssdk:sdk-core:jar</include>
+                <include>software.amazon.awssdk:utils:jar</include>
+                <include>software.amazon.awssdk:regions:jar</include>
+                <include>software.amazon.awssdk:http-client-spi:jar</include>
+                <include>software.amazon.awssdk:url-connection-client:jar</include>
+                <include>software.amazon.awssdk:aws-core:jar</include>
+                <include>software.amazon.awssdk:retries:jar</include>
+                <include>software.amazon.awssdk:retries-spi:jar</include>
+                <include>software.amazon.awssdk:profiles:jar</include>
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
