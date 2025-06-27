@@ -27,19 +27,10 @@ Apache Airavata is a software framework for executing and managing computational
 Apache Airavata is composed of modular components spanning core services, data management, user interfaces, and developer tooling.
 
 ### 🔧 Core Services
-- [`airavata`](https://github.com/apache/airavata) – Main microservices and orchestration engine
+- [`airavata`](https://github.com/apache/airavata) – Main resource management and task orchestration middleware
 - [`airavata-custos`](https://github.com/apache/airavata-custos) – Identity and access management framework
 - [`airavata-mft`](https://github.com/apache/airavata-mft) – Managed file transfer services
-
-### 🖥️ User Interfaces
-- [`airavata-django-portal`](https://github.com/apache/airavata-django-portal) – Primary reference UI
-- [`airavata-django-portal-sdk`](https://github.com/apache/airavata-django-portal-sdk) – SDK for custom portal development
-- [`airavata-django-portal-commons`](https://github.com/apache/airavata-django-portal-commons) – Shared Django utilities
-- [`airavata-cookiecutter-django-app`](https://github.com/apache/airavata-cookiecutter-django-app) – Starter template for apps
-- [`airavata-cookiecutter-django-output-view`](https://github.com/apache/airavata-cookiecutter-django-output-view) – Template for output views
-- [`airavata-custos-portal`](https://github.com/apache/airavata-custos-portal) – UI for Custos
-- [`airavata-php-gateway`](https://github.com/apache/airavata-php-gateway) – Legacy PHP gateway
-- [`airavata-mft-portal`](https://github.com/apache/airavata-mft-portal) – Web UI for file transfers
+- [`airavata-portals`](https://github.com/apache/airavata-portals) – All frontends for airavata
 
 ### 📦 Data & Metadata Services
 - [`airavata-data-lake`](https://github.com/apache/airavata-data-lake) – Data lake and storage backend
