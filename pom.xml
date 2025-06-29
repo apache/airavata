@@ -70,9 +70,10 @@ under the License.
     <modules>
         <module>airavata-api</module>
         <module>modules/file-server</module>
-        <module>modules/agent-framework</module>
-        <module>modules/research-framework</module>
-        <module>modules/registry-tools</module>
+        <module>modules/agent-framework/agent-service</module>
+        <module>modules/research-framework/research-service</module>
+        <module>modules/registry-db-migrator</module>
+        <module>modules/registry-jpa-generator</module>
         <module>modules/distribution</module>
         <module>modules/ide-integration</module>
     </modules>
