@@ -7,9 +7,9 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License. You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,24 +21,26 @@
 PRG="$0"
 
 while [ -h "$PRG" ]; do
-  ls=`ls -ld "$PRG"`
-  link=`expr "$ls" : '.*-> \(.*\)$'`
-  if expr "$link" : '.*/.*' > /dev/null; then
+  ls=$(ls -ld "$PRG")
+  link=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$link" : '.*/.*' >/dev/null; then
     PRG="$link"
   else
-    PRG=`dirname "$PRG"`/"$link"
+    PRG=$(dirname "$PRG")/"$link"
   fi
 done
 
-PRGDIR=`dirname "$PRG"`
+PRGDIR=$(dirname "$PRG")
 
 # Only set AIRAVATA_HOME if not already set
-[ -z "$AIRAVATA_HOME" ] && AIRAVATA_HOME=`cd "$PRGDIR/.." ; pwd`
+[ -z "$AIRAVATA_HOME" ] && AIRAVATA_HOME=$(
+  cd "$PRGDIR/.."
+  pwd
+)
 
 AIRAVATA_CLASSPATH=""
 
-for f in "$AIRAVATA_HOME"/lib/*.jar
-do
+for f in "$AIRAVATA_HOME"/lib/*.jar; do
   AIRAVATA_CLASSPATH="$AIRAVATA_CLASSPATH":$f
 done
 

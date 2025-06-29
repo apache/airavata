@@ -54,7 +54,6 @@ under the License.
               <targetPath>keystores</targetPath>
               <includes>
                 <include>*.jks</include>
-                <include>*.p12</include>
               </includes>
             </resource>
         </resources>

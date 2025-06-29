@@ -43,7 +43,7 @@
       <outputDirectory>bin</outputDirectory>
       <fileMode>777</fileMode>
       <includes>
-        <include>client_truststore.jks</include>
+        <include>airavata.jks</include>
       </includes>
     </fileSet>
     <fileSet>

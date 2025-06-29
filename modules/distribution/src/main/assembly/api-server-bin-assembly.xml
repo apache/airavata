@@ -50,8 +50,6 @@
       <outputDirectory>conf/keystores</outputDirectory>
       <includes>
         <include>*.jks</include>
-        <include>*.p12</include>
-        <include>*.pem</include>
       </includes>
     </fileSet>
 
@@ -78,7 +76,7 @@
 
     <!-- ********************** copy bin files ********************** -->
     <fileSet>
-      <directory>src/main/resources/api-server/bin</directory>
+      <directory>src/main/resources/distribution/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>777</fileMode>
       <includes>
@@ -89,7 +87,7 @@
 
     <!-- ********************** copy config files ********************** -->
     <fileSet>
-      <directory>src/main/resources/api-server/conf</directory>
+      <directory>src/main/resources/distribution/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>*</include>
