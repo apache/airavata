@@ -18,54 +18,54 @@
 # under the License.
 
 . `dirname $0`/setenv.sh
+# Capture user's working dir before changing directory
+CWD="$PWD"
 cd ${AIRAVATA_HOME}/bin
+LOGO_FILE="${AIRAVATA_HOME}/logo.txt"
 
 JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 AIRAVATA_COMMAND=""
-FORCE=false
+EXTRA_ARGS=""
+SERVERS=""
+IS_SUBSET=false
+SUBSET=""
+DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/airavata-parser-wm.log"
+LOG_FILE=$DEFAULT_LOG_FILE
 
+# parse command arguments
 for var in "$@"
 do
     case ${var} in
-    	-f | --force)
-	        FORCE=true
+        -xdebug)
+        	AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
+            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=*:8000"
             shift
+	    ;;
+        -log)
+            shift
+            LOG_FILE="$1"
+            shift
+            # If relative path, expand to absolute path using the user's $CWD
+            if [ -z "`echo "$LOG_FILE" | egrep "^/"`" ]; then
+                LOG_FILE="${CWD}/${LOG_FILE}"
+            fi
         ;;
         -h)
-            echo "Usage: airavata-server-stop.sh [command-options]"
+            echo "Usage: parser-wm.sh"
+
             echo "command options:"
-	        echo "  -f , --force       Force stop all airavata servers."
-	        echo "  --<key>[=<value>]  Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
-            echo "  -h                 Display this help and exit"
+            echo "  -xdebug             Start Parser Workflow Manager under JPDA debugger"
+            echo "  -h                  Display this help and exit"
             shift
             exit 0
         ;;
-	*)
+	    *)
+	        EXTRA_ARGS="${EXTRA_ARGS} ${var}"
             shift
+        ;;
     esac
 done
 
-if ${FORCE} ; then
-	for f in `find . -name "server_start_*"`; do
-	    # split file name using "_" underscore
-		f_split=(${f//_/ });
-		echo "Found process file : $f"
-		echo -n "    Sending kill signals to process ${f_split[2]}..."
-		out=`kill -9 ${f_split[2]} 2>&1`
-		if [ -z "$out" ]; then
-		    echo "done"
-		else
-		    echo "failed (REASON: $out)"
-		fi
-		echo -n "    Removing process file..."
-		out=`rm ${f} 2>&1`
-		if [ -z "$out" ]; then
-		    echo "done"
-		else
-		    echo "failed (REASON: $out)"
-		fi
-	done
-else
-    java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.server.ServerMain stop ${AIRAVATA_COMMAND} $*
-fi
+java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
+    org.apache.airavata.helix.impl.workflow.ParserWorkflowManager ${AIRAVATA_COMMAND} $*
+

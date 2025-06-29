@@ -21,9 +21,9 @@
 # Capture user's working dir before changing directory
 CWD="$PWD"
 cd ${AIRAVATA_HOME}/bin
-LOGO_FILE="logo.txt"
+LOGO_FILE="${AIRAVATA_HOME}/logo.txt"
 
-JAVA_OPTS=""
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 AIRAVATA_COMMAND=""
 EXTRA_ARGS=""
 SERVERS=""
@@ -31,7 +31,7 @@ IS_DAEMON_MODE=false
 LOGO=true
 IS_SUBSET=false
 SUBSET=""
-DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/output.log"
+DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/airavata-server.log"
 LOG_FILE=$DEFAULT_LOG_FILE
 
 # parse command arguments

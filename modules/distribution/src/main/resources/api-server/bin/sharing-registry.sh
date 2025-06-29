@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
@@ -18,37 +18,52 @@
 # under the License.
 
 . `dirname $0`/setenv.sh
-cd ${AIRAVATA_HOME}/bin
+cd $SHARING_REGISTRY_HOME/bin
 
-JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
-AIRAVATA_COMMAND=""
+IS_DAEMON_MODE=false
+SHARING_REGISTRY_COMMAND=""
+STOP=false
 FORCE=false
+JAVA_OPTS=""
 
 for var in "$@"
 do
-    case ${var} in
-    	-f | --force)
-	        FORCE=true
+    case $var in
+    -xdebug)
+        	AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
+            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+            shift
+        ;;
+	start)
+	    IS_DAEMON_MODE=true
+            shift
+        ;;
+	stop)
+	    STOP=true
+	    SHARING_REGISTRY_COMMAND="$
+	    SHARING_REGISTRY_COMMAND $var"
             shift
         ;;
         -h)
-            echo "Usage: airavata-server-stop.sh [command-options]"
+            echo "Usage: sharing-registry.sh [command-options]"
             echo "command options:"
-	        echo "  -f , --force       Force stop all airavata servers."
-	        echo "  --<key>[=<value>]  Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
-            echo "  -h                 Display this help and exit"
-            shift
+	    echo "  start              Start server in daemon mode"
+	    echo "  stop               Stop server."
+	    echo "  -xdebug			   Start Sharing Registry Server under JPDA debugger"
+	    echo "  -h                 Display this help and exit"
+	        shift
             exit 0
         ;;
 	*)
+	    SHARING_REGISTRY_COMMAND="$SHARING_REGISTRY_COMMAND $var"
             shift
     esac
 done
 
-if ${FORCE} ; then
+if $STOP;
+then
 	for f in `find . -name "server_start_*"`; do
-	    # split file name using "_" underscore
-		f_split=(${f//_/ });
+		IFS='_' read -a f_split <<< "$f"
 		echo "Found process file : $f"
 		echo -n "    Sending kill signals to process ${f_split[2]}..."
 		out=`kill -9 ${f_split[2]} 2>&1`
@@ -58,7 +73,7 @@ if ${FORCE} ; then
 		    echo "failed (REASON: $out)"
 		fi
 		echo -n "    Removing process file..."
-		out=`rm ${f} 2>&1`
+		out=`rm $f 2>&1`
 		if [ -z "$out" ]; then
 		    echo "done"
 		else
@@ -66,6 +81,10 @@ if ${FORCE} ; then
 		fi
 	done
 else
-    java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.server.ServerMain stop ${AIRAVATA_COMMAND} $*
+	if $IS_DAEMON_MODE ; then
+		echo "Starting Sharing Registry Server in daemon mode..."
+		$JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.ServerMain $* > $LOG_FILE 2>&1 &
+	else
+		$JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH"  org.apache.airavata.sharing.registry.server.ServerMain $*
+	fi
 fi

@@ -24,7 +24,6 @@
   xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
   <id>bin</id>
   <includeBaseDirectory>true</includeBaseDirectory>
-  <baseDirectory>${api.server.dist.name}</baseDirectory>
   <formats>
     <format>tar.gz</format>
   </formats>
@@ -41,15 +40,39 @@
         <include>NOTICE</include>
         <include>RELEASE_NOTES</include>
         <include>README.md</include>
+        <include>logo.txt</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy keystore files ********************** -->
+    <fileSet>
+      <directory>../../keystores</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>*.jks</include>
+        <include>*.p12</include>
+        <include>*.pem</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy config files ********************** -->
+    <fileSet>
+      <directory>../../airavata-api/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>META-INF/persistence.xml</include>
+        <include>*.properties</include>
+        <include>*.xml</include>
+        <include>*.template</include>
       </includes>
     </fileSet>
 
     <!-- ********************** copy database scripts ********************** -->
     <fileSet>
       <directory>../../airavata-api/src/main/resources</directory>
-      <outputDirectory>bin/database_scripts</outputDirectory>
+      <outputDirectory>database_scripts</outputDirectory>
       <includes>
-        <include>*sql*</include>
+        <include>*.sql</include>
       </includes>
     </fileSet>
 
@@ -61,34 +84,15 @@
       <includes>
         <include>*.sh</include>
         <include>*.bat</include>
-        <include>logo.txt</include>
-        <include>startNetworkServer</include>
       </includes>
     </fileSet>
 
     <!-- ********************** copy config files ********************** -->
     <fileSet>
-      <directory>../../airavata-api/src/main/resources</directory>
-      <outputDirectory>bin</outputDirectory>
+      <directory>src/main/resources/api-server/conf</directory>
+      <outputDirectory>conf</outputDirectory>
       <includes>
-        <include>airavata-server.properties</include>
-        <include>zoo.cfg</include>
-        <include>registry.properties</include>
-        <include>log4j2.xml</include>
-        <include>host.xml</include>
-        <include>persistence.xml</include>
-        <include>provenance.sql</include>
-        <include>gfac-config.yaml</include>
-        <include>PBS_Groovy.template</include>
-        <include>SLURM_Groovy.template</include>
-        <include>LSF_Groovy.template</include>
-        <include>UGE_Groovy.template</include>
-        <include>FORK_Groovy.template</include>
-        <include>gsissh.properties</include>
-        <include>airavata.jks</include>
-        <include>client_truststore.jks</include>
-        <include>airavata-default-xacml-policy.xml</include>
-        <include>enableLegacyTLS.properties</include>
+        <include>*</include>
       </includes>
     </fileSet>
 
