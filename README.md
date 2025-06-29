@@ -117,6 +117,9 @@ The Airavata Python SDK primarily utilizes the Agent Service (gRPC) and the Aira
 
 The research service is the backend for the Airavata research catalog. It provides the API to add, list, modify, and publish notebooks, repositories, datasets, and computational models in cybershuttle, and launch interactive remote sessions to utilize them in a research setting.
 
+#### Utility Classes
+* `org.apache.airavata.sharing.registry.migrator.airavata.AiravataDataMigrator`
+
 
 ## 🏗️ Building from Source
 

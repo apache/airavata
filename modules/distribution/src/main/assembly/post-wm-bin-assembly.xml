@@ -29,6 +29,21 @@
   </formats>
 
   <fileSets>
+
+    <!-- ********************** copy metadata files ********************** -->
+    <fileSet>
+      <directory>../..</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>INSTALL</include>
+        <include>LICENSE</include>
+        <include>NOTICE</include>
+        <include>RELEASE_NOTES</include>
+        <include>README.md</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy bin files ********************** -->
     <fileSet>
       <directory>src/main/resources/post-wm/bin</directory>
       <outputDirectory>bin</outputDirectory>
@@ -37,6 +52,8 @@
         <include>*.sh</include>
       </includes>
     </fileSet>
+
+    <!-- ********************** copy config files ********************** -->
     <fileSet>
       <directory>src/main/resources/post-wm/conf</directory>
       <outputDirectory>conf</outputDirectory>
@@ -45,6 +62,8 @@
         <include>log4j2.xml</include>
       </includes>
     </fileSet>
+
+    <!-- ********************** copy logs ********************** -->
     <fileSet>
       <directory>./</directory>
       <outputDirectory>logs</outputDirectory>
@@ -52,12 +71,14 @@
         <exclude>*/**</exclude>
       </excludes>
     </fileSet>
+
   </fileSets>
 
   <dependencySets>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
 </assembly>

@@ -1,5 +1,6 @@
 <!--
 
+
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -23,7 +24,7 @@
   xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
   <id>bin</id>
   <includeBaseDirectory>true</includeBaseDirectory>
-  <baseDirectory>${pre.wm.dist.name}</baseDirectory>
+  <baseDirectory>sharing-registry</baseDirectory>
   <formats>
     <format>tar.gz</format>
   </formats>
@@ -43,23 +44,34 @@
       </includes>
     </fileSet>
 
+    <!-- ********************** copy database scripts ********************** -->
+    <fileSet>
+      <directory>../../airavata-api/src/main/resources</directory>
+      <outputDirectory>bin/database_scripts</outputDirectory>
+      <includes>
+        <include>*sql*</include>
+      </includes>
+    </fileSet>
+
     <!-- ********************** copy bin files ********************** -->
     <fileSet>
-      <directory>src/main/resources/pre-wm/bin</directory>
+      <directory>src/main/resources/bin</directory>
       <outputDirectory>bin</outputDirectory>
-      <fileMode>777</fileMode>
       <includes>
         <include>*.sh</include>
       </includes>
+      <fileMode>755</fileMode>
     </fileSet>
 
     <!-- ********************** copy config files ********************** -->
     <fileSet>
-      <directory>src/main/resources/pre-wm/conf</directory>
-      <outputDirectory>conf</outputDirectory>
+      <directory>src/main/resources/sharing-registry/bin</directory>
+      <outputDirectory>bin</outputDirectory>
       <includes>
         <include>airavata-server.properties</include>
-        <include>log4j2.xml</include>
+        <include>log4j.properties</include>
+        <include>airavata.jks</include>
+        <include>client_truststore.jks</include>
       </includes>
     </fileSet>
 
@@ -81,5 +93,4 @@
       <useTransitiveDependencies>true</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
-
 </assembly>

@@ -31,63 +31,29 @@
 
   <fileSets>
 
-    <!-- ********************** copy release notes files ********************** -->
+    <!-- ********************** copy metadata files ********************** -->
     <fileSet>
-      <directory>../../../</directory>
+      <directory>../..</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>RELEASE_NOTES</include>
-      </includes>
-    </fileSet>
-    <!-- ********************** copy licenses, readme etc. ********************** -->
-    <fileSet>
-      <directory>src/main/resources/api-server</directory>
-      <outputDirectory>.</outputDirectory>
-      <includes>
+        <include>INSTALL</include>
         <include>LICENSE</include>
         <include>NOTICE</include>
-        <include>README</include>
-        <include>INSTALL</include>
+        <include>RELEASE_NOTES</include>
+        <include>README.md</include>
       </includes>
     </fileSet>
 
     <!-- ********************** copy database scripts ********************** -->
     <fileSet>
-      <directory>../registry/registry-core/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
+      <directory>../../airavata-api/src/main/resources</directory>
+      <outputDirectory>bin/database_scripts</outputDirectory>
       <includes>
         <include>*sql*</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>../../airavata-api/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
-      <includes>
-        <include>*sql*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../sharing-registry/sharing-registry-server/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
-      <includes>
-        <include>*sql*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../../airavata-services/profile-service/profile-user-core/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
-      <includes>
-        <include>*sql*</include>
-      </includes>
-    </fileSet>
+
+    <!-- ********************** copy bin files ********************** -->
     <fileSet>
       <directory>src/main/resources/api-server/bin</directory>
       <outputDirectory>bin</outputDirectory>
@@ -99,8 +65,10 @@
         <include>startNetworkServer</include>
       </includes>
     </fileSet>
+
+    <!-- ********************** copy config files ********************** -->
     <fileSet>
-      <directory>${project.build.directory}/conf</directory>
+      <directory>../../airavata-api/src/main/resources</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
         <include>airavata-server.properties</include>
@@ -124,7 +92,7 @@
       </includes>
     </fileSet>
 
-    <!-- Create logs directory -->
+    <!-- ********************** copy logs ********************** -->
     <fileSet>
       <directory>./</directory>
       <outputDirectory>logs</outputDirectory>
@@ -132,12 +100,14 @@
         <exclude>*/**</exclude>
       </excludes>
     </fileSet>
+
   </fileSets>
 
   <dependencySets>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
 

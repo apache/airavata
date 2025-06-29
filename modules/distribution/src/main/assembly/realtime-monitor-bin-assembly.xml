@@ -29,6 +29,20 @@
 
   <fileSets>
 
+    <!-- ********************** copy metadata files ********************** -->
+    <fileSet>
+      <directory>../..</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>INSTALL</include>
+        <include>LICENSE</include>
+        <include>NOTICE</include>
+        <include>RELEASE_NOTES</include>
+        <include>README.md</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy bin files ********************** -->
     <fileSet>
       <directory>src/main/resources/realtime-monitor/bin</directory>
       <outputDirectory>bin</outputDirectory>
@@ -37,6 +51,8 @@
         <include>*.sh</include>
       </includes>
     </fileSet>
+
+    <!-- ********************** copy config files ********************** -->
     <fileSet>
       <directory>src/main/resources/realtime-monitor/conf</directory>
       <outputDirectory>conf</outputDirectory>
@@ -47,7 +63,7 @@
       </includes>
     </fileSet>
 
-    <!-- Create logs directory -->
+    <!-- ********************** copy logs ********************** -->
     <fileSet>
       <directory>./</directory>
       <outputDirectory>logs</outputDirectory>
@@ -62,6 +78,7 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
 
