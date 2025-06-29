@@ -119,7 +119,7 @@ public class RealtimeJobStatusParser {
                         jobStatusResult.setJobId(jobId);
                         jobStatusResult.setJobName(jobName);
                         jobStatusResult.setState(jobState);
-                        jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+                        jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.realtime.publisher.id"));
                         return jobStatusResult;
                     } catch (Exception e) {
                         logger.error("Failed to fetch job id for job name " + jobName);
