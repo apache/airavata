@@ -250,7 +250,7 @@ under the License.
             <dependency>
                 <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa</artifactId>
-                <version>4.0.1</version>
+                <version>4.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shiro</groupId>
@@ -471,13 +471,13 @@ under the License.
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>1.70</version>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>1.81</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
-                <version>1.70</version>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>1.81</version>
             </dependency>
 
             <!-- Spring Boot -->
@@ -703,7 +703,7 @@ under the License.
                 <plugin>
                     <groupId>org.apache.openjpa</groupId>
                     <artifactId>openjpa-maven-plugin</artifactId>
-                    <version>4.0.1</version>
+                    <version>4.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -739,11 +739,6 @@ under the License.
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>3.2.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>kr.motd.maven</groupId>
-                    <artifactId>os-maven-plugin</artifactId>
-                    <version>1.7.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
