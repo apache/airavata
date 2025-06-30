@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
@@ -18,75 +18,9 @@
 # under the License.
 
 . $(dirname $0)/setenv.sh
+
 SERVICE_NAME="sharing-registry"
 MAIN_CLASS="org.apache.airavata.sharing.registry.server.ServerMain"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 
-cd $SHARING_REGISTRY_HOME/bin
-
-IS_DAEMON_MODE=false
-SHARING_REGISTRY_COMMAND=""
-STOP=false
-FORCE=false
-JAVA_OPTS=""
-
-for var in "$@"; do
-  case $var in
-  -xdebug)
-    AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
-    JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
-    shift
-    ;;
-  start)
-    IS_DAEMON_MODE=true
-    shift
-    ;;
-  stop)
-    STOP=true
-    SHARING_REGISTRY_COMMAND="$
-	    SHARING_REGISTRY_COMMAND $var"
-    shift
-    ;;
-  -h)
-    echo "Usage: sharing-registry.sh [command-options]"
-    echo "command options:"
-    echo "  start              Start server in daemon mode"
-    echo "  stop               Stop server."
-    echo "  -xdebug			   Start Sharing Registry Server under JPDA debugger"
-    echo "  -h                 Display this help and exit"
-    shift
-    exit 0
-    ;;
-  *)
-    SHARING_REGISTRY_COMMAND="$SHARING_REGISTRY_COMMAND $var"
-    shift
-    ;;
-  esac
-done
-
-if $STOP; then
-  for f in $(find . -name "server_start_*"); do
-    IFS='_' read -a f_split <<<"$f"
-    echo "Found process file : $f"
-    echo -n "    Sending kill signals to process ${f_split[2]}..."
-    out=$(kill -9 ${f_split[2]} 2>&1)
-    if [ -z "$out" ]; then
-      echo "done"
-    else
-      echo "failed (REASON: $out)"
-    fi
-    echo -n "    Removing process file..."
-    out=$(rm $f 2>&1)
-    if [ -z "$out" ]; then
-      echo "done"
-    else
-      echo "failed (REASON: $out)"
-    fi
-  done
-else
-  if $IS_DAEMON_MODE; then
-    echo "Starting ${SERVICE_NAME} in daemon mode..."
-    $JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH" ${MAIN_CLASS} $* >$LOG_FILE 2>&1 &
-  else
-    $JAVA_HOME/bin/java ${JAVA_OPTS} -classpath "$SHARING_REGISTRY_CLASSPATH" ${MAIN_CLASS} $*
-  fi
-fi
+run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"
