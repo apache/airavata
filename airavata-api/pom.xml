@@ -56,6 +56,10 @@ under the License.
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
+    </dependency>
 
     <!-- Provided APIs -->
     <dependency>
@@ -94,6 +98,10 @@ under the License.
       <groupId>org.apache.derby</groupId>
       <artifactId>derbytools</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+    </dependency>
 
     <!-- CLI & mapping -->
     <dependency>
@@ -113,6 +121,10 @@ under the License.
     <dependency>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
     </dependency>
 
     <!-- JSON, Kafka, XML -->
@@ -377,9 +389,8 @@ under the License.
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-maven-plugin</artifactId>
         <configuration>
-          <includes>**/model/*.class</includes>
-          <includes>**/entities/*.class</includes>
-          <excludes>**/entities/XML*.class</excludes>
+          <includes>**/entities/**/*.class</includes>
+          <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
           <addDefaultConstructor>true</addDefaultConstructor>
           <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
         </configuration>

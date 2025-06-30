@@ -42,7 +42,7 @@ public class MappingToolRunner {
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfigurationImpl();
         jdbcConfiguration.fromProperties(JPAUtils.createConnectionProperties(jdbcConfig));
-        jdbcConfiguration.setConnectionDriverName("org.apache.commons.dbcp.BasicDataSource");
+        jdbcConfiguration.setConnectionDriverName("org.apache.commons.dbcp2.BasicDataSource");
 
         Options options = new Options();
         options.put("sqlFile", outputFile);

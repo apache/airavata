@@ -25,8 +25,8 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d [%t] %-5p %c{30} %X - %m%n" />
     </Console>
-    <RollingFile name="RollingFileAppender" fileName="../logs/file-server.log"
-      filePattern="../logs/file-server-%d{MM-dd-yyyy}-%i.log.gz">
+    <RollingFile name="RollingFileAppender" fileName="../logs/research-service.log"
+      filePattern="../logs/research-service-%d{MM-dd-yyyy}-%i.log.gz">
       <PatternLayout>
         <Pattern>%d [%t] %-5p %c{30} %X - %m%n</Pattern>
       </PatternLayout>
@@ -49,4 +49,4 @@
       <AppenderRef ref="RollingFileAppender" />
     </Root>
   </Loggers>
-</Configuration>
+</Configuration> 

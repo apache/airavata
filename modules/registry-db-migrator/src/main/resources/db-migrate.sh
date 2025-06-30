@@ -17,19 +17,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-. `dirname $0`/setenv.sh
+. $(dirname $0)/setenv.sh
 cd $AIRAVATA_HOME/bin
 
 # update classpath
 REG_MIGRATE_CLASSPATH="$AIRAVATA_HOME/lib"
-for f in $AIRAVATA_HOME/lib/*.jar
-do
+for f in $AIRAVATA_HOME/lib/*.jar; do
   REG_MIGRATE_CLASSPATH=$REG_MIGRATE_CLASSPATH:$f
 done
 
 java -server -Xms128M -Xmx128M \
-   $XDEBUG \
-   $TEMP_PROPS \
-   -classpath $REG_MIGRATE_CLASSPATH \
-   -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5000,suspend=n \
-   org.apache.airavata.registry.tool.DBMigrator $*
+  $XDEBUG \
+  $TEMP_PROPS \
+  -classpath $REG_MIGRATE_CLASSPATH \
+  -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5000,suspend=n \
+  org.apache.airavata.registry.tool.DBMigrator $*

@@ -2,6 +2,7 @@
 
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+  sleep 1
 }
 
 # ================================
@@ -14,14 +15,14 @@ log "Orchestrator started."
 log "Controller started."
 ./apache-airavata-api-server-0.21-SNAPSHOT/bin/participant.sh -d start
 log "Participant started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/pre-wm.sh -d start
-log "Pre-Workflow Manager started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/post-wm.sh -d start
-log "Post-Workflow Manager started."
 ./apache-airavata-api-server-0.21-SNAPSHOT/bin/email-monitor.sh -d start
 log "Email Monitor started."
 ./apache-airavata-api-server-0.21-SNAPSHOT/bin/realtime-monitor.sh -d start
 log "Realtime Monitor started."
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/pre-wm.sh -d start
+log "Pre-Workflow Manager started."
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/post-wm.sh -d start
+log "Post-Workflow Manager started."
 
 # ================================
 # Start the Agent Service

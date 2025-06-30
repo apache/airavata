@@ -37,8 +37,8 @@ public class JPAUtils {
 
     static {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
-        properties.put("openjpa.DynamicEnhancementAgent", "true");
+        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
+        properties.put("openjpa.DynamicEnhancementAgent", "false");
         properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
@@ -48,6 +48,7 @@ public class JPAUtils {
         properties.put("openjpa.jdbc.SynchronizeMappings", "validate");
         properties.put("openjpa.jdbc.QuerySQLCache", "false");
         properties.put("openjpa.DetachState", "all");
+        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.airavata.sharing.registry.db.entities.*;org.apache.airavata.registry.core.entities.*;org.apache.airavata.service.profile.commons.*.entities.*)");
         properties.put(
                 "openjpa.ConnectionFactoryProperties",
                 "PrettyPrint=true, PrettyPrintLineLength=72,"

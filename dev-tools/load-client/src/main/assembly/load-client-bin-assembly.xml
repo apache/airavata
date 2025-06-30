@@ -34,8 +34,7 @@
       <outputDirectory>bin</outputDirectory>
       <fileMode>777</fileMode>
       <includes>
-        <include>load-client.sh</include>
-        <include>setenv.sh</include>
+        <include>*.sh</include>
       </includes>
     </fileSet>
     <fileSet>

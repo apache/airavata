@@ -26,7 +26,10 @@ log "Research Service updated."
 # Update the config files
 # ================================
 cp vault/airavata-server.properties ./apache-airavata-api-server-0.21-SNAPSHOT/conf/airavata-server.properties
-cp vault/airavata.jks ./apache-airavata-api-server-0.21-SNAPSHOT/conf/airavata.jks
+cp vault/airavata.jks ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/airavata.jks
+cp vault/airavata_sym.jks ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/airavata_sym.jks
+cp vault/client_truststore.jks ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/client_truststore.jks
+cp vault/email-config.yaml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/email-config.yaml
 cp vault/log4j2.xml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/log4j2.xml
 log "API Server config files updated."
 
