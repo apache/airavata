@@ -93,17 +93,12 @@ public class ProfileServiceServer implements IServer {
             logger.info("Profile service databases initialized successfully");
 
             final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
 
             // create multiple processors for each profile-service
-            UserProfileService.Processor userProfileProcessor =
-                    new UserProfileService.Processor(new UserProfileServiceHandler());
-            TenantProfileService.Processor teneantProfileProcessor =
-                    new TenantProfileService.Processor(new TenantProfileServiceHandler());
-            IamAdminServices.Processor iamAdminServicesProcessor =
-                    new IamAdminServices.Processor(new IamAdminServicesHandler());
-            GroupManagerService.Processor groupmanagerProcessor =
-                    new GroupManagerService.Processor(new GroupManagerServiceHandler());
+            var userProfileProcessor = new UserProfileService.Processor<>(new UserProfileServiceHandler());
+            var teneantProfileProcessor = new TenantProfileService.Processor<>(new TenantProfileServiceHandler());
+            var iamAdminServicesProcessor = new IamAdminServices.Processor<>(new IamAdminServicesHandler());
+            var groupmanagerProcessor = new GroupManagerService.Processor<>(new GroupManagerServiceHandler());
 
             // create a multiplexed processor
             TMultiplexedProcessor profileServiceProcessor = new TMultiplexedProcessor();
@@ -117,13 +112,8 @@ public class ProfileServiceServer implements IServer {
                     group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME, groupmanagerProcessor);
 
             TServerTransport serverTransport;
-
-            if (serverHost == null) {
-                serverTransport = new TServerSocket(serverPort);
-            } else {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                serverTransport = new TServerSocket(inetSocketAddress);
-            }
+            InetSocketAddress inetSocketAddress = new InetSocketAddress("0.0.0.0", serverPort);
+            serverTransport = new TServerSocket(inetSocketAddress);
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = 30;
             server = new TThreadPoolServer(options.processor(profileServiceProcessor));

@@ -30,6 +30,7 @@
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
     </properties>
   </persistence-unit>
   <persistence-unit name="appcatalog_data_new">
@@ -96,6 +97,7 @@
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
     </properties>
   </persistence-unit>
   <persistence-unit name="replicacatalog_data_new">
@@ -109,6 +111,7 @@
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
     </properties>
   </persistence-unit>
   <persistence-unit name="workflowcatalog_data_new">
@@ -136,6 +139,7 @@
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
     </properties>
   </persistence-unit>
   <persistence-unit name="experiment_data_new">
@@ -173,6 +177,7 @@
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
     </properties>
   </persistence-unit>
   <persistence-unit name="airavata-sharing-registry">
@@ -190,6 +195,7 @@
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
     </properties>
   </persistence-unit>
 </persistence>

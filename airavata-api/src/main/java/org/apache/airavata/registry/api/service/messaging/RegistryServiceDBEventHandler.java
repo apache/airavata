@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.api.service.messaging;
 
+import java.time.Duration;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -62,9 +63,9 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestWhileIdle(true);
         // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
         poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWaitMillis(3000);
+        poolConfig.setMaxWait(Duration.ofSeconds(3));
 
         registryClientPool = new ThriftClientPool<>(
                 tProtocol -> new RegistryService.Client(tProtocol),
@@ -126,6 +127,11 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 logger.info("deleteGateway Replication Success!");
                                 break;
                             }
+                            case READ: {
+                                logger.info("Replicating readGateway in Registry: " + publisherContext.getCrudType());
+                                // TODO: find appropriate method
+                                break;
+                            }
                         }
                         // break entity: gateway
                         break;
@@ -155,12 +161,21 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 break;
                             }
                             case UPDATE: {
-                                logger.info("Replicating updateGateway in Registry.");
+                                logger.info(
+                                        "Replicating updateGateway in Registry.",
+                                        publisherContext.getEntityDataModel());
                                 // TODO: find appropriate method
                                 break;
                             }
                             case DELETE: {
-                                logger.info("Replicating deleteGateway in Registry.");
+                                logger.info(
+                                        "Replicating deleteGateway in Registry.",
+                                        publisherContext.getEntityDataModel());
+                                // TODO: find appropriate method
+                                break;
+                            }
+                            case READ: {
+                                logger.info("Replicating readGateway in Registry: " + publisherContext.getCrudType());
                                 // TODO: find appropriate method
                                 break;
                             }

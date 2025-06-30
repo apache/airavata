@@ -40,8 +40,7 @@ public class JSONUtil {
     }
 
     public static JsonObject stringToJSONObject(String workflowString) {
-        JsonParser parser = new JsonParser();
-        return (JsonObject) parser.parse(workflowString);
+        return JsonParser.parseString(workflowString).getAsJsonObject();
     }
 
     public static JsonObject loadJSON(File file) throws IOException {
@@ -49,13 +48,7 @@ public class JSONUtil {
     }
 
     public static JsonObject loadJSON(Reader reader) throws IOException {
-        JsonParser parser = new JsonParser();
-        JsonElement jsonElement = parser.parse(reader);
-        if (jsonElement instanceof JsonObject) {
-            return (JsonObject) jsonElement;
-        } else {
-            throw new RuntimeException("Error while loading Json from file");
-        }
+        return JsonParser.parseReader(reader).getAsJsonObject();
     }
 
     public static String jsonElementToString(JsonElement jsonElement) {
@@ -143,7 +136,7 @@ public class JSONUtil {
                     return false;
                 }
             } else if (primitiveOrig.isNumber() && primitiveNew.isNumber()) {
-                if (new Double(primitiveOrig.getAsDouble()).compareTo(primitiveNew.getAsDouble()) != 0) {
+                if (Double.valueOf(primitiveOrig.getAsDouble()).compareTo(primitiveNew.getAsDouble()) != 0) {
                     return false;
                 }
             } else {

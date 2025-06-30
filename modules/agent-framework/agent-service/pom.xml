@@ -35,25 +35,6 @@ under the License.
     <agent.service.dist.name>apache-airavata-agent-service-${project.version}</agent.service.dist.name>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.2.4</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-bom</artifactId>
-        <version>1.71.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.mariadb.jdbc</groupId>
@@ -221,7 +202,7 @@ under the License.
             <binaryMavenPlugin>
               <groupId>io.grpc</groupId>
               <artifactId>protoc-gen-grpc-java</artifactId>
-              <version>1.71.0</version>
+              <version>1.73.0</version>
               <options>@generated=omit</options>
             </binaryMavenPlugin>
           </binaryMavenPlugins>

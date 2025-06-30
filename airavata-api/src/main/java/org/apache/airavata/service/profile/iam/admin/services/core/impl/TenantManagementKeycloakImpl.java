@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.service.profile.iam.admin.services.core.impl;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,9 +40,6 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.core.interfaces.TenantManagementInterface;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -62,7 +61,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
-        ResteasyClient resteasyClient = getResteasyClient();
+        Client resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
                 .serverUrl(adminUrl)
                 .realm(realm)
@@ -75,7 +74,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static Keycloak getClient(String adminUrl, String realm, String accessToken) {
 
-        ResteasyClient resteasyClient = getResteasyClient();
+        Client resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
                 .serverUrl(adminUrl)
                 .realm(realm)
@@ -84,9 +83,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 .build();
     }
 
-    private static ResteasyClient getResteasyClient() {
+    private static Client getResteasyClient() {
 
-        ResteasyClientBuilder builder = new ResteasyClientBuilderImpl().connectionPoolSize(10);
+        var builder = ClientBuilder.newBuilder();
         try {
             if (ServerSettings.isTrustStorePathDefined()) {
                 builder.trustStore(loadKeyStore());

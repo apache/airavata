@@ -27,16 +27,7 @@
             <excludes>
                 <exclude>**/ExpLoadTest.java</exclude>
             </excludes>
-          <!--skip>true</skip-->
           <systemProperties>
-            <!--property>
-              <name>user</name>
-              <value>tobrien</value>
-            </property>
-            <property>
-              <name>name</name>
-              <value>Tim O'Brien</value>
-            </property -->
           </systemProperties>
         </configuration>
         <executions>
@@ -46,7 +37,6 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <!--skip>false</skip-->
             </configuration>
           </execution>
         </executions>
@@ -54,28 +44,10 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>selenium-maven-plugin</artifactId>
-        <!--executions>
-          <execution>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>start-server</goal>
-            </goals>
-            <configuration>
-              <background>false</background>
-            </configuration>
-          </execution>
-        </executions -->
       </plugin>
     </plugins>
   </build>
   <dependencies>
-    <!--dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>5.10</version>
-      <classifier>jdk15</classifier>
-      <scope>test</scope>
-    </dependency-->
     <dependency>
       <groupId>org.seleniumhq.selenium.client-drivers</groupId>
       <artifactId>selenium-java-client-driver</artifactId>
@@ -87,12 +59,12 @@
       </dependency>
 
       <dependency>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpclient</artifactId>
+          <groupId>org.apache.httpcomponents.client5</groupId>
+          <artifactId>httpclient5</artifactId>
       </dependency>
       <dependency>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpcore</artifactId>
+          <groupId>org.apache.httpcomponents.core5</groupId>
+          <artifactId>httpcore5</artifactId>
       </dependency>
       <dependency>
           <groupId>commons-io</groupId>

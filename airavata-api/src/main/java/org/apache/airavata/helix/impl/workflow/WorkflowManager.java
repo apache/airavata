@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.helix.impl.workflow;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -40,13 +41,8 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
-import org.apache.helix.manager.zk.ZNRecordSerializer;
-import org.apache.helix.manager.zk.ZkClient;
+import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +51,6 @@ public class WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowManager.class);
 
     private Publisher statusPublisher;
-    private CuratorFramework curatorClient = null;
     private List<WorkflowOperator> workflowOperators = new ArrayList<>();
     private ThriftClientPool<RegistryService.Client> registryClientPool;
     private String workflowManagerName;
@@ -74,7 +69,6 @@ public class WorkflowManager {
         initHelixAdmin();
         initWorkflowOperators();
         initStatusPublisher();
-        initCuratorClient();
     }
 
     private void initWorkflowOperators() throws Exception {
@@ -101,19 +95,11 @@ public class WorkflowManager {
         this.statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
     }
 
-    private void initCuratorClient() throws Exception {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-        this.curatorClient.start();
-    }
-
     private void initHelixAdmin() throws ApplicationSettingsException {
-        ZkClient zkClient = new ZkClient(
-                ServerSettings.getZookeeperConnection(),
-                ZkClient.DEFAULT_SESSION_TIMEOUT,
-                ZkClient.DEFAULT_CONNECTION_TIMEOUT,
-                new ZNRecordSerializer());
-        zkHelixAdmin = new ZKHelixAdmin(zkClient);
+        this.zkHelixAdmin = new ZKHelixAdmin.Builder()
+                .setRealmMode(RealmMode.SINGLE_REALM)
+                .setZkAddress(ServerSettings.getZookeeperConnection())
+                .build();
     }
 
     private void initRegistryClientPool() throws ApplicationSettingsException {
@@ -125,9 +111,9 @@ public class WorkflowManager {
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestWhileIdle(true);
         // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
         poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWaitMillis(3000);
+        poolConfig.setMaxWait(Duration.ofSeconds(3));
 
         this.registryClientPool = new ThriftClientPool<>(
                 RegistryService.Client::new,
@@ -138,10 +124,6 @@ public class WorkflowManager {
 
     public Publisher getStatusPublisher() {
         return statusPublisher;
-    }
-
-    public CuratorFramework getCuratorClient() {
-        return curatorClient;
     }
 
     public WorkflowOperator getWorkflowOperator() {
