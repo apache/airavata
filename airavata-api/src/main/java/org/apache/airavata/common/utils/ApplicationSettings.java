@@ -383,9 +383,9 @@ public class ApplicationSettings {
     }
 
     public static String getTrustStorePath() throws ApplicationSettingsException {
-      String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
-      String trustStorePath = getSetting(TRUST_STORE_PATH);
-      return new File(airavataConfigDir, trustStorePath).getAbsolutePath();
+        String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
+        String trustStorePath = getSetting(TRUST_STORE_PATH);
+        return new File(airavataConfigDir, trustStorePath).getAbsolutePath();
     }
 
     public static String getTrustStorePassword() throws ApplicationSettingsException {
@@ -397,9 +397,9 @@ public class ApplicationSettings {
     }
 
     public static String getCredentialStoreKeyStorePath() throws ApplicationSettingsException {
-      String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
-      String credentialStoreKeyStorePath = getSetting("credential.store.keystore.url");
-      return new File(airavataConfigDir, credentialStoreKeyStorePath).getAbsolutePath();
+        String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
+        String credentialStoreKeyStorePath = getSetting("credential.store.keystore.url");
+        return new File(airavataConfigDir, credentialStoreKeyStorePath).getAbsolutePath();
     }
 
     public static String getCredentialStoreKeyAlias() throws ApplicationSettingsException {

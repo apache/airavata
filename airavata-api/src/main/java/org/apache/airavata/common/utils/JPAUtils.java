@@ -48,7 +48,6 @@ public class JPAUtils {
         properties.put("openjpa.jdbc.SynchronizeMappings", "validate");
         properties.put("openjpa.jdbc.QuerySQLCache", "false");
         properties.put("openjpa.DetachState", "all");
-        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.airavata.sharing.registry.db.entities.*;org.apache.airavata.registry.core.entities.*;org.apache.airavata.service.profile.commons.*.entities.*)");
         properties.put(
                 "openjpa.ConnectionFactoryProperties",
                 "PrettyPrint=true, PrettyPrintLineLength=72,"
