@@ -35,7 +35,7 @@ public class SecurityUtilTest {
     @Test
     public void testEncryptString() throws Exception {
 
-        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
 
         assert uri != null;
 
@@ -50,7 +50,7 @@ public class SecurityUtilTest {
     @Test
     public void testEncryptBytes() throws Exception {
 
-        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
 
         assert uri != null;
 
@@ -64,7 +64,7 @@ public class SecurityUtilTest {
 
     @Test
     public void testLoadKeyStore() throws Exception {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("mykeystore.jks");
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("airavata.jks");
 
         KeyStore ks = SecurityUtil.loadKeyStore(inputStream, "jceks", new TestKeyStoreCallback());
         assertNotNull(ks);
@@ -72,7 +72,7 @@ public class SecurityUtilTest {
 
     @Test
     public void testLoadKeyStoreFromFile() throws Exception {
-        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
 
         assert uri != null;
         KeyStore ks = SecurityUtil.loadKeyStore(uri.getPath(), "jceks", new TestKeyStoreCallback());

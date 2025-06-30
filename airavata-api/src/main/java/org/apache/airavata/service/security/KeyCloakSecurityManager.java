@@ -576,9 +576,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
     public static void main(String[] args) throws AiravataSecurityException, ApplicationSettingsException {
         // If testing with self-signed certificate, load certificate into
-        // modules/configuration/server/src/main/resources/client_truststore.jks and uncomment the following
+        // modules/configuration/server/src/main/resources/airavata.jks and uncomment the following
         // ServerSettings.setSetting("trust.store",
-        // "./modules/configuration/server/src/main/resources/client_truststore.jks");
+        // "./modules/configuration/server/src/main/resources/airavata.jks");
         // ServerSettings.setSetting("trust.store.password", "airavata");
         KeyCloakSecurityManager keyCloakSecurityManager = new KeyCloakSecurityManager();
         final String tokenURL = "...";

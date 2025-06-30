@@ -37,8 +37,8 @@ public class JPAUtils {
 
     static {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
-        properties.put("openjpa.DynamicEnhancementAgent", "true");
+        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
+        properties.put("openjpa.DynamicEnhancementAgent", "false");
         properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");

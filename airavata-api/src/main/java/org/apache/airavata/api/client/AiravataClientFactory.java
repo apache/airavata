@@ -95,7 +95,7 @@ public class AiravataClientFactory {
         Airavata.Client apiClient = createAiravataSecureClient(
                 "apidev.scigap.org",
                 9930,
-                "/Users/eromaabeysinghe/development/local-airavata/airavata/dev-tools/ansible/inventories/scigap/production/files/client_truststore.jks",
+                "/Users/eromaabeysinghe/development/local-airavata/airavata/dev-tools/ansible/inventories/scigap/production/files/airavata.jks",
                 "airavata",
                 10000);
 

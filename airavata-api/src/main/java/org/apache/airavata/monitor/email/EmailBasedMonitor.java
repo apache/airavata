@@ -156,7 +156,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
         try {
             JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
-            jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+            jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.email.publisher.id"));
             return jobStatusResult;
         } catch (Exception e) {
             getRegistryClientPool().returnBrokenResource(regClient);

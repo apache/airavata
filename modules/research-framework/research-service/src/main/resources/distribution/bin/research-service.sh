@@ -17,54 +17,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-. `dirname $0`/setenv.sh
-# Capture user's working dir before changing directory
-CWD="$PWD"
-cd ${AIRAVATA_HOME}/bin
-LOGO_FILE="logo.txt"
+. $(dirname $0)/setenv.sh
 
-JAVA_OPTS="-Dairavata.server.truststore.path=${AIRAVATA_HOME}/conf/truststore.jks -Dspring.config.location=${AIRAVATA_HOME}/conf/ -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
-AIRAVATA_COMMAND=""
-EXTRA_ARGS=""
-SERVERS=""
-IS_SUBSET=false
-SUBSET=""
-DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/airavata.out"
-LOG_FILE=$DEFAULT_LOG_FILE
+SERVICE_NAME="research-service"
+MAIN_CLASS="org.apache.airavata.research.service.ResearchServiceApplication"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dairavata.server.truststore.path=${AIRAVATA_HOME}/conf/airavata.jks -Dspring.config.location=${AIRAVATA_HOME}/conf/"
 
-# parse command arguments
-for var in "$@"
-do
-    case ${var} in
-        -xdebug)
-        	AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
-            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=*:8000"
-            shift
-	    ;;
-        -log)
-            shift
-            LOG_FILE="$1"
-            shift
-            # If relative path, expand to absolute path using the user's $CWD
-            if [ -z "`echo "$LOG_FILE" | egrep "^/"`" ]; then
-                LOG_FILE="${CWD}/${LOG_FILE}"
-            fi
-        ;;
-        -h)
-            echo "Usage: research-service.sh"
-
-            echo "command options:"
-            echo "  -xdebug             Start Research Service under JPDA debugger"
-            echo "  -h                  Display this help and exit"
-            shift
-            exit 0
-        ;;
-	    *)
-	        EXTRA_ARGS="${EXTRA_ARGS} ${var}"
-            shift
-        ;;
-    esac
-done
-
-java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.research.service.ResearchServiceApplication ${AIRAVATA_COMMAND} $*
+run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"

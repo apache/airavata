@@ -24,107 +24,77 @@
   xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
   <id>bin</id>
   <includeBaseDirectory>true</includeBaseDirectory>
-  <baseDirectory>${api.server.dist.name}</baseDirectory>
   <formats>
     <format>tar.gz</format>
   </formats>
 
   <fileSets>
 
-    <!-- ********************** copy release notes files ********************** -->
+    <!-- ********************** copy metadata files ********************** -->
     <fileSet>
-      <directory>../../../</directory>
+      <directory>../..</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>RELEASE_NOTES</include>
-      </includes>
-    </fileSet>
-    <!-- ********************** copy licenses, readme etc. ********************** -->
-    <fileSet>
-      <directory>src/main/resources/api-server</directory>
-      <outputDirectory>.</outputDirectory>
-      <includes>
+        <include>INSTALL</include>
         <include>LICENSE</include>
         <include>NOTICE</include>
-        <include>README</include>
-        <include>INSTALL</include>
+        <include>RELEASE_NOTES</include>
+        <include>README.md</include>
+        <include>logo.txt</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy keystore files ********************** -->
+    <fileSet>
+      <directory>../../keystores</directory>
+      <outputDirectory>conf/keystores</outputDirectory>
+      <includes>
+        <include>*.jks</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy config files ********************** -->
+    <fileSet>
+      <directory>../../airavata-api/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>META-INF/persistence.xml</include>
+        <include>*.properties</include>
+        <include>*.xml</include>
+        <include>*.template</include>
       </includes>
     </fileSet>
 
     <!-- ********************** copy database scripts ********************** -->
     <fileSet>
-      <directory>../registry/registry-core/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
+      <directory>../../airavata-api/src/main/resources</directory>
+      <outputDirectory>database_scripts</outputDirectory>
       <includes>
-        <include>*sql*</include>
+        <include>*.sql</include>
       </includes>
     </fileSet>
+
+    <!-- ********************** copy bin files ********************** -->
     <fileSet>
-      <directory>../../airavata-api/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
-      <includes>
-        <include>*sql*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../sharing-registry/sharing-registry-server/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
-      <includes>
-        <include>*sql*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../../airavata-services/profile-service/profile-user-core/src/main/resources/
-            </directory>
-      <outputDirectory>bin/database_scripts
-            </outputDirectory>
-      <includes>
-        <include>*sql*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>src/main/resources/api-server/bin</directory>
+      <directory>src/main/resources/distribution/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>777</fileMode>
       <includes>
         <include>*.sh</include>
         <include>*.bat</include>
-        <include>logo.txt</include>
-        <include>startNetworkServer</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/conf</directory>
-      <outputDirectory>bin</outputDirectory>
-      <includes>
-        <include>airavata-server.properties</include>
-        <include>zoo.cfg</include>
-        <include>registry.properties</include>
-        <include>log4j2.xml</include>
-        <include>host.xml</include>
-        <include>persistence.xml</include>
-        <include>provenance.sql</include>
-        <include>gfac-config.yaml</include>
-        <include>PBS_Groovy.template</include>
-        <include>SLURM_Groovy.template</include>
-        <include>LSF_Groovy.template</include>
-        <include>UGE_Groovy.template</include>
-        <include>FORK_Groovy.template</include>
-        <include>gsissh.properties</include>
-        <include>airavata.jks</include>
-        <include>client_truststore.jks</include>
-        <include>airavata-default-xacml-policy.xml</include>
-        <include>enableLegacyTLS.properties</include>
       </includes>
     </fileSet>
 
-    <!-- Create logs directory -->
+    <!-- ********************** copy config files ********************** -->
+    <fileSet>
+      <directory>src/main/resources/distribution/conf</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- ********************** copy logs ********************** -->
     <fileSet>
       <directory>./</directory>
       <outputDirectory>logs</outputDirectory>
@@ -132,12 +102,14 @@
         <exclude>*/**</exclude>
       </excludes>
     </fileSet>
+
   </fileSets>
 
   <dependencySets>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
 

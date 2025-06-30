@@ -17,60 +17,40 @@
 # specific language governing permissions and limitations
 # under the License.
 
-. `dirname $0`/setenv.sh
-# Capture user's working dir before changing directory
-CWD="$PWD"
-cd ${AIRAVATA_HOME}/bin
-LOGO_FILE="logo.txt"
+# Source the common environment and functions
+. $(dirname $0)/setenv.sh
 
+# Client-specific configuration
+MAIN_CLASS="org.apache.airavata.tools.load.LoadClient"
 JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME}"
-AIRAVATA_COMMAND=""
-EXTRA_ARGS=""
-SERVERS=""
-IS_SUBSET=false
-SUBSET=""
-DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/airavata.out"
-LOG_FILE=$DEFAULT_LOG_FILE
 
-# parse command arguments
-for var in "$@"
-do
-    case ${var} in
-        -xdebug)
-        	AIRAVATA_COMMAND="${AIRAVATA_COMMAND}"
-            JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
-            shift
-	    ;;
-        -log)
-            shift
-            LOG_FILE="$1"
-            shift
-            # If relative path, expand to absolute path using the user's $CWD
-            if [ -z "`echo "$LOG_FILE" | egrep "^/"`" ]; then
-                LOG_FILE="${CWD}/${LOG_FILE}"
-            fi
-        ;;
-        -h)
-            echo "Usage: load-client.sh"
-
-            echo "command options:"
-            echo "  -config             Load configuration file in yml format"
-            echo "  -apiHost            API Server host name"
-            echo "  -apiPort            API Server port"
-            echo "  -privateKeyPath     SSH private key path to communicate with storage resources (Defaults to user private key in ~/.ssh/id_rsa)"
-            echo "  -publicKeyPath      SSH public key path to communicate with storage resources (Defaults to user public key in ~/.ssh/id_rsa.pub)"
-            echo "  -passPhrase         SSH private key pass phrase (if any)"
-            echo "  -h                  Display this help and exit"
-            shift
-            exit 0
-        ;;
-	    *)
-	        EXTRA_ARGS="${EXTRA_ARGS} ${var}"
-            shift
-        ;;
-    esac
+# Parse client-specific arguments
+while (($# > 0)); do
+  case "$1" in
+  -xdebug)
+    JAVA_OPTS+=" -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+    shift
+    ;;
+  -h)
+    echo "Usage: load-client.sh"
+    echo ""
+    echo "command options:"
+    echo "  -config             Load configuration file in yml format"
+    echo "  -apiHost            API Server host name"
+    echo "  -apiPort            API Server port"
+    echo "  -privateKeyPath     SSH private key path to communicate with storage resources (Defaults to user private key in ~/.ssh/id_rsa)"
+    echo "  -publicKeyPath      SSH public key path to communicate with storage resources (Defaults to user public key in ~/.ssh/id_rsa.pub)"
+    echo "  -passPhrase         SSH private key pass phrase (if any)"
+    echo "  -xdebug             Start under JPDA debugger"
+    echo "  -h                  Display this help and exit"
+    exit 0
+    ;;
+  *)
+    # Pass all other arguments to the Java application
+    break
+    ;;
+  esac
 done
 
-echo $*
-java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.tools.load.LoadClient ${AIRAVATA_COMMAND} ${EXTRA_ARGS} $*
+# Run the load client
+java ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} "$@"

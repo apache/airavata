@@ -21,33 +21,32 @@
 
 -->
 <Configuration status="WARN">
-
-    <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d [%t] %-5p %c{30} %X - %m%n"/>
-        </Console>
-        <RollingFile name="RollingFileAppender" fileName="../logs/research-service.log"
-                     filePattern="logs/${date:yyyy-MM}/research-service-log-%d{MM-dd-yyyy}-%i.log.gz">
-            <PatternLayout>
-                <Pattern>%d [%t] %-5p %c{30} %X - %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <OnStartupTriggeringPolicy />
-                <TimeBasedTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="50 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="20" />
-        </RollingFile>
-    </Appenders>
-    <Loggers>
-        <logger name="ch.qos.logback" level="WARN"/>
-        <logger name="org.apache.helix" level="WARN"/>
-        <logger name="org.apache.zookeeper" level="ERROR"/>
-        <logger name="org.apache.airavata" level="INFO"/>
-        <logger name="org.hibernate" level="ERROR"/>
-        <Root level="INFO">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFileAppender"/>
-        </Root>
-    </Loggers>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d [%t] %-5p %c{30} %X - %m%n" />
+    </Console>
+    <RollingFile name="RollingFileAppender" fileName="../logs/research-service.log"
+      filePattern="../logs/research-service-%d{MM-dd-yyyy}-%i.log.gz">
+      <PatternLayout>
+        <Pattern>%d [%t] %-5p %c{30} %X - %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <OnStartupTriggeringPolicy />
+        <TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="50 MB" />
+      </Policies>
+      <DefaultRolloverStrategy max="20" />
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <logger name="ch.qos.logback" level="WARN" />
+    <logger name="org.apache.helix" level="WARN" />
+    <logger name="org.apache.zookeeper" level="ERROR" />
+    <logger name="org.apache.airavata" level="INFO" />
+    <logger name="org.hibernate" level="ERROR" />
+    <Root level="INFO">
+      <AppenderRef ref="Console" />
+      <AppenderRef ref="RollingFileAppender" />
+    </Root>
+  </Loggers>
 </Configuration>

@@ -30,29 +30,31 @@
   </formats>
 
   <fileSets>
+
+    <!-- ********************** copy metadata files ********************** -->
     <fileSet>
       <directory>../..</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory>.</outputDirectory>
       <includes>
-        <include>NOTICE</include>
-        <include>LICENSE</include>
-        <include>README</include>
-        <include>RELEASE_NOTES</include>
-        <include>DISCLAIMER</include>
         <include>INSTALL</include>
+        <include>LICENSE</include>
+        <include>NOTICE</include>
+        <include>RELEASE_NOTES</include>
+        <include>README.md</include>
       </includes>
-      <filtered>true</filtered>
     </fileSet>
+
+    <!-- ********************** copy source code ********************** -->
     <fileSet>
       <directory>../..</directory>
       <outputDirectory></outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
       <includes>
         <include>pom.xml</include>
+        <include>airavata-api/**</include>
         <include>modules/**</include>
-        <include>samples/**</include>
+        <include>examples/**</include>
       </includes>
-
       <excludes>
         <!-- Exclusions from org.apache.resources:apache-source-release-assembly-descriptor.
                      Note that they assume that all sources are located under an "src" directory. This
@@ -73,7 +75,7 @@
         <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?pom\.xml\.releaseBackup]</exclude>
         <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?release\.properties]</exclude>
       </excludes>
-
     </fileSet>
+
   </fileSets>
 </assembly>
