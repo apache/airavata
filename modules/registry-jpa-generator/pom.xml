@@ -20,9 +20,9 @@ under the License.
 
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata-registry-tools</artifactId>
+        <artifactId>airavata</artifactId>
         <version>0.21-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
