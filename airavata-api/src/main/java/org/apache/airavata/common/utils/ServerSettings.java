@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.common.utils;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -421,7 +422,9 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static String getKeyStorePath() throws ApplicationSettingsException {
-        return getSetting(Constants.KEYSTORE_PATH);
+        String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
+        String keystorePath = getSetting(Constants.KEYSTORE_PATH);
+        return new File(airavataConfigDir, keystorePath).getAbsolutePath();
     }
 
     public static String getKeyStorePassword() throws ApplicationSettingsException {

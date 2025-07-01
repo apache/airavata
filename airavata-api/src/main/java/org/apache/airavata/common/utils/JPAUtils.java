@@ -37,8 +37,8 @@ public class JPAUtils {
 
     static {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
-        properties.put("openjpa.DynamicEnhancementAgent", "true");
+        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
+        properties.put("openjpa.DynamicEnhancementAgent", "false");
         properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
@@ -52,6 +52,10 @@ public class JPAUtils {
                 "openjpa.ConnectionFactoryProperties",
                 "PrettyPrint=true, PrettyPrintLineLength=72,"
                         + " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
+        // MariaDB/MySQL dialect configuration to handle boolean to tinyint mapping
+        properties.put("openjpa.jdbc.DBDictionary", "mysql");
+        properties.put(
+                "openjpa.jdbc.MappingDefaults", "ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade");
         DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES = properties;
     }
 
@@ -87,7 +91,7 @@ public class JPAUtils {
 
     public static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
         String connectionProperties = "DriverClassName=" + jdbcConfig.getDriver() + "," + "Url=" + jdbcConfig.getURL()
-                + "?autoReconnect=true," + "Username=" + jdbcConfig.getUser() + "," + "Password="
+                + "?autoReconnect=true&tinyInt1isBit=false," + "Username=" + jdbcConfig.getUser() + "," + "Password="
                 + jdbcConfig.getPassword() + ",validationQuery=" + jdbcConfig.getValidationQuery();
         logger.debug("Connection properties={}", connectionProperties);
         return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.monitor;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -60,9 +61,9 @@ public class AbstractMonitor {
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestWhileIdle(true);
         // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
         poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWaitMillis(3000);
+        poolConfig.setMaxWait(Duration.ofSeconds(3));
 
         this.registryClientPool = new ThriftClientPool<>(
                 RegistryService.Client::new,

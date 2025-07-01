@@ -29,7 +29,7 @@ import javax.net.ssl.*;
 
 public class SecurityManager {
 
-    private String trustStoreName = "client_truststore.jks";
+    private String trustStoreName = "airavata.jks";
     private String trustStorePassword = "airavata";
 
     public void loadCertificate(String host, int port)

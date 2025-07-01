@@ -41,9 +41,6 @@ import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
@@ -496,16 +493,6 @@ public class DataParsingTask extends AbstractTask {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException | ApplicationSettingsException e) {
             throw new TaskOnFailException("Unable to create registry client...", false, e);
-        }
-    }
-
-    private static CredentialStoreService.Client getCredentialServiceClient() throws TaskOnFailException {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException | ApplicationSettingsException e) {
-            throw new TaskOnFailException("Unable to create credential client...", false, e);
         }
     }
 

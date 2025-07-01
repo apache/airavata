@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     private static final Logger logger = LoggerFactory.getLogger(GFACPassiveJobSubmitter.class);
-    private static Integer mutex = -1;
+    private static final Object mutex = new Object();
     private Publisher publisher;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
@@ -143,10 +143,15 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
             switch (event.getState()) {
                 case SyncConnected:
                     mutex.notify();
+                    break;
+                default:
+                    break;
             }
             switch (event.getType()) {
                 case NodeCreated:
                     mutex.notify();
+                    break;
+                default:
                     break;
             }
         }

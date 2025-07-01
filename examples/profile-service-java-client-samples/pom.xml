@@ -29,7 +29,6 @@ under the License.
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
