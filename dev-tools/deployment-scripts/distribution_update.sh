@@ -9,17 +9,17 @@ log() {
 # ================================
 log "Updating the API Server..."
 rm -rf ./apache-airavata-api-server-0.21-SNAPSHOT
-tar -xvf ./distribution/apache-airavata-api-server-0.21-SNAPSHOT.tar.gz -C .
+tar -xvf ./apache-airavata-api-server-0.21-SNAPSHOT.tar.gz -C .
 log "API Server updated."
 
 log "Updating the Agent Service..."
 rm -rf ./apache-airavata-agent-service-0.21-SNAPSHOT
-tar -xvf ./distribution/apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz -C .
+tar -xvf ./apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz -C .
 log "Agent Service updated."
 
 log "Updating the Research Service..."
 rm -rf ./apache-airavata-research-service-0.21-SNAPSHOT
-tar -xvf ./distribution/apache-airavata-research-service-0.21-SNAPSHOT.tar.gz -C .
+tar -xvf ./apache-airavata-research-service-0.21-SNAPSHOT.tar.gz -C .
 log "Research Service updated."
 
 # ================================

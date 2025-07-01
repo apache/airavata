@@ -9,7 +9,7 @@ log() {
 # Start the API Server
 # ================================
 log "Starting the API Services..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/airavata-server.sh -d start api-orch
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d start api-orch
 log "Orchestrator started."
 ./apache-airavata-api-server-0.21-SNAPSHOT/bin/controller.sh -d start
 log "Controller started."
