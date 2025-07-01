@@ -52,9 +52,6 @@ public class SlurmGroupComputeResourcePrefEntity extends GroupComputeResourcePre
     @Column(name = "QUALITY_OF_SERVICE")
     private String qualityOfService;
 
-    @Column(name = "SCRATCH_LOCATION")
-    private String scratchLocation;
-
     @Column(name = "USAGE_REPORTING_GATEWAY_ID")
     private String usageReportingGatewayId;
 
@@ -105,14 +102,6 @@ public class SlurmGroupComputeResourcePrefEntity extends GroupComputeResourcePre
 
     public void setQualityOfService(String qualityOfService) {
         this.qualityOfService = qualityOfService;
-    }
-
-    public String getScratchLocation() {
-        return scratchLocation;
-    }
-
-    public void setScratchLocation(String scratchLocation) {
-        this.scratchLocation = scratchLocation;
     }
 
     public String getUsageReportingGatewayId() {

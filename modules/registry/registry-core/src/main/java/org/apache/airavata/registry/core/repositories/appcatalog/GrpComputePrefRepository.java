@@ -58,7 +58,6 @@ public class GrpComputePrefRepository
             scrp.setAllocationProjectNumber(sl.getAllocationProjectNumber());
             scrp.setPreferredBatchQueue(sl.getPreferredBatchQueue());
             scrp.setQualityOfService(sl.getQualityOfService());
-            scrp.setScratchLocation(sl.getScratchLocation());
             scrp.setUsageReportingGatewayId(sl.getUsageReportingGatewayId());
             scrp.setSshAccountProvisioner(sl.getSshAccountProvisioner());
             scrp.setSshAccountProvisionerAdditionalInfo(sl.getSshAccountProvisionerAdditionalInfo());

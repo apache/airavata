@@ -62,6 +62,9 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
 
+    @Column(name = "SCRATCH_LOCATION")
+    private String scratchLocation;
+
     @Column(name = "OVERRIDE_BY_AIRAVATA")
     private short overridebyAiravata;
 
@@ -106,6 +109,14 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
 
     public void setLoginUserName(String loginUserName) {
         this.loginUserName = loginUserName;
+    }
+
+    public String getScratchLocation() {
+        return scratchLocation;
+    }
+
+    public void setScratchLocation(String scratchLocation) {
+        this.scratchLocation = scratchLocation;
     }
 
     public short getOverridebyAiravata() {

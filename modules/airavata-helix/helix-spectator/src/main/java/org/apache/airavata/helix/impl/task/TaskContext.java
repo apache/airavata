@@ -200,8 +200,8 @@ public class TaskContext {
                 scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
             } else if (isSetGroupResourceProfile()
                     && getGroupComputeResourcePreference() != null
-                    && isValid(extractSlurmScratch(getGroupComputeResourcePreference()))) {
-                scratchLocation = extractSlurmScratch(getGroupComputeResourcePreference());
+                    && isValid(getGroupComputeResourcePreference().getScratchLocation())) {
+                scratchLocation = getGroupComputeResourcePreference().getScratchLocation();
             } else {
                 throw new RuntimeException(
                         "Can't find a specified scratch location for compute resource " + getComputeResourceId());
@@ -973,17 +973,6 @@ public class TaskContext {
         private void throwError(String msg) throws Exception {
             throw new Exception(msg);
         }
-    }
-
-    private String extractSlurmScratch(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM
-                && pref.isSetSpecificPreferences()) {
-            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
-            if (esp.isSetSlurm()) {
-                return esp.getSlurm().getScratchLocation();
-            }
-        }
-        return null;
     }
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
