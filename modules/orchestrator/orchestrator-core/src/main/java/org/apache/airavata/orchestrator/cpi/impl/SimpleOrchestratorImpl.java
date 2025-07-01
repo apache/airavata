@@ -404,13 +404,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // TODO support for CLOUD (AWS)
 
-        if (resourceType == ResourceType.SLURM) {
-            String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
-            String workingDir = scratchLocation + File.separator + processModel.getProcessId();
-            envSetupSubModel.setLocation(workingDir);
-        } else if (resourceType == ResourceType.AWS) {
-            envSetupSubModel.setLocation(File.separator + "tmp" + File.separator + processModel.getProcessId());
-        }
+        String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
+        String workingDir = scratchLocation + File.separator + processModel.getProcessId();
+        envSetupSubModel.setLocation(workingDir);
 
         byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
         envSetupTask.setSubTaskModel(envSetupSub);
@@ -701,49 +697,31 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         DataStagingTaskModel submodel = new DataStagingTaskModel();
         ComputeResourceDescription computeResource = registryClient.getComputeResource(processModel.getComputeResourceId());
 
-        String destinationUriString = "";
+        String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
+        String workingDir = (scratchLocation.endsWith(File.separator) ? scratchLocation : scratchLocation + File.separator) + processModel.getProcessId() + File.separator;
 
-        if (resourceType == ResourceType.SLURM) {
-            String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
-            String workingDir = (scratchLocation.endsWith(File.separator) ? scratchLocation : scratchLocation + File.separator) + processModel.getProcessId() + File.separator;
+        URI destination;
+        try {
+            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
+            String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
+            StringBuilder destinationPath = new StringBuilder(workingDir);
+            Optional.ofNullable(processInput.getOverrideFilename()).ifPresent(destinationPath::append); // If an override filename is provided
 
-            URI destination;
-            try {
-                DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
-                String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
-                StringBuilder destinationPath = new StringBuilder(workingDir);
-                Optional.ofNullable(processInput.getOverrideFilename()).ifPresent(destinationPath::append); // If an override filename is provided
+            destination = new URI(
+                    dataMovementProtocol.name(),
+                    loginUserName,
+                    computeResource.getHostName(),
+                    OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                    destinationPath.toString(),
+                    null,
+                    null);
 
-                destination = new URI(
-                        dataMovementProtocol.name(),
-                        loginUserName,
-                        computeResource.getHostName(),
-                        OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
-                        destinationPath.toString(),
-                        null,
-                        null);
-                destinationUriString = destination.toString();
-
-            } catch (URISyntaxException e) {
-                throw new OrchestratorException("Error while constructing destination file URI", e);
-            }
-
-        } else if (resourceType == ResourceType.AWS) {
-            logger.info("Configuring AWS Input Data Staging task for process {}. Setting dummy S3 destination.", processModel.getProcessId());
-
-            try {
-                String fileName = processInput.getOverrideFilename() != null && !processInput.getOverrideFilename().isEmpty()
-                        ? processInput.getOverrideFilename()
-                        : new File(new URI(processInput.getValue()).getPath()).getName();
-                destinationUriString = "s3://dummy-bucket/" + processModel.getProcessId() + "/" + fileName;
-
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-
+        } catch (URISyntaxException e) {
+            logger.error("Error while constructing destination file URI", e);
+            throw new OrchestratorException("Error while constructing destination file URI", e);
         }
 
-        submodel.setDestination(destinationUriString);
+        submodel.setDestination(destination.toString());
         submodel.setType(DataStageType.INPUT);
         submodel.setSource(processInput.getValue());
         submodel.setProcessInput(processInput);
@@ -769,60 +747,44 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
             ComputeResourceDescription computeResource = registryClient.getComputeResource(processModel.getComputeResourceId());
             DataStagingTaskModel submodel = new DataStagingTaskModel();
-            String sourceUriString = "";
 
-            if (resourceType == ResourceType.SLURM) {
-                String workingDir = OrchestratorUtils.getScratchLocation(processModel, gatewayId)
-                        + File.separator
-                        + (parentProcess == null ? processModel.getProcessId() : parentProcess.getProcessId())
-                        + File.separator;
-                DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
-                URI source;
-                try {
-                    String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
-                    if (processOutput != null) {
-                        submodel.setType(DataStageType.OUPUT);
-                        submodel.setProcessOutput(processOutput);
-                        source = new URI(
-                                dataMovementProtocol.name(),
-                                loginUserName,
-                                computeResource.getHostName(),
-                                OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
-                                workingDir + processOutput.getValue(),
-                                null,
-                                null);
-                    } else {
-                        // archive
-                        submodel.setType(DataStageType.ARCHIVE_OUTPUT);
-                        source = new URI(
-                                dataMovementProtocol.name(),
-                                loginUserName,
-                                computeResource.getHostName(),
-                                OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
-                                workingDir,
-                                null,
-                                null);
-                    }
-
-                } catch (URISyntaxException e) {
-                    throw new OrchestratorException("Error while constructing source file URI", e);
-                }
-                sourceUriString = source.toString();
-
-            } else if (resourceType == ResourceType.AWS) {
-                logger.info("Configuring AWS Output Data Staging task for process {}. Setting dummy S3 source.", processModel.getProcessId());
+            String workingDir = OrchestratorUtils.getScratchLocation(processModel, gatewayId)
+                    + File.separator
+                    + (parentProcess == null ? processModel.getProcessId() : parentProcess.getProcessId())
+                    + File.separator;
+            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
+            URI source;
+            try {
+                String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
                 if (processOutput != null) {
                     submodel.setType(DataStageType.OUPUT);
                     submodel.setProcessOutput(processOutput);
-                    sourceUriString = "s3://dummy-bucket/" + processModel.getProcessId() + "/" + processOutput.getValue();
-
+                    source = new URI(
+                            dataMovementProtocol.name(),
+                            loginUserName,
+                            computeResource.getHostName(),
+                            OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                            workingDir + processOutput.getValue(),
+                            null,
+                            null);
                 } else {
+                    // archive
                     submodel.setType(DataStageType.ARCHIVE_OUTPUT);
-                    sourceUriString = "s3://dummy-bucket/" + processModel.getProcessId() + "/";
+                    source = new URI(
+                            dataMovementProtocol.name(),
+                            loginUserName,
+                            computeResource.getHostName(),
+                            OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                            workingDir,
+                            null,
+                            null);
                 }
+
+            } catch (URISyntaxException e) {
+                throw new OrchestratorException("Error while constructing source file URI", e);
             }
 
-            submodel.setSource(sourceUriString);
+            submodel.setSource(source.toString());
             // We don't know destination location at this time, data staging task will set this.
             // because destination is required field we set dummy destination
             submodel.setDestination("dummy://temp/file/location");
