@@ -34,10 +34,7 @@ import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
@@ -195,7 +192,7 @@ public class OrchestratorUtils {
         try {
             GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
-            String scratchLocation = extractScratchFromGroupPref(computeResourcePreference);
+            String scratchLocation = computeResourcePreference.getScratchLocation();
 
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference =
@@ -441,17 +438,5 @@ public class OrchestratorUtils {
             logger.error("Not able to find driver: " + e.getLocalizedMessage());
             return null;
         }
-    }
-
-    private static String extractScratchFromGroupPref(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM
-                && pref.isSetSpecificPreferences()) {
-            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
-            if (esp.isSetSlurm()) {
-                SlurmComputeResourcePreference scp = esp.getSlurm();
-                return scp.getScratchLocation();
-            }
-        }
-        return null;
     }
 }

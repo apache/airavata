@@ -236,7 +236,7 @@ public class AgentManagementHandler {
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
         computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
         // TODO - Support for both HPC & Cloud services --> Need to change the ComputationalResourceSchedulingModel
-        computationalResourceSchedulingModel.setOverrideScratchLocation(extractScratchFromGroupPref(groupCompResourcePref));
+        computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
         computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(extractSlurmAllocationProject(groupCompResourcePref));
         computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
 
@@ -277,18 +277,6 @@ public class AgentManagementHandler {
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());
 
         return experimentModel;
-    }
-
-    private String extractScratchFromGroupPref(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM
-                && pref.isSetSpecificPreferences()) {
-            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
-            if (esp.isSetSlurm()) {
-                SlurmComputeResourcePreference scp = esp.getSlurm();
-                return scp.getScratchLocation();
-            }
-        }
-        return null;
     }
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {

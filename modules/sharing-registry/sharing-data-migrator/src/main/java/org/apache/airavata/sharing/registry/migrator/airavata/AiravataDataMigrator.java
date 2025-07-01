@@ -847,14 +847,14 @@ public class AiravataDataMigrator {
             groupComputeResourcePreference.setResourceSpecificCredentialStoreToken(
                     computeResourcePreference.getResourceSpecificCredentialStoreToken());
         }
+        if (isValid(computeResourcePreference.getScratchLocation())) {
+            groupComputeResourcePreference.setScratchLocation(computeResourcePreference.getScratchLocation());
+        }
 
         groupComputeResourcePreference.setResourceType(org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType.SLURM);
         SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
         if (isValid(computeResourcePreference.getPreferredBatchQueue())) {
             slurm.setPreferredBatchQueue(computeResourcePreference.getPreferredBatchQueue());
-        }
-        if (isValid(computeResourcePreference.getScratchLocation())) {
-            slurm.setScratchLocation(computeResourcePreference.getScratchLocation());
         }
         if (isValid(computeResourcePreference.getAllocationProjectNumber())) {
             slurm.setAllocationProjectNumber(computeResourcePreference.getAllocationProjectNumber());
