@@ -188,16 +188,15 @@ public class ServerMain {
     private static void performServerStart(String[] args) {
         setServerStarted();
         logger.info("Airavata server instance starting...");
+        String serverNames = "all";
         for (String string : args) {
             logger.info("Server Arguments: " + string);
+            if (string.startsWith("--servers=")) {
+                serverNames = string.substring("--servers=".length());
+            }
         }
-        String serverNames;
-        try {
-            serverNames = ApplicationSettings.getSetting(SERVERS_KEY);
-            startAllServers(serverNames);
-        } catch (ApplicationSettingsException e1) {
-            logger.error("Error finding servers property");
-        }
+        serverNames = ApplicationSettings.getSetting(SERVERS_KEY, serverNames);
+        startAllServers(serverNames);
         while (!hasStopRequested()) {
             try {
                 Thread.sleep(2000);

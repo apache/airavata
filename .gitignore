@@ -59,3 +59,4 @@ logs
 # Ignore generated sources
 **/generated-sources/
 /distribution
+/vault

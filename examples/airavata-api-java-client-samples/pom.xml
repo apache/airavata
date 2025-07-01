@@ -29,32 +29,22 @@ under the License.
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
-            <version>${thrift.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-configuration</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4</version>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1</version>
         </dependency>
     </dependencies>
 

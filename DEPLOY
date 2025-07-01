@@ -1,0 +1,33 @@
+## Build Server
+
+```bash
+
+# build from source
+mvn clean install -DskipTests
+
+# prepare the distribution directory for upload
+cp -r dev-tools/deployment-scripts/ distribution
+cp -r vault/ distribution/vault
+
+# define hostname and basepath
+HOSTNAME=exouser@api.dev.cybershuttle.org
+BASEPATH="~/airavata-deployment/airavata-services-v2"
+
+# upload the distribution directory
+scp -r distribution/* $HOSTNAME:$BASEPATH
+
+```
+
+## Deployment Server
+```bash
+
+BASEPATH=$HOME/airavata-deployment/airavata-services-v2
+cd $BASEPATH
+
+./services_down.sh
+./distribution_update.sh
+./services_up.sh
+
+multitail apache-airavata-*/logs/*.log
+
+```
