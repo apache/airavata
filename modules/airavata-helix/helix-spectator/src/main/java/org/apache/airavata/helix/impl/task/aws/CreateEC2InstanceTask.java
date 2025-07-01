@@ -19,19 +19,17 @@
 package org.apache.airavata.helix.impl.task.aws;
 
 import org.apache.airavata.agents.api.AgentUtils;
+import org.apache.airavata.helix.agent.ssh.SSHUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
-import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.helix.task.TaskResult;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
@@ -39,6 +37,7 @@ import software.amazon.awssdk.services.ec2.model.InstanceType;
 import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 
+import java.security.Security;
 import java.util.UUID;
 
 /**
@@ -52,6 +51,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         LOGGER.info("Starting Create EC2 Instance Task for process {}", getProcessId());
+        Security.addProvider(new BouncyCastleProvider());
 
         AWSProcessContextManager awsContext = new AWSProcessContextManager(taskContext);
         Ec2Client ec2Client = null;
@@ -60,7 +60,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
             AwsComputeResourcePreference awsPrefs = taskContext.getGroupComputeResourcePreference().getSpecificPreferences().getAws();
             String credentialToken = taskContext.getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
 
-            ec2Client = buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion());
+            ec2Client = AWSTaskUtil.buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion());
             LOGGER.info("Successfully built EC2 client for region {}", awsPrefs.getRegion());
 
             String securityGroupId = createSecurityGroup(ec2Client);
@@ -71,18 +71,14 @@ public class CreateEC2InstanceTask extends AiravataTask {
             CreateKeyPairResponse kpRes = ec2Client.createKeyPair(req -> req.keyName(keyPairName));
             awsContext.saveKeyPairName(keyPairName);
 
-            String sshCredentialToken = saveSSHCredential(kpRes.keyMaterial());
+            String privateKeyPEM = kpRes.keyMaterial();
+            String publicKey = SSHUtil.generatePublicKey(privateKeyPEM);
+
+            String sshCredentialToken = saveSSHCredential(privateKeyPEM, publicKey);
             awsContext.saveSSHCredentialToken(sshCredentialToken);
             LOGGER.info("Created key pair {} and saved credential with token {}", keyPairName, sshCredentialToken);
 
-            RunInstancesRequest runRequest = RunInstancesRequest.builder()
-                    .imageId(awsPrefs.getPreferredAmiId())
-                    .instanceType(InstanceType.fromValue(awsPrefs.getPreferredInstanceType()))
-                    .keyName(keyPairName)
-                    .securityGroupIds(securityGroupId)
-                    .minCount(1)
-                    .maxCount(1)
-                    .build();
+            RunInstancesRequest runRequest = RunInstancesRequest.builder().imageId(awsPrefs.getPreferredAmiId()).instanceType(InstanceType.fromValue(awsPrefs.getPreferredInstanceType())).keyName(keyPairName).securityGroupIds(securityGroupId).minCount(1).maxCount(1).build();
             RunInstancesResponse runResponse = ec2Client.runInstances(runRequest);
 
             if (runResponse.instances() == null || runResponse.instances().isEmpty()) {
@@ -117,7 +113,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
             AwsComputeResourcePreference awsPrefs = taskContext.getGroupComputeResourcePreference().getSpecificPreferences().getAws();
             String credentialToken = taskContext.getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
 
-            try (Ec2Client ec2Client = buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion())) {
+            try (Ec2Client ec2Client = AWSTaskUtil.buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion())) {
                 String sgId = awsContext.getSecurityGroupId();
                 String keyName = awsContext.getKeyPairName();
 
@@ -137,21 +133,12 @@ public class CreateEC2InstanceTask extends AiravataTask {
         }
     }
 
-    private Ec2Client buildEc2Client(String token, String gatewayId, String region) throws Exception {
-        PasswordCredential pwdCred = AgentUtils.getCredentialClient().getPasswordCredential(token, gatewayId);
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(pwdCred.getLoginUserName(), pwdCred.getPassword()); // TODO support using AWS Credential
-        return Ec2Client.builder()
-                .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .build();
-    }
-
-    // Save the generated aws private key in Airavata Credential Store
-    private String saveSSHCredential(String privateKey) throws Exception {
+    private String saveSSHCredential(String privateKey, String publicKey) throws Exception {
         SSHCredential credential = new SSHCredential();
         credential.setGatewayId(getGatewayId());
         credential.setToken(UUID.randomUUID().toString());
         credential.setPrivateKey(privateKey);
+        credential.setPublicKey(publicKey);
         credential.setUsername(getProcessModel().getUserName());
 
         String savedToken = AgentUtils.getCredentialClient().addSSHCredential(credential);

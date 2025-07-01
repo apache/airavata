@@ -18,6 +18,7 @@
  */
 package org.apache.airavata.helix.impl.task;
 
+import org.apache.airavata.helix.impl.task.aws.AWSJobSubmissionTask;
 import org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask;
 import org.apache.airavata.helix.impl.task.aws.NoOperationTask;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
 
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
-        return new NoOperationTask();
+        return new AWSJobSubmissionTask();
     }
 
     @Override
