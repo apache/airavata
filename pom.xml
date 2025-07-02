@@ -230,7 +230,7 @@ under the License.
             <dependency>
                 <groupId>org.apache.zookeeper</groupId>
                 <artifactId>zookeeper</artifactId>
-                <version>3.9.2</version>
+                <version>3.9.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
