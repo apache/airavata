@@ -53,7 +53,7 @@ profile_service: "profile_service"
 django_db_username: "django"
 django_db_password: "{{ vault_db_password }}"
 
-mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
+mysql_connector_jar: "mysql-connector-j-9.3.0-bin.jar"
 
 # Rabbitmq related vareables
 rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
