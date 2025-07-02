@@ -22,6 +22,7 @@ import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.helix.agent.ssh.SSHUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
+import org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;

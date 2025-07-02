@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.impl.task.aws;
+package org.apache.airavata.helix.impl.task.aws.utils;
 
 import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.model.credential.store.PasswordCredential;
