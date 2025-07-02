@@ -25,6 +25,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
+import org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil;
+import org.apache.airavata.helix.impl.task.aws.utils.ExponentialBackoffWaiter;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -61,8 +63,9 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
 
-    private static final int POLL_INTERVAL_SECONDS = 10;
-    private static final int TIMEOUT_MINUTES = 5;
+    private static final int WAIT_MAX_RETRIES = 10;
+    private static final long INITIAL_DELAY_SECONDS = 5;
+    private static final long MAX_DELAY_SECONDS = 20;
 
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
@@ -84,53 +87,50 @@ public class AWSJobSubmissionTask extends AiravataTask {
             LOGGER.info("Instance {} is verified and running at IP: {}", instanceId, publicIpAddress);
             awsContext.savePublicIp(publicIpAddress);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
+            saveAndPublishProcessStatus(ProcessState.EXECUTING);
 
             SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
+            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
             adaptor.init(
                     getTaskContext().getComputeResourceLoginUserName(),
-                    publicIpAddress,
-                    22,
-                    sshCredential.getPublicKey(),
-                    sshCredential.getPrivateKey(),
-                    sshCredential.getPassphrase()
+                    publicIpAddress, 22,
+                    sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase()
             );
-
-            saveAndPublishProcessStatus(ProcessState.EXECUTING);
 
             JobManagerConfiguration jobManagerConfig = JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
             LOGGER.info("Generated job submission script for AWS:\n{}", scriptContent);
 
-            File localScriptFile = new File(getLocalDataDir(), "aws-job-" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
-            FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
-
-            String remoteWorkingDir = getTaskContext().getWorkingDir();
-
             JobModel jobModel = createJobModel(mapData, "DEFAULT_JOB_ID", scriptContent);
             saveJobModel(jobModel);
             saveAndPublishJobStatus(jobModel);
 
+            File localScriptFile = new File(getLocalDataDir(), "aws-job" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
+            FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
+
             jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.QUEUED)));
             saveJobModel(jobModel);
             saveAndPublishJobStatus(jobModel);
-            // TODO refine the logic
-            long startTime = System.currentTimeMillis();
-            long timeoutTime = startTime + TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES);
 
-            while (System.currentTimeMillis() < timeoutTime) {
-                try {
-                    adaptor.createDirectory(remoteWorkingDir, false);
-                    break;
-                } catch (Exception e) {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(POLL_INTERVAL_SECONDS));
-                }
-            }
+            String remoteWorkingDir = getTaskContext().getWorkingDir();
+            ExponentialBackoffWaiter sshWaiter = new ExponentialBackoffWaiter(
+                    "SSH daemon readiness on EC2 instance " + instanceId,
+                    WAIT_MAX_RETRIES,
+                    INITIAL_DELAY_SECONDS,
+                    MAX_DELAY_SECONDS,
+                    TimeUnit.SECONDS
+            );
 
-            if (System.currentTimeMillis() >= timeoutTime) {
-                String reason = "Failed to create remote working directory " + remoteWorkingDir + " for the process: " + getProcessId();
-                return handleJobSubmissionFailure(mapData, reason);
+            try {
+                sshWaiter.waitUntil(() -> {
+                    adaptor.createDirectory(remoteWorkingDir, true);
+                    return true;
+                });
+            } catch (Exception e) {
+                String reason = "Failed to connect to SSH daemon or create remote directory " + remoteWorkingDir + ". " + e.getMessage();
+                LOGGER.error(reason, e);
+                return onFail(reason, false, e);
             }
 
             jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.ACTIVE)));
@@ -173,11 +173,16 @@ public class AWSJobSubmissionTask extends AiravataTask {
     }
 
     private String verifyInstanceIsRunning(String token, String instanceId, String region) throws Exception {
-        try (Ec2Client ec2Client = AWSTaskUtil.buildEc2Client(token, getGatewayId(), region)) {
-            long startTime = System.currentTimeMillis();
-            long timeoutTime = startTime + TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES);
+        ExponentialBackoffWaiter waiter = new ExponentialBackoffWaiter(
+                "EC2 instance " + instanceId + " to enter 'running' state",
+                WAIT_MAX_RETRIES,
+                INITIAL_DELAY_SECONDS,
+                MAX_DELAY_SECONDS,
+                TimeUnit.SECONDS
+        );
 
-            while (System.currentTimeMillis() < timeoutTime) {
+        try (Ec2Client ec2Client = AWSTaskUtil.buildEc2Client(token, getGatewayId(), region)) {
+            return waiter.waitUntil(() -> {
                 DescribeInstancesRequest request = DescribeInstancesRequest.builder().instanceIds(instanceId).build();
                 DescribeInstancesResponse response = ec2Client.describeInstances(request);
 
@@ -192,8 +197,8 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
                 if (state == InstanceStateName.RUNNING) {
                     if (instance.publicIpAddress() == null || instance.publicIpAddress().isEmpty()) {
-                        LOGGER.error("Instance is running but has no public IP address found during verification: {} for the process: {}", instanceId, getProcessId());
-                        throw new Exception("Instance is running but has no public IP address found during verification: " + instanceId + " for the process: " + getProcessId());
+                        // IP not assigned yet, treat as a retryable condition
+                        return null;
                     }
                     return instance.publicIpAddress();
                 }
@@ -202,10 +207,10 @@ public class AWSJobSubmissionTask extends AiravataTask {
                     LOGGER.error("Instance entered a failure state during verification: {} for the process: {}", state, getProcessId());
                     throw new Exception("Instance entered a failure state during verification: " + state + " for the process: " + getProcessId());
                 }
-                Thread.sleep(TimeUnit.SECONDS.toMillis(POLL_INTERVAL_SECONDS));
-            }
+
+                return null;
+            });
         }
-        throw new Exception("Instance did not become available within " + TIMEOUT_MINUTES + " minutes.");
     }
 
     private TaskResult handleJobSubmissionFailure(GroovyMapData mapData, String reason) throws TException {
