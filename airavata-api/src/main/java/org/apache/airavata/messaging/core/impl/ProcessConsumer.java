@@ -22,8 +22,8 @@ package org.apache.airavata.messaging.core.impl;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.QueueingConsumer;
 import java.io.IOException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -39,7 +39,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessConsumer extends QueueingConsumer {
+public class ProcessConsumer extends DefaultConsumer {
     private static final Logger log = LoggerFactory.getLogger(ProcessConsumer.class);
 
     private MessageHandler handler;
