@@ -6,7 +6,7 @@ require (
 	github.com/cyber-shuttle/cybershuttle-tunnels v0.0.0-20250505072337-4314f6e407c4
 	github.com/fatedier/frp v0.62.1
 	github.com/google/uuid v1.6.0
-	google.golang.org/grpc v1.64.0
+	google.golang.org/grpc v1.64.1
 	google.golang.org/protobuf v1.34.2
 )
 
