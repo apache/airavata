@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 
-public class MessageConsumer extends QueueingConsumer {
+public class MessageConsumer extends DefaultConsumer {
 
     private static final Logger logger = LogManager.getLogger(MessageConsumer.class);
 
