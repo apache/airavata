@@ -30,6 +30,7 @@ import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
@@ -224,14 +225,23 @@ public class ResourceHandler {
     }
 
     public Resource getResourceById(String id) {
-        // Your logic to fetch the resource by ID
         Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
         }
 
-        return opResource.get();
+        Resource resource = opResource.get();
+        boolean isAuthenticated = UserContext.isAuthenticated();
+
+        if (resource.getPrivacy().equals(PrivacyEnum.PUBLIC)) {
+            return resource;
+        } else if (isAuthenticated
+                && resource.getAuthors().contains(UserContext.userId().toLowerCase())) {
+            return resource;
+        } else {
+            throw new EntityNotFoundException("Resource not found: " + id);
+        }
     }
 
     public boolean deleteResourceById(String id) {
