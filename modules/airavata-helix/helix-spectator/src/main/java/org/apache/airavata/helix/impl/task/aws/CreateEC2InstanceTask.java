@@ -90,7 +90,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
             awsContext.saveInstanceId(instanceId);
             LOGGER.info("Successfully launched EC2 instance {}", instanceId);
 
-            return new TaskResult(TaskResult.Status.COMPLETED, "Launched EC2 instance " + instanceId);
+            return onSuccess("AWS Env setup task successfully completed " + getTaskId());
 
         } catch (Exception e) {
             // TODO catch for AMI issues, etc
