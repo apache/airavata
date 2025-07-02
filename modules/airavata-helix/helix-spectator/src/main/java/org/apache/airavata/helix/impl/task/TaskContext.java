@@ -658,22 +658,20 @@ public class TaskContext {
                 throw new Exception("Job Submission interface cannot be empty at this point");
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-                SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localSubmission =
-                        getRegistryClient().getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                LOCALSubmission localSubmission = getRegistryClient().getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = localSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
-                SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
-                return null;
+                SSHJobSubmission sshJobSubmission = getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else {
                 throw new Exception("Unsupported JobSubmissionProtocol - "
