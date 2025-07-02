@@ -37,6 +37,7 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
@@ -81,6 +82,7 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
             String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, awsPrefs.getRegion());
             LOGGER.info("Instance {} is verified and running at IP: {}", instanceId, publicIpAddress);
+            awsContext.savePublicIp(publicIpAddress);
 
             SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
 
@@ -94,6 +96,8 @@ public class AWSJobSubmissionTask extends AiravataTask {
                     sshCredential.getPassphrase()
             );
 
+            saveAndPublishProcessStatus(ProcessState.EXECUTING);
+
             JobManagerConfiguration jobManagerConfig = JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
@@ -103,13 +107,42 @@ public class AWSJobSubmissionTask extends AiravataTask {
             FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
 
             String remoteWorkingDir = getTaskContext().getWorkingDir();
-            adaptor.createDirectory(remoteWorkingDir, false);
+
+            JobModel jobModel = createJobModel(mapData, "DEFAULT_JOB_ID", scriptContent);
+            saveJobModel(jobModel);
+            saveAndPublishJobStatus(jobModel);
+
+            jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.QUEUED)));
+            saveJobModel(jobModel);
+            saveAndPublishJobStatus(jobModel);
+            // TODO refine the logic
+            long startTime = System.currentTimeMillis();
+            long timeoutTime = startTime + TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES);
+
+            while (System.currentTimeMillis() < timeoutTime) {
+                try {
+                    adaptor.createDirectory(remoteWorkingDir, false);
+                    break;
+                } catch (Exception e) {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(POLL_INTERVAL_SECONDS));
+                }
+            }
+
+            if (System.currentTimeMillis() >= timeoutTime) {
+                String reason = "Failed to create remote working directory " + remoteWorkingDir + " for the process: " + getProcessId();
+                return handleJobSubmissionFailure(mapData, reason);
+            }
+
+            jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.ACTIVE)));
+            saveJobModel(jobModel);
+            saveAndPublishJobStatus(jobModel);
+
             adaptor.uploadFile(localScriptFile.getAbsolutePath(), remoteWorkingDir);
             LOGGER.info("Successfully uploaded script {} to {}", localScriptFile.getName(), remoteWorkingDir);
 
             RawCommandInfo submitCommandInfo = jobManagerConfig.getSubmitCommand(remoteWorkingDir, localScriptFile.getName());
             String remoteScriptPath = remoteWorkingDir + File.separator + localScriptFile.getName();
-            String command = "chmod +x " + remoteScriptPath + " && nohup " + submitCommandInfo.getCommand() + " > " + remoteWorkingDir + "/stdout.log 2> " + remoteWorkingDir + "/stderr.log & echo $!";
+            String command = "chmod +x " + remoteScriptPath + " && nohup " + submitCommandInfo.getCommand() + " > " + remoteWorkingDir + "/AiravataAgent.stdout 2> " + remoteWorkingDir + "/AiravataAgent.stderr & echo $!";
             LOGGER.info("Executing command on EC2 instance: {} for the process: {}", command, getProcessId());
 
             CommandOutput commandOutput = adaptor.executeCommand(command, remoteWorkingDir);
@@ -126,10 +159,6 @@ public class AWSJobSubmissionTask extends AiravataTask {
             }
 
             LOGGER.info("Successfully launched job on EC2 instance. Remote process ID (jobId): {}", jobId);
-            JobModel jobModel = createJobModel(mapData, jobId, scriptContent);
-            saveJobModel(jobModel);
-            saveAndPublishJobStatus(jobModel);
-
             return onSuccess("Launched job " + jobId + " in instance " + instanceId);
 
         } catch (Exception e) {
