@@ -46,7 +46,7 @@ public class AWSProcessContextManager {
     private static final String AWS_KEY_PAIR_NAME_KEY = "AWS_KEY_PAIR_NAME";
     private static final String AWS_SSH_CREDENTIAL_TOKEN = "AWS_SSH_CREDENTIAL_TOKEN";
     private static final String AWS_PUBLIC_IP = "AWS_PUBLIC_IP";
-
+    private static final String AWS_JOB_ID = "AWS_JOB_ID";
 
     private final RegistryService.Client registryClient;
     private final TaskContext taskContext;
@@ -103,6 +103,20 @@ public class AWSProcessContextManager {
 
     public void savePublicIp(String publicIp) throws TException, IOException {
         updateContext(AWS_PUBLIC_IP, publicIp);
+    }
+
+    public String getJobId() throws IOException {
+        return getContextMap().get(AWS_JOB_ID);
+    }
+
+    public void saveJobId(String jobId) throws TException, IOException {
+        updateContext(AWS_JOB_ID, jobId);
+    }
+
+    public void cleanup() throws TException, IOException {
+        updateContext(AWS_INSTANCE_ID_KEY, null);
+        updateContext(AWS_SECURITY_GROUP_ID_KEY, null);
+        updateContext(AWS_KEY_PAIR_NAME_KEY, null);
     }
 
     private Map<String, String> getContextMap() throws IOException {

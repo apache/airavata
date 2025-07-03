@@ -1,27 +1,23 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.helix.impl.task.submission;
 
-import java.io.File;
-import java.security.SecureRandom;
-import java.util.*;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
@@ -43,6 +39,11 @@ import org.apache.helix.HelixManager;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class JobSubmissionTask extends AiravataTask {
 
@@ -119,9 +120,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
      * This will write the standard output of the command to a file inside the working directory of the process and
      * if the agent does not receive the output through first invocation, it retries by looking into the output file.
      *
-     * @param submitCommand command to submit
-     * @param agentAdaptor agent adaptor to communicate with compute resource
-     * @param groovyMapData metadata object of the job
+     * @param submitCommand    command to submit
+     * @param agentAdaptor     agent adaptor to communicate with compute resource
+     * @param groovyMapData    metadata object of the job
      * @param workingDirectory working directory for the process
      * @return {@link CommandOutput} of the submitted command
      * @throws AgentException if agent failed to communicate with the compute host
@@ -158,9 +159,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     private String getJobCommandRecordingFile(GroovyMapData mapData) {
         return (mapData.getWorkingDirectory().endsWith(File.separator)
-                        ? mapData.getWorkingDirectory()
-                        : mapData.getWorkingDirectory() + File.separator)
-                + mapData.getJobName();
+                ? mapData.getWorkingDirectory()
+                : mapData.getWorkingDirectory() + File.separator) + mapData.getJobName();
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -234,7 +234,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
             JobStatus jobStatus;
-            if (jobModel.getJobStatuses() != null && jobModel.getJobStatuses().size() > 0) {
+            if (jobModel.getJobStatuses() != null && !jobModel.getJobStatuses().isEmpty()) {
                 jobStatus = jobModel.getJobStatuses().get(0);
             } else {
                 logger.error("Job statuses can not be empty");
@@ -246,8 +246,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             jobModel.setJobStatuses(statuses);
 
             if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0) {
-                jobStatus.setTimeOfStateChange(
-                        AiravataUtils.getCurrentTimestamp().getTime());
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             } else {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
@@ -266,7 +265,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         }
     }
 
-    private void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
+    protected void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
 
         if (Boolean.parseBoolean(ServerSettings.getSetting("enable.realtime.monitor"))) {
             if (mapData.getPreJobCommands() == null) {

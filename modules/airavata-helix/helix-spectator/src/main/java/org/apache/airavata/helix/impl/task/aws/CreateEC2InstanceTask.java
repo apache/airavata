@@ -108,30 +108,14 @@ public class CreateEC2InstanceTask extends AiravataTask {
 
     @Override
     public void onCancel(TaskContext taskContext) {
-        LOGGER.warn("Cleaning up resources for failed CreateEC2InstanceTask, process: {}", getProcessId());
-        try {
-            AWSProcessContextManager awsContext = new AWSProcessContextManager(taskContext);
-            AwsComputeResourcePreference awsPrefs = taskContext.getGroupComputeResourcePreference().getSpecificPreferences().getAws();
-            String credentialToken = taskContext.getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
+        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+    }
 
-            try (Ec2Client ec2Client = AWSTaskUtil.buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion())) {
-                String sgId = awsContext.getSecurityGroupId();
-                String keyName = awsContext.getKeyPairName();
-
-                if (sgId != null) {
-                    LOGGER.warn("Deleting security group: {}", sgId);
-                    ec2Client.deleteSecurityGroup(req -> req.groupId(sgId));
-                }
-                if (keyName != null) {
-                    LOGGER.warn("Deleting key pair: {}", keyName);
-                    ec2Client.deleteKeyPair(req -> req.keyName(keyName));
-                }
-
-                AgentUtils.getCredentialClient().deleteSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to cleanup resources during onCancel. Manual intervention may be required.", e);
-        }
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+        LOGGER.info("AWS Create EC2 Instance Task cleanup for process {}", getProcessId());
+        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
     }
 
     private String saveSSHCredential(String privateKey, String publicKey) throws Exception {
