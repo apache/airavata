@@ -1533,7 +1533,7 @@ ipython = get_ipython()
 if ipython is None:
     raise RuntimeError("airavata_jupyter_magic requires an ipython session")
 assert ipython is not None
-api_host = "api.gateway.cybershuttle.org"
+api_host = "api.dev.cybershuttle.org"
 api_base_url = f"https://{api_host}"
 file_server_url = f"http://{api_host}:8050"
 MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
