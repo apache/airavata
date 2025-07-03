@@ -36,6 +36,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -207,9 +208,12 @@ public class PreWorkflowManager extends WorkflowManager {
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
         ProcessModel processModel;
+        GroupComputeResourcePreference gcrPref;
+
         try {
             processModel = registryClient.getProcess(processId);
             getRegistryClientPool().returnResource(registryClient);
+            gcrPref = registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
 
         } catch (Exception e) {
             logger.error("Failed to fetch process from registry associated with process id " + processId, e);
@@ -245,17 +249,21 @@ public class PreWorkflowManager extends WorkflowManager {
             logger.warn("No workflow registered with process " + processId + " to cancel");
         }
 
-        RemoteJobCancellationTask rjct = new RemoteJobCancellationTask();
-        rjct.setTaskId(UUID.randomUUID().toString());
-        rjct.setExperimentId(experimentId);
-        rjct.setProcessId(processId);
-        rjct.setGatewayId(gateway);
-        rjct.setSkipAllStatusPublish(true);
+        if (gcrPref.getResourceType() == ResourceType.SLURM) {
+            logger.info("Skipping cancel workflow for process {} as it is not a SLURM process, resource type: {}", processId, gcrPref.getResourceType());
 
-        if (allTasks.size() > 0) {
-            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
+            RemoteJobCancellationTask rjct = new RemoteJobCancellationTask();
+            rjct.setTaskId(UUID.randomUUID().toString());
+            rjct.setExperimentId(experimentId);
+            rjct.setProcessId(processId);
+            rjct.setGatewayId(gateway);
+            rjct.setSkipAllStatusPublish(true);
+
+            if (!allTasks.isEmpty()) {
+                allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
+            }
+            allTasks.add(rjct);
         }
-        allTasks.add(rjct);
 
         CancelCompletingTask cct = new CancelCompletingTask();
         cct.setTaskId(UUID.randomUUID().toString());
@@ -264,14 +272,13 @@ public class PreWorkflowManager extends WorkflowManager {
         cct.setGatewayId(gateway);
         cct.setSkipAllStatusPublish(true);
 
-        if (allTasks.size() > 0) {
+        if (!allTasks.isEmpty()) {
             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(cct.getTaskId(), cct));
         }
         allTasks.add(cct);
 
-        String workflow = getWorkflowOperator()
-                .launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
-        logger.info("Started launching workflow " + workflow + " to cancel process " + processId);
+        String workflow = getWorkflowOperator().launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID(), allTasks, true, false);
+        logger.info("Started launching workflow {} to cancel process {}", workflow, processId);
         return workflow;
     }
 

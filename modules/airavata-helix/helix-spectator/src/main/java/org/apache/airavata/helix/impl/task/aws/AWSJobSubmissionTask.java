@@ -21,12 +21,11 @@ package org.apache.airavata.helix.impl.task.aws;
 import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
-import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil;
 import org.apache.airavata.helix.impl.task.aws.utils.ExponentialBackoffWaiter;
+import org.apache.airavata.helix.impl.task.submission.JobSubmissionTask;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -55,11 +54,10 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @TaskDef(name = "AWS_JOB_SUBMISSION_TASK")
-public class AWSJobSubmissionTask extends AiravataTask {
+public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
 
@@ -80,7 +78,7 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
             if (instanceId == null || sshCredentialToken == null) {
                 LOGGER.error("Could not find instanceId: {} or sshCredentialToken: {} in the AWS process context {}", instanceId, sshCredentialToken, getProcessId());
-                throw new Exception("Could not find instanceId: " + instanceId + "or sshCredentialToken: " + sshCredentialToken + "in the AWS process context: " + getProcessId());
+                onFail("Could not find instanceId: " + instanceId + "or sshCredentialToken: " + sshCredentialToken + "in the AWS process context: " + getProcessId(), true);
             }
 
             String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, awsPrefs.getRegion());
@@ -89,22 +87,15 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
             saveAndPublishProcessStatus(ProcessState.EXECUTING);
 
-            SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
-            adaptor.init(
-                    getTaskContext().getComputeResourceLoginUserName(),
-                    publicIpAddress, 22,
-                    sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase()
-            );
+            SSHJAgentAdaptor adaptor = initSSHJAgentAdaptor(sshCredentialToken, publicIpAddress);
 
             JobManagerConfiguration jobManagerConfig = JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
+            addMonitoringCommands(mapData);
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
             LOGGER.info("Generated job submission script for AWS:\n{}", scriptContent);
 
-            JobModel jobModel = createJobModel(mapData, "DEFAULT_JOB_ID", scriptContent);
-            saveJobModel(jobModel);
-            saveAndPublishJobStatus(jobModel);
+            JobModel jobModel = createJobModel(mapData, scriptContent);
 
             File localScriptFile = new File(getLocalDataDir(), "aws-job" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
             FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
@@ -158,6 +149,11 @@ public class AWSJobSubmissionTask extends AiravataTask {
                 return handleJobSubmissionFailure(mapData, reason);
             }
 
+            awsContext.saveJobId(jobId);
+            jobModel.setJobId(jobId);
+            saveJobModel(jobModel);
+            saveAndPublishJobStatus(jobModel);
+
             LOGGER.info("Successfully launched job on EC2 instance. Remote process ID (jobId): {}", jobId);
             return onSuccess("Launched job " + jobId + " in instance " + instanceId);
 
@@ -169,7 +165,37 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
     @Override
     public void onCancel(TaskContext taskContext) {
+        LOGGER.warn("Full cleanup triggered for process {}. Terminating all AWS resources.", getProcessId());
 
+        try {
+            AWSProcessContextManager awsContext = new AWSProcessContextManager(taskContext);
+            String publicIpAddress = awsContext.getPublicIp();
+            String sshCredentialToken = awsContext.getSSHCredentialToken();
+            String jobId = awsContext.getJobId();
+            SSHJAgentAdaptor adaptor = initSSHJAgentAdaptor(sshCredentialToken, publicIpAddress);
+
+            JobManagerConfiguration jobManagerConfig = JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
+            CommandOutput commandOutput = adaptor.executeCommand(jobManagerConfig.getCancelCommand(jobId).getRawCommand(), null);
+
+            if (commandOutput.getExitCode() != 0) {
+                LOGGER.warn("Failed to execute job cancellation command. STDERR: {}", commandOutput.getStdError());
+            } else {
+                LOGGER.info("Successfully executed job cancellation command. Output: {}", commandOutput.getStdOut());
+            }
+            LOGGER.info("Terminating AWS resources, instance {}, IP {}, for process {}", awsContext.getInstanceId(), publicIpAddress, getProcessId());
+            AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to execute full cleanup during onCancel for process {}", getProcessId(), e);
+            onFail("Task failed during full cleanup due to unexpected issue", false, e);
+        }
+    }
+
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+        LOGGER.info("AWS Job Submission Task cleanup for process {}", getProcessId());
+        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
     }
 
     private String verifyInstanceIsRunning(String token, String instanceId, String region) throws Exception {
@@ -188,7 +214,7 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
                 if (response.reservations().isEmpty() || response.reservations().get(0).instances().isEmpty()) {
                     LOGGER.error("No instance found with ID during verification: {} for the process: {}", instanceId, getProcessId());
-                    throw new Exception("No instance found with ID during verification: " + instanceId + " for the process: " + getProcessId());
+                    onFail("No instance found with ID during verification: " + instanceId + " for the process: " + getProcessId(), true);
                 }
 
                 Instance instance = response.reservations().get(0).instances().get(0);
@@ -205,6 +231,7 @@ public class AWSJobSubmissionTask extends AiravataTask {
 
                 if (state == InstanceStateName.SHUTTING_DOWN || state == InstanceStateName.TERMINATED || state == InstanceStateName.STOPPED) {
                     LOGGER.error("Instance entered a failure state during verification: {} for the process: {}", state, getProcessId());
+                    onFail("Instance entered a failure state during verification: " + state + " for the process: " + getProcessId(), true);
                     throw new Exception("Instance entered a failure state during verification: " + state + " for the process: " + getProcessId());
                 }
 
@@ -231,9 +258,9 @@ public class AWSJobSubmissionTask extends AiravataTask {
         return onFail(reason, false, null);
     }
 
-    private JobModel createJobModel(GroovyMapData mapData, String jobId, String jobScript) {
+    private JobModel createJobModel(GroovyMapData mapData, String jobScript) throws Exception {
         JobModel jobModel = new JobModel();
-        jobModel.setJobId(jobId);
+        jobModel.setJobId("DEFAULT_JOB_ID");
         jobModel.setProcessId(getProcessId());
         jobModel.setWorkingDir(mapData.getWorkingDirectory());
         jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
@@ -242,47 +269,26 @@ public class AWSJobSubmissionTask extends AiravataTask {
         jobModel.setJobDescription(jobScript);
 
         JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
-        jobStatus.setReason("Job submitted to EC2 instance with PID: " + jobId);
+        jobStatus.setReason("Job submitted to EC2 instance with PID: " + "DEFAULT_JOB_ID");
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
         jobModel.setJobStatuses(Collections.singletonList(jobStatus));
 
+        saveJobModel(jobModel);
+        saveAndPublishJobStatus(jobModel);
+
         return jobModel;
     }
 
-    private File getLocalDataDir() {
-        String outputPath = ServerSettings.getLocalDataLocation();
-        outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
-        return new File(outputPath + getProcessId());
-    }
+    private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
+        SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
+        SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
+        adaptor.init(
+                getTaskContext().getComputeResourceLoginUserName(),
+                publicIpAddress, 22,
+                sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase()
+        );
 
-    private void saveJobModel(JobModel jobModel) throws TException {
-        getRegistryServiceClient().addJob(jobModel, getProcessId());
-    }
-
-    private void saveAndPublishJobStatus(JobModel jobModel) throws Exception {
-        try {
-            JobStatus jobStatus;
-            if (jobModel.getJobStatuses() != null && !jobModel.getJobStatuses().isEmpty()) {
-                jobStatus = jobModel.getJobStatuses().get(0);
-            } else {
-                LOGGER.error("Job statuses can not be empty for job model: {} for process: {}", jobModel.getJobId(), getProcessId());
-                return;
-            }
-
-            jobModel.setJobStatuses(List.of(jobStatus));
-
-            if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0) {
-                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            } else {
-                jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
-            }
-
-            getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
-
-        } catch (Exception e) {
-            LOGGER.error("Error persisting job status for process {}: {}", getProcessId(), e.getLocalizedMessage(), e);
-            throw new Exception("Error persisting job status for process: " + getProcessId() + ". " + e.getLocalizedMessage(), e);
-        }
+        return adaptor;
     }
 }
