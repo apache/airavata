@@ -10,7 +10,7 @@ class DeviceFlowAuthenticator:
     def __init__(self):
         self.client_id = "cybershuttle-agent"
         self.realm = "default"
-        self.auth_server_url = "https://auth.cybershuttle.org"
+        self.auth_server_url = "https://auth.dev.cybershuttle.org"
 
         if not self.client_id or not self.realm or not self.auth_server_url:
             raise ValueError("Missing required environment variables for client ID, realm, or auth server URL")
