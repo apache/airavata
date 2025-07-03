@@ -97,7 +97,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
             JobModel jobModel = createJobModel(mapData, scriptContent);
 
-            File localScriptFile = new File(getLocalDataDir(), "aws-job" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
+            File localScriptFile = new File(getLocalDataDir(), "aws-job-" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
             FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
 
             jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.QUEUED)));
