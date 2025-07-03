@@ -82,7 +82,7 @@ service IamAdminServices extends base_api.BaseAPI {
     list<user_profile_model.UserProfile> getUsers(1: required security_model.AuthzToken authzToken,
                                                   2: required i32 offset,
                                                   3: required i32 limit,
-                                                  4: optional string search)
+                                                  4: string search)
                             throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                         2: airavata_errors.AuthorizationException ae)
 

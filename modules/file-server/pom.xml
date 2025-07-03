@@ -26,13 +26,12 @@ under the License.
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>file-server</artifactId>
-    <name>airavata-file-server</name>
+    <name>Airavata File Server</name>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -42,7 +41,7 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>task-core</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -55,11 +54,6 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>helix-spectator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -67,12 +61,10 @@ under the License.
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.2.5</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -82,7 +74,6 @@ under the License.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven.assembly.plugin}</version>
                 <executions>
                     <execution>
                         <id>file-service-distribution-package</id>
@@ -105,6 +96,6 @@ under the License.
     </build>
 
     <properties>
-        <file.service.dist.name>File-Service-0.01</file.service.dist.name>
+        <file.service.dist.name>apache-airavata-file-server-${project.version}</file.service.dist.name>
     </properties>
 </project>

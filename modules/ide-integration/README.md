@@ -58,7 +58,7 @@ Add the following entry to your system's hosts file:
 Navigate to the containers directory and start all required services:
 
 ```bash
-cd modules/ide-integration/src/main/containers
+cd .devcontainer
 docker-compose up -d
 ```
 
@@ -74,7 +74,7 @@ docker-compose up -d
 Apply database migrations:
 
 ```bash
-cd modules/ide-integration/src/main/containers
+cd .devcontainer
 cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 mysql -p123456
 ```
 
@@ -141,8 +141,8 @@ cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 my
 cd ..
 
 # Clone the Django portal repository
-git clone https://github.com/apache/airavata-django-portal.git
-cd airavata-django-portal
+git clone https://github.com/apache/airavata-portals.git
+cd airavata-portals/airavata-django-portal
 
 # Create a virtual environment
 python3 -m venv venv
@@ -187,7 +187,7 @@ For registering compute resources and storage resources:
 **This portal is required when registering new compute or storage resources into the gateway.**
 
 ```bash
-cd modules/ide-integration/src/main/containers/pga
+cd .devcontainer/pga
 docker-compose up -d
 ```
 
@@ -237,18 +237,13 @@ Only needed when Keycloak certificates expire:
 ```bash
 cd modules/ide-integration/src/main/resources/keystores
 
-# Remove old keystores
-rm airavata.jks client_truststore.jks
+# Remove old keystore
+rm airavata.jks
 
-# Generate new keystores
-# airavata.jks (PKCS12, preferred)
+# Generate new keystore (airavata.jks)
 keytool -genkey -keyalg RSA -alias selfsigned -keystore airavata.jks \
         -storetype pkcs12 -storepass airavata -validity 360 -keysize 2048 \
         -dname "CN=airavata.host,OU=airavata.host,O=airavata.host,L=airavata.host,ST=airavata.host,C=airavata.host"
-# client_truststore.jks (JKS, legacy)
-keytool -importkeystore -noprompt \
-        -srckeystore airavata.jks -srcstoretype pkcs12 -srcstorepass airavata \
-        -destkeystore client_truststore.jks -deststoretype jks -deststorepass airavata
 ```
 
 ## 📊 Service Status Overview
