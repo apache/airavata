@@ -140,3 +140,15 @@ services:
         ipv4_address: 192.168.100.17
     extra_hosts:
       - "airavata.host:192.168.100.1"
+
+  pga:
+    build: pga
+    volumes:
+      - /tmp:/tmp
+    ports:
+      - "8000:80"
+    networks:
+      airavata-network:
+        ipv4_address: 192.168.100.18
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
