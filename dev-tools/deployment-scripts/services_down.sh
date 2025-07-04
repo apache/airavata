@@ -36,3 +36,10 @@ log "Agent Service stopped."
 log "Stopping the Research Service..."
 ./apache-airavata-research-service-0.21-SNAPSHOT/bin/research-service.sh -d stop
 log "Research Service stopped."
+
+# ================================
+# Shutdown the File Service
+# ================================
+log "Stopping the File Service..."
+./apache-airavata-file-server-0.21-SNAPSHOT/bin/file-service.sh -d stop
+log "File Service stopped."
