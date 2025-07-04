@@ -22,6 +22,11 @@ rm -rf ./apache-airavata-research-service-0.21-SNAPSHOT
 tar -xvf ./apache-airavata-research-service-0.21-SNAPSHOT.tar.gz -C .
 log "Research Service updated."
 
+log "Updating the File Service..."
+rm -rf ./apache-airavata-file-server-0.21-SNAPSHOT
+tar -xvf ./apache-airavata-file-server-0.21-SNAPSHOT.tar.gz -C .
+log "File Service updated."
+
 # ================================
 # Update the config files
 # ================================
@@ -42,3 +47,7 @@ cp vault/application-research-service.yml ./apache-airavata-research-service-0.2
 cp vault/airavata.jks ./apache-airavata-research-service-0.21-SNAPSHOT/conf/airavata.jks
 cp vault/log4j2.xml ./apache-airavata-research-service-0.21-SNAPSHOT/conf/log4j2.xml
 log "Research Service config files updated."
+
+cp vault/application-file-server.properties ./apache-airavata-file-server-0.21-SNAPSHOT/conf/application.properties
+cp vault/log4j2.xml ./apache-airavata-file-server-0.21-SNAPSHOT/conf/log4j2.xml
+log "File Service config files updated."

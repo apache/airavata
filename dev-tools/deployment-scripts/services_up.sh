@@ -37,3 +37,10 @@ log "Agent Service started."
 log "Starting the Research Service..."
 ./apache-airavata-research-service-0.21-SNAPSHOT/bin/research-service.sh -d start
 log "Research Service started."
+
+# ================================
+# Start the File Service
+# ================================
+log "Starting the File Service..."
+./apache-airavata-file-server-0.21-SNAPSHOT/bin/file-service.sh -d start
+log "File Service started."
