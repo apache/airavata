@@ -50,4 +50,13 @@ public class UserContext {
     public static String gatewayId() {
         return CURRENT_USER.get().getGatewayId();
     }
+
+    public static boolean isAuthenticated() {
+        return AUTHZ_TOKEN.get() != null;
+    }
+
+    public static void clear() {
+        AUTHZ_TOKEN.remove();
+        CURRENT_USER.remove();
+    }
 }

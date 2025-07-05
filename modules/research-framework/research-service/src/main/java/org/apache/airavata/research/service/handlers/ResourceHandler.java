@@ -30,6 +30,7 @@ import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
@@ -224,14 +225,23 @@ public class ResourceHandler {
     }
 
     public Resource getResourceById(String id) {
-        // Your logic to fetch the resource by ID
         Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
         }
 
-        return opResource.get();
+        Resource resource = opResource.get();
+        boolean isAuthenticated = UserContext.isAuthenticated();
+
+        if (resource.getPrivacy().equals(PrivacyEnum.PUBLIC)) {
+            return resource;
+        } else if (isAuthenticated
+                && resource.getAuthors().contains(UserContext.userId().toLowerCase())) {
+            return resource;
+        } else {
+            throw new EntityNotFoundException("Resource not found: " + id);
+        }
     }
 
     public boolean deleteResourceById(String id) {
@@ -259,13 +269,11 @@ public class ResourceHandler {
 
     public Page<Resource> getAllResources(
             int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        if (tag == null || tag.length == 0) {
-            return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
+        boolean isAuthenticated = UserContext.isAuthenticated();
+        if (isAuthenticated) {
+            return getAllResourcesUserSignedIn(pageNumber, pageSize, typeList, tag, nameSearch, UserContext.userId());
         }
-
-        return resourceRepository.findAllByTypesAndAllTags(
-                typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
+        return getAllPublicResources(pageNumber, pageSize, typeList, tag, nameSearch);
     }
 
     public List<Tag> getAllTags() {
@@ -277,7 +285,34 @@ public class ResourceHandler {
     }
 
     public List<Resource> getAllResourcesByTypeAndName(Class<? extends Resource> type, String name) {
+        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase(), UserContext.userId());
+    }
 
-        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase());
+    private Page<Resource> getAllPublicResources(
+            int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        if (tag == null || tag.length == 0) {
+            return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
+        }
+
+        return resourceRepository.findAllByTypesAndAllTags(
+                typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
+    }
+
+    private Page<Resource> getAllResourcesUserSignedIn(
+            int pageNumber,
+            int pageSize,
+            List<Class<? extends Resource>> typeList,
+            String[] tag,
+            String nameSearch,
+            String userId) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        if (tag == null || tag.length == 0) {
+            return resourceRepository.findAllByTypesForUser(typeList, nameSearch.toLowerCase(), userId, pageable);
+        }
+
+        return resourceRepository.findAllByTypesAndAllTagsForUser(
+                typeList, tag, (long) tag.length, nameSearch.toLowerCase(), userId, pageable);
     }
 }
