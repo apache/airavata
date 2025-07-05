@@ -163,6 +163,8 @@ public class JobFactory {
                         resourceJobManager.getJobManagerBinPath(),
                         resourceJobManager.getJobManagerCommands(),
                         new HTCondorOutputParser());
+            case CLOUD:
+                return new CloudJobManagerConfiguration(templateFileName);
             // We don't have a job configuration manager for CLOUD type
             default:
                 throw new Exception("Could not find a job manager configuration for job manager type "
