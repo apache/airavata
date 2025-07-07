@@ -1,13 +1,36 @@
-FROM nimmis/apache-php5
+FROM php:8.1-apache
 
-# Download source from GitHub and extract to /var/www/portals/default
-RUN curl -L https://github.com/apache/airavata-portals/archive/refs/heads/main.tar.gz | tar -xz --strip-components=2 -C /var/www/portals/default airavata-portals-main/airavata-php-gateway
+# Install required PHP extensions and tools from apt
+RUN apt-get update && apt-get install -y wget git unzip && rm -rf /var/lib/apt/lists/*
 
-# COPY default.conf /etc/apache2/sites-available/default.conf
-COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
-# COPY pga-default.conf /etc/apache2/sites-available/pga-default.conf
-RUN mkdir /var/www/portals
+# Install Composer (official way)
+RUN wget https://getcomposer.org/installer -O composer-setup.php && \
+  php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+  rm composer-setup.php
+
+# Set up your application (example)
+RUN mkdir -p /var/www/portals/default
+
+RUN wget -q https://github.com/apache/airavata-portals/archive/refs/heads/main.tar.gz -O /tmp/portals.tar.gz && \
+  tar -xzf /tmp/portals.tar.gz --strip-components=2 -C /var/www/portals/default airavata-portals-main/airavata-php-gateway && \
+  rm /tmp/portals.tar.gz
+
+COPY pga-default.conf /etc/apache2/sites-available/000-default.conf
+
+# Enable Apache modules
 RUN a2enmod rewrite
+
+RUN mkdir -p /var/www/portals/default/storage/views && \
+    mkdir -p /var/www/portals/default/storage/sessions && \
+    mkdir -p /var/www/portals/default/bootstrap/cache
+
+# Set proper permissions for Laravel
+RUN chmod -R 775 /var/www/portals/default/storage/views && \
+    chmod -R 775 /var/www/portals/default/storage/sessions && \
+    chmod -R 775 /var/www/portals/default/bootstrap/cache
+
+WORKDIR /var/www/portals/default
+RUN composer install
+
 EXPOSE 80
 EXPOSE 443
-CMD [ "/bin/sh", "-c", "mkdir -p /var/www/portals/default/app/storage/views/ && mkdir -p /var/www/portals/default/app/storage/sessions/ && composer --working-dir=/var/www/portals/default install && echo 'Starting sever..' && /usr/sbin/apache2ctl -D FOREGROUND"]
