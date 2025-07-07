@@ -8,7 +8,7 @@ log() {
 # Shutdown the API Server
 # ================================
 log "Stopping the API Services..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d stop -f api-orch
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d stop api-orch
 log "Orchestrator stopped."
 ./apache-airavata-api-server-0.21-SNAPSHOT/bin/controller.sh -d stop
 log "Controller stopped."
