@@ -64,6 +64,7 @@ Daemon mode commands (use with -d):
     if [[ -f "$PID_PATH_NAME" ]]; then
       local PID=$(cat "$PID_PATH_NAME")
       echo "$SERVICE_NAME stopping..."
+      pkill -P "$PID"
       kill "$PID"
 
       local retry=0
@@ -74,6 +75,7 @@ Daemon mode commands (use with -d):
 
       if kill -0 "$PID" 2>/dev/null; then
         echo "[PID: $PID] Forcefully killing non-responsive process..."
+        pkill -9 -P "$PID"
         kill -9 "$PID"
       fi
 

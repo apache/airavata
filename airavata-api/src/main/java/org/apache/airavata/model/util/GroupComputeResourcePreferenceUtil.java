@@ -20,22 +20,37 @@
 package org.apache.airavata.model.util;
 
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 
 public class GroupComputeResourcePreferenceUtil {
 
     public static ComputeResourceReservation getActiveReservationForQueue(
             GroupComputeResourcePreference groupComputeResourcePreference, String queueName) {
 
-        long now = System.currentTimeMillis();
-        if (groupComputeResourcePreference.getReservationsSize() > 0) {
-            for (ComputeResourceReservation reservation : groupComputeResourcePreference.getReservations()) {
+        // Only SLURM has reservations
+        if (groupComputeResourcePreference.getResourceType() != ResourceType.SLURM) {
+            return null;
+        }
 
-                if (reservation.getQueueNames().contains(queueName)
-                        && now > reservation.getStartTime()
-                        && now < reservation.getEndTime()) {
-                    return reservation;
-                }
+        EnvironmentSpecificPreferences esp = groupComputeResourcePreference.getSpecificPreferences();
+        if (esp == null || !esp.isSetSlurm()) {
+            return null;
+        }
+
+        SlurmComputeResourcePreference slurm = esp.getSlurm();
+        if (!slurm.isSetReservations() || slurm.getReservationsSize() == 0) {
+            return null;
+        }
+
+        long now = System.currentTimeMillis();
+        for (ComputeResourceReservation reservation : slurm.getReservations()) {
+            if (reservation.getQueueNames().contains(queueName)
+                    && now > reservation.getStartTime()
+                    && now < reservation.getEndTime()) {
+                return reservation;
             }
         }
         return null;

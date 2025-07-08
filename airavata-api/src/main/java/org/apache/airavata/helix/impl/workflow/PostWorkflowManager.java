@@ -19,21 +19,29 @@
 */
 package org.apache.airavata.helix.impl.workflow;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.impl.task.*;
-import org.apache.airavata.helix.impl.task.completing.CompletingTask;
-import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
-import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
-import org.apache.airavata.helix.impl.task.staging.JobVerificationTask;
-import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
+import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.helix.impl.task.HelixTaskFactory;
+import org.apache.airavata.helix.impl.task.TaskFactory;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
@@ -53,7 +61,12 @@ import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -221,10 +234,17 @@ public class PostWorkflowManager extends WorkflowManager {
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
+        HelixTaskFactory taskFactory;
         try {
             processModel = registryClient.getProcess(processId);
             experimentModel = registryClient.getExperiment(processModel.getExperimentId());
             getRegistryClientPool().returnResource(registryClient);
+            ResourceType resourceType = registryClient
+                    .getGroupComputeResourcePreference(
+                            processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
+                    .getResourceType();
+            taskFactory = TaskFactory.getFactory(resourceType);
+            logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
 
         } catch (Exception e) {
             logger.error(
@@ -240,7 +260,7 @@ public class PostWorkflowManager extends WorkflowManager {
         String[] taskIds = taskDag.split(",");
         final List<AiravataTask> allTasks = new ArrayList<>();
 
-        JobVerificationTask jobVerificationTask = new JobVerificationTask();
+        AiravataTask jobVerificationTask = taskFactory.createJobVerificationTask(processId);
         jobVerificationTask.setGatewayId(experimentModel.getGatewayId());
         jobVerificationTask.setExperimentId(experimentModel.getExperimentId());
         jobVerificationTask.setProcessId(processModel.getProcessId());
@@ -270,11 +290,11 @@ public class PostWorkflowManager extends WorkflowManager {
                         assert subTaskModel != null;
                         switch (subTaskModel.getType()) {
                             case OUPUT:
-                                airavataTask = new OutputDataStagingTask();
+                                airavataTask = taskFactory.createOutputDataStagingTask(processId);
                                 airavataTask.setForceRunTask(true);
                                 break;
                             case ARCHIVE_OUTPUT:
-                                airavataTask = new ArchiveTask();
+                                airavataTask = taskFactory.createArchiveTask(processId);
                                 airavataTask.setForceRunTask(true);
                                 break;
                         }
@@ -296,7 +316,7 @@ public class PostWorkflowManager extends WorkflowManager {
             }
         }
 
-        CompletingTask completingTask = new CompletingTask();
+        AiravataTask completingTask = taskFactory.createCompletingTask(processId);
         completingTask.setGatewayId(experimentModel.getGatewayId());
         completingTask.setExperimentId(experimentModel.getExperimentId());
         completingTask.setProcessId(processModel.getProcessId());
@@ -308,7 +328,7 @@ public class PostWorkflowManager extends WorkflowManager {
         }
         allTasks.add(completingTask);
 
-        ParsingTriggeringTask parsingTriggeringTask = new ParsingTriggeringTask();
+        AiravataTask parsingTriggeringTask = taskFactory.createParsingTriggeringTask(processId);
         parsingTriggeringTask.setGatewayId(experimentModel.getGatewayId());
         parsingTriggeringTask.setExperimentId(experimentModel.getExperimentId());
         parsingTriggeringTask.setProcessId(processModel.getProcessId());

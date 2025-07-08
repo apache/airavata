@@ -21,10 +21,14 @@ package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
 import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.common.utils.ThriftClientPool;
-import org.apache.airavata.helix.impl.task.TaskOnFailException;
+import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
+import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
@@ -68,7 +72,28 @@ public class ProcessDataManager extends OutputDataStagingTask {
         this.processId = processId;
     }
 
-    public AgentAdaptor getAgentAdaptor() throws TaskOnFailException {
+    public AgentAdaptor getAgentAdaptor() throws Exception {
+        if (getTaskContext().getGroupComputeResourcePreference().getResourceType() == ResourceType.AWS) {
+            logger.info("Using AWS adaptor for process {}", processId);
+
+            AWSProcessContextManager awsContext = new AWSProcessContextManager(getTaskContext());
+            SSHCredential sshCredential = AgentUtils.getCredentialClient()
+                    .getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
+
+            logger.info("Using SSHCredential {} for AWS process {}", sshCredential.getPublicKey(), processId);
+            logger.info("AWS public ip is {}", awsContext.getPublicIp());
+            SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
+            adaptor.init(
+                    getTaskContext().getComputeResourceLoginUserName(),
+                    awsContext.getPublicIp(),
+                    22,
+                    sshCredential.getPublicKey(),
+                    sshCredential.getPrivateKey(),
+                    sshCredential.getPassphrase());
+
+            return adaptor;
+        }
+
         return getComputeResourceAdaptor(adaptorSupport);
     }
 
