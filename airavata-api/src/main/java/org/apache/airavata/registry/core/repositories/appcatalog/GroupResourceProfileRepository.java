@@ -1,23 +1,30 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
@@ -33,13 +40,6 @@ import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfil
 import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by skariyat on 2/8/18.
@@ -69,7 +69,8 @@ public class GroupResourceProfileRepository
                         && gcrPref.isSetSpecificPreferences()
                         && gcrPref.getSpecificPreferences().isSetSlurm()) {
 
-                    SlurmComputeResourcePreference slurm = gcrPref.getSpecificPreferences().getSlurm();
+                    SlurmComputeResourcePreference slurm =
+                            gcrPref.getSpecificPreferences().getSlurm();
 
                     // update SSH provisioner configs
                     if (slurm.getGroupSSHAccountProvisionerConfigs() != null) {
@@ -80,7 +81,8 @@ public class GroupResourceProfileRepository
                     // update reservations
                     if (slurm.getReservations() != null) {
                         slurm.getReservations().forEach(res -> {
-                            if (res.getReservationId().trim().isEmpty() || res.getReservationId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                            if (res.getReservationId().trim().isEmpty()
+                                    || res.getReservationId().equals(airavata_commonsConstants.DEFAULT_ID)) {
                                 res.setReservationId(AiravataUtils.getId(res.getReservationName()));
                             }
                         });
@@ -160,10 +162,18 @@ public class GroupResourceProfileRepository
         return isExists(groupResourceProfileId);
     }
 
-    public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId, List<String> accessibleGroupResProfileIds) {
+    public List<GroupResourceProfile> getAllGroupResourceProfiles(
+            String gatewayId, List<String> accessibleGroupResProfileIds) {
         if (accessibleGroupResProfileIds != null && !accessibleGroupResProfileIds.isEmpty()) {
-            List<GroupResourceProfile> profiles = select(QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES, -1, 0,
-                    Map.of(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId, DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS, accessibleGroupResProfileIds));
+            List<GroupResourceProfile> profiles = select(
+                    QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES,
+                    -1,
+                    0,
+                    Map.of(
+                            DBConstants.GroupResourceProfile.GATEWAY_ID,
+                            gatewayId,
+                            DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS,
+                            accessibleGroupResProfileIds));
 
             GrpComputePrefRepository prefRepo = new GrpComputePrefRepository();
             for (GroupResourceProfile profile : profiles) {
@@ -230,7 +240,11 @@ public class GroupResourceProfileRepository
 
     public List<GroupComputeResourcePreference> getAllGroupComputeResourcePreferences(String groupResourceProfileId) {
         List<GroupComputeResourcePreference> rawPrefs = (new GrpComputePrefRepository()
-                .select(QueryConstants.FIND_ALL_GROUP_COMPUTE_PREFERENCES, -1, 0, Map.of(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId)));
+                .select(
+                        QueryConstants.FIND_ALL_GROUP_COMPUTE_PREFERENCES,
+                        -1,
+                        0,
+                        Map.of(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId)));
 
         GrpComputePrefRepository prefRepo = new GrpComputePrefRepository();
         List<GroupComputeResourcePreference> decorated = new ArrayList<>();
@@ -238,7 +252,8 @@ public class GroupResourceProfileRepository
             GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
             pk.setComputeResourceId(raw.getComputeResourceId());
             pk.setGroupResourceProfileId(raw.getGroupResourceProfileId());
-            // this .get(...) will load the entity, detect SLURM, set resourceType, and populate the specificPreferences union
+            // this .get(...) will load the entity, detect SLURM, set resourceType, and populate the specificPreferences
+            // union
             GroupComputeResourcePreference full = prefRepo.get(pk);
             decorated.add(full);
         }

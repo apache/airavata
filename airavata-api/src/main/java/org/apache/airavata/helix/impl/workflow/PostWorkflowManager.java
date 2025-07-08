@@ -1,23 +1,37 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.workflow;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -57,20 +71,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 public class PostWorkflowManager extends WorkflowManager {
 
@@ -240,7 +240,8 @@ public class PostWorkflowManager extends WorkflowManager {
             experimentModel = registryClient.getExperiment(processModel.getExperimentId());
             getRegistryClientPool().returnResource(registryClient);
             ResourceType resourceType = registryClient
-                    .getGroupComputeResourcePreference(processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
+                    .getGroupComputeResourcePreference(
+                            processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
@@ -351,43 +352,50 @@ public class PostWorkflowManager extends WorkflowManager {
         init();
         final Consumer<String, JobStatusResult> consumer = createConsumer();
         new Thread(() -> {
-            while (true) {
+                    while (true) {
 
-                final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
-                CompletionService<Boolean> executorCompletionService = new ExecutorCompletionService<>(processingPool);
-                List<Future<Boolean>> processingFutures = new ArrayList<>();
+                        final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+                        CompletionService<Boolean> executorCompletionService =
+                                new ExecutorCompletionService<>(processingPool);
+                        List<Future<Boolean>> processingFutures = new ArrayList<>();
 
-                for (TopicPartition partition : consumerRecords.partitions()) {
-                    List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
-                    logger.info("Received job records {}", partitionRecords.size());
+                        for (TopicPartition partition : consumerRecords.partitions()) {
+                            List<ConsumerRecord<String, JobStatusResult>> partitionRecords =
+                                    consumerRecords.records(partition);
+                            logger.info("Received job records {}", partitionRecords.size());
 
-                    for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
-                        logger.info("Submitting {} to process in thread pool", record.value().getJobId());
+                            for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
+                                logger.info(
+                                        "Submitting {} to process in thread pool",
+                                        record.value().getJobId());
 
-                        // This avoids kafka read thread to wait until processing is completed before committing
-                        // There is a risk of missing 20 messages in case of a restart but this improves the
-                        // robustness
-                        // of the kafka read thread by avoiding wait timeouts
-                        processingFutures.add(executorCompletionService.submit(() -> {
-                            boolean success = process(record.value());
-                            logger.info("Status of processing " + record.value().getJobId() + " : " + success);
-                            return success;
-                        }));
+                                // This avoids kafka read thread to wait until processing is completed before committing
+                                // There is a risk of missing 20 messages in case of a restart but this improves the
+                                // robustness
+                                // of the kafka read thread by avoiding wait timeouts
+                                processingFutures.add(executorCompletionService.submit(() -> {
+                                    boolean success = process(record.value());
+                                    logger.info("Status of processing "
+                                            + record.value().getJobId() + " : " + success);
+                                    return success;
+                                }));
 
-                        consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                                consumer.commitSync(Collections.singletonMap(
+                                        partition, new OffsetAndMetadata(record.offset() + 1)));
+                            }
+                        }
+
+                        for (Future<Boolean> f : processingFutures) {
+                            try {
+                                executorCompletionService.take().get();
+                            } catch (Exception e) {
+                                logger.error("Failed processing job", e);
+                            }
+                        }
+                        logger.info("All messages processed. Moving to next round");
                     }
-                }
-
-                for (Future<Boolean> f : processingFutures) {
-                    try {
-                        executorCompletionService.take().get();
-                    } catch (Exception e) {
-                        logger.error("Failed processing job", e);
-                    }
-                }
-                logger.info("All messages processed. Moving to next round");
-            }
-        }).start();
+                })
+                .start();
     }
 
     private void saveAndPublishJobStatus(
@@ -431,8 +439,7 @@ public class PostWorkflowManager extends WorkflowManager {
         }
     }
 
-    public void stopServer() {
-    }
+    public void stopServer() {}
 
     public static void main(String[] args) throws Exception {
 
