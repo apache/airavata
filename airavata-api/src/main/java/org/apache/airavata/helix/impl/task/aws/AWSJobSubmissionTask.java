@@ -1,23 +1,29 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.task.aws;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -50,12 +56,6 @@ import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
 @TaskDef(name = "AWS_JOB_SUBMISSION_TASK")
 public class AWSJobSubmissionTask extends JobSubmissionTask {
 
@@ -71,14 +71,25 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
         try {
             AWSProcessContextManager awsContext = new AWSProcessContextManager(getTaskContext());
-            AwsComputeResourcePreference awsPrefs = getTaskContext().getGroupComputeResourcePreference().getSpecificPreferences().getAws();
+            AwsComputeResourcePreference awsPrefs = getTaskContext()
+                    .getGroupComputeResourcePreference()
+                    .getSpecificPreferences()
+                    .getAws();
             String instanceId = awsContext.getInstanceId();
             String sshCredentialToken = awsContext.getSSHCredentialToken();
-            String awsCredentialToken = getTaskContext().getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
+            String awsCredentialToken =
+                    getTaskContext().getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
 
             if (instanceId == null || sshCredentialToken == null) {
-                LOGGER.error("Could not find instanceId: {} or sshCredentialToken: {} in the AWS process context {}", instanceId, sshCredentialToken, getProcessId());
-                onFail("Could not find instanceId: " + instanceId + "or sshCredentialToken: " + sshCredentialToken + "in the AWS process context: " + getProcessId(), true);
+                LOGGER.error(
+                        "Could not find instanceId: {} or sshCredentialToken: {} in the AWS process context {}",
+                        instanceId,
+                        sshCredentialToken,
+                        getProcessId());
+                onFail(
+                        "Could not find instanceId: " + instanceId + "or sshCredentialToken: " + sshCredentialToken
+                                + "in the AWS process context: " + getProcessId(),
+                        true);
             }
 
             String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, awsPrefs.getRegion());
@@ -89,7 +100,8 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
             SSHJAgentAdaptor adaptor = initSSHJAgentAdaptor(sshCredentialToken, publicIpAddress);
 
-            JobManagerConfiguration jobManagerConfig = JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
+            JobManagerConfiguration jobManagerConfig =
+                    JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
             addMonitoringCommands(mapData);
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
@@ -97,7 +109,9 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
             JobModel jobModel = createJobModel(mapData, scriptContent);
 
-            File localScriptFile = new File(getLocalDataDir(), "aws-job-" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
+            File localScriptFile = new File(
+                    getLocalDataDir(),
+                    "aws-job-" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
             FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
 
             jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.QUEUED)));
@@ -110,8 +124,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                     WAIT_MAX_RETRIES,
                     INITIAL_DELAY_SECONDS,
                     MAX_DELAY_SECONDS,
-                    TimeUnit.SECONDS
-            );
+                    TimeUnit.SECONDS);
 
             try {
                 sshWaiter.waitUntil(() -> {
@@ -119,7 +132,8 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                     return true;
                 });
             } catch (Exception e) {
-                String reason = "Failed to connect to SSH daemon or create remote directory " + remoteWorkingDir + ". " + e.getMessage();
+                String reason = "Failed to connect to SSH daemon or create remote directory " + remoteWorkingDir + ". "
+                        + e.getMessage();
                 LOGGER.error(reason, e);
                 return onFail(reason, false, e);
             }
@@ -131,9 +145,12 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             adaptor.uploadFile(localScriptFile.getAbsolutePath(), remoteWorkingDir);
             LOGGER.info("Successfully uploaded script {} to {}", localScriptFile.getName(), remoteWorkingDir);
 
-            RawCommandInfo submitCommandInfo = jobManagerConfig.getSubmitCommand(remoteWorkingDir, localScriptFile.getName());
+            RawCommandInfo submitCommandInfo =
+                    jobManagerConfig.getSubmitCommand(remoteWorkingDir, localScriptFile.getName());
             String remoteScriptPath = remoteWorkingDir + File.separator + localScriptFile.getName();
-            String command = "chmod +x " + remoteScriptPath + " && nohup " + submitCommandInfo.getCommand() + " > " + remoteWorkingDir + "/AiravataAgent.stdout 2> " + remoteWorkingDir + "/AiravataAgent.stderr & echo $!";
+            String command = "chmod +x " + remoteScriptPath + " && nohup " + submitCommandInfo.getCommand() + " > "
+                    + remoteWorkingDir + "/AiravataAgent.stdout 2> " + remoteWorkingDir
+                    + "/AiravataAgent.stderr & echo $!";
             LOGGER.info("Executing command on EC2 instance: {} for the process: {}", command, getProcessId());
 
             CommandOutput commandOutput = adaptor.executeCommand(command, remoteWorkingDir);
@@ -145,7 +162,8 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             }
 
             if (jobId.isEmpty() || !jobId.matches("\\d+")) {
-                String reason = "Job submission command did not return a valid process ID (PID). Output: " + commandOutput.getStdOut();
+                String reason = "Job submission command did not return a valid process ID (PID). Output: "
+                        + commandOutput.getStdOut();
                 return handleJobSubmissionFailure(mapData, reason);
             }
 
@@ -174,15 +192,21 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             String jobId = awsContext.getJobId();
             SSHJAgentAdaptor adaptor = initSSHJAgentAdaptor(sshCredentialToken, publicIpAddress);
 
-            JobManagerConfiguration jobManagerConfig = JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
-            CommandOutput commandOutput = adaptor.executeCommand(jobManagerConfig.getCancelCommand(jobId).getRawCommand(), null);
+            JobManagerConfiguration jobManagerConfig =
+                    JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
+            CommandOutput commandOutput = adaptor.executeCommand(
+                    jobManagerConfig.getCancelCommand(jobId).getRawCommand(), null);
 
             if (commandOutput.getExitCode() != 0) {
                 LOGGER.warn("Failed to execute job cancellation command. STDERR: {}", commandOutput.getStdError());
             } else {
                 LOGGER.info("Successfully executed job cancellation command. Output: {}", commandOutput.getStdOut());
             }
-            LOGGER.info("Terminating AWS resources, instance {}, IP {}, for process {}", awsContext.getInstanceId(), publicIpAddress, getProcessId());
+            LOGGER.info(
+                    "Terminating AWS resources, instance {}, IP {}, for process {}",
+                    awsContext.getInstanceId(),
+                    publicIpAddress,
+                    getProcessId());
             AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
 
         } catch (Exception e) {
@@ -204,17 +228,25 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                 WAIT_MAX_RETRIES,
                 INITIAL_DELAY_SECONDS,
                 MAX_DELAY_SECONDS,
-                TimeUnit.SECONDS
-        );
+                TimeUnit.SECONDS);
 
         try (Ec2Client ec2Client = AWSTaskUtil.buildEc2Client(token, getGatewayId(), region)) {
             return waiter.waitUntil(() -> {
-                DescribeInstancesRequest request = DescribeInstancesRequest.builder().instanceIds(instanceId).build();
+                DescribeInstancesRequest request = DescribeInstancesRequest.builder()
+                        .instanceIds(instanceId)
+                        .build();
                 DescribeInstancesResponse response = ec2Client.describeInstances(request);
 
-                if (response.reservations().isEmpty() || response.reservations().get(0).instances().isEmpty()) {
-                    LOGGER.error("No instance found with ID during verification: {} for the process: {}", instanceId, getProcessId());
-                    onFail("No instance found with ID during verification: " + instanceId + " for the process: " + getProcessId(), true);
+                if (response.reservations().isEmpty()
+                        || response.reservations().get(0).instances().isEmpty()) {
+                    LOGGER.error(
+                            "No instance found with ID during verification: {} for the process: {}",
+                            instanceId,
+                            getProcessId());
+                    onFail(
+                            "No instance found with ID during verification: " + instanceId + " for the process: "
+                                    + getProcessId(),
+                            true);
                 }
 
                 Instance instance = response.reservations().get(0).instances().get(0);
@@ -222,17 +254,27 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                 LOGGER.info("Current state of instance {}: {} for the process: {}", instanceId, state, getProcessId());
 
                 if (state == InstanceStateName.RUNNING) {
-                    if (instance.publicIpAddress() == null || instance.publicIpAddress().isEmpty()) {
+                    if (instance.publicIpAddress() == null
+                            || instance.publicIpAddress().isEmpty()) {
                         // IP not assigned yet, treat as a retryable condition
                         return null;
                     }
                     return instance.publicIpAddress();
                 }
 
-                if (state == InstanceStateName.SHUTTING_DOWN || state == InstanceStateName.TERMINATED || state == InstanceStateName.STOPPED) {
-                    LOGGER.error("Instance entered a failure state during verification: {} for the process: {}", state, getProcessId());
-                    onFail("Instance entered a failure state during verification: " + state + " for the process: " + getProcessId(), true);
-                    throw new Exception("Instance entered a failure state during verification: " + state + " for the process: " + getProcessId());
+                if (state == InstanceStateName.SHUTTING_DOWN
+                        || state == InstanceStateName.TERMINATED
+                        || state == InstanceStateName.STOPPED) {
+                    LOGGER.error(
+                            "Instance entered a failure state during verification: {} for the process: {}",
+                            state,
+                            getProcessId());
+                    onFail(
+                            "Instance entered a failure state during verification: " + state + " for the process: "
+                                    + getProcessId(),
+                            true);
+                    throw new Exception("Instance entered a failure state during verification: " + state
+                            + " for the process: " + getProcessId());
                 }
 
                 return null;
@@ -282,12 +324,15 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
         SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
-        SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
+        SSHCredential sshCredential =
+                AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
         adaptor.init(
                 getTaskContext().getComputeResourceLoginUserName(),
-                publicIpAddress, 22,
-                sshCredential.getPublicKey(), sshCredential.getPrivateKey(), sshCredential.getPassphrase()
-        );
+                publicIpAddress,
+                22,
+                sshCredential.getPublicKey(),
+                sshCredential.getPrivateKey(),
+                sshCredential.getPassphrase());
 
         return adaptor;
     }

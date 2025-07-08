@@ -1,23 +1,35 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.orchestrator.cpi.impl;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -65,18 +77,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
     private ExecutorService executor;
@@ -112,8 +112,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public ValidationResults validateExperiment(ExperimentModel experiment)
             throws OrchestratorException, LaunchValidationException {
-        ValidationResults validationResults =
-                new ValidationResults();
+        ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(
                 true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
@@ -189,8 +188,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     public ValidationResults validateProcess(ExperimentModel experiment, ProcessModel processModel)
             throws OrchestratorException, LaunchValidationException {
 
-        ValidationResults validationResults =
-                new ValidationResults();
+        ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(
                 true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
@@ -294,8 +292,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         this.jobSubmitter = jobSubmitter;
     }
 
-    public void initialize() throws OrchestratorException {
-    }
+    public void initialize() throws OrchestratorException {}
 
     public List<ProcessModel> createProcesses(String experimentId, String gatewayId) throws OrchestratorException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
@@ -322,7 +319,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            GroupComputeResourcePreference preference = OrchestratorUtils.getGroupComputeResourcePreference(processModel);
+            GroupComputeResourcePreference preference =
+                    OrchestratorUtils.getGroupComputeResourcePreference(processModel);
             ResourceType resourceType = preference.getResourceType();
             logger.info("Determined resource type as {} for process {}", resourceType, processModel.getProcessId());
 
@@ -334,18 +332,22 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             }
 
             // TODO - handle for different resource types
-            JobSubmissionInterface preferredJobSubmissionInterface = OrchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
-            JobSubmissionProtocol preferredJobSubmissionProtocol = OrchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
+            JobSubmissionInterface preferredJobSubmissionInterface =
+                    OrchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
+            JobSubmissionProtocol preferredJobSubmissionProtocol =
+                    OrchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
             List<String> taskIdList = new ArrayList<>();
 
             if (preferredJobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
                 // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE
                 // here.
-                taskIdList.addAll(createAndSaveSubmissionTasks(registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                taskIdList.addAll(createAndSaveSubmissionTasks(
+                        registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
             } else {
                 taskIdList.addAll(createAndSaveEnvSetupTask(registryClient, gatewayId, processModel, resourceType));
                 taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId, resourceType));
-                taskIdList.addAll(createAndSaveSubmissionTasks(registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                taskIdList.addAll(createAndSaveSubmissionTasks(
+                        registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
                 taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId, resourceType));
             }
             // update process scheduling
@@ -360,12 +362,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    public String createAndSaveIntermediateOutputFetchingTasks(String gatewayId, ProcessModel processModel, ProcessModel parentProcess) throws OrchestratorException {
+    public String createAndSaveIntermediateOutputFetchingTasks(
+            String gatewayId, ProcessModel processModel, ProcessModel parentProcess) throws OrchestratorException {
         final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            GroupComputeResourcePreference preference = OrchestratorUtils.getGroupComputeResourcePreference(processModel);
+            GroupComputeResourcePreference preference =
+                    OrchestratorUtils.getGroupComputeResourcePreference(processModel);
             ResourceType resourceType = preference.getResourceType();
-            List<String> taskIdList = new ArrayList<>(createAndSaveIntermediateOutputDataStagingTasks(processModel, gatewayId, parentProcess, resourceType));
+            List<String> taskIdList = new ArrayList<>(createAndSaveIntermediateOutputDataStagingTasks(
+                    processModel, gatewayId, parentProcess, resourceType));
             // update process scheduling
             registryClient.updateProcess(processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
@@ -390,7 +395,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return dag.substring(0, dag.length() - 1); // remove last comma
     }
 
-    private List<String> createAndSaveEnvSetupTask(RegistryService.Client registryClient, String gatewayId, ProcessModel processModel, ResourceType resourceType)
+    private List<String> createAndSaveEnvSetupTask(
+            RegistryService.Client registryClient,
+            String gatewayId,
+            ProcessModel processModel,
+            ResourceType resourceType)
             throws TException, AiravataException, OrchestratorException {
         List<String> envTaskIds = new ArrayList<>();
 
@@ -402,7 +411,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         envSetupTask.setParentProcessId(processModel.getProcessId());
 
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
-        envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // TODO support for CLOUD (AWS)
+        envSetupSubModel.setProtocol(
+                OrchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // TODO support for CLOUD (AWS)
 
         String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
@@ -419,7 +429,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return envTaskIds;
     }
 
-    public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel, String gatewayId, ResourceType resourceType) throws AiravataException {
+    public List<String> createAndSaveInputDataStagingTasks(
+            ProcessModel processModel, String gatewayId, ResourceType resourceType) throws AiravataException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
@@ -435,13 +446,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                         break;
                     case URI:
                     case URI_COLLECTION:
-                        if ((processInput.getValue() == null || processInput.getValue().isEmpty()) && !processInput.isIsRequired()) {
-                            logger.debug("Skipping input data staging task for {} since value is empty and not required", processInput.getName());
+                        if ((processInput.getValue() == null
+                                        || processInput.getValue().isEmpty())
+                                && !processInput.isIsRequired()) {
+                            logger.debug(
+                                    "Skipping input data staging task for {} since value is empty and not required",
+                                    processInput.getName());
                             break;
                         }
                         final RegistryService.Client registryClient = getRegistryServiceClient();
                         try {
-                            TaskModel inputDataStagingTask = getInputDataStagingTask(registryClient, processModel, processInput, gatewayId, resourceType);
+                            TaskModel inputDataStagingTask = getInputDataStagingTask(
+                                    registryClient, processModel, processInput, gatewayId, resourceType);
                             String taskId = registryClient.addTask(inputDataStagingTask, processModel.getProcessId());
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
@@ -462,8 +478,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return dataStagingTaskIds;
     }
 
-    public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId,
-                                                            ResourceType resourceType) throws AiravataException, TException, OrchestratorException {
+    public List<String> createAndSaveOutputDataStagingTasks(
+            ProcessModel processModel, String gatewayId, ResourceType resourceType)
+            throws AiravataException, TException, OrchestratorException {
 
         final RegistryService.Client registryClient = getRegistryServiceClient();
         List<String> dataStagingTaskIds = new ArrayList<>();
@@ -475,20 +492,40 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     DataType type = processOutput.getType();
                     switch (type) {
                         case STDOUT:
-                            if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
+                            if (null == processOutput.getValue()
+                                    || processOutput.getValue().trim().isEmpty()) {
                                 processOutput.setValue(appName + ".stdout");
                             }
-                            createOutputDataSatagingTasks(registryClient, processModel, gatewayId, dataStagingTaskIds, processOutput, resourceType);
+                            createOutputDataSatagingTasks(
+                                    registryClient,
+                                    processModel,
+                                    gatewayId,
+                                    dataStagingTaskIds,
+                                    processOutput,
+                                    resourceType);
                             break;
                         case STDERR:
-                            if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
+                            if (null == processOutput.getValue()
+                                    || processOutput.getValue().trim().isEmpty()) {
                                 processOutput.setValue(appName + ".stderr");
                             }
-                            createOutputDataSatagingTasks(registryClient, processModel, gatewayId, dataStagingTaskIds, processOutput, resourceType);
+                            createOutputDataSatagingTasks(
+                                    registryClient,
+                                    processModel,
+                                    gatewayId,
+                                    dataStagingTaskIds,
+                                    processOutput,
+                                    resourceType);
                             break;
                         case URI:
                         case URI_COLLECTION:
-                            createOutputDataSatagingTasks(registryClient, processModel, gatewayId, dataStagingTaskIds, processOutput, resourceType);
+                            createOutputDataSatagingTasks(
+                                    registryClient,
+                                    processModel,
+                                    gatewayId,
+                                    dataStagingTaskIds,
+                                    processOutput,
+                                    resourceType);
                             break;
                         default:
                             // nothing to do
@@ -499,7 +536,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
             try {
                 if (isArchive(registryClient, processModel)) {
-                    createArchiveDataStatgingTask(registryClient, processModel, gatewayId, dataStagingTaskIds, resourceType);
+                    createArchiveDataStatgingTask(
+                            registryClient, processModel, gatewayId, dataStagingTaskIds, resourceType);
                 }
             } catch (Exception e) {
                 throw new AiravataException("Error! Application interface retrieval failed", e);
@@ -512,8 +550,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return dataStagingTaskIds;
     }
 
-    public List<String> createAndSaveIntermediateOutputDataStagingTasks(ProcessModel processModel, String gatewayId, ProcessModel parentProcess,
-                                                                        ResourceType resourceType) throws AiravataException, TException, OrchestratorException {
+    public List<String> createAndSaveIntermediateOutputDataStagingTasks(
+            ProcessModel processModel, String gatewayId, ProcessModel parentProcess, ResourceType resourceType)
+            throws AiravataException, TException, OrchestratorException {
 
         final RegistryService.Client registryClient = getRegistryServiceClient();
         List<String> dataStagingTaskIds = new ArrayList<>();
@@ -525,20 +564,43 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     DataType type = processOutput.getType();
                     switch (type) {
                         case STDOUT:
-                            if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
+                            if (null == processOutput.getValue()
+                                    || processOutput.getValue().trim().isEmpty()) {
                                 processOutput.setValue(appName + ".stdout");
                             }
-                            createIntermediateOutputDataStagingTasks(registryClient, processModel, gatewayId, parentProcess, dataStagingTaskIds, processOutput, resourceType);
+                            createIntermediateOutputDataStagingTasks(
+                                    registryClient,
+                                    processModel,
+                                    gatewayId,
+                                    parentProcess,
+                                    dataStagingTaskIds,
+                                    processOutput,
+                                    resourceType);
                             break;
                         case STDERR:
-                            if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
+                            if (null == processOutput.getValue()
+                                    || processOutput.getValue().trim().isEmpty()) {
                                 processOutput.setValue(appName + ".stderr");
                             }
-                            createIntermediateOutputDataStagingTasks(registryClient, processModel, gatewayId, parentProcess, dataStagingTaskIds, processOutput, resourceType);
+                            createIntermediateOutputDataStagingTasks(
+                                    registryClient,
+                                    processModel,
+                                    gatewayId,
+                                    parentProcess,
+                                    dataStagingTaskIds,
+                                    processOutput,
+                                    resourceType);
                             break;
                         case URI:
                         case URI_COLLECTION:
-                            createIntermediateOutputDataStagingTasks(registryClient, processModel, gatewayId, parentProcess, dataStagingTaskIds, processOutput, resourceType);
+                            createIntermediateOutputDataStagingTasks(
+                                    registryClient,
+                                    processModel,
+                                    gatewayId,
+                                    parentProcess,
+                                    dataStagingTaskIds,
+                                    processOutput,
+                                    resourceType);
                             break;
                         default:
                             // nothing to do
@@ -556,12 +618,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private boolean isArchive(RegistryService.Client registryClient, ProcessModel processModel) throws TException {
-        ApplicationInterfaceDescription appInterface = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
+        ApplicationInterfaceDescription appInterface =
+                registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
         return appInterface.isArchiveWorkingDirectory();
     }
 
-    private void createArchiveDataStatgingTask(RegistryService.Client registryClient, ProcessModel processModel, String gatewayId,
-                                               List<String> dataStagingTaskIds, ResourceType resourceType) throws AiravataException, TException, OrchestratorException {
+    private void createArchiveDataStatgingTask(
+            RegistryService.Client registryClient,
+            ProcessModel processModel,
+            String gatewayId,
+            List<String> dataStagingTaskIds,
+            ResourceType resourceType)
+            throws AiravataException, TException, OrchestratorException {
         TaskModel archiveTask;
         try {
             archiveTask = getOutputDataStagingTask(registryClient, processModel, null, gatewayId, null, resourceType);
@@ -573,10 +641,17 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         dataStagingTaskIds.add(archiveTask.getTaskId());
     }
 
-    private void createOutputDataSatagingTasks(RegistryService.Client registryClient, ProcessModel processModel, String gatewayId,
-                                               List<String> dataStagingTaskIds, OutputDataObjectType processOutput, ResourceType resourceType) throws AiravataException, OrchestratorException {
+    private void createOutputDataSatagingTasks(
+            RegistryService.Client registryClient,
+            ProcessModel processModel,
+            String gatewayId,
+            List<String> dataStagingTaskIds,
+            OutputDataObjectType processOutput,
+            ResourceType resourceType)
+            throws AiravataException, OrchestratorException {
         try {
-            TaskModel outputDataStagingTask = getOutputDataStagingTask(registryClient, processModel, processOutput, gatewayId, null, resourceType);
+            TaskModel outputDataStagingTask = getOutputDataStagingTask(
+                    registryClient, processModel, processOutput, gatewayId, null, resourceType);
             String taskId = registryClient.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
@@ -585,11 +660,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    private void createIntermediateOutputDataStagingTasks(RegistryService.Client registryClient, ProcessModel processModel, String gatewayId,
-                                                          ProcessModel parentProcess, List<String> dataStagingTaskIds,
-                                                          OutputDataObjectType processOutput, ResourceType resourceType) throws AiravataException, OrchestratorException {
+    private void createIntermediateOutputDataStagingTasks(
+            RegistryService.Client registryClient,
+            ProcessModel processModel,
+            String gatewayId,
+            ProcessModel parentProcess,
+            List<String> dataStagingTaskIds,
+            OutputDataObjectType processOutput,
+            ResourceType resourceType)
+            throws AiravataException, OrchestratorException {
         try {
-            TaskModel outputDataStagingTask = getOutputDataStagingTask(registryClient, processModel, processOutput, gatewayId, parentProcess, resourceType);
+            TaskModel outputDataStagingTask = getOutputDataStagingTask(
+                    registryClient, processModel, processOutput, gatewayId, parentProcess, resourceType);
             outputDataStagingTask.setTaskType(TaskTypes.OUTPUT_FETCHING);
             String taskId = registryClient.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
@@ -599,14 +681,20 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    private List<String> createAndSaveSubmissionTasks(RegistryService.Client registryClient, JobSubmissionInterface jobSubmissionInterface, ProcessModel processModel, int wallTime)
+    private List<String> createAndSaveSubmissionTasks(
+            RegistryService.Client registryClient,
+            JobSubmissionInterface jobSubmissionInterface,
+            ProcessModel processModel,
+            int wallTime)
             throws TException, OrchestratorException {
 
         JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
         MonitorMode monitorMode;
 
-        if (jobSubmissionProtocol == JobSubmissionProtocol.SSH || jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-            SSHJobSubmission sshJobSubmission = OrchestratorUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+        if (jobSubmissionProtocol == JobSubmissionProtocol.SSH
+                || jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
+            SSHJobSubmission sshJobSubmission =
+                    OrchestratorUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
             monitorMode = sshJobSubmission.getMonitorMode();
         } else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
             monitorMode = MonitorMode.FORK;
@@ -652,7 +740,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         if (monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR || monitorMode == MonitorMode.CLOUD_JOB_MONITOR) {
 
             TaskStatus monitorTaskStatus = new TaskStatus(TaskState.CREATED);
-            monitorTaskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            monitorTaskStatus.setTimeOfStateChange(
+                    AiravataUtils.getCurrentTimestamp().getTime());
 
             TaskModel monitorTaskModel = new TaskModel();
             monitorTaskModel.setParentProcessId(processModel.getProcessId());
@@ -682,7 +771,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         });
     }
 
-    private TaskModel getInputDataStagingTask(RegistryService.Client registryClient, ProcessModel processModel, InputDataObjectType processInput, String gatewayId, ResourceType resourceType)
+    private TaskModel getInputDataStagingTask(
+            RegistryService.Client registryClient,
+            ProcessModel processModel,
+            InputDataObjectType processInput,
+            String gatewayId,
+            ResourceType resourceType)
             throws TException, AiravataException, OrchestratorException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
@@ -695,17 +789,23 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ComputeResourceDescription computeResource = registryClient.getComputeResource(processModel.getComputeResourceId());
+        ComputeResourceDescription computeResource =
+                registryClient.getComputeResource(processModel.getComputeResourceId());
 
         String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
-        String workingDir = (scratchLocation.endsWith(File.separator) ? scratchLocation : scratchLocation + File.separator) + processModel.getProcessId() + File.separator;
+        String workingDir =
+                (scratchLocation.endsWith(File.separator) ? scratchLocation : scratchLocation + File.separator)
+                        + processModel.getProcessId()
+                        + File.separator;
 
         URI destination;
         try {
-            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
+            DataMovementProtocol dataMovementProtocol =
+                    OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
             String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
             StringBuilder destinationPath = new StringBuilder(workingDir);
-            Optional.ofNullable(processInput.getOverrideFilename()).ifPresent(destinationPath::append); // If an override filename is provided
+            Optional.ofNullable(processInput.getOverrideFilename())
+                    .ifPresent(destinationPath::append); // If an override filename is provided
 
             destination = new URI(
                     dataMovementProtocol.name(),
@@ -731,8 +831,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return taskModel;
     }
 
-    private TaskModel getOutputDataStagingTask(RegistryService.Client registryClient, ProcessModel processModel, OutputDataObjectType processOutput,
-                                               String gatewayId, ProcessModel parentProcess, ResourceType resourceType) throws TException, AiravataException, OrchestratorException {
+    private TaskModel getOutputDataStagingTask(
+            RegistryService.Client registryClient,
+            ProcessModel processModel,
+            OutputDataObjectType processOutput,
+            String gatewayId,
+            ProcessModel parentProcess,
+            ResourceType resourceType)
+            throws TException, AiravataException, OrchestratorException {
         try {
             // create new task model for this task
             TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
@@ -745,14 +851,16 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             taskModel.setTaskStatuses(List.of(taskStatus));
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
 
-            ComputeResourceDescription computeResource = registryClient.getComputeResource(processModel.getComputeResourceId());
+            ComputeResourceDescription computeResource =
+                    registryClient.getComputeResource(processModel.getComputeResourceId());
             DataStagingTaskModel submodel = new DataStagingTaskModel();
 
             String workingDir = OrchestratorUtils.getScratchLocation(processModel, gatewayId)
                     + File.separator
                     + (parentProcess == null ? processModel.getProcessId() : parentProcess.getProcessId())
                     + File.separator;
-            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
+            DataMovementProtocol dataMovementProtocol =
+                    OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
             URI source;
             try {
                 String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);

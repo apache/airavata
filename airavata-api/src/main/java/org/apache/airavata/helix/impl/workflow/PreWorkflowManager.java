@@ -1,23 +1,30 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.helix.impl.workflow;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -56,13 +63,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 public class PreWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
@@ -81,8 +81,7 @@ public class PreWorkflowManager extends WorkflowManager {
         initLaunchSubscriber();
     }
 
-    public void stopServer() {
-    }
+    public void stopServer() {}
 
     private void initLaunchSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
@@ -104,7 +103,8 @@ public class PreWorkflowManager extends WorkflowManager {
             experimentModel = registryClient.getExperiment(processModel.getExperimentId());
             getRegistryClientPool().returnResource(registryClient);
             ResourceType resourceType = registryClient
-                    .getGroupComputeResourcePreference(processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
+                    .getGroupComputeResourcePreference(
+                            processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
@@ -213,7 +213,8 @@ public class PreWorkflowManager extends WorkflowManager {
         try {
             processModel = registryClient.getProcess(processId);
             getRegistryClientPool().returnResource(registryClient);
-            gcrPref = registryClient.getGroupComputeResourcePreference(processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
+            gcrPref = registryClient.getGroupComputeResourcePreference(
+                    processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
 
         } catch (Exception e) {
             logger.error("Failed to fetch process from registry associated with process id " + processId, e);
@@ -250,7 +251,10 @@ public class PreWorkflowManager extends WorkflowManager {
         }
 
         if (gcrPref.getResourceType() == ResourceType.SLURM) {
-            logger.info("Skipping cancel workflow for process {} as it is not a SLURM process, resource type: {}", processId, gcrPref.getResourceType());
+            logger.info(
+                    "Skipping cancel workflow for process {} as it is not a SLURM process, resource type: {}",
+                    processId,
+                    gcrPref.getResourceType());
 
             RemoteJobCancellationTask rjct = new RemoteJobCancellationTask();
             rjct.setTaskId(UUID.randomUUID().toString());
@@ -277,7 +281,8 @@ public class PreWorkflowManager extends WorkflowManager {
         }
         allTasks.add(cct);
 
-        String workflow = getWorkflowOperator().launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID(), allTasks, true, false);
+        String workflow =
+                getWorkflowOperator().launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID(), allTasks, true, false);
         logger.info("Started launching workflow {} to cancel process {}", workflow, processId);
         return workflow;
     }

@@ -34,7 +34,6 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpec
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
@@ -237,7 +236,8 @@ public class AgentManagementHandler {
         computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
         // TODO - Support for both HPC & Cloud services --> Need to change the ComputationalResourceSchedulingModel
         computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
-        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(extractSlurmAllocationProject(groupCompResourcePref));
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(
+                extractSlurmAllocationProject(groupCompResourcePref));
         computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
 
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
@@ -280,8 +280,7 @@ public class AgentManagementHandler {
     }
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM
-                && pref.isSetSpecificPreferences()) {
+        if (pref.getResourceType() == ResourceType.SLURM && pref.isSetSpecificPreferences()) {
             EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
             if (esp.isSetSlurm()) {
                 return esp.getSlurm().getAllocationProjectNumber();
