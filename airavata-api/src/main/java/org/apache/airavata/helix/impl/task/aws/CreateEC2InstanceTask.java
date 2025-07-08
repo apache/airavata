@@ -84,7 +84,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
 
             if (runResponse.instances() == null || runResponse.instances().isEmpty()) {
                 LOGGER.error("No instances were launched by AWS even after successful SDK call");
-                throw new Exception("No instances were launched by AWS even after successful SDK call");
+                return onFail("No instances were launched by AWS even after successful SDK call", false, null);
             }
 
             String instanceId = runResponse.instances().get(0).instanceId();
@@ -96,8 +96,9 @@ public class CreateEC2InstanceTask extends AiravataTask {
         } catch (Exception e) {
             // TODO catch for AMI issues, etc
             LOGGER.error("Error creating EC2 instance for process {}", getProcessId(), e);
-            onCancel(taskContext);
-            return new TaskResult(TaskResult.Status.FATAL_FAILED, e.getMessage());
+            LOGGER.warn("Triggering cleanup due to failure in onRun().");
+            this.onCancel(taskContext);
+            return onFail("Error creating EC2 instance for process " + getProcessId(), false, e); // fatal: false to retry EC2 instance creation since cleanup-action was triggerred
 
         } finally {
             if (ec2Client != null) {
