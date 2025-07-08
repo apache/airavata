@@ -44,8 +44,10 @@ import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -109,6 +111,7 @@ public class TaskContext {
     private UserComputeResourcePreference userComputeResourcePreference;
     private UserStoragePreference userStoragePreference;
     private GroupComputeResourcePreference groupComputeResourcePreference;
+    private ResourceType resourceType;
 
     private ComputeResourceDescription computeResourceDescription;
     private ApplicationDeploymentDescription applicationDeploymentDescription;
@@ -263,6 +266,14 @@ public class TaskContext {
 
     public void setGroupComputeResourcePreference(GroupComputeResourcePreference groupComputeResourcePreference) {
         this.groupComputeResourcePreference = groupComputeResourcePreference;
+    }
+
+    public ResourceType getResourceType() throws Exception {
+        if (resourceType == null) {
+            GroupComputeResourcePreference pref = getGroupComputeResourcePreference();
+            resourceType = pref.getResourceType();
+        }
+        return resourceType;
     }
 
     public UserResourceProfile getUserResourceProfile() throws Exception {
@@ -662,7 +673,9 @@ public class TaskContext {
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
-                return null;
+                SSHJobSubmission sshJobSubmission =
+                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else {
                 throw new Exception("Unsupported JobSubmissionProtocol - "
@@ -780,8 +793,8 @@ public class TaskContext {
             return getUserComputeResourcePreference().getAllocationProjectNumber();
         } else if (isSetGroupResourceProfile()
                 && getGroupComputeResourcePreference() != null
-                && isValid(getGroupComputeResourcePreference().getAllocationProjectNumber())) {
-            return getGroupComputeResourcePreference().getAllocationProjectNumber();
+                && isValid(extractSlurmAllocationProject(getGroupComputeResourcePreference()))) {
+            return extractSlurmAllocationProject(getGroupComputeResourcePreference());
         } else {
             return null;
         }
@@ -819,7 +832,7 @@ public class TaskContext {
                 && isValid(getUserComputeResourcePreference().getQualityOfService())) {
             return getUserComputeResourcePreference().getQualityOfService();
         } else {
-            return getGroupComputeResourcePreference().getQualityOfService();
+            return extractSlurmQoS(getGroupComputeResourcePreference());
         }
     }
 
@@ -962,5 +975,25 @@ public class TaskContext {
         private void throwError(String msg) throws Exception {
             throw new Exception(msg);
         }
+    }
+
+    private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                return esp.getSlurm().getAllocationProjectNumber();
+            }
+        }
+        return null;
+    }
+
+    private String extractSlurmQoS(GroupComputeResourcePreference pref) {
+        if (pref.getResourceType() == ResourceType.SLURM && pref.isSetSpecificPreferences()) {
+            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            if (esp.isSetSlurm()) {
+                return esp.getSlurm().getQualityOfService();
+            }
+        }
+        return null;
     }
 }

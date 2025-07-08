@@ -21,7 +21,8 @@ package org.apache.airavata.helix.impl.task.submission;
 
 import java.io.File;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
@@ -119,9 +120,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
      * This will write the standard output of the command to a file inside the working directory of the process and
      * if the agent does not receive the output through first invocation, it retries by looking into the output file.
      *
-     * @param submitCommand command to submit
-     * @param agentAdaptor agent adaptor to communicate with compute resource
-     * @param groovyMapData metadata object of the job
+     * @param submitCommand    command to submit
+     * @param agentAdaptor     agent adaptor to communicate with compute resource
+     * @param groovyMapData    metadata object of the job
      * @param workingDirectory working directory for the process
      * @return {@link CommandOutput} of the submitted command
      * @throws AgentException if agent failed to communicate with the compute host
@@ -234,7 +235,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
             JobStatus jobStatus;
-            if (jobModel.getJobStatuses() != null && jobModel.getJobStatuses().size() > 0) {
+            if (jobModel.getJobStatuses() != null && !jobModel.getJobStatuses().isEmpty()) {
                 jobStatus = jobModel.getJobStatuses().get(0);
             } else {
                 logger.error("Job statuses can not be empty");
@@ -266,7 +267,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         }
     }
 
-    private void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
+    protected void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
 
         if (Boolean.parseBoolean(ServerSettings.getSetting("enable.realtime.monitor"))) {
             if (mapData.getPreJobCommands() == null) {

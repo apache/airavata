@@ -20,7 +20,10 @@
 package org.apache.airavata.orchestrator.core.utils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
@@ -29,7 +32,13 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
@@ -183,6 +192,8 @@ public class OrchestratorUtils {
         try {
             GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
+            String scratchLocation = computeResourcePreference.getScratchLocation();
+
             if (processModel.isUseUserCRPref()) {
                 UserComputeResourcePreference userComputeResourcePreference =
                         registryClient.getUserComputeResourcePreference(
@@ -194,22 +205,22 @@ public class OrchestratorUtils {
                             + "resource scheduling scratch location "
                             + processResourceSchedule.getOverrideScratchLocation());
                     return processResourceSchedule.getOverrideScratchLocation();
-                } else if (isValid(computeResourcePreference.getScratchLocation())) {
+                } else if (isValid(scratchLocation)) {
                     logger.warn("Either User computer resource preference or computer resource scheduling doesn't have "
-                            + "valid scratch location, using  gateway computer resource preference scratch location"
-                            + computeResourcePreference.getScratchLocation());
-                    return computeResourcePreference.getScratchLocation();
+                            + "valid scratch location, using  gateway computer resource preference scratch location "
+                            + scratchLocation);
+                    return scratchLocation;
                 } else {
                     throw new AiravataException("Scratch location is not found");
                 }
             } else {
                 if (isValid(processResourceSchedule.getOverrideScratchLocation())) {
                     return processResourceSchedule.getOverrideScratchLocation();
-                } else if (isValid(computeResourcePreference.getScratchLocation())) {
+                } else if (isValid(scratchLocation)) {
                     logger.warn("Process compute resource scheduling doesn't have valid scratch location, "
-                            + "using  gateway computer resource preference scratch location"
-                            + computeResourcePreference.getScratchLocation());
-                    return computeResourcePreference.getScratchLocation();
+                            + "using  gateway computer resource preference scratch location "
+                            + scratchLocation);
+                    return scratchLocation;
                 } else {
                     throw new AiravataException("Scratch location is not found");
                 }

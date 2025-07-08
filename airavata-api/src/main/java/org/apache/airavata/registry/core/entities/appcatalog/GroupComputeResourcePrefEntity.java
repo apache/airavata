@@ -21,19 +21,19 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.util.List;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
@@ -44,8 +44,10 @@ import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
  */
 @Entity
 @Table(name = "GROUP_COMPUTE_RESOURCE_PREFERENCE")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "RESOURCE_TYPE", discriminatorType = DiscriminatorType.STRING)
 @IdClass(GroupComputeResourcePrefPK.class)
-public class GroupComputeResourcePrefEntity implements Serializable {
+public abstract class GroupComputeResourcePrefEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,59 +59,25 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Id
     private String groupResourceProfileId;
 
-    @Column(name = "ALLOCATION_PROJECT_NUMBER")
-    private String allocationProjectNumber;
-
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
-
-    @Column(name = "OVERRIDE_BY_AIRAVATA")
-    private short overridebyAiravata;
-
-    @Column(name = "PREFERED_BATCH_QUEUE")
-    private String preferredBatchQueue;
-
-    @Column(name = "PREFERED_DATA_MOVE_PROTOCOL")
-    @Enumerated(EnumType.STRING)
-    private DataMovementProtocol preferredDataMovementProtocol;
-
-    @Column(name = "PREFERED_JOB_SUB_PROTOCOL")
-    @Enumerated(EnumType.STRING)
-    private JobSubmissionProtocol preferredJobSubmissionProtocol;
-
-    @Column(name = "QUALITY_OF_SERVICE")
-    private String qualityOfService;
-
-    @Column(name = "RESOURCE_CS_TOKEN")
-    private String resourceSpecificCredentialStoreToken;
 
     @Column(name = "SCRATCH_LOCATION")
     private String scratchLocation;
 
-    @Column(name = "USAGE_REPORTING_GATEWAY_ID")
-    private String usageReportingGatewayId;
+    @Column(name = "OVERRIDE_BY_AIRAVATA")
+    private short overridebyAiravata;
 
-    @Column(name = "SSH_ACCOUNT_PROVISIONER")
-    private String sshAccountProvisioner;
+    @Column(name = "PREFERED_DATA_MOVE_PROTOCOL")
+    @Enumerated(EnumType.STRING)
+    private DataMovementProtocol preferredDataMovementProtocol; // TODO introduce S3
 
-    @Column(name = "SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO")
-    private String sshAccountProvisionerAdditionalInfo;
+    @Column(name = "PREFERED_JOB_SUB_PROTOCOL")
+    @Enumerated(EnumType.STRING)
+    private JobSubmissionProtocol preferredJobSubmissionProtocol; // TODO introduce CLOUD
 
-    @OneToMany(
-            targetEntity = GroupSSHAccountProvisionerConfig.class,
-            mappedBy = "groupComputeResourcePref",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
-    private List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs;
-
-    @OneToMany(
-            targetEntity = ComputeResourceReservationEntity.class,
-            mappedBy = "groupComputeResourcePref",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
-            orphanRemoval = true)
-    @OrderBy("startTime ASC")
-    private List<ComputeResourceReservationEntity> reservations;
+    @Column(name = "RESOURCE_CS_TOKEN")
+    private String resourceSpecificCredentialStoreToken;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
@@ -134,14 +102,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
         this.groupResourceProfileId = groupResourceProfileId;
     }
 
-    public String getAllocationProjectNumber() {
-        return allocationProjectNumber;
-    }
-
-    public void setAllocationProjectNumber(String allocationProjectNumber) {
-        this.allocationProjectNumber = allocationProjectNumber;
-    }
-
     public String getLoginUserName() {
         return loginUserName;
     }
@@ -150,20 +110,20 @@ public class GroupComputeResourcePrefEntity implements Serializable {
         this.loginUserName = loginUserName;
     }
 
+    public String getScratchLocation() {
+        return scratchLocation;
+    }
+
+    public void setScratchLocation(String scratchLocation) {
+        this.scratchLocation = scratchLocation;
+    }
+
     public short getOverridebyAiravata() {
         return overridebyAiravata;
     }
 
     public void setOverridebyAiravata(short overridebyAiravata) {
         this.overridebyAiravata = overridebyAiravata;
-    }
-
-    public String getPreferredBatchQueue() {
-        return preferredBatchQueue;
-    }
-
-    public void setPreferredBatchQueue(String preferredBatchQueue) {
-        this.preferredBatchQueue = preferredBatchQueue;
     }
 
     public DataMovementProtocol getPreferredDataMovementProtocol() {
@@ -182,69 +142,12 @@ public class GroupComputeResourcePrefEntity implements Serializable {
         this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
     }
 
-    public String getQualityOfService() {
-        return qualityOfService;
-    }
-
-    public void setQualityOfService(String qualityOfService) {
-        this.qualityOfService = qualityOfService;
-    }
-
     public String getResourceSpecificCredentialStoreToken() {
         return resourceSpecificCredentialStoreToken;
     }
 
     public void setResourceSpecificCredentialStoreToken(String resourceSpecificCredentialStoreToken) {
         this.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken;
-    }
-
-    public String getScratchLocation() {
-        return scratchLocation;
-    }
-
-    public void setScratchLocation(String scratchLocation) {
-        this.scratchLocation = scratchLocation;
-    }
-
-    public String getUsageReportingGatewayId() {
-        return usageReportingGatewayId;
-    }
-
-    public void setUsageReportingGatewayId(String usageReportingGatewayId) {
-        this.usageReportingGatewayId = usageReportingGatewayId;
-    }
-
-    public String getSshAccountProvisioner() {
-        return sshAccountProvisioner;
-    }
-
-    public void setSshAccountProvisioner(String sshAccountProvisioner) {
-        this.sshAccountProvisioner = sshAccountProvisioner;
-    }
-
-    public String getSshAccountProvisionerAdditionalInfo() {
-        return sshAccountProvisionerAdditionalInfo;
-    }
-
-    public void setSshAccountProvisionerAdditionalInfo(String sshAccountProvisionerAdditionalInfo) {
-        this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
-    }
-
-    public List<GroupSSHAccountProvisionerConfig> getGroupSSHAccountProvisionerConfigs() {
-        return groupSSHAccountProvisionerConfigs;
-    }
-
-    public void setGroupSSHAccountProvisionerConfigs(
-            List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs) {
-        this.groupSSHAccountProvisionerConfigs = groupSSHAccountProvisionerConfigs;
-    }
-
-    public List<ComputeResourceReservationEntity> getReservations() {
-        return reservations;
-    }
-
-    public void setReservations(List<ComputeResourceReservationEntity> reservations) {
-        this.reservations = reservations;
     }
 
     public GroupResourceProfileEntity getGroupResourceProfile() {

@@ -42,23 +42,44 @@ struct ComputeResourceReservation {
     5: required i64 endTime,
 }
 
+enum ResourceType {
+  SLURM = 0,
+  AWS = 1,
+}
+
+struct SlurmComputeResourcePreference {
+    1: optional string allocationProjectNumber,
+    2: optional string preferredBatchQueue,
+    3: optional string qualityOfService,
+    4: optional string usageReportingGatewayId,
+    5: optional string sshAccountProvisioner,
+    6: optional list<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs,
+    7: optional string sshAccountProvisionerAdditionalInfo,
+    8: optional list<ComputeResourceReservation> reservations
+}
+
+struct AwsComputeResourcePreference {
+    1: optional string region,
+    2: optional string preferredAmiId,
+    3: optional string preferredInstanceType,
+}
+
+union EnvironmentSpecificPreferences {
+    1: SlurmComputeResourcePreference slurm,
+    2: AwsComputeResourcePreference aws,
+}
+
 struct GroupComputeResourcePreference {
     1: required string computeResourceId,
     2: required string groupResourceProfileId = airavata_commons.DEFAULT_ID,
     3: required bool overridebyAiravata = 1,
     4: optional string loginUserName,
-    5: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
-    6: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
-    7: optional string preferredBatchQueue,
-    8: optional string scratchLocation,
-    9: optional string allocationProjectNumber,
-    10: optional string resourceSpecificCredentialStoreToken,
-    11: optional string usageReportingGatewayId,
-    12: optional string qualityOfService,
-    16: optional string sshAccountProvisioner,
-    17: optional list<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs,
-    18: optional string sshAccountProvisionerAdditionalInfo,
-    19: optional list<ComputeResourceReservation> reservations,
+    5: optional string scratchLocation,
+    6: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
+    7: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
+    8: optional string resourceSpecificCredentialStoreToken,
+    9: required ResourceType resourceType,
+    10: optional EnvironmentSpecificPreferences specificPreferences
 }
 
 struct ComputeResourcePolicy {

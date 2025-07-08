@@ -27,7 +27,7 @@ under the License.
 
     <artifactId>ide-integration</artifactId>
     <name>Airavata IDE Integration</name>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
