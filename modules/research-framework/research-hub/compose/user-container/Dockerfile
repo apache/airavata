@@ -10,4 +10,4 @@ USER $NB_USER
 RUN pip install ipywidgets jupyterlab-git
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
-CMD ["start-notebook.sh"]
+CMD ["start-notebook.py"]
