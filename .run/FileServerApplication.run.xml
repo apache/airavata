@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FileServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="file-server" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.apache.airavata.file.server.FileServerApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

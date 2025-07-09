@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as deps
 
 ARG TARGETARCH
 
@@ -24,7 +24,7 @@ RUN wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz \
     && rm go1.23.0.linux-amd64.tar.gz
 
-# Install Thrift 0.23
+# Install Thrift 0.22
 RUN wget https://dlcdn.apache.org/thrift/0.22.0/thrift-0.22.0.tar.gz \
     && tar -xzf thrift-0.22.0.tar.gz \
     && cd thrift-0.22.0 \
@@ -45,3 +45,26 @@ ENV MAVEN_HOME=/opt/maven
 ENV GOROOT=/usr/local/go
 ENV GOPATH=/home/developer/go
 ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin:$GOROOT/bin:$GOPATH/bin
+
+EXPOSE 7878 8000 17000 8050 8930 9930 8960 8962 8970 18800 19900 18889 19908
+
+FROM deps AS compiler
+
+COPY --chown=developer:developer .. /home/developer/workspace
+WORKDIR /home/developer/workspace
+RUN mvn clean install -DskipTests
+
+
+FROM eclipse-temurin:17-jdk AS runner
+WORKDIR /app
+
+COPY --from=compiler /home/developer/workspace/distribution/*.tar.gz ./
+
+COPY ../dev-tools/deployment-scripts/*.sh ./
+COPY ../vault ./vault
+
+RUN chmod +x ./distribution_update.sh ./services_up.sh
+
+EXPOSE 7878 8000 17000 8050 8930 9930 8960 8962 8970 18800 19900 18889 19908
+
+CMD ["sh", "-c", "./distribution_update.sh && ./services_up.sh && sleep infinity"]

@@ -13,32 +13,114 @@ volumes:
 
 services:
   devcontainer:
-    build: .
+    profiles:
+      - development
+    build:
+      dockerfile: Dockerfile
+      target: deps
     volumes:
-      - ..:/workspace:cached
-    command: sleep infinity
+      - ..:/home/developer/workspace:cached
+      - $HOME/.m2:/home/developer/.m2
+      - $HOME/.ssh:/home/developer/.ssh
     networks:
       airavata-network:
         ipv4_address: 192.168.100.10
     extra_hosts:
       - "airavata.host:192.168.100.1"
+    ports:
+      - "7878:7878"   # sharing registry service
+      - "8000:8000"   # tunnel service
+      - "17000:17000" # tunnel service (ingress)
+      - "8050:8050"   # file service
+      - "8930:8930"   # api service
+      - "9930:9930"   # api service (TLS) !!!
+      - "8960:8960"   # cred store service
+      - "8962:8962"   # profile service
+      - "8970:8970"   # registry service
+      - "18800:18800" # agent service (http)
+      - "19900:19900" # agent service (gRPC)
+      - "18889:18889" # research service (http)
+      - "19908:19908" # research service (gRPC)
+    command: sleep infinity
+
+  microservices:
+    profiles:
+      - staging
+    build:
+      dockerfile: Dockerfile
+      target: runner
+    volumes:
+      - ../vault:/app/vault
+    networks:
+      airavata-network:
+        ipv4_address: 192.168.100.10
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+    ports:
+      - "7878:7878"   # sharing registry service
+      - "8000:8000"   # tunnel service
+      - "17000:17000" # tunnel service (ingress)
+      - "8050:8050"   # file service
+      - "8930:8930"   # api service
+      - "9930:9930"   # api service (TLS) !!!
+      - "8960:8960"   # cred store service
+      - "8962:8962"   # profile service
+      - "8970:8970"   # registry service
+      - "18800:18800" # agent service (http)
+      - "19900:19900" # agent service (gRPC)
+      - "18889:18889" # research service (http)
+      - "19908:19908" # research service (gRPC)
+    depends_on:
+      - db
+      - kafka
+      - keycloak
+      - rabbitmq
+      - sshd
+
+  portals:
+    build: portals
+    volumes:
+      - /tmp:/tmp
+      - ./portals/pga_config.php:/var/www/html/default/config/pga_config.php
+    networks:
+      airavata-network:
+        ipv4_address: 192.168.100.18
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
+  proxy:
+    image: nginx/nginx-ingress
+    ports:
+      - "8443:8443" # https keycloak
+      - "5173:5173" # https research portal
+      - "8008:8008" # https php portal
+      - "8009:8009" # https django portal
+    environment:
+      RESEARCH_PORTAL_ADDR: "portals:5173"
+      PHP_PORTAL_ADDR: "portals:8008"
+      DJANGO_PORTAL_ADDR: "portals:8009"
+      KEYCLOAK_ADDR: "keycloak:18080"
+    volumes:
+      - ../vault:/vault  # requires /vault/server.crt and /vault/server.key for ssl termination
+      - ./proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
+    networks:
+      airavata-network:
+        ipv4_address: 192.168.100.18
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
 
   keycloak:
-    image: keycloak/keycloak:24.0
+    image: keycloak/keycloak:25.0
     restart: always
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "18080:8080"
-      - "8443:8443"
+      - "18080:18080"
     volumes:
       - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-      - ../keystores/airavata.jks:/opt/keycloak/conf/keystores/airavata.jks
-    command: ["start-dev", "--import-realm"]
-    depends_on:
-      - db
+    command: [ "start", "--import-realm" ]
     networks:
       airavata-network:
         ipv4_address: 192.168.100.11
@@ -78,8 +160,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    depends_on:
-      - db
     networks:
       airavata-network:
         ipv4_address: 192.168.100.13
@@ -91,7 +171,7 @@ services:
     restart: always
     hostname: zk
     ports:
-      - "12181:2181"
+      - "2181:2181"
     networks:
       airavata-network:
         ipv4_address: 192.168.100.14
@@ -115,8 +195,26 @@ services:
     extra_hosts:
       - "airavata.host:192.168.100.1"
 
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest:latest
+    restart: always
+    depends_on:
+      - kafka
+    ports:
+      - "8082:8082"
+    environment:
+      KAFKA_REST_HOST_NAME: 192.168.100.19
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+    networks:
+      airavata-network:
+        ipv4_address: 192.168.100.19
+    extra_hosts:
+      - "airavata.host:192.168.100.1"
+
   sshd:
-    image: dimuthuupe/sshd:1.0
+    image: panubo/sshd
     restart: always
     volumes:
       - /tmp:/tmp
@@ -138,17 +236,5 @@ services:
     networks:
       airavata-network:
         ipv4_address: 192.168.100.17
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
-
-  pga:
-    build: pga
-    volumes:
-      - /tmp:/tmp
-    ports:
-      - "8000:80"
-    networks:
-      airavata-network:
-        ipv4_address: 192.168.100.18
     extra_hosts:
       - "airavata.host:192.168.100.1"

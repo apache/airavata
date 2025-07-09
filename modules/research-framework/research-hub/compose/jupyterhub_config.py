@@ -8,10 +8,10 @@ from oauthenticator.generic import GenericOAuthenticator
 c.JupyterHub.authenticator_class = GenericOAuthenticator
 c.GenericOAuthenticator.client_id = os.getenv('OAUTH_CLIENT_ID')
 c.GenericOAuthenticator.client_secret = os.getenv('OAUTH_CLIENT_SECRET')
-c.GenericOAuthenticator.oauth_callback_url = 'https://hub.dev.cybershuttle.org/hub/oauth_callback'
-c.GenericOAuthenticator.authorize_url = 'https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/auth'
-c.GenericOAuthenticator.token_url = 'https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/token'
-c.GenericOAuthenticator.userdata_url = 'https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/userinfo'
+c.GenericOAuthenticator.oauth_callback_url = 'https://airavata.host:20000/hub/oauth_callback'
+c.GenericOAuthenticator.authorize_url = 'http://airavata.host:18080/realms/default/protocol/openid-connect/auth'
+c.GenericOAuthenticator.token_url = 'http://airavata.host:18080/realms/default/protocol/openid-connect/token'
+c.GenericOAuthenticator.userdata_url = 'http://airavata.host:18080/realms/default/protocol/openid-connect/userinfo'
 c.GenericOAuthenticator.scope = ['openid', 'profile', 'email']
 c.GenericOAuthenticator.username_claim = 'email'
 
@@ -107,7 +107,7 @@ c.JupyterHub.hub_connect_ip = 'jupyterhub'
 c.JupyterHub.shutdown_on_logout = True
 
 # External URL
-c.JupyterHub.external_url = 'https://hub.cybershuttle.org'
+c.JupyterHub.external_url = 'http://airavata.host:20000'
 
 # Logging
 c.JupyterHub.log_level = 'DEBUG'

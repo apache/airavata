@@ -46,7 +46,7 @@ public class AiravataService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
     private static final int TIMEOUT = 100000;
 
-    @Value("${airavata.server.url:scigap02.sciencegateways.iu.edu}")
+    @Value("${airavata.server.url:airavata.host}")
     private String serverUrl;
 
     @Value("${airavata.server.port:9930}")

@@ -36,7 +36,7 @@ public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    @Value("${airavata.user-profile.server.url:api.dev.cybershuttle.org}")
+    @Value("${airavata.user-profile.server.url:airavata.host}")
     private String profileServerUrl;
 
     @Value("${airavata.user-profile.server.port:8962}")

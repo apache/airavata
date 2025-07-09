@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ResearchServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="research-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.apache.airavata.research.service.ResearchServiceApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

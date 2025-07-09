@@ -113,8 +113,8 @@ under the License.
       <artifactId>commons-cli</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.dozer</groupId>
-      <artifactId>dozer</artifactId>
+      <groupId>com.github.dozermapper</groupId>
+      <artifactId>dozer-core</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -322,6 +322,29 @@ under the License.
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>retries</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.zookeeper</groupId>
+      <artifactId>zookeeper</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
@@ -578,6 +601,73 @@ under the License.
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>api-server-distribution-package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <tarLongFileMode>posix</tarLongFileMode>
+              <finalName>${api.server.dist.name}</finalName>
+              <descriptors>
+                <descriptor>src/main/assembly/api-server-bin-assembly.xml</descriptor>
+              </descriptors>
+              <attach>false</attach>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-api-server-resources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docker.api.server.build.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${docker.api.server.image.src.root}</directory>
+                  <filtering>false</filtering>
+                </resource>
+                <resource>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
+                  <includes>
+                    <include>${api.server.dist.name}.tar.gz</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.46.0</version>
+        <configuration>
+          <verbose>true</verbose>
+          <images>
+            <image>
+              <name>airavata/api-server</name>
+              <build>
+                <dockerFile>${docker.api.server.build.directory}/Dockerfile</dockerFile>
+              </build>
+            </image>
+          </images>
+        </configuration>
+      </plugin>
+
     </plugins>
 
     <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
@@ -595,4 +685,11 @@ under the License.
       </testResource>
     </testResources>
   </build>
+
+  <properties>
+    <docker.api.server.build.directory>${project.build.directory}/api_server_docker_img_build</docker.api.server.build.directory>
+    <docker.api.server.image.src.root>src/main/docker/api-server</docker.api.server.image.src.root>
+    <api.server.dist.name>apache-airavata-api-server-${project.version}</api.server.dist.name>
+  </properties>
+
 </project>
