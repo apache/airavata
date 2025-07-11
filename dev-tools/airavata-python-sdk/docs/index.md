@@ -17,7 +17,6 @@ The Apache Airavata Python SDK lets third-party clients interact with Airavata t
   │   ├── service/
   │   └── __init__.py
   ├── airavata_experiments/
-  │   ├── auth/
   │   ├── md/
   │   ├── neuro/
   │   ├── __init__.py
@@ -29,7 +28,8 @@ The Apache Airavata Python SDK lets third-party clients interact with Airavata t
   │   ├── sftp.py
   │   └── task.py
   ├── airavata_jupyter_magic/
-  │   ├── __init__.py
+  │   └── __init__.py
+  ├── airavata_auth/
   │   └── device_auth.py
   └── airavata_sdk/
       ├── clients/

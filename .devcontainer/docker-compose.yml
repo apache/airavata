@@ -121,17 +121,12 @@ services:
       - "20000:20000"
 
   proxy:
-    image: nginx/nginx-ingress
+    image: nginx:stable
     container_name: proxy
     restart: always
-    environment:
-      RESEARCH_PORTAL_ADDR: "http://portals:5173"
-      PHP_PORTAL_ADDR: "http://portals:8008"
-      DJANGO_PORTAL_ADDR: "http://portals:8009"
-      KEYCLOAK_ADDR: "http://keycloak:18080"
     volumes:
-      - ../vault:/vault:ro # requires /vault/server.crt and /vault/server.key for ssl termination
-      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../vault/server.key:/vault/server.key:ro
+      - ../vault/server.crt:/vault/server.crt:ro
       - ./proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
     networks:
       airavata-network:
@@ -139,10 +134,10 @@ services:
     extra_hosts:
       - "airavata.host:192.168.100.1"
     ports:
-      - "8443:8443" # https keycloak
       - "5173:5173" # https research portal
       - "8008:8008" # https php portal
       - "8009:8009" # https django portal
+      - "8443:8443" # https keycloak
 
   keycloak:
     image: keycloak/keycloak:25.0

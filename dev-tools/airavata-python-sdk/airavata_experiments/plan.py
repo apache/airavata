@@ -27,9 +27,8 @@ from .task import Task
 import uuid
 
 from .airavata import AiravataOperator
-from .auth import context
 
-api_host: str = "https://api.gateway.cybershuttle.org"
+from airavata_auth.device_auth import AuthContext
 
 class Plan(pydantic.BaseModel):
 
@@ -129,7 +128,7 @@ class Plan(pydantic.BaseModel):
       json.dump(self.model_dump(), f, indent=2)
 
   def save(self) -> None:
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -141,10 +140,10 @@ class Plan(pydantic.BaseModel):
     import requests
     if self.id is None:
       self.id = str(uuid.uuid4())
-      response = requests.post(f"{api_host}/api/v1/plan", headers=headers, json=self.model_dump())
+      response = requests.post(f"{AuthContext.api_host}/api/v1/plan", headers=headers, json=self.model_dump())
       print(f"Plan saved: {self.id}")
     else:
-      response = requests.put(f"{api_host}/api/v1/plan/{self.id}", headers=headers, json=self.model_dump())
+      response = requests.put(f"{AuthContext.api_host}/api/v1/plan/{self.id}", headers=headers, json=self.model_dump())
       print(f"Plan updated: {self.id}")
 
     if response.status_code == 200:
@@ -161,7 +160,7 @@ def load_json(filename: str) -> Plan:
 
 def load(id: str | None) -> Plan:
     assert id is not None
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -171,7 +170,7 @@ def load(id: str | None) -> Plan:
         'X-Claims': json.dumps(az.claimsMap)
     }
     import requests
-    response = requests.get(f"{api_host}/api/v1/plan/{id}", headers=headers)
+    response = requests.get(f"{AuthContext.api_host}/api/v1/plan/{id}", headers=headers)
 
     if response.status_code == 200:
       body = response.json()
@@ -181,7 +180,7 @@ def load(id: str | None) -> Plan:
       raise Exception(response)
     
 def query() -> list[Plan]:
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -191,7 +190,7 @@ def query() -> list[Plan]:
         'X-Claims': json.dumps(az.claimsMap)
     }
     import requests
-    response = requests.get(f"{api_host}/api/v1/plan/user", headers=headers)
+    response = requests.get(f"{AuthContext.api_host}/api/v1/plan/user", headers=headers)
 
     if response.status_code == 200:
       items: list = response.json()

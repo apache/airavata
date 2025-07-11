@@ -206,7 +206,7 @@ distribution
     ├── airavata.jks
     ├── application-agent-service.yml
     ├── application-research-service.yml
-    ├── client_truststore.jks
+    ├── client_truststore.p12
     ├── email-config.yaml
     └── log4j2.xml
 
@@ -216,7 +216,7 @@ distribution
 **What's in the vault?**
 
 * `airavata_sym.jks`, `airavata.jks` - contains the keys used to secure SSH credentials, etc.
-* `client_truststore.jks` - contains the certificates (e.g., certbot fullchain.pem) used to secure network connections (TLS).
+* `client_truststore.p12` - contains the certificates (e.g., certbot fullchain.pem) used to secure network connections (TLS).
 * `email-config.yaml` - contains the email addresses observed by the email monitor.
 * `airavata-server.properties` - config file for the airavata api server.
 * `application-agent-service.yml` - config file for the airavata agent service.
