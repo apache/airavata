@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.registry.core.entities.expcatalog.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.registry.core.entities.expcatalog.GatewayUsageReportingPK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

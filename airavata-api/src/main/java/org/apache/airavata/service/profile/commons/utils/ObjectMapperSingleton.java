@@ -19,19 +19,19 @@
 */
 package org.apache.airavata.service.profile.commons.utils;
 
-import org.dozer.DozerBeanMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
 
-public class ObjectMapperSingleton extends DozerBeanMapper {
-    private static final Logger logger = LoggerFactory.getLogger(ObjectMapperSingleton.class);
+public class ObjectMapperSingleton {
 
-    private static ObjectMapperSingleton instance;
+    private static Mapper mapper;
 
-    private ObjectMapperSingleton() {}
-
-    public static ObjectMapperSingleton getInstance() {
-        if (instance == null) instance = new ObjectMapperSingleton();
-        return instance;
+    public static Mapper getInstance() {
+        if (mapper == null) {
+            mapper = DozerBeanMapperBuilder.create()
+                    .withMappingFiles("dozer_mapping.xml")
+                    .build();
+        }
+        return mapper;
     }
 }

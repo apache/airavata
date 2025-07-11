@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.service.profile.user.core.repositories;
 
+import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import org.apache.airavata.service.profile.commons.user.entities.UserProfileEnti
 import org.apache.airavata.service.profile.commons.utils.JPAUtils;
 import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.service.profile.commons.utils.QueryConstants;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

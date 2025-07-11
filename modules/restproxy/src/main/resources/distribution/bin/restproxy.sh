@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
 # distributed with this work for additional information
@@ -15,22 +17,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-FROM eclipse-temurin:17-jre
+. $(dirname $0)/setenv.sh
 
-WORKDIR /opt
+SERVICE_NAME="rest-proxy"
+MAIN_CLASS="org.apache.airavata.restproxy.RestProxyApplication"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dspring.config.location=${AIRAVATA_HOME}/conf/"
 
-COPY ${pre.wm.dist.name}-bin.tar.gz .
-RUN tar -xzf ${pre.wm.dist.name}-bin.tar.gz && \
-    mv ${pre.wm.dist.name} apache-airavata-pre-wm && \
-    rm ${pre.wm.dist.name}-bin.tar.gz
-
-COPY wait-for-it.sh /tmp/
-RUN chmod +x /tmp/wait-for-it.sh
-
-ENV JAVA_HOME=/opt/java/openjdk
-ENV AIRAVATA_HOME=/opt/apache-airavata-pre-wm
-
-# Expose monitoring port
-EXPOSE 9093
-
-ENTRYPOINT ["/opt/apache-airavata-pre-wm/bin/pre-wm.sh"]
+run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"

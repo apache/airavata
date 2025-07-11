@@ -21,26 +21,45 @@ FROM eclipse-temurin:17-jre
 WORKDIR /opt
 
 # Copy the extracted distribution files
-COPY ${api.server.dist.name}-bin.tar.gz /opt/
+COPY ${api.server.dist.name}.tar.gz /opt/
 RUN tar -xzf /opt/${api.server.dist.name}-bin.tar.gz && \
     rm /opt/${api.server.dist.name}-bin.tar.gz && \
     mv /opt/${api.server.dist.name} /opt/apache-airavata
 
-# Copy wait-for-it script for container orchestration
-COPY wait-for-it.sh /opt/apache-airavata/wait-for-it.sh
-RUN chmod +x /opt/apache-airavata/wait-for-it.sh
-
-# Add required configuration
-RUN echo "api.server.monitoring.enabled=false" >> /opt/apache-airavata/bin/airavata-server.properties
+# Copy server start scripts
+COPY ./*.sh /opt/apache-airavata/
+RUN chmod +x /opt/apache-airavata/*.sh
 
 # Set environment variables
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ENV AIRAVATA_HOME=/opt/apache-airavata
 
-# Expose the default API server port
-EXPOSE 8960 8930 7878 8962 8970
+# sharing registry service
+EXPOSE 7878
+# tunnel service
+EXPOSE 8000
+# tunnel service (ingress)
+EXPOSE 17000
+# file service
+EXPOSE 8050
+# api service
+EXPOSE 8930
+# # api service (TLS) !!!
+EXPOSE 9930
+# cred store service
+EXPOSE 8960
+# profile service
+EXPOSE 8962
+# registry service
+EXPOSE 8970
+# agent service (http)
+EXPOSE 18800
+# agent service (gRPC)
+EXPOSE 19900
+# research service (http)
+EXPOSE 18889
+# research service (gRPC)
+EXPOSE 19908
 
-# Set the entrypoint to use the shell script
-ENTRYPOINT ["/opt/apache-airavata/bin/airavata-server-start.sh"]
-CMD ["api-orch"]
+CMD ["/opt/apache-airavata/services_up.sh && sleep infinity"]

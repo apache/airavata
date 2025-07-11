@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories;
 
+import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ import java.util.Map;
 import org.apache.airavata.registry.core.utils.Committer;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

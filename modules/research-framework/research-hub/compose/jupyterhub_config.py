@@ -8,7 +8,7 @@ from oauthenticator.generic import GenericOAuthenticator
 c.JupyterHub.authenticator_class = GenericOAuthenticator
 c.GenericOAuthenticator.client_id = os.getenv('OAUTH_CLIENT_ID')
 c.GenericOAuthenticator.client_secret = os.getenv('OAUTH_CLIENT_SECRET')
-c.GenericOAuthenticator.oauth_callback_url = 'https://airavata.host:20000/hub/oauth_callback'
+c.GenericOAuthenticator.oauth_callback_url = 'http://airavata.host:20000/hub/oauth_callback'
 c.GenericOAuthenticator.authorize_url = 'http://airavata.host:18080/realms/default/protocol/openid-connect/auth'
 c.GenericOAuthenticator.token_url = 'http://airavata.host:18080/realms/default/protocol/openid-connect/token'
 c.GenericOAuthenticator.userdata_url = 'http://airavata.host:18080/realms/default/protocol/openid-connect/userinfo'
@@ -135,7 +135,7 @@ c.JupyterHub.load_roles = [
 ]
 
 # SSL Termination
-c.JupyterHub.bind_url = 'http://:8000'
+c.JupyterHub.bind_url = 'http://0.0.0.0:20000'
 c.JupyterHub.external_ssl = True
 
 # Custom templates - Login
