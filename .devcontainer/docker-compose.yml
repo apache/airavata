@@ -117,8 +117,6 @@ services:
         ipv4_address: 192.168.100.12
     extra_hosts:
       - "airavata.host:192.168.100.1"
-    ports:
-      - "20000:20000"
 
   proxy:
     image: nginx:stable
@@ -138,6 +136,7 @@ services:
       - "8008:8008" # https php portal
       - "8009:8009" # https django portal
       - "8443:8443" # https keycloak
+      - "20000:20000" # https jupyterhub
 
   keycloak:
     image: keycloak/keycloak:25.0

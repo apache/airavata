@@ -70,7 +70,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.thrift.TException;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,8 +233,6 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
      *
      * @param authzToken : this includes OAuth token and user's claims
      * @param metaData   : this includes other meta data needed for security enforcements.
-     * @return
-     * @throws AiravataSecurityException
      */
     @Override
     public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData)
@@ -382,31 +379,6 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
     }
 
-    private String[] getUserRolesFromOAuthToken(String username, String token, String gatewayId) throws Exception {
-        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
-        String identityServerRealm = gwrp.getIdentityServerTenant();
-        String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
-        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, token));
-        String userInfoEndPoint = openIdConnectConfig.getString("userinfo_endpoint");
-        JSONObject userInfo = new JSONObject(getFromUrl(userInfoEndPoint, token));
-        if (!username.equals(userInfo.get("preferred_username"))) {
-            throw new AiravataSecurityException("Subject name and username for the token doesn't match");
-        }
-        String userId = userInfo.getString("sub");
-
-        String userRoleMappingUrl = ServerSettings.getRemoteIDPServiceUrl() + "/admin/realms/"
-                + identityServerRealm + "/users/"
-                + userId + "/role-mappings/realm";
-        JSONArray roleMappings = new JSONArray(getFromUrl(userRoleMappingUrl, getAdminAccessToken(gatewayId)));
-        String[] roles = new String[roleMappings.length()];
-        for (int i = 0; i < roleMappings.length(); i++) {
-            roles[i] =
-                    (new JSONObject(roleMappings.get(i).toString())).get("name").toString();
-        }
-
-        return roles;
-    }
-
     private String getOpenIDConfigurationUrl(String realm) throws ApplicationSettingsException {
         return ServerSettings.getRemoteIDPServiceUrl() + "/realms/" + realm + "/.well-known/openid-configuration";
     }
@@ -514,18 +486,6 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         Pattern pattern = Pattern.compile(this.rolePermissionConfig.get(role));
         Matcher matcher = pattern.matcher(apiMethod);
         return matcher.matches();
-    }
-
-    private boolean hasPermission(String[] roles, String apiMethod) {
-        for (int i = 0; i < roles.length; i++) {
-            String role = roles[i];
-            if (this.rolePermissionConfig.keySet().contains(role)) {
-                Pattern pattern = Pattern.compile(this.rolePermissionConfig.get(role));
-                Matcher matcher = pattern.matcher(apiMethod);
-                if (matcher.matches()) return true;
-            }
-        }
-        return false;
     }
 
     private void initServiceClients() throws TException, ApplicationSettingsException {

@@ -114,10 +114,6 @@ public class ApplicationSettings {
         return INSTANCE;
     }
 
-    protected static void setInstance(ApplicationSettings settingsInstance) {
-        INSTANCE = settingsInstance;
-    }
-
     private void saveProperties() throws ApplicationSettingsException {
         URL url = getPropertyFileURL();
         if (url.getProtocol().equalsIgnoreCase("file")) {
@@ -228,81 +224,6 @@ public class ApplicationSettings {
         return property;
     }
 
-    public void setSettingImpl(String key, String value) throws ApplicationSettingsException {
-        properties.setProperty(key, value);
-        saveProperties();
-    }
-
-    public boolean isSettingDefinedImpl(String key) throws ApplicationSettingsException {
-        validateSuccessfulPropertyFileLoad();
-        return properties.containsKey(key);
-    }
-
-    public String getTrustStorePathImpl() throws ApplicationSettingsException {
-        return getSetting(TRUST_STORE_PATH);
-    }
-
-    public String getTrustStorePasswordImpl() throws ApplicationSettingsException {
-        return getSetting(TRUST_STORE_PASSWORD);
-    }
-
-    public String getCredentialStoreKeyStorePathImpl() throws ApplicationSettingsException {
-        return getSetting("credential.store.keystore.url");
-    }
-
-    public String getCredentialStoreKeyAliasImpl() throws ApplicationSettingsException {
-        return getSetting("credential.store.keystore.alias");
-    }
-
-    public String getCredentialStoreKeyStorePasswordImpl() throws ApplicationSettingsException {
-        return getSetting("credential.store.keystore.password");
-    }
-
-    public String getCredentialStoreNotifierEnabledImpl() throws ApplicationSettingsException {
-        return getSetting("notifier.enabled");
-    }
-
-    public String getCredentialStoreNotifierDurationImpl() throws ApplicationSettingsException {
-        return getSetting("notifier.duration");
-    }
-
-    public String getCredentialStoreEmailServerImpl() throws ApplicationSettingsException {
-        return getSetting("email.server");
-    }
-
-    public String getCredentialStoreEmailServerPortImpl() throws ApplicationSettingsException {
-        return getSetting("email.server.port");
-    }
-
-    public String getCredentialStoreEmailUserImpl() throws ApplicationSettingsException {
-        return getSetting("email.user");
-    }
-
-    public String getCredentialStoreEmailPasswordImpl() throws ApplicationSettingsException {
-        return getSetting("email.password");
-    }
-
-    public String getCredentialStoreEmailSSLConnectImpl() throws ApplicationSettingsException {
-        return getSetting("email.ssl");
-    }
-
-    public String getCredentialStoreEmailFromEmailImpl() throws ApplicationSettingsException {
-        return getSetting("email.from");
-    }
-
-    /**
-     * @deprecated use {{@link #getSetting(String)}}
-     * @return
-     */
-    @Deprecated
-    public Properties getPropertiesImpl() {
-        return properties;
-    }
-
-    public void mergeSettingsImpl(Map<String, String> props) {
-        properties.putAll(props);
-    }
-
     public void mergeSettingsImpl(InputStream stream) throws IOException {
         Properties tmpProp = new Properties();
         tmpProp.load(stream);
@@ -356,24 +277,6 @@ public class ApplicationSettings {
                 .orElseThrow(() -> new ApplicationSettingsException("Value can not be parsed to Boolean"));
     }
 
-    public static long getLongSetting(String key) throws ApplicationSettingsException {
-        String val = getInstance().getSettingImpl(key);
-        try {
-            return Long.parseLong(val);
-        } catch (NumberFormatException e) {
-            throw new ApplicationSettingsException("Value can not be parsed to long", e);
-        }
-    }
-
-    public static double getDoubleSetting(String key) throws ApplicationSettingsException {
-        String val = getInstance().getSettingImpl(key);
-        try {
-            return Double.parseDouble(val);
-        } catch (NumberFormatException e) {
-            throw new ApplicationSettingsException("Value can not be parsed to double", e);
-        }
-    }
-
     public static boolean isSettingDefined(String key) throws ApplicationSettingsException {
         return getInstance().properties.containsKey(key);
     }
@@ -390,10 +293,6 @@ public class ApplicationSettings {
 
     public static String getTrustStorePassword() throws ApplicationSettingsException {
         return getSetting(TRUST_STORE_PASSWORD);
-    }
-
-    public static void initializeTrustStore() throws ApplicationSettingsException {
-        SecurityUtil.setTrustStoreParameters(getTrustStorePath(), getTrustStorePassword());
     }
 
     public static String getCredentialStoreKeyStorePath() throws ApplicationSettingsException {
@@ -416,14 +315,6 @@ public class ApplicationSettings {
 
     public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
         return getSetting("credential.store.server.port");
-    }
-
-    public static String getCredentialStoreNotifierEnabled() throws ApplicationSettingsException {
-        return getSetting("notifier.enabled");
-    }
-
-    public static String getCredentialStoreNotifierDuration() throws ApplicationSettingsException {
-        return getSetting("notifier.duration");
     }
 
     public static String getCredentialStoreEmailServer() throws ApplicationSettingsException {
@@ -478,14 +369,6 @@ public class ApplicationSettings {
         return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
     }
 
-    public static String getUserProfileServerHost() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
-    }
-
-    public static String getUserProfileServerPort() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
-    }
-
     public static String getProfileServiceServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
     }
@@ -499,29 +382,11 @@ public class ApplicationSettings {
     }
 
     public static boolean isThriftClientPoolAbandonedRemovalEnabled() {
-        return Boolean.valueOf(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED, "false"));
+        return Boolean.parseBoolean(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED, "false"));
     }
 
     public static boolean isThriftClientPoolAbandonedRemovalLogged() {
-        return Boolean.valueOf(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED, "false"));
-    }
-
-    /**
-     * @deprecated use {{@link #getSetting(String)}}
-     * @return
-     * @throws ApplicationSettingsException
-     */
-    @Deprecated
-    public static Properties getProperties() throws ApplicationSettingsException {
-        return getInstance().properties;
-    }
-
-    public static void mergeSettings(Map<String, String> props) {
-        getInstance().mergeSettingsImpl(props);
-    }
-
-    public static void mergeSettings(InputStream stream) throws IOException {
-        getInstance().mergeSettingsImpl(stream);
+        return Boolean.parseBoolean(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED, "false"));
     }
 
     public static void mergeSettingsCommandLineArgs(String[] args) {
@@ -548,7 +413,7 @@ public class ApplicationSettings {
                     return asfile.toURI().toURL();
                 }
             } catch (MalformedURLException e) {
-                logger.error("Error parsing the file from airavata.config.dir", airavataConfigDir);
+                logger.error("Error parsing the file from airavata.config.dir: {}", airavataConfigDir);
             }
         }
 

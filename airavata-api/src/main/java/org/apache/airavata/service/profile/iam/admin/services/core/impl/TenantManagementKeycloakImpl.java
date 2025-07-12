@@ -57,7 +57,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantManagementKeycloakImpl.class);
 
-    private String superAdminRealmId = "master";
+    private final String superAdminRealmId = "master";
 
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
