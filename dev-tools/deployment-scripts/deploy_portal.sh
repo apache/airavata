@@ -12,16 +12,69 @@ DOMAIN_NAME=$2
 PORTALS_BASE_DIR="/var/www/portals"
 APACHE_USER="pga"
 APACHE_GROUP="pga"
-PYTHON_EXECUTABLE="python3.9"
+PYTHON_EXECUTABLE="python3.10"
 
 PROJECT_ROOT="${PORTALS_BASE_DIR}/django-${PORTAL_NAME}"
 VENV_PATH="${PROJECT_ROOT}/venv"
 SETTINGS_LOCAL_SRC="./settings_local_${PORTAL_NAME}.py"
 
-# Assumes python3.9 and certbot are already installed
-echo ">>> Installing essential build tools..."
-sudo apt-get update
-sudo apt-get install -y python3-pip git apache2 gcc apache2-dev libmysqlclient-dev npm
+echo ">>> Installing Python 3.10 from source..."
+sudo apt update
+sudo apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
+
+PYTHON_TAR="Python-3.10.13.tgz"
+PYTHON_DIR="Python-3.10.13"
+PYTHON_URL="https://www.python.org/ftp/python/3.10.13/$PYTHON_TAR"
+
+if ! python3.10 --version &> /dev/null; then
+    TEMP_DIR=$(mktemp -d)
+    pushd ${TEMP_DIR}
+    wget "$PYTHON_URL"
+    tar -xf "$PYTHON_TAR"
+    cd "$PYTHON_DIR"
+    ./configure --enable-optimizations --enable-shared
+    sudo make altinstall
+    sudo ldconfig
+    popd
+    rm -rf ${TEMP_DIR}
+else
+    echo "Python 3.10 already detected."
+fi
+
+# Remove system mod_wsgi package before compiling the custom one
+echo ">>> Removing system mod_wsgi package..."
+sudo a2dismod wsgi || true
+sudo apt remove --purge -y libapache2-mod-wsgi-py3 || true
+
+echo ">>> Installing essential build tools (including apache2-dev for mod_wsgi compilation)..."
+sudo apt-get install -y python3-pip git apache2 gcc apache2-dev libmysqlclient-dev npm certbot python3-certbot-apache pkg-config default-libmysqlclient-dev
+
+# Compile mod_wsgi against Python 3.10
+echo ">>> Compiling mod_wsgi against Python 3.10..."
+MOD_WSGI_VERSION="5.0.2"
+MOD_WSGI_TAR="mod_wsgi-${MOD_WSGI_VERSION}.tar.gz"
+MOD_WSGI_URL="https://github.com/GrahamDumpleton/mod_wsgi/archive/refs/tags/${MOD_WSGI_VERSION}.tar.gz"
+
+TEMP_MOD_WSGI_DIR=$(mktemp -d)
+pushd "${TEMP_MOD_WSGI_DIR}"
+wget -O "${MOD_WSGI_TAR}" "$MOD_WSGI_URL"
+tar -xf "${MOD_WSGI_TAR}"
+cd "mod_wsgi-${MOD_WSGI_VERSION}"
+
+./configure --with-apxs=/usr/bin/apxs --with-python="${VENV_PATH}/bin/python3.10"
+sudo make
+sudo make install
+
+echo ">>> Creating wsgi.load for Apache..."
+sudo bash -c 'cat > /etc/apache2/mods-available/wsgi.load' <<'EOL_WSGI_LOAD'
+LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so
+EOL_WSGI_LOAD
+
+popd
+rm -rf "${TEMP_MOD_WSGI_DIR}"
+
+echo ">>> Enabling custom mod_wsgi module..."
+sudo a2enmod wsgi
 
 echo ">>> Setting up project directory..."
 if [ ! -d "${PROJECT_ROOT}" ]; then
@@ -32,7 +85,7 @@ git clone https://github.com/apache/airavata-django-portal.git ${TMP_CLONE_DIR}
 sudo rsync -av --delete ${TMP_CLONE_DIR}/ ${PROJECT_ROOT}/airavata-django-portal/
 rm -rf ${TMP_CLONE_DIR}
 
-echo ">>> Creating Python 3.9 virtual environment..."
+echo ">>> Creating Python 3.10 virtual environment..."
 if [ ! -d "${VENV_PATH}" ]; then
     sudo ${PYTHON_EXECUTABLE} -m venv ${VENV_PATH}
 fi
@@ -44,7 +97,8 @@ sudo ${VENV_PATH}/bin/pip install mod_wsgi mysqlclient==2.2.0
 
 echo ">>> Building frontend assets..."
 cd ${PROJECT_ROOT}/airavata-django-portal
-sudo bash -c 'export NVM_DIR="/root/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" ; nvm install 19 && npm install -g yarn && ./build_js.sh'
+sudo npm install -g yarn
+sudo bash -c "cd ${PROJECT_ROOT}/airavata-django-portal && ./build_js.sh"
 cd -
 
 echo ">>> Configuring Django..."
@@ -98,7 +152,7 @@ sudo bash -c "cat > ${VHOST_CONF}" <<EOF
     WSGIDaemonProcess ${DOMAIN_NAME} \\
         display-name=%{GROUP} \\
         python-home=${VENV_PATH} \\
-        python-path=${PROJECT_ROOT}/airavata-django-portal:${VENV_PATH}/lib/python3.9/site-packages \\
+        python-path=${PROJECT_ROOT}/airavata-django-portal:${VENV_PATH}/lib/python3.10/site-packages \\
         processes=1 \\
         user=${APACHE_USER} \\
         group=${APACHE_GROUP} \\
@@ -118,10 +172,10 @@ sudo bash -c "cat > ${VHOST_CONF}" <<EOF
     ErrorLog /var/log/apache2/${PORTAL_NAME}.error.log
     CustomLog /var/log/apache2/${PORTAL_NAME}.requests.log combined
 
-    SSLEngine on
-    SSLCertificateFile /etc/letsencrypt/live/${DOMAIN_NAME}/cert.pem
-    SSLCertificateChainFile /etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem
+    #SSLEngine on
+    #SSLCertificateFile /etc/letsencrypt/live/${DOMAIN_NAME}/cert.pem
+    #SSLCertificateChainFile /etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem
+    #SSLCertificateKeyFile /etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem
 </VirtualHost>
 EOF
 
@@ -130,10 +184,10 @@ sudo chown -R ${APACHE_USER}:${APACHE_GROUP} ${PROJECT_ROOT}
 sudo chmod -R 775 ${PROJECT_ROOT}
 
 echo ">>> Enabling Site, running Certbot, and restarting..."
+sudo rm /etc/apache2/sites-enabled/default.conf || true
 sudo a2dissite 000-default.conf || true
-sudo a2enmod ssl rewrite headers
+sudo a2enmod ssl rewrite headers wsgi
 sudo a2ensite ${PORTAL_NAME}.conf
-sudo systemctl restart apache2
 
 sudo certbot --apache -d ${DOMAIN_NAME} --non-interactive --agree-tos -m ARTISAN@groups.gatech.edu --redirect
 
