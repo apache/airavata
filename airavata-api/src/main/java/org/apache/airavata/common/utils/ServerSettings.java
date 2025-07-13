@@ -29,10 +29,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
     private static final String ENABLE_SHARING = "enable.sharing";
 
-    private static final String API_SERVER_TLS_ENABLED = "apiserver.tls.enabled";
-    private static final String API_SERVER_KEYSTORE = "apiserver.keystore";
-    private static final String API_SERVER_KEYSTORE_PASSWD = "apiserver.keystore.password";
-
     // Zookeeper + curator constants
     public static final String EMBEDDED_ZK = "embedded.zk";
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
@@ -65,8 +61,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
     private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
     private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
-
-    private static final String SERVER_ROLES = "server.roles";
 
     // Profile Service Constants
     public static final String PROFILE_SERVICE_SERVER_HOST = "profile.service.server.host";
@@ -167,22 +161,6 @@ public class ServerSettings extends ApplicationSettings {
         }
     }
 
-    public static boolean isAPIServerTLSEnabled() {
-        try {
-            return Boolean.parseBoolean(getSetting(API_SERVER_TLS_ENABLED));
-        } catch (ApplicationSettingsException e) {
-            return false;
-        }
-    }
-
-    public static String getApiServerKeystorePasswd() throws ApplicationSettingsException {
-        return getSetting(API_SERVER_KEYSTORE_PASSWD);
-    }
-
-    public static String getApiServerKeystore() throws ApplicationSettingsException {
-        return getSetting(API_SERVER_KEYSTORE);
-    }
-
     public static String getHostScheduler() throws ApplicationSettingsException {
         return getSetting(HOST_SCHEDULER);
     }
@@ -223,10 +201,6 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(EMAIL_BASED_MONITOR_STORE_PROTOCOL);
     }
 
-    public static boolean isAPISecured() throws ApplicationSettingsException {
-        return Boolean.parseBoolean(getSetting(Constants.IS_API_SECURED));
-    }
-
     public static String getRemoteIDPServiceUrl() throws ApplicationSettingsException {
         return getSetting(ServerSettings.IAM_SERVER_URL);
     }
@@ -244,15 +218,7 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static boolean isTLSEnabled() throws ApplicationSettingsException {
-        return Boolean.parseBoolean(getSetting(Constants.IS_TLS_ENABLED));
-    }
-
-    public static boolean isSharingTLSEnabled() throws ApplicationSettingsException {
-        return Boolean.parseBoolean(getSetting(Constants.IS_SHARING_TLS_ENABLED));
-    }
-
-    public static int getTLSServerPort() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(Constants.TLS_SERVER_PORT));
+        return Boolean.parseBoolean(getSetting(Constants.IS_TLS_ENABLED, "false"));
     }
 
     public static String getKeyStorePath() throws ApplicationSettingsException {

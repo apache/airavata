@@ -105,6 +105,7 @@ public class GwyResourceProfileRepository
     @Override
     public GatewayResourceProfile getGatewayProfile(String gatewayId) {
         GatewayResourceProfile gatewayResourceProfile = get(gatewayId);
+        gatewayResourceProfile.setGatewayID(gatewayId);
         if (gatewayResourceProfile.getComputeResourcePreferences() != null
                 && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
             for (ComputeResourcePreference preference : gatewayResourceProfile.getComputeResourcePreferences()) {

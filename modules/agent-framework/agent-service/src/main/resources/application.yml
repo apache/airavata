@@ -44,9 +44,7 @@ spring:
 airavata:
   server:
     url: airavata.host
-    port: 9930
-    truststore:
-      path: keystores/airavata.jks
+    port: 8930
   storageResourceId: airavata.host_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd
   storagePath: /tmp
   cluster:
@@ -56,3 +54,10 @@ airavata:
     serverPort: 17000
     serverToken: airavata
     serverApiUrl: http://airavata.host:8000
+
+keystore:
+  path: keystores/airavata.p12
+  password: airavata
+
+TLS:
+  enabled: true

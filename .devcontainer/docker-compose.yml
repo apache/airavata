@@ -36,7 +36,6 @@ services:
       - "8050:8050"   # file service
       - "8082:8082"   # rest proxy
       - "8930:8930"   # api service
-      - "9930:9930"   # api service (TLS) !!!
       - "8960:8960"   # cred store service
       - "8962:8962"   # profile service
       - "8970:8970"   # registry service
@@ -67,7 +66,6 @@ services:
       - "17000:17000" # tunnel service (ingress)
       - "8050:8050"   # file service
       - "8930:8930"   # api service
-      - "9930:9930"   # api service (TLS) !!!
       - "8960:8960"   # cred store service
       - "8962:8962"   # profile service
       - "8970:8970"   # registry service
@@ -125,18 +123,21 @@ services:
     volumes:
       - ../vault/server.key:/vault/server.key:ro
       - ../vault/server.crt:/vault/server.crt:ro
-      - ./proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./proxy/http.conf:/etc/nginx/conf.d/http.conf:ro
+      - ./proxy/stream.conf:/etc/nginx/conf.d/stream.conf:ro
     networks:
       airavata-network:
         ipv4_address: 192.168.100.13
     extra_hosts:
       - "airavata.host:192.168.100.1"
     ports:
-      - "5173:5173" # https research portal
-      - "8008:8008" # https php portal
-      - "8009:8009" # https django portal
-      - "8443:8443" # https keycloak
-      - "20000:20000" # https jupyterhub
+      - "5173:5173" # tls + research portal
+      - "8008:8008" # tls + php portal
+      - "8009:8009" # tls + django portal
+      - "8443:8443" # tls + keycloak
+      - "9930:9930" # tls + api
+      - "20000:20000" # tls + jupyterhub
 
   keycloak:
     image: keycloak/keycloak:25.0

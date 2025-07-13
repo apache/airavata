@@ -45,8 +45,6 @@ EXPOSE 17000
 EXPOSE 8050
 # api service
 EXPOSE 8930
-# # api service (TLS) !!!
-EXPOSE 9930
 # cred store service
 EXPOSE 8960
 # profile service

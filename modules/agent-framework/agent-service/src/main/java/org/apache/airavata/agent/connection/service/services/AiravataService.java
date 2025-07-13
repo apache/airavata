@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -44,24 +46,17 @@ import org.springframework.stereotype.Service;
 public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
-    private static final int TIMEOUT = 100000;
 
     @Value("${airavata.server.url:airavata.host}")
     private String serverUrl;
 
-    @Value("${airavata.server.port:9930}")
+    @Value("${airavata.server.port:8930}")
     private int port;
-
-    @Value("${airavata.server.truststore.path}")
-    private String trustStorePath;
 
     public Airavata.Client airavata() {
         try {
-            LOGGER.debug("Creating Airavata client with the TrustStore URL - " + trustStorePath);
-            return AiravataClientFactory.createAiravataSecureClient(
-                    serverUrl, port, trustStorePath, "airavata", TIMEOUT);
-
-        } catch (AiravataClientException e) {
+            return AiravataClientFactory.createAiravataClient(serverUrl, port, ServerSettings.isTLSEnabled());
+        } catch (AiravataClientException | ApplicationSettingsException e) {
             LOGGER.error("Error while creating Airavata client", e);
             throw new RuntimeException("Error while creating Airavata client", e);
         }

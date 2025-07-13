@@ -26,15 +26,11 @@ public final class Constants {
     public static final String JOB = "job";
 
     // API security relates property names
-    public static final String IS_API_SECURED = "api.secured";
     public static final String SECURITY_MANAGER_CLASS = "security.manager.class";
     public static final String IS_TLS_ENABLED = "TLS.enabled";
-    public static final String TLS_SERVER_PORT = "TLS.api.server.port";
     public static final String KEYSTORE_PATH = "keystore.path";
     public static final String KEYSTORE_PASSWORD = "keystore.password";
     public static final String TLS_CLIENT_TIMEOUT = "TLS.client.timeout";
-
-    public static final String IS_SHARING_TLS_ENABLED = "sharing.tls.enabled";
 
     public static final String API_METHOD_NAME = "api.method.name";
 

@@ -64,7 +64,7 @@ public class SecurityInterceptor implements MethodInterceptor {
 
     private void authorize(AuthzToken authzToken, Map<String, String> metaData) throws AuthorizationException {
         try {
-            boolean isAPISecured = ServerSettings.isAPISecured();
+            boolean isAPISecured = ServerSettings.isTLSEnabled();
             if (isAPISecured) {
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);

@@ -43,9 +43,6 @@ public class ApplicationSettings {
 
     private Exception propertyLoadException;
 
-    protected static final String TRUST_STORE_PATH = "trust.store";
-    protected static final String TRUST_STORE_PASSWORD = "trust.store.password";
-
     private static final String REGULAR_EXPRESSION = "\\$\\{[a-zA-Z.-]*\\}";
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
@@ -279,20 +276,6 @@ public class ApplicationSettings {
 
     public static boolean isSettingDefined(String key) throws ApplicationSettingsException {
         return getInstance().properties.containsKey(key);
-    }
-
-    public static boolean isTrustStorePathDefined() throws ApplicationSettingsException {
-        return ApplicationSettings.isSettingDefined(TRUST_STORE_PATH);
-    }
-
-    public static String getTrustStorePath() throws ApplicationSettingsException {
-        String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
-        String trustStorePath = getSetting(TRUST_STORE_PATH);
-        return new File(airavataConfigDir, trustStorePath).getAbsolutePath();
-    }
-
-    public static String getTrustStorePassword() throws ApplicationSettingsException {
-        return getSetting(TRUST_STORE_PASSWORD);
     }
 
     public static String getCredentialStoreKeyStorePath() throws ApplicationSettingsException {

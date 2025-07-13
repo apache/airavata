@@ -23,21 +23,18 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.service.profile.iam.admin.services.core.interfaces.TenantManagementInterface;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.keycloak.admin.client.Keycloak;
@@ -87,51 +84,33 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
         var builder = ClientBuilder.newBuilder();
         try {
-            if (ServerSettings.isTrustStorePathDefined()) {
-                builder.trustStore(loadKeyStore());
+            if (ServerSettings.isTLSEnabled()) {
+                var keyStorePath = ServerSettings.getKeyStorePath();
+                var keyStorePassword = ServerSettings.getKeyStorePassword();
+                builder.keyStore(loadKeyStore(keyStorePath, keyStorePassword), keyStorePassword);
             }
         } catch (ApplicationSettingsException e) {
             throw new RuntimeException("Failed to read application settings", e);
+        } catch (AiravataSecurityException e) {
+            throw new RuntimeException("Failed to load key store", e);
         }
         return builder.build();
     }
 
-    private static KeyStore loadKeyStore() {
-
-        InputStream is = null;
+    private static KeyStore loadKeyStore(String keyStorePath, String keyStorePassword)
+            throws ApplicationSettingsException, AiravataSecurityException {
+        var keyStoreFile = new File(keyStorePath);
+        if (keyStoreFile.exists() && keyStoreFile.isFile()) {
+            logger.info("Loading trust store file from path {}", keyStorePath);
+        } else {
+            logger.error("Trust store file does not exist at path {}", keyStorePath);
+            throw new ApplicationSettingsException("Trust store file does not exist at path " + keyStorePath);
+        }
         try {
-
-            String trustStorePath = ServerSettings.getTrustStorePath();
-            File trustStoreFile = new File(trustStorePath);
-
-            if (trustStoreFile.exists()) {
-                logger.debug("Loading trust store file from path " + trustStorePath);
-                is = new FileInputStream(trustStorePath);
-            } else {
-                logger.debug("Trying to load trust store file form class path " + trustStorePath);
-                is = SecurityUtil.class.getClassLoader().getResourceAsStream(trustStorePath);
-                if (is != null) {
-                    logger.debug("Trust store file was loaded form class path " + trustStorePath);
-                }
-            }
-
-            if (is == null) {
-                throw new RuntimeException("Could not find a trust store file in path " + trustStorePath);
-            }
-
-            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(is, ServerSettings.getTrustStorePassword().toCharArray());
-            return ks;
+        return KeyStore.getInstance(keyStoreFile, keyStorePassword.toCharArray());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load trust store KeyStore instance", e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    logger.error("Failed to close trust store FileInputStream", e);
-                }
-            }
+            logger.error("Failed to load trust store file from path {}", keyStorePath, e);
+            throw new AiravataSecurityException("Failed to load trust store file from path " + keyStorePath, e);
         }
     }
 
@@ -895,9 +874,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     public static void main(String[] args) throws IamAdminServicesException, ApplicationSettingsException {
         TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
         // If testing with self-signed certificate, load certificate into
-        // modules/configuration/server/src/main/resources/airavata.jks and uncomment the following
+        // modules/configuration/server/src/main/resources/airavata.p12 and uncomment the following
         // ServerSettings.setSetting("trust.store",
-        // "./modules/configuration/server/src/main/resources/airavata.jks");
+        // "./modules/configuration/server/src/main/resources/airavata.p12");
         // ServerSettings.setSetting("trust.store.password", "airavata");
         ServerSettings.setSetting("iam.server.url", "");
         String accessToken = "";

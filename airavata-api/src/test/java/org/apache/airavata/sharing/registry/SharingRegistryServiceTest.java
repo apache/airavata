@@ -54,13 +54,12 @@ public class SharingRegistryServiceTest {
         TTransport transport;
 
         SharingRegistryService.Client sharingServiceClient;
-        if (!ServerSettings.isSharingTLSEnabled()) {
+        if (!ServerSettings.isTLSEnabled()) {
             transport = new TSocket(serverHost, serverPort);
             transport.open();
         } else {
             TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
             params.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
-            params.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
             transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
         }
 

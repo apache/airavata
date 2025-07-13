@@ -76,27 +76,23 @@ public class SharingRegistryServer implements IServer {
                     new SharingRegistryServerHandler(createSharingRegistryDBInitConfig()));
 
             TServerTransport serverTransport;
+            TThreadPoolServer.Args options;
 
-            if (!ServerSettings.isSharingTLSEnabled()) {
+            if (!ServerSettings.isTLSEnabled()) {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
                 serverTransport = new TServerSocket(inetSocketAddress);
-                TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-                options.minWorkerThreads = 30;
-                server = new TThreadPoolServer(options.processor(processor));
+                options = new TThreadPoolServer.Args(serverTransport);
             } else {
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.requireClientAuth(true);
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
-                if (ServerSettings.isTrustStorePathDefined()) {
-                    TLSParams.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
-                }
                 TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
                         serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
-                TThreadPoolServer.Args options = new TThreadPoolServer.Args(TLSServerTransport);
-                options.minWorkerThreads = 30;
-                server = new TThreadPoolServer(options.processor(processor));
+                options = new TThreadPoolServer.Args(TLSServerTransport);
             }
+            options.minWorkerThreads = 30;
+            server = new TThreadPoolServer(options.processor(processor));
 
             new Thread(() -> {
                 server.serve();

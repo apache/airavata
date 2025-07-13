@@ -42,7 +42,7 @@
       <outputDirectory>bin</outputDirectory>
       <fileMode>777</fileMode>
       <includes>
-        <include>airavata.jks</include>
+        <include>airavata.p12</include>
       </includes>
     </fileSet>
     <fileSet>

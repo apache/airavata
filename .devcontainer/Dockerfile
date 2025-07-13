@@ -46,7 +46,7 @@ ENV GOROOT=/usr/local/go
 ENV GOPATH=/home/developer/go
 ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin:$GOROOT/bin:$GOPATH/bin
 
-EXPOSE 7878 8000 17000 8050 8930 9930 8960 8962 8970 18800 19900 18889 19908
+EXPOSE 7878 8000 17000 8050 8930 8960 8962 8970 18800 19900 18889 19908
 
 FROM deps AS compiler
 
@@ -65,6 +65,6 @@ COPY ../vault ./vault
 
 RUN chmod +x ./distribution_update.sh ./services_up.sh
 
-EXPOSE 7878 8000 17000 8050 8930 9930 8960 8962 8970 18800 19900 18889 19908
+EXPOSE 7878 8000 17000 8050 8930 8960 8962 8970 18800 19900 18889 19908
 
 CMD ["sh", "-c", "./distribution_update.sh && ./services_up.sh && sleep infinity"]

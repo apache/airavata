@@ -238,19 +238,16 @@ Only needed when Keycloak certificates expire:
 cd modules/ide-integration/src/main/resources/keystores
 
 # Remove old keystore
-rm airavata.jks
+rm airavata.p12
 
-# Generate new keystore (airavata.jks)
-keytool -genkey -keyalg RSA -alias selfsigned -keystore airavata.jks \
+# Generate new keystore (airavata.p12)
+keytool -genkey -keyalg RSA -alias selfsigned -keystore airavata.p12 \
         -storetype pkcs12 -storepass airavata -validity 360 -keysize 2048 \
         -dname "CN=airavata.host,OU=airavata.host,O=airavata.host,L=airavata.host,ST=airavata.host,C=airavata.host"
 
 # Generate self-signed key-pair (for TLS)
-openssl req -x509 -nodes -days 365 \
-  -newkey rsa:2048 \
-  -keyout server.key \
-  -out server.crt \
-  -subj "/CN=airavata.host" \
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt \
+  -subj "/CN=airavata.host/OU=airavata.host/O=airavata.host/L=airavata.host/ST=airavata.host/C=airavata.host" \
   -addext "subjectAltName=DNS:airavata.host"
 ```
 

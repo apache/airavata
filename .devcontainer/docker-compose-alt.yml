@@ -121,7 +121,7 @@ services:
       - job.notification.enable=true
       - job.notification.emailids=
       - job.notification.flags=abe
-      - credential.store.keystore.url=/opt/keystores/airavata.jks
+      - credential.store.keystore.url=/opt/keystores/airavata.p12
       - credential.store.keystore.alias=airavata
       - credential.store.keystore.password=airavata
       - credential.store.jdbc.url=jdbc:mariadb://db:3306/credential_store
@@ -154,9 +154,9 @@ services:
       - TLS.enabled=true
       - TLS.api.server.port=9930
       - TLS.client.timeout=10000
-      - keystore.path=/opt/keystores/airavata.jks
+      - keystore.path=/opt/keystores/airavata.p12
       - keystore.password=airavata
-      - trust.store=/opt/keystores/airavata.jks
+      - trust.store=/opt/keystores/airavata.p12
       - trust.store.password=airavata
       - authz.cache.enabled=true
       - authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
