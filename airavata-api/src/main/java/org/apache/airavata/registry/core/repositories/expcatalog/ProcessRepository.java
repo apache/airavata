@@ -107,9 +107,10 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
 
         if (processEntity.getProcessStatuses() != null) {
             logger.debug("Populating the Primary Key of ProcessStatus objects for the Process");
-            processEntity
-                    .getProcessStatuses()
-                    .forEach(processStatusEntity -> processStatusEntity.setProcessId(processId));
+            processEntity.getProcessStatuses().forEach(processStatusEntity -> {
+                processStatusEntity.setProcessId(processId);
+                processStatusEntity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
+            });
         }
 
         if (processEntity.getProcessErrors() != null) {
