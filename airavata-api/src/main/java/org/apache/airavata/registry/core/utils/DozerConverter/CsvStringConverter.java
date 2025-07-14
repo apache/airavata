@@ -26,15 +26,16 @@ import java.util.List;
 /**
  * CsvStringConverter
  */
-public class CsvStringConverter extends DozerConverter<String, List> {
+public class CsvStringConverter extends DozerConverter<String, List<String>> {
 
+    @SuppressWarnings("unchecked")
     public CsvStringConverter() {
-        super(String.class, List.class);
+        super(String.class, (Class<List<String>>) (Class<?>) List.class);
     }
 
     @Override
-    public List convertTo(String source, List destination) {
-        if (source == null || source.length() == 0) {
+    public List<String> convertTo(String source, List<String> destination) {
+        if (source == null || source.isEmpty()) {
             return null;
         } else {
             return Arrays.asList(source.split(","));
@@ -42,7 +43,7 @@ public class CsvStringConverter extends DozerConverter<String, List> {
     }
 
     @Override
-    public String convertFrom(List source, String destination) {
+    public String convertFrom(List<String> source, String destination) {
         if (source == null || source.isEmpty()) {
             return null;
         } else {
