@@ -300,30 +300,6 @@ public class ApplicationSettings {
         return getSetting("credential.store.server.port");
     }
 
-    public static String getCredentialStoreEmailServer() throws ApplicationSettingsException {
-        return getSetting("email.server");
-    }
-
-    public static String getCredentialStoreEmailServerPort() throws ApplicationSettingsException {
-        return getSetting("email.server.port");
-    }
-
-    public static String getCredentialStoreEmailUser() throws ApplicationSettingsException {
-        return getSetting("email.user");
-    }
-
-    public static String getCredentialStoreEmailPassword() throws ApplicationSettingsException {
-        return getSetting("email.password");
-    }
-
-    public static String getCredentialStoreEmailSSLConnect() throws ApplicationSettingsException {
-        return getSetting("email.ssl");
-    }
-
-    public static String getCredentialStoreEmailFromEmail() throws ApplicationSettingsException {
-        return getSetting("email.from");
-    }
-
     public static String getRegistryServerPort() throws ApplicationSettingsException {
         return getSetting("regserver.server.port");
     }

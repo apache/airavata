@@ -74,13 +74,4 @@ public class EmailNotifierConfiguration {
         return fromAddress;
     }
 
-    public static EmailNotifierConfiguration getEmailNotifierConfigurations() throws ApplicationSettingsException {
-        return new EmailNotifierConfiguration(
-                ApplicationSettings.getCredentialStoreEmailServer(),
-                Integer.parseInt(ApplicationSettings.getCredentialStoreEmailServerPort()),
-                ApplicationSettings.getCredentialStoreEmailUser(),
-                ApplicationSettings.getCredentialStoreEmailPassword(),
-                Boolean.parseBoolean(ApplicationSettings.getCredentialStoreEmailSSLConnect()),
-                ApplicationSettings.getCredentialStoreEmailFromEmail());
-    }
 }
