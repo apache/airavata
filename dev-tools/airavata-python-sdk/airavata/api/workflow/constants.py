@@ -15,13 +15,5 @@ from uuid import UUID
 from enum import IntEnum
 
 import sys
-import airavata.service.profile.user.cpi.ttypes
-import airavata.service.profile.tenant.cpi.ttypes
-import airavata.service.profile.iam.admin.services.cpi.ttypes
-import airavata.service.profile.groupmanager.cpi.ttypes
-import airavata.base.api.ttypes
-
-from thrift.transport import TTransport
-all_structs = []
-fix_spec(all_structs)
-del all_structs
+from .ttypes import *
+WORKFLOW_API_VERSION = "0.18.0"

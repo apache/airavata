@@ -23,6 +23,12 @@ from thrift.transport import TTransport
 all_structs = []
 
 
+class ResourceType(IntEnum):
+    SLURM = 0
+    AWS = 1
+
+
+
 class GroupAccountSSHProvisionerConfig(object):
     """
     Attributes:
@@ -242,21 +248,13 @@ class ComputeResourceReservation(object):
         return not (self == other)
 
 
-class GroupComputeResourcePreference(object):
+class SlurmComputeResourcePreference(object):
     """
     Attributes:
-     - computeResourceId
-     - groupResourceProfileId
-     - overridebyAiravata
-     - loginUserName
-     - preferredJobSubmissionProtocol
-     - preferredDataMovementProtocol
-     - preferredBatchQueue
-     - scratchLocation
      - allocationProjectNumber
-     - resourceSpecificCredentialStoreToken
-     - usageReportingGatewayId
+     - preferredBatchQueue
      - qualityOfService
+     - usageReportingGatewayId
      - sshAccountProvisioner
      - groupSSHAccountProvisionerConfigs
      - sshAccountProvisionerAdditionalInfo
@@ -266,23 +264,326 @@ class GroupComputeResourcePreference(object):
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, computeResourceId: str = None, groupResourceProfileId: str = "DO_NOT_SET_AT_CLIENTS", overridebyAiravata: bool = True, loginUserName: typing.Optional[str] = None, preferredJobSubmissionProtocol: typing.Optional[airavata.model.appcatalog.computeresource.ttypes.JobSubmissionProtocol] = None, preferredDataMovementProtocol: typing.Optional[airavata.model.data.movement.ttypes.DataMovementProtocol] = None, preferredBatchQueue: typing.Optional[str] = None, scratchLocation: typing.Optional[str] = None, allocationProjectNumber: typing.Optional[str] = None, resourceSpecificCredentialStoreToken: typing.Optional[str] = None, usageReportingGatewayId: typing.Optional[str] = None, qualityOfService: typing.Optional[str] = None, sshAccountProvisioner: typing.Optional[str] = None, groupSSHAccountProvisionerConfigs: typing.Optional[list[GroupAccountSSHProvisionerConfig]] = None, sshAccountProvisionerAdditionalInfo: typing.Optional[str] = None, reservations: typing.Optional[list[ComputeResourceReservation]] = None,):
-        self.computeResourceId: str = computeResourceId
-        self.groupResourceProfileId: str = groupResourceProfileId
-        self.overridebyAiravata: bool = overridebyAiravata
-        self.loginUserName: typing.Optional[str] = loginUserName
-        self.preferredJobSubmissionProtocol: typing.Optional[airavata.model.appcatalog.computeresource.ttypes.JobSubmissionProtocol] = preferredJobSubmissionProtocol
-        self.preferredDataMovementProtocol: typing.Optional[airavata.model.data.movement.ttypes.DataMovementProtocol] = preferredDataMovementProtocol
-        self.preferredBatchQueue: typing.Optional[str] = preferredBatchQueue
-        self.scratchLocation: typing.Optional[str] = scratchLocation
+    def __init__(self, allocationProjectNumber: typing.Optional[str] = None, preferredBatchQueue: typing.Optional[str] = None, qualityOfService: typing.Optional[str] = None, usageReportingGatewayId: typing.Optional[str] = None, sshAccountProvisioner: typing.Optional[str] = None, groupSSHAccountProvisionerConfigs: typing.Optional[list[GroupAccountSSHProvisionerConfig]] = None, sshAccountProvisionerAdditionalInfo: typing.Optional[str] = None, reservations: typing.Optional[list[ComputeResourceReservation]] = None,):
         self.allocationProjectNumber: typing.Optional[str] = allocationProjectNumber
-        self.resourceSpecificCredentialStoreToken: typing.Optional[str] = resourceSpecificCredentialStoreToken
-        self.usageReportingGatewayId: typing.Optional[str] = usageReportingGatewayId
+        self.preferredBatchQueue: typing.Optional[str] = preferredBatchQueue
         self.qualityOfService: typing.Optional[str] = qualityOfService
+        self.usageReportingGatewayId: typing.Optional[str] = usageReportingGatewayId
         self.sshAccountProvisioner: typing.Optional[str] = sshAccountProvisioner
         self.groupSSHAccountProvisionerConfigs: typing.Optional[list[GroupAccountSSHProvisionerConfig]] = groupSSHAccountProvisionerConfigs
         self.sshAccountProvisionerAdditionalInfo: typing.Optional[str] = sshAccountProvisionerAdditionalInfo
         self.reservations: typing.Optional[list[ComputeResourceReservation]] = reservations
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.allocationProjectNumber = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.preferredBatchQueue = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.qualityOfService = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.usageReportingGatewayId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.sshAccountProvisioner = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.LIST:
+                    self.groupSSHAccountProvisionerConfigs = []
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = GroupAccountSSHProvisionerConfig()
+                        _elem12.read(iprot)
+                        self.groupSSHAccountProvisionerConfigs.append(_elem12)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.STRING:
+                    self.sshAccountProvisionerAdditionalInfo = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.LIST:
+                    self.reservations = []
+                    (_etype16, _size13) = iprot.readListBegin()
+                    for _i17 in range(_size13):
+                        _elem18 = ComputeResourceReservation()
+                        _elem18.read(iprot)
+                        self.reservations.append(_elem18)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('SlurmComputeResourcePreference')
+        if self.allocationProjectNumber is not None:
+            oprot.writeFieldBegin('allocationProjectNumber', TType.STRING, 1)
+            oprot.writeString(self.allocationProjectNumber.encode('utf-8') if sys.version_info[0] == 2 else self.allocationProjectNumber)
+            oprot.writeFieldEnd()
+        if self.preferredBatchQueue is not None:
+            oprot.writeFieldBegin('preferredBatchQueue', TType.STRING, 2)
+            oprot.writeString(self.preferredBatchQueue.encode('utf-8') if sys.version_info[0] == 2 else self.preferredBatchQueue)
+            oprot.writeFieldEnd()
+        if self.qualityOfService is not None:
+            oprot.writeFieldBegin('qualityOfService', TType.STRING, 3)
+            oprot.writeString(self.qualityOfService.encode('utf-8') if sys.version_info[0] == 2 else self.qualityOfService)
+            oprot.writeFieldEnd()
+        if self.usageReportingGatewayId is not None:
+            oprot.writeFieldBegin('usageReportingGatewayId', TType.STRING, 4)
+            oprot.writeString(self.usageReportingGatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.usageReportingGatewayId)
+            oprot.writeFieldEnd()
+        if self.sshAccountProvisioner is not None:
+            oprot.writeFieldBegin('sshAccountProvisioner', TType.STRING, 5)
+            oprot.writeString(self.sshAccountProvisioner.encode('utf-8') if sys.version_info[0] == 2 else self.sshAccountProvisioner)
+            oprot.writeFieldEnd()
+        if self.groupSSHAccountProvisionerConfigs is not None:
+            oprot.writeFieldBegin('groupSSHAccountProvisionerConfigs', TType.LIST, 6)
+            oprot.writeListBegin(TType.STRUCT, len(self.groupSSHAccountProvisionerConfigs))
+            for iter19 in self.groupSSHAccountProvisionerConfigs:
+                iter19.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.sshAccountProvisionerAdditionalInfo is not None:
+            oprot.writeFieldBegin('sshAccountProvisionerAdditionalInfo', TType.STRING, 7)
+            oprot.writeString(self.sshAccountProvisionerAdditionalInfo.encode('utf-8') if sys.version_info[0] == 2 else self.sshAccountProvisionerAdditionalInfo)
+            oprot.writeFieldEnd()
+        if self.reservations is not None:
+            oprot.writeFieldBegin('reservations', TType.LIST, 8)
+            oprot.writeListBegin(TType.STRUCT, len(self.reservations))
+            for iter20 in self.reservations:
+                iter20.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class AwsComputeResourcePreference(object):
+    """
+    Attributes:
+     - region
+     - preferredAmiId
+     - preferredInstanceType
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, region: typing.Optional[str] = None, preferredAmiId: typing.Optional[str] = None, preferredInstanceType: typing.Optional[str] = None,):
+        self.region: typing.Optional[str] = region
+        self.preferredAmiId: typing.Optional[str] = preferredAmiId
+        self.preferredInstanceType: typing.Optional[str] = preferredInstanceType
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.region = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.preferredAmiId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.preferredInstanceType = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('AwsComputeResourcePreference')
+        if self.region is not None:
+            oprot.writeFieldBegin('region', TType.STRING, 1)
+            oprot.writeString(self.region.encode('utf-8') if sys.version_info[0] == 2 else self.region)
+            oprot.writeFieldEnd()
+        if self.preferredAmiId is not None:
+            oprot.writeFieldBegin('preferredAmiId', TType.STRING, 2)
+            oprot.writeString(self.preferredAmiId.encode('utf-8') if sys.version_info[0] == 2 else self.preferredAmiId)
+            oprot.writeFieldEnd()
+        if self.preferredInstanceType is not None:
+            oprot.writeFieldBegin('preferredInstanceType', TType.STRING, 3)
+            oprot.writeString(self.preferredInstanceType.encode('utf-8') if sys.version_info[0] == 2 else self.preferredInstanceType)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class EnvironmentSpecificPreferences(object):
+    """
+    Attributes:
+     - slurm
+     - aws
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, slurm: typing.Optional[SlurmComputeResourcePreference] = None, aws: typing.Optional[AwsComputeResourcePreference] = None,):
+        self.slurm: typing.Optional[SlurmComputeResourcePreference] = slurm
+        self.aws: typing.Optional[AwsComputeResourcePreference] = aws
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.slurm = SlurmComputeResourcePreference()
+                    self.slurm.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.aws = AwsComputeResourcePreference()
+                    self.aws.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('EnvironmentSpecificPreferences')
+        if self.slurm is not None:
+            oprot.writeFieldBegin('slurm', TType.STRUCT, 1)
+            self.slurm.write(oprot)
+            oprot.writeFieldEnd()
+        if self.aws is not None:
+            oprot.writeFieldBegin('aws', TType.STRUCT, 2)
+            self.aws.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GroupComputeResourcePreference(object):
+    """
+    Attributes:
+     - computeResourceId
+     - groupResourceProfileId
+     - overridebyAiravata
+     - loginUserName
+     - scratchLocation
+     - preferredJobSubmissionProtocol
+     - preferredDataMovementProtocol
+     - resourceSpecificCredentialStoreToken
+     - resourceType
+     - specificPreferences
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, computeResourceId: str = None, groupResourceProfileId: str = "DO_NOT_SET_AT_CLIENTS", overridebyAiravata: bool = True, loginUserName: typing.Optional[str] = None, scratchLocation: typing.Optional[str] = None, preferredJobSubmissionProtocol: typing.Optional[airavata.model.appcatalog.computeresource.ttypes.JobSubmissionProtocol] = None, preferredDataMovementProtocol: typing.Optional[airavata.model.data.movement.ttypes.DataMovementProtocol] = None, resourceSpecificCredentialStoreToken: typing.Optional[str] = None, resourceType: ResourceType = None, specificPreferences: typing.Optional[EnvironmentSpecificPreferences] = None,):
+        self.computeResourceId: str = computeResourceId
+        self.groupResourceProfileId: str = groupResourceProfileId
+        self.overridebyAiravata: bool = overridebyAiravata
+        self.loginUserName: typing.Optional[str] = loginUserName
+        self.scratchLocation: typing.Optional[str] = scratchLocation
+        self.preferredJobSubmissionProtocol: typing.Optional[airavata.model.appcatalog.computeresource.ttypes.JobSubmissionProtocol] = preferredJobSubmissionProtocol
+        self.preferredDataMovementProtocol: typing.Optional[airavata.model.data.movement.ttypes.DataMovementProtocol] = preferredDataMovementProtocol
+        self.resourceSpecificCredentialStoreToken: typing.Optional[str] = resourceSpecificCredentialStoreToken
+        self.resourceType: ResourceType = resourceType
+        self.specificPreferences: typing.Optional[EnvironmentSpecificPreferences] = specificPreferences
 
     def __setattr__(self, name, value):
         if name == "preferredJobSubmissionProtocol":
@@ -290,6 +591,9 @@ class GroupComputeResourcePreference(object):
             return
         if name == "preferredDataMovementProtocol":
             super().__setattr__(name, value if hasattr(value, 'value') else airavata.model.data.movement.ttypes.DataMovementProtocol.__members__.get(value))
+            return
+        if name == "resourceType":
+            super().__setattr__(name, value if hasattr(value, 'value') else ResourceType.__members__.get(value))
             return
         super().__setattr__(name, value)
 
@@ -324,75 +628,34 @@ class GroupComputeResourcePreference(object):
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
-                if ftype == TType.I32:
-                    self.preferredJobSubmissionProtocol = airavata.model.appcatalog.computeresource.ttypes.JobSubmissionProtocol(iprot.readI32())
-                else:
-                    iprot.skip(ftype)
-            elif fid == 6:
-                if ftype == TType.I32:
-                    self.preferredDataMovementProtocol = airavata.model.data.movement.ttypes.DataMovementProtocol(iprot.readI32())
-                else:
-                    iprot.skip(ftype)
-            elif fid == 7:
-                if ftype == TType.STRING:
-                    self.preferredBatchQueue = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 8:
                 if ftype == TType.STRING:
                     self.scratchLocation = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 9:
-                if ftype == TType.STRING:
-                    self.allocationProjectNumber = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+            elif fid == 6:
+                if ftype == TType.I32:
+                    self.preferredJobSubmissionProtocol = airavata.model.appcatalog.computeresource.ttypes.JobSubmissionProtocol(iprot.readI32())
                 else:
                     iprot.skip(ftype)
-            elif fid == 10:
+            elif fid == 7:
+                if ftype == TType.I32:
+                    self.preferredDataMovementProtocol = airavata.model.data.movement.ttypes.DataMovementProtocol(iprot.readI32())
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
                 if ftype == TType.STRING:
                     self.resourceSpecificCredentialStoreToken = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 11:
-                if ftype == TType.STRING:
-                    self.usageReportingGatewayId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+            elif fid == 9:
+                if ftype == TType.I32:
+                    self.resourceType = ResourceType(iprot.readI32())
                 else:
                     iprot.skip(ftype)
-            elif fid == 12:
-                if ftype == TType.STRING:
-                    self.qualityOfService = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 16:
-                if ftype == TType.STRING:
-                    self.sshAccountProvisioner = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 17:
-                if ftype == TType.LIST:
-                    self.groupSSHAccountProvisionerConfigs = []
-                    (_etype10, _size7) = iprot.readListBegin()
-                    for _i11 in range(_size7):
-                        _elem12 = GroupAccountSSHProvisionerConfig()
-                        _elem12.read(iprot)
-                        self.groupSSHAccountProvisionerConfigs.append(_elem12)
-                    iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 18:
-                if ftype == TType.STRING:
-                    self.sshAccountProvisionerAdditionalInfo = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 19:
-                if ftype == TType.LIST:
-                    self.reservations = []
-                    (_etype16, _size13) = iprot.readListBegin()
-                    for _i17 in range(_size13):
-                        _elem18 = ComputeResourceReservation()
-                        _elem18.read(iprot)
-                        self.reservations.append(_elem18)
-                    iprot.readListEnd()
+            elif fid == 10:
+                if ftype == TType.STRUCT:
+                    self.specificPreferences = EnvironmentSpecificPreferences()
+                    self.specificPreferences.read(iprot)
                 else:
                     iprot.skip(ftype)
             else:
@@ -422,59 +685,29 @@ class GroupComputeResourcePreference(object):
             oprot.writeFieldBegin('loginUserName', TType.STRING, 4)
             oprot.writeString(self.loginUserName.encode('utf-8') if sys.version_info[0] == 2 else self.loginUserName)
             oprot.writeFieldEnd()
+        if self.scratchLocation is not None:
+            oprot.writeFieldBegin('scratchLocation', TType.STRING, 5)
+            oprot.writeString(self.scratchLocation.encode('utf-8') if sys.version_info[0] == 2 else self.scratchLocation)
+            oprot.writeFieldEnd()
         if self.preferredJobSubmissionProtocol is not None:
-            oprot.writeFieldBegin('preferredJobSubmissionProtocol', TType.I32, 5)
+            oprot.writeFieldBegin('preferredJobSubmissionProtocol', TType.I32, 6)
             oprot.writeI32(self.preferredJobSubmissionProtocol.value)
             oprot.writeFieldEnd()
         if self.preferredDataMovementProtocol is not None:
-            oprot.writeFieldBegin('preferredDataMovementProtocol', TType.I32, 6)
+            oprot.writeFieldBegin('preferredDataMovementProtocol', TType.I32, 7)
             oprot.writeI32(self.preferredDataMovementProtocol.value)
             oprot.writeFieldEnd()
-        if self.preferredBatchQueue is not None:
-            oprot.writeFieldBegin('preferredBatchQueue', TType.STRING, 7)
-            oprot.writeString(self.preferredBatchQueue.encode('utf-8') if sys.version_info[0] == 2 else self.preferredBatchQueue)
-            oprot.writeFieldEnd()
-        if self.scratchLocation is not None:
-            oprot.writeFieldBegin('scratchLocation', TType.STRING, 8)
-            oprot.writeString(self.scratchLocation.encode('utf-8') if sys.version_info[0] == 2 else self.scratchLocation)
-            oprot.writeFieldEnd()
-        if self.allocationProjectNumber is not None:
-            oprot.writeFieldBegin('allocationProjectNumber', TType.STRING, 9)
-            oprot.writeString(self.allocationProjectNumber.encode('utf-8') if sys.version_info[0] == 2 else self.allocationProjectNumber)
-            oprot.writeFieldEnd()
         if self.resourceSpecificCredentialStoreToken is not None:
-            oprot.writeFieldBegin('resourceSpecificCredentialStoreToken', TType.STRING, 10)
+            oprot.writeFieldBegin('resourceSpecificCredentialStoreToken', TType.STRING, 8)
             oprot.writeString(self.resourceSpecificCredentialStoreToken.encode('utf-8') if sys.version_info[0] == 2 else self.resourceSpecificCredentialStoreToken)
             oprot.writeFieldEnd()
-        if self.usageReportingGatewayId is not None:
-            oprot.writeFieldBegin('usageReportingGatewayId', TType.STRING, 11)
-            oprot.writeString(self.usageReportingGatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.usageReportingGatewayId)
+        if self.resourceType is not None:
+            oprot.writeFieldBegin('resourceType', TType.I32, 9)
+            oprot.writeI32(self.resourceType.value)
             oprot.writeFieldEnd()
-        if self.qualityOfService is not None:
-            oprot.writeFieldBegin('qualityOfService', TType.STRING, 12)
-            oprot.writeString(self.qualityOfService.encode('utf-8') if sys.version_info[0] == 2 else self.qualityOfService)
-            oprot.writeFieldEnd()
-        if self.sshAccountProvisioner is not None:
-            oprot.writeFieldBegin('sshAccountProvisioner', TType.STRING, 16)
-            oprot.writeString(self.sshAccountProvisioner.encode('utf-8') if sys.version_info[0] == 2 else self.sshAccountProvisioner)
-            oprot.writeFieldEnd()
-        if self.groupSSHAccountProvisionerConfigs is not None:
-            oprot.writeFieldBegin('groupSSHAccountProvisionerConfigs', TType.LIST, 17)
-            oprot.writeListBegin(TType.STRUCT, len(self.groupSSHAccountProvisionerConfigs))
-            for iter19 in self.groupSSHAccountProvisionerConfigs:
-                iter19.write(oprot)
-            oprot.writeListEnd()
-            oprot.writeFieldEnd()
-        if self.sshAccountProvisionerAdditionalInfo is not None:
-            oprot.writeFieldBegin('sshAccountProvisionerAdditionalInfo', TType.STRING, 18)
-            oprot.writeString(self.sshAccountProvisionerAdditionalInfo.encode('utf-8') if sys.version_info[0] == 2 else self.sshAccountProvisionerAdditionalInfo)
-            oprot.writeFieldEnd()
-        if self.reservations is not None:
-            oprot.writeFieldBegin('reservations', TType.LIST, 19)
-            oprot.writeListBegin(TType.STRUCT, len(self.reservations))
-            for iter20 in self.reservations:
-                iter20.write(oprot)
-            oprot.writeListEnd()
+        if self.specificPreferences is not None:
+            oprot.writeFieldBegin('specificPreferences', TType.STRUCT, 10)
+            self.specificPreferences.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -486,6 +719,8 @@ class GroupComputeResourcePreference(object):
             raise TProtocolException(message='Required field groupResourceProfileId is unset!')
         if self.overridebyAiravata is None:
             raise TProtocolException(message='Required field overridebyAiravata is unset!')
+        if self.resourceType is None:
+            raise TProtocolException(message='Required field resourceType is unset!')
         return
 
     def __repr__(self):
@@ -950,6 +1185,31 @@ ComputeResourceReservation.thrift_spec = (
     (4, TType.I64, 'startTime', None, None, ),  # 4
     (5, TType.I64, 'endTime', None, None, ),  # 5
 )
+all_structs.append(SlurmComputeResourcePreference)
+SlurmComputeResourcePreference.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'allocationProjectNumber', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'preferredBatchQueue', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'qualityOfService', 'UTF8', None, ),  # 3
+    (4, TType.STRING, 'usageReportingGatewayId', 'UTF8', None, ),  # 4
+    (5, TType.STRING, 'sshAccountProvisioner', 'UTF8', None, ),  # 5
+    (6, TType.LIST, 'groupSSHAccountProvisionerConfigs', (TType.STRUCT, [GroupAccountSSHProvisionerConfig, None], False), None, ),  # 6
+    (7, TType.STRING, 'sshAccountProvisionerAdditionalInfo', 'UTF8', None, ),  # 7
+    (8, TType.LIST, 'reservations', (TType.STRUCT, [ComputeResourceReservation, None], False), None, ),  # 8
+)
+all_structs.append(AwsComputeResourcePreference)
+AwsComputeResourcePreference.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'region', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'preferredAmiId', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'preferredInstanceType', 'UTF8', None, ),  # 3
+)
+all_structs.append(EnvironmentSpecificPreferences)
+EnvironmentSpecificPreferences.thrift_spec = (
+    None,  # 0
+    (1, TType.STRUCT, 'slurm', [SlurmComputeResourcePreference, None], None, ),  # 1
+    (2, TType.STRUCT, 'aws', [AwsComputeResourcePreference, None], None, ),  # 2
+)
 all_structs.append(GroupComputeResourcePreference)
 GroupComputeResourcePreference.thrift_spec = (
     None,  # 0
@@ -957,21 +1217,12 @@ GroupComputeResourcePreference.thrift_spec = (
     (2, TType.STRING, 'groupResourceProfileId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 2
     (3, TType.BOOL, 'overridebyAiravata', None, True, ),  # 3
     (4, TType.STRING, 'loginUserName', 'UTF8', None, ),  # 4
-    (5, TType.I32, 'preferredJobSubmissionProtocol', None, None, ),  # 5
-    (6, TType.I32, 'preferredDataMovementProtocol', None, None, ),  # 6
-    (7, TType.STRING, 'preferredBatchQueue', 'UTF8', None, ),  # 7
-    (8, TType.STRING, 'scratchLocation', 'UTF8', None, ),  # 8
-    (9, TType.STRING, 'allocationProjectNumber', 'UTF8', None, ),  # 9
-    (10, TType.STRING, 'resourceSpecificCredentialStoreToken', 'UTF8', None, ),  # 10
-    (11, TType.STRING, 'usageReportingGatewayId', 'UTF8', None, ),  # 11
-    (12, TType.STRING, 'qualityOfService', 'UTF8', None, ),  # 12
-    None,  # 13
-    None,  # 14
-    None,  # 15
-    (16, TType.STRING, 'sshAccountProvisioner', 'UTF8', None, ),  # 16
-    (17, TType.LIST, 'groupSSHAccountProvisionerConfigs', (TType.STRUCT, [GroupAccountSSHProvisionerConfig, None], False), None, ),  # 17
-    (18, TType.STRING, 'sshAccountProvisionerAdditionalInfo', 'UTF8', None, ),  # 18
-    (19, TType.LIST, 'reservations', (TType.STRUCT, [ComputeResourceReservation, None], False), None, ),  # 19
+    (5, TType.STRING, 'scratchLocation', 'UTF8', None, ),  # 5
+    (6, TType.I32, 'preferredJobSubmissionProtocol', None, None, ),  # 6
+    (7, TType.I32, 'preferredDataMovementProtocol', None, None, ),  # 7
+    (8, TType.STRING, 'resourceSpecificCredentialStoreToken', 'UTF8', None, ),  # 8
+    (9, TType.I32, 'resourceType', None, None, ),  # 9
+    (10, TType.STRUCT, 'specificPreferences', [EnvironmentSpecificPreferences, None], None, ),  # 10
 )
 all_structs.append(ComputeResourcePolicy)
 ComputeResourcePolicy.thrift_spec = (

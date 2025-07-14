@@ -16,11 +16,11 @@ from enum import IntEnum
 
 import sys
 import airavata.model.commons.ttypes
+import airavata.model.application.io.ttypes
 import airavata.model.appcatalog.computeresource.ttypes
 import airavata.model.data.movement.ttypes
-import airavata.model.application.io.ttypes
-import airavata.model.status.ttypes
 import airavata.model.job.ttypes
+import airavata.model.status.ttypes
 
 from thrift.transport import TTransport
 all_structs = []

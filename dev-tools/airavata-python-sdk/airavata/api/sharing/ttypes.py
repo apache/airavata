@@ -15,8 +15,8 @@ from uuid import UUID
 from enum import IntEnum
 
 import sys
-import airavata.model.sharing.ttypes
 import airavata.base.api.ttypes
+import airavata.model.sharing.ttypes
 
 from thrift.transport import TTransport
 all_structs = []

@@ -17,7 +17,6 @@ from enum import IntEnum
 import sys
 import airavata.model.appcatalog.computeresource.ttypes
 import airavata.model.data.movement.ttypes
-import airavata.model.appcatalog.accountprovisioning.ttypes
 
 from thrift.transport import TTransport
 all_structs = []
