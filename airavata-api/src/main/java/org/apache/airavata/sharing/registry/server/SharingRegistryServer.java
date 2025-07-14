@@ -95,36 +95,38 @@ public class SharingRegistryServer implements IServer {
             server = new TThreadPoolServer(options.processor(processor));
 
             new Thread(() -> {
-                server.serve();
-                setStatus(ServerStatus.STOPPED);
-                logger.info("Sharing Registry Server Stopped.");
-            }).start();
+                        server.serve();
+                        setStatus(ServerStatus.STOPPED);
+                        logger.info("Sharing Registry Server Stopped.");
+                    })
+                    .start();
             new Thread(() -> {
-                while (!server.isServing()) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-                if (server.isServing()) {
+                        while (!server.isServing()) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                break;
+                            }
+                        }
+                        if (server.isServing()) {
 
-                    try {
-                        logger.info("Register sharing service with DB Event publishers");
-                        SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(
-                                Constants.PUBLISHERS);
+                            try {
+                                logger.info("Register sharing service with DB Event publishers");
+                                SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(
+                                        Constants.PUBLISHERS);
 
-                        logger.info("Start sharing service DB Event subscriber");
-                        SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
-                    } catch (AiravataException | SharingRegistryException e) {
-                        logger.error("Error starting sharing service. Error setting up DB event services.");
-                        server.stop();
-                    }
-                    setStatus(ServerStatus.STARTED);
-                    logger.info("Starting Sharing Registry Server on Port " + serverPort);
-                    logger.info("Listening to Sharing Registry server clients ....");
-                }
-            }).start();
+                                logger.info("Start sharing service DB Event subscriber");
+                                SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+                            } catch (AiravataException | SharingRegistryException e) {
+                                logger.error("Error starting sharing service. Error setting up DB event services.");
+                                server.stop();
+                            }
+                            setStatus(ServerStatus.STARTED);
+                            logger.info("Starting Sharing Registry Server on Port " + serverPort);
+                            logger.info("Listening to Sharing Registry server clients ....");
+                        }
+                    })
+                    .start();
 
         } catch (TTransportException e) {
             setStatus(IServer.ServerStatus.FAILED);

@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
-
 import org.junit.jupiter.api.Test;
 
 /**

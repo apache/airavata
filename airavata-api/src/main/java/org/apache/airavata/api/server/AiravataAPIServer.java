@@ -75,54 +75,55 @@ public class AiravataAPIServer implements IServer {
                         Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
                 server = new TThreadPoolServer(options.processor(airavataAPIServer));
                 new Thread(() -> {
-                    server.serve();
-                    setStatus(ServerStatus.STOPPED);
-                    logger.info("Airavata API Server Stopped.");
-                }).start();
+                            server.serve();
+                            setStatus(ServerStatus.STOPPED);
+                            logger.info("Airavata API Server Stopped.");
+                        })
+                        .start();
                 new Thread(() -> {
-                    while (!server.isServing()) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            break;
-                        }
-                    }
-                    if (server.isServing()) {
-                        setStatus(ServerStatus.STARTED);
-                        logger.info("Starting Airavata API Server on Port " + serverPort);
-                        logger.info("Listening to Airavata Clients ....");
-                    }
-                }).start();
+                            while (!server.isServing()) {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    break;
+                                }
+                            }
+                            if (server.isServing()) {
+                                setStatus(ServerStatus.STARTED);
+                                logger.info("Starting Airavata API Server on Port " + serverPort);
+                                logger.info("Listening to Airavata Clients ....");
+                            }
+                        })
+                        .start();
                 logger.info("Started API Server ....");
             } else {
                 var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
                 var TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort,
-                        ServerSettings.getTLSClientTimeout(),
-                        InetAddress.getByName(serverHost),
-                        TLSParams);
+                        serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
                 TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
                 settings.minWorkerThreads =
                         Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
                 TLSServer = new TThreadPoolServer(settings.processor(airavataAPIServer));
                 new Thread(() -> {
-                    TLSServer.serve();
-                    setStatus(ServerStatus.STOPPED);
-                    logger.info("Airavata API Server over TLS Stopped.");
-                }).start();
+                            TLSServer.serve();
+                            setStatus(ServerStatus.STOPPED);
+                            logger.info("Airavata API Server over TLS Stopped.");
+                        })
+                        .start();
                 new Thread(() -> {
-                    while (!TLSServer.isServing()) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            break;
-                        }
-                    }
-                    if (TLSServer.isServing()) {
-                        setStatus(ServerStatus.STARTED);
-                    }
-                }).start();
+                            while (!TLSServer.isServing()) {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    break;
+                                }
+                            }
+                            if (TLSServer.isServing()) {
+                                setStatus(ServerStatus.STARTED);
+                            }
+                        })
+                        .start();
                 logger.info("API server started over TLS on Port: " + serverPort + " ...");
             }
 

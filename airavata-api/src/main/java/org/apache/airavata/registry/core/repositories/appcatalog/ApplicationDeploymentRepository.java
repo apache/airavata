@@ -158,7 +158,8 @@ public class ApplicationDeploymentRepository
 
                 switch (fieldName) {
                     case DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID: {
-                        logger.debug("Fetching all Application Deployments for Application Module ID {}",
+                        logger.debug(
+                                "Fetching all Application Deployments for Application Module ID {}",
                                 filters.get(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID));
 
                         Map<String, Object> queryParameters = new HashMap<>();
@@ -173,7 +174,8 @@ public class ApplicationDeploymentRepository
                     }
 
                     case DBConstants.ApplicationDeployment.COMPUTE_HOST_ID: {
-                        logger.debug("Fetching Application Deployments for Compute Host ID {}",
+                        logger.debug(
+                                "Fetching Application Deployments for Compute Host ID {}",
                                 filters.get(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID));
 
                         Map<String, Object> queryParameters = new HashMap<>();

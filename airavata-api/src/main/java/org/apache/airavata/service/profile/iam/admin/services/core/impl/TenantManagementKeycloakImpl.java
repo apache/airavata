@@ -107,7 +107,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throw new ApplicationSettingsException("Trust store file does not exist at path " + keyStorePath);
         }
         try {
-        return KeyStore.getInstance(keyStoreFile, keyStorePassword.toCharArray());
+            return KeyStore.getInstance(keyStoreFile, keyStorePassword.toCharArray());
         } catch (Exception e) {
             logger.error("Failed to load trust store file from path {}", keyStorePath, e);
             throw new AiravataSecurityException("Failed to load trust store file from path " + keyStorePath, e);

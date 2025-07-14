@@ -19,6 +19,15 @@
 */
 package org.apache.airavata.service.security;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -53,16 +62,6 @@ import org.apache.thrift.TException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
@@ -297,7 +296,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         GatewayGroups gatewayGroups = getGatewayGroups(gatewayId);
         List<UserGroup> userGroups =
                 sharingRegistryServiceClient.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
-        List<String> userGroupIds = userGroups.stream().map(UserGroup::getGroupId).toList();
+        List<String> userGroupIds =
+                userGroups.stream().map(UserGroup::getGroupId).toList();
         GatewayGroupMembership gatewayGroupMembership = new GatewayGroupMembership();
         gatewayGroupMembership.setInAdminsGroup(userGroupIds.contains(gatewayGroups.getAdminsGroupId()));
         gatewayGroupMembership.setInReadOnlyAdminsGroup(
@@ -349,8 +349,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         return openIdConnectConfig.getString("token_endpoint");
     }
 
-    private JSONObject getClientCredentials(String tokenURL, String clientId, String clientSecret)
-            throws IOException {
+    private JSONObject getClientCredentials(String tokenURL, String clientId, String clientSecret) throws IOException {
 
         CloseableHttpClient httpClient = HttpClients.createSystem();
 

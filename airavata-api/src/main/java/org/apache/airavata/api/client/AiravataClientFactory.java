@@ -70,10 +70,7 @@ public class AiravataClientFactory {
         claimsMap.put(Constants.GATEWAY_ID, "seagrid");
         claimsMap.put(Constants.USER_NAME, "2021test1");
         token.setClaimsMap(claimsMap);
-        Airavata.Client apiClient = createAiravataClient(
-                "apidev.scigap.org",
-                8930,
-                ServerSettings.isTLSEnabled());
+        Airavata.Client apiClient = createAiravataClient("apidev.scigap.org", 8930, ServerSettings.isTLSEnabled());
 
         List<String> outputNames = new ArrayList<>();
         outputNames.add("Gaussian-Application-Output");
