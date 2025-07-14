@@ -94,7 +94,7 @@ services:
       - sharing.tls.enabled=false
       - userprofile.mongodb.host=localhost
       - userprofile.mongodb.port=27017
-      - apiserver=org.apache.airavata.api.server.AiravataAPIServer
+      - apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
       - apiserver.name=apiserver-node0
       - apiserver.host=0.0.0.0
       - apiserver.port=8930
@@ -105,10 +105,6 @@ services:
       - orchestrator.server.port=8940
       - orchestrator.server.min.threads=50
       - job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
-      - submitter.interval=10000
-      - threadpool.size=10
-      - start.submitter=true
-      - embedded.mode=true
       - enable.validation=true
       - host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler
       - regserver=org.apache.airavata.registry.api.service.RegistryAPIServer
@@ -130,7 +126,7 @@ services:
       - credential.store.jdbc.driver=org.mariadb.jdbc.Driver
       - credential.store.server.host=0.0.0.0
       - credential.store.server.port=8960
-      - credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
+      - credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
       - credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - rabbitmq.status.exchange.name=status_exchange
@@ -155,7 +151,7 @@ services:
       - in.memory.cache.size=1000
       - profile.service.server.host=0.0.0.0
       - profile.service.server.port=8962
-      - profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
+      - profile_service.class=org.apache.airavata.service.profile.server.ProfileServiceServer
       - profile.service.jdbc.url=jdbc:mariadb://db:3306/profile_service
       - profile.service.jdbc.user=root
       - profile.service.jdbc.password=123456
@@ -164,7 +160,7 @@ services:
       - iam.server.url=https://airavata.host:8443
       - iam.server.super.admin.username=admin
       - iam.server.super.admin.password=admin
-      - db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner
+      - db_event_manager.class=org.apache.airavata.db.event.manager.DBEventManagerRunner
       - thrift.client.pool.abandoned.removal.enabled=true
     command: ["/tmp/wait-for-it.sh", "db:3306", "--", "/tmp/wait-for-it.sh", "rabbitmq:5672", "--" , "/opt/apache-airavata-api-server/bin/airavata-server-start.sh", "api-orch"]
 

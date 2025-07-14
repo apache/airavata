@@ -127,7 +127,7 @@ sharing.registry.server.port={{ sharing_registry_port }}
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
-apiserver=org.apache.airavata.api.server.AiravataAPIServer
+apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
 apiserver.name={{ api_server_name }}
 apiserver.host={{ api_server_host }}
 apiserver.port={{ api_server_port }}
@@ -142,10 +142,6 @@ orchestrator.server.host={{ orchestrator_host }}
 orchestrator.server.port={{ orchestrator_port }}
 orchestrator.server.min.threads=50
 job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
-submitter.interval=10000
-threadpool.size=10
-start.submitter=true
-embedded.mode=true
 enable.validation=true
 host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler
 
@@ -194,7 +190,7 @@ credential.store.jdbc.password={{ db_password }}
 credential.store.jdbc.driver=org.mariadb.jdbc.Driver
 credential.store.server.host={{ cred_store_server_host }}
 credential.store.server.port={{ cred_store_port }}
-credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
+credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
 credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
 # SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.
@@ -282,7 +278,7 @@ in.memory.cache.size=1000
 ###########################################################################
 profile.service.server.host={{ profile_service_host }}
 profile.service.server.port={{ profile_service_port }}
-profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
+profile_service.class=org.apache.airavata.service.profile.server.ProfileServiceServer
 # MariaDB properties
 profile.service.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ profile_service }}
 profile.service.jdbc.user={{ db_user }}
@@ -300,7 +296,7 @@ iam.server.super.admin.password={{ iam_server_super_admin_password }}
 ###########################################################################
 # DB Event Manager Runner
 ###########################################################################
-db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner
+db_event_manager.class=org.apache.airavata.db.event.manager.DBEventManagerRunner
 
 ###########################################################################
 # ThriftClientPool Configuration

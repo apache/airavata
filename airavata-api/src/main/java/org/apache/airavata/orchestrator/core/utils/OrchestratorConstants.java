@@ -24,10 +24,6 @@ package org.apache.airavata.orchestrator.core.utils;
  *
  */
 public class OrchestratorConstants {
-    public static final String SUBMIT_INTERVAL = "submitter.interval";
-    public static final String THREAD_POOL_SIZE = "threadpool.size";
-    public static final String START_SUBMITTER = "start.submitter";
-    public static final String EMBEDDED_MODE = "embedded.mode";
     public static final String ENABLE_VALIDATION = "enable.validation";
     public static final String JOB_VALIDATOR = "job.validators";
 

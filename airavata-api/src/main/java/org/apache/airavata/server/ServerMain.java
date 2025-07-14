@@ -53,14 +53,14 @@ public class ServerMain {
     private static final String API_ORCH = "api-orch";
     private static final String EXECUTION = "execution";
     // server names
-    private static final String API_SERVER = "apiserver";
-    private static final String CREDENTIAL_STORE = "credentialstore";
+    private static final String API_SERVER = "apiserver.class";
+    private static final String CREDENTIAL_STORE = "credential.store.class";
     private static final String REGISTRY_SERVER = "regserver";
     private static final String SHARING_SERVER = "sharing_server";
     private static final String GFAC_SERVER = "gfac";
     private static final String ORCHESTRATOR = "orchestrator";
-    private static final String PROFILE_SERVICE = "profile_service";
-    private static final String DB_EVENT_MANAGER = "db_event_manager";
+    private static final String PROFILE_SERVICE = "profile_service.class";
+    private static final String DB_EVENT_MANAGER = "db_event_manager.class";
 
     private static ServerCnxnFactory cnxnFactory;
     //	private static boolean shutdownHookCalledBefore=false;

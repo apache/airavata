@@ -67,16 +67,8 @@ public class OrchestratorUtils {
             throws OrchestratorException, IOException, NumberFormatException, ApplicationSettingsException {
 
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setSubmitterInterval(
-                Integer.parseInt(ServerSettings.getSetting(OrchestratorConstants.SUBMIT_INTERVAL)));
-        orchestratorConfiguration.setThreadPoolSize(
-                Integer.parseInt(ServerSettings.getSetting(OrchestratorConstants.THREAD_POOL_SIZE)));
-        orchestratorConfiguration.setStartSubmitter(
-                Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.START_SUBMITTER)));
-        orchestratorConfiguration.setEmbeddedMode(
-                Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.EMBEDDED_MODE)));
         orchestratorConfiguration.setEnableValidation(
-                Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.ENABLE_VALIDATION)));
+                Boolean.parseBoolean(ServerSettings.getSetting(OrchestratorConstants.ENABLE_VALIDATION)));
         if (orchestratorConfiguration.isEnableValidation()) {
             orchestratorConfiguration.setValidatorClasses(
                     Arrays.asList(ServerSettings.getSetting(OrchestratorConstants.JOB_VALIDATOR)
