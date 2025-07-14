@@ -208,14 +208,6 @@ credential.store.server.port={{ cred_store_port }}
 credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
 credential.stroe.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
-# these properties used by credential store email notifications
-email.server=smtp.googlemail.com
-email.server.port=465
-email.user=airavata
-email.password=xxx
-email.ssl=true
-email.from=airavata@apache.org
-
 # SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.
 # if user specify both password sshKeyAuthentication gets the higher preference
 
@@ -266,8 +258,6 @@ rabbitmq.process.exchange.name=process_exchange
 rabbitmq.experiment.exchange.name=experiment_exchange
 durable.queue=false
 prefetch.count=200
-process.launch.queue.name=process.launch.queue
-experiment.launch..queue.name=experiment.launch.queue
 
 ###########################################################################
 # Zookeeper Server Configuration
