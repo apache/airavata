@@ -45,6 +45,7 @@ airavata:
   server:
     url: airavata.host
     port: 8930
+    secure: false
   storageResourceId: airavata.host_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd
   storagePath: /tmp
   cluster:
