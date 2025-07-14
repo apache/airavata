@@ -24,7 +24,7 @@ import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.common.utils.JDBCConfig;
 
 public class JPAUtils {
-    private static final String PERSISTENCE_UNIT_NAME = "profile_service.class";
+    private static final String PERSISTENCE_UNIT_NAME = "profile_service";
     private static final JDBCConfig JDBC_CONFIG = new ProfileServiceJDBCConfig();
     private static final EntityManagerFactory factory =
             org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);

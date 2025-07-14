@@ -19,9 +19,6 @@
 */
 package org.apache.airavata.credential.store.notifier.impl;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
-
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 12/3/13
@@ -73,5 +70,4 @@ public class EmailNotifierConfiguration {
     public String getFromAddress() {
         return fromAddress;
     }
-
 }
