@@ -128,7 +128,7 @@ userprofile.mongodb.port=27017
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
-apiserver=org.apache.airavata.api.server.AiravataAPIServer
+apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
 apiserver.name={{ api_server_name }}
 apiserver.host={{ api_server_host }}
 apiserver.port={{ api_server_port }}
@@ -143,10 +143,6 @@ orchestrator.server.host={{ orchestrator_host }}
 orchestrator.server.port={{ orchestrator_port }}
 orchestrator.server.min.threads=50
 job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
-submitter.interval=10000
-threadpool.size=10
-start.submitter=true
-embedded.mode=true
 enable.validation=true
 
 ###########################################################################
@@ -205,7 +201,7 @@ credential.store.jdbc.password={{ db_password }}
 credential.store.jdbc.driver=com.mysql.jdbc.Driver
 credential.store.server.host={{ cred_store_server_host }}
 credential.store.server.port={{ cred_store_port }}
-credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
+credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
 credential.stroe.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
 # SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.

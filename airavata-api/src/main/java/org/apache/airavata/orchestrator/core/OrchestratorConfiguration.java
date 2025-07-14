@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -28,22 +27,7 @@ import java.util.List;
  */
 public class OrchestratorConfiguration {
 
-    private String newJobSubmitterClass;
-
-    private String hangedJobSubmitterClass;
-
-    private int submitterInterval = 1000;
-
-    private int threadPoolSize = 10;
-
-    private boolean startSubmitter = false;
-
-    private URL brokerURL;
-
-    private boolean embeddedMode;
-
     private List<String> validatorClasses;
-
     private boolean enableValidation;
 
     public List<String> getValidatorClasses() {
@@ -52,62 +36,6 @@ public class OrchestratorConfiguration {
 
     public void setValidatorClasses(List<String> validatorClasses) {
         this.validatorClasses = validatorClasses;
-    }
-
-    public boolean isEmbeddedMode() {
-        return embeddedMode;
-    }
-
-    public void setEmbeddedMode(boolean embeddedMode) {
-        this.embeddedMode = embeddedMode;
-    }
-
-    public URL getBrokerURL() {
-        return brokerURL;
-    }
-
-    public void setBrokerURL(URL brokerURL) {
-        this.brokerURL = brokerURL;
-    }
-
-    public String getNewJobSubmitterClass() {
-        return newJobSubmitterClass;
-    }
-
-    public int getSubmitterInterval() {
-        return submitterInterval;
-    }
-
-    public int getThreadPoolSize() {
-        return threadPoolSize;
-    }
-
-    public void setNewJobSubmitterClass(String newJobSubmitterClass) {
-        this.newJobSubmitterClass = newJobSubmitterClass;
-    }
-
-    public void setSubmitterInterval(int submitterInterval) {
-        this.submitterInterval = submitterInterval;
-    }
-
-    public void setThreadPoolSize(int threadPoolSize) {
-        this.threadPoolSize = threadPoolSize;
-    }
-
-    public boolean isStartSubmitter() {
-        return startSubmitter;
-    }
-
-    public void setStartSubmitter(boolean startSubmitter) {
-        this.startSubmitter = startSubmitter;
-    }
-
-    public String getHangedJobSubmitterClass() {
-        return hangedJobSubmitterClass;
-    }
-
-    public void setHangedJobSubmitterClass(String hangedJobSubmitterClass) {
-        this.hangedJobSubmitterClass = hangedJobSubmitterClass;
     }
 
     public boolean isEnableValidation() {
