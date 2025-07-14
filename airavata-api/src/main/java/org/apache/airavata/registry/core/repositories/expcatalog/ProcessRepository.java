@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -120,6 +121,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
             logger.debug("Populating the Primary Key of Task objects for the Process");
             processEntity.getTasks().forEach(taskEntity -> {
                 taskEntity.setParentProcessId(processId);
+                taskEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 taskRepository.populateParentIds(taskEntity);
             });
         }
