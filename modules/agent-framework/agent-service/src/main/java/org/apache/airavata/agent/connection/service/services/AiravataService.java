@@ -28,8 +28,6 @@ import java.util.stream.Stream;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -53,10 +51,13 @@ public class AiravataService {
     @Value("${airavata.server.port:8930}")
     private int port;
 
+    @Value("${airavata.server.secure:false}")
+    private boolean secure;
+
     public Airavata.Client airavata() {
         try {
-            return AiravataClientFactory.createAiravataClient(serverUrl, port, ServerSettings.isTLSEnabled());
-        } catch (AiravataClientException | ApplicationSettingsException e) {
+            return AiravataClientFactory.createAiravataClient(serverUrl, port, secure);
+        } catch (AiravataClientException e) {
             LOGGER.error("Error while creating Airavata client", e);
             throw new RuntimeException("Error while creating Airavata client", e);
         }
