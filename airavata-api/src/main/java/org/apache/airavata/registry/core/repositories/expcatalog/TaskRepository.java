@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.entities.expcatalog.TaskEntity;
@@ -87,12 +88,18 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
 
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
-            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> taskStatusEntity.setTaskId(taskId));
+            taskEntity.getTaskStatuses().forEach(taskStatusEntity -> {
+                taskStatusEntity.setTaskId(taskId);
+                taskStatusEntity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
+            });
         }
 
         if (taskEntity.getTaskErrors() != null) {
             logger.debug("Populating the Primary Key of TaskError objects for the Task");
-            taskEntity.getTaskErrors().forEach(taskErrorEntity -> taskErrorEntity.setTaskId(taskId));
+            taskEntity.getTaskErrors().forEach(taskErrorEntity -> {
+                taskErrorEntity.setTaskId(taskId);
+                taskErrorEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+            });
         }
 
         if (taskEntity.getJobs() != null) {
