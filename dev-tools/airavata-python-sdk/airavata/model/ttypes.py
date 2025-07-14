@@ -15,27 +15,759 @@ from uuid import UUID
 from enum import IntEnum
 
 import sys
+import airavata.model.application.io.ttypes
 import airavata.model.commons.ttypes
-import airavata.model.workspace.ttypes
-import airavata.api.error.ttypes
-import airavata.model.messaging.event.ttypes
-import airavata.model.security.ttypes
-import airavata.model.dbevent.ttypes
-import airavata.model.experiment.ttypes
-import airavata.model.job.ttypes
-import airavata.model.task.ttypes
-import airavata.model.process.ttypes
-import airavata.model.scheduling.ttypes
-import airavata.model.status.ttypes
-import airavata.model.data.movement.ttypes
-import airavata.model.data.replica.ttypes
-import airavata.model.user.ttypes
-import airavata.model.group.ttypes
-import airavata.model.tenant.ttypes
-import airavata.model.credential.store.ttypes
-import airavata.model.appcatalog.gatewaygroups.ttypes
 
 from thrift.transport import TTransport
 all_structs = []
+
+
+class WorkflowState(IntEnum):
+    CREATED = 0
+    STARTED = 1
+    EXECUTING = 2
+    COMPLETED = 3
+    FAILED = 4
+    CANCELLING = 5
+    CANCELED = 6
+
+
+
+class ComponentState(IntEnum):
+    CREATED = 0
+    WAITING = 1
+    READY = 2
+    RUNNING = 3
+    COMPLETED = 4
+    FAILED = 5
+    CANCELED = 6
+
+
+
+class WorkflowModel(object):
+    """
+    Attributes:
+     - templateId
+     - name
+     - graph
+     - gatewayId
+     - createdUser
+     - image
+     - workflowInputs
+     - workflowOutputs
+     - creationTime
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, templateId: str = "DO_NOT_SET_AT_CLIENTS", name: str = None, graph: str = None, gatewayId: str = None, createdUser: str = None, image: typing.Optional[bytes] = None, workflowInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, workflowOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, creationTime: typing.Optional[int] = None,):
+        self.templateId: str = templateId
+        self.name: str = name
+        self.graph: str = graph
+        self.gatewayId: str = gatewayId
+        self.createdUser: str = createdUser
+        self.image: typing.Optional[bytes] = image
+        self.workflowInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = workflowInputs
+        self.workflowOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = workflowOutputs
+        self.creationTime: typing.Optional[int] = creationTime
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.templateId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.name = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.graph = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.gatewayId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.createdUser = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.image = iprot.readBinary()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.LIST:
+                    self.workflowInputs = []
+                    (_etype3, _size0) = iprot.readListBegin()
+                    for _i4 in range(_size0):
+                        _elem5 = airavata.model.application.io.ttypes.InputDataObjectType()
+                        _elem5.read(iprot)
+                        self.workflowInputs.append(_elem5)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.LIST:
+                    self.workflowOutputs = []
+                    (_etype9, _size6) = iprot.readListBegin()
+                    for _i10 in range(_size6):
+                        _elem11 = airavata.model.application.io.ttypes.OutputDataObjectType()
+                        _elem11.read(iprot)
+                        self.workflowOutputs.append(_elem11)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.I64:
+                    self.creationTime = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('WorkflowModel')
+        if self.templateId is not None:
+            oprot.writeFieldBegin('templateId', TType.STRING, 1)
+            oprot.writeString(self.templateId.encode('utf-8') if sys.version_info[0] == 2 else self.templateId)
+            oprot.writeFieldEnd()
+        if self.name is not None:
+            oprot.writeFieldBegin('name', TType.STRING, 2)
+            oprot.writeString(self.name.encode('utf-8') if sys.version_info[0] == 2 else self.name)
+            oprot.writeFieldEnd()
+        if self.graph is not None:
+            oprot.writeFieldBegin('graph', TType.STRING, 3)
+            oprot.writeString(self.graph.encode('utf-8') if sys.version_info[0] == 2 else self.graph)
+            oprot.writeFieldEnd()
+        if self.gatewayId is not None:
+            oprot.writeFieldBegin('gatewayId', TType.STRING, 4)
+            oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
+            oprot.writeFieldEnd()
+        if self.createdUser is not None:
+            oprot.writeFieldBegin('createdUser', TType.STRING, 5)
+            oprot.writeString(self.createdUser.encode('utf-8') if sys.version_info[0] == 2 else self.createdUser)
+            oprot.writeFieldEnd()
+        if self.image is not None:
+            oprot.writeFieldBegin('image', TType.STRING, 6)
+            oprot.writeBinary(self.image)
+            oprot.writeFieldEnd()
+        if self.workflowInputs is not None:
+            oprot.writeFieldBegin('workflowInputs', TType.LIST, 7)
+            oprot.writeListBegin(TType.STRUCT, len(self.workflowInputs))
+            for iter12 in self.workflowInputs:
+                iter12.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.workflowOutputs is not None:
+            oprot.writeFieldBegin('workflowOutputs', TType.LIST, 8)
+            oprot.writeListBegin(TType.STRUCT, len(self.workflowOutputs))
+            for iter13 in self.workflowOutputs:
+                iter13.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.creationTime is not None:
+            oprot.writeFieldBegin('creationTime', TType.I64, 9)
+            oprot.writeI64(self.creationTime)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.templateId is None:
+            raise TProtocolException(message='Required field templateId is unset!')
+        if self.name is None:
+            raise TProtocolException(message='Required field name is unset!')
+        if self.graph is None:
+            raise TProtocolException(message='Required field graph is unset!')
+        if self.gatewayId is None:
+            raise TProtocolException(message='Required field gatewayId is unset!')
+        if self.createdUser is None:
+            raise TProtocolException(message='Required field createdUser is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class ComponentStatus(object):
+    """
+    Attributes:
+     - state
+     - reason
+     - timeofStateChange
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, state: ComponentState =     ComponentState.CREATED, reason: typing.Optional[str] = None, timeofStateChange: typing.Optional[int] = None,):
+        self.state: ComponentState = state
+        self.reason: typing.Optional[str] = reason
+        self.timeofStateChange: typing.Optional[int] = timeofStateChange
+
+    def __setattr__(self, name, value):
+        if name == "state":
+            super().__setattr__(name, value if hasattr(value, 'value') else ComponentState.__members__.get(value))
+            return
+        super().__setattr__(name, value)
+
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.I32:
+                    self.state = ComponentState(iprot.readI32())
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.reason = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.I64:
+                    self.timeofStateChange = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('ComponentStatus')
+        if self.state is not None:
+            oprot.writeFieldBegin('state', TType.I32, 1)
+            oprot.writeI32(self.state.value)
+            oprot.writeFieldEnd()
+        if self.reason is not None:
+            oprot.writeFieldBegin('reason', TType.STRING, 2)
+            oprot.writeString(self.reason.encode('utf-8') if sys.version_info[0] == 2 else self.reason)
+            oprot.writeFieldEnd()
+        if self.timeofStateChange is not None:
+            oprot.writeFieldBegin('timeofStateChange', TType.I64, 3)
+            oprot.writeI64(self.timeofStateChange)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.state is None:
+            raise TProtocolException(message='Required field state is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class WorkflowStatus(object):
+    """
+    Attributes:
+     - state
+     - timeOfStateChange
+     - reason
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, state: WorkflowState = None, timeOfStateChange: typing.Optional[int] = None, reason: typing.Optional[str] = None,):
+        self.state: WorkflowState = state
+        self.timeOfStateChange: typing.Optional[int] = timeOfStateChange
+        self.reason: typing.Optional[str] = reason
+
+    def __setattr__(self, name, value):
+        if name == "state":
+            super().__setattr__(name, value if hasattr(value, 'value') else WorkflowState.__members__.get(value))
+            return
+        super().__setattr__(name, value)
+
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.I32:
+                    self.state = WorkflowState(iprot.readI32())
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I64:
+                    self.timeOfStateChange = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.reason = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('WorkflowStatus')
+        if self.state is not None:
+            oprot.writeFieldBegin('state', TType.I32, 1)
+            oprot.writeI32(self.state.value)
+            oprot.writeFieldEnd()
+        if self.timeOfStateChange is not None:
+            oprot.writeFieldBegin('timeOfStateChange', TType.I64, 2)
+            oprot.writeI64(self.timeOfStateChange)
+            oprot.writeFieldEnd()
+        if self.reason is not None:
+            oprot.writeFieldBegin('reason', TType.STRING, 3)
+            oprot.writeString(self.reason.encode('utf-8') if sys.version_info[0] == 2 else self.reason)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.state is None:
+            raise TProtocolException(message='Required field state is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class EdgeModel(object):
+    """
+    Attributes:
+     - edgeId
+     - name
+     - status
+     - description
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, edgeId: str = "DO_NOT_SET_AT_CLIENTS", name: typing.Optional[str] = None, status: typing.Optional[ComponentStatus] = None, description: typing.Optional[str] = None,):
+        self.edgeId: str = edgeId
+        self.name: typing.Optional[str] = name
+        self.status: typing.Optional[ComponentStatus] = status
+        self.description: typing.Optional[str] = description
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.edgeId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.name = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.status = ComponentStatus()
+                    self.status.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.description = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('EdgeModel')
+        if self.edgeId is not None:
+            oprot.writeFieldBegin('edgeId', TType.STRING, 1)
+            oprot.writeString(self.edgeId.encode('utf-8') if sys.version_info[0] == 2 else self.edgeId)
+            oprot.writeFieldEnd()
+        if self.name is not None:
+            oprot.writeFieldBegin('name', TType.STRING, 2)
+            oprot.writeString(self.name.encode('utf-8') if sys.version_info[0] == 2 else self.name)
+            oprot.writeFieldEnd()
+        if self.status is not None:
+            oprot.writeFieldBegin('status', TType.STRUCT, 3)
+            self.status.write(oprot)
+            oprot.writeFieldEnd()
+        if self.description is not None:
+            oprot.writeFieldBegin('description', TType.STRING, 4)
+            oprot.writeString(self.description.encode('utf-8') if sys.version_info[0] == 2 else self.description)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.edgeId is None:
+            raise TProtocolException(message='Required field edgeId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class PortModel(object):
+    """
+    Attributes:
+     - portId
+     - name
+     - status
+     - value
+     - description
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, portId: str = "DO_NOT_SET_AT_CLIENTS", name: typing.Optional[str] = None, status: typing.Optional[ComponentStatus] = None, value: typing.Optional[str] = None, description: typing.Optional[str] = None,):
+        self.portId: str = portId
+        self.name: typing.Optional[str] = name
+        self.status: typing.Optional[ComponentStatus] = status
+        self.value: typing.Optional[str] = value
+        self.description: typing.Optional[str] = description
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.portId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.name = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.status = ComponentStatus()
+                    self.status.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.value = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.description = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('PortModel')
+        if self.portId is not None:
+            oprot.writeFieldBegin('portId', TType.STRING, 1)
+            oprot.writeString(self.portId.encode('utf-8') if sys.version_info[0] == 2 else self.portId)
+            oprot.writeFieldEnd()
+        if self.name is not None:
+            oprot.writeFieldBegin('name', TType.STRING, 2)
+            oprot.writeString(self.name.encode('utf-8') if sys.version_info[0] == 2 else self.name)
+            oprot.writeFieldEnd()
+        if self.status is not None:
+            oprot.writeFieldBegin('status', TType.STRUCT, 3)
+            self.status.write(oprot)
+            oprot.writeFieldEnd()
+        if self.value is not None:
+            oprot.writeFieldBegin('value', TType.STRING, 4)
+            oprot.writeString(self.value.encode('utf-8') if sys.version_info[0] == 2 else self.value)
+            oprot.writeFieldEnd()
+        if self.description is not None:
+            oprot.writeFieldBegin('description', TType.STRING, 5)
+            oprot.writeString(self.description.encode('utf-8') if sys.version_info[0] == 2 else self.description)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.portId is None:
+            raise TProtocolException(message='Required field portId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class NodeModel(object):
+    """
+    Attributes:
+     - nodeId
+     - name
+     - applicationId
+     - applicationName
+     - status
+     - description
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, nodeId: str = "DO_NOT_SET_AT_CLIENTS", name: typing.Optional[str] = None, applicationId: typing.Optional[str] = None, applicationName: typing.Optional[str] = None, status: typing.Optional[ComponentStatus] = None, description: typing.Optional[str] = None,):
+        self.nodeId: str = nodeId
+        self.name: typing.Optional[str] = name
+        self.applicationId: typing.Optional[str] = applicationId
+        self.applicationName: typing.Optional[str] = applicationName
+        self.status: typing.Optional[ComponentStatus] = status
+        self.description: typing.Optional[str] = description
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.nodeId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.name = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.applicationId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.applicationName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRUCT:
+                    self.status = ComponentStatus()
+                    self.status.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.description = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('NodeModel')
+        if self.nodeId is not None:
+            oprot.writeFieldBegin('nodeId', TType.STRING, 1)
+            oprot.writeString(self.nodeId.encode('utf-8') if sys.version_info[0] == 2 else self.nodeId)
+            oprot.writeFieldEnd()
+        if self.name is not None:
+            oprot.writeFieldBegin('name', TType.STRING, 2)
+            oprot.writeString(self.name.encode('utf-8') if sys.version_info[0] == 2 else self.name)
+            oprot.writeFieldEnd()
+        if self.applicationId is not None:
+            oprot.writeFieldBegin('applicationId', TType.STRING, 3)
+            oprot.writeString(self.applicationId.encode('utf-8') if sys.version_info[0] == 2 else self.applicationId)
+            oprot.writeFieldEnd()
+        if self.applicationName is not None:
+            oprot.writeFieldBegin('applicationName', TType.STRING, 4)
+            oprot.writeString(self.applicationName.encode('utf-8') if sys.version_info[0] == 2 else self.applicationName)
+            oprot.writeFieldEnd()
+        if self.status is not None:
+            oprot.writeFieldBegin('status', TType.STRUCT, 5)
+            self.status.write(oprot)
+            oprot.writeFieldEnd()
+        if self.description is not None:
+            oprot.writeFieldBegin('description', TType.STRING, 6)
+            oprot.writeString(self.description.encode('utf-8') if sys.version_info[0] == 2 else self.description)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.nodeId is None:
+            raise TProtocolException(message='Required field nodeId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(WorkflowModel)
+WorkflowModel.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'templateId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+    (2, TType.STRING, 'name', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'graph', 'UTF8', None, ),  # 3
+    (4, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 4
+    (5, TType.STRING, 'createdUser', 'UTF8', None, ),  # 5
+    (6, TType.STRING, 'image', 'BINARY', None, ),  # 6
+    (7, TType.LIST, 'workflowInputs', (TType.STRUCT, [airavata.model.application.io.ttypes.InputDataObjectType, None], False), None, ),  # 7
+    (8, TType.LIST, 'workflowOutputs', (TType.STRUCT, [airavata.model.application.io.ttypes.OutputDataObjectType, None], False), None, ),  # 8
+    (9, TType.I64, 'creationTime', None, None, ),  # 9
+)
+all_structs.append(ComponentStatus)
+ComponentStatus.thrift_spec = (
+    None,  # 0
+    (1, TType.I32, 'state', None,     ComponentState.CREATED, ),  # 1
+    (2, TType.STRING, 'reason', 'UTF8', None, ),  # 2
+    (3, TType.I64, 'timeofStateChange', None, None, ),  # 3
+)
+all_structs.append(WorkflowStatus)
+WorkflowStatus.thrift_spec = (
+    None,  # 0
+    (1, TType.I32, 'state', None, None, ),  # 1
+    (2, TType.I64, 'timeOfStateChange', None, None, ),  # 2
+    (3, TType.STRING, 'reason', 'UTF8', None, ),  # 3
+)
+all_structs.append(EdgeModel)
+EdgeModel.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'edgeId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+    (2, TType.STRING, 'name', 'UTF8', None, ),  # 2
+    (3, TType.STRUCT, 'status', [ComponentStatus, None], None, ),  # 3
+    (4, TType.STRING, 'description', 'UTF8', None, ),  # 4
+)
+all_structs.append(PortModel)
+PortModel.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'portId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+    (2, TType.STRING, 'name', 'UTF8', None, ),  # 2
+    (3, TType.STRUCT, 'status', [ComponentStatus, None], None, ),  # 3
+    (4, TType.STRING, 'value', 'UTF8', None, ),  # 4
+    (5, TType.STRING, 'description', 'UTF8', None, ),  # 5
+)
+all_structs.append(NodeModel)
+NodeModel.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'nodeId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+    (2, TType.STRING, 'name', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'applicationId', 'UTF8', None, ),  # 3
+    (4, TType.STRING, 'applicationName', 'UTF8', None, ),  # 4
+    (5, TType.STRUCT, 'status', [ComponentStatus, None], None, ),  # 5
+    (6, TType.STRING, 'description', 'UTF8', None, ),  # 6
+)
 fix_spec(all_structs)
 del all_structs

@@ -17,7 +17,7 @@ from enum import IntEnum
 import sys
 import airavata.api.error.ttypes
 import airavata.model.security.ttypes
-import airavata.model.ttypes
+import airavata.base.api.ttypes
 import airavata.model.credential.store.ttypes
 import airavata.model.status.ttypes
 import airavata.model.job.ttypes
@@ -38,8 +38,6 @@ import airavata.model.data.movement.ttypes
 import airavata.model.appcatalog.gatewaygroups.ttypes
 import airavata.model.data.replica.ttypes
 import airavata.model.group.ttypes
-import airavata.model.user.ttypes
-import airavata.base.api.ttypes
 
 from thrift.transport import TTransport
 all_structs = []

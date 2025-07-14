@@ -15,13 +15,13 @@ from uuid import UUID
 from enum import IntEnum
 
 import sys
+import airavata.service.profile.iam.admin.services.cpi.error.ttypes
 import airavata.api.error.ttypes
 import airavata.model.security.ttypes
-import airavata.model.workspace.ttypes
-import airavata.model.user.ttypes
-import airavata.model.credential.store.ttypes
-import airavata.service.profile.iam.admin.services.cpi.error.ttypes
 import airavata.base.api.ttypes
+import airavata.model.credential.store.ttypes
+import airavata.model.user.ttypes
+import airavata.model.workspace.ttypes
 
 from thrift.transport import TTransport
 all_structs = []

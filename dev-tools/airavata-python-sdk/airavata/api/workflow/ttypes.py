@@ -15,4 +15,16 @@ from uuid import UUID
 from enum import IntEnum
 
 import sys
-from .ttypes import *
+import airavata.api.error.ttypes
+import airavata.base.api.ttypes
+import airavata.model.experiment.ttypes
+import airavata.model.workspace.ttypes
+import airavata.model.appcatalog.computeresource.ttypes
+import airavata.model.appcatalog.appdeployment.ttypes
+import airavata.model.appcatalog.appinterface.ttypes
+import airavata.model.ttypes
+
+from thrift.transport import TTransport
+all_structs = []
+fix_spec(all_structs)
+del all_structs
