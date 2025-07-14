@@ -81,6 +81,9 @@ services:
       - sshd
 
   portals:
+    profiles:
+      - development
+      - staging
     build:
       context: portals
       dockerfile: Dockerfile
@@ -96,6 +99,9 @@ services:
       - "airavata.host:192.168.100.1"
 
   jupyterhub:
+    profiles:
+      - development
+      - staging
     build:
       context: ../modules/research-framework/research-hub/compose
       dockerfile: Dockerfile
