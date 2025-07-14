@@ -32,24 +32,16 @@ public class JobFactory {
     private static final Logger logger = LoggerFactory.getLogger(JobFactory.class);
 
     public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
-        switch (resourceJobManagerType) {
-            case FORK:
-                return "templates/FORK_Groovy.template";
-            case PBS:
-                return "templates/PBS_Groovy.template";
-            case SLURM:
-                return "templates/SLURM_Groovy.template";
-            case UGE:
-                return "templates/UGE_Groovy.template";
-            case LSF:
-                return "templates/LSF_Groovy.template";
-            case CLOUD:
-                return "templates/CLOUD_Groovy.template";
-            case HTCONDOR:
-                return "templates/HTCONDOR_Groovy.template";
-            default:
-                return null;
-        }
+        return switch (resourceJobManagerType) {
+            case FORK -> "FORK_Groovy.template";
+            case PBS -> "PBS_Groovy.template";
+            case SLURM -> "SLURM_Groovy.template";
+            case UGE -> "UGE_Groovy.template";
+            case LSF -> "LSF_Groovy.template";
+            case CLOUD -> "CLOUD_Groovy.template";
+            case HTCONDOR -> "HTCONDOR_Groovy.template";
+            default -> null;
+        };
     }
 
     public static ResourceJobManager getResourceJobManager(
