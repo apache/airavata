@@ -18,7 +18,7 @@ import sys
 import tempfile
 import yaml
 from IPython.core.getipython import get_ipython
-from IPython.core.interactiveshell import ExecutionResult, InteractiveShell
+from IPython.core.interactiveshell import ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
 from IPython.display import HTML, Image, Javascript, display
 from rich.console import Console
@@ -26,8 +26,7 @@ from rich.live import Live
 
 from jupyter_client.blocking.client import BlockingKernelClient
 
-from .device_auth import DeviceFlowAuthenticator
-import asyncio
+from airavata_auth.device_auth import AuthContext
 
 # ========================================================================
 # DATA STRUCTURES
@@ -169,7 +168,7 @@ def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str):
         raise InvalidStateError(msg)
 
     # third, check the state of agent
-    url = f"{api_base_url}/api/v1/agent/{rt.agentId}"
+    url = f"{AuthContext.api_host}/api/v1/agent/{rt.agentId}"
     res = requests.get(url)
     code = res.status_code
     astate = "CREATING_WORKSPACE"
@@ -193,7 +192,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
 
-    url = f"{api_base_url}/api/v1/agent/execute/asyncshell"
+    url = f"{AuthContext.api_host}/api/v1/agent/execute/asyncshell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -211,7 +210,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
 
     # Check if the request was successful
     while True:
-        url = api_base_url + "/api/v1/agent/execute/asyncshell/" + executionId
+        url = f"{AuthContext.api_host}/api/v1/agent/execute/asyncshell/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
 
@@ -236,7 +235,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
 
-    url = f"{api_base_url}/api/v1/agent/execute/shell"
+    url = f"{AuthContext.api_host}/api/v1/agent/execute/shell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -252,7 +251,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
         return print(f"Failed to get hostname for runtime={rt_name}")
 
     while True:
-        url = f"{api_base_url}/api/v1/agent/execute/shell/{executionId}"
+        url = f"{AuthContext.api_host}/api/v1/agent/execute/shell/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
         if data.get('executed'):
@@ -274,7 +273,7 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
 
-    url = f"{api_base_url}/api/v1/agent/setup/tunnel"
+    url = f"{AuthContext.api_host}/api/v1/agent/setup/tunnel"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -290,7 +289,7 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
         return print(f"Failed to setup tunnel for runtime={rt_name}")
 
     while True:
-        url = f"{api_base_url}/api/v1/agent/setup/tunnel/{executionId}"
+        url = f"{AuthContext.api_host}/api/v1/agent/setup/tunnel/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
         if data.get('status') == "OK":
@@ -329,7 +328,7 @@ def terminate_shell_async(access_token: str, rt_name: str, process_id: str, proc
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
 
-    url = f"{api_base_url}/api/v1/agent/terminate/asyncshell"
+    url = f"{AuthContext.api_host}/api/v1/agent/terminate/asyncshell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -357,7 +356,7 @@ def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessStat
     @returns: the experiment state
 
     """
-    url = f"{api_base_url}/api/v1/exp/{experiment_id}"
+    url = f"{AuthContext.api_host}/api/v1/exp/{experiment_id}"
     res = requests.get(url, headers=headers)
     code = res.status_code
     if code != 200:
@@ -381,7 +380,7 @@ def get_process_state(experiment_id: str, headers: dict) -> tuple[str, ProcessSt
     @returns: process id and state
 
     """
-    url = f"{api_base_url}/api/v1/exp/{experiment_id}/process"
+    url = f"{AuthContext.api_host}/api/v1/exp/{experiment_id}/process"
     pid, pstate = "", ProcessState.CREATED
     while not pid:
         res = requests.get(url, headers=headers)
@@ -469,7 +468,7 @@ def submit_agent_job(
 
     """
     # URL to which the POST request will be sent
-    url = api_base_url + '/api/v1/exp/launch'
+    url = f"{AuthContext.api_host}/api/v1/exp/launch"
 
     # data from file
     min_cpu: int = 1
@@ -575,8 +574,8 @@ def fetch_logs(rt_name: str) -> tuple[str, str]:
 
     """
     pid = state.all_runtimes[rt_name].processId
-    stdout_res = requests.get(f"{file_server_url}/download/live/{pid}/AiravataAgent.stdout")
-    stderr_res = requests.get(f"{file_server_url}/download/live/{pid}/AiravataAgent.stderr")
+    stdout_res = requests.get(f"{AuthContext.file_server_url}/download/live/{pid}/AiravataAgent.stdout")
+    stderr_res = requests.get(f"{AuthContext.file_server_url}/download/live/{pid}/AiravataAgent.stderr")
     stdout = "No STDOUT" if stdout_res.status_code != 200 else stdout_res.content.decode('utf-8').strip()
     stderr = "No STDERR" if stderr_res.status_code != 200 else stderr_res.content.decode('utf-8').strip()
     return stdout, stderr
@@ -648,7 +647,7 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
 
     """
 
-    url = api_base_url + '/api/v1/agent/setup/restart'
+    url = f"{AuthContext.api_host}/api/v1/agent/setup/restart"
 
     decode = jwt.decode(access_token, options={"verify_signature": False})
     user_id = decode['preferred_username']
@@ -678,7 +677,7 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
 
     # Check if the request was successful
     while True:
-        url = api_base_url + "/api/v1/agent/setup/restart/" + executionId
+        url = f"{AuthContext.api_host}/api/v1/agent/setup/restart/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
         if data.get('restarted'):
@@ -698,7 +697,7 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
 
     """
 
-    url = api_base_url + '/api/v1/exp/terminate/' + runtime.experimentId
+    url = f"{AuthContext.api_host}/api/v1/exp/terminate/{runtime.experimentId}"
 
     decode = jwt.decode(access_token, options={"verify_signature": False})
     user_id = decode['preferred_username']
@@ -734,7 +733,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
         result.error_in_exec = Exception(f"Runtime {rt_name} not found.")
         return False
 
-    url = api_base_url + '/api/v1/agent/execute/jupyter'
+    url = f"{AuthContext.api_host}/api/v1/agent/execute/jupyter"
     data = {
         "agentId": rt.agentId,
         "envName": rt.envName,
@@ -757,7 +756,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
         return False
 
     while True:
-        url = api_base_url + "/api/v1/agent/execute/jupyter/" + execution_id
+        url = f"{AuthContext.api_host}/api/v1/agent/execute/jupyter/{execution_id}"
         response = requests.get(url, headers={'Accept': 'application/json'})
         json_response = response.json()
         if json_response.get('executed'):
@@ -915,7 +914,7 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
     # upload file
     print(f"local:{local_path} --> {remot_rt}:{remot_path}...", end=" ", flush=True)
     pid = state.all_runtimes[remot_rt].processId
-    url = f"{file_server_url}/upload/live/{pid}/{remot_path}"
+    url = f"{AuthContext.file_server_url}/upload/live/{pid}/{remot_path}"
     with open(local_path, "rb") as file:
         files = {"file": file}
         response = requests.post(url, files=files)
@@ -923,7 +922,7 @@ def push_remote(local_path: str, remot_rt: str, remot_path: str) -> None:
 
 def pull_remote_file(remot_rt: str, remot_fp: str, local_fp: str) -> None:
     pid = state.all_runtimes[remot_rt].processId
-    url = f"{file_server_url}/download/live/{pid}/{remot_fp}"
+    url = f"{AuthContext.file_server_url}/download/live/{pid}/{remot_fp}"
     print(f"GET {url}")
     response = requests.get(url)
     with open(local_fp, "wb") as file:
@@ -943,7 +942,7 @@ def pull_remote(remot_rt: str, remot_path: str, local_path: Path, local_is_dir: 
     if not state.all_runtimes.get(remot_rt, None):
         return print(MSG_NOT_INITIALIZED)
     pid = state.all_runtimes[remot_rt].processId
-    url = f"{file_server_url}/list/live/{pid}/{remot_path}"
+    url = f"{AuthContext.file_server_url}/list/live/{pid}/{remot_path}"
     print(f"GET {url}")
     response = requests.get(url)
     res = response.json()
@@ -1055,8 +1054,8 @@ def authenticate(line: str):
 
     """
     try:
-        authenticator = DeviceFlowAuthenticator()
-        authenticator.login()
+        context = AuthContext()
+        context.login()
     except ValueError as e:
         msg = f"Configuration error: {e}"
         print(msg)
@@ -1533,9 +1532,7 @@ ipython = get_ipython()
 if ipython is None:
     raise RuntimeError("airavata_jupyter_magic requires an ipython session")
 assert ipython is not None
-api_host = "api.dev.cybershuttle.org"
-api_base_url = f"https://{api_host}"
-file_server_url = f"http://{api_host}:8050"
+
 MSG_NOT_INITIALIZED = r"Runtime not found. Please run %request_runtime name=<name> cluster=<cluster> cpu=<cpu> memory=<memory mb> queue=<queue> walltime=<walltime minutes> group=<group> to request one."
 
 state = State(current_runtime="local", all_runtimes={}, processes={}, tunnels={}, kernel_clients={})

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import java.util.*;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
@@ -26,7 +27,6 @@ import org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputEntity
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessOutputPK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

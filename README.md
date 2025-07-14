@@ -201,12 +201,10 @@ distribution
 ├── services_down.sh
 ├── services_up.sh
 └── vault
-    ├── airavata_sym.jks
     ├── airavata-server.properties
-    ├── airavata.jks
+    ├── airavata.p12
     ├── application-agent-service.yml
     ├── application-research-service.yml
-    ├── client_truststore.jks
     ├── email-config.yaml
     └── log4j2.xml
 
@@ -215,8 +213,7 @@ distribution
 
 **What's in the vault?**
 
-* `airavata_sym.jks`, `airavata.jks` - contains the keys used to secure SSH credentials, etc.
-* `client_truststore.jks` - contains the certificates (e.g., certbot fullchain.pem) used to secure network connections (TLS).
+* `airavata.p12` - contains the keys used to secure SSH credentials, etc.
 * `email-config.yaml` - contains the email addresses observed by the email monitor.
 * `airavata-server.properties` - config file for the airavata api server.
 * `application-agent-service.yml` - config file for the airavata agent service.

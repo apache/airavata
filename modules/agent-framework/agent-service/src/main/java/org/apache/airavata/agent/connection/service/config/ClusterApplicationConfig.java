@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.agent.connection.service.config;
 
-import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -27,17 +26,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "airavata.cluster")
 public class ClusterApplicationConfig {
 
-    private Map<String, String> applicationInterfaceId;
+    private String applicationInterfaceId;
 
-    public Map<String, String> getApplicationInterfaceId() {
+    public String getApplicationInterfaceId() {
         return applicationInterfaceId;
     }
 
-    public void setApplicationInterfaceId(Map<String, String> applicationInterfaceId) {
+    public void setApplicationInterfaceId(String applicationInterfaceId) {
         this.applicationInterfaceId = applicationInterfaceId;
-    }
-
-    public String getApplicationInterfaceIdByCluster(String clusterName) {
-        return applicationInterfaceId.get(clusterName);
     }
 }

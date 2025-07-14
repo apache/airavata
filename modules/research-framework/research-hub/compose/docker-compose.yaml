@@ -7,7 +7,7 @@ services:
       - "8000:8000"
     environment:
       OAUTH_CLIENT_ID: "cs-jupyterlab"
-      OAUTH_CLIENT_SECRET: "CHANGE_ME"
+      OAUTH_CLIENT_SECRET: "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1"
       JUPYTERHUB_CRYPT_KEY: "a99323294a5d6f9b1d0e7e33450dff44db664264231b985e069c6eba8f9a3e09"
       DOCKER_NETWORK_NAME: jupyterhub_network
       DOCKER_NOTEBOOK_IMAGE: cybershuttle/dev_jupyterlab-base

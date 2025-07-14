@@ -34,9 +34,8 @@ public class SecurityManagerFactory {
 
     public static AiravataSecurityManager getSecurityManager() throws AiravataSecurityException {
         try {
-            Class secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
-            AiravataSecurityManager securityManager = (AiravataSecurityManager) secManagerImpl.newInstance();
-            return securityManager;
+            Class<?> secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
+            return (AiravataSecurityManager) secManagerImpl.newInstance();
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
             logger.error(e.getMessage(), e);
@@ -45,11 +44,7 @@ public class SecurityManagerFactory {
             String error = "Error in reading the configuration related to Security Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error);
-        } catch (InstantiationException e) {
-            String error = "Error in instantiating the Security Manager class.";
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             String error = "Error in instantiating the Security Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error);

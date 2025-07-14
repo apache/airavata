@@ -33,59 +33,10 @@ import org.slf4j.LoggerFactory;
 public class SecurityUtil {
 
     public static final String PASSWORD_HASH_METHOD_PLAINTEXT = "PLAINTEXT";
-
     public static final String CHARSET_ENCODING = "UTF-8";
-    public static final String ENCRYPTION_ALGORITHM = "AES";
     public static final String PADDING_MECHANISM = "AES/CBC/PKCS5Padding";
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
-
-    /**
-     * Creates a hash of given string with the given hash algorithm.
-     *
-     * @param stringToDigest
-     *            The string to digest.
-     * @param digestingAlgorithm
-     *            Hash algorithm.
-     * @return The digested string.
-     * @throws NoSuchAlgorithmException
-     *             If given hash algorithm doesnt exists.
-     */
-    public static String digestString(String stringToDigest, String digestingAlgorithm)
-            throws NoSuchAlgorithmException {
-
-        if (digestingAlgorithm == null || digestingAlgorithm.equals(PASSWORD_HASH_METHOD_PLAINTEXT)) {
-            return stringToDigest;
-        }
-
-        MessageDigest messageDigest = MessageDigest.getInstance(digestingAlgorithm);
-        try {
-            return new String(messageDigest.digest(stringToDigest.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Error encoding password string when creating digest", e);
-            throw new RuntimeException("Error encoding password string when creating digest", e);
-        }
-    }
-
-    /**
-     * Sets the truststore for application. Useful when communicating over HTTPS.
-     *
-     * @param trustStoreFilePath
-     *            Where trust store is located.
-     * @param trustStorePassword
-     *            The trust store password.
-     */
-    public static void setTrustStoreParameters(String trustStoreFilePath, String trustStorePassword) {
-
-        if (System.getProperty("javax.net.ssl.trustStrore") == null) {
-            logger.info("Setting Java trust store to " + trustStoreFilePath);
-            System.setProperty("javax.net.ssl.trustStrore", trustStoreFilePath);
-        }
-
-        if (System.getProperty("javax.net.ssl.trustStorePassword") == null) {
-            System.setProperty("javax.net.ssl.trustStorePassword", trustStoreFilePath);
-        }
-    }
 
     public static byte[] encryptString(
             String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, String value)
@@ -107,13 +58,7 @@ public class SecurityUtil {
     private static Key getSymmetricKey(String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException,
                     UnrecoverableKeyException {
-
-        KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, "jceks", passwordCallback);
-
-        if (ks == null) {
-            throw new IOException("Unable to load Java keystore " + keyStorePath);
-        }
-
+        KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, passwordCallback);
         return ks.getKey(keyAlias, passwordCallback.getSecretKeyPassPhrase(keyAlias));
     }
 
@@ -137,46 +82,15 @@ public class SecurityUtil {
         return new String(decrypted, CHARSET_ENCODING);
     }
 
-    public static KeyStore loadKeyStore(
-            String keyStoreFilePath, String keyStoreType, KeyStorePasswordCallback passwordCallback)
+    public static KeyStore loadKeyStore(String keyStoreFilePath, KeyStorePasswordCallback passwordCallback)
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
         File keystoreFile = new File(keyStoreFilePath);
-
-        InputStream is;
-        if (keystoreFile.exists()) {
-            logger.debug("Loading keystore file from path " + keyStoreFilePath);
-            is = new FileInputStream(keyStoreFilePath);
+        if (keystoreFile.exists() && keystoreFile.isFile()) {
+            logger.debug("Found keystore: {}", keyStoreFilePath);
         } else {
-            logger.debug("Trying to load keystore file form class path " + keyStoreFilePath);
-            is = SecurityUtil.class.getClassLoader().getResourceAsStream(keyStoreFilePath);
-            if (is != null) {
-                logger.debug("Trust store file was loaded form class path " + keyStoreFilePath);
-            }
+            throw new FileNotFoundException("Keystore file not found: " + keyStoreFilePath);
         }
-
-        if (is == null) {
-            throw new KeyStoreException("Could not find a keystore file in path " + keyStoreFilePath);
-        }
-
-        try {
-            return loadKeyStore(is, keyStoreType, passwordCallback);
-        } finally {
-            is.close();
-        }
-    }
-
-    public static KeyStore loadKeyStore(
-            InputStream inputStream, String keyStoreType, KeyStorePasswordCallback passwordCallback)
-            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-
-        if (keyStoreType == null) {
-            keyStoreType = KeyStore.getDefaultType();
-        }
-
-        KeyStore ks = KeyStore.getInstance(keyStoreType);
-        ks.load(inputStream, passwordCallback.getStorePassword());
-
-        return ks;
+        return KeyStore.getInstance(keystoreFile, passwordCallback.getStorePassword());
     }
 }

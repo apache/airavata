@@ -119,7 +119,7 @@ public class SSHSummaryTest extends DatabaseTestCases {
         String baseDirectory = System.getProperty("credential.module.directory");
 
         String keyStorePath =
-                "src" + File.separator + "test" + File.separator + "resources" + File.separator + "airavata.jks";
+                "src" + File.separator + "test" + File.separator + "resources" + File.separator + "airavata.p12";
 
         if (baseDirectory != null) {
             keyStorePath = baseDirectory + File.separator + keyStorePath;

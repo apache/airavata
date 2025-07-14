@@ -119,8 +119,7 @@ public class AgentManagementHandler {
         AgentLaunchRequest sortedLaunchRequest = launchRequests.get(0);
 
         for (AgentLaunchRequest req : launchRequests) {
-            String appInterfaceId =
-                    clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
+            String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
             ExperimentStatistics experimentStatistics = airavataService
                     .airavata()
                     .getExperimentStatistics(
@@ -215,8 +214,7 @@ public class AgentManagementHandler {
         AuthzToken authzToken = UserContext.authzToken();
         String userName = UserContext.username();
         String gatewayId = UserContext.gatewayId();
-        String appInterfaceId =
-                clusterApplicationConfig.getApplicationInterfaceIdByCluster(req.getApplicationInterfaceName());
+        String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setExperimentName(experimentName);
         experimentModel.setProjectId(projectId);

@@ -43,3 +43,10 @@ log "Research Service stopped."
 log "Stopping the File Service..."
 ./apache-airavata-file-server-0.21-SNAPSHOT/bin/file-service.sh -d stop
 log "File Service stopped."
+
+# ================================
+# Shutdown the REST proxy
+# ================================
+log "Stopping the REST proxy..."
+./apache-airavata-restproxy-0.21-SNAPSHOT/bin/restproxy.sh -d stop
+log "REST proxy stopped."

@@ -1,9 +1,22 @@
 #!/bin/bash
 
-# Remove existing key stores
-rm -f airavata.jks
+# generate AES-256 key for credential encryption
+keytool -genseckey -alias airavata -keyalg AES -keysize 256 -keystore aes.p12 -storepass airavata
 
-# Generate a PKCS12 keystore with a self-signed certificate
-keytool -genkey -keyalg RSA -alias selfsigned -keystore airavata.jks -storetype pkcs12 -storepass airavata -validity 360 -keysize 2048 \
-  -dname "CN=airavata.host, OU=airavata.host, O=airavata.host, L=airavata.host, ST=airavata.host, C=airavata.host" \
-  -ext san=dns:airavata.host
+# generate self-signed key-cert pair for SSL termination
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt \
+  -subj "/CN=airavata.host/OU=airavata.host/O=airavata.host/L=airavata.host/ST=airavata.host/C=airavata.host" \
+  -addext "subjectAltName=DNS:airavata.host"
+
+# add server.crt to java truststore
+sudo keytool -cacerts -storepass changeit -delete -alias airavata
+sudo keytool -cacerts -storepass changeit -importcert -alias airavata -file server.crt -trustcacerts -noprompt
+
+# generate airavata.p12
+rm -rf airavata.p12
+# if self-signed {server.crt, server.key}
+openssl pkcs12 -export -name tls -out airavata.p12 -passout pass:airavata -in server.crt -inkey server.key
+# if letsencrypt {fullchain.pem, privkey.pem}
+openssl pkcs12 -export -name tls -out airavata.p12 -passout pass:airavata -in fullchain.pem -inkey privkey.pem
+# add AES key to store
+keytool -importkeystore -srckeystore aes.p12 -destkeystore airavata.p12 -srcstorepass airavata -deststorepass airavata

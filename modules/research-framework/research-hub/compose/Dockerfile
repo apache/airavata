@@ -16,6 +16,6 @@ RUN mkdir -p /home/jovyan/notebooks && \
 ENV JUPYTERHUB_CONFIG=/srv/jupyterhub/jupyterhub_config.py
 ENV PYTHONPATH=/srv/jupyterhub
 
-EXPOSE 8000
+EXPOSE 20000
 
 CMD ["jupyterhub"]

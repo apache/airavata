@@ -34,19 +34,19 @@ public class JobFactory {
     public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
         switch (resourceJobManagerType) {
             case FORK:
-                return "FORK_Groovy.template";
+                return "templates/FORK_Groovy.template";
             case PBS:
-                return "PBS_Groovy.template";
+                return "templates/PBS_Groovy.template";
             case SLURM:
-                return "SLURM_Groovy.template";
+                return "templates/SLURM_Groovy.template";
             case UGE:
-                return "UGE_Groovy.template";
+                return "templates/UGE_Groovy.template";
             case LSF:
-                return "LSF_Groovy.template";
+                return "templates/LSF_Groovy.template";
             case CLOUD:
-                return "CLOUD_Groovy.template";
+                return "templates/CLOUD_Groovy.template";
             case HTCONDOR:
-                return "HTCONDOR_Groovy.template";
+                return "templates/HTCONDOR_Groovy.template";
             default:
                 return null;
         }
@@ -119,7 +119,7 @@ public class JobFactory {
             throw new Exception("Resource job manager can not be null");
         }
 
-        String templateFileName = getTemplateFileName(resourceJobManager.getResourceJobManagerType());
+        String templateFileName = "templates/" + getTemplateFileName(resourceJobManager.getResourceJobManagerType());
         switch (resourceJobManager.getResourceJobManagerType()) {
             case PBS:
                 return new PBSJobConfiguration(

@@ -19,35 +19,32 @@
 */
 package org.apache.airavata.registry.core.utils;
 
-import java.util.ArrayList;
+import com.github.dozermapper.core.CustomFieldMapper;
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
+import com.github.dozermapper.core.classmap.ClassMap;
+import com.github.dozermapper.core.fieldmap.FieldMap;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TFieldIdEnum;
-import org.dozer.CustomFieldMapper;
-import org.dozer.DozerBeanMapper;
-import org.dozer.classmap.ClassMap;
-import org.dozer.fieldmap.FieldMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ObjectMapperSingleton extends DozerBeanMapper {
+public class ObjectMapperSingleton {
     private static final Logger logger = LoggerFactory.getLogger(ObjectMapperSingleton.class);
 
-    private static ObjectMapperSingleton instance;
+    private static Mapper mapper;
 
     private ObjectMapperSingleton() {}
 
-    public static ObjectMapperSingleton getInstance() {
-        if (instance == null) {
-            instance = new ObjectMapperSingleton();
-            instance.setMappingFiles(new ArrayList<String>() {
-                {
-                    add("dozer_mapping.xml");
-                }
-            });
-            instance.setCustomFieldMapper(new SkipUnsetPrimitiveFieldMapper());
+    public static Mapper getInstance() {
+        if (mapper == null) {
+            mapper = DozerBeanMapperBuilder.create()
+                    .withMappingFiles("dozer_mapping.xml")
+                    .withCustomFieldMapper(new SkipUnsetPrimitiveFieldMapper())
+                    .build();
         }
-        return instance;
+        return mapper;
     }
 
     private static class SkipUnsetPrimitiveFieldMapper implements CustomFieldMapper {
@@ -70,7 +67,7 @@ public class ObjectMapperSingleton extends DozerBeanMapper {
                 TBase thriftSource = (TBase) source;
                 try {
                     Class<?> thriftFieldsEnum =
-                            Class.forName(thriftSource.getClass().getName() + "$_Fields");
+                            Class.forName(thriftSource.getClass().getName() + "$$_Fields");
                     TFieldIdEnum srcField = (TFieldIdEnum) thriftFieldsEnum
                             .getMethod("findByName", String.class)
                             .invoke(null, fieldMap.getSrcFieldName());

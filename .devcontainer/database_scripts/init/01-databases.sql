@@ -3520,6 +3520,14 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `workflow_catalog` /*!40100 DEFAULT CHA
 USE `workflow_catalog`;
 
 --
+-- Current Database: `research_catalog`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `research_catalog` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+
+USE `research_catalog`;
+
+--
 -- Current Database: `app_catalog`
 --
 

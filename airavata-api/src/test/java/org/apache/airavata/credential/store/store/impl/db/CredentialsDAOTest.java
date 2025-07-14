@@ -126,7 +126,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         String baseDirectory = System.getProperty("credential.module.directory");
 
         String keyStorePath =
-                "src" + File.separator + "test" + File.separator + "resources" + File.separator + "airavata.jks";
+                "src" + File.separator + "test" + File.separator + "resources" + File.separator + "airavata.p12";
 
         if (baseDirectory != null) {
             keyStorePath = baseDirectory + File.separator + keyStorePath;
@@ -245,7 +245,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     @Test
     public void testSerializationWithEncryption() throws CredentialStoreException, URISyntaxException {
 
-        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("airavata.p12").toURI();
         String secretKeyAlias = "mykey";
 
         assert uri != null;

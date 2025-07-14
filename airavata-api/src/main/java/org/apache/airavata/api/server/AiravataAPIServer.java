@@ -32,9 +32,6 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.service.security.AiravataSecurityManager;
-import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.airavata.service.security.interceptor.SecurityModule;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -63,114 +60,76 @@ public class AiravataAPIServer implements IServer {
             throws AiravataSystemException {
         try {
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
+
             if (!ServerSettings.isTLSEnabled()) {
-                final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
-
                 TServerTransport serverTransport;
-
-                if (ServerSettings.isAPIServerTLSEnabled()) {
-                    logger.info("Starting API Server with TLS Security..");
-
-                    String keystore = ServerSettings.getApiServerKeystore();
-                    String keystorePWD = ServerSettings.getApiServerKeystorePasswd();
-                    TSSLTransportFactory.TSSLTransportParameters tlsParams =
-                            new TSSLTransportFactory.TSSLTransportParameters();
-                    tlsParams.setKeyStore(keystore, keystorePWD);
-                    serverTransport = TSSLTransportFactory.getServerSocket(
-                            serverPort, 10000, InetAddress.getByName(serverHost), tlsParams);
+                if (serverHost == null) {
+                    serverTransport = new TServerSocket(serverPort);
                 } else {
-                    if (serverHost == null) {
-                        serverTransport = new TServerSocket(serverPort);
-                    } else {
-                        InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                        serverTransport = new TServerSocket(inetSocketAddress);
-                    }
+                    InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+                    serverTransport = new TServerSocket(inetSocketAddress);
                 }
-
                 TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
                 options.minWorkerThreads =
                         Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
                 server = new TThreadPoolServer(options.processor(airavataAPIServer));
-                new Thread() {
-                    public void run() {
-                        server.serve();
-                        setStatus(ServerStatus.STOPPED);
-                        logger.info("Airavata API Server Stopped.");
-                    }
-                }.start();
-                new Thread() {
-                    public void run() {
-                        while (!server.isServing()) {
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                break;
+                new Thread(() -> {
+                            server.serve();
+                            setStatus(ServerStatus.STOPPED);
+                            logger.info("Airavata API Server Stopped.");
+                        })
+                        .start();
+                new Thread(() -> {
+                            while (!server.isServing()) {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    break;
+                                }
                             }
-                        }
-                        if (server.isServing()) {
-                            setStatus(ServerStatus.STARTED);
-                            logger.info("Starting Airavata API Server on Port " + serverPort);
-                            logger.info("Listening to Airavata Clients ....");
-                        }
-                    }
-                }.start();
+                            if (server.isServing()) {
+                                setStatus(ServerStatus.STARTED);
+                                logger.info("Starting Airavata API Server on Port " + serverPort);
+                                logger.info("Listening to Airavata Clients ....");
+                            }
+                        })
+                        .start();
                 logger.info("Started API Server ....");
             } else {
-                /**********start thrift server over TLS******************/
-                TSSLTransportFactory.TSSLTransportParameters TLSParams =
-                        new TSSLTransportFactory.TSSLTransportParameters();
+                var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
-                TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        ServerSettings.getTLSServerPort(),
-                        ServerSettings.getTLSClientTimeout(),
-                        InetAddress.getByName(serverHost),
-                        TLSParams);
+                var TLSServerTransport = TSSLTransportFactory.getServerSocket(
+                        serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
                 TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
                 settings.minWorkerThreads =
                         Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
                 TLSServer = new TThreadPoolServer(settings.processor(airavataAPIServer));
-                new Thread() {
-                    public void run() {
-                        TLSServer.serve();
-                        setStatus(ServerStatus.STOPPED);
-                        logger.info("Airavata API Server over TLS Stopped.");
-                    }
-                }.start();
-                new Thread() {
-                    public void run() {
-                        while (!TLSServer.isServing()) {
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                break;
+                new Thread(() -> {
+                            TLSServer.serve();
+                            setStatus(ServerStatus.STOPPED);
+                            logger.info("Airavata API Server over TLS Stopped.");
+                        })
+                        .start();
+                new Thread(() -> {
+                            while (!TLSServer.isServing()) {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    break;
+                                }
                             }
-                        }
-                        if (TLSServer.isServing()) {
-                            setStatus(ServerStatus.STARTED);
-                        }
-                    }
-                }.start();
-                logger.info("API server started over TLS on Port: " + ServerSettings.getTLSServerPort() + " ...");
+                            if (TLSServer.isServing()) {
+                                setStatus(ServerStatus.STARTED);
+                            }
+                        })
+                        .start();
+                logger.info("API server started over TLS on Port: " + serverPort + " ...");
             }
 
-            /*perform any security related initialization at the server startup, according to the underlying security
-            manager implementation being used.*/
-            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
-            securityManager.initializeSecurityInfra();
-
-        } catch (TTransportException e) {
-            logger.error(e.getMessage(), e);
-            setStatus(ServerStatus.FAILED);
+        } catch (TTransportException | ApplicationSettingsException | UnknownHostException e) {
             logger.error("Failed to start API server ...", e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (UnknownHostException e) {
-            logger.error(e.getMessage(), e);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (AiravataSecurityException e) {
-            logger.error(e.getMessage(), e);
+            setStatus(ServerStatus.FAILED);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
     }

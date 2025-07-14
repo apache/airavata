@@ -14,10 +14,10 @@
 #  limitations under the License.
 #
 from __future__ import annotations
-from .auth import context
 import abc
 from typing import Any
 from pathlib import Path
+import os
 
 import pydantic
 
@@ -83,7 +83,7 @@ class Mock(Runtime):
   _state: int = 0
 
   def __init__(self) -> None:
-    super().__init__(id="mock")
+    super().__init__(id="mock", args={})
 
   def execute(self, task: Task) -> None:
     import uuid
@@ -142,7 +142,7 @@ class Remote(Runtime):
     print(f"[Remote] Creating Experiment: name={task.name}")
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     try:
       launch_state = av.launch_experiment(
           experiment_name=task.name,
@@ -172,7 +172,7 @@ class Remote(Runtime):
     assert task.pid is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     result = av.execute_py(task.project, libraries, code, task.agent_ref, task.pid, task.runtime.args)
     print(result)
 
@@ -181,7 +181,7 @@ class Remote(Runtime):
     assert task.agent_ref is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     # prioritize job state, fallback to experiment state
     job_id, job_state = av.get_task_status(task.ref)
     if not job_state or job_state == "UN_SUBMITTED":
@@ -194,7 +194,7 @@ class Remote(Runtime):
     assert task.agent_ref is not None
     
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     av.stop_experiment(task.ref)
 
   def ls(self, task: Task) -> list[str]:
@@ -205,7 +205,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     files = av.list_files(task.pid, task.agent_ref, task.sr_host, task.workdir)
     return files
 
@@ -217,7 +217,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     result = av.upload_files(task.pid, task.agent_ref, task.sr_host, [file], task.workdir).pop()
     return result
 
@@ -229,7 +229,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     result = av.download_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir, local_dir)
     return result
 
@@ -241,7 +241,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(context.access_token)
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     content = av.cat_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir)
     return content
 
@@ -259,7 +259,7 @@ def list_runtimes(
     walltime: int | None = None,
 ) -> list[Runtime]:
   from .airavata import AiravataOperator
-  av = AiravataOperator(context.access_token)
+  av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
   all_runtimes = av.get_available_runtimes()
   out_runtimes = []
   for r in all_runtimes:

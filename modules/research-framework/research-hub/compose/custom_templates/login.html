@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>CyberShuttle Hub Login</title>
-    <link rel="icon" href="https://dev.cybershuttle.org/static/images/airavata-logo.png">
-    <link rel="stylesheet" href="{{ static_url("css/style.min.css") }}">
+    <link rel="icon" href="{{ static_url('images/airavata-logo.png') }}">
+    <link rel="stylesheet" href="{{ static_url('css/style.min.css') }}">
     <style>
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -44,7 +44,7 @@
 </head>
 <body>
 <div class="container">
-    <img src="https://dev.cybershuttle.org/static/images/airavata-logo.png" alt="CyberShuttle Logo"/>
+    <img src="https://airavata.host:8009/static/images/airavata-logo.png" alt="CyberShuttle Logo"/>
     <h1>Welcome to Dev CyberShuttle Hub</h1>
     <a class="btn-login" href="{{ authenticator_login_url }}">Login with OAuth 2.0</a>
 </div>

@@ -38,8 +38,11 @@ public class JPAUtils {
     static {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
-        properties.put("openjpa.DynamicEnhancementAgent", "false");
-        properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
+        properties.put(
+                "openjpa.DynamicEnhancementAgent", System.getProperty("openjpa.DynamicEnhancementAgent", "false"));
+        properties.put(
+                "openjpa.RuntimeUnenhancedClasses",
+                System.getProperty("openjpa.RuntimeUnenhancedClasses", "unsupported"));
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
         // use the following to enable logging of all SQL statements

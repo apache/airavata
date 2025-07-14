@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.sharing.registry.db.repositories;
 
+import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.db.utils.ObjectMapperSingleton;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

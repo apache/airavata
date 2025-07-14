@@ -98,7 +98,7 @@ public class ServerMain {
         serversLoaded = true;
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                setSystemShutDown(true);
+                setSystemShutDown();
                 stopAllServers();
             }
         });
@@ -163,11 +163,8 @@ public class ServerMain {
     //		});
     //	}
 
-    public static void main(String args[]) throws IOException, AiravataException, ParseException {
+    public static void main(String[] args) throws IOException, AiravataException, ParseException {
         ServerSettings.mergeSettingsCommandLineArgs(args);
-        ServerSettings.setServerRoles(
-                ApplicationSettings.getSetting(SERVERS_KEY, "all").split(","));
-
         if (ServerSettings.getBooleanSetting("api.server.monitoring.enabled")) {
             MonitoringServer monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("api.server.monitoring.host"),
@@ -393,8 +390,8 @@ public class ServerMain {
         return systemShutDown;
     }
 
-    private static void setSystemShutDown(boolean systemShutDown) {
-        ServerMain.systemShutDown = systemShutDown;
+    private static void setSystemShutDown() {
+        ServerMain.systemShutDown = true;
     }
 
     //	private static int getPID(){

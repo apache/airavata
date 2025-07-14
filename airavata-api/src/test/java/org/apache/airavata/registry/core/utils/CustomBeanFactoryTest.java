@@ -37,7 +37,7 @@ public class CustomBeanFactoryTest {
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
         UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
-                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName());
+                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), null);
         Assertions.assertTrue(fromFactory.isSetAiravataAutoSchedule());
     }
 
@@ -52,7 +52,7 @@ public class CustomBeanFactoryTest {
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
         UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
-                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName());
+                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), null);
         Assertions.assertTrue(fromFactory.isSetShareExperimentPublicly());
     }
 }

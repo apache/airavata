@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.registry.core.utils.DozerConverter;
 
+import com.github.dozermapper.core.DozerConverter;
 import java.sql.Timestamp;
-import org.dozer.DozerConverter;
 
 /**
  * Created by skariyat on 4/11/18.

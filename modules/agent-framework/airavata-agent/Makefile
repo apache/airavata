@@ -16,7 +16,7 @@
 # under the License.
 
 IMAGE_NAME=cybershuttle/remote-agent-base
-AGENT_SVC_URL=api.gateway.cybershuttle.org:19900
+AGENT_SVC_URL=airavata.host:19900
 AGENT_ID=test
 
 build-multiarch:

@@ -43,7 +43,7 @@
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>application.yml</include>
-        <include>airavata.jks</include>
+        <include>airavata.p12</include>
         <include>log4j2.xml</include>
       </includes>
     </fileSet>

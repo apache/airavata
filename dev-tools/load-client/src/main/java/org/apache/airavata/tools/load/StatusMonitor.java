@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
@@ -37,21 +39,15 @@ public class StatusMonitor {
 
     private String apiHost;
     private int apiPort;
-    private String trustStorePath;
-    private String trustStorePassword;
     private AuthzToken authzToken;
 
-    public StatusMonitor(
-            String apiHost, int apiPort, String trustStorePath, String trustStorePassword, AuthzToken authzToken)
-            throws AiravataClientException {
+    public StatusMonitor(String apiHost, int apiPort, AuthzToken authzToken) {
         this.apiHost = apiHost;
         this.apiPort = apiPort;
-        this.trustStorePath = trustStorePath;
-        this.trustStorePassword = trustStorePassword;
         this.authzToken = authzToken;
     }
 
-    public void monitorExperiments(List<String> experiments) throws TException {
+    public void monitorExperiments(List<String> experiments) throws TException, ApplicationSettingsException {
 
         Map<String, JobModel> jobModelMap = new HashMap<>();
         Map<String, ExperimentModel> experimentModelMap = new HashMap<>();
@@ -60,8 +56,7 @@ public class StatusMonitor {
         long monitoringStartTime = System.currentTimeMillis();
         while (experiments.size() > jobModelMap.size()) {
             System.out.println("Running a monitoring round....");
-            airavataClient = AiravataClientFactory.createAiravataSecureClient(
-                    apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
+            airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
 
             for (String experiment : experiments) {
 
@@ -87,8 +82,7 @@ public class StatusMonitor {
             }
         }
 
-        airavataClient = AiravataClientFactory.createAiravataSecureClient(
-                apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
+        airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
 
         for (String experiment : experiments) {
             experimentModelMap.put(experiment, airavataClient.getExperiment(authzToken, experiment));

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -30,7 +31,6 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationDeployment;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class ApplicationDeploymentRepository
             ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId)
             throws AppCatalogException {
 
-        if (applicationDeploymentDescription.getAppDeploymentId().trim().equals("")
+        if (applicationDeploymentDescription.getAppDeploymentId().trim().isEmpty()
                 || applicationDeploymentDescription.getAppDeploymentId().equals(airavata_commonsConstants.DEFAULT_ID)) {
             logger.debug(
                     "If Application Deployment ID is empty or DEFAULT, set it as the compute host name plus the App Module ID");
@@ -158,8 +158,9 @@ public class ApplicationDeploymentRepository
 
                 switch (fieldName) {
                     case DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID: {
-                        logger.debug("Fetching all Application Deployments for Application Module ID "
-                                + filters.get(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID));
+                        logger.debug(
+                                "Fetching all Application Deployments for Application Module ID {}",
+                                filters.get(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID));
 
                         Map<String, Object> queryParameters = new HashMap<>();
                         queryParameters.put(
@@ -173,8 +174,9 @@ public class ApplicationDeploymentRepository
                     }
 
                     case DBConstants.ApplicationDeployment.COMPUTE_HOST_ID: {
-                        logger.debug("Fetching Application Deployments for Compute Host ID "
-                                + filters.get(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID));
+                        logger.debug(
+                                "Fetching Application Deployments for Compute Host ID {}",
+                                filters.get(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID));
 
                         Map<String, Object> queryParameters = new HashMap<>();
                         queryParameters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, filters.get(fieldName));
@@ -187,7 +189,7 @@ public class ApplicationDeploymentRepository
                     }
 
                     default:
-                        logger.error("Unsupported field name for app deployment in filters: " + filters);
+                        logger.error("Unsupported field name for app deployment in filters: {}", filters);
                         throw new IllegalArgumentException(
                                 "Unsupported field name for app deployment in filters: " + filters);
                 }
@@ -223,9 +225,7 @@ public class ApplicationDeploymentRepository
             throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
-        List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
-                select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID, -1, 0, queryParameters);
-        return applicationDeploymentDescriptionList;
+        return select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID, -1, 0, queryParameters);
     }
 
     @Override
@@ -239,9 +239,7 @@ public class ApplicationDeploymentRepository
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleCompHostIds);
-        List<ApplicationDeploymentDescription> accessibleApplicationDeployments =
-                select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS, -1, 0, queryParameters);
-        return accessibleApplicationDeployments;
+        return select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS, -1, 0, queryParameters);
     }
 
     @Override
@@ -260,13 +258,11 @@ public class ApplicationDeploymentRepository
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
         queryParameters.put(
                 DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleComputeResourceIds);
-        List<ApplicationDeploymentDescription> accessibleApplicationDeployments =
-                select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS_FOR_APP_MODULE, -1, 0, queryParameters);
-        return accessibleApplicationDeployments;
+        return select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS_FOR_APP_MODULE, -1, 0, queryParameters);
     }
 
     @Override
-    public List<String> getAllApplicationDeployementIds() throws AppCatalogException {
+    public List<String> getAllApplicationDeployementIds() {
         List<String> applicationDeploymentIds = new ArrayList<>();
         List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
                 select(QueryConstants.GET_ALL_APPLICATION_DEPLOYMENTS, 0);
@@ -282,7 +278,7 @@ public class ApplicationDeploymentRepository
     }
 
     @Override
-    public boolean isAppDeploymentExists(String deploymentId) throws AppCatalogException {
+    public boolean isAppDeploymentExists(String deploymentId) {
         return isExists(deploymentId);
     }
 

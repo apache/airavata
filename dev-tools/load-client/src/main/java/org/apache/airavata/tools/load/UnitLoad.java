@@ -28,6 +28,8 @@ import java.util.concurrent.*;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -41,22 +43,16 @@ public class UnitLoad {
 
     private String apiHost;
     private int apiPort;
-    private String trustStorePath;
-    private String trustStorePassword;
     private StorageResourceManager storageResourceManager;
     private AuthzToken authzToken;
 
     public UnitLoad(
             String apiHost,
             int apiPort,
-            String trustStorePath,
-            String trustStorePassword,
             StorageResourceManager storageResourceManager,
             AuthzToken authzToken) {
         this.apiHost = apiHost;
         this.apiPort = apiPort;
-        this.trustStorePath = trustStorePath;
-        this.trustStorePassword = trustStorePassword;
         this.storageResourceManager = storageResourceManager;
         this.authzToken = authzToken;
     }
@@ -100,11 +96,7 @@ public class UnitLoad {
                     long randomLong = (long) randomDouble;
                     Thread.sleep(randomLong);
                     experiments.add(submitExperiment(config, id + "-" + i));
-                } catch (TException e) {
-                    e.printStackTrace();
-                } catch (AgentException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (TException | ApplicationSettingsException | AgentException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -112,7 +104,7 @@ public class UnitLoad {
         }
     }
 
-    private String submitExperiment(Configuration config, String suffix) throws TException, AgentException {
+    private String submitExperiment(Configuration config, String suffix) throws TException, AgentException, ApplicationSettingsException {
 
         String experimentName = config.getExperimentBaseName() + suffix;
 
@@ -145,8 +137,7 @@ public class UnitLoad {
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
-        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(
-                apiHost, apiPort, trustStorePath, trustStorePassword, 100000);
+        Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
 
         List<InputDataObjectType> applicationInputs =
                 airavataClient.getApplicationInputs(authzToken, config.getApplicationInterfaceId());

@@ -18,4 +18,5 @@ cp -r ./apache-airavata-api-server-0.21-SNAPSHOT $BACKUP_DIR/
 cp -r ./apache-airavata-agent-service-0.21-SNAPSHOT $BACKUP_DIR/
 cp -r ./apache-airavata-research-service-0.21-SNAPSHOT $BACKUP_DIR/
 cp -r ./apache-airavata-file-server-0.21-SNAPSHOT $BACKUP_DIR/
+cp -r ./apache-airavata-restproxy-0.21-SNAPSHOT $BACKUP_DIR/
 log "Distribution backed up."

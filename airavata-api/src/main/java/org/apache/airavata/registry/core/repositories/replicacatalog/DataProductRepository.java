@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
+import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.airavata.model.data.replica.DataProductModel;
@@ -29,7 +30,6 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.DataProductInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

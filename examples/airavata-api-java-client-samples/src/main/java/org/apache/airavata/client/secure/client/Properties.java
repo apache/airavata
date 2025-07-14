@@ -26,7 +26,7 @@ public class Properties {
 
     // trust store parameters
     public static final String TRUST_STORE_PATH =
-            "../../../../../airavata/modules/configuration/server/src/main/resources/airavata.jks";
+            "../../../../../airavata/modules/configuration/server/src/main/resources/airavata.p12";
     public static final String TRUST_STORE_PASSWORD = "airavata";
 
     public static String oauthAuthzServerURL = "https://localhost:9443/services/";
