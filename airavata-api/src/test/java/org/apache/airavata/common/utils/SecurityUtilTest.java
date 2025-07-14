@@ -21,8 +21,7 @@ package org.apache.airavata.common.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.InputStream;
-import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import org.junit.jupiter.api.Test;
 
@@ -32,54 +31,36 @@ import org.junit.jupiter.api.Test;
  * Time: 10:42 AM
  */
 public class SecurityUtilTest {
+
+    private final String keyStorePath = "airavata.p12";
+
     @Test
     public void testEncryptString() throws Exception {
 
-        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
-
-        assert uri != null;
-
         String stringToEncrypt = "Test string to encrypt";
         byte[] encrypted =
-                SecurityUtil.encryptString(uri.getPath(), "mykey", new TestKeyStoreCallback(), stringToEncrypt);
+                SecurityUtil.encryptString(keyStorePath, "mykey", new TestKeyStoreCallback(), stringToEncrypt);
 
-        String decrypted = SecurityUtil.decryptString(uri.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
-        assertTrue(stringToEncrypt.equals(decrypted));
+        String decrypted = SecurityUtil.decryptString(keyStorePath, "mykey", new TestKeyStoreCallback(), encrypted);
+        assertEquals(stringToEncrypt, decrypted);
     }
 
     @Test
     public void testEncryptBytes() throws Exception {
-
-        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
-
-        assert uri != null;
-
         String stringToEncrypt = "Test string to encrypt";
-        byte[] encrypted = SecurityUtil.encrypt(
-                uri.getPath(), "mykey", new TestKeyStoreCallback(), stringToEncrypt.getBytes("UTF-8"));
-
-        byte[] decrypted = SecurityUtil.decrypt(uri.getPath(), "mykey", new TestKeyStoreCallback(), encrypted);
-        assertTrue(stringToEncrypt.equals(new String(decrypted, "UTF-8")));
-    }
-
-    @Test
-    public void testLoadKeyStore() throws Exception {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("airavata.jks");
-
-        KeyStore ks = SecurityUtil.loadKeyStore(inputStream, "jceks", new TestKeyStoreCallback());
-        assertNotNull(ks);
+        byte[] plaintext = stringToEncrypt.getBytes(StandardCharsets.UTF_8);
+        byte[] encrypted = SecurityUtil.encrypt(keyStorePath, "mykey", new TestKeyStoreCallback(), plaintext);
+        byte[] decrypted = SecurityUtil.decrypt(keyStorePath, "mykey", new TestKeyStoreCallback(), encrypted);
+        assertEquals(plaintext, decrypted);
     }
 
     @Test
     public void testLoadKeyStoreFromFile() throws Exception {
-        URI uri = this.getClass().getClassLoader().getResource("airavata.jks").toURI();
-
-        assert uri != null;
-        KeyStore ks = SecurityUtil.loadKeyStore(uri.getPath(), "jceks", new TestKeyStoreCallback());
+        KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, new TestKeyStoreCallback());
         assertNotNull(ks);
     }
 
-    private class TestKeyStoreCallback implements KeyStorePasswordCallback {
+    private static class TestKeyStoreCallback implements KeyStorePasswordCallback {
 
         @Override
         public char[] getStorePassword() {
@@ -91,7 +72,6 @@ public class SecurityUtilTest {
             if (keyAlias.equals("mykey")) {
                 return "airavatasecretkey".toCharArray();
             }
-
             return null;
         }
     }

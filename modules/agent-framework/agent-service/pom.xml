@@ -241,7 +241,7 @@ under the License.
         <directory>${project.parent.basedir}/keystores</directory>
         <targetPath>keystores</targetPath>
         <includes>
-          <include>*.jks</include>
+          <include>airavata.p12</include>
         </includes>
       </resource>
     </resources>

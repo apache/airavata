@@ -44,12 +44,6 @@ under the License.
     <build>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>pga/**</exclude>
-                </excludes>
-            </resource>
-            <resource>
               <directory>../../keystores</directory>
               <targetPath>keystores</targetPath>
               <includes>

@@ -5,7 +5,7 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "features": {},
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/home/developer/workspace",
   "forwardPorts": [],
   "customizations": {
     "vscode": {

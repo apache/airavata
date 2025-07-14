@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,6 @@ import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.Airava
 import org.apache.airavata.registry.core.utils.*;
 import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

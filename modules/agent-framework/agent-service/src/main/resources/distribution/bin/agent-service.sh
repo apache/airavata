@@ -21,6 +21,6 @@
 
 SERVICE_NAME="agent-service"
 MAIN_CLASS="org.apache.airavata.agent.connection.service.AgentServiceApplication"
-JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dairavata.server.truststore.path=${AIRAVATA_HOME}/conf/airavata.jks -Dspring.config.location=${AIRAVATA_HOME}/conf/"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dairavata.server.truststore.path=${AIRAVATA_HOME}/conf/airavata.p12 -Dspring.config.location=${AIRAVATA_HOME}/conf/"
 
 run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"

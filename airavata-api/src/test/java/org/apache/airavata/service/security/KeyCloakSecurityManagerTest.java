@@ -40,7 +40,6 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.airavata.service.security.authzcache.AuthzCacheIndex;
 import org.apache.airavata.service.security.authzcache.AuthzCacheManager;
 import org.apache.airavata.service.security.authzcache.AuthzCacheManagerFactory;
@@ -56,9 +55,6 @@ public class KeyCloakSecurityManagerTest {
     public static final String TEST_USERNAME = "test-user";
     public static final String TEST_GATEWAY = "test-gateway";
     public static final String TEST_ACCESS_TOKEN = "abc123";
-
-    @Mocked
-    private TrustStoreManager mockTrustStoreManager;
 
     @Mocked
     private ServerSettings mockServerSettings;
@@ -85,10 +81,7 @@ public class KeyCloakSecurityManagerTest {
     public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
         new Expectations() {
             {
-                mockServerSettings.isTrustStorePathDefined();
-                result = true;
-                mockTrustStoreManager.initializeTrustStoreManager(anyString, anyString);
-                mockServerSettings.isAPISecured();
+                mockServerSettings.isTLSEnabled();
                 result = true;
                 mockServerSettings.getRegistryServerHost();
                 result = "localhost";
@@ -261,7 +254,7 @@ public class KeyCloakSecurityManagerTest {
     }
 
     private void runIsUserAuthorizedTest(String apiMethod, boolean expectedAuthorization)
-            throws AiravataSecurityException {
+            throws AiravataSecurityException, ApplicationSettingsException {
 
         KeyCloakSecurityManager keyCloakSecurityManager = new KeyCloakSecurityManager();
 

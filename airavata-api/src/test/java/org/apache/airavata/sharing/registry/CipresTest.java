@@ -20,42 +20,48 @@
 package org.apache.airavata.sharing.registry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSSLTransportFactory;
+import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 public class CipresTest {
+    private static final Logger log = LogManager.getLogger(CipresTest.class);
+
     public static void main(String[] args) throws InterruptedException, TException, ApplicationSettingsException {
         System.out.println("Hello World!");
         // should use the correct host name and port here
         String serverHost = "wb-airavata.scigap.org";
-
         int serverPort = 7878;
+
         TTransport transport = null;
-        TProtocol protocol = null;
+        TProtocol protocol;
+        TSSLTransportFactory.TSSLTransportParameters params;
+
         try {
 
             SharingRegistryService.Client sharingServiceClient;
 
-            // Non Secure Client
-            //            transport = new TSocket(serverHost, serverPort);
-            //            transport.open();
-            //            protocol = new TBinaryProtocol(transport);
-            //            sharingServiceClient= new SharingRegistryService.Client(protocol);
+            if (!ServerSettings.isTLSEnabled()) {
+                transport = new TSocket(serverHost, serverPort);
+                transport.open();
+            } else {
+                // TLS enabled client
+                params = new TSSLTransportFactory.TSSLTransportParameters();
+                params.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+                transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
+            }
 
-            // TLS enabled client
-            TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
-            params.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
-            params.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
-            transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             protocol = new TBinaryProtocol(transport);
             sharingServiceClient = new SharingRegistryService.Client(protocol);
 
@@ -163,10 +169,10 @@ public class CipresTest {
             sharingServiceClient.createGroup(userGroup2);
             System.out.println("After group creation...\n");
 
-            sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-3"), "test-group-2");
+            sharingServiceClient.addUsersToGroup(domainId, List.of("test-user-3"), "test-group-2");
             System.out.println("After adding user to group...\n");
 
-            sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
+            sharingServiceClient.addChildGroupsToParentGroup(domainId, List.of("test-group-2"), "test-group-1");
 
             PermissionType permissionType1 = new PermissionType();
             // required
@@ -278,13 +284,13 @@ public class CipresTest {
             System.out.println("Before shareEntityWithGroups READ...\n");
             long time = System.currentTimeMillis();
             sharingServiceClient.shareEntityWithGroups(
-                    domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
+                    domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
             System.out.println("Time for sharing " + (System.currentTimeMillis() - time));
             // shared with non cascading permissions
             System.out.println("Before shareEntityWithGroups CLONE...\n");
             time = System.currentTimeMillis();
             sharingServiceClient.shareEntityWithGroups(
-                    domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
+                    domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
             System.out.println("Time for sharing " + (System.currentTimeMillis() - time));
 
             // test-project-1 is explicitly shared with test-user-2 with WRITE permission
@@ -441,9 +447,9 @@ public class CipresTest {
             sharingServiceClient.createGroup(Group1);
             System.out.println("After Group1 creation...\n");
 
-            sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("UserB"), "Group1");
-            sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("UserC"), "Group1");
-            sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("UserD"), "Group1");
+            sharingServiceClient.addUsersToGroup(domainId, List.of("UserB"), "Group1");
+            sharingServiceClient.addUsersToGroup(domainId, List.of("UserC"), "Group1");
+            sharingServiceClient.addUsersToGroup(domainId, List.of("UserD"), "Group1");
 
             System.out.println("After adding users to Group1 creation...\n");
 
@@ -562,7 +568,7 @@ public class CipresTest {
             // sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"),
             // "READ", true);
             time = System.currentTimeMillis();
-            sharingServiceClient.shareEntityWithGroups(domainId, "Folder1", Arrays.asList("Group1"), "READ", true);
+            sharingServiceClient.shareEntityWithGroups(domainId, "Folder1", List.of("Group1"), "READ", true);
             System.out.println("Time for sharing " + (System.currentTimeMillis() - time));
             System.out.println("After READ sharing UserBFolder1 with Group1 ...\n");
             // sharingServiceClient.shareEntityWithGroups(domainId, "Folder2", Arrays.asList("Group1"), "READ", true);
@@ -619,7 +625,7 @@ public class CipresTest {
             System.out.println(sharingServiceClient.searchEntities(domainId, "UserC", sharedfilters, 0, -1));
             System.out.println("After searchEntities 2...\n");
 
-            sharingServiceClient.removeUsersFromGroup(domainId, Arrays.asList("UserD"), "Group1");
+            sharingServiceClient.removeUsersFromGroup(domainId, List.of("UserD"), "Group1");
             System.out.println("After removing UserD from Group1 ...\n");
 
             sharingServiceClient.deleteGroup(domainId, "Group1");
@@ -627,20 +633,14 @@ public class CipresTest {
 
             System.out.println("End of try clause...\n");
         } catch (TTransportException ex1) {
-            System.out.println("TTransportException...\n");
-            System.out.println(ex1);
-            System.out.println(ex1.getCause());
-            ex1.printStackTrace();
-            System.out.println(ex1.getMessage());
+            log.error("TTransportException: {}", ex1.getMessage(), ex1);
         } catch (SharingRegistryException ex2) {
-            System.out.println("SharingRegistryException...\n");
-            System.out.println(ex2.getMessage());
+            log.error("SharingRegistryException: {}", ex2.getMessage(), ex2);
         } catch (TException ex3) {
-            System.out.println("TException...\n");
-            System.out.println(ex3.getMessage());
+            log.error("TException: {}", ex3.getMessage(), ex3);
         } finally {
-            System.out.println("In finally...\n");
-            transport.close();
+            log.info("Closing transport...");
+            if (transport != null) transport.close();
         }
     }
 }

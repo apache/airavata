@@ -24,8 +24,6 @@ package org.apache.airavata.orchestrator.core.utils;
  *
  */
 public class OrchestratorConstants {
-    public static final String AIRAVATA_PROPERTIES = "airavata-server.properties";
-    public static final int hotUpdateInterval = 1000;
     public static final String SUBMIT_INTERVAL = "submitter.interval";
     public static final String THREAD_POOL_SIZE = "threadpool.size";
     public static final String START_SUBMITTER = "start.submitter";

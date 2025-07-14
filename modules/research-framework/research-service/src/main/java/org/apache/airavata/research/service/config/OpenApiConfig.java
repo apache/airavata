@@ -62,9 +62,8 @@ public class OpenApiConfig {
                                         .flows(new OAuthFlows()
                                                 .authorizationCode(new OAuthFlow()
                                                         .authorizationUrl(
-                                                                "https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/auth")
-                                                        .tokenUrl(
-                                                                "https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/token")
+                                                                openIdConfigURL + "/protocol/openid-connect/auth")
+                                                        .tokenUrl(openIdConfigURL + "/protocol/openid-connect/token")
                                                         .scopes(new Scopes()
                                                                 .addString("openid", "openid")
                                                                 .addString("email", "email"))))));

@@ -772,7 +772,7 @@ public class TaskContext {
                 this.userProfile = getProfileClient()
                         .getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
             } catch (Exception e) {
-                logger.error("Failed to fetch the user profile for user id " + processModel.getUserName(), e);
+                logger.error("Failed to fetch the user profile for user id {}", processModel.getUserName(), e);
                 throw new TaskOnFailException(
                         "Failed to fetch the user profile for user id " + processModel.getUserName(), true, e);
             }

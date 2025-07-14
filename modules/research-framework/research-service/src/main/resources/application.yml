@@ -24,18 +24,18 @@ server:
 
 airavata:
   research-hub:
-    url: https://hub.dev.cybershuttle.org
+    url: http://airavata.host:20000
     dev-user: "airavata@apache.org"
     adminApiKey: "JUPYTER_ADMIN_API_KEY"
     limit: 10
   research-portal:
-    url: https://catalog.dev.cybershuttle.org
-    dev-url: http://localhost:5173
+    url: http://airavata.host:5173
+    dev-url: http://airavata.host:5173
   openid:
-    url: "https://auth.dev.cybershuttle.org/realms/default/.well-known/openid-configuration"
+    url: "http://airavata.host:18080/realms/default"
   user-profile:
     server:
-      url: api.dev.cybershuttle.org
+      url: airavata.host
       port: 8962
 
 spring:
@@ -44,7 +44,7 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
   datasource:
-    url: "jdbc:mariadb://localhost:13306/research_catalog"
+    url: "jdbc:mariadb://airavata.host:13306/research_catalog"
     username: "airavata"
     password: "123456"
     driver-class-name: org.mariadb.jdbc.Driver

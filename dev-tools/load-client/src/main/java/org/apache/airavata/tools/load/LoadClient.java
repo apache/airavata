@@ -29,9 +29,13 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.Future;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
 import org.yaml.snakeyaml.Yaml;
 
 public class LoadClient {
@@ -41,8 +45,7 @@ public class LoadClient {
     private String passPhrase = null;
     private String configFile;
 
-    private SecurityManager securityManager = new SecurityManager();
-    private Map<String, StorageResourceManager> storageResourceManagerStore = new HashMap<>();
+    private final Map<String, StorageResourceManager> storageResourceManagerStore = new HashMap<>();
     private Configurations configurations;
 
     public void init() throws Exception {
@@ -63,8 +66,6 @@ public class LoadClient {
         for (Configuration cfg : configurations.getConfigurations()) {
             cfg.getAuthzToken();
         }
-
-        securityManager.loadCertificate(configurations.getApiHost(), configurations.getApiPort());
         createStorageResourceManagers(configurations);
     }
 
@@ -74,16 +75,12 @@ public class LoadClient {
             UnitLoad unitLoad = new UnitLoad(
                     configurations.getApiHost(),
                     configurations.getApiPort(),
-                    securityManager.getTrustStorePath(),
-                    securityManager.getTrustStorePassword(),
                     storageResourceManagerStore.get(configuration.getStorageResourceId()),
                     configuration.getAuthzToken());
 
             StatusMonitor statusMonitor = new StatusMonitor(
                     configurations.getApiHost(),
                     configurations.getApiPort(),
-                    securityManager.getTrustStorePath(),
-                    securityManager.getTrustStorePassword(),
                     configuration.getAuthzToken());
 
             CompletionService<List<String>> completion = unitLoad.execute(configuration);
@@ -105,12 +102,10 @@ public class LoadClient {
 
     private void createStorageResourceManagers(Configurations configurations) throws Exception {
 
-        Airavata.Client airavataClient = AiravataClientFactory.createAiravataSecureClient(
+        Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(
                 configurations.getApiHost(),
                 configurations.getApiPort(),
-                securityManager.getTrustStorePath(),
-                securityManager.getTrustStorePassword(),
-                100000);
+                ServerSettings.isTLSEnabled());
 
         for (Configuration configuration : configurations.getConfigurations()) {
             String storageResourceId = configuration.getStorageResourceId();
@@ -135,7 +130,7 @@ public class LoadClient {
         storageResourceManagerStore.values().forEach(StorageResourceManager::destroy);
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
 
         Options options = new Options();
         options.addOption("config", true, "Load configuration file in yaml format");

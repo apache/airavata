@@ -76,63 +76,57 @@ public class SharingRegistryServer implements IServer {
                     new SharingRegistryServerHandler(createSharingRegistryDBInitConfig()));
 
             TServerTransport serverTransport;
+            TThreadPoolServer.Args options;
 
-            if (!ServerSettings.isSharingTLSEnabled()) {
+            if (!ServerSettings.isTLSEnabled()) {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
                 serverTransport = new TServerSocket(inetSocketAddress);
-                TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-                options.minWorkerThreads = 30;
-                server = new TThreadPoolServer(options.processor(processor));
+                options = new TThreadPoolServer.Args(serverTransport);
             } else {
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.requireClientAuth(true);
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
-                if (ServerSettings.isTrustStorePathDefined()) {
-                    TLSParams.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
-                }
                 TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
                         serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
-                TThreadPoolServer.Args options = new TThreadPoolServer.Args(TLSServerTransport);
-                options.minWorkerThreads = 30;
-                server = new TThreadPoolServer(options.processor(processor));
+                options = new TThreadPoolServer.Args(TLSServerTransport);
             }
+            options.minWorkerThreads = 30;
+            server = new TThreadPoolServer(options.processor(processor));
 
-            new Thread() {
-                public void run() {
-                    server.serve();
-                    setStatus(IServer.ServerStatus.STOPPED);
-                    logger.info("Sharing Registry Server Stopped.");
-                }
-            }.start();
-            new Thread() {
-                public void run() {
-                    while (!server.isServing()) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            break;
+            new Thread(() -> {
+                        server.serve();
+                        setStatus(ServerStatus.STOPPED);
+                        logger.info("Sharing Registry Server Stopped.");
+                    })
+                    .start();
+            new Thread(() -> {
+                        while (!server.isServing()) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                break;
+                            }
                         }
-                    }
-                    if (server.isServing()) {
+                        if (server.isServing()) {
 
-                        try {
-                            logger.info("Register sharing service with DB Event publishers");
-                            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(
-                                    Constants.PUBLISHERS);
+                            try {
+                                logger.info("Register sharing service with DB Event publishers");
+                                SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(
+                                        Constants.PUBLISHERS);
 
-                            logger.info("Start sharing service DB Event subscriber");
-                            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
-                        } catch (AiravataException | SharingRegistryException e) {
-                            logger.error("Error starting sharing service. Error setting up DB event services.");
-                            server.stop();
+                                logger.info("Start sharing service DB Event subscriber");
+                                SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+                            } catch (AiravataException | SharingRegistryException e) {
+                                logger.error("Error starting sharing service. Error setting up DB event services.");
+                                server.stop();
+                            }
+                            setStatus(ServerStatus.STARTED);
+                            logger.info("Starting Sharing Registry Server on Port " + serverPort);
+                            logger.info("Listening to Sharing Registry server clients ....");
                         }
-                        setStatus(IServer.ServerStatus.STARTED);
-                        logger.info("Starting Sharing Registry Server on Port " + serverPort);
-                        logger.info("Listening to Sharing Registry server clients ....");
-                    }
-                }
-            }.start();
+                    })
+                    .start();
 
         } catch (TTransportException e) {
             setStatus(IServer.ServerStatus.FAILED);
@@ -173,10 +167,6 @@ public class SharingRegistryServer implements IServer {
 
     public void setServer(TServer server) {
         this.server = server;
-    }
-
-    public boolean isTestMode() {
-        return testMode;
     }
 
     public void setTestMode(boolean testMode) {

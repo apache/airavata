@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="APIServerStarter" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="org.apache.airavata.ide.integration.APIServerStarter" />
+    <module name="ide-integration" />
+    <option name="PROGRAM_PARAMETERS" value="-Dopenjpa.DynamicEnhancementAgent=true" />
+    <option name="VM_PARAMETERS" value="-javaagent:$MAVEN_REPOSITORY$/org/apache/openjpa/openjpa/4.1.1/openjpa-4.1.1.jar" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -18,8 +18,8 @@
 # under the License.
 #
 
-keystore_src_path: "airavata.jks"
-cred_keystore_src_path: "airavata.jks"
+keystore_src_path: "airavata.p12"
+cred_keystore_src_path: "airavata.p12"
 
 apache_maven_version: "apache-maven-3.6.3"
 apache_maven_url: "https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz"

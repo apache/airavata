@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.service.profile.commons.repositories;
 
+import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.service.profile.commons.utils.JPAUtils;
 import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

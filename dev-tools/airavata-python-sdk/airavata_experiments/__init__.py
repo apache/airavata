@@ -17,11 +17,17 @@
 from __future__ import annotations
 
 from . import base, plan
-from .auth import login, logout
+from airavata_auth.device_auth import AuthContext
 from .runtime import list_runtimes, Runtime
 from typing import Any
 
-__all__ = ["login", "logout", "list_runtimes", "base", "plan"]
+
+context = AuthContext()
+
+def login():
+  context.login()
+
+__all__ = ["list_runtimes", "base", "plan", "login"]
 
 
 def display_runtimes(runtimes: list[Runtime]) -> None:

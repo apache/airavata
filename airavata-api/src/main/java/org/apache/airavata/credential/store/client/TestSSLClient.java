@@ -97,7 +97,7 @@ public class TestSSLClient {
             X509Certificate[] x509Certificates = new X509Certificate[1];
             KeyStore ks = KeyStore.getInstance("JKS");
             File keyStoreFile = new File(
-                    "/Users/smarru/code/airavata-master/modules/configuration/server/src/main/resources/airavata.jks");
+                    "/Users/smarru/code/airavata-master/modules/configuration/server/src/main/resources/airavata.p12");
             FileInputStream fis = new FileInputStream(keyStoreFile);
             char[] password = "airavata".toCharArray();
             ks.load(fis, password);

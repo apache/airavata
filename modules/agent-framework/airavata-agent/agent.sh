@@ -37,7 +37,6 @@
 CS_HOME=$HOME/cybershuttle
 AGENT=""
 SERVER=""
-CONTAINER=""
 LIBRARIES=""
 ENVIRON=""
 PIP=""
@@ -47,12 +46,11 @@ MOUNTS=()
 ln -s $CS_HOME/application $PWD/application
 
 # parse command line args
-PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,container:,libraries:,pip:,mounts:,environ: -n "$0" -- "$@")
+PARSED_OPTIONS=$(getopt -o '' --long server:,agent:,libraries:,pip:,mounts:,environ: -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
     echo "Usage: $0 \
     --server SERVER \
     --agent AGENT \
-    --container CONTAINER \
     --libraries LIBRARIES \
     --pip PIP \
     --mounts MOUNTS \
@@ -64,7 +62,6 @@ while true; do
     case "$1" in
         --server)    SERVER="$2";  shift 2 ;;
         --agent)     AGENT="$2";   shift 2 ;;
-        --container) CONTAINER="$2"; shift 2 ;;
         --libraries) LIBRARIES="$2"; shift 2 ;;
         --pip)       PIP="$2"; shift 2 ;;
         --mounts)    
@@ -85,7 +82,6 @@ done
 echo "CS_HOME=$CS_HOME"
 echo "AGENT=$AGENT"
 echo "SERVER=$SERVER"
-echo "CONTAINER=$CONTAINER"
 echo "LIBRARIES=$LIBRARIES"
 echo "PIP=$PIP"
 echo "MOUNTS=${MOUNTS[@]}"
@@ -107,7 +103,7 @@ find $CS_HOME/workspace -mindepth 1 -maxdepth 1 -type d -ctime +3 | xargs -n1 -I
 # fetch binaries
 wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/airavata-agent-linux-amd64 -O airavata-agent
 wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/kernel.py -O kernel.py
-wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.1.1-0/micromamba-linux-64 -O micromamba
+wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.3.0-1/micromamba-linux-64 -O micromamba
 
 chmod +x airavata-agent micromamba
 

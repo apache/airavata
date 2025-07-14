@@ -44,3 +44,10 @@ log "Research Service started."
 log "Starting the File Service..."
 ./apache-airavata-file-server-0.21-SNAPSHOT/bin/file-service.sh -d start
 log "File Service started."
+
+# ================================
+# Start the REST proxy
+# ================================
+log "Starting the REST proxy..."
+./apache-airavata-restproxy-0.21-SNAPSHOT/bin/restproxy.sh -d start
+log "REST proxy started."
