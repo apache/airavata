@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.registry.core.entities.expcatalog.JobEntity;
@@ -85,6 +86,7 @@ public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity,
             jobEntity.getJobStatuses().forEach(jobStatusEntity -> {
                 jobStatusEntity.setJobId(jobId);
                 jobStatusEntity.setTaskId(taskId);
+                jobStatusEntity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
             });
         }
     }
