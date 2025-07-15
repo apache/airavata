@@ -24,10 +24,5 @@ public class JPAConstants {
     public static final String KEY_JDBC_USER = "profile.service.jdbc.user";
     public static final String KEY_JDBC_PASSWORD = "profile.service.jdbc.password";
     public static final String KEY_JDBC_DRIVER = "profile.service.jdbc.driver";
-
-    // TODO: is this needed?
-    public static final String KEY_DERBY_START_ENABLE = "profile.service.start.derby.server.mode";
     public static final String VALIDATION_QUERY = "profile.service.validationQuery";
-    public static final String JPA_CACHE_SIZE = "profile.service.jpa.cache.size";
-    public static final String ENABLE_CACHING = "profile.service.cache.enable";
 }

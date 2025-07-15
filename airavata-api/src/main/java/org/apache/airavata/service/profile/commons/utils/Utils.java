@@ -61,25 +61,6 @@ public class Utils {
         }
     }
 
-    public static int getJPACacheSize() {
-        try {
-            String cache = ServerSettings.getSetting(JPAConstants.JPA_CACHE_SIZE, "5000");
-            return Integer.parseInt(cache);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return -1;
-        }
-    }
-
-    public static String isCachingEnabled() {
-        try {
-            return ServerSettings.getSetting(JPAConstants.ENABLE_CACHING, "true");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return "true";
-        }
-    }
-
     public static String getJDBCUser() {
         try {
             return ServerSettings.getSetting(JPAConstants.KEY_JDBC_USER);

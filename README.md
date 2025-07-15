@@ -202,10 +202,10 @@ distribution
 ├── services_up.sh
 └── vault
     ├── airavata-server.properties
-    ├── airavata.p12
+    ├── airavata.sym.p12
     ├── application-agent-service.yml
     ├── application-research-service.yml
-    ├── email-config.yaml
+    ├── email-config.yml
     └── log4j2.xml
 
 2 directories, 16 files
@@ -213,11 +213,13 @@ distribution
 
 **What's in the vault?**
 
-* `airavata.p12` - contains the keys used to secure SSH credentials, etc.
-* `email-config.yaml` - contains the email addresses observed by the email monitor.
+* `airavata.sym.p12` - contains the symmetric key used to secure stored credentials.
 * `airavata-server.properties` - config file for the airavata api server.
 * `application-agent-service.yml` - config file for the airavata agent service.
+* `application-file-server.yml` - config file for the airavata file server.
 * `application-research-service.yml` - config file for the airavata research service.
+* `application-restproxy.properties` - config file for the airavata rest proxy.
+* `email-config.yml` - contains the email addresses observed by the email monitor.
 * `log4j2.xml` - contains the Log4j configuration for all airavata services.
 
 Next, start the services using the deployment scripts.

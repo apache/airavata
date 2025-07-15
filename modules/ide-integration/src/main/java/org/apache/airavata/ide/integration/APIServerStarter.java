@@ -29,7 +29,7 @@ import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
 
 public class APIServerStarter {
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         DBEventManagerRunner dbEventManagerRunner = new DBEventManagerRunner();
         RegistryAPIServer registryAPIServer = new RegistryAPIServer();
         CredentialStoreServer credentialStoreServer = new CredentialStoreServer();
