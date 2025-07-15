@@ -50,7 +50,7 @@ public class WorkflowEntity implements Serializable {
     private String graph;
 
     @Column(name = "IMAGE")
-    private ByteBuffer image;
+    private byte[] image;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -124,12 +124,12 @@ public class WorkflowEntity implements Serializable {
         this.graph = graph;
     }
 
-    public ByteBuffer getImage() {
+    public byte[] getImage() {
 
         return this.image;
     }
 
-    public void setImage(ByteBuffer image) {
+    public void setImage(byte[] image) {
 
         this.image = image;
     }

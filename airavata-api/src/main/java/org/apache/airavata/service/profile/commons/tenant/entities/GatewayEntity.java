@@ -237,7 +237,7 @@ public class GatewayEntity {
 
     @PrePersist
     void createdAt() {
-        this.requestCreationTime = System.currentTimeMillis();
+        this.setRequestCreationTime(System.currentTimeMillis());
     }
 
     @Override
@@ -258,25 +258,25 @@ public class GatewayEntity {
     @Override
     public String toString() {
         return "GatewayEntity{" + "airavataInternalGatewayId='"
-                + airavataInternalGatewayId + '\'' + ", gatewayId='"
-                + gatewayId + '\'' + ", gatewayName='"
-                + gatewayName + '\'' + ", domain='"
-                + domain + '\'' + ", emailAddress='"
-                + emailAddress + '\'' + ", gatewayApprovalStatus='"
-                + gatewayApprovalStatus + '\'' + ", gatewayAcronym='"
-                + gatewayAcronym + '\'' + ", gatewayUrl='"
-                + gatewayUrl + '\'' + ", gatewayPublicAbstract='"
-                + gatewayPublicAbstract + '\'' + ", reviewProposalDescription='"
-                + reviewProposalDescription + '\'' + ", gatewayAdminFirstName='"
-                + gatewayAdminFirstName + '\'' + ", gatewayAdminLastName='"
-                + gatewayAdminLastName + '\'' + ", gatewayAdminEmail='"
-                + gatewayAdminEmail + '\'' + ", identityServerUserName='"
-                + identityServerUserName + '\'' + ", identityServerPasswordToken='"
-                + identityServerPasswordToken + '\'' + ", declinedReason='"
-                + declinedReason + '\'' + ", oauthClientId='"
-                + oauthClientId + '\'' + ", oauthClientSecret='"
-                + oauthClientSecret + '\'' + ", requestCreationTime="
-                + requestCreationTime + ", requesterUsername='"
-                + requesterUsername + '\'' + '}';
+                + getAiravataInternalGatewayId() + '\'' + ", gatewayId='"
+                + getGatewayId() + '\'' + ", gatewayName='"
+                + getGatewayName() + '\'' + ", domain='"
+                + getDomain() + '\'' + ", emailAddress='"
+                + getEmailAddress() + '\'' + ", gatewayApprovalStatus='"
+                + getGatewayApprovalStatus() + '\'' + ", gatewayAcronym='"
+                + getGatewayAcronym() + '\'' + ", gatewayUrl='"
+                + getGatewayUrl() + '\'' + ", gatewayPublicAbstract='"
+                + getGatewayPublicAbstract() + '\'' + ", reviewProposalDescription='"
+                + getReviewProposalDescription() + '\'' + ", gatewayAdminFirstName='"
+                + getGatewayAdminFirstName() + '\'' + ", gatewayAdminLastName='"
+                + getGatewayAdminLastName() + '\'' + ", gatewayAdminEmail='"
+                + getGatewayAdminEmail() + '\'' + ", identityServerUserName='"
+                + getIdentityServerUserName() + '\'' + ", identityServerPasswordToken='"
+                + getIdentityServerPasswordToken() + '\'' + ", declinedReason='"
+                + getDeclinedReason() + '\'' + ", oauthClientId='"
+                + getOauthClientId() + '\'' + ", oauthClientSecret='"
+                + getOauthClientSecret() + '\'' + ", requestCreationTime="
+                + getRequestCreationTime() + ", requesterUsername='"
+                + getRequesterUsername() + '\'' + '}';
     }
 }
