@@ -21,6 +21,7 @@ package org.apache.airavata.registry.core.repositories.replicacatalog;
 
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.*;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
@@ -82,6 +83,8 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         }
 
         if (dataProductEntity.getReplicaLocations() != null) {
+            // set replica validity for 7 days
+            final Timestamp validUntilTime = new Timestamp(currentTime.getTime() + Duration.ofDays(7).toMillis());
             logger.debug("Populating the product URI for ReplicaLocations objects for the Data Product");
             dataProductEntity.getReplicaLocations().forEach(dataReplicaLocationEntity -> {
                 dataReplicaLocationEntity.setProductUri(productUri);
@@ -92,6 +95,7 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
                     dataReplicaLocationEntity.setCreationTime(currentTime);
                 }
                 dataReplicaLocationEntity.setLastModifiedTime(currentTime);
+                dataReplicaLocationEntity.setValidUntilTime(validUntilTime);
             });
         }
 
