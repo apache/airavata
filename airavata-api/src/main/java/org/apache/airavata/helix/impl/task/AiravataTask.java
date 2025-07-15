@@ -645,11 +645,18 @@ public abstract class AiravataTask extends AbstractTask {
 
     // TODO this is inefficient. Try to use a connection pool
     public static RegistryService.Client getRegistryServiceClient() {
+        final String serverHost;
+        final int serverPort;
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
+            serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            serverHost = ServerSettings.getRegistryServerHost();
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException("Unable to get registry server host or port...", e);
+        }
+        try {
+            logger.info("Connecting to registry server on {}:{}", serverHost, serverPort);
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
+        } catch (RegistryServiceException e) {
             throw new RuntimeException("Unable to create registry client...", e);
         }
     }
