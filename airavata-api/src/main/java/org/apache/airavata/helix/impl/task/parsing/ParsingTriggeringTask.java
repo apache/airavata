@@ -45,8 +45,8 @@ public class ParsingTriggeringTask extends AiravataTask {
 
         if (producer == null) {
             Properties props = new Properties();
-            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.parsing.broker.url"));
-            props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("kafka.parsing.broker.publisher.id"));
+            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
+            props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("data.parser.broker.publisher.id"));
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ProcessCompletionMessageSerializer.class.getName());
             producer = new KafkaProducer<String, ProcessCompletionMessage>(props);
@@ -56,9 +56,7 @@ public class ParsingTriggeringTask extends AiravataTask {
     public void submitMessageToParserEngine(ProcessCompletionMessage completionMessage)
             throws ExecutionException, InterruptedException, ApplicationSettingsException {
         final ProducerRecord<String, ProcessCompletionMessage> record = new ProducerRecord<>(
-                ServerSettings.getSetting("kafka.parser.topic"),
-                completionMessage.getExperimentId(),
-                completionMessage);
+                ServerSettings.getSetting("data.parser.topic"), completionMessage.getExperimentId(), completionMessage);
         RecordMetadata recordMetadata = producer.send(record).get();
         producer.flush();
     }

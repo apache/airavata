@@ -218,7 +218,7 @@ services:
       - regserver.server.port=8970
       - email.based.monitor.address=CHANGEME
       - email.based.monitor.password=CHANGEME
-      - job.monitor.broker.url=kafka:9092
+      - kafka.broker.url=kafka:9092
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-email-monitor/bin/email-monitor.sh"]
 
   db:

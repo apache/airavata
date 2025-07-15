@@ -56,7 +56,7 @@ public class ParserWorkflowManager extends WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
     private static final CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
-    private String parserStorageResourceId = ServerSettings.getSetting("parser.storage.resource.id");
+    private String parserStorageResourceId = ServerSettings.getSetting("data.parser.storage.resource.id");
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(
@@ -440,14 +440,14 @@ public class ParserWorkflowManager extends WorkflowManager {
 
         final Properties props = new Properties();
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.parsing.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.parser.broker.consumer.group"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("data.parser.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
 
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.parser.topic")));
+        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("data.parser.topic")));
 
         logger.info("Starting the kafka consumer..");
 

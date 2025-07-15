@@ -30,24 +30,25 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public class MessageProducer {
 
     final Producer<String, JobStatusResult> producer;
+    final String jobMonitorQueue;
 
     public MessageProducer() throws ApplicationSettingsException {
         producer = createProducer();
+        jobMonitorQueue = ServerSettings.getSetting("job.monitor.broker.topic");
     }
 
     private Producer<String, JobStatusResult> createProducer() throws ApplicationSettingsException {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("job.monitor.broker.url"));
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
         props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("job.monitor.broker.publisher.id"));
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JobStatusResultSerializer.class.getName());
         return new KafkaProducer<String, JobStatusResult>(props);
     }
 
-    public void submitMessageToQueue(JobStatusResult jobStatusResult)
-            throws ExecutionException, InterruptedException, ApplicationSettingsException {
-        final ProducerRecord<String, JobStatusResult> record = new ProducerRecord<>(
-                ServerSettings.getSetting("job.monitor.broker.topic"), jobStatusResult.getJobId(), jobStatusResult);
+    public void submitMessageToQueue(JobStatusResult jobStatusResult) throws ExecutionException, InterruptedException {
+        var jobId = jobStatusResult.getJobId();
+        final var record = new ProducerRecord<>(jobMonitorQueue, jobId, jobStatusResult);
         RecordMetadata recordMetadata = producer.send(record).get();
         producer.flush();
     }

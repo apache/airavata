@@ -92,7 +92,7 @@ public class PostWorkflowManager extends WorkflowManager {
     private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("job.monitor.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -100,7 +100,7 @@ public class PostWorkflowManager extends WorkflowManager {
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.broker.topic")));
+        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("job.monitor.broker.topic")));
         return consumer;
     }
 
