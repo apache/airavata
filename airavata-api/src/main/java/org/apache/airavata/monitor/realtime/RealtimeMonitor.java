@@ -40,22 +40,26 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
-    private RealtimeJobStatusParser parser;
+    private final RealtimeJobStatusParser parser;
+    private final String publisherId;
+    private final String brokerTopic;
 
     public RealtimeMonitor() throws ApplicationSettingsException {
         parser = new RealtimeJobStatusParser();
+        publisherId = ServerSettings.getSetting("job.monitor.realtime.publisher.id");
+        brokerTopic = ServerSettings.getSetting("realtime.monitor.broker.topic");
     }
 
     private Consumer<String, String> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("realtime.monitor.broker.url"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("realtime.monitor.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Create the consumer using props.
         final Consumer<String, String> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("realtime.monitor.broker.topic")));
+        consumer.subscribe(Collections.singletonList(brokerTopic));
         return consumer;
     }
 
@@ -81,8 +85,8 @@ public class RealtimeMonitor extends AbstractMonitor {
     }
 
     private void process(String value, RegistryService.Client registryClient) throws MonitoringException {
-        logger.info("Received data " + value);
-        JobStatusResult statusResult = parser.parse(value, registryClient);
+        logger.info("Received Job Status [{}]: {}", publisherId, value);
+        JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);

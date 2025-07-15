@@ -24,7 +24,6 @@ import com.google.gson.JsonSyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
@@ -41,9 +40,9 @@ public class RealtimeJobStatusParser {
         for (int i = 0; i < 3; i++) {
 
             List<JobModel> jobsOfTask = registryClient.getJobs("taskId", taskId);
-            if (jobsOfTask == null || jobsOfTask.size() == 0) {
+            if (jobsOfTask == null || jobsOfTask.isEmpty()) {
                 // Retry after 2s
-                logger.warn("No jobs for task " + taskId + ". Retrying in 2 seconds");
+                logger.warn("No jobs for task {}. Retrying in 2 seconds", taskId);
                 Thread.sleep(2000);
             } else {
                 Optional<JobModel> filtered = jobsOfTask.stream()
@@ -52,7 +51,7 @@ public class RealtimeJobStatusParser {
                 if (filtered.isPresent()) {
                     return filtered.get().getJobId();
                 } else {
-                    logger.warn("No job for job name " + jobName + " and task " + taskId + ". Retrying in 2 seconds");
+                    logger.warn("No job for job name {} and task {}. Retrying in 2 seconds", jobName, taskId);
                     Thread.sleep(2000);
                 }
             }
@@ -60,7 +59,7 @@ public class RealtimeJobStatusParser {
         return null;
     }
 
-    public JobStatusResult parse(String rawMessage, RegistryService.Client registryClient) {
+    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService.Client registryClient) {
 
         try {
             Map asMap = new Gson().fromJson(rawMessage, Map.class);
@@ -74,44 +73,26 @@ public class RealtimeJobStatusParser {
                     try {
                         String jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registryClient);
                         if (jobId == null) {
-                            logger.error("No job id for job name " + jobName);
+                            logger.error("No job id for job name {}", jobName);
                             return null;
                         }
 
-                        JobState jobState = null;
-
-                        switch (status) {
-                            case "RUNNING":
-                                jobState = JobState.ACTIVE;
-                                break;
-                            case "COMPLETED":
-                                jobState = JobState.COMPLETE;
-                                break;
-                            case "FAILED":
-                                jobState = JobState.FAILED;
-                                break;
-                            case "SUBMITTED":
-                                jobState = JobState.SUBMITTED;
-                                break;
-                            case "QUEUED":
-                                jobState = JobState.QUEUED;
-                                break;
-                            case "CANCELED":
-                                jobState = JobState.CANCELED;
-                                break;
-                            case "SUSPENDED":
-                                jobState = JobState.SUSPENDED;
-                                break;
-                            case "UNKNOWN":
-                                jobState = JobState.UNKNOWN;
-                                break;
-                            case "NON_CRITICAL_FAIL":
-                                jobState = JobState.NON_CRITICAL_FAIL;
-                                break;
-                        }
+                        JobState jobState =
+                                switch (status) {
+                                    case "RUNNING" -> JobState.ACTIVE;
+                                    case "COMPLETED" -> JobState.COMPLETE;
+                                    case "FAILED" -> JobState.FAILED;
+                                    case "SUBMITTED" -> JobState.SUBMITTED;
+                                    case "QUEUED" -> JobState.QUEUED;
+                                    case "CANCELED" -> JobState.CANCELED;
+                                    case "SUSPENDED" -> JobState.SUSPENDED;
+                                    case "UNKNOWN" -> JobState.UNKNOWN;
+                                    case "NON_CRITICAL_FAIL" -> JobState.NON_CRITICAL_FAIL;
+                                    default -> null;
+                                };
 
                         if (jobState == null) {
-                            logger.error("Invalid job state " + status);
+                            logger.error("Invalid job state {}", status);
                             return null;
                         }
 
@@ -119,23 +100,22 @@ public class RealtimeJobStatusParser {
                         jobStatusResult.setJobId(jobId);
                         jobStatusResult.setJobName(jobName);
                         jobStatusResult.setState(jobState);
-                        jobStatusResult.setPublisherName(
-                                ServerSettings.getSetting("job.monitor.realtime.publisher.id"));
+                        jobStatusResult.setPublisherName(publisherId);
                         return jobStatusResult;
                     } catch (Exception e) {
-                        logger.error("Failed to fetch job id for job name " + jobName);
+                        logger.error("Failed to fetch job id for job name {}", jobName);
                         return null;
                     }
                 } else {
-                    logger.error("Job name, taskId or status is null in message " + rawMessage);
+                    logger.error("Job name, taskId or status is null in message {}", rawMessage);
                     return null;
                 }
             } else {
-                logger.error("Data structure of message " + rawMessage + " is not correct");
+                logger.error("Data structure of message {} is not correct", rawMessage);
                 return null;
             }
         } catch (JsonSyntaxException e) {
-            logger.error("Failed to parse raw data " + rawMessage + " to type Map", e);
+            logger.error("Failed to parse raw data {} to type Map", rawMessage, e);
             return null;
         }
     }

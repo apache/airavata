@@ -52,10 +52,7 @@ public class ProxyController {
         producer = new KafkaProducer<>(props);
     }
 
-    @PostMapping(
-            value = "/topics/{topic}",
-            consumes = "application/vnd.kafka.json.v2+json",
-            produces = "application/vnd.kafka.v2+json")
+    @PostMapping(value = "/topics/{topic}", consumes = "application/vnd.kafka.json.v2+json")
     public ResponseEntity<?> postToKafka(@PathVariable("topic") String topic, @RequestBody String body) {
         try {
             JsonNode root = objectMapper.readTree(body);

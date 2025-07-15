@@ -62,6 +62,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private Message[] flushUnseenMessages;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
     private long emailExpirationTimeMinutes;
+    private String publisherId;
 
     public EmailBasedMonitor() throws Exception {
         init();
@@ -76,6 +77,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
         folderName = ServerSettings.getEmailBasedMonitorFolderName();
         emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("email.expiration.minutes"));
+        publisherId = ServerSettings.getSetting("job.monitor.email.publisher.id");
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
             throw new AiravataException(
                     "Unsupported store protocol , expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);
@@ -143,7 +145,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         log.info("[EJM]: Added monitor Id : {} to email based monitor map", jobId);
     }
 
-    private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
+    private JobStatusResult parse(Message message, String publisherId) throws MessagingException, AiravataException {
         Address fromAddress = message.getFrom()[0];
         String addressStr = fromAddress.toString();
         ResourceJobManagerType jobMonitorType = getJobMonitorType(addressStr);
@@ -156,7 +158,11 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
         try {
             JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
-            jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.email.publisher.id"));
+            jobStatusResult.setPublisherName(publisherId);
+            var jobId = jobStatusResult.getJobId();
+            var jobName = jobStatusResult.getJobName();
+            var jobStatus = jobStatusResult.getState().getValue();
+            log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
             return jobStatusResult;
         } catch (Exception e) {
             getRegistryClientPool().returnBrokenResource(regClient);
@@ -252,11 +258,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         List<Message> unreadMessages = new ArrayList<>();
         for (Message message : searchMessages) {
             try {
-                log.info("Parsing the job status message");
-                JobStatusResult jobStatusResult = parse(message);
-                log.info("Job message parsed. Job Id " + jobStatusResult.getJobId() + ", Job Name "
-                        + jobStatusResult.getJobName() + ", Job State "
-                        + jobStatusResult.getState().getValue());
+                log.info("Received Job Status [{}]: {}", publisherId, message);
+                JobStatusResult jobStatusResult = parse(message, publisherId);
                 submitJobStatus(jobStatusResult);
                 log.info("Submitted the job {} status to queue", jobStatusResult.getJobId());
                 processedMessages.add(message);
