@@ -83,8 +83,6 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         }
 
         if (dataProductEntity.getReplicaLocations() != null) {
-            // set replica validity for 7 days
-            final Timestamp validUntilTime = new Timestamp(currentTime.getTime() + Duration.ofDays(7).toMillis());
             logger.debug("Populating the product URI for ReplicaLocations objects for the Data Product");
             dataProductEntity.getReplicaLocations().forEach(dataReplicaLocationEntity -> {
                 dataReplicaLocationEntity.setProductUri(productUri);
@@ -95,7 +93,9 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
                     dataReplicaLocationEntity.setCreationTime(currentTime);
                 }
                 dataReplicaLocationEntity.setLastModifiedTime(currentTime);
-                dataReplicaLocationEntity.setValidUntilTime(validUntilTime);
+                // set replica validity for 7 days
+                dataReplicaLocationEntity.setValidUntilTime(
+                        new Timestamp(currentTime.getTime() + Duration.ofDays(7).toMillis()));
             });
         }
 
