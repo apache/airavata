@@ -26,7 +26,6 @@ import org.apache.airavata.common.utils.DBEventService;
 public class Constants {
     public static final String REGISTRY_SERVER_PORT = "regserver.server.port";
     public static final String REGISTRY_SERVER_HOST = "regserver.server.host";
-    public static final String REGISTRY_SERVER_NAME = "regserver.server.name";
     public static final String REGISTRY_SERVER_MIN_THREADS = "regserver.server.min.threads";
 
     public static final List<String> DB_EVENT_SUBSCRIBERS = new ArrayList<String>() {

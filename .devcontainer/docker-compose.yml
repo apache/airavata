@@ -127,8 +127,8 @@ services:
     container_name: proxy
     restart: always
     volumes:
-      - ../vault/server.key:/vault/server.key:ro
-      - ../vault/server.crt:/vault/server.crt:ro
+      - ../vault.local/server.key:/vault/server.key:ro
+      - ../vault.local/server.crt:/vault/server.crt:ro
       - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./proxy/http.conf:/etc/nginx/conf.d/http.conf:ro
       - ./proxy/stream.conf:/etc/nginx/conf.d/stream.conf:ro

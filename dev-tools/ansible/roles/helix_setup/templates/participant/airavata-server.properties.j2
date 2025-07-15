@@ -67,7 +67,6 @@ prefetch.count=200
 # Zookeeper Server Configuration
 ###########################################################################
 zookeeper.server.connection={{ zookeeper_connection_url }}
-zookeeper.timeout=30000
 
 ###########################################################################
 # Data Parser Configurations
@@ -99,13 +98,6 @@ max.archive.size={{ max_archive_size }}
 ###########################################################################
 thrift.client.pool.abandoned.removal.enabled={{ thrift_client_pool_abandoned_removal_enabled }}
 thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_removal_logged }}
-
-###########################################################################
-# Usage Reporting Configuration
-###########################################################################
-
-usage.reporting.key={{ usage_reporting_key }}
-usage.reporting.endpoint=https://xsede-xdcdb-api.xsede.org/gateway/v2/job_attributes
 
 ###########################################################################
 # Platform Monitoring Configuration

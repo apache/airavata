@@ -75,8 +75,8 @@
   - { name: realtime-monitor, dir: "{{ realtime_monitor_version }}" }
 
 - name: Copy email-monitor configuration file
-  template: src=email-monitor/email-config.yaml.j2
-            dest="{{ helix_dir }}/{{ email_monitor_version }}/conf/email-config.yaml"
+  template: src=email-monitor/email-config.yml
+            dest="{{ helix_dir }}/{{ email_monitor_version }}/conf/email-config.yml"
             owner={{ user }}
             group={{ group }}
             mode="u=rw,g=r,o=r"

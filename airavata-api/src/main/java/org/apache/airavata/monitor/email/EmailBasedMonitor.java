@@ -87,7 +87,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
         InputStream emailConfigStream =
-                ApplicationSettings.loadFile("email-config.yaml").openStream();
+                ApplicationSettings.loadFile("email-config.yml").openStream();
         Object load = yaml.load(emailConfigStream);
 
         if (load == null) {
