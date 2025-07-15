@@ -21,7 +21,6 @@ package org.apache.airavata.registry.core.entities.workflowcatalog;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.List;
 
