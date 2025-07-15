@@ -51,7 +51,6 @@ import org.apache.airavata.patform.monitoring.CountMonitor;
 import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -338,16 +337,19 @@ public class PostWorkflowManager extends WorkflowManager {
         new Thread(() -> {
                     while (true) {
                         final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
-                        CompletionService<Boolean> executorCompletionService =
-                                new ExecutorCompletionService<>(processingPool);
-                        List<Future<Boolean>> processingFutures = new ArrayList<>();
+                        var executorCompletionService = new ExecutorCompletionService<>(processingPool);
+                        var processingFutures = new ArrayList<>();
 
-                        for (TopicPartition partition : consumerRecords.partitions()) {
-                            List<ConsumerRecord<String, JobStatusResult>> partitionRecords =
-                                    consumerRecords.records(partition);
+                        for (var topicPartition : consumerRecords.partitions()) {
+                            var partitionRecords = consumerRecords.records(topicPartition);
                             logger.info("Received job records {}", partitionRecords.size());
 
-                            for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
+                            for (var record : partitionRecords) {
+                                var topic = topicPartition.topic();
+                                var partition = topicPartition.partition();
+                                var key = record.key();
+                                var value = record.value();
+                                logger.info("received post on {}/{}: {}->{}", topic, partition, key, value);
                                 logger.info(
                                         "Submitting {} to process in thread pool",
                                         record.value().getJobId());
@@ -365,11 +367,11 @@ public class PostWorkflowManager extends WorkflowManager {
                                 }));
 
                                 consumer.commitSync(Collections.singletonMap(
-                                        partition, new OffsetAndMetadata(record.offset() + 1)));
+                                        topicPartition, new OffsetAndMetadata(record.offset() + 1)));
                             }
                         }
 
-                        for (Future<Boolean> f : processingFutures) {
+                        for (var f : processingFutures) {
                             try {
                                 executorCompletionService.take().get();
                             } catch (Exception e) {

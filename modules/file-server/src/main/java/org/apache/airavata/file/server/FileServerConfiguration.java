@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.file.server;
 
+import java.time.Duration;
 import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
@@ -55,9 +56,9 @@ public class FileServerConfiguration {
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestWhileIdle(true);
         // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
         poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWaitMillis(3000);
+        poolConfig.setMaxWait(Duration.ofSeconds(3));
 
         return new ThriftClientPool<>(RegistryService.Client::new, poolConfig, registryServerHost, registryServerPort);
     }

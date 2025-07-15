@@ -26,15 +26,18 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageProducer {
 
+    private static final Logger log = LoggerFactory.getLogger(MessageProducer.class);
     final Producer<String, JobStatusResult> producer;
-    final String jobMonitorQueue;
+    final String topic;
 
     public MessageProducer() throws ApplicationSettingsException {
         producer = createProducer();
-        jobMonitorQueue = ServerSettings.getSetting("job.monitor.broker.topic");
+        topic = ServerSettings.getSetting("job.monitor.broker.topic");
     }
 
     private Producer<String, JobStatusResult> createProducer() throws ApplicationSettingsException {
@@ -43,13 +46,14 @@ public class MessageProducer {
         props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("job.monitor.broker.publisher.id"));
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JobStatusResultSerializer.class.getName());
-        return new KafkaProducer<String, JobStatusResult>(props);
+        return new KafkaProducer<>(props);
     }
 
     public void submitMessageToQueue(JobStatusResult jobStatusResult) throws ExecutionException, InterruptedException {
         var jobId = jobStatusResult.getJobId();
-        final var record = new ProducerRecord<>(jobMonitorQueue, jobId, jobStatusResult);
-        RecordMetadata recordMetadata = producer.send(record).get();
+        final var record = new ProducerRecord<>(topic, jobId, jobStatusResult);
+        producer.send(record).get();
+        log.info("MessageProducer posted to {}: {}->{}", topic, jobId, jobStatusResult);
         producer.flush();
     }
 }

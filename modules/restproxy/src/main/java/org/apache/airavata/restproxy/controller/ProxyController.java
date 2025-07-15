@@ -23,18 +23,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import java.util.Properties;
-import java.util.concurrent.Future;
 import org.apache.airavata.restproxy.RestProxyConfiguration;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ProxyController {
+    private static final Logger log = LoggerFactory.getLogger(ProxyController.class);
+
     private KafkaProducer<String, String> producer;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestProxyConfiguration restProxyConfiguration;
@@ -47,6 +49,7 @@ public class ProxyController {
     public void init() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, restProxyConfiguration.getBrokerUrl());
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, "RestProxyProducer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producer = new KafkaProducer<>(props);
@@ -63,9 +66,11 @@ public class ProxyController {
                 JsonNode valueNode = record.get("value");
                 if (valueNode == null) continue;
                 String valueStr = objectMapper.writeValueAsString(valueNode);
-                ProducerRecord<String, String> kafkaRecord = new ProducerRecord<>(topic, null, valueStr);
-                Future<RecordMetadata> future = producer.send(kafkaRecord);
-                future.get();
+                log.info("Received message for topic {}: {}", topic, valueStr);
+                var kafkaRecord = new ProducerRecord<String, String>(topic, valueStr);
+                producer.send(kafkaRecord).get();
+                log.info("RestProxyProducer posted to topic {}: {}", topic, valueStr);
+                producer.flush();
             }
             return ResponseEntity.ok().build();
         } catch (Exception e) {
