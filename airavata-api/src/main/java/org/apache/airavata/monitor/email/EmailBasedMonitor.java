@@ -29,6 +29,7 @@ import jakarta.mail.Store;
 import jakarta.mail.search.FlagTerm;
 import jakarta.mail.search.SearchTerm;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
@@ -50,17 +51,14 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
 
-    private boolean stopMonitoring = false;
-    private Session session;
     private Store store;
     private Folder emailFolder;
     private Properties properties;
     private String host, emailAddress, password, storeProtocol, folderName;
-    private Map<ResourceJobManagerType, EmailParser> emailParserMap =
-            new HashMap<ResourceJobManagerType, EmailParser>();
-    private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
+    private final Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<>();
+    private final Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
-    private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
+    private final Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
     private long emailExpirationTimeMinutes;
     private String publisherId;
 
@@ -84,7 +82,6 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         }
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
-        long period = 1000 * 60 * 5; // five minute delay between successive task executions.
     }
 
     private void loadContext() throws Exception {
@@ -184,16 +181,16 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     @Override
     public void run() {
 
-        while (!stopMonitoring && !ServerSettings.isStopAllThreads()) {
+        while (!ServerSettings.isStopAllThreads()) {
             try {
-                session = Session.getDefaultInstance(properties);
+                Session session = Session.getDefaultInstance(properties);
                 store = session.getStore(storeProtocol);
                 store.connect(host, emailAddress, password);
                 emailFolder = store.getFolder(folderName);
-                // first time we search for all unread messages.
+                // first we search for all unread messages.
                 SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
-                    Thread.sleep(ServerSettings.getEmailMonitorPeriod()); // sleep a bit - get a rest till job finishes
+                while (!ServerSettings.isStopAllThreads()) {
+                    Thread.sleep(ServerSettings.getEmailMonitorPeriod()); // sleep for long enough
                     if (!store.isConnected()) {
                         store.connect();
                         emailFolder = store.getFolder(folderName);
@@ -221,7 +218,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                         if (searchMessages == null || searchMessages.length == 0) {
                             log.info("[EJM]: No new email messages");
                         } else {
-                            log.info("[EJM]: " + searchMessages.length + " new email/s received");
+                            log.info("[EJM]: {} new email/s received", searchMessages.length);
                             processMessages(searchMessages);
                         }
                         emailFolder.close(false);
@@ -257,21 +254,21 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         List<Message> processedMessages = new ArrayList<>();
         List<Message> unreadMessages = new ArrayList<>();
         for (Message message : searchMessages) {
+            var msgHash = message.hashCode();
             try {
-                log.info("Received Job Status [{}]: {}", publisherId, message);
                 JobStatusResult jobStatusResult = parse(message, publisherId);
+                log.info("read JobStatusUpdate<{}> from {}: {}", msgHash, publisherId, jobStatusResult);
                 submitJobStatus(jobStatusResult);
-                log.info("Submitted the job {} status to queue", jobStatusResult.getJobId());
                 processedMessages.add(message);
             } catch (Exception e) {
-                log.error("Error in submitting job status to queue", e);
-                if ((System.currentTimeMillis() - message.getReceivedDate().getTime())
-                        > emailExpirationTimeMinutes * 60 * 1000) {
-                    log.warn("Marking job status email as read as it was expired");
+                var msgTime = message.getReceivedDate().getTime();
+                var msgExpiryTime =
+                        msgTime + Duration.ofMinutes(emailExpirationTimeMinutes).toMillis();
+                if (System.currentTimeMillis() > msgExpiryTime) {
                     processedMessages.add(message);
+                    log.error("cannot read JobStatusUpdate<{}> from {}. marked as timeout", msgHash, publisherId, e);
                 } else {
-                    log.warn("Keeping job status email as unread untill it is expired in " + emailExpirationTimeMinutes
-                            + " minutes. Email received time " + message.getReceivedDate());
+                    log.error("cannot read JobStatusUpdate<{}> from {}. marked as requeue", msgHash, publisherId, e);
                     unreadMessages.add(message);
                 }
             }
@@ -294,13 +291,12 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             try {
                 emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
             } catch (MessagingException e) {
+                // anyway we need to push this update.
                 if (!store.isConnected()) {
                     store.connect();
                     emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
-                    flushUnseenMessages = unseenMessages; // anyway we need to push this update.
-                } else {
-                    flushUnseenMessages = unseenMessages; // anyway we need to push this update.
                 }
+                flushUnseenMessages = unseenMessages;
             }
         }
     }
@@ -311,7 +307,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         t.join();
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         EmailBasedMonitor monitor = new EmailBasedMonitor();
         monitor.startServer();
     }

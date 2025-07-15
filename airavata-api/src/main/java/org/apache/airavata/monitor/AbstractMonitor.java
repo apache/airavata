@@ -21,7 +21,6 @@ package org.apache.airavata.monitor;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
@@ -29,10 +28,6 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +35,10 @@ public class AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);
 
-    private MessageProducer messageProducer;
-    private CuratorFramework curatorClient;
+    private final MessageProducer messageProducer;
     private ThriftClientPool<RegistryService.Client> registryClientPool;
 
     public AbstractMonitor() throws ApplicationSettingsException {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-        this.curatorClient.start();
         this.initRegistryClientPool();
         messageProducer = new MessageProducer();
     }
@@ -79,16 +70,19 @@ public class AbstractMonitor {
             log.info("Fetching matching jobs for job id {} from registry", jobStatusResult.getJobId());
             List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
 
-            if (jobs.size() > 0) {
-                log.info("Filtering total " + jobs.size() + " with target job name " + jobStatusResult.getJobName());
+            if (!jobs.isEmpty()) {
+                log.info("Filtering total {} with target job name {}", jobs.size(), jobStatusResult.getJobName());
                 jobs = jobs.stream()
                         .filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName()))
-                        .collect(Collectors.toList());
+                        .toList();
             }
 
             if (jobs.size() != 1) {
-                log.error("Couldn't find exactly one job with id " + jobStatusResult.getJobId() + " and name "
-                        + jobStatusResult.getJobName() + " in the registry. Count " + jobs.size());
+                log.error(
+                        "Couldn't find exactly one job with id {} and name {} in the registry. Count {}",
+                        jobStatusResult.getJobId(),
+                        jobStatusResult.getJobName(),
+                        jobs.size());
                 validated = false;
 
             } else {
@@ -98,11 +92,14 @@ public class AbstractMonitor {
                 String experimentId = registryClient.getProcess(processId).getExperimentId();
 
                 if (experimentId != null && processId != null) {
-                    log.info("Job id " + jobStatusResult.getJobId() + " is owned by process " + processId
-                            + " of experiment " + experimentId);
+                    log.info(
+                            "Job id {} is owned by process {} of experiment {}",
+                            jobStatusResult.getJobId(),
+                            processId,
+                            experimentId);
                     validated = true;
                 } else {
-                    log.error("Experiment or process is null for job " + jobStatusResult.getJobId());
+                    log.error("Experiment or process is null for job {}", jobStatusResult.getJobId());
                     validated = false;
                 }
             }
@@ -110,7 +107,7 @@ public class AbstractMonitor {
             return validated;
 
         } catch (Exception e) {
-            log.error("Error at validating job status " + jobStatusResult.getJobId(), e);
+            log.error("Error at validating job status {}", jobStatusResult.getJobId(), e);
             getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
