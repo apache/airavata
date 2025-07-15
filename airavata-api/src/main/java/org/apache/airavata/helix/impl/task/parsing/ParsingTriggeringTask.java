@@ -37,9 +37,18 @@ import org.slf4j.LoggerFactory;
 @TaskDef(name = "Parsing Triggering Task")
 public class ParsingTriggeringTask extends AiravataTask {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParsingTriggeringTask.class);
 
     private static Producer<String, ProcessCompletionMessage> producer;
+    private final String topic;
+
+    public ParsingTriggeringTask() {
+        try {
+            topic = ServerSettings.getSetting("data.parser.topic");
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private void createProducer() throws ApplicationSettingsException {
 
@@ -49,22 +58,23 @@ public class ParsingTriggeringTask extends AiravataTask {
             props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("data.parser.broker.publisher.id"));
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ProcessCompletionMessageSerializer.class.getName());
-            producer = new KafkaProducer<String, ProcessCompletionMessage>(props);
+            producer = new KafkaProducer<>(props);
         }
     }
 
     public void submitMessageToParserEngine(ProcessCompletionMessage completionMessage)
-            throws ExecutionException, InterruptedException, ApplicationSettingsException {
-        final ProducerRecord<String, ProcessCompletionMessage> record = new ProducerRecord<>(
-                ServerSettings.getSetting("data.parser.topic"), completionMessage.getExperimentId(), completionMessage);
-        RecordMetadata recordMetadata = producer.send(record).get();
+            throws ExecutionException, InterruptedException {
+        var experimentId = completionMessage.getExperimentId();
+        var record = new ProducerRecord<>(topic, experimentId, completionMessage);
+        producer.send(record).get();
+        logger.info("ParsingTriggeringTask posted to {}: {}->{}", topic, experimentId, completionMessage);
         producer.flush();
     }
 
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
 
-        logger.info("Starting parsing triggerring task " + getTaskId() + ", experiment id " + getExperimentId());
+        logger.info("Starting parsing triggering task {}, experiment id {}", getTaskId(), getExperimentId());
 
         ProcessCompletionMessage completionMessage = new ProcessCompletionMessage();
         completionMessage.setExperimentId(getExperimentId());

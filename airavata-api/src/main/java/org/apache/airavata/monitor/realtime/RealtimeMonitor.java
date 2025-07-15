@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.monitor.realtime;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -67,25 +68,22 @@ public class RealtimeMonitor extends AbstractMonitor {
         final Consumer<String, String> consumer = createConsumer();
 
         while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(1000);
+            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
+            RegistryService.Client registryClient = getRegistryClientPool().getResource();
             consumerRecords.forEach(record -> {
-                RegistryService.Client registryClient = getRegistryClientPool().getResource();
                 try {
-                    process(record.value(), registryClient);
-                    getRegistryClientPool().returnResource(registryClient);
+                    process(record.key(), record.value(), registryClient);
                 } catch (Exception e) {
-                    logger.error("Error while processing message " + record.value(), e);
-                    getRegistryClientPool().returnBrokenResource(registryClient);
-                    // ignore this error
+                    logger.error("Error while processing message {}", record.value(), e);
                 }
             });
-
+            getRegistryClientPool().returnResource(registryClient);
             consumer.commitAsync();
         }
     }
 
-    private void process(String value, RegistryService.Client registryClient) throws MonitoringException {
-        logger.info("Received Job Status [{}]: {}", publisherId, value);
+    private void process(String key, String value, RegistryService.Client registryClient) throws MonitoringException {
+        logger.info("received post from {} on {}: {}->{}", publisherId, brokerTopic, key, value);
         JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
