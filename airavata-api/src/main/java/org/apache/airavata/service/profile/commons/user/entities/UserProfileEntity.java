@@ -309,41 +309,43 @@ public class UserProfileEntity {
 
     @PrePersist
     void createdAt() {
-        this.creationTime = this.lastAccessTime = new Date();
+        var date = new Date();
+        this.setCreationTime(date);
+        this.setLastAccessTime(date);
     }
 
     @PreUpdate
     void updatedAt() {
-        this.lastAccessTime = new Date();
+        this.setLastAccessTime(new Date());
     }
 
     @Override
     public String toString() {
         return "UserProfileEntity{" + "airavataInternalUserId='"
-                + airavataInternalUserId + '\'' + ", userId='"
-                + userId + '\'' + ", gatewayId='"
-                + gatewayId + '\'' + ", userModelVersion='"
-                + userModelVersion + '\'' + ", firstName='"
-                + firstName + '\'' + ", lastName='"
-                + lastName + '\'' + ", middleName='"
-                + middleName + '\'' + ", namePrefix='"
-                + namePrefix + '\'' + ", nameSuffix='"
-                + nameSuffix + '\'' + ", orcidId='"
-                + orcidId + '\'' + ", country='"
-                + country + '\'' + ", homeOrganization='"
-                + homeOrganization + '\'' + ", orginationAffiliation='"
-                + orginationAffiliation + '\'' + ", creationTime="
-                + creationTime + ", lastAccessTime="
-                + lastAccessTime + ", validUntil="
-                + validUntil + ", state='"
-                + state + '\'' + ", comments='"
-                + comments + '\'' + ", labeledURI="
-                + labeledURI + ", gpgKey='"
-                + gpgKey + '\'' + ", timeZone='"
-                + timeZone + '\'' + ", nationality="
-                + nationality + ", emails="
-                + emails + ", phones="
-                + phones + ", nsfDemographics="
-                + nsfDemographics + '}';
+                + getAiravataInternalUserId() + '\'' + ", userId='"
+                + getUserId() + '\'' + ", gatewayId='"
+                + getGatewayId() + '\'' + ", userModelVersion='"
+                + getUserModelVersion() + '\'' + ", firstName='"
+                + getFirstName() + '\'' + ", lastName='"
+                + getLastName() + '\'' + ", middleName='"
+                + getMiddleName() + '\'' + ", namePrefix='"
+                + getNamePrefix() + '\'' + ", nameSuffix='"
+                + getNameSuffix() + '\'' + ", orcidId='"
+                + getOrcidId() + '\'' + ", country='"
+                + getCountry() + '\'' + ", homeOrganization='"
+                + getHomeOrganization() + '\'' + ", orginationAffiliation='"
+                + getOrginationAffiliation() + '\'' + ", creationTime="
+                + getCreationTime() + ", lastAccessTime="
+                + getLastAccessTime() + ", validUntil="
+                + getValidUntil() + ", state='"
+                + getState() + '\'' + ", comments='"
+                + getComments() + '\'' + ", labeledURI="
+                + getLabeledURI() + ", gpgKey='"
+                + getGpgKey() + '\'' + ", timeZone='"
+                + getTimeZone() + '\'' + ", nationality="
+                + getNationality() + ", emails="
+                + getEmails() + ", phones="
+                + getPhones() + ", nsfDemographics="
+                + getNsfDemographics() + '}';
     }
 }

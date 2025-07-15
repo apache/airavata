@@ -36,7 +36,7 @@ public class EntityEntity {
     private String parentEntityId;
     private String name;
     private String description;
-    private ByteBuffer binaryData;
+    private byte[] binaryData;
     private String fullText;
     private Long originalEntityCreationTime;
     private Long sharedCount;
@@ -115,11 +115,11 @@ public class EntityEntity {
 
     @Lob
     @Column(name = "BINARY_DATA")
-    public ByteBuffer getBinaryData() {
+    public byte[] getBinaryData() {
         return binaryData;
     }
 
-    public void setBinaryData(ByteBuffer binaryData) {
+    public void setBinaryData(byte[] binaryData) {
         this.binaryData = binaryData;
     }
 

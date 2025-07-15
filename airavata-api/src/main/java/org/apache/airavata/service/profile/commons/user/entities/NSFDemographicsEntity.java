@@ -97,10 +97,10 @@ public class NSFDemographicsEntity {
     @Override
     public String toString() {
         return "NSFDemographicsEntity{" + "airavataInternalUserId='"
-                + airavataInternalUserId + '\'' + ", gender='"
-                + gender + '\'' + ", ethnicities="
-                + ethnicities + ", races="
-                + races + ", disabilities="
-                + disabilities + '}';
+                + getAiravataInternalUserId() + '\'' + ", gender='"
+                + getGender() + '\'' + ", ethnicities="
+                + getEthnicities() + ", races="
+                + getRaces() + ", disabilities="
+                + getDisabilities() + '}';
     }
 }
