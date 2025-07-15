@@ -20,7 +20,6 @@
 package org.apache.airavata.sharing.registry.db.entities;
 
 import jakarta.persistence.*;
-import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

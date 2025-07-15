@@ -141,7 +141,9 @@ public class PostWorkflowManager extends WorkflowManager {
             getRegistryClientPool().returnResource(registryClient);
 
             if (experimentModel != null) {
-                jobModel.getJobStatuses().sort(Comparator.comparingLong(JobStatus::getTimeOfStateChange).reversed());
+                jobModel.getJobStatuses()
+                        .sort(Comparator.comparingLong(JobStatus::getTimeOfStateChange)
+                                .reversed());
                 JobState currentJobStatus = jobModel.getJobStatuses().get(0).getJobState();
                 logger.info("Last known state of job {} is {}", jobId, jobName);
 
@@ -155,8 +157,13 @@ public class PostWorkflowManager extends WorkflowManager {
                 String gateway = experimentModel.getGatewayId();
                 String experimentId = experimentModel.getExperimentId();
 
-                logger.info("saving JobStatusUpdate<{}>: pid={}, eid={}, gw={}, state={}",
-                        jobId, processId, experimentId, gateway, jobState);
+                logger.info(
+                        "saving JobStatusUpdate<{}>: pid={}, eid={}, gw={}, state={}",
+                        jobId,
+                        processId,
+                        experimentId,
+                        gateway,
+                        jobState);
                 saveAndPublishJobStatus(jobId, task, processId, experimentId, gateway, jobState);
 
                 // TODO get cluster lock before that
@@ -194,7 +201,11 @@ public class PostWorkflowManager extends WorkflowManager {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("Failed to process job: {}, with status : {}", jobStatusResult.getJobId(), jobStatusResult.getState().name(), e);
+            logger.error(
+                    "Failed to process job: {}, with status : {}",
+                    jobStatusResult.getJobId(),
+                    jobStatusResult.getState().name(),
+                    e);
             getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
@@ -215,7 +226,9 @@ public class PostWorkflowManager extends WorkflowManager {
             var grpId = processModel.getGroupResourceProfileId();
 
             experimentModel = registryClient.getExperiment(experimentId);
-            ResourceType resourceType = registryClient.getGroupComputeResourcePreference(crId, grpId).getResourceType();
+            ResourceType resourceType = registryClient
+                    .getGroupComputeResourcePreference(crId, grpId)
+                    .getResourceType();
 
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
@@ -344,7 +357,10 @@ public class PostWorkflowManager extends WorkflowManager {
                                 // robustness of the kafka read thread by avoiding wait timeouts
                                 processingFutures.add(executorCompletionService.submit(() -> {
                                     boolean success = process(record.value());
-                                    logger.info("Status of processing {} : {}", record.value().getJobId(), success);
+                                    logger.info(
+                                            "Status of processing {} : {}",
+                                            record.value().getJobId(),
+                                            success);
                                     return success;
                                 }));
 
