@@ -61,6 +61,9 @@ public class AgentManagementHandler {
     @Value("${airavata.storagePath}")
     private String storagePath;
 
+    @Value("${grpc.server.host}")
+    private String grpcHost;
+
     public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
@@ -257,7 +260,7 @@ public class AgentManagementHandler {
                         switch (input.getName()) {
                             case "agent_id" -> input.setValue(agentId);
                             case "env_name" -> input.setValue(envName);
-                            case "server_url" -> input.setValue(airavataService.getServerUrl());
+                            case "server_url" -> input.setValue(grpcHost);
                             case "libraries" ->
                                 input.setValue(req.getLibraries() != null ? String.join(",", req.getLibraries()) : "");
                             case "pip" -> input.setValue(req.getPip() != null ? String.join(",", req.getPip()) : "");

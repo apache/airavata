@@ -127,8 +127,4 @@ public class AiravataService {
                 .map(ExperimentSummaryModel::getExperimentId)
                 .collect(Collectors.toList());
     }
-
-    public String getServerUrl() {
-        return serverUrl;
-    }
 }
