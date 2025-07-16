@@ -70,7 +70,7 @@ class CustomDockerSpawner(DockerSpawner):
 
         # register given datasets as volumes (ro)
         for subfolder in data_subfolders:
-            host_data_path = os.path.expandvars(f"$HOME/mnt/{subfolder}")
+            host_data_path = f"/mnt/{subfolder}"
             container_path = f"/cybershuttle_data/{subfolder}"
             self.volumes[host_data_path] = {
                 'bind': container_path,
@@ -86,6 +86,7 @@ c.JupyterHub.named_server_limit_per_user = 10
 c.JupyterHub.spawner_class = CustomDockerSpawner
 c.DockerSpawner.notebook_dir = '/home/jovyan/work'
 c.DockerSpawner.default_url = "/lab"
+c.DockerSpawner.start_timeout = 600
 
 c.DockerSpawner.environment = {
     'CHOWN_HOME': 'no',
