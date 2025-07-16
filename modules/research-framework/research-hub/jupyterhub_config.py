@@ -3,6 +3,9 @@ import re
 import sys
 from dockerspawner import DockerSpawner
 from oauthenticator.generic import GenericOAuthenticator
+from traitlets.config import Config
+
+c: Config
 
 # Authenticator Configuration
 c.JupyterHub.authenticator_class = GenericOAuthenticator
@@ -48,39 +51,31 @@ class CustomDockerSpawner(DockerSpawner):
         # Create a unique volume name keyed by (username + servername).
         # If the user spawns again with the same (servername), it will reuse the same volume.
         safe_user = self.sanitize_name(self.user.name)
-        safe_srv = self.sanitize_name(self.name) or "default"
-
-        volumes_dict = {}
-
-        git_url = self.user_options.get("git")
+        safe_srv = self.sanitize_name(self.name or "default")
+        reference_git_url = "https://github.com/cyber-shuttle/cybershuttle-reference.git"
+        git_url = self.user_options.get("git") or reference_git_url
         data_subfolders = self.user_options.get("dataPath", [])
         print("THE DATA PATH IS: ", data_subfolders)
 
-        if git_url or data_subfolders:
-            vol_name = f"jupyterhub-vol-{safe_user}-{safe_srv}"
-            volumes_dict[vol_name] = "/home/jovyan/work"
+        self.image = "cybershuttle/jupyterlab-base"
+        if not hasattr(self, "environment"):
+            self.environment = {}
+        self.environment["GIT_URL"] = git_url
+        self.post_start_cmd = "/usr/local/bin/init.sh"
+        self.volumes = {}
 
-            # If one or more data subfolders are provided, mount them all read-only.
-            for subfolder in data_subfolders:
-                host_data_path = os.path.expandvars("$HOME/mnt/{subfolder}")
-                container_path = f"/cybershuttle_data/{subfolder}"
-                volumes_dict[host_data_path] = {
-                    'bind': container_path,
-                    'mode': 'ro'
-                }
-            self.image = "cybershuttle/jupyterlab-base" # TODO using ENV variable
-        else:
-            # Sample mode
-            vol_name = f"jupyterhub-vol-{safe_user}-default-jupyterlab-base"
-            volumes_dict[vol_name] = "/home/jovyan/work"
-            self.image = "cybershuttle/jupyterlab-base-sample" # TODO using ENV variable
+        # register the home directory as volume (rw)
+        vol_name = f"jupyterhub-vol-{safe_user}-{safe_srv}"
+        self.volumes[vol_name] = "/home/jovyan/work"
 
-        self.volumes = volumes_dict
-
-        if git_url:
-            if not hasattr(self, "environment"):
-                self.environment = {}
-            self.environment["GIT_URL"] = git_url
+        # register given datasets as volumes (ro)
+        for subfolder in data_subfolders:
+            host_data_path = os.path.expandvars(f"$HOME/mnt/{subfolder}")
+            container_path = f"/cybershuttle_data/{subfolder}"
+            self.volumes[host_data_path] = {
+                'bind': container_path,
+                'mode': 'ro'
+            }
 
         return await super().start()
 
