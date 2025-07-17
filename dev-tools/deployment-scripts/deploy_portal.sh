@@ -49,6 +49,25 @@ sudo apt remove --purge -y libapache2-mod-wsgi-py3 || true
 echo ">>> Installing essential build tools (including apache2-dev for mod_wsgi compilation)..."
 sudo apt-get install -y python3-pip git apache2 gcc apache2-dev libmysqlclient-dev npm certbot python3-certbot-apache pkg-config default-libmysqlclient-dev
 
+echo ">>> Setting up project directory..."
+if [ ! -d "${PROJECT_ROOT}" ]; then
+    sudo mkdir -p ${PROJECT_ROOT}
+fi
+TMP_CLONE_DIR=$(mktemp -d)
+git clone https://github.com/apache/airavata-django-portal.git ${TMP_CLONE_DIR}
+sudo rsync -av ${TMP_CLONE_DIR}/ ${PROJECT_ROOT}/airavata-django-portal/
+rm -rf ${TMP_CLONE_DIR}
+
+echo ">>> Creating Python 3.10 virtual environment..."
+if [ ! -d "${VENV_PATH}" ]; then
+    sudo ${PYTHON_EXECUTABLE} -m venv ${VENV_PATH}
+fi
+
+echo ">>> Installing Python dependencies..."
+sudo ${VENV_PATH}/bin/pip install --upgrade pip setuptools wheel
+sudo bash -c "cd ${PROJECT_ROOT}/airavata-django-portal && ${VENV_PATH}/bin/pip install -r requirements.txt"
+sudo ${VENV_PATH}/bin/pip install mod_wsgi mysqlclient==2.2.0
+
 # Compile mod_wsgi against Python 3.10
 echo ">>> Compiling mod_wsgi against Python 3.10..."
 MOD_WSGI_VERSION="5.0.2"
@@ -75,25 +94,6 @@ rm -rf "${TEMP_MOD_WSGI_DIR}"
 
 echo ">>> Enabling custom mod_wsgi module..."
 sudo a2enmod wsgi
-
-echo ">>> Setting up project directory..."
-if [ ! -d "${PROJECT_ROOT}" ]; then
-    sudo mkdir -p ${PROJECT_ROOT}
-fi
-TMP_CLONE_DIR=$(mktemp -d)
-git clone https://github.com/apache/airavata-django-portal.git ${TMP_CLONE_DIR}
-sudo rsync -av --delete ${TMP_CLONE_DIR}/ ${PROJECT_ROOT}/airavata-django-portal/
-rm -rf ${TMP_CLONE_DIR}
-
-echo ">>> Creating Python 3.10 virtual environment..."
-if [ ! -d "${VENV_PATH}" ]; then
-    sudo ${PYTHON_EXECUTABLE} -m venv ${VENV_PATH}
-fi
-
-echo ">>> Installing Python dependencies..."
-sudo ${VENV_PATH}/bin/pip install --upgrade pip setuptools wheel
-sudo bash -c "cd ${PROJECT_ROOT}/airavata-django-portal && ${VENV_PATH}/bin/pip install -r requirements.txt"
-sudo ${VENV_PATH}/bin/pip install mod_wsgi mysqlclient==2.2.0
 
 echo ">>> Building frontend assets..."
 cd ${PROJECT_ROOT}/airavata-django-portal
