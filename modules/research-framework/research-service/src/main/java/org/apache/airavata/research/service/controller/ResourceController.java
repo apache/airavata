@@ -134,13 +134,14 @@ public class ResourceController {
                 typeList.add(DatasetResource.class);
             }
         }
+
         Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags, nameSearch);
 
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Get resource by name")
-    @GetMapping("/public/search")
+    @GetMapping("/search")
     public ResponseEntity<List<Resource>> searchResource(
             @RequestParam(value = "type") ResourceTypeEnum type,
             @RequestParam(value = "name", required = false) String name) {
