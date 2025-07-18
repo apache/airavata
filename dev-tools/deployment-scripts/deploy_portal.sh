@@ -54,8 +54,17 @@ if [ ! -d "${PROJECT_ROOT}" ]; then
     sudo mkdir -p ${PROJECT_ROOT}
 fi
 TMP_CLONE_DIR=$(mktemp -d)
-git clone https://github.com/apache/airavata-django-portal.git ${TMP_CLONE_DIR}
-sudo rsync -av ${TMP_CLONE_DIR}/ ${PROJECT_ROOT}/airavata-django-portal/
+REPO_URL="https://github.com/apache/airavata-portals.git"
+SUBDIR="airavata-django-portal"
+
+# Use sparse checkout to get only the subdirectory
+git clone --filter=blob:none --no-checkout ${REPO_URL} ${TMP_CLONE_DIR}
+cd ${TMP_CLONE_DIR}
+git sparse-checkout set ${SUBDIR}
+git checkout main
+cd -
+
+sudo rsync -av ${TMP_CLONE_DIR}/${SUBDIR}/ ${PROJECT_ROOT}/airavata-django-portal/
 rm -rf ${TMP_CLONE_DIR}
 
 echo ">>> Creating Python 3.10 virtual environment..."
