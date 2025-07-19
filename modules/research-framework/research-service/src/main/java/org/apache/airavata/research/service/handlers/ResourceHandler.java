@@ -36,6 +36,7 @@ import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
+import org.apache.airavata.research.service.model.entity.ResourceAuthor;
 import org.apache.airavata.research.service.model.entity.ResourceStar;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
@@ -74,14 +75,18 @@ public class ResourceHandler {
     }
 
     public void initializeResource(Resource resource) {
-        Set<String> userSet = new HashSet<>();
-        for (String authorId : resource.getAuthors()) {
+        Set<ResourceAuthor> userSet = new HashSet<>();
+        for (ResourceAuthor author : resource.getAuthors()) {
             try {
-                UserProfile fetchedUser = airavataService.getUserProfile(authorId);
-                userSet.add(fetchedUser.getUserId());
+                UserProfile fetchedUser = airavataService.getUserProfile(author.getAuthorId());
+                ResourceAuthor newAuthor = new ResourceAuthor();
+                newAuthor.setAuthorId(fetchedUser.getUserId());
+                newAuthor.setRole(author.getRole());
+                userSet.add(newAuthor);
             } catch (Exception e) {
-                LOGGER.error("Error while fetching user profile with the userId: {}", authorId, e);
-                throw new EntityNotFoundException("Error while fetching user profile with the userId: " + authorId, e);
+                LOGGER.error("Error while fetching user profile with the userId: {}", author.getAuthorId(), e);
+                throw new EntityNotFoundException(
+                        "Error while fetching user profile with the userId: " + author.getAuthorId(), e);
             }
         }
 
@@ -113,10 +118,10 @@ public class ResourceHandler {
         // check that the logged in author is at least one of the authors making the request
         String currentUserId = UserContext.userId();
         boolean found = false;
-        for (String authorId : createResourceRequest.getAuthors()) {
-            if (authorId.equalsIgnoreCase(currentUserId)) {
+        for (ResourceAuthor author : createResourceRequest.getAuthors()) {
+            author.setAuthorId(author.getAuthorId().toLowerCase());
+            if (author.getAuthorId().equalsIgnoreCase(currentUserId)) {
                 found = true;
-                break;
             }
         }
         if (!found) {
@@ -126,9 +131,7 @@ public class ResourceHandler {
 
         resource.setName(createResourceRequest.getName());
         resource.setDescription(createResourceRequest.getDescription());
-        resource.setAuthors(createResourceRequest.getAuthors().stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet()));
+        resource.setAuthors(createResourceRequest.getAuthors());
         Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
         for (String tag : createResourceRequest.getTags()) {
             org.apache.airavata.research.service.model.entity.Tag t =
@@ -162,8 +165,8 @@ public class ResourceHandler {
 
         // ensure that the user making the request is one of the current authors
         boolean found = false;
-        for (String authorId : resource.getAuthors()) {
-            if (authorId.equalsIgnoreCase(UserContext.userId())) {
+        for (ResourceAuthor author : resource.getAuthors()) {
+            if (author.getAuthorId().equalsIgnoreCase(UserContext.userId())) {
                 found = true;
                 break;
             }
