@@ -36,13 +36,33 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
     @Query(
             """
                     SELECT r
-                    FROM #{#entityName} r
-                    WHERE TYPE(r) IN :types AND r.name LIKE CONCAT('%', :nameSearch, '%') AND r.state = 'ACTIVE'
+                    FROM Resource r
+                    WHERE TYPE(r) IN :types
+                      AND r.name LIKE CONCAT('%', :nameSearch, '%')
+                      AND r.state = 'ACTIVE'
+                      AND r.privacy = 'PUBLIC'
                     ORDER BY r.name
                     """)
     Page<Resource> findAllByTypes(
             @Param("types") List<Class<? extends Resource>> types,
             @Param("nameSearch") String nameSearch,
+            Pageable pageable);
+
+    @Query(
+            """
+            SELECT DISTINCT r
+            FROM Resource r
+            JOIN r.authors a
+            WHERE r.class IN :typeList
+              AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
+              AND r.state = 'ACTIVE'
+              AND (r.privacy = 'PUBLIC' or a = :userId)
+            ORDER BY r.name
+            """)
+    Page<Resource> findAllByTypesForUser(
+            @Param("typeList") List<Class<? extends Resource>> typeList,
+            @Param("nameSearch") String nameSearch,
+            @Param("userId") String userId,
             Pageable pageable);
 
     @Query(
@@ -54,6 +74,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
                       AND t.value IN :tags
                       AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
                       AND r.state = 'ACTIVE'
+                      AND r.privacy = 'PUBLIC'
                     GROUP BY r
                     HAVING COUNT(DISTINCT t.value) = :tagCount
                     ORDER BY r.name
@@ -67,13 +88,38 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
 
     @Query(
             """
+            SELECT r
+            FROM Resource r
+            JOIN r.tags t
+            JOIN r.authors a
+            WHERE r.class IN :typeList
+              AND t.value IN :tags
+              AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
+              AND r.state = 'ACTIVE'
+              AND (r.privacy = 'PUBLIC' OR a = :userId)
+            GROUP BY r
+            HAVING COUNT(DISTINCT t.value) = :tagCount
+            ORDER BY r.name
+            """)
+    Page<Resource> findAllByTypesAndAllTagsForUser(
+            @Param("typeList") List<Class<? extends Resource>> typeList,
+            @Param("tags") String[] tags,
+            @Param("tagCount") Long tagCount,
+            @Param("nameSearch") String nameSearch,
+            @Param("userId") String userId,
+            Pageable pageable);
+
+    @Query(
+            """
                     SELECT r
                     FROM Resource r
+                    JOIN r.authors a
                     WHERE TYPE(r) = :type AND r.state = 'ACTIVE'
                     AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))
+                    AND (r.privacy = "PUBLIC" OR a = :userId)
                     """)
     List<Resource> findByTypeAndNameContainingIgnoreCase(
-            @Param("type") Class<? extends Resource> type, @Param("name") String name);
+            @Param("type") Class<? extends Resource> type, @Param("name") String name, @Param("userId") String userId);
 
     Optional<Resource> findByIdAndState(String id, StateEnum state);
 }
