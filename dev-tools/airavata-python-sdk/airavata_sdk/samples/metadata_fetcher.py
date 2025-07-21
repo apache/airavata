@@ -23,12 +23,10 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-configFile = "/Users/isururanawaka/Documents/Cyberwater/poc/resources/settings.ini"
-
-authenticator = Authenticator(configFile)
+authenticator = Authenticator()
 token = authenticator.get_token_and_user_info_password_flow("username", "password", "cyberwater")
 
-api_server_client = APIServerClient(configFile)
+api_server_client = APIServerClient()
 
 # fetch all application deployments
 deployments = api_server_client.get_all_application_deployments(token, "cyberwater");

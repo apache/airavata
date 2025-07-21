@@ -14,22 +14,18 @@
 #  limitations under the License.
 #
 
-import configparser
 import logging
-from typing import Optional
 
 from airavata_sdk.transport import utils
-from airavata_sdk.transport.settings import CredentialStoreServerSettings
+from airavata_sdk import Settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-
 class CredentialStoreClient(object):
 
-    def __init__(self, configuration_file_location: Optional[str] = None):
-        self.settings = CredentialStoreServerSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self):
+        self.settings = Settings()
         self.client = utils.initialize_credential_store_client(
             self.settings.CREDENTIAL_STORE_API_HOST,
             self.settings.CREDENTIAL_STORE_API_PORT,
@@ -37,11 +33,3 @@ class CredentialStoreClient(object):
         )
         # expose the needed functions
         self.get_SSH_credential = self.client.getSSHCredential
-
-    def _load_settings(self, configuration_file_location: Optional[str]):
-        if configuration_file_location is not None:
-            config = configparser.ConfigParser()
-            config.read(configuration_file_location)
-            self.settings.CREDENTIAL_STORE_API_HOST = config.get('CredentialStoreServer', 'CREDENTIAL_STORE_API_HOST')
-            self.settings.CREDENTIAL_STORE_API_PORT = config.getint('CredentialStoreServer', 'CREDENTIAL_STORE_API_PORT')
-            self.settings.CREDENTIAL_STORE_API_SECURE = config.getboolean('CredentialStoreServer', 'CREDENTIAL_STORE_API_SECURE')

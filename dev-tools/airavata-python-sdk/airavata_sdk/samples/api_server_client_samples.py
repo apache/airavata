@@ -36,11 +36,6 @@ token = authenticator.get_token_and_user_info_password_flow("default-admin", "12
 client = APIServerClient()
 
 
-# load client with given configuration file (e.g customized_settings.ini)
-
-# client = APIServerClient('../transport/settings.ini')
-
-
 # check for given gateway exists
 def is_gateway_exists():
     try:

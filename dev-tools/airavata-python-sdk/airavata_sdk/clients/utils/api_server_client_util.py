@@ -26,8 +26,8 @@ logger.setLevel(logging.INFO)
 
 class APIServerClientUtil(object):
 
-    def __init__(self, configuration_file_location: Optional[str], gateway_id: str, username: str, password: Optional[str], access_token: Optional[str] = None):
-        self.authenticator = Authenticator(configuration_file_location)
+    def __init__(self, gateway_id: str, username: str, password: Optional[str], access_token: Optional[str] = None):
+        self.authenticator = Authenticator()
         if access_token:
             self.token = self.authenticator.get_airavata_authz_token(
                 gateway_id=gateway_id,
@@ -43,7 +43,7 @@ class APIServerClientUtil(object):
             )
         self.gateway_id = gateway_id
         self.username = username
-        self.api_server_client = APIServerClient(configuration_file_location)
+        self.api_server_client = APIServerClient()
 
     def get_project_id(self, project_name: str) -> Optional[str]:
         response = self.api_server_client.get_user_projects(self.token, self.gateway_id, self.username, 10, 0)

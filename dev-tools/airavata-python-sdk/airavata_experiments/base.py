@@ -66,7 +66,7 @@ class Experiment(Generic[T], abc.ABC):
   application: T
   inputs: dict[str, Any]
   input_mapping: dict[str, tuple[Any, str]]
-  resource: Runtime = Runtime.default()
+  resource: Runtime = Runtime.Local()
   tasks: list[Task] = []
 
   def __init__(self, name: str, application: T):

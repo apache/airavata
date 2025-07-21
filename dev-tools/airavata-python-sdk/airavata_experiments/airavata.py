@@ -18,7 +18,9 @@ import logging
 from pathlib import Path
 from typing import Literal, NamedTuple
 
-from airavata_sdk.transport.settings import APIServerSettings
+from airavata_sdk import Settings
+from airavata_sdk.clients.api_server_client import APIServerClient
+
 from .sftp import SFTPConnector
 import time
 import warnings
@@ -33,7 +35,6 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-from airavata_sdk.clients.api_server_client import APIServerClient
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
@@ -47,29 +48,6 @@ LaunchState = NamedTuple("LaunchState", [
   ("experiment_dir", str),
   ("sr_host", str),
 ])
-
-class Settings:
-
-  def __init__(self, config_path: str) -> None:
-    
-    import configparser
-    config = configparser.ConfigParser()
-    config.read(config_path)
-
-    # api server client settings
-    self.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
-    self.API_SERVER_PORT = config.getint('APIServer', 'API_PORT')
-    self.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')
-    self.CONNECTION_SVC_URL = config.get('APIServer', 'CONNECTION_SVC_URL')
-    self.FILEMGR_SVC_URL = config.get('APIServer', 'FILEMGR_SVC_URL')
-    
-    # gateway settings
-    self.GATEWAY_ID = config.get('Gateway', 'GATEWAY_ID')
-    self.GATEWAY_URL = config.get('Gateway', 'GATEWAY_URL')
-    self.GATEWAY_DATA_STORE_DIR = config.get('Gateway', 'GATEWAY_DATA_STORE_DIR')
-    self.STORAGE_RESOURCE_HOST = config.get('Gateway', 'STORAGE_RESOURCE_HOST')
-    self.SFTP_PORT = config.get('Gateway', 'SFTP_PORT')
-    
 
 class AiravataOperator:
 
@@ -158,13 +136,11 @@ class AiravataOperator:
 
         return experiment_model
 
-  def __init__(self, access_token: str, config_file: str = "settings.ini"):
+  def __init__(self, access_token: str):
     # store variables
+    self.settings = Settings()
     self.access_token = access_token
-    self.settings = Settings(config_file)
-    # load api server settings and create client
-    api_server_settings = APIServerSettings(config_file)
-    self.api_server_client = APIServerClient(api_server_settings=api_server_settings)
+    self.api_server_client = APIServerClient()
     # load gateway settings
     gateway_id = self.default_gateway_id()
     self.airavata_token = self.__airavata_token__(self.access_token, gateway_id)
@@ -182,10 +158,10 @@ class AiravataOperator:
     return self.settings.STORAGE_RESOURCE_HOST
   
   def connection_svc_url(self):
-    return self.settings.CONNECTION_SVC_URL
+    return f"{self.settings.API_SERVER_URL}/api/v1"
   
   def filemgr_svc_url(self):
-    return self.settings.FILEMGR_SVC_URL
+    return self.settings.FILE_SVC_URL
 
   def __airavata_token__(self, access_token: str, gateway_id: str):
     """
@@ -658,12 +634,19 @@ class AiravataOperator:
     self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
 
     # create experiment
-    ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
+    try:
+      ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
+    except Exception as e:
+      raise Exception(f"[AV] Failed to create experiment: {repr(e)}").with_traceback(e.__traceback__)
+
     ex_id = str(ex_id)
     print(f"[AV] Experiment {experiment_name} CREATED with id: {ex_id}")
 
     # launch experiment
-    self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
+    try:
+      self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
+    except Exception as e:
+      raise Exception(f"[AV] Failed to launch experiment: {repr(e)}").with_traceback(e.__traceback__)
     print(f"[AV] Experiment {experiment_name} STARTED with id: {ex_id}")
 
     # wait until experiment begins, then get process id

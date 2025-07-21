@@ -13,6 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
 from __future__ import annotations
 import abc
 from typing import Any
@@ -55,10 +56,6 @@ class Runtime(abc.ABC, pydantic.BaseModel):
 
   def __str__(self) -> str:
     return f"{self.__class__.__name__}(args={self.args})"
-
-  @staticmethod
-  def default():
-    return Remote.default()
 
   @staticmethod
   def create(id: str, args: dict[str, Any]) -> Runtime:
@@ -116,10 +113,6 @@ class Mock(Runtime):
   def cat(self, file: str, task: Task) -> bytes:
     return b""
 
-  @staticmethod
-  def default():
-    return Mock()
-
 
 class Remote(Runtime):
 
@@ -163,7 +156,7 @@ class Remote(Runtime):
       task.sr_host = launch_state.sr_host
       print(f"[Remote] Experiment Launched: id={task.ref}")
     except Exception as e:
-      print(f"[Remote] Failed to launch experiment: {e}")
+      print(f"[Remote] Failed to launch experiment: {repr(e)}")
       raise e
 
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
@@ -244,10 +237,6 @@ class Remote(Runtime):
     av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     content = av.cat_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir)
     return content
-
-  @staticmethod
-  def default():
-    return list_runtimes(cluster="login.expanse.sdsc.edu", category="gpu").pop()
 
 
 def list_runtimes(

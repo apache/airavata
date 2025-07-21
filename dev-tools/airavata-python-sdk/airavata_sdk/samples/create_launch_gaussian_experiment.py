@@ -28,9 +28,7 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-configFile = "/Users/isururanawaka/Documents/Cyberwater/poc/resources/settings.ini"
-
-authenticator = Authenticator(configFile)
+authenticator = Authenticator()
 
 user_name = "username"
 password = "password"
@@ -42,22 +40,20 @@ token = authenticator.get_token_and_user_info_password_flow(
     gateway_id=gateway_id,
 )
 
-api_server_client = APIServerClient(configFile)
+api_server_client = APIServerClient()
 
 airavata_util = APIServerClientUtil(
-    configFile,
     gateway_id=gateway_id,
     username=user_name,
     password=password,
 )
 data_model_client = DataModelCreationUtil(
-    configFile,
     gateway_id=gateway_id,
     username=user_name,
     password=password,
 )
 
-credential_store_client = CredentialStoreClient(configFile)
+credential_store_client = CredentialStoreClient()
 
 executionId = airavata_util.get_execution_id("Gaussian")
 projectId = airavata_util.get_project_id("Default Project")

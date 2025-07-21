@@ -32,10 +32,6 @@ token = authenticator.get_token_and_user_info_password_flow("default-admin", "12
 client = UserProfileClient()
 
 
-# load client with given configuration file (e.g customized_settings.ini)
-# client = UserProfileClient('../transport/settings.ini')
-
-
 def add_user_profile():
     try:
         profile = UserProfile()

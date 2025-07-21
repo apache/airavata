@@ -26,18 +26,16 @@ from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
 from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
-from airavata_sdk.transport.settings import ExperimentSettings, GatewaySettings
+from airavata_sdk import Settings
 
 logger = logging.getLogger('airavata_sdk.clients')
 logger.setLevel(logging.INFO)
 
 
 class ExperimentHandlerUtil(object):
-    def __init__(self, configuration_file_location: Optional[str] = None, access_token: Optional[str] = None):
-        self.configuration_file = configuration_file_location
-        self.gateway_conf = GatewaySettings(configuration_file_location)
-        self.experiment_conf = ExperimentSettings(configuration_file_location)
-        self.authenticator = Authenticator(self.configuration_file)
+    def __init__(self, access_token: Optional[str] = None):
+        self.settings = Settings()
+        self.authenticator = Authenticator()
         if access_token is None:
           self.authenticator.authenticate_with_auth_code()
           access_token = getpass.getpass('Copy paste the access token')
@@ -45,25 +43,24 @@ class ExperimentHandlerUtil(object):
         decode = jwt.decode(access_token, options={"verify_signature": False})
         self.user_id = decode['preferred_username']
         self.airavata_token = self.authenticator.get_airavata_authz_token(
-            gateway_id=self.gateway_conf.GATEWAY_ID,
+            gateway_id=self.settings.GATEWAY_ID,
             username=self.user_id,
             token=access_token,
         )
         self.airavata_util = APIServerClientUtil(
-            self.configuration_file,
-            gateway_id=self.gateway_conf.GATEWAY_ID,
+            gateway_id=self.settings.GATEWAY_ID,
             username=self.user_id,
             password=None,
             access_token=access_token,
         )
 
-        self.data_model_client = DataModelCreationUtil(self.configuration_file,
+        self.data_model_client = DataModelCreationUtil(
                                                        username=self.user_id,
                                                        password=None,
-                                                       gateway_id=self.gateway_conf.GATEWAY_ID,
+                                                       gateway_id=self.settings.GATEWAY_ID,
                                                        access_token=access_token)
 
-        self.api_server_client = APIServerClient(self.configuration_file)
+        self.api_server_client = APIServerClient()
 
     def queue_names(self, computation_resource_name: str):
         resource_id = self.airavata_util.get_resource_host_id(computation_resource_name)
@@ -83,52 +80,62 @@ class ExperimentHandlerUtil(object):
         walltime: int = 30,
         auto_schedule: bool = False,
         output_path: str = '.',
+        group_name: str = "Default",
+        application_name: str = "Default Application",
+        project_name: str = "Default Project",
     ):
-        execution_id = self.airavata_util.get_execution_id(self.experiment_conf.APPLICATION_NAME)
+        execution_id = self.airavata_util.get_execution_id(application_name)
         assert execution_id is not None
-        project_id = self.airavata_util.get_project_id(self.experiment_conf.PROJECT_NAME)
-        hosts = self.experiment_conf.COMPUTE_HOST_DOMAIN.split(",")
-
-        computation_resource_name = computation_resource_name if computation_resource_name is not None else hosts[0]
+        project_id = self.airavata_util.get_project_id(project_name)
+        assert computation_resource_name is not None
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
-        group_resource_profile_id = self.airavata_util.get_group_resource_profile_id(self.experiment_conf.GROUP_RESOURCE_PROFILE_NAME)
-        storage_id = self.airavata_util.get_storage_resource_id(self.experiment_conf.STORAGE_RESOURCE_HOST)
+        group_resource_profile_id = self.airavata_util.get_group_resource_profile_id(group_name)
+
+        storage_host = self.settings.STORAGE_RESOURCE_HOST
+        assert storage_host is not None
+
+        sftp_port = self.settings.SFTP_PORT
+        assert sftp_port is not None
+
+        storage_id = self.airavata_util.get_storage_resource_id(storage_host)
         assert storage_id is not None
 
+        assert project_name is not None
+        assert application_name is not None
+        assert experiment_name is not None
+        assert description is not None
         logger.info("creating experiment %s", experiment_name)
         experiment = self.data_model_client.get_experiment_data_model_for_single_application(
-            project_name=self.experiment_conf.PROJECT_NAME,
-            application_name=self.experiment_conf.APPLICATION_NAME,
+            project_name=project_name,
+            application_name=application_name,
             experiment_name=experiment_name,
             description=description,
         )
 
-        logger.info("connnecting to file upload endpoint %s : %s", self.experiment_conf.STORAGE_RESOURCE_HOST, self.experiment_conf.SFTP_PORT)
-        sftp_connector = SFTPConnector(host=self.experiment_conf.STORAGE_RESOURCE_HOST,
-                                       port=self.experiment_conf.SFTP_PORT,
+        logger.info("connnecting to file upload endpoint %s : %s", storage_host, sftp_port)
+        sftp_connector = SFTPConnector(host=storage_host,
+                                       port=sftp_port,
                                        username=self.user_id,
                                        password=self.access_token)
 
+        assert local_input_path is not None
         path_suffix = sftp_connector.upload_files(local_input_path,
-                                                  self.experiment_conf.PROJECT_NAME,
-                                                  experiment.experimentName)
+                                                  project_name,
+                                                  experiment_name)
 
         logger.info("Input files uploaded to %s", path_suffix)
 
-        path = self.gateway_conf.GATEWAY_DATA_STORE_DIR + path_suffix
+        path = self.settings.GATEWAY_DATA_STORE_DIR + path_suffix
 
-        queue_name = queue_name if queue_name is not None else self.experiment_conf.QUEUE_NAME
-
-        node_count = node_count if node_count is not None else self.experiment_conf.NODE_COUNT
-
-        cpu_count = cpu_count if cpu_count is not None else self.experiment_conf.TOTAL_CPU_COUNT
-
-        walltime = walltime if walltime is not None else self.experiment_conf.WALL_TIME_LIMIT
+        assert queue_name is not None
+        assert node_count is not None
+        assert cpu_count is not None
+        assert walltime is not None
 
         logger.info("configuring inputs ......")
         experiment = self.data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,
                                                                                       computation_resource_name=computation_resource_name,
-                                                                                      group_resource_profile_name=self.experiment_conf.GROUP_RESOURCE_PROFILE_NAME,
+                                                                                      group_resource_profile_name=group_name,
                                                                                       storageId=storage_id,
                                                                                       node_count=int(node_count),
                                                                                       total_cpu_count=int(cpu_count),
@@ -144,7 +151,7 @@ class ExperimentHandlerUtil(object):
                     data_uris = []
                     for x in input_file_mapping[key]:
                         data_uri = self.data_model_client.register_input_file(file_identifier=x,
-                                                                              storage_name=self.experiment_conf.STORAGE_RESOURCE_HOST,
+                                                                              storage_name=storage_host,
                                                                               storageId=storage_id,
                                                                               input_file_name=x,
                                                                               uploaded_storage_path=path)
@@ -153,13 +160,13 @@ class ExperimentHandlerUtil(object):
                 else:
                     x = input_file_mapping[key]
                     data_uri = self.data_model_client.register_input_file(file_identifier=x,
-                                                                          storage_name=self.experiment_conf.STORAGE_RESOURCE_HOST,
+                                                                          storage_name=storage_host,
                                                                           storageId=storage_id,
                                                                           input_file_name=x,
                                                                           uploaded_storage_path=path)
                     new_file_mapping[key] = data_uri
             experiment = self.data_model_client.configure_input_and_outputs(experiment, input_files=[],
-                                                                            application_name=self.experiment_conf.APPLICATION_NAME,
+                                                                            application_name=application_name,
                                                                             file_mapping=new_file_mapping)
         else:
             for x in os.listdir(local_input_path):
@@ -170,13 +177,13 @@ class ExperimentHandlerUtil(object):
                 data_uris = []
                 for x in input_files:
                     data_uri = self.data_model_client.register_input_file(file_identifier=x,
-                                                                          storage_name=self.experiment_conf.STORAGE_RESOURCE_HOST,
+                                                                          storage_name=storage_host,
                                                                           storageId=storage_id,
                                                                           input_file_name=x,
                                                                           uploaded_storage_path=path)
                     data_uris.append(data_uri)
                 experiment = self.data_model_client.configure_input_and_outputs(experiment, input_files=data_uris,
-                                                                                application_name=self.experiment_conf.APPLICATION_NAME)
+                                                                                application_name=application_name)
             else:
                 inputs = self.api_server_client.get_application_inputs(self.airavata_token, execution_id)
                 experiment.experimentInputs = inputs
@@ -186,17 +193,17 @@ class ExperimentHandlerUtil(object):
         experiment.experimentOutputs = outputs
 
         # create experiment
-        ex_id = self.api_server_client.create_experiment(self.airavata_token, self.gateway_conf.GATEWAY_ID, experiment)
+        ex_id = self.api_server_client.create_experiment(self.airavata_token, self.settings.GATEWAY_ID, experiment)
 
         # launch experiment
-        self.api_server_client.launch_experiment(self.airavata_token, ex_id, self.gateway_conf.GATEWAY_ID)
+        self.api_server_client.launch_experiment(self.airavata_token, ex_id, self.settings.GATEWAY_ID)
 
         logger.info("experiment launched id: %s", ex_id)
 
-        experiment_url = 'https://' + self.gateway_conf.GATEWAY_URL + '.org/workspace/experiments/' + ex_id
+        experiment_url = f"{self.settings.GATEWAY_URL}/workspace/experiments/{ex_id}"
         logger.info("For more information visit %s", experiment_url)
 
-        if self.experiment_conf.MONITOR_STATUS:
+        if self.settings.MONITOR_STATUS:
             status = self.api_server_client.get_experiment_status(self.airavata_token, ex_id)
             status_dict = {'0': 'EXECUTING', '4': 'JOB_ACTIVE', '7': 'COMPLETED'}
 

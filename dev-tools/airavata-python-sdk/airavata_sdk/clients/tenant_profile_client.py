@@ -14,12 +14,10 @@
 #  limitations under the License.
 #
 
-import configparser
 import logging
-from typing import Optional
 
 from airavata_sdk.transport import utils
-from airavata_sdk.transport.settings import ProfileServerSettings
+from airavata_sdk import Settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -35,9 +33,8 @@ logger.addHandler(handler)
 
 class TenantProfileClient(object):
 
-    def __init__(self, configuration_file_location: Optional[str] = None):
-        self.settings = ProfileServerSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self):
+        self.settings = Settings()
         self.client = utils.initialize_tenant_profile_client(
             self.settings.PROFILE_SERVICE_HOST,
             self.settings.PROFILE_SERVICE_PORT,
@@ -51,12 +48,3 @@ class TenantProfileClient(object):
         self.get_all_gateways = self.client.getAllGateways
         self.is_gateway_exist = self.client.isGatewayExist
         self.get_all_gateways_for_user = self.client.getAllGatewaysForUser
-
-
-    def _load_settings(self, configuration_file_location: Optional[str]):
-        if configuration_file_location is not None:
-            config = configparser.ConfigParser()
-            config.read(configuration_file_location)
-            self.settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-            self.settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-            self.settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')
