@@ -32,7 +32,7 @@ token = authenticator.get_token_and_user_info_password_flow("default-admin", "12
 
 
 # load client with given configuration file (e.g customized_settings.ini)
-client = TenantProfileClient('../transport/settings.ini')
+client = TenantProfileClient()
 
 
 def get_all_gateways():

@@ -7,32 +7,29 @@ from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
 from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
 from airavata_sdk.clients.utils.data_model_creation_util import DataModelCreationUtil
-from airavata_sdk.transport.settings import GatewaySettings
+from airavata_sdk import Settings
 
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
-
-configFile: str = "/Users/isururanawaka/Documents/Airavata_Repository/airavata/airavata-api/airavata-client-sdks/airavata-python-sdk/airavata_sdk/transport/settings.ini"
-
-authenticator = Authenticator(configFile)
+authenticator = Authenticator()
 username: str = "username"
 password: str = "password"
 gateway_id: str = "cyberwater"
 token = authenticator.get_token_and_user_info_password_flow(username=username, password=password, gateway_id=gateway_id)
 
-api_server_client = APIServerClient(configFile)
+api_server_client = APIServerClient()
 
-data_model_client = DataModelCreationUtil(configFile,
-                                          gateway_id=gateway_id,
-                                          username=username,
-                                          password=password,
-                                          access_token=token.accessToken)
+data_model_client = DataModelCreationUtil(
+    gateway_id=gateway_id,
+    username=username,
+    password=password,
+    access_token=token.accessToken,
+)
 
-credential_store_client = CredentialStoreClient(configFile)
+credential_store_client = CredentialStoreClient()
 
 airavata_util = APIServerClientUtil(
-    configFile,
     gateway_id=gateway_id,
     username=username,
     password=password,
@@ -68,8 +65,7 @@ path_suffix = sftp_connector.upload_files("/Users/isururanawaka/Documents/Cyberw
                                           "Default_Project",
                                           experiment.experimentName)
 
-gateway_settings = GatewaySettings(configFile)
-path = gateway_settings.GATEWAY_DATA_STORE_DIR + path_suffix
+path = Settings().GATEWAY_DATA_STORE_DIR + path_suffix
 
 # configure computational resources
 experiment = data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,

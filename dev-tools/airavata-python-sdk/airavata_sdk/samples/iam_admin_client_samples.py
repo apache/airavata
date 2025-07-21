@@ -31,10 +31,6 @@ token = authenticator.get_token_and_user_info_password_flow("default-admin", "12
 client = IAMAdminClient()
 
 
-# load client with given configuration file (e.g customized_settings.ini)
-# client = IAMAdminClient('../transport/settings.ini')
-
-
 def is_user_exisits():
     try:
         user = client.is_user_exist(token, "default-admin")

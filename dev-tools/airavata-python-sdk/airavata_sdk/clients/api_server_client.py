@@ -14,27 +14,20 @@
 #  limitations under the License.
 #
 
-import configparser
 import logging
-from typing import Optional
 
+from airavata_sdk import Settings
 from airavata_sdk.transport import utils
-from airavata_sdk.transport.settings import APIServerSettings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+class APIServerClient:
 
-class APIServerClient(object):
-
-    def __init__(self, configuration_file_location: Optional[str] = None, api_server_settings: Optional[APIServerSettings] = None):
-        if api_server_settings is not None:
-            self.settings = api_server_settings
-        elif configuration_file_location is not None:
-            self.settings = APIServerSettings(configuration_file_location)
-            self._load_settings(configuration_file_location)
+    def __init__(self):
+        self.settings = Settings()
         self.client = utils.initialize_api_client_pool(
-            self.settings.API_SERVER_HOST,
+            self.settings.API_SERVER_HOSTNAME,
             self.settings.API_SERVER_PORT,
             self.settings.API_SERVER_SECURE,
         )
@@ -230,11 +223,3 @@ class APIServerClient(object):
         self.save_parsing_template = self.client.saveParsingTemplate
         self.remove_parsing_template = self.client.removeParsingTemplate
         self.list_all_parsing_templates = self.client.listAllParsingTemplates
-
-    def _load_settings(self, configuration_file_location: Optional[str]):
-        if configuration_file_location is not None:
-            config = configparser.ConfigParser()
-            config.read(configuration_file_location)
-            self.settings.API_SERVER_HOST = config.get('APIServer', 'API_HOST')
-            self.settings.API_SERVER_PORT = config.getint('APIServer', 'API_PORT')
-            self.settings.API_SERVER_SECURE = config.getboolean('APIServer', 'API_SECURE')

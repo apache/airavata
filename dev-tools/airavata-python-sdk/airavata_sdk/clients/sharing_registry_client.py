@@ -14,12 +14,10 @@
 #  limitations under the License.
 #
 
-import configparser
 import logging
-from typing import Optional
 
 from airavata_sdk.transport import utils
-from airavata_sdk.transport.settings import SharingServerSettings
+from airavata_sdk import Settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -35,9 +33,8 @@ logger.addHandler(handler)
 
 class SharingRegistryClient(object):
 
-    def __init__(self, configuration_file_location: Optional[str] = None):
-        self.settings = SharingServerSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self):
+        self.settings = Settings()
         self.client = utils.initialize_sharing_registry_client(
             self.settings.SHARING_API_HOST,
             self.settings.SHARING_API_PORT,
@@ -101,12 +98,3 @@ class SharingRegistryClient(object):
         self.share_entity_with_groups = self.client.shareEntityWithGroups
         self.revoke_entity_sharing_from_groups = self.client.revokeEntitySharingFromGroups
         self.user_has_access = self.client.userHasAccess
-
-
-    def _load_settings(self, configuration_file_location: Optional[str]):
-        if configuration_file_location is not None:
-            config = configparser.ConfigParser()
-            config.read(configuration_file_location)
-            self.settings.SHARING_API_HOST = config.get('SharingServer', 'SHARING_API_HOST')
-            self.settings.SHARING_API_PORT = config.getint('SharingServer', 'SHARING_API_PORT')
-            self.settings.SHARING_API_SECURE = config.getboolean('SharingServer', 'SHARING_API_SECURE')

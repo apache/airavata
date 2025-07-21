@@ -19,7 +19,7 @@ import logging
 from typing import Optional
 
 from airavata_sdk.transport import utils
-from airavata_sdk.transport.settings import ProfileServerSettings
+from airavata_sdk import Settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -35,9 +35,8 @@ logger.addHandler(handler)
 
 class IAMAdminClient(object):
 
-    def __init__(self, configuration_file_location: Optional[str] = None):
-        self.settings = ProfileServerSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self):
+        self.settings = Settings()
         self.client = utils.initialize_iam_admin_client(
             self.settings.PROFILE_SERVICE_HOST,
             self.settings.PROFILE_SERVICE_PORT,
@@ -59,11 +58,3 @@ class IAMAdminClient(object):
         self.add_role_to_user = self.client.addRoleToUser
         self.remove_role_from_user = self.client.removeRoleFromUser
         self.get_users_with_role = self.client.getUsersWithRole
-
-    def _load_settings(self, configuration_file_location: Optional[str]):
-        if configuration_file_location is not None:
-            config = configparser.ConfigParser()
-            config.read(configuration_file_location)
-            self.settings.PROFILE_SERVICE_HOST = config.get('ProfileServer', 'PROFILE_SERVICE_HOST')
-            self.settings.PROFILE_SERVICE_PORT = config.getint('ProfileServer', 'PROFILE_SERVICE_PORT')
-            self.settings.PROFILE_SERVICE_SECURE = config.getboolean('ProfileServer', 'PROFILE_SERVICE_SECURE')

@@ -32,11 +32,6 @@ token = authenticator.get_token_and_user_info_password_flow("default-admin", "12
 # load GroupManagerClient with default configuration
 client = SharingRegistryClient()
 
-
-# load client with given configuration file (e.g customized_settings.ini)
-
-# client = SharingRegistryClient('../transport/settings.ini')
-
 # create domian
 def create_domain():
     try:

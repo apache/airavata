@@ -32,11 +32,6 @@ token = authenticator.get_token_and_user_info_password_flow("default-admin", "12
 client = GroupManagerClient()
 
 
-# load client with given configuration file (e.g customized_settings.ini)
-
-#client = GroupManagerClient('../transport/settings.ini')
-
-
 # create group in airavata
 def create_group():
     try:

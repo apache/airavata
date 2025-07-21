@@ -14,31 +14,50 @@
 #  limitations under the License.
 #
 
-import configparser
 import os
-from typing import Optional
 
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 from airavata.model.security.ttypes import AuthzToken
-from airavata_sdk.transport.settings import KeycloakServerSettings
+from airavata_sdk import Settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 class Authenticator(object):
 
-    def __init__(self, configuration_file_location: Optional[str] = None):
-        self.settings = KeycloakServerSettings(configuration_file_location)
-        self._load_settings(configuration_file_location)
+    def __init__(self):
+        self.settings = Settings()
+
+    @property
+    def TOKEN_URL(self):
+        return f"{Settings.AUTH_SERVER_URL}/realms/{Settings.AUTH_REALM}/protocol/openid-connect/token"
+
+    @property
+    def USER_INFO_URL(self):
+        return f"{Settings.AUTH_SERVER_URL}/realms/{Settings.AUTH_REALM}/protocol/openid-connect/userinfo"
+
+    @property
+    def LOGIN_DESKTOP_URI(self):
+        return f"{Settings.AUTH_SERVER_URL}/realms/{Settings.AUTH_REALM}/protocol/openid-connect/auth"
+    
+    @property
+    def CLIENT_ID(self):
+        return "airavata"
+    
+    @property
+    def CLIENT_SECRET(self):
+        return "airavata"
 
     def get_token_and_user_info_password_flow(self, username: str, password: str, gateway_id: str):
-        client_id = self.settings.CLIENT_ID
-        client_secret = self.settings.CLIENT_SECRET
-        token_url = self.settings.TOKEN_URL
+        client_id = self.CLIENT_ID
+        client_secret = self.CLIENT_SECRET
+        token_url = self.TOKEN_URL
         # userinfo_url = self.keycloak_settings.USER_INFO_URL
         verify_ssl = self.settings.VERIFY_SSL
-        oauth2_session = OAuth2Session(client=LegacyApplicationClient(client_id=client_id))
+        oauth2_session = OAuth2Session(
+            client=LegacyApplicationClient(client_id=client_id))
         token = oauth2_session.fetch_token(
             token_url=token_url,
             username=username,
@@ -61,12 +80,12 @@ class Authenticator(object):
         return AuthzToken(accessToken=token, claimsMap=claimsMap)
 
     def get_authorize_url(self, username: str, password: str, gateway_id: str):
-        client_id = self.settings.CLIENT_ID
-        client_secret = self.settings.CLIENT_SECRET
-        token_url = self.settings.TOKEN_URL
-        # userinfo_url = self.keycloak_settings.USER_INFO_URL
+        client_id = self.CLIENT_ID
+        client_secret = self.CLIENT_SECRET
+        token_url = self.TOKEN_URL
         verify_ssl = self.settings.VERIFY_SSL
-        oauth2_session = OAuth2Session(client=LegacyApplicationClient(client_id=client_id))
+        oauth2_session = OAuth2Session(
+            client=LegacyApplicationClient(client_id=client_id))
         token = oauth2_session.fetch_token(
             token_url=token_url,
             username=username,
@@ -82,16 +101,5 @@ class Authenticator(object):
         return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
 
     def authenticate_with_auth_code(self):
-        print("Click on Login URI ", self.settings.LOGIN_DESKTOP_URI)
-        return self.settings.LOGIN_DESKTOP_URI
-
-    def _load_settings(self, configuration_file_location: Optional[str]):
-        if configuration_file_location is not None:
-            config = configparser.ConfigParser()
-            config.read(configuration_file_location)
-            # self.keycloak_settings.KEYCLOAK_CA_CERTIFICATE = config.get("KeycloakServer", 'CERTIFICATE_FILE_PATH')
-            self.settings.CLIENT_ID = config.get('KeycloakServer', 'CLIENT_ID')
-            self.settings.CLIENT_SECRET = config.get('KeycloakServer', 'CLIENT_SECRET')
-            self.settings.TOKEN_URL = config.get('KeycloakServer', 'TOKEN_URL')
-            self.settings.USER_INFO_URL = config.get('KeycloakServer', 'USER_INFO_URL')
-            self.settings.VERIFY_SSL = config.getboolean('KeycloakServer', 'VERIFY_SSL')
+        print("Click on Login URI ", self.LOGIN_DESKTOP_URI)
+        return self.LOGIN_DESKTOP_URI

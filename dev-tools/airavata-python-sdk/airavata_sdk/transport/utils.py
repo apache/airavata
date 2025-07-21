@@ -15,7 +15,8 @@
 #
 
 import logging
-from typing import Generic, Optional, TypeVar
+import ssl
+from typing import Optional, TypeVar
 
 from thrift.protocol import TBinaryProtocol
 from thrift.protocol.TMultiplexedProtocol import TMultiplexedProtocol
@@ -32,15 +33,11 @@ from airavata.service.profile.tenant.cpi import TenantProfileService
 from airavata.service.profile.tenant.cpi.constants import TENANT_PROFILE_CPI_NAME
 from airavata.service.profile.user.cpi import UserProfileService
 from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
-from airavata_sdk.transport import settings
+from airavata_sdk import Settings
 
 log = logging.getLogger(__name__)
 
-default_api_server_settings = settings.APIServerSettings()
-default_profile_server_settings = settings.ProfileServerSettings()
-default_sharing_server_settings = settings.SharingServerSettings()
-default_credential_store_server_settings = settings.CredentialStoreServerSettings()
-default_thrift_settings = settings.ThriftSettings()
+settings = Settings()
 
 T = TypeVar(
   'T',
@@ -67,7 +64,15 @@ class ThriftClient:
     self.service_name = service_name
 
     if self.secure:
-      self.transport = TSSLSocket.TSSLSocket(self.host, self.port, validate=False, socket_keepalive=True)
+      ssl_context = ssl.create_default_context()
+      ssl_context.check_hostname = False
+      ssl_context.verify_mode = ssl.CERT_REQUIRED
+      self.transport = TSSLSocket.TSSLSocket(
+        self.host,
+        self.port,
+        ssl_context=ssl_context,
+        socket_keepalive=True,
+      )
     else:
       self.transport = TSocket.TSocket(self.host, self.port, socket_keepalive=True)
     self.transport = TTransport.TBufferedTransport(self.transport)
@@ -94,56 +99,56 @@ class ThriftClient:
 
 
 def initialize_api_client_pool(
-    host=default_api_server_settings.API_SERVER_HOST,
-    port=default_api_server_settings.API_SERVER_PORT,
-    secure=default_api_server_settings.API_SERVER_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> Airavata.Client:
   return ThriftClient(Airavata.Client, host, port, secure).client
 
 
 def initialize_group_manager_client(
-    host=default_profile_server_settings.PROFILE_SERVICE_HOST,
-    port=default_profile_server_settings.PROFILE_SERVICE_PORT,
-    secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
+    host=settings.PROFILE_SERVICE_HOST,
+    port=settings.PROFILE_SERVICE_PORT,
+    secure=settings.PROFILE_SERVICE_SECURE,
 ) -> GroupManagerService.Client:
   return ThriftClient(GroupManagerService.Client, host, port, secure, GROUP_MANAGER_CPI_NAME).client
 
 
 def initialize_iam_admin_client(
-    host=default_profile_server_settings.PROFILE_SERVICE_HOST,
-    port=default_profile_server_settings.PROFILE_SERVICE_PORT,
-    secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
+    host=settings.PROFILE_SERVICE_HOST,
+    port=settings.PROFILE_SERVICE_PORT,
+    secure=settings.PROFILE_SERVICE_SECURE,
 ) -> IamAdminServices.Client:
   return ThriftClient(IamAdminServices.Client, host, port, secure, IAM_ADMIN_SERVICES_CPI_NAME).client
 
 
 def initialize_tenant_profile_client(
-    host=default_profile_server_settings.PROFILE_SERVICE_HOST,
-    port=default_profile_server_settings.PROFILE_SERVICE_PORT,
-    secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
+    host=settings.PROFILE_SERVICE_HOST,
+    port=settings.PROFILE_SERVICE_PORT,
+    secure=settings.PROFILE_SERVICE_SECURE,
 ) -> TenantProfileService.Client:
   return ThriftClient(TenantProfileService.Client, host, port, secure, TENANT_PROFILE_CPI_NAME).client
 
 
 def initialize_user_profile_client(
-    host=default_profile_server_settings.PROFILE_SERVICE_HOST,
-    port=default_profile_server_settings.PROFILE_SERVICE_PORT,
-    secure=default_profile_server_settings.PROFILE_SERVICE_SECURE,
+    host=settings.PROFILE_SERVICE_HOST,
+    port=settings.PROFILE_SERVICE_PORT,
+    secure=settings.PROFILE_SERVICE_SECURE,
 ) -> UserProfileService.Client:
   return ThriftClient(UserProfileService.Client, host, port, secure, USER_PROFILE_CPI_NAME).client
 
 
 def initialize_sharing_registry_client(
-    host=default_sharing_server_settings.SHARING_API_HOST,
-    port=default_sharing_server_settings.SHARING_API_PORT,
-    secure=default_sharing_server_settings.SHARING_API_SECURE,
+    host=settings.SHARING_API_HOST,
+    port=settings.SHARING_API_PORT,
+    secure=settings.SHARING_API_SECURE,
 ) -> SharingRegistryService.Client:
   return ThriftClient(SharingRegistryService.Client, host, port, secure).client
 
 
 def initialize_credential_store_client(
-    host=default_credential_store_server_settings.CREDENTIAL_STORE_API_HOST,
-    port=default_credential_store_server_settings.CREDENTIAL_STORE_API_PORT,
-    secure=default_credential_store_server_settings.CREDENTIAL_STORE_API_SECURE,
+    host=settings.CREDENTIAL_STORE_API_HOST,
+    port=settings.CREDENTIAL_STORE_API_PORT,
+    secure=settings.CREDENTIAL_STORE_API_SECURE,
 ) -> CredentialStoreService.Client:
   return ThriftClient(CredentialStoreService.Client, host, port, secure).client
