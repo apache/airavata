@@ -54,6 +54,14 @@ class Settings:
     def VERIFY_SSL(self):
         return bool(os.getenv("VERIFY_SSL", True))
 
+    @property
+    def THRIFT_CONNECTION_MAX_RETRIES(self):
+        return int(os.getenv("THRIFT_CONNECTION_MAX_RETRIES", 3))
+
+    @property
+    def THRIFT_CONNECTION_RETRY_DELAY(self):
+        return float(os.getenv("THRIFT_CONNECTION_RETRY_DELAY", 1.0))
+
     # ------------------------------------------------------------
     # API Server Connection Settings
     # ------------------------------------------------------------
@@ -64,7 +72,7 @@ class Settings:
 
     @property
     def API_SERVER_PORT(self):
-        return int(os.getenv("API_SERVER_PORT", 9930))
+        return int(os.getenv("API_SERVER_PORT", 8930))
 
     @property
     def API_SERVER_URL(self):
@@ -72,7 +80,7 @@ class Settings:
 
     @property
     def API_SERVER_SECURE(self):
-        return bool(os.getenv("API_SERVER_SECURE", True))
+        return bool(os.getenv("API_SERVER_SECURE", False))
 
     @property
     def MONITOR_STATUS(self):
@@ -148,7 +156,7 @@ class Settings:
 
     @property
     def GATEWAY_DATA_STORE_DIR(self):
-        return str(os.getenv("GATEWAY_DATA_STORE_DIR", "/var/www/portals/gateway-user-data/cybershuttle"))
+        return str(os.getenv("GATEWAY_DATA_STORE_DIR", f"/var/www/portals/gateway-user-data/{self.GATEWAY_ID}"))
 
     # ------------------------------------------------------------
     # Storage Settings

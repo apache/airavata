@@ -35,6 +35,7 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
+from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
@@ -234,9 +235,12 @@ class AiravataOperator:
 
     """
     # logic
-    grps: list = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group))
-    return str(grp_id)
+    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
+    try:
+      grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group))
+      return str(grp_id)
+    except StopIteration:
+      raise Exception(f"Group resource profile {group} not found")
   
   def get_group_resource_profile(self, group_id: str):
     grp = self.api_server_client.get_group_resource_profile(self.airavata_token, group_id) # type: ignore
@@ -575,6 +579,7 @@ class AiravataOperator:
     print("[AV] exp_dir:", exp_dir)
     print("[AV] abs_path:", abs_path)
 
+    print("[AV] Setting up computation resource scheduling...")
     experiment = self.configure_computation_resource_scheduling(
         experiment_model=experiment,
         computation_resource_name=computation_resource_name,
@@ -634,6 +639,7 @@ class AiravataOperator:
     self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
 
     # create experiment
+    print(f"[AV] Creating experiment...")
     try:
       ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
     except Exception as e:
@@ -781,9 +787,6 @@ class AiravataOperator:
       Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="Default"),
       Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, gpu_count=0, walltime=30, group="Default"),
       Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="Default"),
-      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="GaussianGroup"),
-      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, gpu_count=0, walltime=30, group="GaussianGroup"),
-      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="GaussianGroup"),
     ]
   
   def get_task_status(self, experiment_id: str) -> tuple[str, Literal["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"] | None]:
