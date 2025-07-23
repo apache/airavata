@@ -15,7 +15,9 @@
 #
 
 import logging
+import certifi
 import ssl
+import time
 from typing import Optional, TypeVar
 
 from thrift.protocol import TBinaryProtocol
@@ -56,46 +58,72 @@ class ThriftClient:
   secure: bool
   service_name: Optional[str]
   transport: TTransport.TTransportBase
+  max_retries: int
+  retry_delay: float
 
-  def __init__(self, klass, host: str, port: int, secure: bool = False, service_name: Optional[str] = None):
+  def __init__(self, klass, host: str, port: int, secure: bool = False, service_name: Optional[str] = None, 
+               max_retries: Optional[int] = None, retry_delay: Optional[float] = None):
     self.host = host
     self.port = port
     self.secure = secure
     self.service_name = service_name
+    self.max_retries = max_retries or settings.THRIFT_CONNECTION_MAX_RETRIES
+    self.retry_delay = retry_delay or settings.THRIFT_CONNECTION_RETRY_DELAY
 
-    if self.secure:
-      ssl_context = ssl.create_default_context()
-      ssl_context.check_hostname = False
-      ssl_context.verify_mode = ssl.CERT_REQUIRED
-      self.transport = TSSLSocket.TSSLSocket(
-        self.host,
-        self.port,
-        ssl_context=ssl_context,
-        socket_keepalive=True,
-      )
-    else:
-      self.transport = TSocket.TSocket(self.host, self.port, socket_keepalive=True)
-    self.transport = TTransport.TBufferedTransport(self.transport)
+    # create and validate transport
+    self.transport = self._create_transport()
     protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
     if self.service_name:
       protocol = TMultiplexedProtocol(protocol, self.service_name)
-    
     self.client = klass(protocol)
 
-    # open transport at constructor time
-    self.transport.open()
+    self._validate_transport()
+
+  def _create_transport(self):
+    """Create transport with enhanced SSL configuration"""
+    if self.secure:
+      transport = TSSLSocket.TSSLSocket(
+        self.host,
+        self.port,
+        cert_reqs=ssl.CERT_REQUIRED,
+        ca_certs=certifi.where(),
+        socket_keepalive=True,
+      )
+    else:
+      transport = TSocket.TSocket(
+        self.host, 
+        self.port, 
+        socket_keepalive=True,
+      )
+    return TTransport.TBufferedTransport(transport)
+
+  def _validate_transport(self):
+    """Open transport with retry logic to handle connection issues"""
+    for attempt in range(self.max_retries):
+      try:
+        log.debug(f"[AV] Attempting to connect to {self.host}:{self.port} (attempt {attempt + 1}/{self.max_retries})")
+        if self.transport.isOpen():
+          self.transport.close()
+        self.transport.open()
+        version = self.client.getAPIVersion() # type: ignore
+        log.debug(f"[AV] Connected to {self.host}:{self.port} passed! API version={version}")
+        break
+      except Exception as e:
+        log.debug(f"[AV] Connection attempt {attempt + 1} failed: {repr(e)}")
+        time.sleep(self.retry_delay * (attempt + 1))
+    else:
+      error_msg = f"[AV] Failed to connect to {self.host}:{self.port} after {self.max_retries} attempts"
+      log.error(error_msg)
+      raise Exception(error_msg)
+
 
   def close(self):
     if self.transport:
-      self.transport.close()
-
-  def ping(self):
-    assert self.client is not None
-    try:
-      self.client.getAPIVersion() # type: ignore
-    except Exception as e:
-      log.debug("getAPIVersion failed: {}".format(str(e)))
-      raise
+      try:
+        self.transport.close()
+      except Exception as e:
+        log.warning(f"Error closing transport: {str(e)}")
+    
 
 
 def initialize_api_client_pool(
