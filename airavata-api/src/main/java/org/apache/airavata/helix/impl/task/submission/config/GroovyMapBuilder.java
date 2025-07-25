@@ -80,6 +80,7 @@ public class GroovyMapBuilder {
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
+        mapData.setExperimentId(taskContext.getExperimentId());
 
         SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
@@ -121,6 +122,7 @@ public class GroovyMapBuilder {
                         ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
                 if (jobSubmissionTaskModel.getWallTime() > 0) {
                     mapData.setMaxWallTime(maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
+                    mapData.setWallTimeInSeconds(jobSubmissionTaskModel.getWallTime() * 60);
                     // TODO fix this
                     /*if (resourceJobManager != null) {
                         if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
@@ -161,6 +163,7 @@ public class GroovyMapBuilder {
             // if so we ignore scheduling configuration.
             if (scheduling.getWallTimeLimit() > 0 && mapData.getMaxWallTime() == null) {
                 mapData.setMaxWallTime(maxWallTimeCalculator(scheduling.getWallTimeLimit()));
+                mapData.setWallTimeInSeconds(scheduling.getWallTimeLimit() * 60);
 
                 // TODO fix this
                 /*

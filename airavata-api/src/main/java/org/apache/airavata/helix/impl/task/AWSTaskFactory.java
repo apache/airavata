@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.helix.impl.task;
 
+import org.apache.airavata.helix.impl.task.aws.AWSCompletingTask;
 import org.apache.airavata.helix.impl.task.aws.AWSJobSubmissionTask;
 import org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask;
 import org.apache.airavata.helix.impl.task.aws.NoOperationTask;
-import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        return new CompletingTask();
+        return new AWSCompletingTask();
     }
 
     @Override
