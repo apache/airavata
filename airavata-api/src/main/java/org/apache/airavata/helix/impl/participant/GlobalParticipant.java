@@ -52,6 +52,7 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         "org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask",
         "org.apache.airavata.helix.impl.task.aws.NoOperationTask",
         "org.apache.airavata.helix.impl.task.aws.AWSJobSubmissionTask",
+        "org.apache.airavata.helix.impl.task.aws.AWSCompletingTask",
     };
 
     @SuppressWarnings("WeakerAccess")

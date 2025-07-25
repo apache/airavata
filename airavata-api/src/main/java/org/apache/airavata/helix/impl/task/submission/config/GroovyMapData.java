@@ -107,6 +107,9 @@ public class GroovyMapData {
     @ScriptTag(name = "maxWallTime")
     private String maxWallTime;
 
+    @ScriptTag(name = "wallTimeInSeconds")
+    private Integer wallTimeInSeconds;
+
     @ScriptTag(name = "qualityOfService")
     private String qualityOfService;
 
@@ -151,6 +154,9 @@ public class GroovyMapData {
 
     @ScriptTag(name = "experimentDataDir")
     private String experimentDataDir;
+
+    @ScriptTag(name = "experimentId")
+    private String experimentId;
 
     @ScriptTag(name = "computeHostName")
     private String computeHostName;
@@ -363,6 +369,14 @@ public class GroovyMapData {
         return this;
     }
 
+    public Integer getWallTimeInSeconds() {
+        return wallTimeInSeconds;
+    }
+
+    public void setWallTimeInSeconds(Integer wallTimeInSeconds) {
+        this.wallTimeInSeconds = wallTimeInSeconds;
+    }
+
     public String getQualityOfService() {
         return qualityOfService;
     }
@@ -494,6 +508,14 @@ public class GroovyMapData {
 
     public void setExperimentDataDir(String experimentDataDir) {
         this.experimentDataDir = experimentDataDir;
+    }
+
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public String getCurrentTime() {
