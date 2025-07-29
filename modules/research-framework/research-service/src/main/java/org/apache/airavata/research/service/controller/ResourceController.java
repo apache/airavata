@@ -99,7 +99,7 @@ public class ResourceController {
     @Operation(summary = "Get all tags")
     @GetMapping(value = "/public/tags/all")
     public ResponseEntity<List<org.apache.airavata.research.service.model.entity.Tag>> getTags() {
-        return ResponseEntity.ok(resourceHandler.getAllTagsByPopularity());
+        return ResponseEntity.ok(resourceHandler.getAllTagsByAlphabeticalOrder());
     }
 
     @Operation(summary = "Get dataset, notebook, repository, or model")
