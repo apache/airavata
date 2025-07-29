@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -282,6 +283,10 @@ public class ResourceHandler {
 
     public List<Tag> getAllTagsByPopularity() {
         return tagRepository.findDistinctByPopularity(100);
+    }
+
+    public List<Tag> getAllTagsByAlphabeticalOrder() {
+        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "value"));
     }
 
     public List<Resource> getAllResourcesByTypeAndName(Class<? extends Resource> type, String name) {
