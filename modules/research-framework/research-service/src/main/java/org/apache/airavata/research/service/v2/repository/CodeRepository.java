@@ -21,6 +21,8 @@ package org.apache.airavata.research.service.v2.repository;
 
 import java.util.List;
 import org.apache.airavata.research.service.v2.entity.Code;
+import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
+import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,61 +34,79 @@ import org.springframework.stereotype.Repository;
 public interface CodeRepository extends JpaRepository<Code, String> {
     
     // Find by name containing (case insensitive)
-    List<Code> findByNameContainingIgnoreCaseAndIsPublicTrue(String name);
+    List<Code> findByNameContainingIgnoreCaseAndPrivacyAndState(String name, PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find by code type
-    List<Code> findByCodeTypeAndIsPublicTrue(String codeType);
+    List<Code> findByCodeTypeAndPrivacyAndState(String codeType, PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find by programming language
-    List<Code> findByProgrammingLanguageAndIsPublicTrue(String programmingLanguage);
+    List<Code> findByProgrammingLanguageAndPrivacyAndState(String programmingLanguage, PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find by framework
-    List<Code> findByFrameworkAndIsPublicTrue(String framework);
+    List<Code> findByFrameworkAndPrivacyAndState(String framework, PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find all public and active codes with pagination
-    Page<Code> findByIsPublicTrueAndIsActiveTrue(Pageable pageable);
+    Page<Code> findByPrivacyAndState(PrivacyEnumV2 privacy, StateEnumV2 state, Pageable pageable);
     
     // Search by name, description, or tags with pagination
-    @Query("SELECT c FROM Code c WHERE c.isPublic = true AND c.isActive = true AND " +
+    @Query("SELECT c FROM Code c WHERE c.privacy = :privacy AND c.state = :state AND " +
            "(LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.codeType) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.programmingLanguage) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.framework) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<Code> findByKeywordSearchAndIsPublicTrueAndIsActiveTrue(@Param("keyword") String keyword, Pageable pageable);
+    Page<Code> findByKeywordSearchAndPrivacyAndState(@Param("keyword") String keyword, 
+                                                     @Param("privacy") PrivacyEnumV2 privacy, 
+                                                     @Param("state") StateEnumV2 state, 
+                                                     Pageable pageable);
     
     // Search codes by keyword (for simple list)
-    @Query("SELECT c FROM Code c WHERE c.isPublic = true AND c.isActive = true AND " +
+    @Query("SELECT c FROM Code c WHERE c.privacy = :privacy AND c.state = :state AND " +
            "(LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.codeType) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.programmingLanguage) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(c.framework) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    List<Code> findByKeywordSearchAndIsPublicTrueAndIsActiveTrue(@Param("keyword") String keyword);
+    List<Code> findByKeywordSearchAndPrivacyAndState(@Param("keyword") String keyword, 
+                                                     @Param("privacy") PrivacyEnumV2 privacy, 
+                                                     @Param("state") StateEnumV2 state);
     
     // Find all public and active codes
-    List<Code> findAllByIsPublicTrueAndIsActiveTrue();
+    List<Code> findAllByPrivacyAndState(PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find codes by tag
-    @Query("SELECT c FROM Code c JOIN c.tags t WHERE c.isPublic = true AND c.isActive = true AND LOWER(t) = LOWER(:tag)")
-    List<Code> findByTagAndIsPublicTrue(@Param("tag") String tag);
+    @Query("SELECT c FROM Code c JOIN c.tags t WHERE c.privacy = :privacy AND c.state = :state AND LOWER(t.tagValue) = LOWER(:tag)")
+    List<Code> findByTagAndPrivacyAndState(@Param("tag") String tag, 
+                                           @Param("privacy") PrivacyEnumV2 privacy, 
+                                           @Param("state") StateEnumV2 state);
     
     // Find codes by author
-    @Query("SELECT c FROM Code c JOIN c.authors a WHERE c.isPublic = true AND c.isActive = true AND LOWER(a) LIKE LOWER(CONCAT('%', :author, '%'))")
-    List<Code> findByAuthorAndIsPublicTrue(@Param("author") String author);
+    @Query("SELECT c FROM Code c JOIN c.authors a WHERE c.privacy = :privacy AND c.state = :state AND LOWER(a) LIKE LOWER(CONCAT('%', :author, '%'))")
+    List<Code> findByAuthorAndPrivacyAndState(@Param("author") String author, 
+                                              @Param("privacy") PrivacyEnumV2 privacy, 
+                                              @Param("state") StateEnumV2 state);
     
     // Find codes by dependency
-    @Query("SELECT c FROM Code c JOIN c.dependencies d WHERE c.isPublic = true AND c.isActive = true AND LOWER(d) = LOWER(:dependency)")
-    List<Code> findByDependencyAndIsPublicTrue(@Param("dependency") String dependency);
+    @Query("SELECT c FROM Code c JOIN c.dependencies d WHERE c.privacy = :privacy AND c.state = :state AND LOWER(d) = LOWER(:dependency)")
+    List<Code> findByDependencyAndPrivacyAndState(@Param("dependency") String dependency, 
+                                                  @Param("privacy") PrivacyEnumV2 privacy, 
+                                                  @Param("state") StateEnumV2 state);
     
     // Find top starred codes
-    @Query("SELECT c FROM Code c WHERE c.isPublic = true AND c.isActive = true ORDER BY c.starCount DESC")
-    List<Code> findTopStarredCodes(Pageable pageable);
+    @Query("SELECT c FROM Code c WHERE c.privacy = :privacy AND c.state = :state ORDER BY c.starCount DESC")
+    List<Code> findTopStarredCodes(@Param("privacy") PrivacyEnumV2 privacy, 
+                                   @Param("state") StateEnumV2 state, 
+                                   Pageable pageable);
     
     // Find recently created codes
-    @Query("SELECT c FROM Code c WHERE c.isPublic = true AND c.isActive = true ORDER BY c.createdAt DESC")
-    List<Code> findRecentCodes(Pageable pageable);
+    @Query("SELECT c FROM Code c WHERE c.privacy = :privacy AND c.state = :state ORDER BY c.createdAt DESC")
+    List<Code> findRecentCodes(@Param("privacy") PrivacyEnumV2 privacy, 
+                               @Param("state") StateEnumV2 state, 
+                               Pageable pageable);
     
     // Find starred codes (starCount > 0)
-    Page<Code> findByStarCountGreaterThanAndIsPublicTrueAndIsActiveTrue(int starCount, Pageable pageable);
+    Page<Code> findByStarCountGreaterThanAndPrivacyAndState(int starCount, 
+                                                            PrivacyEnumV2 privacy, 
+                                                            StateEnumV2 state, 
+                                                            Pageable pageable);
 }

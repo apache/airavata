@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import jakarta.validation.Valid;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
+import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
+import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.apache.airavata.research.service.v2.repository.ComputeResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComputeResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeResourceController.class);
+    private static final PrivacyEnumV2 PUBLIC_PRIVACY = PrivacyEnumV2.PUBLIC;
+    private static final StateEnumV2 ACTIVE_STATE = StateEnumV2.ACTIVE;
 
     private final ComputeResourceRepository computeResourceRepository;
 
@@ -72,9 +76,9 @@ public class ComputeResourceController {
         Page<ComputeResource> resources;
         
         if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-            resources = computeResourceRepository.findByNameSearchAndIsPublicTrueAndIsActiveTrue(nameSearch, pageable);
+            resources = computeResourceRepository.findByNameSearchAndPrivacyAndState(nameSearch, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         } else {
-            resources = computeResourceRepository.findByIsPublicTrueAndIsActiveTrue(pageable);
+            resources = computeResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         }
         
         LOGGER.info("Found {} compute resources", resources.getTotalElements());
@@ -118,11 +122,11 @@ public class ComputeResourceController {
             if (computeResource.getMemoryGB() == null) {
                 computeResource.setMemoryGB(1); // Default to 1 GB
             }
-            if (computeResource.getIsPublic() == null) {
-                computeResource.setIsPublic(true);
+            if (computeResource.getPrivacy() == null) {
+                computeResource.setPrivacy(PUBLIC_PRIVACY);
             }
-            if (computeResource.getIsActive() == null) {
-                computeResource.setIsActive(true);
+            if (computeResource.getState() == null) {
+                computeResource.setState(ACTIVE_STATE);
             }
             
             ComputeResource savedResource = computeResourceRepository.save(computeResource);
@@ -205,7 +209,7 @@ public class ComputeResourceController {
         LOGGER.info("Searching compute resources with keyword: {}", keyword);
         
         List<ComputeResource> resources = computeResourceRepository
-                .findByNameContainingIgnoreCaseAndIsPublicTrue(keyword);
+                .findByNameContainingIgnoreCaseAndPrivacyAndState(keyword, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} compute resources matching keyword: {}", resources.size(), keyword);
         return ResponseEntity.ok(resources);
@@ -219,7 +223,7 @@ public class ComputeResourceController {
         LOGGER.info("Getting compute resources by type: {}", computeType);
         
         List<ComputeResource> resources = computeResourceRepository
-                .findByComputeTypeAndIsPublicTrue(computeType);
+                .findByComputeTypeAndPrivacyAndState(computeType, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} compute resources of type: {}", resources.size(), computeType);
         return ResponseEntity.ok(resources);

@@ -21,41 +21,18 @@ package org.apache.airavata.research.service.v2.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.Instant;
-import java.util.List;
-import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.airavata.research.service.v2.enums.ResourceTypeEnumV2;
 
 @Entity
 @Table(name = "COMPUTE_RESOURCE_V2")
-@EntityListeners(AuditingEntityListener.class)
-public class ComputeResource {
-
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
-    private String id;
-
-    @Column(nullable = false)
-    @NotBlank(message = "Name is required")
-    @Size(max = 255, message = "Name must not exceed 255 characters")
-    private String name;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    @NotBlank(message = "Description is required")
-    @Size(max = 5000, message = "Description must not exceed 5000 characters")
-    private String description;
+public class ComputeResource extends ResourceV2 {
 
     @Column(nullable = false)
     @NotBlank(message = "Hostname is required")
@@ -91,23 +68,14 @@ public class ComputeResource {
     private String additionalInfo;
 
     @Column(nullable = false)
-    private Boolean isPublic = true;
-
-    @Column(nullable = false)
-    private Boolean isActive = true;
-
-    @Column(nullable = false)
     @NotBlank(message = "Resource manager is required")
     @Size(max = 255, message = "Resource manager must not exceed 255 characters")
     private String resourceManager; // Gateway name or organization
 
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
-    private Instant createdAt;
-
-    @Column(nullable = false)
-    @LastModifiedDate
-    private Instant updatedAt;
+    @Override
+    public ResourceTypeEnumV2 getType() {
+        return ResourceTypeEnumV2.COMPUTE_RESOURCE;
+    }
 
     // Default constructor
     public ComputeResource() {}
@@ -116,8 +84,8 @@ public class ComputeResource {
     public ComputeResource(String name, String description, String hostname, String computeType, 
                           Integer cpuCores, Integer memoryGB, String operatingSystem, 
                           String queueSystem, String additionalInfo, String resourceManager) {
-        this.name = name;
-        this.description = description;
+        this.setName(name);
+        this.setDescription(description);
         this.hostname = hostname;
         this.computeType = computeType;
         this.cpuCores = cpuCores;
@@ -126,35 +94,14 @@ public class ComputeResource {
         this.queueSystem = queueSystem;
         this.additionalInfo = additionalInfo;
         this.resourceManager = resourceManager;
-        this.isPublic = true;
-        this.isActive = true;
+        
+        // Set inherited fields
+        this.setAuthors(new HashSet<>());
+        this.setTags(new HashSet<>());
+        this.setHeaderImage(""); // Default empty header image
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
+    // Getters and Setters for ComputeResource-specific fields
     public String getHostname() {
         return hostname;
     }
@@ -211,43 +158,11 @@ public class ComputeResource {
         this.additionalInfo = additionalInfo;
     }
 
-    public Boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(Boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public String getResourceManager() {
         return resourceManager;
     }
 
     public void setResourceManager(String resourceManager) {
         this.resourceManager = resourceManager;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

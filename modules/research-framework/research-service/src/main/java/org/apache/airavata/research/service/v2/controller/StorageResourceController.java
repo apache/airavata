@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import jakarta.validation.Valid;
 import org.apache.airavata.research.service.v2.entity.StorageResource;
+import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
+import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.apache.airavata.research.service.v2.repository.StorageResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class StorageResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageResourceController.class);
+    private static final PrivacyEnumV2 PUBLIC_PRIVACY = PrivacyEnumV2.PUBLIC;
+    private static final StateEnumV2 ACTIVE_STATE = StateEnumV2.ACTIVE;
 
     private final StorageResourceRepository storageResourceRepository;
 
@@ -72,9 +76,9 @@ public class StorageResourceController {
         Page<StorageResource> resources;
         
         if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-            resources = storageResourceRepository.findByNameSearchAndIsPublicTrueAndIsActiveTrue(nameSearch, pageable);
+            resources = storageResourceRepository.findByNameSearchAndPrivacyAndState(nameSearch, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         } else {
-            resources = storageResourceRepository.findByIsPublicTrueAndIsActiveTrue(pageable);
+            resources = storageResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         }
         
         LOGGER.info("Found {} storage resources", resources.getTotalElements());
@@ -121,11 +125,11 @@ public class StorageResourceController {
             if (storageResource.getSupportsVersioning() == null) {
                 storageResource.setSupportsVersioning(false);
             }
-            if (storageResource.getIsPublic() == null) {
-                storageResource.setIsPublic(true);
+            if (storageResource.getPrivacy() == null) {
+                storageResource.setPrivacy(PUBLIC_PRIVACY);
             }
-            if (storageResource.getIsActive() == null) {
-                storageResource.setIsActive(true);
+            if (storageResource.getState() == null) {
+                storageResource.setState(ACTIVE_STATE);
             }
             
             StorageResource savedResource = storageResourceRepository.save(storageResource);
@@ -208,7 +212,7 @@ public class StorageResourceController {
         LOGGER.info("Searching storage resources with keyword: {}", keyword);
         
         List<StorageResource> resources = storageResourceRepository
-                .findByNameContainingIgnoreCaseAndIsPublicTrue(keyword);
+                .findByNameContainingIgnoreCaseAndPrivacyAndState(keyword, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} storage resources matching keyword: {}", resources.size(), keyword);
         return ResponseEntity.ok(resources);
@@ -222,7 +226,7 @@ public class StorageResourceController {
         LOGGER.info("Getting storage resources by type: {}", storageType);
         
         List<StorageResource> resources = storageResourceRepository
-                .findByStorageTypeAndIsPublicTrue(storageType);
+                .findByStorageTypeAndPrivacyAndState(storageType, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} storage resources of type: {}", resources.size(), storageType);
         return ResponseEntity.ok(resources);

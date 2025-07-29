@@ -21,6 +21,8 @@ package org.apache.airavata.research.service.v2.repository;
 
 import java.util.List;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
+import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
+import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,21 +34,24 @@ import org.springframework.stereotype.Repository;
 public interface ComputeResourceRepository extends JpaRepository<ComputeResource, String> {
     
     // Find by name containing (case insensitive)
-    List<ComputeResource> findByNameContainingIgnoreCaseAndIsPublicTrue(String name);
+    List<ComputeResource> findByNameContainingIgnoreCaseAndPrivacyAndState(String name, PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find by compute type
-    List<ComputeResource> findByComputeTypeAndIsPublicTrue(String computeType);
+    List<ComputeResource> findByComputeTypeAndPrivacyAndState(String computeType, PrivacyEnumV2 privacy, StateEnumV2 state);
     
     // Find all public and active resources with pagination
-    Page<ComputeResource> findByIsPublicTrueAndIsActiveTrue(Pageable pageable);
+    Page<ComputeResource> findByPrivacyAndState(PrivacyEnumV2 privacy, StateEnumV2 state, Pageable pageable);
     
     // Search by name with pagination
-    @Query("SELECT c FROM ComputeResource c WHERE c.isPublic = true AND c.isActive = true AND " +
+    @Query("SELECT c FROM ComputeResource c WHERE c.privacy = :privacy AND c.state = :state AND " +
            "(LOWER(c.name) LIKE LOWER(CONCAT('%', :nameSearch, '%')) OR " +
            "LOWER(c.description) LIKE LOWER(CONCAT('%', :nameSearch, '%')) OR " +
            "LOWER(c.computeType) LIKE LOWER(CONCAT('%', :nameSearch, '%')))")
-    Page<ComputeResource> findByNameSearchAndIsPublicTrueAndIsActiveTrue(@Param("nameSearch") String nameSearch, Pageable pageable);
+    Page<ComputeResource> findByNameSearchAndPrivacyAndState(@Param("nameSearch") String nameSearch, 
+                                                             @Param("privacy") PrivacyEnumV2 privacy, 
+                                                             @Param("state") StateEnumV2 state, 
+                                                             Pageable pageable);
     
     // Find all public and active resources
-    List<ComputeResource> findAllByIsPublicTrueAndIsActiveTrue();
+    List<ComputeResource> findAllByPrivacyAndState(PrivacyEnumV2 privacy, StateEnumV2 state);
 }

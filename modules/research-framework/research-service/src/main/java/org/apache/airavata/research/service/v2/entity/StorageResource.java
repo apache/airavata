@@ -21,40 +21,17 @@ package org.apache.airavata.research.service.v2.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.Instant;
-import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.util.HashSet;
+import org.apache.airavata.research.service.v2.enums.ResourceTypeEnumV2;
 
 @Entity
 @Table(name = "STORAGE_RESOURCE_V2")
-@EntityListeners(AuditingEntityListener.class)
-public class StorageResource {
-
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
-    private String id;
-
-    @Column(nullable = false)
-    @NotBlank(message = "Name is required")
-    @Size(max = 255, message = "Name must not exceed 255 characters")
-    private String name;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    @NotBlank(message = "Description is required")
-    @Size(max = 5000, message = "Description must not exceed 5000 characters")
-    private String description;
+public class StorageResource extends ResourceV2 {
 
     @Column(nullable = false)
     @NotBlank(message = "Hostname is required")
@@ -91,23 +68,14 @@ public class StorageResource {
     private String additionalInfo;
 
     @Column(nullable = false)
-    private Boolean isPublic = true;
-
-    @Column(nullable = false)
-    private Boolean isActive = true;
-
-    @Column(nullable = false)
     @NotBlank(message = "Resource manager is required")
     @Size(max = 255, message = "Resource manager must not exceed 255 characters")
     private String resourceManager; // Gateway name or organization
 
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
-    private Instant createdAt;
-
-    @Column(nullable = false)
-    @LastModifiedDate
-    private Instant updatedAt;
+    @Override
+    public ResourceTypeEnumV2 getType() {
+        return ResourceTypeEnumV2.STORAGE_RESOURCE;
+    }
 
     // Default constructor
     public StorageResource() {}
@@ -117,8 +85,8 @@ public class StorageResource {
                           Long capacityTB, String accessProtocol, String endpoint,
                           Boolean supportsEncryption, Boolean supportsVersioning,
                           String additionalInfo, String resourceManager) {
-        this.name = name;
-        this.description = description;
+        this.setName(name);
+        this.setDescription(description);
         this.hostname = hostname;
         this.storageType = storageType;
         this.capacityTB = capacityTB;
@@ -128,35 +96,14 @@ public class StorageResource {
         this.supportsVersioning = supportsVersioning;
         this.additionalInfo = additionalInfo;
         this.resourceManager = resourceManager;
-        this.isPublic = true;
-        this.isActive = true;
+        
+        // Set inherited fields
+        this.setAuthors(new HashSet<>());
+        this.setTags(new HashSet<>());
+        this.setHeaderImage(""); // Default empty header image
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
+    // Getters and Setters for StorageResource-specific fields
     public String getHostname() {
         return hostname;
     }
@@ -221,43 +168,11 @@ public class StorageResource {
         this.additionalInfo = additionalInfo;
     }
 
-    public Boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(Boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public String getResourceManager() {
         return resourceManager;
     }
 
     public void setResourceManager(String resourceManager) {
         this.resourceManager = resourceManager;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

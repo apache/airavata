@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import jakarta.validation.Valid;
 import org.apache.airavata.research.service.v2.entity.Code;
+import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
+import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.apache.airavata.research.service.v2.repository.CodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class CodeController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeController.class);
+    private static final PrivacyEnumV2 PUBLIC_PRIVACY = PrivacyEnumV2.PUBLIC;
+    private static final StateEnumV2 ACTIVE_STATE = StateEnumV2.ACTIVE;
 
     private final CodeRepository codeRepository;
 
@@ -74,9 +78,9 @@ public class CodeController {
         Page<Code> codes;
         
         if (keyword != null && !keyword.trim().isEmpty()) {
-            codes = codeRepository.findByKeywordSearchAndIsPublicTrueAndIsActiveTrue(keyword, pageable);
+            codes = codeRepository.findByKeywordSearchAndPrivacyAndState(keyword, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         } else {
-            codes = codeRepository.findByIsPublicTrueAndIsActiveTrue(pageable);
+            codes = codeRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         }
         
         LOGGER.info("Found {} codes", codes.getTotalElements());
@@ -113,12 +117,12 @@ public class CodeController {
         }
         
         try {
-            // Set default values for fields that might be null
-            if (code.getIsPublic() == null) {
-                code.setIsPublic(true);
+            // Set default values using enums
+            if (code.getPrivacy() == null) {
+                code.setPrivacy(PUBLIC_PRIVACY);
             }
-            if (code.getIsActive() == null) {
-                code.setIsActive(true);
+            if (code.getState() == null) {
+                code.setState(ACTIVE_STATE);
             }
             if (code.getStarCount() == null) {
                 code.setStarCount(0);
@@ -206,7 +210,7 @@ public class CodeController {
         
         LOGGER.info("Searching codes with keyword: {}", keyword);
         
-        List<Code> codes = codeRepository.findByKeywordSearchAndIsPublicTrueAndIsActiveTrue(keyword);
+        List<Code> codes = codeRepository.findByKeywordSearchAndPrivacyAndState(keyword, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} codes matching keyword: {}", codes.size(), keyword);
         return ResponseEntity.ok(codes);
@@ -219,7 +223,7 @@ public class CodeController {
         
         LOGGER.info("Getting codes by type: {}", codeType);
         
-        List<Code> codes = codeRepository.findByCodeTypeAndIsPublicTrue(codeType);
+        List<Code> codes = codeRepository.findByCodeTypeAndPrivacyAndState(codeType, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} codes of type: {}", codes.size(), codeType);
         return ResponseEntity.ok(codes);
@@ -232,7 +236,7 @@ public class CodeController {
         
         LOGGER.info("Getting codes by programming language: {}", programmingLanguage);
         
-        List<Code> codes = codeRepository.findByProgrammingLanguageAndIsPublicTrue(programmingLanguage);
+        List<Code> codes = codeRepository.findByProgrammingLanguageAndPrivacyAndState(programmingLanguage, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} codes for language: {}", codes.size(), programmingLanguage);
         return ResponseEntity.ok(codes);
@@ -245,7 +249,7 @@ public class CodeController {
         
         LOGGER.info("Getting codes by framework: {}", framework);
         
-        List<Code> codes = codeRepository.findByFrameworkAndIsPublicTrue(framework);
+        List<Code> codes = codeRepository.findByFrameworkAndPrivacyAndState(framework, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} codes for framework: {}", codes.size(), framework);
         return ResponseEntity.ok(codes);
@@ -258,7 +262,7 @@ public class CodeController {
         
         LOGGER.info("Getting codes by tag: {}", tag);
         
-        List<Code> codes = codeRepository.findByTagAndIsPublicTrue(tag);
+        List<Code> codes = codeRepository.findByTagAndPrivacyAndState(tag, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} codes with tag: {}", codes.size(), tag);
         return ResponseEntity.ok(codes);
@@ -271,7 +275,7 @@ public class CodeController {
         
         LOGGER.info("Getting codes by author: {}", author);
         
-        List<Code> codes = codeRepository.findByAuthorAndIsPublicTrue(author);
+        List<Code> codes = codeRepository.findByAuthorAndPrivacyAndState(author, PUBLIC_PRIVACY, ACTIVE_STATE);
         
         LOGGER.info("Found {} codes by author: {}", codes.size(), author);
         return ResponseEntity.ok(codes);
@@ -285,7 +289,7 @@ public class CodeController {
         LOGGER.info("Getting top {} starred codes", limit);
         
         Pageable pageable = PageRequest.of(0, limit);
-        List<Code> codes = codeRepository.findTopStarredCodes(pageable);
+        List<Code> codes = codeRepository.findTopStarredCodes(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         
         LOGGER.info("Found {} top starred codes", codes.size());
         return ResponseEntity.ok(codes);
@@ -299,7 +303,7 @@ public class CodeController {
         LOGGER.info("Getting {} recent codes", limit);
         
         Pageable pageable = PageRequest.of(0, limit);
-        List<Code> codes = codeRepository.findRecentCodes(pageable);
+        List<Code> codes = codeRepository.findRecentCodes(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         
         LOGGER.info("Found {} recent codes", codes.size());
         return ResponseEntity.ok(codes);
@@ -394,7 +398,7 @@ public class CodeController {
         try {
             Pageable pageable = PageRequest.of(page, size);
             // Get codes where starCount > 0 (i.e., starred codes)
-            Page<Code> starredCodes = codeRepository.findByStarCountGreaterThanAndIsPublicTrueAndIsActiveTrue(0, pageable);
+            Page<Code> starredCodes = codeRepository.findByStarCountGreaterThanAndPrivacyAndState(0, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
             LOGGER.info("Found {} starred codes", starredCodes.getTotalElements());
             return ResponseEntity.ok(starredCodes);
         } catch (Exception e) {
