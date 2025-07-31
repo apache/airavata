@@ -45,7 +45,7 @@ public class StorageResource extends Resource {
     @Column(nullable = false)
     @NotBlank(message = "Storage type is required")
     @Size(max = 100, message = "Storage type must not exceed 100 characters")
-    private String storageType; // Object Storage, File System, Database, etc.
+    private String storageType; // S3, SCP, NFS, etc.
 
     @Column(nullable = false)
     @NotNull(message = "Capacity TB is required")
@@ -67,6 +67,38 @@ public class StorageResource extends Resource {
 
     @Column(nullable = false)
     private Boolean supportsVersioning = false;
+
+    // S3-specific fields
+    @Column
+    @Size(max = 255, message = "Bucket name must not exceed 255 characters")
+    private String bucketName;
+
+    @Column
+    @Size(max = 255, message = "Access key must not exceed 255 characters")
+    private String accessKey;
+
+    @Column
+    @Size(max = 255, message = "Secret key must not exceed 255 characters")
+    private String secretKey;
+
+    // SCP-specific fields
+    @Column
+    private Integer port;
+
+    @Column
+    @Size(max = 255, message = "Username must not exceed 255 characters")
+    private String username;
+
+    @Column
+    @Size(max = 50, message = "Authentication method must not exceed 50 characters")
+    private String authenticationMethod; // "SSH_KEY", "PASSWORD"
+
+    @Column(columnDefinition = "TEXT")
+    private String sshKey;
+
+    @Column
+    @Size(max = 500, message = "Remote path must not exceed 500 characters")
+    private String remotePath;
 
     @Column(columnDefinition = "TEXT")
     private String additionalInfo;
@@ -108,6 +140,28 @@ public class StorageResource extends Resource {
         this.setAuthors(new HashSet<>());
         this.setTags(new HashSet<>());
         this.setHeaderImage(""); // Default empty header image
+    }
+
+    // S3-specific constructor
+    public StorageResource(String name, String description, String storageType, String endpoint,
+                          String bucketName, String accessKey, String secretKey,
+                          String resourceManager) {
+        this(name, description, endpoint, storageType, 1000L, "S3", endpoint, true, true, null, resourceManager);
+        this.bucketName = bucketName;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+    }
+
+    // SCP-specific constructor
+    public StorageResource(String name, String description, String hostname, String storageType,
+                          Integer port, String username, String authenticationMethod, String sshKey,
+                          String remotePath, String resourceManager) {
+        this(name, description, hostname, storageType, 100L, "SCP", hostname, false, false, null, resourceManager);
+        this.port = port;
+        this.username = username;
+        this.authenticationMethod = authenticationMethod;
+        this.sshKey = sshKey;
+        this.remotePath = remotePath;
     }
 
     // Getters and Setters for StorageResource-specific fields
@@ -181,5 +235,71 @@ public class StorageResource extends Resource {
 
     public void setResourceManager(String resourceManager) {
         this.resourceManager = resourceManager;
+    }
+
+    // S3-specific getters and setters
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public String getAccessKey() {
+        return accessKey;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    // SCP-specific getters and setters
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(String authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
+
+    public String getSshKey() {
+        return sshKey;
+    }
+
+    public void setSshKey(String sshKey) {
+        this.sshKey = sshKey;
+    }
+
+    public String getRemotePath() {
+        return remotePath;
+    }
+
+    public void setRemotePath(String remotePath) {
+        this.remotePath = remotePath;
     }
 }

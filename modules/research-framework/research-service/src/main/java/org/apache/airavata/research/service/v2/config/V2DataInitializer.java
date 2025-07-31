@@ -208,130 +208,114 @@ public class V2DataInitializer {
             LOGGER.info("Creating mock storage resources...");
             
             List<StorageResource> storageResources = List.of(
+                // S3 Storage Resources
                 new StorageResource(
-                    "TACC Ranch Archive",
-                    "Petascale archival storage system for long-term data preservation and backup with tape-based architecture.",
-                    "ranch.tacc.utexas.edu",
-                    "Archive Storage",
-                    20000L,
-                    "SFTP",
-                    "ranch.tacc.utexas.edu:22",
-                    true,
-                    false,
-                    "Hierarchical storage management with automatic data migration. Designed for long-term archival.",
-                    "Texas Advanced Computing Center"
-                ),
-                
-                new StorageResource(
-                    "XSEDE Globus Data Transfer",
-                    "High-performance data transfer and sharing service connecting research institutions worldwide.",
-                    "globus.org",
-                    "Data Transfer",
-                    50000L,
-                    "GridFTP",
-                    "https://transfer.api.globusonline.org",
-                    true,
-                    true,
-                    "Parallel data transfer with resumption capabilities. Supports endpoint-to-endpoint transfers.",
-                    "University of Chicago & XSEDE"
-                ),
-                
-                new StorageResource(
-                    "AWS S3 Object Storage",
-                    "Highly scalable object storage service with 99.999999999% durability and global accessibility.",
-                    "s3.amazonaws.com",
-                    "Object Storage",
-                    999999L,
-                    "S3 API",
+                    "AWS S3 Research Bucket",
+                    "Production S3 bucket for research data with automated lifecycle management and encryption.",
+                    "S3",
                     "https://s3.amazonaws.com",
-                    true,
-                    true,
-                    "Multiple storage classes (Standard, IA, Glacier) with lifecycle policies for automatic cost optimization.",
+                    "research-data-bucket-01",
+                    "AKIAIOSFODNN7EXAMPLE",
+                    "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
                     "Amazon Web Services"
                 ),
                 
                 new StorageResource(
-                    "Google Cloud Storage",
-                    "Unified object storage platform with multi-regional availability and integrated machine learning capabilities.",
-                    "storage.googleapis.com",
-                    "Object Storage",
-                    888888L,
-                    "S3 Compatible API",
+                    "Google Cloud Storage Bucket",
+                    "Multi-regional cloud storage bucket with integrated AI/ML data processing capabilities.",
+                    "S3",
                     "https://storage.googleapis.com",
-                    true,
-                    true,
-                    "Integrated with BigQuery and AI Platform. Supports both hot and cold storage tiers.",
+                    "ml-datasets-bucket",
+                    "GOOGABCDEFG123456789",
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk123",
                     "Google Cloud Platform"
                 ),
                 
                 new StorageResource(
-                    "NERSC HPSS Archive",
-                    "High Performance Storage System providing long-term archival storage for scientific data.",
-                    "archive.nersc.gov",
-                    "Archive Storage",
-                    30000L,
-                    "HPSS",
-                    "hpss://archive.nersc.gov",
-                    true,
-                    false,
-                    "Hierarchical storage management with robotic tape library. Optimized for large scientific datasets.",
+                    "MinIO Research Storage",
+                    "Self-hosted S3-compatible object storage for sensitive research data with local control.",
+                    "S3",
+                    "https://minio.research.university.edu",
+                    "private-research-data",
+                    "minioadmin",
+                    "minioadmin123",
+                    "University Research Computing"
+                ),
+                
+                // SCP Storage Resources
+                new StorageResource(
+                    "HPC Cluster Storage",
+                    "High-performance shared file system accessible via SCP for computational workflows.",
+                    "cluster.hpc.university.edu",
+                    "SCP",
+                    22,
+                    "researcher01",
+                    "SSH_KEY",
+                    "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA7yn3bRHQ...",
+                    "/shared/research/datasets",
+                    "University HPC Center"
+                ),
+                
+                new StorageResource(
+                    "XSEDE Stampede2 Storage",
+                    "TACC Stampede2 supercomputer storage system with high-speed parallel file system access.",
+                    "stampede2.tacc.utexas.edu",
+                    "SCP",
+                    22,
+                    "tg-username123",
+                    "SSH_KEY",
+                    "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA8vKqM...",
+                    "/work/projects/research-data",
+                    "Texas Advanced Computing Center"
+                ),
+                
+                new StorageResource(
+                    "NERSC Cori Storage",
+                    "NERSC Cori supercomputer storage with specialized file systems for scientific computing.",
+                    "cori.nersc.gov",
+                    "SCP",
+                    22,
+                    "nersc_user",
+                    "PASSWORD",
+                    null,
+                    "/global/cscratch1/sd/username",
                     "National Energy Research Scientific Computing Center"
                 ),
                 
+                // Mixed Storage Types
                 new StorageResource(
-                    "Open Science Data Federation",
-                    "Distributed data federation providing access to scientific datasets across multiple institutions.",
-                    "osdf.osg-htc.org",
-                    "Distributed Storage",
-                    15000L,
-                    "HTTP/HTTPS",
-                    "https://osdf.osg-htc.org",
-                    true,
-                    false,
-                    "Caching infrastructure for efficient data distribution. Supports both public and authenticated access.",
-                    "Open Science Grid"
+                    "Azure Blob Storage",
+                    "Microsoft Azure blob storage with hot and cool tier options for research data archival.",
+                    "S3",
+                    "https://researchstorage.blob.core.windows.net",
+                    "research-container",
+                    "storage_account_name",
+                    "storage_account_key_here_very_long_key",
+                    "Microsoft Azure"
                 ),
                 
                 new StorageResource(
-                    "SDSC Data Oasis",
-                    "High-performance parallel file system designed for data-intensive computing and analytics workflows.",
-                    "oasis.sdsc.edu",
-                    "Parallel File System",
-                    12000L,
-                    "NFS/Lustre",
-                    "/oasis/projects",
-                    false,
-                    false,
-                    "Lustre-based parallel file system with high IOPS capability. Optimized for concurrent access patterns.",
-                    "San Diego Supercomputer Center"
+                    "Laboratory Compute Server",
+                    "Local laboratory server with direct SCP access for instrument data and analysis results.",
+                    "labserver.biology.university.edu",
+                    "SCP",
+                    2222,
+                    "labuser",
+                    "SSH_KEY",
+                    "-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEA1qaz2...",
+                    "/data/experiments/2024",
+                    "University Biology Department"
                 ),
                 
                 new StorageResource(
-                    "CyVerse Data Store",
-                    "Comprehensive data management platform for life sciences research with integrated analysis tools.",
-                    "datastore.cyverse.org",
-                    "Research Data Platform",
-                    25000L,
-                    "iRODS",
-                    "https://data.cyverse.org",
-                    true,
-                    true,
-                    "Metadata management, data sharing, and integrated analysis workflows. Specialized for life sciences.",
-                    "University of Arizona CyVerse"
-                ),
-                
-                new StorageResource(
-                    "HDF5 Cloud Storage",
-                    "Cloud-optimized storage service designed specifically for HDF5 datasets and scientific data formats.",
-                    "hdf5.cloud",
-                    "Scientific Data Storage",
-                    5000L,
-                    "REST API",
-                    "https://api.hdf5.cloud",
-                    true,
-                    true,
-                    "Native support for HDF5 datasets with cloud-optimized access patterns and metadata indexing.",
-                    "HDF Group"
+                    "IBM Cloud Object Storage",
+                    "Enterprise-grade object storage with S3-compatible API and advanced data protection features.",
+                    "S3",
+                    "https://s3.us-south.cloud-object-storage.ibm.com",
+                    "research-cos-bucket",
+                    "ibm_cos_access_key_id",
+                    "ibm_cos_secret_access_key_value",
+                    "IBM Cloud"
                 )
             );
             
