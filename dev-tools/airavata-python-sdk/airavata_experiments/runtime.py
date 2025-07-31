@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 import abc
-from typing import Any
+from typing import Any, Literal
 from pathlib import Path
 import os
 
@@ -24,6 +24,28 @@ import pydantic
 
 # from .task import Task
 Task = Any
+States = Literal[
+  # Experiment States
+  'CREATED',
+  'VALIDATED',
+  'SCHEDULED',
+  'LAUNCHED',
+  'EXECUTING',
+  'CANCELING',
+  'CANCELED',
+  'COMPLETED',
+  'FAILED',
+  # Job States
+  'SUBMITTED',
+  'QUEUED',
+  'ACTIVE',
+  'COMPLETE',
+  'CANCELED',
+  'FAILED',
+  'SUSPENDED',
+  'UNKNOWN',
+  'NON_CRITICAL_FAIL',
+]
 
 class Runtime(abc.ABC, pydantic.BaseModel):
 
@@ -35,6 +57,9 @@ class Runtime(abc.ABC, pydantic.BaseModel):
 
   @abc.abstractmethod
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None: ...
+
+  @abc.abstractmethod
+  def execute_cmd(self, cmd: str, task: Task) -> bytes: ...
 
   @abc.abstractmethod
   def status(self, task: Task) -> tuple[str, str]: ...
@@ -86,6 +111,9 @@ class Mock(Runtime):
     import uuid
     task.agent_ref = str(uuid.uuid4())
     task.ref = str(uuid.uuid4())
+
+  def execute_cmd(self, cmd: str, task: Task) -> bytes:
+    return b""
 
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     pass
@@ -158,6 +186,23 @@ class Remote(Runtime):
     except Exception as e:
       print(f"[Remote] Failed to launch experiment: {repr(e)}")
       raise e
+    
+  def execute_cmd(self, cmd: str, task: Task) -> bytes:
+    assert task.ref is not None
+    assert task.agent_ref is not None
+    assert task.pid is not None
+    assert task.sr_host is not None
+    assert task.workdir is not None
+
+    from .airavata import AiravataOperator
+    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    try:
+      result = av.execute_cmd(task.agent_ref, cmd)
+      return result
+    except Exception as e:
+      print(f"[Remote] Failed to execute command: {repr(e)}")
+      return b""
+
 
   def execute_py(self, libraries: list[str], code: str, task: Task) -> None:
     assert task.ref is not None
@@ -169,7 +214,7 @@ class Remote(Runtime):
     result = av.execute_py(task.project, libraries, code, task.agent_ref, task.pid, task.runtime.args)
     print(result)
 
-  def status(self, task: Task) -> tuple[str, str]:
+  def status(self, task: Task) -> tuple[str, States]:
     assert task.ref is not None
     assert task.agent_ref is not None
 
@@ -177,10 +222,10 @@ class Remote(Runtime):
     av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
     # prioritize job state, fallback to experiment state
     job_id, job_state = av.get_task_status(task.ref)
-    if not job_state or job_state == "UN_SUBMITTED":
-      return job_id, av.get_experiment_status(task.ref)
+    if job_state in [AiravataOperator.JobState.UNKNOWN, AiravataOperator.JobState.NON_CRITICAL_FAIL]:
+      return job_id, av.get_experiment_status(task.ref).name
     else:
-      return job_id, job_state
+      return job_id, job_state.name
 
   def signal(self, signal: str, task: Task) -> None:
     assert task.ref is not None
@@ -259,5 +304,5 @@ def find_runtimes(
       out_runtimes.append(r)
   return out_runtimes
 
-def is_terminal_state(x):
-  return x in ["CANCELED", "COMPLETED", "FAILED"]
+def is_terminal_state(x: States) -> bool:
+  return x in ["CANCELED", "COMPLETE", "COMPLETED", "FAILED"]

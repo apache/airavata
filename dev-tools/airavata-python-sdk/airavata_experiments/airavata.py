@@ -36,6 +36,7 @@ from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, Us
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
 from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
+from airavata.model.status.ttypes import JobStatus, JobState, ExperimentStatus, ExperimentState
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
@@ -446,7 +447,36 @@ class AiravataOperator:
     assert process_id is not None, f"Expected process_id, got {process_id}"
     url_path = os.path.join(process_id, remote_file)
     filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
-  
+
+  def execute_cmd(self, agent_ref: str, cmd: str) -> bytes:
+    """
+    Execute a command on a remote directory of a storage resource
+    TODO add data_svc fallback
+
+    Return Path: /{project_name}/{experiment_name}
+
+    """
+    res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
+        "agentId": agent_ref,
+        "envName": agent_ref,
+        "workingDir": ".",
+        "arguments": ["sh", "-c", f"{cmd} | base64 -w0"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
+        data = res.json()
+        if data["executed"]:
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
+          return content
+        time.sleep(1)
+
   def cat_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str) -> bytes:
     """
     Download files from a remote directory of a storage resource to a local directory
@@ -674,14 +704,15 @@ class AiravataOperator:
     # wait until task begins, then get job id
     print(f"[AV] Experiment {experiment_name} WAITING until task begins...")
     job_id = job_state = None
-    while job_state is None:
+    while job_id in [None, "N/A"]:
       try:
         job_id, job_state = self.get_task_status(ex_id)
       except:
         time.sleep(2)
       else:
         time.sleep(2)
-    print(f"[AV] Experiment {experiment_name} - Task {job_state} with id: {job_id}")
+    assert job_state is not None, f"Job state is None for job id: {job_id}"
+    print(f"[AV] Experiment {experiment_name} - Task {job_state.name} with id: {job_id}")
 
     return LaunchState(
       experiment_id=ex_id,
@@ -692,14 +723,12 @@ class AiravataOperator:
       sr_host=storage.hostName,
     )
 
-  def get_experiment_status(self, experiment_id: str) -> Literal['CREATED', 'VALIDATED', 'SCHEDULED', 'LAUNCHED', 'EXECUTING', 'CANCELING', 'CANCELED', 'COMPLETED', 'FAILED']:
-    states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
+  def get_experiment_status(self, experiment_id: str) -> ExperimentState:
     status = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id)
-    state = status.state.name
-    if state in states:
-      return state
-    else:
-      return "FAILED"
+    if status is None:
+      return ExperimentState.CREATED
+    assert isinstance(status, ExperimentStatus)
+    return status.state
 
   def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
@@ -794,16 +823,12 @@ class AiravataOperator:
       Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="Default"),
     ]
   
-  def get_task_status(self, experiment_id: str) -> tuple[str, Literal["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"] | None]:
-    states = ["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"]
-    job_details: dict = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
-    print(f"[av] Job details: {job_details}")
+  def get_task_status(self, experiment_id: str) -> tuple[str, JobState]:
+    job_details: dict[str, JobStatus] = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
     job_id = job_state = None
-    # get the most recent job id and state
-    for job_id, v in job_details.items(): # type: ignore
-      if v.reason in states:
-        job_state = v.reason
-      else:
-        job_state = states[int(v.jobState)]
-    return job_id or "N/A", job_state # type: ignore
+    for job_id, v in job_details.items():
+      job_state = v.jobState
+    return job_id or "N/A", job_state or JobState.UNKNOWN
+  
+  JobState = JobState
 

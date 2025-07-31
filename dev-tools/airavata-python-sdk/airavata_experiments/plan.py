@@ -66,11 +66,13 @@ class Plan(pydantic.BaseModel):
       statuses.append(task.status())
     return statuses
 
-  def __stage_stop__(self) -> None:
-    print("Stopping task(s)...")
-    for task in self.tasks:
-      task.stop()
-    print("Task(s) stopped.")
+  def __stage_stop__(self, runs: list[int] = []) -> None:
+    runs = runs if len(runs) > 0 else list(range(len(self.tasks)))
+    print(f"Stopping task(s): {runs}")
+    for i, task in enumerate(self.tasks):
+      if i in runs:
+        task.stop()
+    print(f"Task(s) stopped: {runs}")
 
   def __stage_fetch__(self, local_dir: str) -> list[list[str]]:
     print("Fetching results...")
@@ -119,8 +121,8 @@ class Plan(pydantic.BaseModel):
     assert os.path.isdir(local_dir)
     self.__stage_fetch__(local_dir)
 
-  def stop(self) -> None:
-    self.__stage_stop__()
+  def stop(self, runs: list[int] = []) -> None:
+    self.__stage_stop__(runs)
     self.save()
 
   def export(self, filename: str) -> None:
