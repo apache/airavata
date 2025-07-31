@@ -85,18 +85,25 @@ class Experiment(Generic[T], abc.ABC):
     self.resource = resource
     return self
 
-  def create_task(self, *allowed_runtimes: Runtime, name: str | None = None) -> None:
+  def add_run(self, use: list[Runtime] = [], name: str | None = None, **kwargs) -> None:
     """
     Create a task to run the experiment on a given runtime.
     """
-    runtime = random.choice(allowed_runtimes) if len(allowed_runtimes) > 0 else self.resource
+    runtime = random.choice(use) if len(use) > 0 else self.resource
     uuid_str = str(uuid.uuid4())[:4].upper()
-
+    # override walltime if one is provided in kwargs
+    runtime = runtime.model_copy()
+    if (w := kwargs.pop("walltime", None)) is not None:
+      runtime.args["walltime"] = w
+    # override experiment inputs with inputs provided in kwargs
+    inputs = self.inputs.copy()
+    inputs.update(kwargs)
+    # create a task with the given runtime and inputs
     self.tasks.append(
         Task(
             name=name or f"{self.name}_{uuid_str}",
             app_id=self.application.app_id,
-            inputs={**self.inputs},
+            inputs=inputs,
             runtime=runtime,
         )
     )
@@ -124,10 +131,14 @@ class Experiment(Generic[T], abc.ABC):
 
   def plan(self, **kwargs) -> Plan:
     if len(self.tasks) == 0:
-      self.create_task(self.resource)
+      self.add_run()
     tasks = []
     for t in self.tasks:
       agg_inputs = {**self.inputs, **t.inputs}
       task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
-      tasks.append(Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime))
-    return Plan(tasks=tasks)
+      task = Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime)
+      # task.freeze()  # TODO upload the task-related data and freeze the task
+      tasks.append(task)
+    plan = Plan(tasks=tasks)
+    plan.save()
+    return plan

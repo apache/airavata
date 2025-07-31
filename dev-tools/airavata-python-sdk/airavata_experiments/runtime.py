@@ -239,7 +239,7 @@ class Remote(Runtime):
     return content
 
 
-def list_runtimes(
+def find_runtimes(
     cluster: str | None = None,
     category: str | None = None,
     group: str | None = None,

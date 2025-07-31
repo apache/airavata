@@ -78,7 +78,7 @@ class Plan(pydantic.BaseModel):
     for task in self.tasks:
       fps.append(task.download_all(local_dir))
     print("Results fetched.")
-    self.save_json(os.path.join(local_dir, "plan.json"))
+    self.export(os.path.join(local_dir, "plan.json"))
     return fps
 
   def launch(self, silent: bool = True) -> None:
@@ -123,7 +123,7 @@ class Plan(pydantic.BaseModel):
     self.__stage_stop__()
     self.save()
 
-  def save_json(self, filename: str) -> None:
+  def export(self, filename: str) -> None:
     with open(filename, "w") as f:
       json.dump(self.model_dump(), f, indent=2)
 
