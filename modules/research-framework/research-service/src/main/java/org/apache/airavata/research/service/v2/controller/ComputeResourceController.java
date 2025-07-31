@@ -28,6 +28,7 @@ import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
 import org.apache.airavata.research.service.v2.repository.ComputeResourceRepository;
+import org.apache.airavata.research.service.v2.service.ComputeResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -57,9 +58,12 @@ public class ComputeResourceController {
     private static final StateEnum ACTIVE_STATE = StateEnum.ACTIVE;
 
     private final ComputeResourceRepository computeResourceRepository;
+    private final ComputeResourceService computeResourceService;
 
-    public ComputeResourceController(ComputeResourceRepository computeResourceRepository) {
+    public ComputeResourceController(ComputeResourceRepository computeResourceRepository, 
+                                   ComputeResourceService computeResourceService) {
         this.computeResourceRepository = computeResourceRepository;
+        this.computeResourceService = computeResourceService;
     }
 
     @Operation(summary = "Get all public compute resources with pagination")
@@ -76,9 +80,9 @@ public class ComputeResourceController {
         Page<ComputeResource> resources;
         
         if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-            resources = computeResourceRepository.findByNameSearchAndPrivacyAndState(nameSearch, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+            resources = computeResourceService.searchComputeResources(nameSearch, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         } else {
-            resources = computeResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+            resources = computeResourceService.getComputeResources(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
         }
         
         LOGGER.info("Found {} compute resources", resources.getTotalElements());
@@ -90,7 +94,7 @@ public class ComputeResourceController {
     public ResponseEntity<ComputeResource> getComputeResourceById(@PathVariable("id") String id) {
         LOGGER.info("Getting compute resource by ID: {}", id);
         
-        Optional<ComputeResource> resource = computeResourceRepository.findById(id);
+        Optional<ComputeResource> resource = computeResourceService.getComputeResourceById(id);
         if (resource.isPresent()) {
             return ResponseEntity.ok(resource.get());
         } else {
@@ -130,7 +134,7 @@ public class ComputeResourceController {
             }
             // Note: starCount functionality handled separately in v1 star system
             
-            ComputeResource savedResource = computeResourceRepository.save(computeResource);
+            ComputeResource savedResource = computeResourceService.createComputeResource(computeResource);
             LOGGER.info("Created compute resource with ID: {}", savedResource.getId());
             
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
@@ -157,19 +161,13 @@ public class ComputeResourceController {
         }
         
         try {
-            Optional<ComputeResource> existingResource = computeResourceRepository.findById(id);
-            if (!existingResource.isPresent()) {
+            Optional<ComputeResource> updatedResourceOpt = computeResourceService.updateComputeResource(id, computeResource);
+            if (!updatedResourceOpt.isPresent()) {
                 LOGGER.warn("Compute resource not found with ID: {}", id);
                 return ResponseEntity.notFound().build();
             }
             
-            // Set the ID to ensure we update the correct resource
-            computeResource.setId(id);
-            
-            // Preserve creation timestamp
-            computeResource.setCreatedAt(existingResource.get().getCreatedAt());
-            
-            ComputeResource updatedResource = computeResourceRepository.save(computeResource);
+            ComputeResource updatedResource = updatedResourceOpt.get();
             LOGGER.info("Successfully updated compute resource with ID: {}", id);
             
             return ResponseEntity.ok(updatedResource);
@@ -186,13 +184,12 @@ public class ComputeResourceController {
         LOGGER.info("Deleting compute resource with ID: {}", id);
         
         try {
-            Optional<ComputeResource> existingResource = computeResourceRepository.findById(id);
-            if (!existingResource.isPresent()) {
+            boolean deleted = computeResourceService.deleteComputeResource(id);
+            if (!deleted) {
                 LOGGER.warn("Compute resource not found with ID: {}", id);
                 return ResponseEntity.notFound().build();
             }
             
-            computeResourceRepository.deleteById(id);
             LOGGER.info("Successfully deleted compute resource with ID: {}", id);
             return ResponseEntity.ok().body("Compute resource deleted successfully");
         } catch (Exception e) {
@@ -236,7 +233,7 @@ public class ComputeResourceController {
         LOGGER.info("Toggling star for compute resource with ID: {}", id);
         
         try {
-            Optional<ComputeResource> resourceOpt = computeResourceRepository.findById(id);
+            Optional<ComputeResource> resourceOpt = computeResourceRepository.findByIdWithCollections(id);
             if (resourceOpt.isPresent()) {
                 ComputeResource resource = resourceOpt.get();
                 
@@ -260,7 +257,7 @@ public class ComputeResourceController {
         LOGGER.info("Checking if compute resource is starred: {}", id);
         
         try {
-            Optional<ComputeResource> resourceOpt = computeResourceRepository.findById(id);
+            Optional<ComputeResource> resourceOpt = computeResourceRepository.findByIdWithCollections(id);
             if (resourceOpt.isPresent()) {
                 ComputeResource resource = resourceOpt.get();
                 // TODO: Implement proper v1 ResourceStar system integration
@@ -282,7 +279,7 @@ public class ComputeResourceController {
         LOGGER.info("Getting star count for compute resource: {}", id);
         
         try {
-            Optional<ComputeResource> resourceOpt = computeResourceRepository.findById(id);
+            Optional<ComputeResource> resourceOpt = computeResourceRepository.findByIdWithCollections(id);
             if (resourceOpt.isPresent()) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 return ResponseEntity.ok(0);

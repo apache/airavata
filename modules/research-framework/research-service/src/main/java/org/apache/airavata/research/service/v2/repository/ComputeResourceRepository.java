@@ -20,6 +20,7 @@
 package org.apache.airavata.research.service.v2.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
@@ -54,4 +55,10 @@ public interface ComputeResourceRepository extends JpaRepository<ComputeResource
     
     // Find all public and active resources
     List<ComputeResource> findAllByPrivacyAndState(PrivacyEnum privacy, StateEnum state);
+    
+    // Find by ID with eager fetching of queues only
+    @Query("SELECT DISTINCT c FROM ComputeResource c " +
+           "LEFT JOIN FETCH c.queues " +
+           "WHERE c.id = :id")
+    Optional<ComputeResource> findByIdWithCollections(@Param("id") String id);
 }

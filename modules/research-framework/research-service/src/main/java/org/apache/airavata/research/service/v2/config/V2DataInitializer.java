@@ -20,6 +20,7 @@
 package org.apache.airavata.research.service.v2.config;
 
 import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.apache.airavata.research.service.v2.entity.Code;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
+import org.apache.airavata.research.service.v2.entity.ComputeResourceQueue;
 import org.apache.airavata.research.service.v2.entity.StorageResource;
 import org.apache.airavata.research.service.v2.repository.CodeRepository;
 import org.apache.airavata.research.service.v2.repository.ComputeResourceRepository;
@@ -90,7 +92,13 @@ public class V2DataInitializer {
                     "CentOS 7",
                     "SLURM",
                     "Features GPU nodes for machine learning, regular memory and extreme memory configurations. Maximum job time: 48 hours.",
-                    "Pittsburgh Supercomputing Center"
+                    "Pittsburgh Supercomputing Center",
+                    "hpcuser",
+                    22,
+                    "SSH_KEY",
+                    "/home/hpcuser",
+                    "SLURM",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -103,7 +111,13 @@ public class V2DataInitializer {
                     "CentOS 8",
                     "SLURM",
                     "CPU and GPU partitions available. Optimized for parallel computing and machine learning workloads.",
-                    "San Diego Supercomputer Center"
+                    "San Diego Supercomputer Center",
+                    "expanseuser",
+                    22,
+                    "SSH_KEY",
+                    "/expanse/lustre/scratch",
+                    "SLURM",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -116,7 +130,13 @@ public class V2DataInitializer {
                     "Red Hat Enterprise Linux 8",
                     "SLURM",
                     "High-memory nodes (1.5TB RAM), GPU nodes with V100 and A100 cards for deep learning applications.",
-                    "Purdue University RCAC"
+                    "Purdue University RCAC",
+                    "anviluser",
+                    22,
+                    "SSH_KEY",
+                    "/anvil/scratch",
+                    "SLURM",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -129,7 +149,13 @@ public class V2DataInitializer {
                     "CentOS 7",
                     "SLURM",
                     "Leadership computing facility with specialized queues for different workload types. Maximum allocation: 3M core-hours.",
-                    "Texas Advanced Computing Center"
+                    "Texas Advanced Computing Center",
+                    "fronterauser",
+                    22,
+                    "SSH_KEY",
+                    "/scratch1/projects",
+                    "SLURM",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -142,7 +168,13 @@ public class V2DataInitializer {
                     "Amazon Linux 2",
                     "Cloud Native",
                     "Pay-as-you-go pricing model with various instance types (CPU, memory, GPU optimized). Global availability zones.",
-                    "Amazon Web Services"
+                    "Amazon Web Services",
+                    "ec2-user",
+                    22,
+                    "SSH_KEY",
+                    "/home/ec2-user",
+                    "Cloud Native",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -155,7 +187,13 @@ public class V2DataInitializer {
                     "Ubuntu 20.04 LTS",
                     "Cloud Native",
                     "Preemptible instances available for cost savings. TPUs available for machine learning acceleration.",
-                    "Google Cloud Platform"
+                    "Google Cloud Platform",
+                    "gceuser",
+                    22,
+                    "SSH_KEY",
+                    "/home/gceuser",
+                    "Cloud Native",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -168,7 +206,13 @@ public class V2DataInitializer {
                     "CentOS 7",
                     "SLURM",
                     "72 GPU nodes with K80 cards, high-speed interconnect, and parallel file systems for data-intensive research.",
-                    "San Diego Supercomputer Center"
+                    "San Diego Supercomputer Center",
+                    "cometuser",
+                    22,
+                    "SSH_KEY",
+                    "/oasis/scratch/comet",
+                    "SLURM",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -181,7 +225,13 @@ public class V2DataInitializer {
                     "Various Linux Distributions",
                     "OpenStack",
                     "Self-service cloud environment with support for containers, Kubernetes, and Jupyter notebooks.",
-                    "Indiana University & TACC"
+                    "Indiana University & TACC",
+                    "jetstream",
+                    22,
+                    "SSH_KEY",
+                    "/home/jetstream",
+                    "OpenStack",
+                    "SCP"
                 ),
                 
                 new ComputeResource(
@@ -194,13 +244,138 @@ public class V2DataInitializer {
                     "SUSE Linux Enterprise",
                     "SLURM",
                     "A100 GPU nodes optimized for mixed-precision computing. Advanced interconnect and parallel file systems.",
-                    "National Energy Research Scientific Computing Center"
+                    "National Energy Research Scientific Computing Center",
+                    "perlmutter",
+                    22,
+                    "SSH_KEY",
+                    "/global/cfs/cdirs",
+                    "SLURM",
+                    "SCP"
                 )
             );
             
             computeResourceRepository.saveAll(computeResources);
             LOGGER.info("Created {} compute resources", computeResources.size());
+            
+            // Initialize queues for each compute resource
+            initializeComputeResourceQueues(computeResources);
         }
+    }
+
+    private void initializeComputeResourceQueues(List<ComputeResource> computeResources) {
+        LOGGER.info("Creating mock compute resource queues...");
+        
+        for (ComputeResource computeResource : computeResources) {
+            List<ComputeResourceQueue> queues = new ArrayList<>();
+            
+            // Create different queue configurations based on resource type
+            if (computeResource.getComputeType().equals("HPC")) {
+                // Standard HPC queues
+                queues.add(new ComputeResourceQueue(
+                    "GPU queue", 
+                    "High-priority queue for GPU-accelerated workloads",
+                    2880, // 48 hours
+                    32, 
+                    1024, 
+                    100,
+                    64,
+                    1,
+                    64,
+                    60, // 1 hour default
+                    "#SBATCH --partition=gpu\n#SBATCH --gres=gpu:4",
+                    false
+                ));
+                
+                queues.add(new ComputeResourceQueue(
+                    "Compute queue", 
+                    "Standard compute queue for CPU-intensive workloads",
+                    1440, // 24 hours
+                    128,
+                    2048, 
+                    500,
+                    48,
+                    2,
+                    96,
+                    120, // 2 hours default
+                    "#SBATCH --partition=compute",
+                    true // Default queue
+                ));
+                
+                queues.add(new ComputeResourceQueue(
+                    "Debug queue", 
+                    "Quick debug queue with shorter runtime limits",
+                    30, // 30 minutes
+                    4,
+                    128,
+                    10,
+                    24,
+                    1,
+                    24,
+                    15, // 15 minutes default
+                    "#SBATCH --partition=debug\n#SBATCH --qos=debug",
+                    false
+                ));
+                
+                queues.add(new ComputeResourceQueue(
+                    "GPU shared queue", 
+                    "Shared GPU resources for smaller workloads",
+                    720, // 12 hours
+                    8,
+                    256,
+                    50,
+                    32,
+                    1,
+                    32,
+                    30, // 30 minutes default
+                    "#SBATCH --partition=gpu-shared\n#SBATCH --gres=gpu:1",
+                    false
+                ));
+                
+            } else if (computeResource.getComputeType().equals("Cloud")) {
+                // Cloud-based queues
+                queues.add(new ComputeResourceQueue(
+                    "On-demand", 
+                    "On-demand instances with flexible resource allocation",
+                    10080, // 7 days
+                    1000,
+                    10000,
+                    1000,
+                    96,
+                    1,
+                    4,
+                    60, // 1 hour default
+                    "# Cloud-native auto-scaling enabled",
+                    true // Default queue
+                ));
+                
+                queues.add(new ComputeResourceQueue(
+                    "Spot instances", 
+                    "Cost-optimized spot instances for fault-tolerant workloads",
+                    2880, // 48 hours
+                    500,
+                    5000,
+                    500,
+                    96,
+                    1,
+                    2,
+                    30, // 30 minutes default
+                    "# Spot instance with automatic checkpointing",
+                    false
+                ));
+            }
+            
+            // Set the compute resource relationship and save
+            for (ComputeResourceQueue queue : queues) {
+                queue.setComputeResource(computeResource);
+            }
+            
+            computeResource.setQueues(queues);
+        }
+        
+        // Save all compute resources with their queues
+        computeResourceRepository.saveAll(computeResources);
+        
+        LOGGER.info("Created queues for {} compute resources", computeResources.size());
     }
 
     private void initializeStorageResources() {
