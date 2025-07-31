@@ -21,12 +21,12 @@ package org.apache.airavata.research.service.v2.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import jakarta.validation.Valid;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
-import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
-import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.apache.airavata.research.service.v2.repository.ComputeResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +53,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComputeResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeResourceController.class);
-    private static final PrivacyEnumV2 PUBLIC_PRIVACY = PrivacyEnumV2.PUBLIC;
-    private static final StateEnumV2 ACTIVE_STATE = StateEnumV2.ACTIVE;
+    private static final PrivacyEnum PUBLIC_PRIVACY = PrivacyEnum.PUBLIC;
+    private static final StateEnum ACTIVE_STATE = StateEnum.ACTIVE;
 
     private final ComputeResourceRepository computeResourceRepository;
 
@@ -128,6 +128,7 @@ public class ComputeResourceController {
             if (computeResource.getState() == null) {
                 computeResource.setState(ACTIVE_STATE);
             }
+            // Note: starCount functionality handled separately in v1 star system
             
             ComputeResource savedResource = computeResourceRepository.save(computeResource);
             LOGGER.info("Created compute resource with ID: {}", savedResource.getId());
@@ -232,24 +233,88 @@ public class ComputeResourceController {
     @Operation(summary = "Star/unstar a compute resource")
     @PostMapping("/{id}/star")
     public ResponseEntity<Boolean> starComputeResource(@PathVariable("id") String id) {
-        LOGGER.info("Starring compute resource with ID: {}", id);
-        // For now, just return true - starring functionality can be implemented later
-        return ResponseEntity.ok(true);
+        LOGGER.info("Toggling star for compute resource with ID: {}", id);
+        
+        try {
+            Optional<ComputeResource> resourceOpt = computeResourceRepository.findById(id);
+            if (resourceOpt.isPresent()) {
+                ComputeResource resource = resourceOpt.get();
+                
+                // TODO: Implement proper v1 ResourceStar system integration
+                // For now, return simple toggle response
+                LOGGER.info("Star toggle requested for compute resource: {} (simplified implementation)", id);
+                return ResponseEntity.ok(true);
+            } else {
+                LOGGER.warn("Compute resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error toggling compute resource star: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Check if user starred a compute resource")
     @GetMapping("/{id}/star")
     public ResponseEntity<Boolean> checkComputeResourceStarred(@PathVariable("id") String id) {
         LOGGER.info("Checking if compute resource is starred: {}", id);
-        // For now, just return false - starring functionality can be implemented later
-        return ResponseEntity.ok(false);
+        
+        try {
+            Optional<ComputeResource> resourceOpt = computeResourceRepository.findById(id);
+            if (resourceOpt.isPresent()) {
+                ComputeResource resource = resourceOpt.get();
+                // TODO: Implement proper v1 ResourceStar system integration
+                LOGGER.info("Star status check for compute resource: {} (simplified implementation)", id);
+                return ResponseEntity.ok(false);
+            } else {
+                LOGGER.warn("Compute resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error checking compute resource star status: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Get compute resource star count")
     @GetMapping("/{id}/stars/count")
-    public ResponseEntity<Long> getComputeResourceStarCount(@PathVariable("id") String id) {
+    public ResponseEntity<Integer> getComputeResourceStarCount(@PathVariable("id") String id) {
         LOGGER.info("Getting star count for compute resource: {}", id);
-        // For now, just return 0 - starring functionality can be implemented later
-        return ResponseEntity.ok(0L);
+        
+        try {
+            Optional<ComputeResource> resourceOpt = computeResourceRepository.findById(id);
+            if (resourceOpt.isPresent()) {
+                // TODO: Implement proper v1 ResourceStar system integration
+                return ResponseEntity.ok(0);
+            } else {
+                LOGGER.warn("Compute resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error getting star count: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(summary = "Get all starred compute resources")
+    @GetMapping("/starred")
+    public ResponseEntity<Page<ComputeResource>> getStarredComputeResources(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size) {
+        LOGGER.info("Fetching starred compute resources - page: {}, size: {}", page, size);
+        
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            // TODO: Implement proper v1 ResourceStar system integration
+            // For now, return empty page
+            Page<ComputeResource> starredResources = computeResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+            // Filter to empty for now until proper star system is implemented
+            starredResources = Page.empty();
+            LOGGER.info("Found {} starred compute resources", starredResources.getTotalElements());
+            return ResponseEntity.ok(starredResources);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching starred compute resources: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

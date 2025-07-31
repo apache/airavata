@@ -28,11 +28,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.airavata.research.service.v2.enums.ResourceTypeEnumV2;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
+import org.apache.airavata.research.service.enums.StatusEnum;
+import org.apache.airavata.research.service.model.entity.Resource;
 
 @Entity
 @Table(name = "COMPUTE_RESOURCE_V2")
-public class ComputeResource extends ResourceV2 {
+public class ComputeResource extends Resource {
 
     @Column(nullable = false)
     @NotBlank(message = "Hostname is required")
@@ -73,8 +77,8 @@ public class ComputeResource extends ResourceV2 {
     private String resourceManager; // Gateway name or organization
 
     @Override
-    public ResourceTypeEnumV2 getType() {
-        return ResourceTypeEnumV2.COMPUTE_RESOURCE;
+    public ResourceTypeEnum getType() {
+        return ResourceTypeEnum.COMPUTE_RESOURCE;
     }
 
     // Default constructor
@@ -95,7 +99,10 @@ public class ComputeResource extends ResourceV2 {
         this.additionalInfo = additionalInfo;
         this.resourceManager = resourceManager;
         
-        // Set inherited fields
+        // Set inherited v1 Resource fields (required)
+        this.setPrivacy(PrivacyEnum.PUBLIC);
+        this.setState(StateEnum.ACTIVE);
+        this.setStatus(StatusEnum.VERIFIED);
         this.setAuthors(new HashSet<>());
         this.setTags(new HashSet<>());
         this.setHeaderImage(""); // Default empty header image

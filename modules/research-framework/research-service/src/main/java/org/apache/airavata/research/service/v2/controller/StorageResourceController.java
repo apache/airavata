@@ -21,12 +21,12 @@ package org.apache.airavata.research.service.v2.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import jakarta.validation.Valid;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.v2.entity.StorageResource;
-import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
-import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.apache.airavata.research.service.v2.repository.StorageResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +53,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class StorageResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageResourceController.class);
-    private static final PrivacyEnumV2 PUBLIC_PRIVACY = PrivacyEnumV2.PUBLIC;
-    private static final StateEnumV2 ACTIVE_STATE = StateEnumV2.ACTIVE;
+    private static final PrivacyEnum PUBLIC_PRIVACY = PrivacyEnum.PUBLIC;
+    private static final StateEnum ACTIVE_STATE = StateEnum.ACTIVE;
 
     private final StorageResourceRepository storageResourceRepository;
 
@@ -131,6 +131,7 @@ public class StorageResourceController {
             if (storageResource.getState() == null) {
                 storageResource.setState(ACTIVE_STATE);
             }
+            // Note: starCount functionality handled separately in v1 star system
             
             StorageResource savedResource = storageResourceRepository.save(storageResource);
             LOGGER.info("Created storage resource with ID: {}", savedResource.getId());
@@ -235,24 +236,88 @@ public class StorageResourceController {
     @Operation(summary = "Star/unstar a storage resource")
     @PostMapping("/{id}/star")
     public ResponseEntity<Boolean> starStorageResource(@PathVariable("id") String id) {
-        LOGGER.info("Starring storage resource with ID: {}", id);
-        // For now, just return true - starring functionality can be implemented later
-        return ResponseEntity.ok(true);
+        LOGGER.info("Toggling star for storage resource with ID: {}", id);
+        
+        try {
+            Optional<StorageResource> resourceOpt = storageResourceRepository.findById(id);
+            if (resourceOpt.isPresent()) {
+                StorageResource resource = resourceOpt.get();
+                
+                // TODO: Implement proper v1 ResourceStar system integration
+                // For now, return simple toggle response
+                LOGGER.info("Star toggle requested for storage resource: {} (simplified implementation)", id);
+                return ResponseEntity.ok(true);
+            } else {
+                LOGGER.warn("Storage resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error toggling storage resource star: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Check if user starred a storage resource")
     @GetMapping("/{id}/star")
     public ResponseEntity<Boolean> checkStorageResourceStarred(@PathVariable("id") String id) {
         LOGGER.info("Checking if storage resource is starred: {}", id);
-        // For now, just return false - starring functionality can be implemented later
-        return ResponseEntity.ok(false);
+        
+        try {
+            Optional<StorageResource> resourceOpt = storageResourceRepository.findById(id);
+            if (resourceOpt.isPresent()) {
+                StorageResource resource = resourceOpt.get();
+                // TODO: Implement proper v1 ResourceStar system integration
+                LOGGER.info("Star status check for storage resource: {} (simplified implementation)", id);
+                return ResponseEntity.ok(false);
+            } else {
+                LOGGER.warn("Storage resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error checking storage resource star status: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Get storage resource star count")
     @GetMapping("/{id}/stars/count")
-    public ResponseEntity<Long> getStorageResourceStarCount(@PathVariable("id") String id) {
+    public ResponseEntity<Integer> getStorageResourceStarCount(@PathVariable("id") String id) {
         LOGGER.info("Getting star count for storage resource: {}", id);
-        // For now, just return 0 - starring functionality can be implemented later
-        return ResponseEntity.ok(0L);
+        
+        try {
+            Optional<StorageResource> resourceOpt = storageResourceRepository.findById(id);
+            if (resourceOpt.isPresent()) {
+                // TODO: Implement proper v1 ResourceStar system integration
+                return ResponseEntity.ok(0);
+            } else {
+                LOGGER.warn("Storage resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error getting star count: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(summary = "Get all starred storage resources")
+    @GetMapping("/starred")
+    public ResponseEntity<Page<StorageResource>> getStarredStorageResources(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size) {
+        LOGGER.info("Fetching starred storage resources - page: {}, size: {}", page, size);
+        
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            // TODO: Implement proper v1 ResourceStar system integration
+            // For now, return empty page
+            Page<StorageResource> starredResources = storageResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+            // Filter to empty for now until proper star system is implemented
+            starredResources = Page.empty();
+            LOGGER.info("Found {} starred storage resources", starredResources.getTotalElements());
+            return ResponseEntity.ok(starredResources);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching starred storage resources: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

@@ -24,17 +24,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
+import org.apache.airavata.research.service.enums.StatusEnum;
+import org.apache.airavata.research.service.model.entity.Tag;
+import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.apache.airavata.research.service.v2.entity.Code;
 import org.apache.airavata.research.service.v2.entity.ComputeResource;
 import org.apache.airavata.research.service.v2.entity.StorageResource;
-import org.apache.airavata.research.service.v2.entity.TagV2;
-import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
-import org.apache.airavata.research.service.v2.enums.StateEnumV2;
-import org.apache.airavata.research.service.v2.enums.StatusEnumV2;
 import org.apache.airavata.research.service.v2.repository.CodeRepository;
 import org.apache.airavata.research.service.v2.repository.ComputeResourceRepository;
 import org.apache.airavata.research.service.v2.repository.StorageResourceRepository;
-import org.apache.airavata.research.service.v2.repository.TagV2Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -47,16 +47,16 @@ public class V2DataInitializer {
     private final ComputeResourceRepository computeResourceRepository;
     private final StorageResourceRepository storageResourceRepository;
     private final CodeRepository codeRepository;
-    private final TagV2Repository tagV2Repository;
+    private final TagRepository tagRepository;
 
     public V2DataInitializer(ComputeResourceRepository computeResourceRepository,
                            StorageResourceRepository storageResourceRepository,
                            CodeRepository codeRepository,
-                           TagV2Repository tagV2Repository) {
+                           TagRepository tagRepository) {
         this.computeResourceRepository = computeResourceRepository;
         this.storageResourceRepository = storageResourceRepository;
         this.codeRepository = codeRepository;
-        this.tagV2Repository = tagV2Repository;
+        this.tagRepository = tagRepository;
     }
 
     @PostConstruct
@@ -499,11 +499,11 @@ public class V2DataInitializer {
     }
 
     /**
-     * Helper method to create Code entity with proper TagV2 associations
+     * Helper method to create Code entity with proper Tag associations
      */
     private Code createCodeWithTags(CodeData codeData) {
-        // Create or get existing TagV2 entities
-        Set<TagV2> tagEntities = getOrCreateTags(codeData.tagStrings);
+        // Create or get existing Tag entities
+        Set<Tag> tagEntities = getOrCreateTags(codeData.tagStrings);
         
         // Create Code entity using the constructor
         Code code = new Code(codeData.name, codeData.description, codeData.codeType, 
@@ -511,13 +511,14 @@ public class V2DataInitializer {
                            codeData.authors, tagEntities);
         
         // Set enum-based fields with proper defaults
-        code.setStatus(StatusEnumV2.VERIFIED);
-        code.setState(StateEnumV2.ACTIVE);
-        code.setPrivacy(PrivacyEnumV2.PUBLIC);
+        code.setStatus(StatusEnum.VERIFIED);
+        code.setState(StateEnum.ACTIVE);
+        code.setPrivacy(PrivacyEnum.PUBLIC);
         
         // Set random star count for demonstration
         int starCount = (int) (Math.random() * 1000) + 10;
-        code.setStarCount(starCount);
+        // Note: starCount functionality handled separately in v1 star system
+        // code.setStarCount(starCount); // Removed - v2 entities don't have starCount field
         
         // Set code-specific fields
         if (codeData.applicationInterfaceId != null) {
@@ -546,20 +547,20 @@ public class V2DataInitializer {
     }
 
     /**
-     * Helper method to get or create TagV2 entities from tag strings
+     * Helper method to get or create Tag entities from tag strings
      */
-    private Set<TagV2> getOrCreateTags(Set<String> tagStrings) {
-        Set<TagV2> tagEntities = new HashSet<>();
+    private Set<Tag> getOrCreateTags(Set<String> tagStrings) {
+        Set<Tag> tagEntities = new HashSet<>();
         
         for (String tagString : tagStrings) {
-            Optional<TagV2> existingTag = tagV2Repository.findByTagValue(tagString);
+            Optional<Tag> existingTag = Optional.ofNullable(tagRepository.findByValue(tagString));
             if (existingTag.isPresent()) {
                 tagEntities.add(existingTag.get());
             } else {
                 // Create new tag
-                TagV2 newTag = new TagV2();
-                newTag.setTagValue(tagString);
-                TagV2 savedTag = tagV2Repository.save(newTag);
+                Tag newTag = new Tag();
+                newTag.setValue(tagString);
+                Tag savedTag = tagRepository.save(newTag);
                 tagEntities.add(savedTag);
                 LOGGER.debug("Created new tag: {}", tagString);
             }

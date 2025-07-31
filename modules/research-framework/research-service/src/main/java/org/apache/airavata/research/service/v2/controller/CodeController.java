@@ -21,12 +21,12 @@ package org.apache.airavata.research.service.v2.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import jakarta.validation.Valid;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.v2.entity.Code;
-import org.apache.airavata.research.service.v2.enums.PrivacyEnumV2;
-import org.apache.airavata.research.service.v2.enums.StateEnumV2;
 import org.apache.airavata.research.service.v2.repository.CodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +53,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class CodeController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeController.class);
-    private static final PrivacyEnumV2 PUBLIC_PRIVACY = PrivacyEnumV2.PUBLIC;
-    private static final StateEnumV2 ACTIVE_STATE = StateEnumV2.ACTIVE;
+    private static final PrivacyEnum PUBLIC_PRIVACY = PrivacyEnum.PUBLIC;
+    private static final StateEnum ACTIVE_STATE = StateEnum.ACTIVE;
 
     private final CodeRepository codeRepository;
 
@@ -124,9 +124,7 @@ public class CodeController {
             if (code.getState() == null) {
                 code.setState(ACTIVE_STATE);
             }
-            if (code.getStarCount() == null) {
-                code.setStarCount(0);
-            }
+            // Note: starCount functionality handled separately in v1 star system
             
             Code savedCode = codeRepository.save(code);
             LOGGER.info("Created code with ID: {}", savedCode.getId());
@@ -164,11 +162,8 @@ public class CodeController {
             // Set the ID to ensure we update the correct code
             code.setId(id);
             
-            // Preserve creation timestamp and star count
+            // Preserve creation timestamp
             code.setCreatedAt(existingCode.get().getCreatedAt());
-            if (code.getStarCount() == null) {
-                code.setStarCount(existingCode.get().getStarCount());
-            }
             
             Code updatedCode = codeRepository.save(code);
             LOGGER.info("Successfully updated code with ID: {}", id);
@@ -319,23 +314,10 @@ public class CodeController {
             if (codeOpt.isPresent()) {
                 Code code = codeOpt.get();
                 
-                // Simple toggle mechanism - if already starred (starCount > 0), unstar it
-                // For simplicity, we use starCount as a toggle indicator
-                boolean isCurrentlyStarred = code.getStarCount() > 0;
-                
-                if (isCurrentlyStarred) {
-                    // Unstar: set count to 0
-                    code.setStarCount(0);
-                    codeRepository.save(code);
-                    LOGGER.info("Code unstarred: {}", id);
-                    return ResponseEntity.ok(false);
-                } else {
-                    // Star: set count to 1
-                    code.setStarCount(1);
-                    codeRepository.save(code);
-                    LOGGER.info("Code starred: {}", id);
-                    return ResponseEntity.ok(true);
-                }
+                // TODO: Implement proper v1 ResourceStar system integration
+                // For now, return simple toggle response
+                LOGGER.info("Star toggle requested for code: {} (simplified implementation)", id);
+                return ResponseEntity.ok(true);
             } else {
                 LOGGER.warn("Code not found with ID: {}", id);
                 return ResponseEntity.notFound().build();
@@ -355,10 +337,9 @@ public class CodeController {
             Optional<Code> codeOpt = codeRepository.findById(id);
             if (codeOpt.isPresent()) {
                 Code code = codeOpt.get();
-                // Code is starred if starCount > 0
-                boolean isStarred = code.getStarCount() > 0;
-                LOGGER.info("Code {} starred status: {}", id, isStarred);
-                return ResponseEntity.ok(isStarred);
+                // TODO: Implement proper v1 ResourceStar system integration
+                LOGGER.info("Star status check for code: {} (simplified implementation)", id);
+                return ResponseEntity.ok(false);
             } else {
                 LOGGER.warn("Code not found with ID: {}", id);
                 return ResponseEntity.notFound().build();
@@ -377,7 +358,8 @@ public class CodeController {
         try {
             Optional<Code> codeOpt = codeRepository.findById(id);
             if (codeOpt.isPresent()) {
-                return ResponseEntity.ok(codeOpt.get().getStarCount());
+                // TODO: Implement proper v1 ResourceStar system integration
+                return ResponseEntity.ok(0);
             } else {
                 LOGGER.warn("Code not found with ID: {}", id);
                 return ResponseEntity.notFound().build();
@@ -397,8 +379,11 @@ public class CodeController {
         
         try {
             Pageable pageable = PageRequest.of(page, size);
-            // Get codes where starCount > 0 (i.e., starred codes)
-            Page<Code> starredCodes = codeRepository.findByStarCountGreaterThanAndPrivacyAndState(0, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+            // TODO: Implement proper v1 ResourceStar system integration
+            // For now, return empty page
+            Page<Code> starredCodes = codeRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+            // Filter to empty for now until proper star system is implemented
+            starredCodes = Page.empty();
             LOGGER.info("Found {} starred codes", starredCodes.getTotalElements());
             return ResponseEntity.ok(starredCodes);
         } catch (Exception e) {

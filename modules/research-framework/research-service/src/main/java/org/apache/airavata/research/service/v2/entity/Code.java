@@ -30,11 +30,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.airavata.research.service.v2.enums.ResourceTypeEnumV2;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.ResourceTypeEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
+import org.apache.airavata.research.service.enums.StatusEnum;
+import org.apache.airavata.research.service.model.entity.Resource;
+import org.apache.airavata.research.service.model.entity.Tag;
 
 @Entity
 @Table(name = "CODE_V2")
-public class Code extends ResourceV2 {
+public class Code extends Resource {
 
     @Column(nullable = false)
     @NotBlank(message = "Code type is required")
@@ -75,8 +80,8 @@ public class Code extends ResourceV2 {
     private String additionalInfo;
 
     @Override
-    public ResourceTypeEnumV2 getType() {
-        return ResourceTypeEnumV2.CODE;
+    public ResourceTypeEnum getType() {
+        return ResourceTypeEnum.CODE;
     }
 
     // Default constructor
@@ -84,12 +89,16 @@ public class Code extends ResourceV2 {
 
     // Main constructor for creating code entities
     public Code(String name, String description, String codeType, String programmingLanguage, 
-                String framework, Set<String> authors, Set<TagV2> tags) {
+                String framework, Set<String> authors, Set<Tag> tags) {
         this.setName(name);
         this.setDescription(description);
         this.codeType = codeType;
         this.programmingLanguage = programmingLanguage;
         this.framework = framework;
+        // Set inherited v1 Resource fields (required)
+        this.setPrivacy(PrivacyEnum.PUBLIC);
+        this.setState(StateEnum.ACTIVE);
+        this.setStatus(StatusEnum.VERIFIED);
         this.setAuthors(authors != null ? authors : new HashSet<>());
         this.setTags(tags != null ? tags : new HashSet<>());
         this.setHeaderImage(""); // Default empty header image

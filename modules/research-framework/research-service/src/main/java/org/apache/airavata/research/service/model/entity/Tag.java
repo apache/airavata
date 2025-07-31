@@ -36,7 +36,7 @@ public class Tag {
     @Column(nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "tag_value", nullable = false)
     private String value;
 
     public String getId() {
