@@ -72,12 +72,22 @@ public class SessionController {
         return ResponseEntity.ok(sessionHandler.updateSessionStatus(sessionId, status));
     }
 
+    @DeleteMapping("/delete/{sessionIds}")
+    @Operation(summary = "Delete a session")
+    public ResponseEntity<Boolean> deleteSessions(@PathVariable(value = "sessionIds") List<String> sessionIds) {
+        for (String id : sessionIds) {
+            sessionHandler.updateSessionStatus(id, SessionStatusEnum.TERMINATED);
+            sessionHandler.deleteSession(id);
+        }
+        return ResponseEntity.ok(Boolean.TRUE);
+    }
+
     @DeleteMapping("/{sessionId}")
     @Operation(summary = "Delete a session")
-    public ResponseEntity<Boolean> deleteSessoin(@PathVariable(value = "sessionId") String sessionId) {
+    public ResponseEntity<Boolean> deleteSession(@PathVariable(value = "sessionId") String sessionId) {
         LOGGER.info("Deleting session session: {}", sessionId);
+        sessionHandler.updateSessionStatus(sessionId, SessionStatusEnum.TERMINATED);
         sessionHandler.deleteSession(sessionId);
-
         return ResponseEntity.ok(Boolean.TRUE);
     }
 }
