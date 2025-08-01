@@ -18,9 +18,10 @@ from __future__ import annotations
 import abc
 from typing import Any, Literal
 from pathlib import Path
-import os
 
 import pydantic
+
+from airavata_auth.device_auth import AuthContext
 
 # from .task import Task
 Task = Any
@@ -163,7 +164,7 @@ class Remote(Runtime):
     print(f"[Remote] Creating Experiment: name={task.name}")
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     try:
       launch_state = av.launch_experiment(
           experiment_name=task.name,
@@ -195,7 +196,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     try:
       result = av.execute_cmd(task.agent_ref, cmd)
       return result
@@ -210,7 +211,7 @@ class Remote(Runtime):
     assert task.pid is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     result = av.execute_py(task.project, libraries, code, task.agent_ref, task.pid, task.runtime.args)
     print(result)
 
@@ -219,7 +220,7 @@ class Remote(Runtime):
     assert task.agent_ref is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     # prioritize job state, fallback to experiment state
     job_id, job_state = av.get_task_status(task.ref)
     if job_state in [AiravataOperator.JobState.UNKNOWN, AiravataOperator.JobState.NON_CRITICAL_FAIL]:
@@ -232,7 +233,7 @@ class Remote(Runtime):
     assert task.agent_ref is not None
     
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     av.stop_experiment(task.ref)
 
   def ls(self, task: Task) -> list[str]:
@@ -243,7 +244,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     files = av.list_files(task.pid, task.agent_ref, task.sr_host, task.workdir)
     return files
 
@@ -255,7 +256,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     result = av.upload_files(task.pid, task.agent_ref, task.sr_host, [file], task.workdir).pop()
     return result
 
@@ -267,7 +268,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     result = av.download_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir, local_dir)
     return result
 
@@ -279,7 +280,7 @@ class Remote(Runtime):
     assert task.workdir is not None
 
     from .airavata import AiravataOperator
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     content = av.cat_file(task.pid, task.agent_ref, task.sr_host, file, task.workdir)
     return content
 
@@ -287,22 +288,36 @@ class Remote(Runtime):
 def find_runtimes(
     cluster: str | None = None,
     category: str | None = None,
-    group: str | None = None,
     node_count: int | None = None,
     cpu_count: int | None = None,
-    walltime: int | None = None,
+    group: str | None = None,
 ) -> list[Runtime]:
   from .airavata import AiravataOperator
-  av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
-  all_runtimes = av.get_available_runtimes()
-  out_runtimes = []
-  for r in all_runtimes:
-    if (cluster in [None, r.args["cluster"]]) and (category in [None, r.args["category"]]) and (group in [None, r.args["group"]]):
-      r.args["node_count"] = node_count or r.args["node_count"]
-      r.args["cpu_count"] = cpu_count or r.args["cpu_count"]
-      r.args["walltime"] = walltime or r.args["walltime"]
-      out_runtimes.append(r)
-  return out_runtimes
+  av = AiravataOperator(AuthContext.get_access_token())
+  grps = av.get_available_groups()
+  grp_names = [str(x.groupResourceProfileName) for x in grps]
+  if group is not None:
+    assert group in grp_names, f"Group {group} was not found. Available groups: {repr(grp_names)}"
+    groups = [g for g in grps if str(g.groupResourceProfileName) == group]
+  else:
+    groups = grps
+  runtimes = []
+  for g in groups:
+    matched_runtimes = []
+    assert g.groupResourceProfileName is not None, f"Group {g} has no name"
+    r: Runtime
+    for r in av.get_available_runtimes(group=g.groupResourceProfileName):
+      if (node_count or 1) > int(r.args["node_count"]):
+        continue
+      if (cpu_count or 1) > int(r.args["cpu_count"]):
+        continue
+      if (cluster or r.args["cluster"]) != r.args["cluster"]:
+        continue
+      if (category or r.args["category"]) != r.args["category"]:
+        continue
+      matched_runtimes.append(r)
+    runtimes.extend(matched_runtimes)
+  return runtimes
 
 def is_terminal_state(x: States) -> bool:
   return x in ["CANCELED", "COMPLETE", "COMPLETED", "FAILED"]

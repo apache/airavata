@@ -35,7 +35,8 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
+from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile, ResourceType
+from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
 from airavata.model.status.ttypes import JobStatus, JobState, ExperimentStatus, ExperimentState
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -101,8 +102,8 @@ class AiravataOperator:
     )
   
   def get_resource_host_id(self, resource_name):
-    resources: dict = self.api_server_client.get_all_compute_resource_names(self.airavata_token) # type: ignore
-    resource_id = next((str(k) for k, v in resources.items() if v == resource_name), None)
+    resources = self.api_server_client.get_all_compute_resource_names(self.airavata_token)
+    resource_id = next((k for k in resources if k.startswith(resource_name)), None)
     assert resource_id is not None, f"Compute resource {resource_name} not found"
     return resource_id
   
@@ -814,14 +815,41 @@ class AiravataOperator:
       print(f"[av] Remote execution failed! {e}")
       return None
     
-  def get_available_runtimes(self):
+  def get_available_groups(self, gateway_id: str = "default"):
+    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list(self.airavata_token, gatewayId=gateway_id)
+    return grps
+  
+  def get_available_runtimes(self, group: str, gateway_id: str = "default"):
+    grps = self.get_available_groups(gateway_id)
+    grp_id, gcr_prefs, gcr_policies = next(((x.groupResourceProfileId, x.computePreferences, x.computeResourcePolicies) for x in grps if str(x.groupResourceProfileName).strip() == group.strip()), (None, None, None))
+    assert grp_id is not None, f"Group {group} was not found"
+    assert gcr_prefs is not None, f"Compute preferences for group={grp_id} were not found"
+    assert gcr_policies is not None, f"Compute policies for group={grp_id} were not found" # type: ignore
     from .runtime import Remote
-    return [
-      Remote(cluster="login.delta.ncsa.illinois.edu", category="gpu", queue_name="gpuA100x4", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="Default"),
-      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="Default"),
-      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, gpu_count=0, walltime=30, group="Default"),
-      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="Default"),
-    ]
+    runtimes = []
+    for pref in gcr_prefs:
+      cr = self.api_server_client.get_compute_resource(self.airavata_token, pref.computeResourceId)
+      assert cr is not None, "Compute resource not found"
+      assert isinstance(cr, ComputeResourceDescription), "Compute resource is not a ComputeResourceDescription"
+      assert cr.batchQueues is not None, "Compute resource has no batch queues"
+      for queue in cr.batchQueues:
+        if pref.resourceType == ResourceType.SLURM:
+          policy = next((p for p in gcr_policies if p.computeResourceId == pref.computeResourceId), None)
+          assert policy is not None, f"Compute resource policy not found for {pref.computeResourceId}"
+          if queue.queueName not in (policy.allowedBatchQueues or []):
+            continue
+        runtime = Remote(
+          cluster=pref.computeResourceId.split("_")[0],
+          category="GPU" if "gpu" in queue.queueName.lower() else "CPU",
+          queue_name=queue.queueName,
+          node_count=queue.maxNodes or 1,
+          cpu_count=queue.cpuPerNode or 1,
+          gpu_count=1 if "gpu" in queue.queueName.lower() else 0,
+          walltime=queue.maxRunTime or 30,
+          group=group,
+        )
+        runtimes.append(runtime)
+    return runtimes
   
   def get_task_status(self, experiment_id: str) -> tuple[str, JobState]:
     job_details: dict[str, JobStatus] = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore

@@ -25,6 +25,7 @@ from rich.progress import Progress
 from .runtime import is_terminal_state
 from .task import Task
 import uuid
+from airavata_auth.device_auth import AuthContext
 
 from .airavata import AiravataOperator
 
@@ -131,7 +132,7 @@ class Plan(pydantic.BaseModel):
 
   def save(self) -> None:
     settings = Settings()
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -164,7 +165,7 @@ def load_json(filename: str) -> Plan:
 def load(id: str | None) -> Plan:
     settings = Settings()
     assert id is not None
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -185,7 +186,7 @@ def load(id: str | None) -> Plan:
     
 def query() -> list[Plan]:
     settings = Settings()
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
