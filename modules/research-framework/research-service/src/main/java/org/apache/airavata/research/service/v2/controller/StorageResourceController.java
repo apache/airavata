@@ -23,17 +23,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
-import org.apache.airavata.research.service.enums.PrivacyEnum;
-import org.apache.airavata.research.service.enums.StateEnum;
-import org.apache.airavata.research.service.v2.entity.StorageResource;
-import org.apache.airavata.research.service.v2.repository.StorageResourceRepository;
+import org.apache.airavata.research.service.dto.StorageResourceDTO;
+import org.apache.airavata.research.service.handler.LocalStorageResourceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -53,56 +47,56 @@ import org.springframework.web.bind.annotation.RestController;
 public class StorageResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageResourceController.class);
-    private static final PrivacyEnum PUBLIC_PRIVACY = PrivacyEnum.PUBLIC;
-    private static final StateEnum ACTIVE_STATE = StateEnum.ACTIVE;
 
-    private final StorageResourceRepository storageResourceRepository;
+    @Autowired
+    private LocalStorageResourceHandler localStorageResourceHandler;
 
-    public StorageResourceController(StorageResourceRepository storageResourceRepository) {
-        this.storageResourceRepository = storageResourceRepository;
-    }
-
-    @Operation(summary = "Get all public storage resources with pagination")
+    @Operation(summary = "Get all public storage resources")
     @GetMapping("/public")
-    public ResponseEntity<Page<StorageResource>> getStorageResources(
-            @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value = "nameSearch", required = false) String nameSearch,
-            @RequestParam(value = "tag", required = false) String[] tags) {
+    public ResponseEntity<List<StorageResourceDTO>> getStorageResources(
+            @RequestParam(value = "nameSearch", required = false) String nameSearch) {
         
-        LOGGER.info("Getting storage resources - page: {}, size: {}, search: {}", pageNumber, pageSize, nameSearch);
+        LOGGER.info("Getting storage resources - search: {}", nameSearch);
         
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-        Page<StorageResource> resources;
-        
-        if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-            resources = storageResourceRepository.findByNameSearchAndPrivacyAndState(nameSearch, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
-        } else {
-            resources = storageResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+        try {
+            List<StorageResourceDTO> resources;
+            
+            if (nameSearch != null && !nameSearch.trim().isEmpty()) {
+                resources = localStorageResourceHandler.searchStorageResources(nameSearch);
+            } else {
+                resources = localStorageResourceHandler.getAllStorageResources();
+            }
+            
+            LOGGER.info("Found {} storage resources", resources.size());
+            return ResponseEntity.ok(resources);
+        } catch (Exception e) {
+            LOGGER.error("Failed to get storage resources: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        
-        LOGGER.info("Found {} storage resources", resources.getTotalElements());
-        return ResponseEntity.ok(resources);
     }
 
     @Operation(summary = "Get storage resource by ID")
     @GetMapping("/public/{id}")
-    public ResponseEntity<StorageResource> getStorageResourceById(@PathVariable("id") String id) {
+    public ResponseEntity<StorageResourceDTO> getStorageResourceById(@PathVariable("id") String id) {
         LOGGER.info("Getting storage resource by ID: {}", id);
         
-        Optional<StorageResource> resource = storageResourceRepository.findById(id);
-        if (resource.isPresent()) {
-            return ResponseEntity.ok(resource.get());
-        } else {
-            LOGGER.warn("Storage resource not found with ID: {}", id);
-            return ResponseEntity.notFound().build();
+        try {
+            StorageResourceDTO resource = localStorageResourceHandler.getStorageResource(id);
+            return ResponseEntity.ok(resource);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("not found")) {
+                LOGGER.warn("Storage resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+            LOGGER.error("Error getting storage resource {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @Operation(summary = "Create new storage resource")
     @PostMapping("/")
-    public ResponseEntity<?> createStorageResource(@Valid @RequestBody StorageResource storageResource, BindingResult bindingResult) {
-        LOGGER.info("Creating new storage resource: {}", storageResource.getName());
+    public ResponseEntity<?> createStorageResource(@Valid @RequestBody StorageResourceDTO storageResourceDTO, BindingResult bindingResult) {
+        LOGGER.info("Creating new storage resource: {}", storageResourceDTO.getHostName());
         
         // Validation error handling
         if (bindingResult.hasErrors()) {
@@ -116,25 +110,12 @@ public class StorageResourceController {
         
         try {
             // Set default values for fields that might be null
-            if (storageResource.getCapacityTB() == null) {
-                storageResource.setCapacityTB(1L); // Default to 1 TB
+            if (storageResourceDTO.getCapacityTB() == null) {
+                storageResourceDTO.setCapacityTB(1L); // Default to 1 TB
             }
-            if (storageResource.getSupportsEncryption() == null) {
-                storageResource.setSupportsEncryption(false);
-            }
-            if (storageResource.getSupportsVersioning() == null) {
-                storageResource.setSupportsVersioning(false);
-            }
-            if (storageResource.getPrivacy() == null) {
-                storageResource.setPrivacy(PUBLIC_PRIVACY);
-            }
-            if (storageResource.getState() == null) {
-                storageResource.setState(ACTIVE_STATE);
-            }
-            // Note: starCount functionality handled separately in v1 star system
             
-            StorageResource savedResource = storageResourceRepository.save(storageResource);
-            LOGGER.info("Created storage resource with ID: {}", savedResource.getId());
+            StorageResourceDTO savedResource = localStorageResourceHandler.createStorageResource(storageResourceDTO);
+            LOGGER.info("Created storage resource with ID: {}", savedResource.getStorageResourceId());
             
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
         } catch (Exception e) {
@@ -146,7 +127,7 @@ public class StorageResourceController {
 
     @Operation(summary = "Update storage resource")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStorageResource(@PathVariable("id") String id, @Valid @RequestBody StorageResource storageResource, BindingResult bindingResult) {
+    public ResponseEntity<?> updateStorageResource(@PathVariable("id") String id, @Valid @RequestBody StorageResourceDTO storageResourceDTO, BindingResult bindingResult) {
         LOGGER.info("Updating storage resource with ID: {}", id);
         
         // Validation error handling
@@ -160,19 +141,7 @@ public class StorageResourceController {
         }
         
         try {
-            Optional<StorageResource> existingResource = storageResourceRepository.findById(id);
-            if (!existingResource.isPresent()) {
-                LOGGER.warn("Storage resource not found with ID: {}", id);
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Set the ID to ensure we update the correct resource
-            storageResource.setId(id);
-            
-            // Preserve creation timestamp
-            storageResource.setCreatedAt(existingResource.get().getCreatedAt());
-            
-            StorageResource updatedResource = storageResourceRepository.save(storageResource);
+            StorageResourceDTO updatedResource = localStorageResourceHandler.updateStorageResource(id, storageResourceDTO);
             LOGGER.info("Successfully updated storage resource with ID: {}", id);
             
             return ResponseEntity.ok(updatedResource);
@@ -189,13 +158,7 @@ public class StorageResourceController {
         LOGGER.info("Deleting storage resource with ID: {}", id);
         
         try {
-            Optional<StorageResource> existingResource = storageResourceRepository.findById(id);
-            if (!existingResource.isPresent()) {
-                LOGGER.warn("Storage resource not found with ID: {}", id);
-                return ResponseEntity.notFound().build();
-            }
-            
-            storageResourceRepository.deleteById(id);
+            localStorageResourceHandler.deleteStorageResource(id);
             LOGGER.info("Successfully deleted storage resource with ID: {}", id);
             return ResponseEntity.ok().body("Storage resource deleted successfully");
         } catch (Exception e) {
@@ -207,30 +170,36 @@ public class StorageResourceController {
 
     @Operation(summary = "Search storage resources by keyword")
     @GetMapping("/search")
-    public ResponseEntity<List<StorageResource>> searchStorageResources(
+    public ResponseEntity<List<StorageResourceDTO>> searchStorageResources(
             @RequestParam(value = "keyword") String keyword) {
         
         LOGGER.info("Searching storage resources with keyword: {}", keyword);
         
-        List<StorageResource> resources = storageResourceRepository
-                .findByNameContainingIgnoreCaseAndPrivacyAndState(keyword, PUBLIC_PRIVACY, ACTIVE_STATE);
-        
-        LOGGER.info("Found {} storage resources matching keyword: {}", resources.size(), keyword);
-        return ResponseEntity.ok(resources);
+        try {
+            List<StorageResourceDTO> resources = localStorageResourceHandler.searchStorageResources(keyword);
+            LOGGER.info("Found {} storage resources matching keyword: {}", resources.size(), keyword);
+            return ResponseEntity.ok(resources);
+        } catch (Exception e) {
+            LOGGER.error("Error searching storage resources: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Get storage resources by type")
     @GetMapping("/type/{storageType}")
-    public ResponseEntity<List<StorageResource>> getStorageResourcesByType(
+    public ResponseEntity<List<StorageResourceDTO>> getStorageResourcesByType(
             @PathVariable("storageType") String storageType) {
         
         LOGGER.info("Getting storage resources by type: {}", storageType);
         
-        List<StorageResource> resources = storageResourceRepository
-                .findByStorageTypeAndPrivacyAndState(storageType, PUBLIC_PRIVACY, ACTIVE_STATE);
-        
-        LOGGER.info("Found {} storage resources of type: {}", resources.size(), storageType);
-        return ResponseEntity.ok(resources);
+        try {
+            List<StorageResourceDTO> resources = localStorageResourceHandler.getStorageResourcesByType(storageType);
+            LOGGER.info("Found {} storage resources of type: {}", resources.size(), storageType);
+            return ResponseEntity.ok(resources);
+        } catch (Exception e) {
+            LOGGER.error("Error filtering storage resources by type: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Star/unstar a storage resource")
@@ -239,10 +208,7 @@ public class StorageResourceController {
         LOGGER.info("Toggling star for storage resource with ID: {}", id);
         
         try {
-            Optional<StorageResource> resourceOpt = storageResourceRepository.findById(id);
-            if (resourceOpt.isPresent()) {
-                StorageResource resource = resourceOpt.get();
-                
+            if (localStorageResourceHandler.existsStorageResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 // For now, return simple toggle response
                 LOGGER.info("Star toggle requested for storage resource: {} (simplified implementation)", id);
@@ -263,9 +229,7 @@ public class StorageResourceController {
         LOGGER.info("Checking if storage resource is starred: {}", id);
         
         try {
-            Optional<StorageResource> resourceOpt = storageResourceRepository.findById(id);
-            if (resourceOpt.isPresent()) {
-                StorageResource resource = resourceOpt.get();
+            if (localStorageResourceHandler.existsStorageResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 LOGGER.info("Star status check for storage resource: {} (simplified implementation)", id);
                 return ResponseEntity.ok(false);
@@ -285,8 +249,7 @@ public class StorageResourceController {
         LOGGER.info("Getting star count for storage resource: {}", id);
         
         try {
-            Optional<StorageResource> resourceOpt = storageResourceRepository.findById(id);
-            if (resourceOpt.isPresent()) {
+            if (localStorageResourceHandler.existsStorageResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 return ResponseEntity.ok(0);
             } else {
@@ -301,19 +264,14 @@ public class StorageResourceController {
 
     @Operation(summary = "Get all starred storage resources")
     @GetMapping("/starred")
-    public ResponseEntity<Page<StorageResource>> getStarredStorageResources(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "50") int size) {
-        LOGGER.info("Fetching starred storage resources - page: {}, size: {}", page, size);
+    public ResponseEntity<List<StorageResourceDTO>> getStarredStorageResources() {
+        LOGGER.info("Fetching starred storage resources");
         
         try {
-            Pageable pageable = PageRequest.of(page, size);
             // TODO: Implement proper v1 ResourceStar system integration
-            // For now, return empty page
-            Page<StorageResource> starredResources = storageResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
-            // Filter to empty for now until proper star system is implemented
-            starredResources = Page.empty();
-            LOGGER.info("Found {} starred storage resources", starredResources.getTotalElements());
+            // For now, return empty list
+            List<StorageResourceDTO> starredResources = List.of();
+            LOGGER.info("Found {} starred storage resources", starredResources.size());
             return ResponseEntity.ok(starredResources);
         } catch (Exception e) {
             LOGGER.error("Error fetching starred storage resources: {}", e.getMessage(), e);

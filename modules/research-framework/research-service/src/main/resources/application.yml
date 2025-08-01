@@ -37,6 +37,10 @@ airavata:
     server:
       url: airavata.host
       port: 8962
+  registry:
+    host: localhost
+    port: 9930
+    enabled: false  # Disabled for development - using direct database access
 
 spring:
   servlet:

@@ -176,4 +176,40 @@ public class Code extends Resource {
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
     }
+
+    // Additional setter methods for V2DataInitializer compatibility
+    public void setFileName(String fileName) {
+        // For models and notebooks, store in notebookPath field
+        this.notebookPath = fileName;
+    }
+
+    public String getFileName() {
+        return this.notebookPath;
+    }
+
+    public void setBranch(String branch) {
+        // For repositories, use additionalInfo to store branch info
+        if (branch != null && !branch.isEmpty()) {
+            String branchInfo = "Branch: " + branch;
+            if (this.additionalInfo != null && !this.additionalInfo.isEmpty()) {
+                this.additionalInfo += "; " + branchInfo;
+            } else {
+                this.additionalInfo = branchInfo;
+            }
+        }
+    }
+
+    public String getBranch() {
+        // Extract branch info from additionalInfo
+        if (additionalInfo != null && additionalInfo.contains("Branch: ")) {
+            String[] parts = additionalInfo.split("Branch: ");
+            if (parts.length > 1) {
+                String branchPart = parts[1];
+                // Get everything before the next semicolon
+                int semicolonIndex = branchPart.indexOf(";");
+                return semicolonIndex > 0 ? branchPart.substring(0, semicolonIndex) : branchPart;
+            }
+        }
+        return null;
+    }
 }

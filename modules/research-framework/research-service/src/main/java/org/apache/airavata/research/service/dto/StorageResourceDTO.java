@@ -1,176 +1,179 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
-package org.apache.airavata.research.service.v2.entity;
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.airavata.research.service.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.HashSet;
-import org.apache.airavata.research.service.enums.PrivacyEnum;
-import org.apache.airavata.research.service.enums.ResourceTypeEnum;
-import org.apache.airavata.research.service.enums.StateEnum;
-import org.apache.airavata.research.service.enums.StatusEnum;
-import org.apache.airavata.research.service.model.entity.Resource;
 
-@Entity
-@Table(name = "STORAGE_RESOURCE_V2")
-public class StorageResource extends Resource {
+/**
+ * UI-specific DTO for Storage Resource
+ * Maps to airavata-api StorageResourceDescription with UI-specific extensions
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class StorageResourceDTO {
 
-    @Column(nullable = false)
+    // Core fields from StorageResourceDescription
+    private String storageResourceId;
+    
+    @NotBlank(message = "Storage resource name is required")
+    @Size(max = 255, message = "Storage resource name must not exceed 255 characters")
+    private String name;
+    
     @NotBlank(message = "Hostname is required")
     @Size(max = 255, message = "Hostname must not exceed 255 characters")
-    private String hostname;
+    private String hostName;
 
-    @Column(nullable = false)
+    @Size(max = 1000, message = "Storage resource description must not exceed 1000 characters")
+    private String storageResourceDescription;
+
+    // UI-specific extensions stored in storageResourceDescription as JSON
     @NotBlank(message = "Storage type is required")
     @Size(max = 100, message = "Storage type must not exceed 100 characters")
     private String storageType; // S3, SCP, NFS, etc.
 
-    @Column(nullable = false)
     @NotNull(message = "Capacity TB is required")
     @Min(value = 1, message = "Capacity TB must be at least 1")
     private Long capacityTB;
 
-    @Column(nullable = false)
     @NotBlank(message = "Access protocol is required")
     @Size(max = 100, message = "Access protocol must not exceed 100 characters")
     private String accessProtocol; // S3, SFTP, NFS, HTTP, etc.
 
-    @Column(nullable = false)
     @NotBlank(message = "Endpoint is required")
     @Size(max = 500, message = "Endpoint must not exceed 500 characters")
     private String endpoint; // API endpoint or mount point
 
-    @Column(nullable = false)
     private Boolean supportsEncryption = false;
-
-    @Column(nullable = false)
     private Boolean supportsVersioning = false;
 
     // S3-specific fields
-    @Column
     @Size(max = 255, message = "Bucket name must not exceed 255 characters")
     private String bucketName;
 
-    @Column
     @Size(max = 255, message = "Access key must not exceed 255 characters")
     private String accessKey;
 
-    @Column
     @Size(max = 255, message = "Secret key must not exceed 255 characters")
     private String secretKey;
 
     // SCP-specific fields
-    @Column
     private Integer port;
 
-    @Column
     @Size(max = 255, message = "Username must not exceed 255 characters")
     private String username;
 
-    @Column
     @Size(max = 50, message = "Authentication method must not exceed 50 characters")
     private String authenticationMethod; // "SSH_KEY", "PASSWORD"
 
-    @Column(columnDefinition = "TEXT")
     private String sshKey;
 
-    @Column
     @Size(max = 500, message = "Remote path must not exceed 500 characters")
     private String remotePath;
 
-    @Column(columnDefinition = "TEXT")
     private String additionalInfo;
 
-    @Column(nullable = false)
     @NotBlank(message = "Resource manager is required")
     @Size(max = 255, message = "Resource manager must not exceed 255 characters")
     private String resourceManager; // Gateway name or organization
 
-    @Override
-    public ResourceTypeEnum getType() {
-        return ResourceTypeEnum.STORAGE_RESOURCE;
-    }
+    // System fields
+    private boolean enabled = true;
+    private Long creationTime;
+    private Long updateTime;
 
     // Default constructor
-    public StorageResource() {}
+    public StorageResourceDTO() {}
 
-    // Constructor for mock data creation
-    public StorageResource(String name, String description, String hostname, String storageType,
-                          Long capacityTB, String accessProtocol, String endpoint,
-                          Boolean supportsEncryption, Boolean supportsVersioning,
-                          String additionalInfo, String resourceManager) {
-        this.setName(name);
-        this.setDescription(description);
-        this.hostname = hostname;
-        this.storageType = storageType;
-        this.capacityTB = capacityTB;
-        this.accessProtocol = accessProtocol;
-        this.endpoint = endpoint;
-        this.supportsEncryption = supportsEncryption;
-        this.supportsVersioning = supportsVersioning;
-        this.additionalInfo = additionalInfo;
-        this.resourceManager = resourceManager;
-        
-        // Set inherited v1 Resource fields (required)
-        this.setPrivacy(PrivacyEnum.PUBLIC);
-        this.setState(StateEnum.ACTIVE);
-        this.setStatus(StatusEnum.VERIFIED);
-        this.setAuthors(new HashSet<>());
-        this.setTags(new HashSet<>());
-        this.setHeaderImage(""); // Default empty header image
+    // Constructor for basic creation
+    public StorageResourceDTO(String hostName, String storageResourceDescription) {
+        this.hostName = hostName;
+        this.storageResourceDescription = storageResourceDescription;
     }
 
     // S3-specific constructor
-    public StorageResource(String name, String description, String storageType, String endpoint,
-                          String bucketName, String accessKey, String secretKey,
-                          String resourceManager) {
-        this(name, description, endpoint, storageType, 1000L, "S3", endpoint, true, true, null, resourceManager);
+    public StorageResourceDTO(String hostName, String storageResourceDescription, String storageType, 
+                             String endpoint, String bucketName, String accessKey, String secretKey, 
+                             String resourceManager) {
+        this.hostName = hostName;
+        this.storageResourceDescription = storageResourceDescription;
+        this.storageType = storageType;
+        this.endpoint = endpoint;
         this.bucketName = bucketName;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
+        this.resourceManager = resourceManager;
+        this.accessProtocol = "S3";
+        this.supportsEncryption = true;
+        this.supportsVersioning = true;
     }
 
     // SCP-specific constructor
-    public StorageResource(String name, String description, String hostname, String storageType,
-                          Integer port, String username, String authenticationMethod, String sshKey,
-                          String remotePath, String resourceManager) {
-        this(name, description, hostname, storageType, 100L, "SCP", hostname, false, false, null, resourceManager);
+    public StorageResourceDTO(String hostName, String storageResourceDescription, String storageType,
+                             Integer port, String username, String authenticationMethod, String sshKey,
+                             String remotePath, String resourceManager) {
+        this.hostName = hostName;
+        this.storageResourceDescription = storageResourceDescription;
+        this.storageType = storageType;
         this.port = port;
         this.username = username;
         this.authenticationMethod = authenticationMethod;
         this.sshKey = sshKey;
         this.remotePath = remotePath;
+        this.resourceManager = resourceManager;
+        this.accessProtocol = "SCP";
+        this.endpoint = hostName;
     }
 
-    // Getters and Setters for StorageResource-specific fields
-    public String getHostname() {
-        return hostname;
+    // Getters and Setters
+    public String getStorageResourceId() {
+        return storageResourceId;
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public String getStorageResourceDescription() {
+        return storageResourceDescription;
+    }
+
+    public void setStorageResourceDescription(String storageResourceDescription) {
+        this.storageResourceDescription = storageResourceDescription;
     }
 
     public String getStorageType() {
@@ -221,23 +224,6 @@ public class StorageResource extends Resource {
         this.supportsVersioning = supportsVersioning;
     }
 
-    public String getAdditionalInfo() {
-        return additionalInfo;
-    }
-
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
-    }
-
-    public String getResourceManager() {
-        return resourceManager;
-    }
-
-    public void setResourceManager(String resourceManager) {
-        this.resourceManager = resourceManager;
-    }
-
-    // S3-specific getters and setters
     public String getBucketName() {
         return bucketName;
     }
@@ -262,7 +248,6 @@ public class StorageResource extends Resource {
         this.secretKey = secretKey;
     }
 
-    // SCP-specific getters and setters
     public Integer getPort() {
         return port;
     }
@@ -301,5 +286,45 @@ public class StorageResource extends Resource {
 
     public void setRemotePath(String remotePath) {
         this.remotePath = remotePath;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
+
+    public String getResourceManager() {
+        return resourceManager;
+    }
+
+    public void setResourceManager(String resourceManager) {
+        this.resourceManager = resourceManager;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Long getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Long creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 }

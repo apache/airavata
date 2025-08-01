@@ -1,189 +1,160 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
-package org.apache.airavata.research.service.v2.entity;
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.airavata.research.service.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
 import java.util.ArrayList;
-import org.apache.airavata.research.service.enums.PrivacyEnum;
-import org.apache.airavata.research.service.enums.ResourceTypeEnum;
-import org.apache.airavata.research.service.enums.StateEnum;
-import org.apache.airavata.research.service.enums.StatusEnum;
-import org.apache.airavata.research.service.model.entity.Resource;
+import java.util.List;
 
-@Entity
-@Table(name = "COMPUTE_RESOURCE_V2")
-public class ComputeResource extends Resource {
+/**
+ * UI-specific DTO for Compute Resource
+ * Maps to airavata-api ComputeResourceDescription with UI-specific extensions
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ComputeResourceDTO {
 
-    @Column(nullable = false)
+    // Core fields from ComputeResourceDescription
+    private String computeResourceId;
+    
+    @NotBlank(message = "Compute resource name is required")
+    @Size(max = 255, message = "Compute resource name must not exceed 255 characters")
+    private String name;
+    
+    @NotBlank(message = "Resource description is required")
+    @Size(max = 1000, message = "Resource description must not exceed 1000 characters")
+    private String resourceDescription;
+    
     @NotBlank(message = "Hostname is required")
     @Size(max = 255, message = "Hostname must not exceed 255 characters")
-    private String hostname;
+    private String hostName;
 
-    @Column(nullable = false)
+    // UI-specific extensions stored in resourceDescription as JSON
     @NotBlank(message = "Compute type is required")
     @Size(max = 100, message = "Compute type must not exceed 100 characters")
     private String computeType; // HPC, Cloud, Local, etc.
 
-    @Column(nullable = false)
     @NotNull(message = "CPU cores is required")
     @Min(value = 1, message = "CPU cores must be at least 1")
     private Integer cpuCores;
 
-    @Column(nullable = false)
     @NotNull(message = "Memory GB is required")
     @Min(value = 1, message = "Memory GB must be at least 1")
     private Integer memoryGB;
 
-    @Column(nullable = false)
     @NotBlank(message = "Operating system is required")
     @Size(max = 100, message = "Operating system must not exceed 100 characters")
     private String operatingSystem;
 
-    @Column(nullable = false)
     @NotBlank(message = "Queue system is required")
     @Size(max = 100, message = "Queue system must not exceed 100 characters")
     private String queueSystem; // SLURM, PBS, SGE, etc.
 
-    @Column(columnDefinition = "TEXT")
     private String additionalInfo;
 
-    @Column(nullable = false)
     @NotBlank(message = "Resource manager is required")
     @Size(max = 255, message = "Resource manager must not exceed 255 characters")
     private String resourceManager; // Gateway name or organization
 
-    // New fields to match UI requirements
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "COMPUTE_RESOURCE_HOST_ALIASES", joinColumns = @JoinColumn(name = "compute_resource_id"))
-    @Column(name = "host_alias")
+    // Direct mappings from ComputeResourceDescription
     private List<String> hostAliases = new ArrayList<>();
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "COMPUTE_RESOURCE_IP_ADDRESSES", joinColumns = @JoinColumn(name = "compute_resource_id"))
-    @Column(name = "ip_address")
     private List<String> ipAddresses = new ArrayList<>();
 
-    @Column(nullable = false)
+    // UI-specific SSH configuration fields
     @NotBlank(message = "SSH username is required")
     @Size(max = 100, message = "SSH username must not exceed 100 characters")
     private String sshUsername;
 
-    @Column(nullable = false)
     @NotNull(message = "SSH port is required")
     @Min(value = 1, message = "SSH port must be at least 1")
     private Integer sshPort;
 
-    @Column(nullable = false)
     @NotBlank(message = "Authentication method is required")
     @Size(max = 50, message = "Authentication method must not exceed 50 characters")
     private String authenticationMethod; // SSH_KEY or PASSWORD
 
-    @Column(columnDefinition = "TEXT")
     private String sshKey; // SSH key content for SSH_KEY authentication
 
-    @Column(nullable = false)
     @NotBlank(message = "Working directory is required")
     @Size(max = 500, message = "Working directory must not exceed 500 characters")
     private String workingDirectory;
 
-    @Column(nullable = false)
     @NotBlank(message = "Scheduler type is required")
     @Size(max = 50, message = "Scheduler type must not exceed 50 characters")
     private String schedulerType; // SLURM, PBS, SGE, etc.
 
-    @Column(nullable = false)
     @NotBlank(message = "Data movement protocol is required")
     @Size(max = 50, message = "Data movement protocol must not exceed 50 characters")
     private String dataMovementProtocol; // SCP, SFTP, etc.
 
-    // One-to-many relationship with Queue entities
-    @OneToMany(mappedBy = "computeResource", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<ComputeResourceQueue> queues = new ArrayList<>();
+    // Queue management
+    private List<ComputeResourceQueueDTO> queues = new ArrayList<>();
 
-    @Override
-    public ResourceTypeEnum getType() {
-        return ResourceTypeEnum.COMPUTE_RESOURCE;
-    }
+    // System fields
+    private boolean enabled = true;
+    private Long creationTime;
+    private Long updateTime;
 
     // Default constructor
-    public ComputeResource() {}
+    public ComputeResourceDTO() {}
 
-    // Constructor for mock data creation
-    public ComputeResource(String name, String description, String hostname, String computeType, 
-                          Integer cpuCores, Integer memoryGB, String operatingSystem, 
-                          String queueSystem, String additionalInfo, String resourceManager,
-                          String sshUsername, Integer sshPort, String authenticationMethod, 
-                          String workingDirectory, String schedulerType, String dataMovementProtocol) {
-        this.setName(name);
-        this.setDescription(description);
-        this.hostname = hostname;
-        this.computeType = computeType;
-        this.cpuCores = cpuCores;
-        this.memoryGB = memoryGB;
-        this.operatingSystem = operatingSystem;
-        this.queueSystem = queueSystem;
-        this.additionalInfo = additionalInfo;
-        this.resourceManager = resourceManager;
-        this.sshUsername = sshUsername;
-        this.sshPort = sshPort;
-        this.authenticationMethod = authenticationMethod;
-        this.workingDirectory = workingDirectory;
-        this.schedulerType = schedulerType;
-        this.dataMovementProtocol = dataMovementProtocol;
-        
-        // Initialize collections
-        this.hostAliases = new ArrayList<>();
-        this.ipAddresses = new ArrayList<>();
-        this.queues = new ArrayList<>();
-        
-        // Set inherited v1 Resource fields (required)
-        this.setPrivacy(PrivacyEnum.PUBLIC);
-        this.setState(StateEnum.ACTIVE);
-        this.setStatus(StatusEnum.VERIFIED);
-        this.setAuthors(new HashSet<>());
-        this.setTags(new HashSet<>());
-        this.setHeaderImage(""); // Default empty header image
+    // Constructor for mapping from existing data
+    public ComputeResourceDTO(String computeResourceId, String hostName, String resourceDescription) {
+        this.computeResourceId = computeResourceId;
+        this.hostName = hostName;
+        this.resourceDescription = resourceDescription;
     }
 
-    // Getters and Setters for ComputeResource-specific fields
-    public String getHostname() {
-        return hostname;
+    // Getters and Setters
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getResourceDescription() {
+        return resourceDescription;
+    }
+
+    public void setResourceDescription(String resourceDescription) {
+        this.resourceDescription = resourceDescription;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public String getComputeType() {
@@ -241,8 +212,6 @@ public class ComputeResource extends Resource {
     public void setResourceManager(String resourceManager) {
         this.resourceManager = resourceManager;
     }
-
-    // Getters and Setters for new fields
 
     public List<String> getHostAliases() {
         return hostAliases;
@@ -316,11 +285,35 @@ public class ComputeResource extends Resource {
         this.dataMovementProtocol = dataMovementProtocol;
     }
 
-    public List<ComputeResourceQueue> getQueues() {
+    public List<ComputeResourceQueueDTO> getQueues() {
         return queues;
     }
 
-    public void setQueues(List<ComputeResourceQueue> queues) {
+    public void setQueues(List<ComputeResourceQueueDTO> queues) {
         this.queues = queues;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Long getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Long creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 }

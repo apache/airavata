@@ -23,18 +23,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
-import org.apache.airavata.research.service.enums.PrivacyEnum;
-import org.apache.airavata.research.service.enums.StateEnum;
-import org.apache.airavata.research.service.v2.entity.ComputeResource;
-import org.apache.airavata.research.service.v2.repository.ComputeResourceRepository;
-import org.apache.airavata.research.service.v2.service.ComputeResourceService;
+import org.apache.airavata.research.service.dto.ComputeResourceDTO;
+import org.apache.airavata.research.service.handler.LocalComputeResourceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -54,59 +47,57 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComputeResourceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeResourceController.class);
-    private static final PrivacyEnum PUBLIC_PRIVACY = PrivacyEnum.PUBLIC;
-    private static final StateEnum ACTIVE_STATE = StateEnum.ACTIVE;
 
-    private final ComputeResourceRepository computeResourceRepository;
-    private final ComputeResourceService computeResourceService;
+    @Autowired
+    private LocalComputeResourceHandler localComputeResourceHandler;
 
-    public ComputeResourceController(ComputeResourceRepository computeResourceRepository, 
-                                   ComputeResourceService computeResourceService) {
-        this.computeResourceRepository = computeResourceRepository;
-        this.computeResourceService = computeResourceService;
-    }
-
-    @Operation(summary = "Get all public compute resources with pagination")
+    @Operation(summary = "Get all public compute resources")
     @GetMapping("/public")
-    public ResponseEntity<Page<ComputeResource>> getComputeResources(
-            @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value = "nameSearch", required = false) String nameSearch,
-            @RequestParam(value = "tag", required = false) String[] tags) {
+    public ResponseEntity<List<ComputeResourceDTO>> getComputeResources(
+            @RequestParam(value = "nameSearch", required = false) String nameSearch) {
         
-        LOGGER.info("Getting compute resources - page: {}, size: {}, search: {}", pageNumber, pageSize, nameSearch);
+        LOGGER.info("Getting compute resources - search: {}", nameSearch);
         
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-        Page<ComputeResource> resources;
-        
-        if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-            resources = computeResourceService.searchComputeResources(nameSearch, PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
-        } else {
-            resources = computeResourceService.getComputeResources(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
+        try {
+            List<ComputeResourceDTO> resources;
+            
+            if (nameSearch != null && !nameSearch.trim().isEmpty()) {
+                resources = localComputeResourceHandler.searchComputeResources(nameSearch);
+            } else {
+                resources = localComputeResourceHandler.getAllComputeResources();
+            }
+            
+            LOGGER.info("Found {} compute resources", resources.size());
+            return ResponseEntity.ok(resources);
+        } catch (Exception e) {
+            LOGGER.error("Failed to get compute resources: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        
-        LOGGER.info("Found {} compute resources", resources.getTotalElements());
-        return ResponseEntity.ok(resources);
     }
 
     @Operation(summary = "Get compute resource by ID")
     @GetMapping("/public/{id}")
-    public ResponseEntity<ComputeResource> getComputeResourceById(@PathVariable("id") String id) {
+    public ResponseEntity<ComputeResourceDTO> getComputeResourceById(@PathVariable("id") String id) {
         LOGGER.info("Getting compute resource by ID: {}", id);
         
-        Optional<ComputeResource> resource = computeResourceService.getComputeResourceById(id);
-        if (resource.isPresent()) {
-            return ResponseEntity.ok(resource.get());
-        } else {
-            LOGGER.warn("Compute resource not found with ID: {}", id);
-            return ResponseEntity.notFound().build();
+        try {
+            ComputeResourceDTO resource = localComputeResourceHandler.getComputeResource(id);
+            return ResponseEntity.ok(resource);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("not found")) {
+                LOGGER.warn("Compute resource not found with ID: {}", id);
+                return ResponseEntity.notFound().build();
+            } else {
+                LOGGER.error("Error getting compute resource {}: {}", id, e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }
     }
 
     @Operation(summary = "Create new compute resource")
     @PostMapping("/")
-    public ResponseEntity<?> createComputeResource(@Valid @RequestBody ComputeResource computeResource, BindingResult bindingResult) {
-        LOGGER.info("Creating new compute resource: {}", computeResource.getName());
+    public ResponseEntity<?> createComputeResource(@Valid @RequestBody ComputeResourceDTO computeResourceDTO, BindingResult bindingResult) {
+        LOGGER.info("Creating new compute resource: {}", computeResourceDTO.getHostName());
         
         // Validation error handling
         if (bindingResult.hasErrors()) {
@@ -120,22 +111,15 @@ public class ComputeResourceController {
         
         try {
             // Set default values for fields that might be null
-            if (computeResource.getCpuCores() == null) {
-                computeResource.setCpuCores(1); // Default to 1 core
+            if (computeResourceDTO.getCpuCores() == null) {
+                computeResourceDTO.setCpuCores(1); // Default to 1 core
             }
-            if (computeResource.getMemoryGB() == null) {
-                computeResource.setMemoryGB(1); // Default to 1 GB
+            if (computeResourceDTO.getMemoryGB() == null) {
+                computeResourceDTO.setMemoryGB(1); // Default to 1 GB
             }
-            if (computeResource.getPrivacy() == null) {
-                computeResource.setPrivacy(PUBLIC_PRIVACY);
-            }
-            if (computeResource.getState() == null) {
-                computeResource.setState(ACTIVE_STATE);
-            }
-            // Note: starCount functionality handled separately in v1 star system
             
-            ComputeResource savedResource = computeResourceService.createComputeResource(computeResource);
-            LOGGER.info("Created compute resource with ID: {}", savedResource.getId());
+            ComputeResourceDTO savedResource = localComputeResourceHandler.createComputeResource(computeResourceDTO);
+            LOGGER.info("Created compute resource with ID: {}", savedResource.getComputeResourceId());
             
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
         } catch (Exception e) {
@@ -147,7 +131,7 @@ public class ComputeResourceController {
 
     @Operation(summary = "Update compute resource")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateComputeResource(@PathVariable("id") String id, @Valid @RequestBody ComputeResource computeResource, BindingResult bindingResult) {
+    public ResponseEntity<?> updateComputeResource(@PathVariable("id") String id, @Valid @RequestBody ComputeResourceDTO computeResourceDTO, BindingResult bindingResult) {
         LOGGER.info("Updating compute resource with ID: {}", id);
         
         // Validation error handling
@@ -161,13 +145,7 @@ public class ComputeResourceController {
         }
         
         try {
-            Optional<ComputeResource> updatedResourceOpt = computeResourceService.updateComputeResource(id, computeResource);
-            if (!updatedResourceOpt.isPresent()) {
-                LOGGER.warn("Compute resource not found with ID: {}", id);
-                return ResponseEntity.notFound().build();
-            }
-            
-            ComputeResource updatedResource = updatedResourceOpt.get();
+            ComputeResourceDTO updatedResource = localComputeResourceHandler.updateComputeResource(id, computeResourceDTO);
             LOGGER.info("Successfully updated compute resource with ID: {}", id);
             
             return ResponseEntity.ok(updatedResource);
@@ -184,12 +162,7 @@ public class ComputeResourceController {
         LOGGER.info("Deleting compute resource with ID: {}", id);
         
         try {
-            boolean deleted = computeResourceService.deleteComputeResource(id);
-            if (!deleted) {
-                LOGGER.warn("Compute resource not found with ID: {}", id);
-                return ResponseEntity.notFound().build();
-            }
-            
+            localComputeResourceHandler.deleteComputeResource(id);
             LOGGER.info("Successfully deleted compute resource with ID: {}", id);
             return ResponseEntity.ok().body("Compute resource deleted successfully");
         } catch (Exception e) {
@@ -201,30 +174,19 @@ public class ComputeResourceController {
 
     @Operation(summary = "Search compute resources by keyword")
     @GetMapping("/search")
-    public ResponseEntity<List<ComputeResource>> searchComputeResources(
+    public ResponseEntity<List<ComputeResourceDTO>> searchComputeResources(
             @RequestParam(value = "keyword") String keyword) {
         
         LOGGER.info("Searching compute resources with keyword: {}", keyword);
         
-        List<ComputeResource> resources = computeResourceRepository
-                .findByNameContainingIgnoreCaseAndPrivacyAndState(keyword, PUBLIC_PRIVACY, ACTIVE_STATE);
-        
-        LOGGER.info("Found {} compute resources matching keyword: {}", resources.size(), keyword);
-        return ResponseEntity.ok(resources);
-    }
-
-    @Operation(summary = "Get compute resources by type")
-    @GetMapping("/type/{computeType}")
-    public ResponseEntity<List<ComputeResource>> getComputeResourcesByType(
-            @PathVariable("computeType") String computeType) {
-        
-        LOGGER.info("Getting compute resources by type: {}", computeType);
-        
-        List<ComputeResource> resources = computeResourceRepository
-                .findByComputeTypeAndPrivacyAndState(computeType, PUBLIC_PRIVACY, ACTIVE_STATE);
-        
-        LOGGER.info("Found {} compute resources of type: {}", resources.size(), computeType);
-        return ResponseEntity.ok(resources);
+        try {
+            List<ComputeResourceDTO> resources = localComputeResourceHandler.searchComputeResources(keyword);
+            LOGGER.info("Found {} compute resources matching keyword: {}", resources.size(), keyword);
+            return ResponseEntity.ok(resources);
+        } catch (Exception e) {
+            LOGGER.error("Error searching compute resources: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Star/unstar a compute resource")
@@ -233,10 +195,7 @@ public class ComputeResourceController {
         LOGGER.info("Toggling star for compute resource with ID: {}", id);
         
         try {
-            Optional<ComputeResource> resourceOpt = computeResourceRepository.findByIdWithCollections(id);
-            if (resourceOpt.isPresent()) {
-                ComputeResource resource = resourceOpt.get();
-                
+            if (localComputeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 // For now, return simple toggle response
                 LOGGER.info("Star toggle requested for compute resource: {} (simplified implementation)", id);
@@ -257,9 +216,7 @@ public class ComputeResourceController {
         LOGGER.info("Checking if compute resource is starred: {}", id);
         
         try {
-            Optional<ComputeResource> resourceOpt = computeResourceRepository.findByIdWithCollections(id);
-            if (resourceOpt.isPresent()) {
-                ComputeResource resource = resourceOpt.get();
+            if (localComputeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 LOGGER.info("Star status check for compute resource: {} (simplified implementation)", id);
                 return ResponseEntity.ok(false);
@@ -279,8 +236,7 @@ public class ComputeResourceController {
         LOGGER.info("Getting star count for compute resource: {}", id);
         
         try {
-            Optional<ComputeResource> resourceOpt = computeResourceRepository.findByIdWithCollections(id);
-            if (resourceOpt.isPresent()) {
+            if (localComputeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 return ResponseEntity.ok(0);
             } else {
@@ -295,19 +251,14 @@ public class ComputeResourceController {
 
     @Operation(summary = "Get all starred compute resources")
     @GetMapping("/starred")
-    public ResponseEntity<Page<ComputeResource>> getStarredComputeResources(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "50") int size) {
-        LOGGER.info("Fetching starred compute resources - page: {}, size: {}", page, size);
+    public ResponseEntity<List<ComputeResourceDTO>> getStarredComputeResources() {
+        LOGGER.info("Fetching starred compute resources");
         
         try {
-            Pageable pageable = PageRequest.of(page, size);
             // TODO: Implement proper v1 ResourceStar system integration
-            // For now, return empty page
-            Page<ComputeResource> starredResources = computeResourceRepository.findByPrivacyAndState(PUBLIC_PRIVACY, ACTIVE_STATE, pageable);
-            // Filter to empty for now until proper star system is implemented
-            starredResources = Page.empty();
-            LOGGER.info("Found {} starred compute resources", starredResources.getTotalElements());
+            // For now, return empty list
+            List<ComputeResourceDTO> starredResources = List.of();
+            LOGGER.info("Found {} starred compute resources", starredResources.size());
             return ResponseEntity.ok(starredResources);
         } catch (Exception e) {
             LOGGER.error("Error fetching starred compute resources: {}", e.getMessage(), e);
