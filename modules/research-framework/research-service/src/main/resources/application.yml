@@ -22,6 +22,14 @@ server:
   port: 8080
   address: 0.0.0.0
 
+app:
+  datasource:
+    app-catalog:
+      url: jdbc:mariadb://airavata.host:13306/app_catalog
+      username: airavata
+      password: 123456
+      driver-class-name: org.mariadb.jdbc.Driver
+
 airavata:
   research-hub:
     url: http://airavata.host:20000
@@ -57,7 +65,11 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none  # Don't modify existing app_catalog schema
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
     open-in-view: false
     show-sql: true
   h2:

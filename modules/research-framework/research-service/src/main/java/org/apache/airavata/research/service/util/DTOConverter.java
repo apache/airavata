@@ -21,11 +21,11 @@ package org.apache.airavata.research.service.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.research.service.entity.LocalComputeResourceEntity;
-import org.apache.airavata.research.service.entity.LocalStorageResourceEntity;
+import org.apache.airavata.research.service.entity.ComputeResourceEntity;
+import org.apache.airavata.research.service.entity.StorageResourceEntity;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
 import org.apache.airavata.research.service.dto.ComputeResourceQueueDTO;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
@@ -37,7 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utility class for converting between Airavata Thrift models and UI DTOs
+ * Utility class for converting between entities and DTOs
  * Handles JSON serialization of UI-specific fields into description fields
  */
 @Component
@@ -471,9 +471,9 @@ public class DTOConverter {
     // ===============================
 
     /**
-     * Convert LocalStorageResourceEntity (JPA) to StorageResourceDTO
+     * Convert StorageResourceEntity (JPA) to StorageResourceDTO
      */
-    public StorageResourceDTO storageEntityToDTO(LocalStorageResourceEntity entity) {
+    public StorageResourceDTO storageEntityToDTO(StorageResourceEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -483,11 +483,13 @@ public class DTOConverter {
         // Core fields
         dto.setStorageResourceId(entity.getStorageResourceId());
         dto.setHostName(entity.getHostName());
-        dto.setStorageResourceDescription(entity.getStorageResourceDescription());
-        dto.setEnabled(entity.isEnabled());
+        dto.setStorageResourceDescription(entity.getDescription());
+        // Handle enabled field safely - Short type from database
+        Short enabledValue = entity.getEnabled();
+        dto.setEnabled(enabledValue != null && enabledValue.shortValue() == 1);
         
         // Generate a name from hostname if not available
-        dto.setName(generateStorageResourceName(entity.getHostName(), entity.getStorageResourceDescription()));
+        dto.setName(generateStorageResourceName(entity.getHostName(), entity.getDescription()));
         
         // Timestamps
         if (entity.getCreationTime() != null) {
@@ -498,37 +500,37 @@ public class DTOConverter {
         }
 
         // Extract UI-specific fields from description JSON
-        extractStorageUIFieldsFromDescription(entity.getStorageResourceDescription(), dto);
+        extractStorageUIFieldsFromDescription(entity.getDescription(), dto);
 
         return dto;
     }
 
     /**
-     * Convert StorageResourceDTO to LocalStorageResourceEntity (JPA)
+     * Convert StorageResourceDTO to StorageResourceEntity (JPA)
      */
-    public LocalStorageResourceEntity storageResourceDTOToEntity(StorageResourceDTO dto) {
+    public StorageResourceEntity storageResourceDTOToEntity(StorageResourceDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        LocalStorageResourceEntity entity = new LocalStorageResourceEntity();
+        StorageResourceEntity entity = new StorageResourceEntity();
         
         // Core fields
         entity.setStorageResourceId(dto.getStorageResourceId());
         entity.setHostName(dto.getHostName());
-        entity.setEnabled(dto.isEnabled());
+        entity.setEnabled(dto.isEnabled() ? (short) 1 : (short) 0);
         
         // Embed UI fields into description as JSON
         String descriptionWithUIFields = encodeStorageUIFieldsIntoDescription(dto);
-        entity.setStorageResourceDescription(descriptionWithUIFields);
+        entity.setDescription(descriptionWithUIFields);
 
         return entity;
     }
 
     /**
-     * Convert LocalComputeResourceEntity (JPA) to ComputeResourceDTO
+     * Convert ComputeResourceEntity (JPA) to ComputeResourceDTO
      */
-    public ComputeResourceDTO computeEntityToDTO(LocalComputeResourceEntity entity) {
+    public ComputeResourceDTO computeEntityToDTO(ComputeResourceEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -536,12 +538,14 @@ public class DTOConverter {
         ComputeResourceDTO dto = new ComputeResourceDTO();
         
         // Core fields
-        dto.setComputeResourceId(entity.getComputeResourceId());
+        dto.setComputeResourceId(entity.getResourceId());
         dto.setHostName(entity.getHostName());
         dto.setResourceDescription(entity.getResourceDescription());
-        dto.setEnabled(entity.getEnabled() == 1);
+        // Handle enabled field safely - Short type from database
+        Short enabledValue = entity.getEnabled();
+        dto.setEnabled(enabledValue != null && enabledValue.shortValue() == 1);
         dto.setCpuCores(entity.getCpusPerNode());
-        dto.setMemoryGB(entity.getMaxMemoryPerNode());
+        dto.setMemoryGB(entity.getMaxMemoryNode());
         
         // Generate a name from hostname if not available
         dto.setName(generateComputeResourceName(entity.getHostName(), entity.getResourceDescription()));
@@ -561,21 +565,21 @@ public class DTOConverter {
     }
 
     /**
-     * Convert ComputeResourceDTO to LocalComputeResourceEntity (JPA)
+     * Convert ComputeResourceDTO to ComputeResourceEntity (JPA)
      */
-    public LocalComputeResourceEntity computeResourceDTOToEntity(ComputeResourceDTO dto) {
+    public ComputeResourceEntity computeResourceDTOToEntity(ComputeResourceDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        LocalComputeResourceEntity entity = new LocalComputeResourceEntity();
+        ComputeResourceEntity entity = new ComputeResourceEntity();
         
         // Core fields
-        entity.setComputeResourceId(dto.getComputeResourceId());
+        entity.setResourceId(dto.getComputeResourceId());
         entity.setHostName(dto.getHostName());
         entity.setEnabled(dto.isEnabled() ? (short) 1 : (short) 0);
         entity.setCpusPerNode(dto.getCpuCores());
-        entity.setMaxMemoryPerNode(dto.getMemoryGB());
+        entity.setMaxMemoryNode(dto.getMemoryGB());
         
         // Embed UI fields into description as JSON
         String descriptionWithUIFields = encodeComputeUIFieldsIntoDescription(dto);

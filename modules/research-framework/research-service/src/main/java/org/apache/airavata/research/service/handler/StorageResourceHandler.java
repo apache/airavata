@@ -18,283 +18,241 @@
  */
 package org.apache.airavata.research.service.handler;
 
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.research.service.config.RegistryServiceConfig;
+import org.apache.airavata.research.service.entity.StorageResourceEntity;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
+import org.apache.airavata.research.service.repository.StorageResourceRepository;
 import org.apache.airavata.research.service.util.DTOConverter;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
- * Handler for Storage Resource operations using Airavata Registry Service
- * Integrates with existing airavata-api infrastructure
+ * Handler for Storage Resource operations using local entities with app_catalog database
+ * Direct integration with Airavata app_catalog database
  */
-@Component
+@Component("storageResourceHandler")
 public class StorageResourceHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageResourceHandler.class);
 
-    @Autowired
-    private RegistryServiceConfig.RegistryServiceProvider registryServiceProvider;
+    private final StorageResourceRepository storageResourceRepository;
+    private final DTOConverter dtoConverter;
 
-    @Autowired
-    private DTOConverter dtoConverter;
-
-    /**
-     * Get RegistryService with connection validation
-     */
-    private RegistryService.Iface getRegistryService() throws RegistryServiceException {
-        return registryServiceProvider.getRegistryService();
+    public StorageResourceHandler(StorageResourceRepository storageResourceRepository,
+                                 DTOConverter dtoConverter) {
+        this.storageResourceRepository = storageResourceRepository;
+        this.dtoConverter = dtoConverter;
     }
 
     /**
-     * Check if registry service is available
+     * Get all enabled storage resources
      */
-    private boolean isRegistryServiceAvailable() {
-        return registryServiceProvider.isAvailable();
-    }
-
-    /**
-     * Create a new storage resource using registry service
-     */
-    public StorageResourceDTO createStorageResource(StorageResourceDTO dto) throws RegistryServiceException, TException {
-        LOGGER.debug("Creating storage resource: {}", dto.getHostName());
+    public List<StorageResourceDTO> getAllStorageResources() {
+        LOGGER.info("Getting all storage resources from app_catalog");
         
         try {
-            // Convert DTO to Thrift model
-            StorageResourceDescription thriftModel = dtoConverter.dtoToThrift(dto);
+            List<StorageResourceEntity> entities = storageResourceRepository.findAllEnabledOrderByCreationTime();
+            List<StorageResourceDTO> dtos = new ArrayList<>();
             
-            // Generate ID if not provided
-            if (thriftModel.getStorageResourceId() == null || thriftModel.getStorageResourceId().isEmpty()) {
-                thriftModel.setStorageResourceId(generateStorageResourceId());
+            for (StorageResourceEntity entity : entities) {
+                StorageResourceDTO dto = dtoConverter.storageEntityToDTO(entity);
+                dtos.add(dto);
             }
             
-            // Set timestamps
-            long currentTime = System.currentTimeMillis();
-            thriftModel.setCreationTime(currentTime);
-            thriftModel.setUpdateTime(currentTime);
-            
-            // Use existing registry service to save
-            String resourceId = getRegistryService().registerStorageResource(thriftModel);
-            LOGGER.info("Successfully created storage resource with ID: {}", resourceId);
-            
-            // Retrieve saved entity with generated/updated fields
-            StorageResourceDescription savedModel = getRegistryService().getStorageResource(resourceId);
-            
-            // Convert back to DTO for frontend
-            return dtoConverter.thriftToDTO(savedModel);
-            
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to create storage resource: {}", e.getMessage(), e);
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error creating storage resource: {}", e.getMessage(), e);
-            throw e;
+            LOGGER.info("Found {} storage resources from app_catalog", dtos.size());
+            return dtos;
         } catch (Exception e) {
-            LOGGER.error("Unexpected error creating storage resource", e);
-            throw new RegistryServiceException("Failed to create storage resource: " + e.getMessage());
+            LOGGER.error("Failed to get storage resources from app_catalog", e);
+            throw new RuntimeException("Failed to get storage resources", e);
         }
     }
+
+    /**
+     * Search storage resources by keyword
+     */
+    public List<StorageResourceDTO> searchStorageResources(String keyword) {
+        LOGGER.info("Searching storage resources in app_catalog with keyword: {}", keyword);
+        
+        try {
+            List<StorageResourceEntity> entities;
+            
+            if (keyword == null || keyword.trim().isEmpty()) {
+                entities = storageResourceRepository.findAllEnabledOrderByCreationTime();
+            } else {
+                entities = storageResourceRepository.findEnabledByHostNameContaining(keyword.trim());
+            }
+            
+            List<StorageResourceDTO> dtos = new ArrayList<>();
+            for (StorageResourceEntity entity : entities) {
+                StorageResourceDTO dto = dtoConverter.storageEntityToDTO(entity);
+                dtos.add(dto);
+            }
+            
+            LOGGER.info("Found {} storage resources matching keyword '{}'", dtos.size(), keyword);
+            return dtos;
+        } catch (Exception e) {
+            LOGGER.error("Failed to search storage resources in app_catalog", e);
+            throw new RuntimeException("Failed to search storage resources", e);
+        }
+    }
+
 
     /**
      * Get storage resource by ID
      */
-    public StorageResourceDTO getStorageResource(String resourceId) throws RegistryServiceException, TException {
-        LOGGER.debug("Retrieving storage resource: {}", resourceId);
+    public StorageResourceDTO getStorageResource(String storageResourceId) {
+        LOGGER.info("Getting storage resource by ID from app_catalog: {}", storageResourceId);
         
         try {
-            StorageResourceDescription thriftModel = getRegistryService().getStorageResource(resourceId);
-            return dtoConverter.thriftToDTO(thriftModel);
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to get storage resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error getting storage resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Get all storage resources
-     */
-    public List<StorageResourceDTO> getAllStorageResources() throws RegistryServiceException, TException {
-        LOGGER.debug("Retrieving all storage resources");
-        
-        try {
-            // Get storage resource names (ID -> Name mapping)
-            Map<String, String> storageResourceNames = getRegistryService().getAllStorageResourceNames();
+            Optional<StorageResourceEntity> entityOpt = storageResourceRepository.findById(storageResourceId);
             
-            // Fetch full details for each storage resource
-            return storageResourceNames.keySet().stream()
-                .map(resourceId -> {
-                    try {
-                        return getRegistryService().getStorageResource(resourceId);
-                    } catch (RegistryServiceException e) {
-                        LOGGER.warn("Failed to get storage resource {}: {}", resourceId, e.getMessage());
-                        return null;
-                    } catch (TException e) {
-                        LOGGER.warn("Thrift error getting storage resource {}: {}", resourceId, e.getMessage());
-                        return null;
-                    }
-                })
-                .filter(thriftModel -> thriftModel != null)
-                .map(thriftModel -> dtoConverter.thriftToDTO(thriftModel))
-                .collect(Collectors.toList());
-                
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to get all storage resources: {}", e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error getting all storage resources: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Update storage resource
-     */
-    public StorageResourceDTO updateStorageResource(String resourceId, StorageResourceDTO dto) throws RegistryServiceException, TException {
-        LOGGER.debug("Updating storage resource: {}", resourceId);
-        
-        try {
-            // Ensure DTO has the correct ID
-            dto.setStorageResourceId(resourceId);
-            
-            // Convert DTO to Thrift model
-            StorageResourceDescription thriftModel = dtoConverter.dtoToThrift(dto);
-            
-            // Set update timestamp
-            thriftModel.setUpdateTime(System.currentTimeMillis());
-            
-            // Use existing registry service to update
-            boolean updated = getRegistryService().updateStorageResource(resourceId, thriftModel);
-            
-            if (updated) {
-                LOGGER.info("Successfully updated storage resource: {}", resourceId);
-                
-                // Retrieve updated entity
-                StorageResourceDescription updatedModel = getRegistryService().getStorageResource(resourceId);
-                return dtoConverter.thriftToDTO(updatedModel);
-            } else {
-                throw new RegistryServiceException("Failed to update storage resource: " + resourceId);
+            if (entityOpt.isEmpty()) {
+                LOGGER.warn("Storage resource not found with ID: {}", storageResourceId);
+                throw new RuntimeException("Storage resource not found with ID: " + storageResourceId);
             }
             
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to update storage resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error updating storage resource {}: {}", resourceId, e.getMessage());
-            throw e;
+            StorageResourceEntity entity = entityOpt.get();
+            StorageResourceDTO dto = dtoConverter.storageEntityToDTO(entity);
+            
+            LOGGER.info("Found storage resource: {}", entity.getHostName());
+            return dto;
+        } catch (Exception e) {
+            LOGGER.error("Failed to get storage resource by ID: {}", storageResourceId, e);
+            throw new RuntimeException("Failed to get storage resource", e);
+        }
+    }
+
+    /**
+     * Create new storage resource
+     */
+    public StorageResourceDTO createStorageResource(StorageResourceDTO storageResourceDTO) {
+        LOGGER.info("Creating storage resource in app_catalog: {}", storageResourceDTO.getHostName());
+        
+        try {
+            // Convert DTO to entity using existing DTOConverter
+            StorageResourceEntity entity = dtoConverter.storageResourceDTOToEntity(storageResourceDTO);
+            
+            // Set system fields
+            entity.setStorageResourceId(UUID.randomUUID().toString());
+            entity.setEnabled((short) 1);
+            entity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            
+            // Save to app_catalog database
+            StorageResourceEntity savedEntity = storageResourceRepository.save(entity);
+            
+            // Convert back to DTO
+            StorageResourceDTO savedDTO = dtoConverter.storageEntityToDTO(savedEntity);
+            
+            LOGGER.info("Created storage resource in app_catalog with ID: {}", savedEntity.getStorageResourceId());
+            return savedDTO;
+        } catch (Exception e) {
+            LOGGER.error("Failed to create storage resource in app_catalog", e);
+            throw new RuntimeException("Failed to create storage resource", e);
+        }
+    }
+
+    /**
+     * Update existing storage resource
+     */
+    public StorageResourceDTO updateStorageResource(String storageResourceId, StorageResourceDTO storageResourceDTO) {
+        LOGGER.info("Updating storage resource in app_catalog: {}", storageResourceId);
+        
+        try {
+            Optional<StorageResourceEntity> existingOpt = storageResourceRepository.findById(storageResourceId);
+            
+            if (existingOpt.isEmpty()) {
+                throw new RuntimeException("Storage resource not found with ID: " + storageResourceId);
+            }
+            
+            // Convert DTO to entity
+            StorageResourceEntity updatedEntity = dtoConverter.storageResourceDTOToEntity(storageResourceDTO);
+            
+            // Preserve system fields
+            StorageResourceEntity existing = existingOpt.get();
+            updatedEntity.setStorageResourceId(storageResourceId);
+            updatedEntity.setCreationTime(existing.getCreationTime());
+            updatedEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            
+            // Save updated entity
+            StorageResourceEntity savedEntity = storageResourceRepository.save(updatedEntity);
+            
+            // Convert back to DTO
+            StorageResourceDTO savedDTO = dtoConverter.storageEntityToDTO(savedEntity);
+            
+            LOGGER.info("Updated storage resource in app_catalog: {}", storageResourceId);
+            return savedDTO;
+        } catch (Exception e) {
+            LOGGER.error("Failed to update storage resource in app_catalog: {}", storageResourceId, e);
+            throw new RuntimeException("Failed to update storage resource", e);
         }
     }
 
     /**
      * Delete storage resource
      */
-    public void deleteStorageResource(String resourceId) throws RegistryServiceException, TException {
-        LOGGER.debug("Deleting storage resource: {}", resourceId);
+    public void deleteStorageResource(String storageResourceId) {
+        LOGGER.info("Deleting storage resource from app_catalog: {}", storageResourceId);
         
         try {
-            boolean deleted = getRegistryService().deleteStorageResource(resourceId);
-            
-            if (deleted) {
-                LOGGER.info("Successfully deleted storage resource: {}", resourceId);
-            } else {
-                throw new RegistryServiceException("Failed to delete storage resource: " + resourceId);
+            if (!storageResourceRepository.existsById(storageResourceId)) {
+                throw new RuntimeException("Storage resource not found with ID: " + storageResourceId);
             }
             
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to delete storage resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error deleting storage resource {}: {}", resourceId, e.getMessage());
-            throw e;
+            storageResourceRepository.deleteById(storageResourceId);
+            LOGGER.info("Deleted storage resource from app_catalog: {}", storageResourceId);
+        } catch (Exception e) {
+            LOGGER.error("Failed to delete storage resource from app_catalog: {}", storageResourceId, e);
+            throw new RuntimeException("Failed to delete storage resource", e);
         }
     }
 
     /**
-     * Search storage resources by keyword
-     * Note: This is a simplified implementation - Airavata registry might have more sophisticated search
+     * Get storage resources by type
      */
-    public List<StorageResourceDTO> searchStorageResources(String keyword) throws RegistryServiceException, TException {
-        LOGGER.debug("Searching storage resources with keyword: {}", keyword);
+    public List<StorageResourceDTO> getStorageResourcesByType(String storageType) {
+        LOGGER.info("Getting storage resources by type from app_catalog: {}", storageType);
         
         try {
-            // Get all storage resources and filter by keyword
-            List<StorageResourceDTO> allResources = getAllStorageResources();
+            List<StorageResourceEntity> entities = storageResourceRepository.findAllEnabledOrderByCreationTime();
+            List<StorageResourceDTO> dtos = new ArrayList<>();
             
-            String lowerKeyword = keyword.toLowerCase();
-            return allResources.stream()
-                .filter(resource -> 
-                    (resource.getHostName() != null && resource.getHostName().toLowerCase().contains(lowerKeyword)) ||
-                    (resource.getStorageResourceDescription() != null && resource.getStorageResourceDescription().toLowerCase().contains(lowerKeyword)) ||
-                    (resource.getStorageType() != null && resource.getStorageType().toLowerCase().contains(lowerKeyword)) ||
-                    (resource.getAccessProtocol() != null && resource.getAccessProtocol().toLowerCase().contains(lowerKeyword))
-                )
-                .collect(Collectors.toList());
-                
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to search storage resources: {}", e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error searching storage resources: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Filter storage resources by type
-     */
-    public List<StorageResourceDTO> getStorageResourcesByType(String storageType) throws RegistryServiceException, TException {
-        LOGGER.debug("Filtering storage resources by type: {}", storageType);
-        
-        try {
-            List<StorageResourceDTO> allResources = getAllStorageResources();
+            for (StorageResourceEntity entity : entities) {
+                StorageResourceDTO dto = dtoConverter.storageEntityToDTO(entity);
+                // Filter by storage type from UI fields
+                if (storageType == null || storageType.isEmpty() || 
+                    (dto.getStorageType() != null && dto.getStorageType().equalsIgnoreCase(storageType))) {
+                    dtos.add(dto);
+                }
+            }
             
-            return allResources.stream()
-                .filter(resource -> resource.getStorageType() != null && 
-                                  resource.getStorageType().equalsIgnoreCase(storageType))
-                .collect(Collectors.toList());
-                
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to filter storage resources by type: {}", e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error filtering storage resources by type: {}", e.getMessage());
-            throw e;
+            LOGGER.info("Found {} storage resources of type '{}'", dtos.size(), storageType);
+            return dtos;
+        } catch (Exception e) {
+            LOGGER.error("Failed to get storage resources by type from app_catalog", e);
+            throw new RuntimeException("Failed to get storage resources by type", e);
         }
     }
 
     /**
      * Check if storage resource exists
      */
-    public boolean existsStorageResource(String resourceId) {
+    public boolean existsStorageResource(String storageResourceId) {
+        LOGGER.debug("Checking if storage resource exists in app_catalog: {}", storageResourceId);
+        
         try {
-            StorageResourceDescription resource = getRegistryService().getStorageResource(resourceId);
-            return resource != null;
-        } catch (RegistryServiceException e) {
-            LOGGER.debug("Storage resource {} does not exist: {}", resourceId, e.getMessage());
-            return false;
-        } catch (TException e) {
-            LOGGER.debug("Thrift error checking storage resource {}: {}", resourceId, e.getMessage());
+            boolean exists = storageResourceRepository.existsById(storageResourceId);
+            LOGGER.debug("Storage resource {} exists: {}", storageResourceId, exists);
+            return exists;
+        } catch (Exception e) {
+            LOGGER.error("Failed to check storage resource existence in app_catalog: {}", storageResourceId, e);
             return false;
         }
-    }
-
-    /**
-     * Generate unique storage resource ID
-     */
-    private String generateStorageResourceId() {
-        return "storage_" + UUID.randomUUID().toString().replace("-", "");
     }
 }

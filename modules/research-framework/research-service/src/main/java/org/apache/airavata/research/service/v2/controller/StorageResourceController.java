@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
-import org.apache.airavata.research.service.handler.LocalStorageResourceHandler;
+import org.apache.airavata.research.service.handler.StorageResourceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class StorageResourceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageResourceController.class);
 
     @Autowired
-    private LocalStorageResourceHandler localStorageResourceHandler;
+    private StorageResourceHandler storageResourceHandler;
 
     @Operation(summary = "Get all public storage resources")
     @GetMapping("/public")
@@ -62,9 +62,9 @@ public class StorageResourceController {
             List<StorageResourceDTO> resources;
             
             if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-                resources = localStorageResourceHandler.searchStorageResources(nameSearch);
+                resources = storageResourceHandler.searchStorageResources(nameSearch);
             } else {
-                resources = localStorageResourceHandler.getAllStorageResources();
+                resources = storageResourceHandler.getAllStorageResources();
             }
             
             LOGGER.info("Found {} storage resources", resources.size());
@@ -81,7 +81,7 @@ public class StorageResourceController {
         LOGGER.info("Getting storage resource by ID: {}", id);
         
         try {
-            StorageResourceDTO resource = localStorageResourceHandler.getStorageResource(id);
+            StorageResourceDTO resource = storageResourceHandler.getStorageResource(id);
             return ResponseEntity.ok(resource);
         } catch (RuntimeException e) {
             if (e.getMessage().contains("not found")) {
@@ -114,7 +114,7 @@ public class StorageResourceController {
                 storageResourceDTO.setCapacityTB(1L); // Default to 1 TB
             }
             
-            StorageResourceDTO savedResource = localStorageResourceHandler.createStorageResource(storageResourceDTO);
+            StorageResourceDTO savedResource = storageResourceHandler.createStorageResource(storageResourceDTO);
             LOGGER.info("Created storage resource with ID: {}", savedResource.getStorageResourceId());
             
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
@@ -141,7 +141,7 @@ public class StorageResourceController {
         }
         
         try {
-            StorageResourceDTO updatedResource = localStorageResourceHandler.updateStorageResource(id, storageResourceDTO);
+            StorageResourceDTO updatedResource = storageResourceHandler.updateStorageResource(id, storageResourceDTO);
             LOGGER.info("Successfully updated storage resource with ID: {}", id);
             
             return ResponseEntity.ok(updatedResource);
@@ -158,7 +158,7 @@ public class StorageResourceController {
         LOGGER.info("Deleting storage resource with ID: {}", id);
         
         try {
-            localStorageResourceHandler.deleteStorageResource(id);
+            storageResourceHandler.deleteStorageResource(id);
             LOGGER.info("Successfully deleted storage resource with ID: {}", id);
             return ResponseEntity.ok().body("Storage resource deleted successfully");
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class StorageResourceController {
         LOGGER.info("Searching storage resources with keyword: {}", keyword);
         
         try {
-            List<StorageResourceDTO> resources = localStorageResourceHandler.searchStorageResources(keyword);
+            List<StorageResourceDTO> resources = storageResourceHandler.searchStorageResources(keyword);
             LOGGER.info("Found {} storage resources matching keyword: {}", resources.size(), keyword);
             return ResponseEntity.ok(resources);
         } catch (Exception e) {
@@ -193,7 +193,7 @@ public class StorageResourceController {
         LOGGER.info("Getting storage resources by type: {}", storageType);
         
         try {
-            List<StorageResourceDTO> resources = localStorageResourceHandler.getStorageResourcesByType(storageType);
+            List<StorageResourceDTO> resources = storageResourceHandler.getStorageResourcesByType(storageType);
             LOGGER.info("Found {} storage resources of type: {}", resources.size(), storageType);
             return ResponseEntity.ok(resources);
         } catch (Exception e) {
@@ -208,7 +208,7 @@ public class StorageResourceController {
         LOGGER.info("Toggling star for storage resource with ID: {}", id);
         
         try {
-            if (localStorageResourceHandler.existsStorageResource(id)) {
+            if (storageResourceHandler.existsStorageResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 // For now, return simple toggle response
                 LOGGER.info("Star toggle requested for storage resource: {} (simplified implementation)", id);
@@ -229,7 +229,7 @@ public class StorageResourceController {
         LOGGER.info("Checking if storage resource is starred: {}", id);
         
         try {
-            if (localStorageResourceHandler.existsStorageResource(id)) {
+            if (storageResourceHandler.existsStorageResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 LOGGER.info("Star status check for storage resource: {} (simplified implementation)", id);
                 return ResponseEntity.ok(false);
@@ -249,7 +249,7 @@ public class StorageResourceController {
         LOGGER.info("Getting star count for storage resource: {}", id);
         
         try {
-            if (localStorageResourceHandler.existsStorageResource(id)) {
+            if (storageResourceHandler.existsStorageResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 return ResponseEntity.ok(0);
             } else {

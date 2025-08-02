@@ -18,252 +18,213 @@
  */
 package org.apache.airavata.research.service.handler;
 
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.research.service.config.RegistryServiceConfig;
+import org.apache.airavata.research.service.entity.ComputeResourceEntity;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
+import org.apache.airavata.research.service.repository.ComputeResourceRepository;
 import org.apache.airavata.research.service.util.DTOConverter;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
- * Handler for Compute Resource operations using Airavata Registry Service
- * Integrates with existing airavata-api infrastructure
+ * Handler for Compute Resource operations using local entities with app_catalog database
+ * Direct integration with Airavata app_catalog database
  */
-@Component
+@Component("computeResourceHandler")
 public class ComputeResourceHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeResourceHandler.class);
 
-    @Autowired
-    private RegistryServiceConfig.RegistryServiceProvider registryServiceProvider;
+    private final ComputeResourceRepository computeResourceRepository;
+    private final DTOConverter dtoConverter;
 
-    @Autowired
-    private DTOConverter dtoConverter;
-
-    /**
-     * Get RegistryService with connection validation
-     */
-    private RegistryService.Iface getRegistryService() throws RegistryServiceException {
-        return registryServiceProvider.getRegistryService();
+    public ComputeResourceHandler(ComputeResourceRepository computeResourceRepository,
+                                 DTOConverter dtoConverter) {
+        this.computeResourceRepository = computeResourceRepository;
+        this.dtoConverter = dtoConverter;
     }
 
     /**
-     * Check if registry service is available
+     * Get all enabled compute resources
      */
-    private boolean isRegistryServiceAvailable() {
-        return registryServiceProvider.isAvailable();
-    }
-
-    /**
-     * Create a new compute resource using registry service
-     */
-    public ComputeResourceDTO createComputeResource(ComputeResourceDTO dto) throws RegistryServiceException, TException {
-        LOGGER.debug("Creating compute resource: {}", dto.getHostName());
+    public List<ComputeResourceDTO> getAllComputeResources() {
+        LOGGER.info("Getting all compute resources from app_catalog");
         
         try {
-            // Convert DTO to Thrift model
-            ComputeResourceDescription thriftModel = dtoConverter.dtoToThrift(dto);
+            List<ComputeResourceEntity> entities = computeResourceRepository.findAllEnabledOrderByCreationTime();
+            List<ComputeResourceDTO> dtos = new ArrayList<>();
             
-            // Generate ID if not provided
-            if (thriftModel.getComputeResourceId() == null || thriftModel.getComputeResourceId().isEmpty()) {
-                thriftModel.setComputeResourceId(generateComputeResourceId());
+            for (ComputeResourceEntity entity : entities) {
+                ComputeResourceDTO dto = dtoConverter.computeEntityToDTO(entity);
+                dtos.add(dto);
             }
             
-            // Use existing registry service to save
-            String resourceId = getRegistryService().registerComputeResource(thriftModel);
-            LOGGER.info("Successfully created compute resource with ID: {}", resourceId);
-            
-            // Retrieve saved entity with generated/updated fields
-            ComputeResourceDescription savedModel = getRegistryService().getComputeResource(resourceId);
-            
-            // Convert back to DTO for frontend
-            return dtoConverter.thriftToDTO(savedModel);
-            
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to create compute resource: {}", e.getMessage(), e);
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error creating compute resource: {}", e.getMessage(), e);
-            throw e;
+            LOGGER.info("Found {} compute resources from app_catalog", dtos.size());
+            return dtos;
         } catch (Exception e) {
-            LOGGER.error("Unexpected error creating compute resource", e);
-            throw new RegistryServiceException("Failed to create compute resource: " + e.getMessage());
+            LOGGER.error("Failed to get compute resources from app_catalog", e);
+            throw new RuntimeException("Failed to get compute resources", e);
+        }
+    }
+
+    /**
+     * Search compute resources by hostname
+     */
+    public List<ComputeResourceDTO> searchComputeResources(String keyword) {
+        LOGGER.info("Searching compute resources in app_catalog with keyword: {}", keyword);
+        
+        try {
+            List<ComputeResourceEntity> entities;
+            
+            if (keyword == null || keyword.trim().isEmpty()) {
+                entities = computeResourceRepository.findAllEnabledOrderByCreationTime();
+            } else {
+                entities = computeResourceRepository.findEnabledByHostNameContaining(keyword.trim());
+            }
+            
+            List<ComputeResourceDTO> dtos = new ArrayList<>();
+            for (ComputeResourceEntity entity : entities) {
+                ComputeResourceDTO dto = dtoConverter.computeEntityToDTO(entity);
+                dtos.add(dto);
+            }
+            
+            LOGGER.info("Found {} compute resources matching keyword '{}'", dtos.size(), keyword);
+            return dtos;
+        } catch (Exception e) {
+            LOGGER.error("Failed to search compute resources in app_catalog", e);
+            throw new RuntimeException("Failed to search compute resources", e);
         }
     }
 
     /**
      * Get compute resource by ID
      */
-    public ComputeResourceDTO getComputeResource(String resourceId) throws RegistryServiceException, TException {
-        LOGGER.debug("Retrieving compute resource: {}", resourceId);
+    public ComputeResourceDTO getComputeResource(String computeResourceId) {
+        LOGGER.info("Getting compute resource by ID from app_catalog: {}", computeResourceId);
         
         try {
-            ComputeResourceDescription thriftModel = getRegistryService().getComputeResource(resourceId);
-            return dtoConverter.thriftToDTO(thriftModel);
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to get compute resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error getting compute resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Get all compute resources
-     */
-    public List<ComputeResourceDTO> getAllComputeResources() throws RegistryServiceException, TException {
-        LOGGER.debug("Retrieving all compute resources");
-        
-        try {
-            // Get compute resource names (ID -> Name mapping)
-            Map<String, String> computeResourceNames = getRegistryService().getAllComputeResourceNames();
+            Optional<ComputeResourceEntity> entityOpt = computeResourceRepository.findById(computeResourceId);
             
-            // Fetch full details for each compute resource
-            return computeResourceNames.keySet().stream()
-                .map(resourceId -> {
-                    try {
-                        return getRegistryService().getComputeResource(resourceId);
-                    } catch (RegistryServiceException e) {
-                        LOGGER.warn("Failed to get compute resource {}: {}", resourceId, e.getMessage());
-                        return null;
-                    } catch (TException e) {
-                        LOGGER.warn("Thrift error getting compute resource {}: {}", resourceId, e.getMessage());
-                        return null;
-                    }
-                })
-                .filter(thriftModel -> thriftModel != null)
-                .map(thriftModel -> dtoConverter.thriftToDTO(thriftModel))
-                .collect(Collectors.toList());
-                
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to get all compute resources: {}", e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error getting all compute resources: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Update compute resource
-     */
-    public ComputeResourceDTO updateComputeResource(String resourceId, ComputeResourceDTO dto) throws RegistryServiceException, TException {
-        LOGGER.debug("Updating compute resource: {}", resourceId);
-        
-        try {
-            // Ensure DTO has the correct ID
-            dto.setComputeResourceId(resourceId);
-            
-            // Convert DTO to Thrift model
-            ComputeResourceDescription thriftModel = dtoConverter.dtoToThrift(dto);
-            
-            // Use existing registry service to update
-            boolean updated = getRegistryService().updateComputeResource(resourceId, thriftModel);
-            
-            if (updated) {
-                LOGGER.info("Successfully updated compute resource: {}", resourceId);
-                
-                // Retrieve updated entity
-                ComputeResourceDescription updatedModel = getRegistryService().getComputeResource(resourceId);
-                return dtoConverter.thriftToDTO(updatedModel);
-            } else {
-                throw new RegistryServiceException("Failed to update compute resource: " + resourceId);
+            if (entityOpt.isEmpty()) {
+                LOGGER.warn("Compute resource not found with ID: {}", computeResourceId);
+                throw new RuntimeException("Compute resource not found with ID: " + computeResourceId);
             }
             
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to update compute resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error updating compute resource {}: {}", resourceId, e.getMessage());
-            throw e;
+            ComputeResourceEntity entity = entityOpt.get();
+            ComputeResourceDTO dto = dtoConverter.computeEntityToDTO(entity);
+            
+            LOGGER.info("Found compute resource: {}", entity.getHostName());
+            return dto;
+        } catch (Exception e) {
+            LOGGER.error("Failed to get compute resource by ID: {}", computeResourceId, e);
+            throw new RuntimeException("Failed to get compute resource", e);
+        }
+    }
+
+    /**
+     * Create new compute resource
+     */
+    public ComputeResourceDTO createComputeResource(ComputeResourceDTO computeResourceDTO) {
+        LOGGER.info("Creating compute resource in app_catalog: {}", computeResourceDTO.getHostName());
+        
+        try {
+            // Convert DTO to entity using existing DTOConverter
+            ComputeResourceEntity entity = dtoConverter.computeResourceDTOToEntity(computeResourceDTO);
+            
+            // Set system fields
+            entity.setResourceId(UUID.randomUUID().toString());
+            entity.setEnabled((short) 1);
+            entity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            
+            // Save to app_catalog database
+            ComputeResourceEntity savedEntity = computeResourceRepository.save(entity);
+            
+            // Convert back to DTO
+            ComputeResourceDTO savedDTO = dtoConverter.computeEntityToDTO(savedEntity);
+            
+            LOGGER.info("Created compute resource in app_catalog with ID: {}", savedEntity.getResourceId());
+            return savedDTO;
+        } catch (Exception e) {
+            LOGGER.error("Failed to create compute resource in app_catalog", e);
+            throw new RuntimeException("Failed to create compute resource", e);
+        }
+    }
+
+    /**
+     * Update existing compute resource
+     */
+    public ComputeResourceDTO updateComputeResource(String computeResourceId, ComputeResourceDTO computeResourceDTO) {
+        LOGGER.info("Updating compute resource in app_catalog: {}", computeResourceId);
+        
+        try {
+            Optional<ComputeResourceEntity> existingOpt = computeResourceRepository.findById(computeResourceId);
+            
+            if (existingOpt.isEmpty()) {
+                throw new RuntimeException("Compute resource not found with ID: " + computeResourceId);
+            }
+            
+            // Convert DTO to entity
+            ComputeResourceEntity updatedEntity = dtoConverter.computeResourceDTOToEntity(computeResourceDTO);
+            
+            // Preserve system fields
+            ComputeResourceEntity existing = existingOpt.get();
+            updatedEntity.setResourceId(computeResourceId);
+            updatedEntity.setCreationTime(existing.getCreationTime());
+            updatedEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            
+            // Save updated entity
+            ComputeResourceEntity savedEntity = computeResourceRepository.save(updatedEntity);
+            
+            // Convert back to DTO
+            ComputeResourceDTO savedDTO = dtoConverter.computeEntityToDTO(savedEntity);
+            
+            LOGGER.info("Updated compute resource in app_catalog: {}", computeResourceId);
+            return savedDTO;
+        } catch (Exception e) {
+            LOGGER.error("Failed to update compute resource in app_catalog: {}", computeResourceId, e);
+            throw new RuntimeException("Failed to update compute resource", e);
         }
     }
 
     /**
      * Delete compute resource
      */
-    public void deleteComputeResource(String resourceId) throws RegistryServiceException, TException {
-        LOGGER.debug("Deleting compute resource: {}", resourceId);
+    public void deleteComputeResource(String computeResourceId) {
+        LOGGER.info("Deleting compute resource from app_catalog: {}", computeResourceId);
         
         try {
-            boolean deleted = getRegistryService().deleteComputeResource(resourceId);
-            
-            if (deleted) {
-                LOGGER.info("Successfully deleted compute resource: {}", resourceId);
-            } else {
-                throw new RegistryServiceException("Failed to delete compute resource: " + resourceId);
+            if (!computeResourceRepository.existsById(computeResourceId)) {
+                throw new RuntimeException("Compute resource not found with ID: " + computeResourceId);
             }
             
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to delete compute resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error deleting compute resource {}: {}", resourceId, e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Search compute resources by keyword
-     * Note: This is a simplified implementation - Airavata registry might have more sophisticated search
-     */
-    public List<ComputeResourceDTO> searchComputeResources(String keyword) throws RegistryServiceException, TException {
-        LOGGER.debug("Searching compute resources with keyword: {}", keyword);
-        
-        try {
-            // Get all compute resources and filter by keyword
-            List<ComputeResourceDTO> allResources = getAllComputeResources();
-            
-            String lowerKeyword = keyword.toLowerCase();
-            return allResources.stream()
-                .filter(resource -> 
-                    (resource.getHostName() != null && resource.getHostName().toLowerCase().contains(lowerKeyword)) ||
-                    (resource.getResourceDescription() != null && resource.getResourceDescription().toLowerCase().contains(lowerKeyword)) ||
-                    (resource.getComputeType() != null && resource.getComputeType().toLowerCase().contains(lowerKeyword)) ||
-                    (resource.getOperatingSystem() != null && resource.getOperatingSystem().toLowerCase().contains(lowerKeyword))
-                )
-                .collect(Collectors.toList());
-                
-        } catch (RegistryServiceException e) {
-            LOGGER.error("Failed to search compute resources: {}", e.getMessage());
-            throw e;
-        } catch (TException e) {
-            LOGGER.error("Thrift error searching compute resources: {}", e.getMessage());
-            throw e;
+            computeResourceRepository.deleteById(computeResourceId);
+            LOGGER.info("Deleted compute resource from app_catalog: {}", computeResourceId);
+        } catch (Exception e) {
+            LOGGER.error("Failed to delete compute resource from app_catalog: {}", computeResourceId, e);
+            throw new RuntimeException("Failed to delete compute resource", e);
         }
     }
 
     /**
      * Check if compute resource exists
      */
-    public boolean existsComputeResource(String resourceId) {
+    public boolean existsComputeResource(String computeResourceId) {
+        LOGGER.debug("Checking if compute resource exists in app_catalog: {}", computeResourceId);
+        
         try {
-            ComputeResourceDescription resource = getRegistryService().getComputeResource(resourceId);
-            return resource != null;
-        } catch (RegistryServiceException e) {
-            LOGGER.debug("Compute resource {} does not exist: {}", resourceId, e.getMessage());
-            return false;
-        } catch (TException e) {
-            LOGGER.debug("Thrift error checking compute resource {}: {}", resourceId, e.getMessage());
+            boolean exists = computeResourceRepository.existsById(computeResourceId);
+            LOGGER.debug("Compute resource {} exists: {}", computeResourceId, exists);
+            return exists;
+        } catch (Exception e) {
+            LOGGER.error("Failed to check compute resource existence in app_catalog: {}", computeResourceId, e);
             return false;
         }
-    }
-
-    /**
-     * Generate unique compute resource ID
-     */
-    private String generateComputeResourceId() {
-        return "compute_" + UUID.randomUUID().toString().replace("-", "");
     }
 }

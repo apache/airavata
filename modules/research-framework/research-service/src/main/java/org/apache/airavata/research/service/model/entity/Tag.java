@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.research.service.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +38,7 @@ public class Tag {
     private String id;
 
     @Column(name = "tag_value", nullable = false)
+    @JsonProperty("name")
     private String value;
 
     public String getId() {
@@ -47,6 +49,7 @@ public class Tag {
         this.id = id;
     }
 
+    @JsonProperty("name")
     public String getValue() {
         return value;
     }

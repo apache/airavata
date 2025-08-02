@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
-import org.apache.airavata.research.service.handler.LocalComputeResourceHandler;
+import org.apache.airavata.research.service.handler.ComputeResourceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class ComputeResourceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeResourceController.class);
 
     @Autowired
-    private LocalComputeResourceHandler localComputeResourceHandler;
+    private ComputeResourceHandler computeResourceHandler;
 
     @Operation(summary = "Get all public compute resources")
     @GetMapping("/public")
@@ -62,9 +62,9 @@ public class ComputeResourceController {
             List<ComputeResourceDTO> resources;
             
             if (nameSearch != null && !nameSearch.trim().isEmpty()) {
-                resources = localComputeResourceHandler.searchComputeResources(nameSearch);
+                resources = computeResourceHandler.searchComputeResources(nameSearch);
             } else {
-                resources = localComputeResourceHandler.getAllComputeResources();
+                resources = computeResourceHandler.getAllComputeResources();
             }
             
             LOGGER.info("Found {} compute resources", resources.size());
@@ -81,7 +81,7 @@ public class ComputeResourceController {
         LOGGER.info("Getting compute resource by ID: {}", id);
         
         try {
-            ComputeResourceDTO resource = localComputeResourceHandler.getComputeResource(id);
+            ComputeResourceDTO resource = computeResourceHandler.getComputeResource(id);
             return ResponseEntity.ok(resource);
         } catch (RuntimeException e) {
             if (e.getMessage().contains("not found")) {
@@ -118,7 +118,7 @@ public class ComputeResourceController {
                 computeResourceDTO.setMemoryGB(1); // Default to 1 GB
             }
             
-            ComputeResourceDTO savedResource = localComputeResourceHandler.createComputeResource(computeResourceDTO);
+            ComputeResourceDTO savedResource = computeResourceHandler.createComputeResource(computeResourceDTO);
             LOGGER.info("Created compute resource with ID: {}", savedResource.getComputeResourceId());
             
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
@@ -145,7 +145,7 @@ public class ComputeResourceController {
         }
         
         try {
-            ComputeResourceDTO updatedResource = localComputeResourceHandler.updateComputeResource(id, computeResourceDTO);
+            ComputeResourceDTO updatedResource = computeResourceHandler.updateComputeResource(id, computeResourceDTO);
             LOGGER.info("Successfully updated compute resource with ID: {}", id);
             
             return ResponseEntity.ok(updatedResource);
@@ -162,7 +162,7 @@ public class ComputeResourceController {
         LOGGER.info("Deleting compute resource with ID: {}", id);
         
         try {
-            localComputeResourceHandler.deleteComputeResource(id);
+            computeResourceHandler.deleteComputeResource(id);
             LOGGER.info("Successfully deleted compute resource with ID: {}", id);
             return ResponseEntity.ok().body("Compute resource deleted successfully");
         } catch (Exception e) {
@@ -180,7 +180,7 @@ public class ComputeResourceController {
         LOGGER.info("Searching compute resources with keyword: {}", keyword);
         
         try {
-            List<ComputeResourceDTO> resources = localComputeResourceHandler.searchComputeResources(keyword);
+            List<ComputeResourceDTO> resources = computeResourceHandler.searchComputeResources(keyword);
             LOGGER.info("Found {} compute resources matching keyword: {}", resources.size(), keyword);
             return ResponseEntity.ok(resources);
         } catch (Exception e) {
@@ -195,7 +195,7 @@ public class ComputeResourceController {
         LOGGER.info("Toggling star for compute resource with ID: {}", id);
         
         try {
-            if (localComputeResourceHandler.existsComputeResource(id)) {
+            if (computeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 // For now, return simple toggle response
                 LOGGER.info("Star toggle requested for compute resource: {} (simplified implementation)", id);
@@ -216,7 +216,7 @@ public class ComputeResourceController {
         LOGGER.info("Checking if compute resource is starred: {}", id);
         
         try {
-            if (localComputeResourceHandler.existsComputeResource(id)) {
+            if (computeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 LOGGER.info("Star status check for compute resource: {} (simplified implementation)", id);
                 return ResponseEntity.ok(false);
@@ -236,7 +236,7 @@ public class ComputeResourceController {
         LOGGER.info("Getting star count for compute resource: {}", id);
         
         try {
-            if (localComputeResourceHandler.existsComputeResource(id)) {
+            if (computeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 return ResponseEntity.ok(0);
             } else {
