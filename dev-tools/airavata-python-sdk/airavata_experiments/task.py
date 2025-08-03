@@ -73,7 +73,9 @@ class Task(pydantic.BaseModel):
     from pathlib import Path
     Path(local_dir).mkdir(parents=True, exist_ok=True)
     try:
-      return self.runtime.download(file, local_dir, self)
+      saved_path = self.runtime.download(file, local_dir, self)
+      print(f"[Remote] Downloaded {file} -> {saved_path}")
+      return saved_path
     except Exception as e:
       print(f"[Remote] Failed to download file: {repr(e)}")
       return ""

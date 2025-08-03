@@ -330,14 +330,14 @@ class AiravataOperator:
     elif process_id is not None and agent_ref is not None:
       assert len(local_files) == 1, f"Expected 1 file, got {len(local_files)}"
       file = local_files[0]
-      fp = os.path.join("/data", file.name)
+      fp = os.path.join(".", file.name)
       rawdata = file.read_bytes()
       b64data = base64.b64encode(rawdata).decode()
       res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
           "agentId": agent_ref,
           "envName": agent_ref,
           "workingDir": ".",
-          "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
+          "arguments": [f"echo {b64data} | base64 -d > {fp}"]
       })
       data = res.json()
       if data["error"] is not None:
@@ -379,7 +379,7 @@ class AiravataOperator:
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", r"find /data -type d -name 'venv' -prune -o -type f -printf '%P\n' | sort"]
+        "arguments": [r"find . -type f -printf '%P\n' | sort"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -417,7 +417,7 @@ class AiravataOperator:
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+        "arguments": [f"cat {fp} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -461,7 +461,7 @@ class AiravataOperator:
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", f"{cmd} | base64 -w0"]
+        "arguments": [f"{cmd} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -492,7 +492,7 @@ class AiravataOperator:
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+        "arguments": [f"cat {fp} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
