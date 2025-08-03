@@ -16,7 +16,7 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "HOST_NAME", nullable = false)
     private String hostName;
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", length = 2048)
     private String description;
 
     @Column(name = "ENABLED")

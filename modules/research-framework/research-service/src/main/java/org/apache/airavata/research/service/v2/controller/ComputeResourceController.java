@@ -25,9 +25,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
 import org.apache.airavata.research.service.handler.ComputeResourceHandler;
+import org.apache.airavata.research.service.service.UserContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -51,8 +53,12 @@ public class ComputeResourceController {
     @Autowired
     private ComputeResourceHandler computeResourceHandler;
 
-    @Operation(summary = "Get all public compute resources")
-    @GetMapping("/public")
+    @Autowired
+    private UserContextService userContextService;
+
+    @Operation(summary = "Get all compute resources")
+    @GetMapping("/")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<List<ComputeResourceDTO>> getComputeResources(
             @RequestParam(value = "nameSearch", required = false) String nameSearch) {
         
@@ -76,7 +82,8 @@ public class ComputeResourceController {
     }
 
     @Operation(summary = "Get compute resource by ID")
-    @GetMapping("/public/{id}")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<ComputeResourceDTO> getComputeResourceById(@PathVariable("id") String id) {
         LOGGER.info("Getting compute resource by ID: {}", id);
         
@@ -96,6 +103,7 @@ public class ComputeResourceController {
 
     @Operation(summary = "Create new compute resource")
     @PostMapping("/")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<?> createComputeResource(@Valid @RequestBody ComputeResourceDTO computeResourceDTO, BindingResult bindingResult) {
         LOGGER.info("Creating new compute resource: {}", computeResourceDTO.getHostName());
         
@@ -109,17 +117,17 @@ public class ComputeResourceController {
             return ResponseEntity.badRequest().body("Validation failed: " + errorMessage);
         }
         
+        // Set intelligent defaults for fields not provided by UI
+        setDefaultValues(computeResourceDTO);
+        
         try {
-            // Set default values for fields that might be null
-            if (computeResourceDTO.getCpuCores() == null) {
-                computeResourceDTO.setCpuCores(1); // Default to 1 core
-            }
-            if (computeResourceDTO.getMemoryGB() == null) {
-                computeResourceDTO.setMemoryGB(1); // Default to 1 GB
-            }
+            
+            // Set creator from authenticated user
+            String currentUser = userContextService.getCurrentUserId();
+            // Note: ComputeResourceDTO would need a createdBy field to store this
             
             ComputeResourceDTO savedResource = computeResourceHandler.createComputeResource(computeResourceDTO);
-            LOGGER.info("Created compute resource with ID: {}", savedResource.getComputeResourceId());
+            LOGGER.info("Created compute resource with ID: {} by user: {}", savedResource.getComputeResourceId(), currentUser);
             
             return ResponseEntity.status(HttpStatus.CREATED).body(savedResource);
         } catch (Exception e) {
@@ -131,6 +139,7 @@ public class ComputeResourceController {
 
     @Operation(summary = "Update compute resource")
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<?> updateComputeResource(@PathVariable("id") String id, @Valid @RequestBody ComputeResourceDTO computeResourceDTO, BindingResult bindingResult) {
         LOGGER.info("Updating compute resource with ID: {}", id);
         
@@ -143,6 +152,9 @@ public class ComputeResourceController {
             LOGGER.error("Validation errors: {}", errorMessage);
             return ResponseEntity.badRequest().body("Validation failed: " + errorMessage);
         }
+        
+        // Set intelligent defaults for fields not provided by UI
+        setDefaultValues(computeResourceDTO);
         
         try {
             ComputeResourceDTO updatedResource = computeResourceHandler.updateComputeResource(id, computeResourceDTO);
@@ -158,6 +170,7 @@ public class ComputeResourceController {
     
     @Operation(summary = "Delete compute resource")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<?> deleteComputeResource(@PathVariable("id") String id) {
         LOGGER.info("Deleting compute resource with ID: {}", id);
         
@@ -191,14 +204,16 @@ public class ComputeResourceController {
 
     @Operation(summary = "Star/unstar a compute resource")
     @PostMapping("/{id}/star")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> starComputeResource(@PathVariable("id") String id) {
         LOGGER.info("Toggling star for compute resource with ID: {}", id);
         
         try {
+            String userId = userContextService.getCurrentUserId();
             if (computeResourceHandler.existsComputeResource(id)) {
                 // TODO: Implement proper v1 ResourceStar system integration
                 // For now, return simple toggle response
-                LOGGER.info("Star toggle requested for compute resource: {} (simplified implementation)", id);
+                LOGGER.info("Star toggle requested for compute resource: {} by user: {} (simplified implementation)", id, userId);
                 return ResponseEntity.ok(true);
             } else {
                 LOGGER.warn("Compute resource not found with ID: {}", id);
@@ -264,5 +279,74 @@ public class ComputeResourceController {
             LOGGER.error("Error fetching starred compute resources: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Set intelligent defaults for backend-only fields not provided by UI
+     * UI provides core fields (hostName, name, description) - backend fills in infrastructure defaults
+     */
+    private void setDefaultValues(ComputeResourceDTO dto) {
+        // Backend fills infrastructure defaults - UI provides name and resourceDescription
+        
+        // Set default compute type
+        if (dto.getComputeType() == null || dto.getComputeType().trim().isEmpty()) {
+            dto.setComputeType("HPC");
+        }
+        
+        // Set default CPU cores
+        if (dto.getCpuCores() == null) {
+            dto.setCpuCores(1);
+        }
+        
+        // Set default memory
+        if (dto.getMemoryGB() == null) {
+            dto.setMemoryGB(1);
+        }
+        
+        // Set default operating system
+        if (dto.getOperatingSystem() == null || dto.getOperatingSystem().trim().isEmpty()) {
+            dto.setOperatingSystem("Linux");
+        }
+        
+        // Set default queue system
+        if (dto.getQueueSystem() == null || dto.getQueueSystem().trim().isEmpty()) {
+            dto.setQueueSystem("SLURM");
+        }
+        
+        // Set default resource manager
+        if (dto.getResourceManager() == null || dto.getResourceManager().trim().isEmpty()) {
+            dto.setResourceManager("Default Resource Manager");
+        }
+        
+        // Set default SSH configuration
+        if (dto.getSshUsername() == null || dto.getSshUsername().trim().isEmpty()) {
+            dto.setSshUsername("admin");
+        }
+        
+        if (dto.getSshPort() == null) {
+            dto.setSshPort(22);
+        }
+        
+        if (dto.getAuthenticationMethod() == null || dto.getAuthenticationMethod().trim().isEmpty()) {
+            dto.setAuthenticationMethod("SSH_KEYS");
+        }
+        
+        // Set default working directory
+        if (dto.getWorkingDirectory() == null || dto.getWorkingDirectory().trim().isEmpty()) {
+            dto.setWorkingDirectory("/tmp");
+        }
+        
+        // Set default scheduler type
+        if (dto.getSchedulerType() == null || dto.getSchedulerType().trim().isEmpty()) {
+            dto.setSchedulerType("SLURM");
+        }
+        
+        // Set default data movement protocol
+        if (dto.getDataMovementProtocol() == null || dto.getDataMovementProtocol().trim().isEmpty()) {
+            dto.setDataMovementProtocol("SCP");
+        }
+        
+        LOGGER.debug("Set default values for compute resource: name={}, type={}, cores={}", 
+                    dto.getName(), dto.getComputeType(), dto.getCpuCores());
     }
 }

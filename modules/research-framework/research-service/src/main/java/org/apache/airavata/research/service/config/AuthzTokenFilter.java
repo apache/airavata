@@ -26,6 +26,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
@@ -84,11 +86,21 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ") && xClaimsHeader != null) {
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
                     String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    Map<String, String> claimsMap = objectMapper.readValue(xClaimsHeader, new TypeReference<>() {});
+                    Map<String, String> claimsMap;
+                    
+                    // Primary: Use X-Claims header if available (frontend compatibility)
+                    if (xClaimsHeader != null) {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        claimsMap = objectMapper.readValue(xClaimsHeader, new TypeReference<>() {});
+                        LOGGER.debug("Using claims from X-Claims header");
+                    } else {
+                        // Fallback: Extract claims from JWT payload for pure OAuth2/OIDC clients
+                        claimsMap = extractClaimsFromJWT(accessToken);
+                        LOGGER.debug("Using claims extracted from JWT payload");
+                    }
 
                     AuthzToken authzToken = new AuthzToken();
                     authzToken.setAccessToken(accessToken);
@@ -109,6 +121,60 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
         } finally {
             UserContext.clear();
         }
+    }
+
+    /**
+     * Extract claims from JWT payload as fallback when X-Claims header is not present
+     * This enables pure OAuth2/OIDC clients to work without custom headers
+     */
+    private Map<String, String> extractClaimsFromJWT(String jwt) {
+        try {
+            // Split JWT into parts (header.payload.signature)
+            String[] parts = jwt.split("\\.");
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Invalid JWT format");
+            }
+            
+            // Decode the payload (second part)
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
+            
+            // Parse JSON payload
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> jwtClaims = objectMapper.readValue(payload, new TypeReference<>() {});
+            
+            // Convert to string map and extract required claims
+            Map<String, String> claimsMap = new HashMap<>();
+            
+            // Map standard OIDC claims to Airavata claims
+            String email = getClaimValue(jwtClaims, "email", "preferred_username", "sub");
+            if (email != null) {
+                claimsMap.put(USERNAME_CLAIM, email);
+            }
+            
+            // Default gateway for JWT-only clients
+            claimsMap.put(GATEWAY_CLAIM, "default");
+            
+            LOGGER.debug("Extracted claims from JWT: userName={}, gatewayID={}", 
+                        claimsMap.get(USERNAME_CLAIM), claimsMap.get(GATEWAY_CLAIM));
+            
+            return claimsMap;
+        } catch (Exception e) {
+            LOGGER.error("Failed to extract claims from JWT", e);
+            throw new IllegalArgumentException("Invalid JWT token", e);
+        }
+    }
+    
+    /**
+     * Get claim value from JWT payload, trying multiple possible claim names
+     */
+    private String getClaimValue(Map<String, Object> jwtClaims, String... claimNames) {
+        for (String claimName : claimNames) {
+            Object value = jwtClaims.get(claimName);
+            if (value != null) {
+                return value.toString();
+            }
+        }
+        return null;
     }
 
     private static String getClaim(AuthzToken authzToken, String claimId) {

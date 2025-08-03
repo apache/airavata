@@ -89,3 +89,19 @@ springdoc:
       use-pkce-with-authorization-code-grant: true
       client-id: data-catalog-portal
 
+# Authentication Configuration
+research:
+  auth:
+    jwks-uri: "https://auth.dev.cybershuttle.org/.well-known/jwks"
+    dev-api-key: "dev-research-api-key-12345"
+  cors:
+    allowed-origins: "http://localhost:5173,http://localhost:3000"
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowed-headers: "*"
+
+# Logging for security debugging (dev profile)
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+

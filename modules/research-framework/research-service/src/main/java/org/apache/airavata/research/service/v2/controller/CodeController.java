@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v2/rf/codes")
@@ -62,8 +63,9 @@ public class CodeController {
         this.codeRepository = codeRepository;
     }
 
-    @Operation(summary = "Get all public codes with pagination")
-    @GetMapping("/public")
+    @Operation(summary = "Get all codes with pagination")
+    @GetMapping("/")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<Page<Code>> getCodes(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -88,7 +90,8 @@ public class CodeController {
     }
 
     @Operation(summary = "Get code by ID")
-    @GetMapping("/public/{id}")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<Code> getCodeById(@PathVariable("id") String id) {
         LOGGER.info("Getting code by ID: {}", id);
         

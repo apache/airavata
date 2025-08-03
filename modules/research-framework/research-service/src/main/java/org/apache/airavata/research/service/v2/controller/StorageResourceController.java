@@ -25,9 +25,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
 import org.apache.airavata.research.service.handler.StorageResourceHandler;
+import org.apache.airavata.research.service.service.UserContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -51,8 +53,12 @@ public class StorageResourceController {
     @Autowired
     private StorageResourceHandler storageResourceHandler;
 
-    @Operation(summary = "Get all public storage resources")
-    @GetMapping("/public")
+    @Autowired
+    private UserContextService userContextService;
+
+    @Operation(summary = "Get all storage resources")
+    @GetMapping("/")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<List<StorageResourceDTO>> getStorageResources(
             @RequestParam(value = "nameSearch", required = false) String nameSearch) {
         
@@ -76,7 +82,8 @@ public class StorageResourceController {
     }
 
     @Operation(summary = "Get storage resource by ID")
-    @GetMapping("/public/{id}")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<StorageResourceDTO> getStorageResourceById(@PathVariable("id") String id) {
         LOGGER.info("Getting storage resource by ID: {}", id);
         
@@ -95,6 +102,7 @@ public class StorageResourceController {
 
     @Operation(summary = "Create new storage resource")
     @PostMapping("/")
+    @PreAuthorize("hasRole('USER') or hasRole('API_USER')")
     public ResponseEntity<?> createStorageResource(@Valid @RequestBody StorageResourceDTO storageResourceDTO, BindingResult bindingResult) {
         LOGGER.info("Creating new storage resource: {}", storageResourceDTO.getHostName());
         
@@ -108,11 +116,10 @@ public class StorageResourceController {
             return ResponseEntity.badRequest().body("Validation failed: " + errorMessage);
         }
         
+        // Set intelligent defaults for fields not provided by UI
+        setDefaultValues(storageResourceDTO);
+        
         try {
-            // Set default values for fields that might be null
-            if (storageResourceDTO.getCapacityTB() == null) {
-                storageResourceDTO.setCapacityTB(1L); // Default to 1 TB
-            }
             
             StorageResourceDTO savedResource = storageResourceHandler.createStorageResource(storageResourceDTO);
             LOGGER.info("Created storage resource with ID: {}", savedResource.getStorageResourceId());
@@ -139,6 +146,9 @@ public class StorageResourceController {
             LOGGER.error("Validation errors: {}", errorMessage);
             return ResponseEntity.badRequest().body("Validation failed: " + errorMessage);
         }
+        
+        // Set intelligent defaults for fields not provided by UI
+        setDefaultValues(storageResourceDTO);
         
         try {
             StorageResourceDTO updatedResource = storageResourceHandler.updateStorageResource(id, storageResourceDTO);
@@ -277,5 +287,41 @@ public class StorageResourceController {
             LOGGER.error("Error fetching starred storage resources: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Set intelligent defaults for backend-only fields not provided by UI
+     * UI provides core fields (hostName, name, description) - backend fills in infrastructure defaults
+     */
+    private void setDefaultValues(StorageResourceDTO dto) {
+        // Backend fills infrastructure defaults - UI provides name
+        
+        // Set default storage type
+        if (dto.getStorageType() == null || dto.getStorageType().trim().isEmpty()) {
+            dto.setStorageType("SCP");
+        }
+        
+        // Set default capacity
+        if (dto.getCapacityTB() == null) {
+            dto.setCapacityTB(1L);
+        }
+        
+        // Set default access protocol based on storage type
+        if (dto.getAccessProtocol() == null || dto.getAccessProtocol().trim().isEmpty()) {
+            if ("S3".equalsIgnoreCase(dto.getStorageType())) {
+                dto.setAccessProtocol("HTTPS");
+            } else {
+                dto.setAccessProtocol("SCP");
+            }
+        }
+        
+        // Set default endpoint based on hostname
+        if (dto.getEndpoint() == null || dto.getEndpoint().trim().isEmpty()) {
+            String hostname = dto.getHostName();
+            dto.setEndpoint(hostname != null ? hostname : "localhost");
+        }
+        
+        LOGGER.debug("Set default values for storage resource: name={}, type={}, capacity={}TB", 
+                    dto.getName(), dto.getStorageType(), dto.getCapacityTB());
     }
 }

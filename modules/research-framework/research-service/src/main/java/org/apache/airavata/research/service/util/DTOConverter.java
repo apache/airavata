@@ -61,6 +61,12 @@ public class DTOConverter {
     private static final String WORKING_DIR_KEY = "workingDirectory";
     private static final String SCHEDULER_TYPE_KEY = "schedulerType";
     private static final String DATA_MOVEMENT_PROTOCOL_KEY = "dataMovementProtocol";
+    
+    // Additional compute fields that need to be preserved
+    private static final String NAME_KEY = "name";
+    private static final String HOST_ALIASES_KEY = "hostAliases";
+    private static final String IP_ADDRESSES_KEY = "ipAddresses";
+    private static final String QUEUES_KEY = "queues";
 
     // Storage-specific field names
     private static final String STORAGE_TYPE_KEY = "storageType";
@@ -488,8 +494,13 @@ public class DTOConverter {
         Short enabledValue = entity.getEnabled();
         dto.setEnabled(enabledValue != null && enabledValue.shortValue() == 1);
         
-        // Generate a name from hostname if not available
-        dto.setName(generateStorageResourceName(entity.getHostName(), entity.getDescription()));
+        // Extract name from UI fields or generate fallback
+        String extractedName = extractNameFromStorageDescription(entity.getDescription());
+        if (extractedName != null) {
+            dto.setName(extractedName);
+        } else {
+            dto.setName(generateStorageResourceName(entity.getHostName(), entity.getDescription()));
+        }
         
         // Timestamps
         if (entity.getCreationTime() != null) {
@@ -547,8 +558,13 @@ public class DTOConverter {
         dto.setCpuCores(entity.getCpusPerNode());
         dto.setMemoryGB(entity.getMaxMemoryNode());
         
-        // Generate a name from hostname if not available
-        dto.setName(generateComputeResourceName(entity.getHostName(), entity.getResourceDescription()));
+        // Extract name from UI fields or generate fallback
+        String extractedName = extractNameFromDescription(entity.getResourceDescription());
+        if (extractedName != null) {
+            dto.setName(extractedName);
+        } else {
+            dto.setName(generateComputeResourceName(entity.getHostName(), entity.getResourceDescription()));
+        }
         
         // Timestamps
         if (entity.getCreationTime() != null) {
@@ -560,6 +576,17 @@ public class DTOConverter {
 
         // Extract UI-specific fields from description JSON
         extractComputeUIFieldsFromDescription(entity.getResourceDescription(), dto);
+        
+        // Initialize empty arrays for fields not stored in database
+        if (dto.getHostAliases() == null) {
+            dto.setHostAliases(new ArrayList<>());
+        }
+        if (dto.getIpAddresses() == null) {
+            dto.setIpAddresses(new ArrayList<>());
+        }
+        if (dto.getQueues() == null) {
+            dto.setQueues(new ArrayList<>());
+        }
 
         return dto;
     }
@@ -605,6 +632,9 @@ public class DTOConverter {
             dto.setAccessProtocol(getStringValue(rootNode, ACCESS_PROTOCOL_KEY));
             dto.setSupportsEncryption(getBooleanValue(rootNode, SUPPORTS_ENCRYPTION_KEY));
             dto.setSupportsVersioning(getBooleanValue(rootNode, SUPPORTS_VERSIONING_KEY));
+            
+            // Extract preserved fields
+            dto.setName(getStringValue(rootNode, NAME_KEY));
 
             // S3-specific fields
             dto.setBucketName(getStringValue(rootNode, BUCKET_NAME_KEY));
@@ -645,6 +675,38 @@ public class DTOConverter {
             dto.setOperatingSystem(getStringValue(rootNode, OPERATING_SYSTEM_KEY));
             dto.setSchedulerType(getStringValue(rootNode, SCHEDULER_TYPE_KEY));
             dto.setDataMovementProtocol(getStringValue(rootNode, DATA_MOVEMENT_PROTOCOL_KEY));
+            
+            // Extract preserved fields
+            dto.setName(getStringValue(rootNode, NAME_KEY));
+            
+            // Extract arrays
+            JsonNode hostAliasesNode = rootNode.get(HOST_ALIASES_KEY);
+            if (hostAliasesNode != null && hostAliasesNode.isArray()) {
+                List<String> hostAliases = new ArrayList<>();
+                hostAliasesNode.forEach(node -> hostAliases.add(node.asText()));
+                dto.setHostAliases(hostAliases);
+            }
+            
+            JsonNode ipAddressesNode = rootNode.get(IP_ADDRESSES_KEY);
+            if (ipAddressesNode != null && ipAddressesNode.isArray()) {
+                List<String> ipAddresses = new ArrayList<>();
+                ipAddressesNode.forEach(node -> ipAddresses.add(node.asText()));
+                dto.setIpAddresses(ipAddresses);
+            }
+            
+            JsonNode queuesNode = rootNode.get(QUEUES_KEY);
+            if (queuesNode != null && queuesNode.isArray()) {
+                List<ComputeResourceQueueDTO> queues = new ArrayList<>();
+                queuesNode.forEach(queueNode -> {
+                    ComputeResourceQueueDTO queue = new ComputeResourceQueueDTO();
+                    queue.setQueueName(getStringValue(queueNode, "queueName"));
+                    queue.setMaxNodes(getIntegerValue(queueNode, "maxNodes"));
+                    queue.setMaxProcessors(getIntegerValue(queueNode, "maxProcessors"));
+                    queue.setMaxRunTime(getIntegerValue(queueNode, "maxRunTime"));
+                    queues.add(queue);
+                });
+                dto.setQueues(queues);
+            }
 
             // Clean description (remove UI_FIELDS part)
             String cleanDescription = description.substring(0, description.indexOf("UI_FIELDS:")).trim();
@@ -676,6 +738,9 @@ public class DTOConverter {
             uiFields.put(SUPPORTS_ENCRYPTION_KEY, dto.getSupportsEncryption());
             uiFields.put(SUPPORTS_VERSIONING_KEY, dto.getSupportsVersioning());
             
+            // Preserve critical fields
+            uiFields.put(NAME_KEY, dto.getName());
+            
             // S3-specific fields
             if (dto.getBucketName() != null) {
                 uiFields.put(BUCKET_NAME_KEY, dto.getBucketName());
@@ -702,13 +767,19 @@ public class DTOConverter {
             }
             
             String uiFieldsJson = objectMapper.writeValueAsString(uiFields);
-            description.append("\n\nUI_FIELDS: ").append(uiFieldsJson);
+            String result = description.toString() + "\n\nUI_FIELDS: " + uiFieldsJson;
+            
+            // Check if result exceeds database column limit
+            if (result.length() > 2000) {
+                LOGGER.warn("JSON serialization length ({}) may exceed database column limit. Consider running the database migration script.", result.length());
+            }
+            
+            return result;
             
         } catch (Exception e) {
             LOGGER.warn("Failed to encode storage UI fields", e);
+            return description.toString();
         }
-        
-        return description.toString();
     }
     
     // Helper method to encode compute UI fields into description
@@ -728,14 +799,27 @@ public class DTOConverter {
             uiFields.put(SCHEDULER_TYPE_KEY, dto.getSchedulerType());
             uiFields.put(DATA_MOVEMENT_PROTOCOL_KEY, dto.getDataMovementProtocol());
             
+            // Preserve critical fields that might be lost
+            uiFields.put(NAME_KEY, dto.getName());
+            uiFields.put(HOST_ALIASES_KEY, dto.getHostAliases());
+            uiFields.put(IP_ADDRESSES_KEY, dto.getIpAddresses());
+            uiFields.put(QUEUES_KEY, dto.getQueues());
+            
             String uiFieldsJson = objectMapper.writeValueAsString(uiFields);
-            description.append("\n\nUI_FIELDS: ").append(uiFieldsJson);
+            String result = description.toString() + "\n\nUI_FIELDS: " + uiFieldsJson;
+            
+            // Check if result exceeds database column limit (assume 255 for safety if not migrated)
+            if (result.length() > 2000) {
+                LOGGER.warn("JSON serialization length ({}) may exceed database column limit. Consider running the database migration script.", result.length());
+                // Could implement compression here if needed, but for now just log the warning
+            }
+            
+            return result;
             
         } catch (Exception e) {
             LOGGER.warn("Failed to encode compute UI fields", e);
+            return description.toString();
         }
-        
-        return description.toString();
     }
     
     /**
@@ -781,5 +865,41 @@ public class DTOConverter {
         }
         
         return "Compute Resource";
+    }
+    
+    /**
+     * Extract name from description UI fields
+     */
+    private String extractNameFromDescription(String description) {
+        if (description == null || !description.contains("UI_FIELDS:")) {
+            return null;
+        }
+        
+        try {
+            String jsonPart = description.substring(description.indexOf("UI_FIELDS:") + 10).trim();
+            JsonNode rootNode = objectMapper.readTree(jsonPart);
+            return getStringValue(rootNode, NAME_KEY);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to extract name from description", e);
+            return null;
+        }
+    }
+    
+    /**
+     * Extract name from storage description UI fields
+     */
+    private String extractNameFromStorageDescription(String description) {
+        if (description == null || !description.contains("UI_FIELDS:")) {
+            return null;
+        }
+        
+        try {
+            String jsonPart = description.substring(description.indexOf("UI_FIELDS:") + 10).trim();
+            JsonNode rootNode = objectMapper.readTree(jsonPart);
+            return getStringValue(rootNode, NAME_KEY);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to extract name from storage description", e);
+            return null;
+        }
     }
 }
