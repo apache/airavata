@@ -15,6 +15,7 @@ public class ComputeResourceEntity implements Serializable {
 
     @Column(name = "HOST_NAME", nullable = false)
     private String hostName;
+    
 
     @Column(name = "RESOURCE_DESCRIPTION", length = 2048)
     private String resourceDescription;
@@ -67,6 +68,7 @@ public class ComputeResourceEntity implements Serializable {
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
+    
 
     public String getResourceDescription() {
         return resourceDescription;

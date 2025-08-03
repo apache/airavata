@@ -21,20 +21,17 @@ package org.apache.airavata.research.service.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.research.service.entity.ComputeResourceEntity;
-import org.apache.airavata.research.service.entity.StorageResourceEntity;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
 import org.apache.airavata.research.service.dto.ComputeResourceQueueDTO;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.apache.airavata.research.service.entity.ComputeResourceEntity;
+import org.apache.airavata.research.service.entity.StorageResourceEntity;
 
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for converting between entities and DTOs
@@ -496,9 +493,10 @@ public class DTOConverter {
         
         // Extract name from UI fields or generate fallback
         String extractedName = extractNameFromStorageDescription(entity.getDescription());
-        if (extractedName != null) {
+        if (extractedName != null && !extractedName.trim().isEmpty()) {
             dto.setName(extractedName);
         } else {
+            // Generate name from hostname and description
             dto.setName(generateStorageResourceName(entity.getHostName(), entity.getDescription()));
         }
         
@@ -560,9 +558,10 @@ public class DTOConverter {
         
         // Extract name from UI fields or generate fallback
         String extractedName = extractNameFromDescription(entity.getResourceDescription());
-        if (extractedName != null) {
+        if (extractedName != null && !extractedName.trim().isEmpty()) {
             dto.setName(extractedName);
         } else {
+            // Generate name from hostname and description
             dto.setName(generateComputeResourceName(entity.getHostName(), entity.getResourceDescription()));
         }
         
@@ -675,6 +674,15 @@ public class DTOConverter {
             dto.setOperatingSystem(getStringValue(rootNode, OPERATING_SYSTEM_KEY));
             dto.setSchedulerType(getStringValue(rootNode, SCHEDULER_TYPE_KEY));
             dto.setDataMovementProtocol(getStringValue(rootNode, DATA_MOVEMENT_PROTOCOL_KEY));
+            dto.setQueueSystem(getStringValue(rootNode, QUEUE_SYSTEM_KEY));
+            dto.setResourceManager(getStringValue(rootNode, RESOURCE_MANAGER_KEY));
+            dto.setWorkingDirectory(getStringValue(rootNode, WORKING_DIR_KEY));
+            
+            // Extract SSH fields
+            dto.setSshUsername(getStringValue(rootNode, SSH_USERNAME_KEY));
+            dto.setSshPort(getIntegerValue(rootNode, SSH_PORT_KEY));
+            dto.setAuthenticationMethod(getStringValue(rootNode, AUTH_METHOD_KEY));
+            dto.setSshKey(getStringValue(rootNode, SSH_KEY_KEY));
             
             // Extract preserved fields
             dto.setName(getStringValue(rootNode, NAME_KEY));
@@ -798,6 +806,15 @@ public class DTOConverter {
             uiFields.put(OPERATING_SYSTEM_KEY, dto.getOperatingSystem());
             uiFields.put(SCHEDULER_TYPE_KEY, dto.getSchedulerType());
             uiFields.put(DATA_MOVEMENT_PROTOCOL_KEY, dto.getDataMovementProtocol());
+            uiFields.put(QUEUE_SYSTEM_KEY, dto.getQueueSystem());
+            uiFields.put(RESOURCE_MANAGER_KEY, dto.getResourceManager());
+            uiFields.put(WORKING_DIR_KEY, dto.getWorkingDirectory());
+            
+            // SSH configuration fields
+            uiFields.put(SSH_USERNAME_KEY, dto.getSshUsername());
+            uiFields.put(SSH_PORT_KEY, dto.getSshPort());
+            uiFields.put(AUTH_METHOD_KEY, dto.getAuthenticationMethod());
+            uiFields.put(SSH_KEY_KEY, dto.getSshKey());
             
             // Preserve critical fields that might be lost
             uiFields.put(NAME_KEY, dto.getName());
@@ -828,20 +845,35 @@ public class DTOConverter {
     private String generateStorageResourceName(String hostName, String description) {
         if (description != null && description.length() > 10) {
             // Try to extract first line/sentence as name
-            String firstLine = description.split("\n")[0];
+            String firstLine = description.split("\n")[0].trim();
             if (firstLine.length() > 5 && firstLine.length() < 100) {
                 return firstLine;
             }
         }
         
         // Fallback to hostname-based name
-        if (hostName != null) {
-            return hostName.replace(".edu", "")
-                          .replace("-", " ")
-                          .replace(".", " ");
+        if (hostName != null && !hostName.trim().isEmpty()) {
+            String name = hostName.replace(".edu", "")
+                                 .replace(".org", "")
+                                 .replace(".com", "")
+                                 .replace("-", " ")
+                                 .replace(".", " ");
+            
+            // Capitalize words for better display
+            String[] words = name.split("\\s+");
+            StringBuilder result = new StringBuilder();
+            for (String word : words) {
+                if (word.length() > 0) {
+                    if (result.length() > 0) result.append(" ");
+                    result.append(word.substring(0, 1).toUpperCase())
+                          .append(word.substring(1).toLowerCase());
+                }
+            }
+            return result.toString();
         }
         
-        return "Storage Resource";
+        // Ultimate fallback if hostname is also null/empty
+        return "Unnamed Storage Resource";
     }
     
     /**
@@ -850,21 +882,35 @@ public class DTOConverter {
     private String generateComputeResourceName(String hostName, String description) {
         if (description != null && description.length() > 10) {
             // Try to extract first line/sentence as name
-            String firstLine = description.split("\n")[0];
+            String firstLine = description.split("\n")[0].trim();
             if (firstLine.length() > 5 && firstLine.length() < 100) {
                 return firstLine;
             }
         }
         
         // Fallback to hostname-based name
-        if (hostName != null) {
-            return hostName.replace(".edu", "")
-                          .replace(".org", "")
-                          .replace("-", " ")
-                          .replace(".", " ");
+        if (hostName != null && !hostName.trim().isEmpty()) {
+            String name = hostName.replace(".edu", "")
+                                 .replace(".org", "")
+                                 .replace(".com", "")
+                                 .replace("-", " ")
+                                 .replace(".", " ");
+            
+            // Capitalize words for better display
+            String[] words = name.split("\\s+");
+            StringBuilder result = new StringBuilder();
+            for (String word : words) {
+                if (word.length() > 0) {
+                    if (result.length() > 0) result.append(" ");
+                    result.append(word.substring(0, 1).toUpperCase())
+                          .append(word.substring(1).toLowerCase());
+                }
+            }
+            return result.toString();
         }
         
-        return "Compute Resource";
+        // Ultimate fallback if hostname is also null/empty
+        return "Unnamed Compute Resource";
     }
     
     /**

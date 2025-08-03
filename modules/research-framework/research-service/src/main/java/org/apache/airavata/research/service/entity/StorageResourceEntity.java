@@ -15,6 +15,7 @@ public class StorageResourceEntity implements Serializable {
 
     @Column(name = "HOST_NAME", nullable = false)
     private String hostName;
+    
 
     @Column(name = "DESCRIPTION", length = 2048)
     private String description;
@@ -43,6 +44,7 @@ public class StorageResourceEntity implements Serializable {
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
+    
 
     public String getDescription() {
         return description;
