@@ -31,6 +31,7 @@ airavata:
   research-portal:
     url: http://airavata.host:5173
     dev-url: http://airavata.host:5173
+    admin-notification-email: "TO_EMAIL@gmail.com"
   openid:
     url: "http://airavata.host:18080/realms/default"
   user-profile:
