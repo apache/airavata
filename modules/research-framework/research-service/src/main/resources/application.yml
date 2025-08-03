@@ -56,6 +56,17 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: youremail@gmail.com
+    password: your-app-password # Use an App Password from Google
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 springdoc:
   api-docs:
