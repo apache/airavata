@@ -412,7 +412,7 @@ class AiravataOperator:
 
     """
     import os
-    fp = os.path.join("/data", remote_file)
+    fp = os.path.join(".", remote_file)
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
         "envName": agent_ref,
@@ -487,7 +487,7 @@ class AiravataOperator:
 
     """
     import os
-    fp = os.path.join("/data", remote_file)
+    fp = os.path.join(".", remote_file)
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
         "envName": agent_ref,
