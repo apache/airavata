@@ -72,7 +72,13 @@ class Task(pydantic.BaseModel):
     assert self.ref is not None
     from pathlib import Path
     Path(local_dir).mkdir(parents=True, exist_ok=True)
-    return self.runtime.download(file, local_dir, self)
+    try:
+      saved_path = self.runtime.download(file, local_dir, self)
+      print(f"[Remote] Downloaded {file} -> {saved_path}")
+      return saved_path
+    except Exception as e:
+      print(f"[Remote] Failed to download file: {repr(e)}")
+      return ""
   
   def download_all(self, local_dir: str) -> list[str]:
     assert self.ref is not None
@@ -92,6 +98,10 @@ class Task(pydantic.BaseModel):
   def cat(self, file: str) -> bytes:
     assert self.ref is not None
     return self.runtime.cat(file, self)
+  
+  def exec(self, cmd: str) -> bytes:
+    assert self.ref is not None
+    return self.runtime.execute_cmd(cmd, self)
 
   def stop(self) -> None:
     assert self.ref is not None

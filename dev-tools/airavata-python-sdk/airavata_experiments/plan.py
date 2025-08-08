@@ -25,6 +25,7 @@ from rich.progress import Progress
 from .runtime import is_terminal_state
 from .task import Task
 import uuid
+from airavata_auth.device_auth import AuthContext
 
 from .airavata import AiravataOperator
 
@@ -66,11 +67,13 @@ class Plan(pydantic.BaseModel):
       statuses.append(task.status())
     return statuses
 
-  def __stage_stop__(self) -> None:
-    print("Stopping task(s)...")
-    for task in self.tasks:
-      task.stop()
-    print("Task(s) stopped.")
+  def __stage_stop__(self, runs: list[int] = []) -> None:
+    runs = runs if len(runs) > 0 else list(range(len(self.tasks)))
+    print(f"Stopping task(s): {runs}")
+    for i, task in enumerate(self.tasks):
+      if i in runs:
+        task.stop()
+    print(f"Task(s) stopped: {runs}")
 
   def __stage_fetch__(self, local_dir: str) -> list[list[str]]:
     print("Fetching results...")
@@ -78,7 +81,7 @@ class Plan(pydantic.BaseModel):
     for task in self.tasks:
       fps.append(task.download_all(local_dir))
     print("Results fetched.")
-    self.save_json(os.path.join(local_dir, "plan.json"))
+    self.export(os.path.join(local_dir, "plan.json"))
     return fps
 
   def launch(self, silent: bool = True) -> None:
@@ -119,17 +122,17 @@ class Plan(pydantic.BaseModel):
     assert os.path.isdir(local_dir)
     self.__stage_fetch__(local_dir)
 
-  def stop(self) -> None:
-    self.__stage_stop__()
+  def stop(self, runs: list[int] = []) -> None:
+    self.__stage_stop__(runs)
     self.save()
 
-  def save_json(self, filename: str) -> None:
+  def export(self, filename: str) -> None:
     with open(filename, "w") as f:
       json.dump(self.model_dump(), f, indent=2)
 
   def save(self) -> None:
     settings = Settings()
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -162,7 +165,7 @@ def load_json(filename: str) -> Plan:
 def load(id: str | None) -> Plan:
     settings = Settings()
     assert id is not None
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
@@ -183,7 +186,7 @@ def load(id: str | None) -> Plan:
     
 def query() -> list[Plan]:
     settings = Settings()
-    av = AiravataOperator(os.environ['CS_ACCESS_TOKEN'])
+    av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.accessToken is not None
     assert az.claimsMap is not None
