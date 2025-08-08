@@ -10,6 +10,13 @@ from airavata_sdk import Settings
 
 
 class AuthContext:
+    
+    @staticmethod
+    def get_access_token():
+        if os.environ.get("CS_ACCESS_TOKEN", None) is None:
+            context = AuthContext()
+            context.login()
+        return os.environ["CS_ACCESS_TOKEN"]
 
     def __init__(self):
         self.settings = Settings()
@@ -21,6 +28,8 @@ class AuthContext:
         self.console = Console()
 
     def login(self):
+        if os.environ.get('CS_ACCESS_TOKEN', None) is not None:
+            return
         # Step 1: Request device and user code
         auth_device_url = f"{self.settings.AUTH_SERVER_URL}/realms/{self.settings.AUTH_REALM}/protocol/openid-connect/auth/device"
         response = requests.post(auth_device_url, data={

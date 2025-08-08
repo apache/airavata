@@ -43,6 +43,7 @@ from rich.live import Live
 from jupyter_client.blocking.client import BlockingKernelClient
 
 from airavata_auth.device_auth import AuthContext
+from airavata_experiments.plan import Plan
 from airavata_sdk import Settings
 
 # ========================================================================
@@ -62,6 +63,7 @@ class RequestedRuntime:
     group: str
     file: str | None
     use: str | None
+    plan: str | None
 
 
 class ProcessState(IntEnum):
@@ -101,6 +103,7 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('envName', str),
     ('pids', list[int]),
     ('tunnels', dict[str, tuple[str, int]]),
+    ('links', dict[str, str]),
 ])
 
 PENDING_STATES = [
@@ -137,23 +140,6 @@ class State:
 # END OF DATA STRUCTURES
 # ========================================================================
 # HELPER FUNCTIONS
-
-
-def get_access_token(envar_name: str = "CS_ACCESS_TOKEN", state_path: str = "/tmp/av.json") -> str | None:
-    """
-    Get access token from environment or file
-
-    @param None:
-    @returns: access token if present, None otherwise
-
-    """
-    token = os.getenv(envar_name)
-    if not token:
-        try:
-            token = json.load(Path(state_path).open("r")).get("access_token")
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
-    return token
 
 
 def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str):
@@ -470,7 +456,8 @@ def submit_agent_job(
     memory: int | None = None,
     gpus: int | None = None,
     gpu_memory: int | None = None,
-    file: str | None = None,
+    spec_file: str | None = None,
+    plan_file: str | None = None,
 ) -> None:
     """
     Submit an agent job to the given runtime
@@ -487,7 +474,8 @@ def submit_agent_job(
     @param memory: the memory for cpu (MB)
     @param gpus: the number of gpus (int)
     @param gpu_memory: the memory for gpu (MB)
-    @param file: environment file (path)
+    @param spec_file: environment file (path)
+    @param plan_file: experiment plan file (path)
     @returns: None
 
     """
@@ -506,14 +494,14 @@ def submit_agent_job(
     pip: list[str] = []
 
     # if file is provided, validate it and use the given values as defaults
-    if file is not None:
-        fp = Path(file)
+    if spec_file is not None:
+        fp = Path(spec_file)
         # validation
-        assert fp.exists(), f"File {file} does not exist"
+        assert fp.exists(), f"File {spec_file} does not exist"
         with open(fp, "r") as f:
-            content = yaml.safe_load(f)
+            spec = yaml.safe_load(f)
         # validation: /workspace
-        assert (workspace := content.get("workspace", None)) is not None, "missing section: /workspace"
+        assert (workspace := spec.get("workspace", None)) is not None, "missing section: /workspace"
         assert (resources := workspace.get("resources", None)) is not None, "missing section: /workspace/resources"
         assert (min_cpu := resources.get("min_cpu", None)) is not None, "missing section: /workspace/resources/min_cpu"
         assert (min_mem := resources.get("min_mem", None)) is not None, "missing section: /workspace/resources/min_mem"
@@ -523,11 +511,28 @@ def submit_agent_job(
         assert (datasets := workspace.get("data_collection", None)) is not None, "missing section: /workspace/data_collection"
         collection = models + datasets
         # validation: /additional_dependencies
-        assert (additional_dependencies := content.get("additional_dependencies", None)) is not None, "missing section: /additional_dependencies"
+        assert (additional_dependencies := spec.get("additional_dependencies", None)) is not None, "missing section: /additional_dependencies"
         assert (modules := additional_dependencies.get("modules", None)) is not None, "missing /additional_dependencies/modules section"
         assert (conda := additional_dependencies.get("conda", None)) is not None, "missing /additional_dependencies/conda section"
         assert (pip := additional_dependencies.get("pip", None)) is not None, "missing /additional_dependencies/pip section"
         mounts = [f"{i['identifier']}:{i['mount_point']}" for i in collection]
+
+    # if plan file is provided, link its runs into the workspace
+    links = {}
+    if plan_file is not None:
+        assert Path(plan_file).exists(), f"Plan {plan_file} does not exist"
+        assert Path(plan_file).is_file(), f"Plan {plan_file} is not a file"
+        with open(Path(plan_file), "r") as f:
+            from airavata_experiments.base import Plan
+            plan = Plan(**json.load(f))
+        for task in plan.tasks:
+            plan_cluster = str(task.runtime.args.get("cluster", "N/A"))
+            if plan_cluster == "N/A":
+                print(f"[av] skipping plan task {task.name}: cluster not specified in the plan")
+                continue
+            assert plan_cluster == cluster, f"[av] cluster mismatched: {plan_cluster} in plan, {cluster} in request"
+            assert task.pid is not None, f"[av] plan task {task.name} has no pid"
+            links[task.pid] = task.name
 
     # payload
     data = {
@@ -554,6 +559,7 @@ def submit_agent_job(
     print(f"* libraries={data['libraries']}", flush=True)
     print(f"* pip={data['pip']}", flush=True)
     print(f"* mounts={data['mounts']}", flush=True)
+    print(f"* links={links}", flush=True)
 
     # Send the POST request
     headers = generate_headers(access_token, gateway_id)
@@ -584,6 +590,7 @@ def submit_agent_job(
             envName=obj['envName'],
             pids=[],
             tunnels={},
+            links=links,
         )
         state.all_runtimes[rt_name] = rt
         print(f'Requested runtime={rt_name}', flush=True)
@@ -1114,7 +1121,7 @@ def request_runtime(line: str):
     Request a runtime with given capabilities
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     [rt_name, *cmd_args] = line.strip().split()
@@ -1151,12 +1158,32 @@ def request_runtime(line: str):
     p.add_argument("--group", type=str, help="resource group", required=False, default="Default")
     p.add_argument("--file", type=str, help="yml file", required=False)
     p.add_argument("--use", type=str, help="allowed resources", required=False)
+    p.add_argument("--plan", type=str, help="experiment plan file", required=False)
 
     args = p.parse_args(cmd_args, namespace=RequestedRuntime())
 
     if args.file is not None:
-        assert args.use is not None
-        cluster, queue  = meta_scheduler(args.use.split(","))
+        assert (args.use or args.plan) is not None
+        if args.use:
+          cluster, queue  = meta_scheduler(args.use.split(","))
+        else:
+          assert args.plan is not None, "--plan is required when --use is not provided"
+          assert os.path.exists(args.plan), f"--plan={args.plan} file does not exist"
+          assert os.path.isfile(args.plan), f"--plan={args.plan} is not a file"
+          with open(args.plan, "r") as f:
+            plan: Plan = Plan(**json.load(f))
+            clusters = []
+            queues = []
+            for task in plan.tasks:
+              c, q = task.runtime.args.get("cluster"), task.runtime.args.get("queue_name")
+              clusters.append(c)
+              queues.append(q)
+            assert len(set(clusters)) == 1, "all tasks must be on the same cluster"
+            assert len(set(queues)) == 1, "all tasks must be on the same queue"
+            cluster, queue = clusters[0], queues[0]
+            assert cluster is not None, "cluster is required"
+            assert queue is not None, "queue is required"
+
         submit_agent_job(
             rt_name=rt_name,
             access_token=access_token,
@@ -1166,7 +1193,8 @@ def request_runtime(line: str):
             cluster=cluster,
             queue=queue,
             group=args.group,
-            file=args.file,
+            spec_file=args.file,
+            plan_file=args.plan,
         )
     else:
         assert args.cluster is not None
@@ -1194,7 +1222,7 @@ def stat_runtime(line: str):
     Show the status of the runtime
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt_name = line.strip()
@@ -1226,7 +1254,7 @@ def wait_for_runtime(line: str):
         rt_name, render_live_logs = parts[0], True
     else:
         raise ValueError("Usage: %wait_for_runtime <rt> [--live]")
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt = state.all_runtimes.get(rt_name, None)
@@ -1238,8 +1266,14 @@ def wait_for_runtime(line: str):
         random_port = random.randint(2000, 6000) * 5
         launch_remote_kernel(rt_name, random_port, hostname="127.0.0.1")
         print(f"Remote Jupyter kernel launched and connected for runtime={rt_name}.")
-    return
-
+    
+    # create symlinks
+    for pid, name in rt.links.items():
+        try:
+            state.kernel_clients[rt_name].execute(f"!ln -s ../{pid} {name}", silent=True, store_history=False)
+            print(f"[av] linked ../{pid} -> {name}")
+        except Exception as e:
+            print(f"[av] failed to link ../{pid} -> {name}: {e}")
 
 @register_line_magic
 def run_subprocess(line: str):
@@ -1247,7 +1281,7 @@ def run_subprocess(line: str):
     Run a subprocess asynchronously
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt_name = state.current_runtime
@@ -1279,7 +1313,7 @@ def kill_subprocess(line: str):
     Kill a running subprocess asynchronously
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt_name = state.current_runtime
@@ -1308,7 +1342,7 @@ def open_tunnels(line: str):
     Open tunnels to the runtime
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt_name = state.current_runtime
@@ -1348,7 +1382,7 @@ def close_tunnels(line: str):
     Close tunnels to the runtime
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt_name = state.current_runtime
@@ -1374,7 +1408,7 @@ def restart_runtime(rt_name: str):
     Restart the runtime
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt = state.all_runtimes.get(rt_name, None)
@@ -1389,7 +1423,7 @@ def stop_runtime(rt_name: str):
     Stop the runtime
 
     """
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     rt = state.all_runtimes.get(rt_name, None)
@@ -1457,7 +1491,7 @@ def launch_remote_kernel(rt_name: str, base_port: int, hostname: str):
     Launch a remote Jupyter kernel, open tunnels, and connect a local Jupyter client.
     """
     assert ipython is not None
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     assert access_token is not None
 
     # launch kernel and tunnel ports
@@ -1535,7 +1569,7 @@ def open_web_terminal(line: str):
     cmd = f"ttyd -p {random_port} -i 0.0.0.0 --writable bash"
 
     # Get access token
-    access_token = get_access_token()
+    access_token = AuthContext.get_access_token()
     if access_token is None:
         print("Not authenticated. Please run %authenticate first.")
         return
@@ -1667,7 +1701,7 @@ async def run_cell_async(
         return await orig_run_code(raw_cell, store_history, silent, shell_futures, transformed_cell=transformed_cell, preprocessing_exc_tuple=preprocessing_exc_tuple, cell_id=cell_id)
     else:
         # Validation: check runtime is ready and kernel is started
-        access_token = get_access_token()
+        access_token = AuthContext.get_access_token()
         assert access_token is not None
         rt_info = state.all_runtimes.get(rt, None)
         if rt_info is None:
