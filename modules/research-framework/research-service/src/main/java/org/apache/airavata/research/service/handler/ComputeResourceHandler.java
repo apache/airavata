@@ -18,7 +18,7 @@
  */
 package org.apache.airavata.research.service.handler;
 
-import org.apache.airavata.research.service.entity.ComputeResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
 import org.apache.airavata.research.service.repository.ComputeResourceRepository;
 import org.apache.airavata.research.service.util.DTOConverter;
@@ -138,7 +138,7 @@ public class ComputeResourceHandler {
             ComputeResourceEntity entity = dtoConverter.computeResourceDTOToEntity(computeResourceDTO);
             
             // Set system fields
-            entity.setResourceId(UUID.randomUUID().toString());
+            entity.setComputeResourceId(UUID.randomUUID().toString());
             entity.setEnabled((short) 1);
             entity.setCreationTime(new Timestamp(System.currentTimeMillis()));
             entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
@@ -149,7 +149,7 @@ public class ComputeResourceHandler {
             // Convert back to DTO
             ComputeResourceDTO savedDTO = dtoConverter.computeEntityToDTO(savedEntity);
             
-            LOGGER.info("Created compute resource in app_catalog with ID: {}", savedEntity.getResourceId());
+            LOGGER.info("Created compute resource in app_catalog with ID: {}", savedEntity.getComputeResourceId());
             return savedDTO;
         } catch (Exception e) {
             LOGGER.error("Failed to create compute resource in app_catalog", e);
@@ -175,7 +175,7 @@ public class ComputeResourceHandler {
             
             // Preserve system fields
             ComputeResourceEntity existing = existingOpt.get();
-            updatedEntity.setResourceId(computeResourceId);
+            updatedEntity.setComputeResourceId(computeResourceId);
             updatedEntity.setCreationTime(existing.getCreationTime());
             updatedEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             

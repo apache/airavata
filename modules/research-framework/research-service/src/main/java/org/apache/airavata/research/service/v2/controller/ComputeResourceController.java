@@ -117,8 +117,7 @@ public class ComputeResourceController {
             return ResponseEntity.badRequest().body("Validation failed: " + errorMessage);
         }
         
-        // Set intelligent defaults for fields not provided by UI
-        setDefaultValues(computeResourceDTO);
+        // TODO: Remove setDefaultValues() as part of migration - rely on DTO validation instead
         
         try {
             
@@ -153,8 +152,7 @@ public class ComputeResourceController {
             return ResponseEntity.badRequest().body("Validation failed: " + errorMessage);
         }
         
-        // Set intelligent defaults for fields not provided by UI
-        setDefaultValues(computeResourceDTO);
+        // TODO: Remove setDefaultValues() as part of migration - rely on DTO validation instead
         
         try {
             ComputeResourceDTO updatedResource = computeResourceHandler.updateComputeResource(id, computeResourceDTO);
@@ -318,27 +316,24 @@ public class ComputeResourceController {
             dto.setResourceManager("Default Resource Manager");
         }
         
-        // Set default SSH configuration
-        if (dto.getSshUsername() == null || dto.getSshUsername().trim().isEmpty()) {
-            dto.setSshUsername("admin");
+        // Set default SSH configuration (using alternative hostname field)
+        if (dto.getAlternativeSSHHostName() == null || dto.getAlternativeSSHHostName().trim().isEmpty()) {
+            dto.setAlternativeSSHHostName(dto.getHostName()); // Default to main hostname
         }
         
         if (dto.getSshPort() == null) {
             dto.setSshPort(22);
         }
         
-        if (dto.getAuthenticationMethod() == null || dto.getAuthenticationMethod().trim().isEmpty()) {
-            dto.setAuthenticationMethod("SSH_KEYS");
+        if (dto.getSecurityProtocol() == null || dto.getSecurityProtocol().trim().isEmpty()) {
+            dto.setSecurityProtocol("SSH_KEYS");
         }
         
-        // Set default working directory
-        if (dto.getWorkingDirectory() == null || dto.getWorkingDirectory().trim().isEmpty()) {
-            dto.setWorkingDirectory("/tmp");
-        }
+        // Working directory is no longer a direct field - handled by related entities
         
-        // Set default scheduler type
-        if (dto.getSchedulerType() == null || dto.getSchedulerType().trim().isEmpty()) {
-            dto.setSchedulerType("SLURM");
+        // Set default resource job manager type
+        if (dto.getResourceJobManagerType() == null || dto.getResourceJobManagerType().trim().isEmpty()) {
+            dto.setResourceJobManagerType("SLURM");
         }
         
         // Set default data movement protocol

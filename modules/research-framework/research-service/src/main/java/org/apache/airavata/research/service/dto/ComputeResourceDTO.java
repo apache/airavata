@@ -65,46 +65,30 @@ public class ComputeResourceDTO {
     @Size(max = 100, message = "Operating system must not exceed 100 characters")
     private String operatingSystem;
 
-    @NotBlank(message = "Queue system is required")
-    @Size(max = 100, message = "Queue system must not exceed 100 characters")
+    // Queue system is represented by BatchQueue entities, not a simple string
+    // Keeping for backward compatibility but making optional
     private String queueSystem; // SLURM, PBS, SGE, etc.
 
     private String additionalInfo;
 
-    @NotBlank(message = "Resource manager is required")
-    @Size(max = 255, message = "Resource manager must not exceed 255 characters")
+    // Resource manager type handled by ResourceJobManager entity
+    // Keeping for backward compatibility but making optional  
     private String resourceManager; // Gateway name or organization
 
     // Direct mappings from ComputeResourceDescription
     private List<String> hostAliases = new ArrayList<>();
     private List<String> ipAddresses = new ArrayList<>();
 
-    // UI-specific SSH configuration fields
-    @NotBlank(message = "SSH username is required")
-    @Size(max = 100, message = "SSH username must not exceed 100 characters")
-    private String sshUsername;
+    // SSH configuration fields (mapped from JobSubmissionInterface -> SSHJobSubmission)
+    private Integer sshPort; // Optional - defaults to 22 if not specified
+    private String alternativeSSHHostName; // Optional alternative hostname
+    private String securityProtocol; // SSH_KEYS, USERNAME_PASSWORD (from SecurityProtocol enum)
 
-    @NotNull(message = "SSH port is required")
-    @Min(value = 1, message = "SSH port must be at least 1")
-    private Integer sshPort;
-
-    @NotBlank(message = "Authentication method is required")
-    @Size(max = 50, message = "Authentication method must not exceed 50 characters")
-    private String authenticationMethod; // SSH_KEY or PASSWORD
-
-    private String sshKey; // SSH key content for SSH_KEY authentication
-
-    @NotBlank(message = "Working directory is required")
-    @Size(max = 500, message = "Working directory must not exceed 500 characters")
-    private String workingDirectory;
-
-    @NotBlank(message = "Scheduler type is required")
-    @Size(max = 50, message = "Scheduler type must not exceed 50 characters")
-    private String schedulerType; // SLURM, PBS, SGE, etc.
-
-    @NotBlank(message = "Data movement protocol is required")
-    @Size(max = 50, message = "Data movement protocol must not exceed 50 characters")
-    private String dataMovementProtocol; // SCP, SFTP, etc.
+    // Job management fields (mapped from JobSubmissionInterface -> SSHJobSubmission -> ResourceJobManager)
+    private String resourceJobManagerType; // PBS, SLURM, UGE, etc. (from ResourceJobManagerType enum)
+    
+    // Data movement fields (mapped from DataMovementInterface)
+    private String dataMovementProtocol; // SCP, SFTP, GRIDFTP, etc. (from DataMovementProtocol enum)
 
     // Queue management
     private List<ComputeResourceQueueDTO> queues = new ArrayList<>();
@@ -229,12 +213,12 @@ public class ComputeResourceDTO {
         this.ipAddresses = ipAddresses;
     }
 
-    public String getSshUsername() {
-        return sshUsername;
+    public String getAlternativeSSHHostName() {
+        return alternativeSSHHostName;
     }
 
-    public void setSshUsername(String sshUsername) {
-        this.sshUsername = sshUsername;
+    public void setAlternativeSSHHostName(String alternativeSSHHostName) {
+        this.alternativeSSHHostName = alternativeSSHHostName;
     }
 
     public Integer getSshPort() {
@@ -245,36 +229,20 @@ public class ComputeResourceDTO {
         this.sshPort = sshPort;
     }
 
-    public String getAuthenticationMethod() {
-        return authenticationMethod;
+    public String getSecurityProtocol() {
+        return securityProtocol;
     }
 
-    public void setAuthenticationMethod(String authenticationMethod) {
-        this.authenticationMethod = authenticationMethod;
+    public void setSecurityProtocol(String securityProtocol) {
+        this.securityProtocol = securityProtocol;
     }
 
-    public String getSshKey() {
-        return sshKey;
+    public String getResourceJobManagerType() {
+        return resourceJobManagerType;
     }
 
-    public void setSshKey(String sshKey) {
-        this.sshKey = sshKey;
-    }
-
-    public String getWorkingDirectory() {
-        return workingDirectory;
-    }
-
-    public void setWorkingDirectory(String workingDirectory) {
-        this.workingDirectory = workingDirectory;
-    }
-
-    public String getSchedulerType() {
-        return schedulerType;
-    }
-
-    public void setSchedulerType(String schedulerType) {
-        this.schedulerType = schedulerType;
+    public void setResourceJobManagerType(String resourceJobManagerType) {
+        this.resourceJobManagerType = resourceJobManagerType;
     }
 
     public String getDataMovementProtocol() {

@@ -58,8 +58,8 @@ public class AppCatalogDatabaseConfig {
         em.setDataSource(appCatalogDataSource());
         em.setPersistenceUnitName("appCatalogPU");
         
-        // Scan our local entities that mirror database schema exactly
-        em.setPackagesToScan("org.apache.airavata.research.service.entity");
+        // Scan airavata-api entities instead of local replicated entities
+        em.setPackagesToScan("org.apache.airavata.registry.core.entities.appcatalog");
         
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(false); // Don't modify existing schema

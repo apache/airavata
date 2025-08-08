@@ -18,7 +18,7 @@
  */
 package org.apache.airavata.research.service.repository;
 
-import org.apache.airavata.research.service.entity.StorageResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,9 +29,9 @@ import java.util.List;
 @Repository
 public interface StorageResourceRepository extends JpaRepository<StorageResourceEntity, String> {
     
-    @Query("SELECT s FROM StorageResourceEntity s WHERE s.enabled = 1 ORDER BY s.creationTime DESC")
+    @Query("SELECT s FROM StorageResourceEntity s WHERE s.enabled = true ORDER BY s.creationTime DESC")
     List<StorageResourceEntity> findAllEnabledOrderByCreationTime();
     
-    @Query("SELECT s FROM StorageResourceEntity s WHERE s.enabled = 1 AND s.hostName LIKE %:hostname%")
+    @Query("SELECT s FROM StorageResourceEntity s WHERE s.enabled = true AND s.hostName LIKE %:hostname%")
     List<StorageResourceEntity> findEnabledByHostNameContaining(@Param("hostname") String hostname);
 }

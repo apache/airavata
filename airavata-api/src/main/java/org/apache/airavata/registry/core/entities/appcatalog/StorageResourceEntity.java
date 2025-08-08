@@ -33,10 +33,11 @@ public class StorageResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "STORAGE_RESOURCE_ID")
+    @Column(name = "STORAGE_RESOURCE_ID", nullable = false, length = 255)
     private String storageResourceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp creationTime;
 
     @Column(name = "DESCRIPTION")
@@ -45,17 +46,18 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "ENABLED")
     private boolean enabled;
 
-    @Column(name = "HOST_NAME")
+    @Column(name = "HOST_NAME", nullable = false, length = 255)
     private String hostName;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp updateTime;
 
     @OneToMany(
             targetEntity = StorageInterfaceEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "storageResource",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private List<StorageInterfaceEntity> dataMovementInterfaces;
 
     public StorageResourceEntity() {}

@@ -25,12 +25,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.research.service.dto.ComputeResourceDTO;
 import org.apache.airavata.research.service.dto.ComputeResourceQueueDTO;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
-import org.apache.airavata.research.service.entity.ComputeResourceEntity;
-import org.apache.airavata.research.service.entity.StorageResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -118,6 +125,24 @@ public class DTOConverter {
                 .collect(Collectors.toList()));
         }
 
+        // Extract data movement protocol from DataMovementInterface
+        if (thriftModel.getDataMovementInterfaces() != null && !thriftModel.getDataMovementInterfaces().isEmpty()) {
+            // Get the first (highest priority) data movement interface
+            DataMovementInterface dmInterface = thriftModel.getDataMovementInterfaces().get(0);
+            if (dmInterface != null && dmInterface.getDataMovementProtocol() != null) {
+                dto.setDataMovementProtocol(dmInterface.getDataMovementProtocol().toString());
+            }
+        }
+
+        // Extract resource job manager type from JobSubmissionInterface
+        if (thriftModel.getJobSubmissionInterfaces() != null && !thriftModel.getJobSubmissionInterfaces().isEmpty()) {
+            // Get the first (highest priority) job submission interface
+            JobSubmissionInterface jsInterface = thriftModel.getJobSubmissionInterfaces().get(0);
+            if (jsInterface != null && jsInterface.getJobSubmissionProtocol() != null) {
+                dto.setResourceJobManagerType(jsInterface.getJobSubmissionProtocol().toString());
+            }
+        }
+
         return dto;
     }
 
@@ -156,6 +181,36 @@ public class DTOConverter {
             thriftModel.setBatchQueues(dto.getQueues().stream()
                 .map(this::dtoToBatchQueue)
                 .collect(Collectors.toList()));
+        }
+
+        // Create DataMovementInterface if protocol is specified
+        if (dto.getDataMovementProtocol() != null && !dto.getDataMovementProtocol().trim().isEmpty()) {
+            List<DataMovementInterface> dataMovementInterfaces = new ArrayList<>();
+            DataMovementInterface dmInterface = new DataMovementInterface();
+            dmInterface.setDataMovementInterfaceId(generateInterfaceId("dm"));
+            dmInterface.setPriorityOrder(1); // Highest priority
+            try {
+                dmInterface.setDataMovementProtocol(DataMovementProtocol.valueOf(dto.getDataMovementProtocol()));
+                dataMovementInterfaces.add(dmInterface);
+                thriftModel.setDataMovementInterfaces(dataMovementInterfaces);
+            } catch (IllegalArgumentException e) {
+                LOGGER.warn("Invalid data movement protocol: " + dto.getDataMovementProtocol(), e);
+            }
+        }
+
+        // Create JobSubmissionInterface if protocol is specified  
+        if (dto.getResourceJobManagerType() != null && !dto.getResourceJobManagerType().trim().isEmpty()) {
+            List<JobSubmissionInterface> jobSubmissionInterfaces = new ArrayList<>();
+            JobSubmissionInterface jsInterface = new JobSubmissionInterface();
+            jsInterface.setJobSubmissionInterfaceId(generateInterfaceId("js"));
+            jsInterface.setPriorityOrder(1); // Highest priority
+            try {
+                jsInterface.setJobSubmissionProtocol(JobSubmissionProtocol.valueOf(dto.getResourceJobManagerType()));
+                jobSubmissionInterfaces.add(jsInterface);
+                thriftModel.setJobSubmissionInterfaces(jobSubmissionInterfaces);
+            } catch (IllegalArgumentException e) {
+                LOGGER.warn("Invalid job submission protocol: " + dto.getResourceJobManagerType(), e);
+            }
         }
 
         return thriftModel;
@@ -276,17 +331,15 @@ public class DTOConverter {
                 dto.setQueueSystem(getStringValue(uiFieldsNode, QUEUE_SYSTEM_KEY));
                 dto.setAdditionalInfo(getStringValue(uiFieldsNode, ADDITIONAL_INFO_KEY));
                 dto.setResourceManager(getStringValue(uiFieldsNode, RESOURCE_MANAGER_KEY));
-                dto.setWorkingDirectory(getStringValue(uiFieldsNode, WORKING_DIR_KEY));
-                dto.setSchedulerType(getStringValue(uiFieldsNode, SCHEDULER_TYPE_KEY));
+                dto.setResourceJobManagerType(getStringValue(uiFieldsNode, SCHEDULER_TYPE_KEY)); // Map old schedulerType to new field
                 dto.setDataMovementProtocol(getStringValue(uiFieldsNode, DATA_MOVEMENT_PROTOCOL_KEY));
 
                 // Extract SSH configuration
                 JsonNode sshConfigNode = uiFieldsNode.get(SSH_CONFIG_KEY);
                 if (sshConfigNode != null) {
-                    dto.setSshUsername(getStringValue(sshConfigNode, SSH_USERNAME_KEY));
+                    dto.setAlternativeSSHHostName(getStringValue(sshConfigNode, SSH_USERNAME_KEY)); // Repurpose for alternative hostname
                     dto.setSshPort(getIntegerValue(sshConfigNode, SSH_PORT_KEY));
-                    dto.setAuthenticationMethod(getStringValue(sshConfigNode, AUTH_METHOD_KEY));
-                    dto.setSshKey(getStringValue(sshConfigNode, SSH_KEY_KEY));
+                    dto.setSecurityProtocol(getStringValue(sshConfigNode, AUTH_METHOD_KEY)); // Map to securityProtocol
                 }
             }
             
@@ -320,16 +373,14 @@ public class DTOConverter {
         uiFields.put(QUEUE_SYSTEM_KEY, dto.getQueueSystem());
         uiFields.put(ADDITIONAL_INFO_KEY, dto.getAdditionalInfo());
         uiFields.put(RESOURCE_MANAGER_KEY, dto.getResourceManager());
-        uiFields.put(WORKING_DIR_KEY, dto.getWorkingDirectory());
-        uiFields.put(SCHEDULER_TYPE_KEY, dto.getSchedulerType());
+        uiFields.put(SCHEDULER_TYPE_KEY, dto.getResourceJobManagerType()); // Use new field name
         uiFields.put(DATA_MOVEMENT_PROTOCOL_KEY, dto.getDataMovementProtocol());
 
         // SSH configuration
         Map<String, Object> sshConfig = new HashMap<>();
-        sshConfig.put(SSH_USERNAME_KEY, dto.getSshUsername());
+        sshConfig.put(SSH_USERNAME_KEY, dto.getAlternativeSSHHostName()); // Repurposed field
         sshConfig.put(SSH_PORT_KEY, dto.getSshPort());
-        sshConfig.put(AUTH_METHOD_KEY, dto.getAuthenticationMethod());
-        sshConfig.put(SSH_KEY_KEY, dto.getSshKey());
+        sshConfig.put(AUTH_METHOD_KEY, dto.getSecurityProtocol()); // Use new field name
         uiFields.put(SSH_CONFIG_KEY, sshConfig);
 
         rootMap.put(UI_FIELDS_KEY, uiFields);
@@ -486,18 +537,17 @@ public class DTOConverter {
         // Core fields
         dto.setStorageResourceId(entity.getStorageResourceId());
         dto.setHostName(entity.getHostName());
-        dto.setStorageResourceDescription(entity.getDescription());
-        // Handle enabled field safely - Short type from database
-        Short enabledValue = entity.getEnabled();
-        dto.setEnabled(enabledValue != null && enabledValue.shortValue() == 1);
+        dto.setStorageResourceDescription(entity.getStorageResourceDescription());
+        // Handle enabled field - boolean type from database
+        dto.setEnabled(entity.isEnabled());
         
         // Extract name from UI fields or generate fallback
-        String extractedName = extractNameFromStorageDescription(entity.getDescription());
+        String extractedName = extractNameFromStorageDescription(entity.getStorageResourceDescription());
         if (extractedName != null && !extractedName.trim().isEmpty()) {
             dto.setName(extractedName);
         } else {
             // Generate name from hostname and description
-            dto.setName(generateStorageResourceName(entity.getHostName(), entity.getDescription()));
+            dto.setName(generateStorageResourceName(entity.getHostName(), entity.getStorageResourceDescription()));
         }
         
         // Timestamps
@@ -508,8 +558,8 @@ public class DTOConverter {
             dto.setUpdateTime(entity.getUpdateTime().getTime());
         }
 
-        // Extract UI-specific fields from description JSON
-        extractStorageUIFieldsFromDescription(entity.getDescription(), dto);
+        // Extract UI-specific fields from JSON stored in description
+        extractStorageUIFieldsFromDescription(entity.getStorageResourceDescription(), dto);
 
         return dto;
     }
@@ -527,11 +577,10 @@ public class DTOConverter {
         // Core fields
         entity.setStorageResourceId(dto.getStorageResourceId());
         entity.setHostName(dto.getHostName());
-        entity.setEnabled(dto.isEnabled() ? (short) 1 : (short) 0);
+        entity.setEnabled(dto.isEnabled());
         
-        // Embed UI fields into description as JSON
-        String descriptionWithUIFields = encodeStorageUIFieldsIntoDescription(dto);
-        entity.setDescription(descriptionWithUIFields);
+        // Encode UI-specific fields into JSON within description
+        entity.setStorageResourceDescription(encodeStorageUIFieldsIntoDescription(dto));
 
         return entity;
     }
@@ -547,14 +596,14 @@ public class DTOConverter {
         ComputeResourceDTO dto = new ComputeResourceDTO();
         
         // Core fields
-        dto.setComputeResourceId(entity.getResourceId());
+        dto.setComputeResourceId(entity.getComputeResourceId());
         dto.setHostName(entity.getHostName());
         dto.setResourceDescription(entity.getResourceDescription());
         // Handle enabled field safely - Short type from database
         Short enabledValue = entity.getEnabled();
         dto.setEnabled(enabledValue != null && enabledValue.shortValue() == 1);
         dto.setCpuCores(entity.getCpusPerNode());
-        dto.setMemoryGB(entity.getMaxMemoryNode());
+        dto.setMemoryGB(entity.getMaxMemoryPerNode());
         
         // Extract name from UI fields or generate fallback
         String extractedName = extractNameFromDescription(entity.getResourceDescription());
@@ -573,7 +622,7 @@ public class DTOConverter {
             dto.setUpdateTime(entity.getUpdateTime().getTime());
         }
 
-        // Extract UI-specific fields from description JSON
+        // Extract UI-specific fields from JSON stored in description
         extractComputeUIFieldsFromDescription(entity.getResourceDescription(), dto);
         
         // Initialize empty arrays for fields not stored in database
@@ -601,15 +650,14 @@ public class DTOConverter {
         ComputeResourceEntity entity = new ComputeResourceEntity();
         
         // Core fields
-        entity.setResourceId(dto.getComputeResourceId());
+        entity.setComputeResourceId(dto.getComputeResourceId());
         entity.setHostName(dto.getHostName());
-        entity.setEnabled(dto.isEnabled() ? (short) 1 : (short) 0);
+        entity.setEnabled(dto.isEnabled() ? Short.valueOf((short) 1) : Short.valueOf((short) 0));
         entity.setCpusPerNode(dto.getCpuCores());
-        entity.setMaxMemoryNode(dto.getMemoryGB());
+        entity.setMaxMemoryPerNode(dto.getMemoryGB());
         
-        // Embed UI fields into description as JSON
-        String descriptionWithUIFields = encodeComputeUIFieldsIntoDescription(dto);
-        entity.setResourceDescription(descriptionWithUIFields);
+        // Encode UI-specific fields into JSON within description
+        entity.setResourceDescription(encodeComputeUIFieldsIntoDescription(dto));
 
         return entity;
     }
@@ -672,17 +720,15 @@ public class DTOConverter {
             // Extract UI-specific fields
             dto.setComputeType(getStringValue(rootNode, COMPUTE_TYPE_KEY));
             dto.setOperatingSystem(getStringValue(rootNode, OPERATING_SYSTEM_KEY));
-            dto.setSchedulerType(getStringValue(rootNode, SCHEDULER_TYPE_KEY));
+            dto.setResourceJobManagerType(getStringValue(rootNode, SCHEDULER_TYPE_KEY)); // Map old schedulerType to new field
             dto.setDataMovementProtocol(getStringValue(rootNode, DATA_MOVEMENT_PROTOCOL_KEY));
             dto.setQueueSystem(getStringValue(rootNode, QUEUE_SYSTEM_KEY));
             dto.setResourceManager(getStringValue(rootNode, RESOURCE_MANAGER_KEY));
-            dto.setWorkingDirectory(getStringValue(rootNode, WORKING_DIR_KEY));
             
-            // Extract SSH fields
-            dto.setSshUsername(getStringValue(rootNode, SSH_USERNAME_KEY));
+            // Extract SSH fields (updated field names)
             dto.setSshPort(getIntegerValue(rootNode, SSH_PORT_KEY));
-            dto.setAuthenticationMethod(getStringValue(rootNode, AUTH_METHOD_KEY));
-            dto.setSshKey(getStringValue(rootNode, SSH_KEY_KEY));
+            dto.setSecurityProtocol(getStringValue(rootNode, AUTH_METHOD_KEY)); // Map authenticationMethod to securityProtocol
+            dto.setAlternativeSSHHostName(getStringValue(rootNode, SSH_USERNAME_KEY)); // Repurpose for alternative hostname
             
             // Extract preserved fields
             dto.setName(getStringValue(rootNode, NAME_KEY));
@@ -804,17 +850,15 @@ public class DTOConverter {
             Map<String, Object> uiFields = new HashMap<>();
             uiFields.put(COMPUTE_TYPE_KEY, dto.getComputeType());
             uiFields.put(OPERATING_SYSTEM_KEY, dto.getOperatingSystem());
-            uiFields.put(SCHEDULER_TYPE_KEY, dto.getSchedulerType());
+            uiFields.put(SCHEDULER_TYPE_KEY, dto.getResourceJobManagerType()); // Use new field name
             uiFields.put(DATA_MOVEMENT_PROTOCOL_KEY, dto.getDataMovementProtocol());
             uiFields.put(QUEUE_SYSTEM_KEY, dto.getQueueSystem());
             uiFields.put(RESOURCE_MANAGER_KEY, dto.getResourceManager());
-            uiFields.put(WORKING_DIR_KEY, dto.getWorkingDirectory());
             
-            // SSH configuration fields
-            uiFields.put(SSH_USERNAME_KEY, dto.getSshUsername());
+            // SSH configuration fields (updated field names)
+            uiFields.put(SSH_USERNAME_KEY, dto.getAlternativeSSHHostName()); // Repurposed field
             uiFields.put(SSH_PORT_KEY, dto.getSshPort());
-            uiFields.put(AUTH_METHOD_KEY, dto.getAuthenticationMethod());
-            uiFields.put(SSH_KEY_KEY, dto.getSshKey());
+            uiFields.put(AUTH_METHOD_KEY, dto.getSecurityProtocol()); // Use new field name
             
             // Preserve critical fields that might be lost
             uiFields.put(NAME_KEY, dto.getName());
@@ -947,5 +991,12 @@ public class DTOConverter {
             LOGGER.warn("Failed to extract name from storage description", e);
             return null;
         }
+    }
+    
+    /**
+     * Generate a unique interface ID for JobSubmissionInterface or DataMovementInterface
+     */
+    private String generateInterfaceId(String prefix) {
+        return prefix + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
     }
 }

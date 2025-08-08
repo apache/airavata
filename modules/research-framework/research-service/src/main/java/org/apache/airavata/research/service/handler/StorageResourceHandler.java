@@ -18,7 +18,7 @@
  */
 package org.apache.airavata.research.service.handler;
 
-import org.apache.airavata.research.service.entity.StorageResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity;
 import org.apache.airavata.research.service.dto.StorageResourceDTO;
 import org.apache.airavata.research.service.repository.StorageResourceRepository;
 import org.apache.airavata.research.service.util.DTOConverter;
@@ -140,7 +140,7 @@ public class StorageResourceHandler {
             
             // Set system fields
             entity.setStorageResourceId(UUID.randomUUID().toString());
-            entity.setEnabled((short) 1);
+            entity.setEnabled(true);
             entity.setCreationTime(new Timestamp(System.currentTimeMillis()));
             entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             

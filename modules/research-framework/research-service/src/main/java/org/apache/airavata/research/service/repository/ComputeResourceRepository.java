@@ -18,7 +18,7 @@
  */
 package org.apache.airavata.research.service.repository;
 
-import org.apache.airavata.research.service.entity.ComputeResourceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

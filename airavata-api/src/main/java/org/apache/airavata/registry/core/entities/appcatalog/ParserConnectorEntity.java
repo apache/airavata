@@ -32,13 +32,13 @@ public class ParserConnectorEntity implements Serializable {
     @Column(name = "PARSER_CONNECTOR_ID")
     private String id;
 
-    @Column(name = "PARENT_PARSER_ID")
+    @Column(name = "PARENT_PARSER_ID", insertable = false, updatable = false)
     private String parentParserId;
 
-    @Column(name = "CHILD_PARSER_ID")
+    @Column(name = "CHILD_PARSER_ID", insertable = false, updatable = false)
     private String childParserId;
 
-    @Column(name = "PARSING_TEMPLATE_ID")
+    @Column(name = "PARSING_TEMPLATE_ID", insertable = false, updatable = false)
     private String parsingTemplateId;
 
     @OneToMany(

@@ -117,7 +117,7 @@ public class StorageResourceController {
         }
         
         // Set intelligent defaults for fields not provided by UI
-        setDefaultValues(storageResourceDTO);
+        // TODO: Remove setDefaultValues() as part of migration - rely on DTO validation instead
         
         try {
             
@@ -148,7 +148,7 @@ public class StorageResourceController {
         }
         
         // Set intelligent defaults for fields not provided by UI
-        setDefaultValues(storageResourceDTO);
+        // TODO: Remove setDefaultValues() as part of migration - rely on DTO validation instead
         
         try {
             StorageResourceDTO updatedResource = storageResourceHandler.updateStorageResource(id, storageResourceDTO);

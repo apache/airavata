@@ -38,6 +38,9 @@ public class SshJobSubmissionEntity implements Serializable {
     @Column(name = "JOB_SUBMISSION_INTERFACE_ID")
     private String jobSubmissionInterfaceId;
 
+    @Column(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, updatable = false)
+    private String resourceJobManagerId;
+
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", nullable = false, updatable = false)
     private ResourceJobManagerEntity resourceJobManager;
@@ -69,6 +72,14 @@ public class SshJobSubmissionEntity implements Serializable {
 
     public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
         this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
+    }
+
+    public String getResourceJobManagerId() {
+        return resourceJobManagerId;
+    }
+
+    public void setResourceJobManagerId(String resourceJobManagerId) {
+        this.resourceJobManagerId = resourceJobManagerId;
     }
 
     public String getAlternativeSshHostname() {
