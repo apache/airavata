@@ -1,22 +1,34 @@
-name: Maven Docker Build & Push
+name: Build and Push Monolithic Airavata Docker Image
 
 on:
   push:
-    tags:
-      - "v*"
-  release:
-    types: [published]
+    branches: [ main, master ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
 
 env:
-  DOCKER_REGISTRY: docker.io
-  DOCKER_USERNAME: cybershuttle
-  VERSION: ${{ github.ref_name }}
+  REGISTRY: docker.io
+  IMAGE_NAME: cybershuttle-airavata:latest
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
       - name: Install OS dependencies
         run: |
           sudo apt-get update
@@ -31,34 +43,42 @@ jobs:
           make -j$(nproc)
           sudo make install
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
       - name: Build with Maven (skip tests)
         run: mvn clean install -DskipTests
 
-      - name: Build Docker Images
-        run: |
-          mvn docker:build -pl modules/distribution
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: List Docker Images
-        run: docker images
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Tag and Push Images
-        run: |
-          for image in email-monitor participant post-wm pre-wm api-server controller; do
-            docker tag airavata/$image ${DOCKER_USERNAME}/airavata-$image:${VERSION}
-            docker push ${DOCKER_USERNAME}/airavata-$image:${VERSION}
-          done
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Image digest
+        run: echo ${{ steps.meta.outputs.tags }} 
