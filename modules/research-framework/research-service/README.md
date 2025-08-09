@@ -26,7 +26,7 @@ A comprehensive Spring Boot REST API service for managing research resources, co
 The Research Service employs a **dual database architecture** designed to separate research data from infrastructure management:
 
 - **H2 Database (In-Memory)**: Manages v1 research resources (Projects, Datasets, Models, Notebooks, Repositories)
-- **MariaDB Database**: Manages v2 infrastructure resources (Compute Resources, Storage Resources) 
+- **MariaDB Database**: Manages v2 infrastructure resources (Compute Resources, Storage Resources) using imported airavata-api entities
 - **RESTful API**: Comprehensive v1 and v2 endpoints with different authentication requirements
 - **Multi-Profile Configuration**: Supports development and production environments
 
@@ -70,7 +70,9 @@ docker-compose -f .devcontainer/docker-compose.yml up db adminer
 ```bash
 cd airavata/modules/research-framework/research-service
 
-# Run column length migration (required for enhanced JSON storage)
+# Run column length migration (REQUIRED for UI field JSON storage)
+# This migration increases column lengths in airavata-api entities to support
+# JSON serialization of UI-specific fields like queues, hostAliases, etc.
 mysql -h airavata.host -P 13306 -u airavata -p123456 app_catalog < database-migrations/001-increase-description-column-lengths.sql
 ```
 
@@ -105,15 +107,14 @@ mvn spring-boot:run
 #### MariaDB Database (v2 Infrastructure)
 - **Purpose**: Production infrastructure and computational resources
 - **Location**: `airavata.host:13306/app_catalog`
-- **Entities**: `ComputeResourceEntity`, `StorageResourceEntity`, `Code`
-- **Resource Types**: HPC clusters, storage systems, research codes
+- **Entities**: `ComputeResourceEntity`, `StorageResourceEntity` (imported from airavata-api)
+- **Resource Types**: HPC clusters, supercomputers, cloud resources, storage systems
 - **Sample Data**: 12+ infrastructure resources
 
 ### Data Initializers
 
 - **`DatasetInitializer`**: Creates 9 research datasets (all profiles)
 - **`DevDataInitializer`**: Creates 10 neuroscience projects with full resource sets (dev profile only)
-- **`V2DataInitializer`**: Creates 11 code resources and samples (all profiles)
 
 ## 🔐 Authentication
 
@@ -175,25 +176,6 @@ curl -X POST http://localhost:8080/api/dev/auth/token \
 
 ### V2 API - Infrastructure Resources (MariaDB)
 
-#### Codes (`/api/v2/rf/codes`) 🔒
-- `GET /` - List codes (with pagination, filtering)
-- `GET /{id}` - Get code by ID
-- `POST /` - Create code resource
-- `PUT /{id}` - Update code resource
-- `DELETE /{id}` - Delete code resource
-- `GET /search` - Search by keyword
-- `GET /type/{codeType}` - Filter by code type
-- `GET /language/{language}` - Filter by programming language
-- `GET /framework/{framework}` - Filter by framework
-- `GET /tag/{tag}` - Filter by tag
-- `GET /author/{author}` - Filter by author
-- `GET /top-starred` - Get most starred codes
-- `GET /recent` - Get recent codes
-- `POST /{id}/star` - Star/unstar code
-- `GET /{id}/star` - Check star status
-- `GET /{id}/stars/count` - Get star count
-- `GET /starred` - Get starred codes
-
 #### Compute Resources (`/api/v2/rf/compute-resources`) 🔒
 - `GET /` - List compute resources (with name search)
 - `GET /{id}` - Get compute resource by ID
@@ -242,12 +224,13 @@ Headers: X-API-Key: dev-research-api-key-12345
   "operatingSystem": "Cray Linux Environment",
   "hostAliases": ["titan-login1.supercluster.edu"],
   "ipAddresses": ["128.219.10.1"],
-  "sshUsername": "user123",
   "sshPort": 22,
-  "authenticationMethod": "SSH_KEY",
-  "workingDirectory": "/lustre/home/user123",
-  "schedulerType": "SLURM",
+  "alternativeSSHHostName": "titan-login.supercluster.edu",
+  "securityProtocol": "SSH_KEYS",
+  "resourceJobManagerType": "SLURM",
   "dataMovementProtocol": "SCP",
+  "queueSystem": "SLURM",
+  "resourceManager": "XSEDE",
   "queues": [
     {
       "queueName": "default",
@@ -271,13 +254,14 @@ Headers: X-API-Key: dev-research-api-key-12345
   "storageResourceDescription": "AWS S3 bucket for research data",
   "storageType": "S3",
   "capacityTB": 1000,
-  "accessProtocol": "HTTPS",
+  "accessProtocol": "S3",
   "endpoint": "https://s3.amazonaws.com",
   "supportsEncryption": true,
   "supportsVersioning": true,
   "bucketName": "my-research-bucket",
   "accessKey": "AKIAIOSFODNN7EXAMPLE",
   "secretKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+  "resourceManager": "AWS",
   "enabled": true
 }
 ```
