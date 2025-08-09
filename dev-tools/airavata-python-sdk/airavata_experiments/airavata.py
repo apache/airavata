@@ -35,7 +35,9 @@ from airavata.model.security.ttypes import AuthzToken
 from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
 from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile
+from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile, ResourceType
+from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
+from airavata.model.status.ttypes import JobStatus, JobState, ExperimentStatus, ExperimentState
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
@@ -100,8 +102,10 @@ class AiravataOperator:
     )
   
   def get_resource_host_id(self, resource_name):
-        resources: dict = self.api_server_client.get_all_compute_resource_names(self.airavata_token) # type: ignore
-        return next((str(k) for k, v in resources.items() if v == resource_name))
+    resources = self.api_server_client.get_all_compute_resource_names(self.airavata_token)
+    resource_id = next((k for k in resources if k.startswith(resource_name)), None)
+    assert resource_id is not None, f"Compute resource {resource_name} not found"
+    return resource_id
   
   def configure_computation_resource_scheduling(
       self,
@@ -188,7 +192,7 @@ class AiravataOperator:
     """
     tree = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
     processModels = tree.processes
-    assert processModels is not None
+    assert processModels is not None, f"No process models found for experiment {experiment_id}"
     assert len(processModels) == 1, f"Expected 1 process model, got {len(processModels)}"
     return processModels[0].processId
 
@@ -213,7 +217,8 @@ class AiravataOperator:
     sr_hostname = sr_hostname or self.default_sr_hostname()
     # logic
     sr_names: dict[str, str] = self.api_server_client.get_all_storage_resource_names(self.airavata_token) # type: ignore
-    sr_id = next((str(k) for k, v in sr_names.items() if v == sr_hostname))
+    sr_id = next((str(k) for k, v in sr_names.items() if v == sr_hostname), None)
+    assert sr_id is not None, f"Storage resource {sr_hostname} not found"
     return self.api_server_client.get_gateway_storage_preference(self.airavata_token, gateway_id, sr_id)
 
   def get_storage(self, storage_name: str | None = None) -> any:  # type: ignore
@@ -225,7 +230,8 @@ class AiravataOperator:
     storage_name = storage_name or self.default_sr_hostname()
     # logic
     sr_names: dict[str, str] = self.api_server_client.get_all_storage_resource_names(self.airavata_token) # type: ignore
-    sr_id = next((str(k) for k, v in sr_names.items() if v == storage_name))
+    sr_id = next((str(k) for k, v in sr_names.items() if v == storage_name), None)
+    assert sr_id is not None, f"Storage resource {storage_name} not found"
     storage = self.api_server_client.get_storage_resource(self.airavata_token, sr_id)
     return storage
 
@@ -236,11 +242,9 @@ class AiravataOperator:
     """
     # logic
     grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    try:
-      grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group))
-      return str(grp_id)
-    except StopIteration:
-      raise Exception(f"Group resource profile {group} not found")
+    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group), None)
+    assert grp_id is not None, f"Group resource profile {group} not found"
+    return str(grp_id)
   
   def get_group_resource_profile(self, group_id: str):
     grp = self.api_server_client.get_group_resource_profile(self.airavata_token, group_id) # type: ignore
@@ -253,7 +257,8 @@ class AiravataOperator:
     """
     # logic
     grps: list = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group))
+    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group), None)
+    assert grp_id is not None, f"Group resource profile {group} not found"
     deployments = self.api_server_client.get_application_deployments_for_app_module_and_group_resource_profile(self.airavata_token, app_interface_id, grp_id)
     return deployments
 
@@ -264,13 +269,15 @@ class AiravataOperator:
     """
     gateway_id = str(gateway_id or self.default_gateway_id())
     apps: list = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id) # type: ignore
-    app_id = next((app.applicationInterfaceId for app in apps if app.applicationName == app_name))
+    app_id = next((app.applicationInterfaceId for app in apps if app.applicationName == app_name), None)
+    assert app_id is not None, f"Application interface {app_name} not found"
     return str(app_id)
 
   def get_project_id(self, project_name: str, gateway_id: str | None = None):
     gateway_id = str(gateway_id or self.default_gateway_id())
     projects: list = self.api_server_client.get_user_projects(self.airavata_token, gateway_id, self.user_id, 10, 0) # type: ignore
-    project_id = next((p.projectID for p in projects if p.name == project_name and p.owner == self.user_id))
+    project_id = next((p.projectID for p in projects if p.name == project_name and p.owner == self.user_id), None)
+    assert project_id is not None, f"Project {project_name} not found"
     return str(project_id)
 
   def get_application_inputs(self, app_interface_id: str) -> list:
@@ -323,14 +330,14 @@ class AiravataOperator:
     elif process_id is not None and agent_ref is not None:
       assert len(local_files) == 1, f"Expected 1 file, got {len(local_files)}"
       file = local_files[0]
-      fp = os.path.join("/data", file.name)
+      fp = os.path.join(".", file.name)
       rawdata = file.read_bytes()
       b64data = base64.b64encode(rawdata).decode()
       res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
           "agentId": agent_ref,
           "envName": agent_ref,
           "workingDir": ".",
-          "arguments": ["sh", "-c", f"echo {b64data} | base64 -d > {fp}"]
+          "arguments": [f"echo {b64data} | base64 -d > {fp}"]
       })
       data = res.json()
       if data["error"] is not None:
@@ -372,7 +379,7 @@ class AiravataOperator:
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", r"find /data -type d -name 'venv' -prune -o -type f -printf '%P\n' | sort"]
+        "arguments": [r"find . -type f -printf '%P\n' | sort"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -405,12 +412,12 @@ class AiravataOperator:
 
     """
     import os
-    fp = os.path.join("/data", remote_file)
+    fp = os.path.join(".", remote_file)
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+        "arguments": [f"cat {fp} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -441,7 +448,36 @@ class AiravataOperator:
     assert process_id is not None, f"Expected process_id, got {process_id}"
     url_path = os.path.join(process_id, remote_file)
     filemgr_svc_download_url = f"{self.filemgr_svc_url()}/download/live/{url_path}"
-  
+
+  def execute_cmd(self, agent_ref: str, cmd: str) -> bytes:
+    """
+    Execute a command on a remote directory of a storage resource
+    TODO add data_svc fallback
+
+    Return Path: /{project_name}/{experiment_name}
+
+    """
+    res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
+        "agentId": agent_ref,
+        "envName": agent_ref,
+        "workingDir": ".",
+        "arguments": [f"{cmd} | base64 -w0"]
+    })
+    data = res.json()
+    if data["error"] is not None:
+      raise Exception(data["error"])
+    else:
+      exc_id = data["executionId"]
+      while True:
+        res = requests.get(f"{self.connection_svc_url()}/agent/execute/shell/{exc_id}")
+        data = res.json()
+        if data["executed"]:
+          content = data["responseString"]
+          import base64
+          content = base64.b64decode(content)
+          return content
+        time.sleep(1)
+
   def cat_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str) -> bytes:
     """
     Download files from a remote directory of a storage resource to a local directory
@@ -451,12 +487,12 @@ class AiravataOperator:
 
     """
     import os
-    fp = os.path.join("/data", remote_file)
+    fp = os.path.join(".", remote_file)
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
         "envName": agent_ref,
         "workingDir": ".",
-        "arguments": ["sh", "-c", f"cat {fp} | base64 -w0"]
+        "arguments": [f"cat {fp} | base64 -w0"]
     })
     data = res.json()
     if data["error"] is not None:
@@ -596,8 +632,8 @@ class AiravataOperator:
     def register_input_file(file: Path) -> str:
       return str(self.register_input_file(file.name, sr_host, sr_id, gateway_id, file.name, abs_path))
     
-    # set up file inputs
-    print("[AV] Setting up file inputs...")
+    # set up experiment inputs
+    print("[AV] Setting up experiment inputs...")
     files_to_upload = list[Path]()
     file_refs = dict[str, str | list[str]]()
     for key, value in file_inputs.items():
@@ -610,11 +646,9 @@ class AiravataOperator:
         file_refs[key] = [*map(register_input_file, value)]
       else:
         raise ValueError("Invalid file input type")
-
-    # configure experiment inputs
     experiment_inputs = []
     for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
-      assert exp_input.type is not None
+      assert exp_input.type is not None, f"Invalid exp_input type for {exp_input.name}: {exp_input.type}"
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
         if exp_input.type == 0:
@@ -623,11 +657,12 @@ class AiravataOperator:
           exp_input.value = repr(value)
       elif exp_input.type == 3 and exp_input.name in file_refs:
         ref = file_refs[exp_input.name]
-        assert isinstance(ref, str)
+        assert isinstance(ref, str), f"Invalid file ref: {ref}"
         exp_input.value = ref
       elif exp_input.type == 4 and exp_input.name in file_refs:
         exp_input.value = ','.join(file_refs[exp_input.name])
       experiment_inputs.append(exp_input)
+      print(f"[AV] * {exp_input.name}={exp_input.value}")
     experiment.experimentInputs = experiment_inputs
 
     # configure experiment outputs
@@ -670,14 +705,15 @@ class AiravataOperator:
     # wait until task begins, then get job id
     print(f"[AV] Experiment {experiment_name} WAITING until task begins...")
     job_id = job_state = None
-    while job_state is None:
+    while job_id in [None, "N/A"]:
       try:
         job_id, job_state = self.get_task_status(ex_id)
       except:
         time.sleep(2)
       else:
         time.sleep(2)
-    print(f"[AV] Experiment {experiment_name} - Task {job_state} with id: {job_id}")
+    assert job_state is not None, f"Job state is None for job id: {job_id}"
+    print(f"[AV] Experiment {experiment_name} - Task {job_state.name} with id: {job_id}")
 
     return LaunchState(
       experiment_id=ex_id,
@@ -688,14 +724,12 @@ class AiravataOperator:
       sr_host=storage.hostName,
     )
 
-  def get_experiment_status(self, experiment_id: str) -> Literal['CREATED', 'VALIDATED', 'SCHEDULED', 'LAUNCHED', 'EXECUTING', 'CANCELING', 'CANCELED', 'COMPLETED', 'FAILED']:
-    states = ["CREATED", "VALIDATED", "SCHEDULED", "LAUNCHED", "EXECUTING", "CANCELING", "CANCELED", "COMPLETED", "FAILED"]
+  def get_experiment_status(self, experiment_id: str) -> ExperimentState:
     status = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id)
-    state = status.state.name
-    if state in states:
-      return state
-    else:
-      return "FAILED"
+    if status is None:
+      return ExperimentState.CREATED
+    assert isinstance(status, ExperimentStatus)
+    return status.state
 
   def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
@@ -781,23 +815,48 @@ class AiravataOperator:
       print(f"[av] Remote execution failed! {e}")
       return None
     
-  def get_available_runtimes(self):
-    from .runtime import Remote
-    return [
-      Remote(cluster="login.expanse.sdsc.edu", category="gpu", queue_name="gpu-shared", node_count=1, cpu_count=10, gpu_count=1, walltime=30, group="Default"),
-      Remote(cluster="login.expanse.sdsc.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=10, gpu_count=0, walltime=30, group="Default"),
-      Remote(cluster="anvil.rcac.purdue.edu", category="cpu", queue_name="shared", node_count=1, cpu_count=24, gpu_count=0, walltime=30, group="Default"),
-    ]
+  def get_available_groups(self, gateway_id: str = "default"):
+    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list(self.airavata_token, gatewayId=gateway_id)
+    return grps
   
-  def get_task_status(self, experiment_id: str) -> tuple[str, Literal["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"] | None]:
-    states = ["SUBMITTED", "UN_SUBMITTED", "SETUP", "QUEUED", "ACTIVE", "COMPLETE", "CANCELING", "CANCELED", "FAILED", "HELD", "SUSPENDED", "UNKNOWN"]
-    job_details: dict = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
+  def get_available_runtimes(self, group: str, gateway_id: str = "default"):
+    grps = self.get_available_groups(gateway_id)
+    grp_id, gcr_prefs, gcr_policies = next(((x.groupResourceProfileId, x.computePreferences, x.computeResourcePolicies) for x in grps if str(x.groupResourceProfileName).strip() == group.strip()), (None, None, None))
+    assert grp_id is not None, f"Group {group} was not found"
+    assert gcr_prefs is not None, f"Compute preferences for group={grp_id} were not found"
+    assert gcr_policies is not None, f"Compute policies for group={grp_id} were not found" # type: ignore
+    from .runtime import Remote
+    runtimes = []
+    for pref in gcr_prefs:
+      cr = self.api_server_client.get_compute_resource(self.airavata_token, pref.computeResourceId)
+      assert cr is not None, "Compute resource not found"
+      assert isinstance(cr, ComputeResourceDescription), "Compute resource is not a ComputeResourceDescription"
+      assert cr.batchQueues is not None, "Compute resource has no batch queues"
+      for queue in cr.batchQueues:
+        if pref.resourceType == ResourceType.SLURM:
+          policy = next((p for p in gcr_policies if p.computeResourceId == pref.computeResourceId), None)
+          assert policy is not None, f"Compute resource policy not found for {pref.computeResourceId}"
+          if queue.queueName not in (policy.allowedBatchQueues or []):
+            continue
+        runtime = Remote(
+          cluster=pref.computeResourceId.split("_")[0],
+          category="GPU" if "gpu" in queue.queueName.lower() else "CPU",
+          queue_name=queue.queueName,
+          node_count=queue.maxNodes or 1,
+          cpu_count=queue.cpuPerNode or 1,
+          gpu_count=1 if "gpu" in queue.queueName.lower() else 0,
+          walltime=queue.maxRunTime or 30,
+          group=group,
+        )
+        runtimes.append(runtime)
+    return runtimes
+  
+  def get_task_status(self, experiment_id: str) -> tuple[str, JobState]:
+    job_details: dict[str, JobStatus] = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
     job_id = job_state = None
-    # get the most recent job id and state
     for job_id, v in job_details.items():
-      if v.reason in states:
-        job_state = v.reason
-      else:
-        job_state = states[int(v.jobState)]
-    return job_id or "N/A", job_state # type: ignore
+      job_state = v.jobState
+    return job_id or "N/A", job_state or JobState.UNKNOWN
+  
+  JobState = JobState
 

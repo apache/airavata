@@ -85,49 +85,64 @@ class Experiment(Generic[T], abc.ABC):
     self.resource = resource
     return self
 
-  def create_task(self, *allowed_runtimes: Runtime, name: str | None = None) -> None:
+  def add_run(self, use: list[Runtime], cpus: int, nodes: int, walltime: int, name: str | None = None, **extra_params) -> None:
     """
     Create a task to run the experiment on a given runtime.
     """
-    runtime = random.choice(allowed_runtimes) if len(allowed_runtimes) > 0 else self.resource
+    runtime = random.choice(use) if len(use) > 0 else self.resource
     uuid_str = str(uuid.uuid4())[:4].upper()
-
+    # override runtime args with given values
+    runtime = runtime.model_copy()
+    runtime.args["cpu_count"] = cpus
+    runtime.args["node_count"] = nodes
+    runtime.args["walltime"] = walltime
+    # add extra inputs to task inputs
+    task_inputs = {**self.inputs, **extra_params}
+    # create a task with the given runtime and inputs
     self.tasks.append(
         Task(
-            name=name or f"{self.name}_{uuid_str}",
+            name=f"{name or self.name}_{uuid_str}",
             app_id=self.application.app_id,
-            inputs={**self.inputs},
+            inputs=task_inputs,
             runtime=runtime,
         )
     )
     print(f"Task created. ({len(self.tasks)} tasks in total)")
 
-  def add_sweep(self, *allowed_runtimes: Runtime, **space: list) -> None:
+  def add_sweep(self, use: list[Runtime], cpus: int, nodes: int, walltime: int, name: str | None = None, **space: list) -> None:
     """
     Add a sweep to the experiment.
 
     """
     for values in product(space.values()):
-      runtime = random.choice(allowed_runtimes) if len(allowed_runtimes) > 0 else self.resource
+      runtime = random.choice(use) if len(use) > 0 else self.resource
       uuid_str = str(uuid.uuid4())[:4].upper()
-
+      # override runtime args with given values
+      runtime = runtime.model_copy()
+      runtime.args["cpu_count"] = cpus
+      runtime.args["node_count"] = nodes
+      runtime.args["walltime"] = walltime
+      # add sweep params to task inputs
       task_specific_params = dict(zip(space.keys(), values))
       agg_inputs = {**self.inputs, **task_specific_params}
       task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
-
+      # create a task with the given runtime and inputs
       self.tasks.append(Task(
-          name=f"{self.name}_{uuid_str}",
+          name=f"{name or self.name}_{uuid_str}",
           app_id=self.application.app_id,
           inputs=task_inputs,
           runtime=runtime or self.resource,
       ))
 
-  def plan(self, **kwargs) -> Plan:
-    if len(self.tasks) == 0:
-      self.create_task(self.resource)
+  def plan(self) -> Plan:
+    assert len(self.tasks) > 0, "add_run() must be called before plan() to define runtimes and resources."
     tasks = []
     for t in self.tasks:
       agg_inputs = {**self.inputs, **t.inputs}
       task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
-      tasks.append(Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime))
-    return Plan(tasks=tasks)
+      task = Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime)
+      # task.freeze()  # TODO upload the task-related data and freeze the task
+      tasks.append(task)
+    plan = Plan(tasks=tasks)
+    plan.save()
+    return plan

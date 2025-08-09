@@ -164,7 +164,7 @@ class Settings:
 
     @property
     def STORAGE_RESOURCE_HOST(self):
-        return str(os.getenv("STORAGE_RESOURCE_HOST", "cybershuttle.org"))
+        return str(os.getenv("STORAGE_RESOURCE_HOST", "gateway.cybershuttle.org"))
 
     @property
     def SFTP_PORT(self):
