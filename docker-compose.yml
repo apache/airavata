@@ -1,93 +1,17 @@
-version: '3.8'
-
 services:
-  airavata-monolithic:
-    image: airavata-monolithic:latest
-    container_name: airavata-monolithic-test
-    ports:
-      - "8930:8930"  # Airavata API (Thrift RPC)
-      - "8050:8050"  # File Server (Thrift RPC)
-      - "18800:18800"  # Agent Service (Thrift RPC)
-      - "18889:18889"  # Research Service (Thrift RPC)
-      - "19900:19900"  # Agent Service gRPC
-      - "19908:19908"  # Research Service gRPC
-    volumes:
-      - ./airavata-server.properties:/opt/airavata/apache-airavata-api-server/conf/airavata-server.properties:ro
-      - airavata-logs:/opt/airavata/logs
-    environment:
-      - JAVA_OPTS=-Xmx2g -Xms1g
-      - zookeeper.server.connection=zookeeper:2181
-      - kafka.broker.url=kafka:9092
-      - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/%2F
-      - appcatalog.jdbc.url=jdbc:mariadb://mariadb:3306/app_catalog
-      - credential.store.jdbc.url=jdbc:mariadb://mariadb:3306/credential_store
-      - registry.jdbc.url=jdbc:mariadb://mariadb:3306/experiment_catalog
-      - replicacatalog.jdbc.url=jdbc:mariadb://mariadb:3306/replica_catalog
-      - sharingcatalog.jdbc.url=jdbc:mariadb://mariadb:3306/sharing_catalog
-      - workflowcatalog.jdbc.url=jdbc:mariadb://mariadb:3306/workflow_catalog
-      - profile.service.jdbc.url=jdbc:mariadb://mariadb:3306/profile_service
-      # Monitoring host configurations
-      - api.server.monitoring.host=0.0.0.0
-      - participant.monitoring.host=0.0.0.0
-      - post.workflow.manager.monitoring.host=0.0.0.0
-      - pre.workflow.manager.monitoring.host=0.0.0.0
-      - orchestrator.server.host=0.0.0.0
-      - profile.service.server.host=0.0.0.0
-      - credential.store.server.host=0.0.0.0
-      - regserver.server.host=0.0.0.0
-      - sharing.registry.server.host=0.0.0.0
-      # Additional configurations to fix Orchestrator startup
-      - embedded.zk=false
-      - helix.cluster.name=AiravataCluster
-      - helix.controller.name=AiravataController
-      - helix.participant.name=AiravataParticipant
-      - enable.sharing=true
-      - enable.validation=true
-      - job.notification.enable=true
-      - job.notification.emailids=
-      - data.parser.delete.container=true
-      - data.parser.storage.resource.id=CHANGE_ME
-      - local.data.location=/tmp
-      - TLS.enabled=false
-      - authz.cache.enabled=true
-      # Disable services that are missing classes
-      - agent.service.enabled=false
-      - file.service.enabled=false
-      - research.service.enabled=false
-      # Email monitor configuration
-      - email.monitor.config.file=/opt/airavata/apache-airavata-api-server/conf/email-config.yaml
-      # Additional Helix configurations
-      - helix.zk.connection.timeout=30000
-      - helix.zk.session.timeout=30000
-      - helix.zk.retry.interval=1000
-      - helix.zk.max.retries=3
-    extra_hosts:
-      - "airavata.host:127.0.0.1"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    depends_on:
-      - mariadb
-      - rabbitmq
-      - zookeeper
-      - kafka
-    networks:
-      - airavata-network
-
-  mariadb:
+  mysql:
     image: mariadb:10.11
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: airavata
+      MYSQL_DATABASE: experiment_catalog
       MYSQL_USER: airavata
-      MYSQL_PASSWORD: airavata_password
+      MYSQL_PASSWORD: 123456
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./.devcontainer/database_scripts/init:/docker-entrypoint-initdb.d:ro
     networks:
       - airavata-network
 
@@ -95,8 +19,8 @@ services:
     image: rabbitmq:3-management
     container_name: airavata-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: airavata
+      RABBITMQ_DEFAULT_PASS: airavata
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -108,8 +32,6 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: airavata-zookeeper
-    ports:
-      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -129,14 +51,52 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     volumes:
       - kafka-data:/var/lib/kafka/data
+    networks:
+      airavata-network:
+        aliases:
+          - airavata.host
+
+  airavata:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airavata
+    ports:
+      - "8930:8930"    # Airavata API (Thrift RPC)
+      - "8050:8050"    # File Server (Thrift RPC)
+      - "18800:18800"  # Agent Service (Thrift RPC)
+      - "18889:18889"  # Research Service (Thrift RPC)
+      - "19900:19900"  # Agent Service gRPC
+      - "19908:19908"  # Research Service gRPC
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8930 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    volumes:
+      - ./dev-tools/airavata-server.properties:/opt/airavata/vault/airavata-server.properties:ro
+      - ./dev-tools/airavata-server.properties:/opt/airavata/apache-airavata-api-server/conf/airavata-server.properties:ro
+      - airavata-logs:/opt/airavata/logs
+    environment:
+      - JAVA_OPTS=-Xmx2g -Xms1g -Dthrift.server.max.message.size=1048576000 -Dthrift.server.max.frame.size=1048576000 -Dthrift.server.transport.max.message.size=1048576000 -Dthrift.maxMessageSize=1048576000 -Dthrift.maxFrameSize=1048576000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - mysql
+      - rabbitmq
+      - zookeeper
+      - kafka
     networks:
       - airavata-network
 
