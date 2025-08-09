@@ -35,7 +35,7 @@ public class ApplicationOutputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "INTERFACE_ID")
+    @Column(name = "INTERFACE_ID", insertable = false, updatable = false)
     private String interfaceId;
 
     @Id

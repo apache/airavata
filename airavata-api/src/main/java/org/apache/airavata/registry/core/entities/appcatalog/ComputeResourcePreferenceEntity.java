@@ -35,7 +35,7 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
 public class ComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", insertable = false, updatable = false)
     @Id
     private String gatewayId;
 

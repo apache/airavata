@@ -35,11 +35,11 @@ public class UserStoragePreferenceEntity {
     private String storageResourceId;
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", insertable = false, updatable = false)
     private String userId;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", insertable = false, updatable = false)
     private String gatewayId;
 
     @Column(name = "RESOURCE_CS_TOKEN")

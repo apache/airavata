@@ -49,7 +49,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
     private String groupResourceProfileId;
 
     // TODO: Store COMPUTE_RESOURCE_ID and QUEUE_NAME in table so it can FK to BATCH_QUEUE

@@ -33,7 +33,7 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 public class JobSubmissionInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Column(name = "COMPUTE_RESOURCE_ID", insertable = false, updatable = false)
     @Id
     private String computeResourceId;
 

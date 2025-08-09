@@ -36,11 +36,11 @@ public class UserComputeResourcePreferenceEntity {
     private String computeResourceId;
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", insertable = false, updatable = false)
     private String userId;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", insertable = false, updatable = false)
     private String gatewayId;
 
     @Column(name = "PREFERED_BATCH_QUEUE")
