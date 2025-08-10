@@ -32,6 +32,7 @@ airavata:
     url: http://localhost:5173
     dev-url: http://localhost:5173
     admin-notification-email: "TO_EMAIL@gmail.com"
+    admin-emails: ganning.xu@gatech.edu,ljayathilake3@gatech.edu,yasith@gatech.edu,smarru@gatech.edu,dimuthuw@gatech.edu
   openid:
     url: "http://localhost:18080/realms/default"
   user-profile:

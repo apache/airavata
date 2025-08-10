@@ -32,6 +32,7 @@ import org.apache.airavata.research.service.model.entity.NotebookResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
+import org.apache.airavata.research.service.model.entity.ResourceVerificationActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -171,6 +172,12 @@ public class ResourceController {
     @PostMapping(value = "/{id}/verify")
     public ResponseEntity<Resource> submitResourceForVerification(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok(resourceHandler.submitResourceForVerification(id));
+    }
+
+    @Operation(summary = "Get verification activities for a resource")
+    @GetMapping(value = "/{id}/verification-activities")
+    public ResponseEntity<List<ResourceVerificationActivity>> getResourceVerificationActivities(@PathVariable(value = "id") String id) {
+        return ResponseEntity.ok(resourceHandler.getResourceVerificationActivities(id));
     }
 
     @Operation(summary = "Star/unstar a resource")
