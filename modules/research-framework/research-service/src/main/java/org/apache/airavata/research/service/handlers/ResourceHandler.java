@@ -1,24 +1,30 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.research.service.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
@@ -49,12 +55,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 public class ResourceHandler {
 
@@ -76,8 +76,7 @@ public class ResourceHandler {
             ResourceRepository resourceRepository,
             ProjectRepository projectRepository,
             ResourceStarRepository resourceStarRepository,
-            ResourceVerificationActivityRepository verificationActivityRepository
-    ) {
+            ResourceVerificationActivityRepository verificationActivityRepository) {
         this.airavataService = airavataService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
@@ -251,11 +250,10 @@ public class ResourceHandler {
         if (resource.getPrivacy().equals(PrivacyEnum.PUBLIC)) {
             return resource;
         } else if (isAuthenticated
-                && resource
-                .getAuthors()
-                .stream()
-                .map(ResourceAuthor::getAuthorId)
-                .anyMatch(authorId -> authorId.equals(UserContext.userId().toLowerCase()))) {
+                && resource.getAuthors().stream()
+                        .map(ResourceAuthor::getAuthorId)
+                        .anyMatch(
+                                authorId -> authorId.equals(UserContext.userId().toLowerCase()))) {
             return resource;
         } else {
             throw new EntityNotFoundException("Resource not found: " + id);
@@ -272,12 +270,9 @@ public class ResourceHandler {
         Resource resource = opResource.get();
 
         String userEmail = UserContext.userId();
-        if (!resource
-                .getAuthors()
-                .stream()
+        if (!resource.getAuthors().stream()
                 .map(ResourceAuthor::getAuthorId)
-                .anyMatch(authorId -> authorId.equals(UserContext.userId().toLowerCase()))
-        ) {
+                .anyMatch(authorId -> authorId.equals(UserContext.userId().toLowerCase()))) {
             String errorMsg = String.format(
                     "User %s not authorized to delete resource: %s (%s), type: %s",
                     userEmail, resource.getName(), id, resource.getType().toString());
@@ -320,7 +315,8 @@ public class ResourceHandler {
         String userId = UserContext.userId();
 
         if (!isResourceAuthor(resource, userId)) {
-            throw new IllegalArgumentException(String.format("User %s is not authorized to request verification for resource %s", userId, id));
+            throw new IllegalArgumentException(
+                    String.format("User %s is not authorized to request verification for resource %s", userId, id));
         }
 
         resource.setStatus(StatusEnum.PENDING);
@@ -340,16 +336,15 @@ public class ResourceHandler {
         String userId = UserContext.userId();
 
         if (!isResourceAuthor(resource, userId) && !cybershuttleAdminEmails.contains(userId.toLowerCase())) {
-            throw new IllegalArgumentException(String.format("User %s is not authorized to pull verification activities for resource %s", userId, id));
+            throw new IllegalArgumentException(String.format(
+                    "User %s is not authorized to pull verification activities for resource %s", userId, id));
         }
 
         return verificationActivityRepository.findAllByResourceOrderByUpdatedAtDesc(resource);
     }
 
     public List<Resource> getAllResourcesWithStatus(List<StatusEnum> includeStatus) {
-        return resourceRepository.findAllByStatusInOrderByCreatedAtDesc(
-                includeStatus
-        );
+        return resourceRepository.findAllByStatusInOrderByCreatedAtDesc(includeStatus);
     }
 
     private Page<Resource> getAllPublicResources(
@@ -381,9 +376,6 @@ public class ResourceHandler {
     }
 
     private boolean isResourceAuthor(Resource resource, String userId) {
-        return resource.getAuthors()
-                .stream()
-                .map(ResourceAuthor::getAuthorId)
-                .anyMatch(userId::equals);
+        return resource.getAuthors().stream().map(ResourceAuthor::getAuthorId).anyMatch(userId::equals);
     }
 }
