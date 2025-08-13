@@ -19,9 +19,11 @@
 */
 package org.apache.airavata.research.service.model.repo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.research.service.enums.StateEnum;
+import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,15 +52,15 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
 
     @Query(
             """
-            SELECT DISTINCT r
-            FROM Resource r
-            JOIN r.authors a
-            WHERE r.class IN :typeList
-              AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
-              AND r.state = 'ACTIVE'
-              AND (r.privacy = 'PUBLIC' or a = :userId)
-            ORDER BY r.name
-            """)
+                    SELECT DISTINCT r
+                    FROM Resource r
+                    JOIN r.authors a
+                    WHERE r.class IN :typeList
+                      AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
+                      AND r.state = 'ACTIVE'
+                      AND (r.privacy = 'PUBLIC' or a.authorId = :userId)
+                    ORDER BY r.name
+                    """)
     Page<Resource> findAllByTypesForUser(
             @Param("typeList") List<Class<? extends Resource>> typeList,
             @Param("nameSearch") String nameSearch,
@@ -88,19 +90,19 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
 
     @Query(
             """
-            SELECT r
-            FROM Resource r
-            JOIN r.tags t
-            JOIN r.authors a
-            WHERE r.class IN :typeList
-              AND t.value IN :tags
-              AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
-              AND r.state = 'ACTIVE'
-              AND (r.privacy = 'PUBLIC' OR a = :userId)
-            GROUP BY r
-            HAVING COUNT(DISTINCT t.value) = :tagCount
-            ORDER BY r.name
-            """)
+                    SELECT r
+                    FROM Resource r
+                    JOIN r.tags t
+                    JOIN r.authors a
+                    WHERE r.class IN :typeList
+                      AND t.value IN :tags
+                      AND LOWER(r.name) LIKE LOWER(CONCAT('%', :nameSearch, '%'))
+                      AND r.state = 'ACTIVE'
+                      AND (r.privacy = 'PUBLIC' OR a.authorId = :userId)
+                    GROUP BY r
+                    HAVING COUNT(DISTINCT t.value) = :tagCount
+                    ORDER BY r.name
+                    """)
     Page<Resource> findAllByTypesAndAllTagsForUser(
             @Param("typeList") List<Class<? extends Resource>> typeList,
             @Param("tags") String[] tags,
@@ -116,10 +118,12 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
                     JOIN r.authors a
                     WHERE TYPE(r) = :type AND r.state = 'ACTIVE'
                     AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))
-                    AND (r.privacy = "PUBLIC" OR a = :userId)
+                    AND (r.privacy = "PUBLIC" OR a.authorId = :userId)
                     """)
     List<Resource> findByTypeAndNameContainingIgnoreCase(
             @Param("type") Class<? extends Resource> type, @Param("name") String name, @Param("userId") String userId);
 
     Optional<Resource> findByIdAndState(String id, StateEnum state);
+
+    List<Resource> findAllByStatusInOrderByCreatedAtDesc(Collection<StatusEnum> statuses);
 }
