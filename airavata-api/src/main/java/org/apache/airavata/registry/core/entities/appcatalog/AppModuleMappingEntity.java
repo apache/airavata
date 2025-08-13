@@ -33,11 +33,11 @@ public class AppModuleMappingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "INTERFACE_ID")
+    @Column(name = "INTERFACE_ID", insertable = false, updatable = false)
     private String interfaceId;
 
     @Id
-    @Column(name = "MODULE_ID")
+    @Column(name = "MODULE_ID", insertable = false, updatable = false)
     private String moduleId;
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)

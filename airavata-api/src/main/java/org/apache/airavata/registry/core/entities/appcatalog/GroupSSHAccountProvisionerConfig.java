@@ -42,11 +42,11 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
     private String resourceId;
 
     @Id
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
     private String groupResourceProfileId;
 
     @Id
