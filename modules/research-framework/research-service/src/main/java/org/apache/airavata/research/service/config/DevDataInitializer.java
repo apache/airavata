@@ -19,6 +19,9 @@
 */
 package org.apache.airavata.research.service.config;
 
+import static org.apache.airavata.research.service.enums.AuthorRoleEnum.PRIMARY;
+import static org.apache.airavata.research.service.enums.StateEnum.ACTIVE;
+
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
@@ -26,6 +29,7 @@ import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
+import org.apache.airavata.research.service.model.entity.ResourceAuthor;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
@@ -54,7 +58,7 @@ public class DevDataInitializer implements CommandLineRunner {
     }
 
     private void createProject(
-            String name, String description, String repoUrl, String datasetUrl, String[] tags, String user) {
+            String name, String description, String repoUrl, String datasetUrl, String[] tags, Set<String> authors) {
         Set<Tag> tagSet = new HashSet<>();
         for (String tag : tags) {
             Tag t = tagRepository.findByValue(tag);
@@ -68,12 +72,6 @@ public class DevDataInitializer implements CommandLineRunner {
             }
         }
 
-        Set<String> authors = new HashSet<>() {
-            {
-                add(user);
-            }
-        };
-
         RepositoryResource repo = new RepositoryResource();
         repo.setName(name);
         repo.setDescription(description);
@@ -82,7 +80,16 @@ public class DevDataInitializer implements CommandLineRunner {
         repo.setStatus(StatusEnum.VERIFIED);
         repo.setPrivacy(PrivacyEnum.PUBLIC);
         repo.setTags(tagSet);
-        repo.setAuthors(authors);
+        repo.setState(ACTIVE);
+        Set<ResourceAuthor> repoResourceAuthors = new HashSet<>();
+        for (String author : authors) {
+            ResourceAuthor a = new ResourceAuthor();
+            a.setResource(repo);
+            a.setRole(PRIMARY);
+            a.setAuthorId(author);
+            repoResourceAuthors.add(a);
+        }
+        repo.setAuthors(repoResourceAuthors);
         repo = resourceRepository.save(repo);
 
         DatasetResource dataset = new DatasetResource();
@@ -93,14 +100,24 @@ public class DevDataInitializer implements CommandLineRunner {
         dataset.setStatus(StatusEnum.VERIFIED);
         dataset.setPrivacy(PrivacyEnum.PUBLIC);
         dataset.setTags(tagSet);
-        dataset.setAuthors(authors);
+        dataset.setState(ACTIVE);
+        Set<ResourceAuthor> datasetResourceAuthors = new HashSet<>();
+        for (String author : authors) {
+            ResourceAuthor a = new ResourceAuthor();
+            a.setResource(repo);
+            a.setRole(PRIMARY);
+            a.setAuthorId(author);
+            datasetResourceAuthors.add(a);
+        }
+        dataset.setAuthors(datasetResourceAuthors);
         dataset = resourceRepository.save(dataset);
 
         Project project = new Project();
         project.setRepositoryResource(repo);
         project.getDatasetResources().add(dataset);
         project.setName(name);
-        project.setOwnerId(user);
+        project.setState(ACTIVE);
+        project.setOwnerId(String.join(", ", authors.stream().toString()));
         projectRepository.save(project);
 
         System.out.println("Initialized Project with id: " + project.getId());
@@ -108,10 +125,13 @@ public class DevDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        System.out.println("HRSDSF");
         if (projectRepository.count() > 0) {
             System.out.println("Dev data already initialized. Skipping initialization.");
             return;
         }
+
+        System.out.println("Initializing dev data...");
 
         createProject(
                 "Bio-realistic multiscale simulations of cortical circuits",
@@ -119,7 +139,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/allenai-v1",
                 "allenai-v1",
                 new String[] {"neurodata25", "allenai", "visual_cortex"},
-                "Anton Arkhipov, Laura Green");
+                Set.of("Anton Arkhipov", "Laura Green"));
 
         createProject(
                 "Apache Cerebrum",
@@ -127,7 +147,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/airavata-cerebrum",
                 "apache-airavata-cerebrum",
                 new String[] {"neurodata25", "apache", "cerebrum"},
-                "Sriram Chockalingam");
+                Set.of("Sriram Chockalingam"));
 
         createProject(
                 "Spatio-temporal dynamics of sleep in large-scale brain models",
@@ -135,7 +155,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/whole-brain-public",
                 "bazhlab-whole-brain",
                 new String[] {"neurodata25", "bazhlab", "whole-brain"},
-                "Maxim Bazhenov, Gabriela Navas Zuloaga");
+                Set.of("Maxim Bazhenov", "Gabriela Navas Zuloaga"));
 
         createProject(
                 "Biologically Constrained RNNs",
@@ -143,7 +163,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/biologicalRNNs",
                 "hchoilab-biologicalRNNs",
                 new String[] {"neurodata25", "hchoilab", "biological-rnn"},
-                "Hannah Choi, Aishwarya Balwani");
+                Set.of("Hannah Choi", "Aishwarya Balwani"));
 
         createProject(
                 "One-hot Generalized Linear Model for Switching Brain State Discovery",
@@ -151,7 +171,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/onehot-hmmglm",
                 "brainml-onehot-hmmglm",
                 new String[] {"neurodata25", "brainml", "hmm-glm"},
-                "Anqi Wu, Chengrui Li");
+                Set.of("Anqi Wu", "Chengrui Li"));
 
         createProject(
                 "Scaling up neural data analysis with torch_brain and temporaldata",
@@ -159,7 +179,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/neurodata25_torchbrain_notebooks",
                 "nerdslab-neurodata25",
                 new String[] {"neurodata25", "nerdslab", "torch_brain", "temporaldata"},
-                "Eva Dyer, Vinam Arora, Mahato Shivashriganesh");
+                Set.of("Eva Dyer, Vinam Arora", "Mahato Shivashriganesh"));
 
         createProject(
                 "Bridge the Gap between the Structure and Function in the Brain",
@@ -167,7 +187,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/neuroaihub-netformer",
                 "neuroaihub-netformer",
                 new String[] {"neurodata25", "neuroaihub", "netformer"},
-                "Lu Mi");
+                Set.of("Lu Mi"));
 
         createProject(
                 "Computing with Neural Oscillators",
@@ -175,7 +195,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/imamlab-neural-oscillators",
                 "imamlab-neurodata25",
                 new String[] {"neurodata25", "imamlab", "neural-oscillators"},
-                "Nabil Imam, Nand Chandravadia");
+                Set.of("Nabil Imam, Nand Chandravadia"));
 
         createProject(
                 "Getting started with Cybershuttle",
@@ -183,7 +203,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/cyber-shuttle/cybershuttle-reference",
                 "cybershuttle-reference",
                 new String[] {"cybershuttle", "apache-airavata", "reference"},
-                "Suresh Marru");
+                Set.of("Suresh Marru"));
 
         createProject(
                 "Malicious URL Detector",
@@ -191,7 +211,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/airavata-courses/malicious-url-detector",
                 "airavata-courses-malicious-url-detector",
                 new String[] {"airavata-courses", "spring-2025"},
-                "Krish Katariya, Jesse Gong, Shreyas Arisa, Devin Fromond");
+                Set.of("Krish Katariya", "Jesse Gong", "Shreyas Arisa", "Devin Fromond"));
 
         createProject(
                 "Deepseek Remote Execution",
@@ -199,7 +219,7 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/ZhenmeiOng/proj2-llama",
                 "airavata-courses-deepseek-chat",
                 new String[] {"airavata-courses", "spring-2025", "llm"},
-                "Yashkaran Chauhan, Zhenmei Ong, Varenya Amagowni");
+                Set.of("Yashkaran Chauhan", "Zhenmei Ong", "Varenya Amagowni"));
 
         createProject(
                 "Fast Chat",
@@ -207,6 +227,6 @@ public class DevDataInitializer implements CommandLineRunner {
                 "https://github.com/riccog/cybershuttle",
                 "airavata-courses-fast-chat",
                 new String[] {"airavata-courses", "spring-2025"},
-                "Ricco Goss, Mason Graham, Talam, Ruchira");
+                Set.of("Ricco Goss", "Mason Graham", "Talam", "Ruchira"));
     }
 }
