@@ -1,0 +1,113 @@
+services:
+  mysql:
+    image: mariadb:10.11
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: experiment_catalog
+      MYSQL_USER: airavata
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./.devcontainer/database_scripts/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - airavata-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: airavata-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: airavata
+      RABBITMQ_DEFAULT_PASS: airavata
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - airavata-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: airavata-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    networks:
+      - airavata-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: airavata-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      airavata-network:
+        aliases:
+          - airavata.host
+
+  airavata-monolithic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airavata-monolithic
+    ports:
+      - "8930:8930"    # Airavata API (Thrift RPC)
+      - "8050:8050"    # File Server (Thrift RPC)
+      - "18800:18800"  # Agent Service (Thrift RPC)
+      - "18889:18889"  # Research Service (Thrift RPC)
+      - "19900:19900"  # Agent Service gRPC
+      - "19908:19908"  # Research Service gRPC
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8930 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    volumes:
+      - ./dev-tools/deployment-scripts/airavata-server.properties:/opt/airavata/vault/airavata-server.properties:ro
+      - ./dev-tools/deployment-scripts/airavata-server.properties:/opt/airavata/apache-airavata-api-server/conf/airavata-server.properties:ro
+      - airavata-logs:/opt/airavata/logs
+    environment:
+      - JAVA_OPTS=-Xmx2g -Xms1g -Dthrift.server.max.message.size=1048576000 -Dthrift.server.max.frame.size=1048576000 -Dthrift.server.transport.max.message.size=1048576000 -Dthrift.maxMessageSize=1048576000 -Dthrift.maxFrameSize=1048576000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - mysql
+      - rabbitmq
+      - zookeeper
+      - kafka
+    networks:
+      - airavata-network
+
+volumes:
+  mysql-data:
+  rabbitmq-data:
+  zookeeper-data:
+  zookeeper-logs:
+  kafka-data:
+  airavata-logs:
+
+networks:
+  airavata-network:
+    driver: bridge
