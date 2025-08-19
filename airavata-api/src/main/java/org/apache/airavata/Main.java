@@ -72,10 +72,10 @@ public class Main {
         assert jobScheduler != null;
         // jobScheduler.scheduleClusterStatusMonitoring();
 
-        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
+        if (ServerSettings.getBooleanSetting("api.monitoring.enabled")) {
             var monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
+                    ServerSettings.getSetting("api.monitoring.host"),
+                    ServerSettings.getIntSetting("api.monitoring.port"));
             monitoringServer.start();
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }

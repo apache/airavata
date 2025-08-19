@@ -37,7 +37,6 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
@@ -67,16 +66,8 @@ public class ParserWorkflowManager extends WorkflowManager {
     @Override
     public void run() {
         try {
-          if (ServerSettings.getBooleanSetting("parser.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("parser.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("parser.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-        this.init();
-        this.runConsumer();
+            this.init();
+            this.runConsumer();
         } catch (Exception e) {
             logger.error("Error starting PreWorkflowManager", e);
         }

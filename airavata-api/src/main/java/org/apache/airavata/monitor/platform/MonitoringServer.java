@@ -20,7 +20,6 @@
 package org.apache.airavata.monitor.platform;
 
 import io.prometheus.client.exporter.HTTPServer;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
