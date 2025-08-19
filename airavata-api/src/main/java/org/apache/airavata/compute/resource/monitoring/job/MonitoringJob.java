@@ -51,11 +51,8 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        RegistryService.Client client = null;
         try {
             LOGGER.debug("Executing ComputeResources Monitoring Job....... ");
-
-            client = this.registryClientPool.getResource();
 
             JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
             String metaSchedulerGateway = jobDataMap.getString(Constants.METASCHEDULER_GATEWAY);
@@ -68,24 +65,16 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                     + " username: " + username + " jobId: " + jobId + " parallellJobs: " + parallelJobs);
 
             executeComputeResourceMonitoring(
-                    client, metaSchedulerGateway, username, metaSchedulerGRP, parallelJobs, jobId);
+                    registry, metaSchedulerGateway, username, metaSchedulerGRP, parallelJobs, jobId);
 
         } catch (Exception ex) {
             String msg = "Error occurred while executing job" + ex.getMessage();
             LOGGER.error(msg, ex);
-            if (client != null) {
-                registryClientPool.returnBrokenResource(client);
-            }
-            client = null;
-        } finally {
-            if (client != null) {
-                registryClientPool.returnResource(client);
-            }
         }
     }
 
     private void executeComputeResourceMonitoring(
-            RegistryService.Client client,
+            RegistryService.Iface registry,
             String metaSchedulerGateway,
             String username,
             String metaSchedulerGRP,
@@ -113,26 +102,26 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                 groupResourceProfile.getComputeResourcePolicies().subList(startIndex, endIndex);
 
         for (ComputeResourcePolicy computeResourcePolicy : computeResourcePolicyList) {
-            updateComputeResource(client, adaptorSupport, metaSchedulerGateway, username, computeResourcePolicy);
+            updateComputeResource(registry, adaptorSupport, metaSchedulerGateway, username, computeResourcePolicy);
         }
     }
 
     private void updateComputeResource(
-            RegistryService.Client client,
+            RegistryService.Iface registry,
             AdaptorSupport adaptorSupport,
             String gatewayId,
             String username,
             ComputeResourcePolicy computeResourcePolicy)
             throws Exception {
         String computeResourceId = computeResourcePolicy.getComputeResourceId();
-        ComputeResourceDescription comResourceDes = client.getComputeResource(computeResourceId);
+        ComputeResourceDescription comResourceDes = registry.getComputeResource(computeResourceId);
         List<JobSubmissionInterface> jobSubmissionInterfaces = comResourceDes.getJobSubmissionInterfaces();
         Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
         JobSubmissionInterface jobSubmissionInterface = jobSubmissionInterfaces.get(0);
         JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
 
         ResourceJobManager resourceJobManager =
-                JobFactory.getResourceJobManager(client, jobSubmissionProtocol, jobSubmissionInterface);
+                JobFactory.getResourceJobManager(registry, jobSubmissionProtocol, jobSubmissionInterface);
 
         // TODO: intial phase we are only supporting SLURM
         if (resourceJobManager.getResourceJobManagerType().name().equals("SLURM")) {
@@ -218,7 +207,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
                 queueStatusModels.add(queueStatusModel);
                 queueStatusModel.setTime(System.currentTimeMillis());
             }
-            client.registerQueueStatuses(queueStatusModels);
+            registry.registerQueueStatuses(queueStatusModels);
         }
     }
 }

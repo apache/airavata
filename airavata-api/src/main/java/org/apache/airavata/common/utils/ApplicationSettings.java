@@ -49,12 +49,6 @@ public class ApplicationSettings {
 
     private static final String SHUTDOWN_STATEGY_STRING = "shutdown.strategy";
 
-    // ThriftClientPool Constants
-    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED =
-            "thrift.client.pool.abandoned.removal.enabled";
-    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED =
-            "thrift.client.pool.abandoned.removal.logged";
-
     protected static ApplicationSettings INSTANCE;
 
     public static enum ShutdownStrategy {
@@ -338,14 +332,6 @@ public class ApplicationSettings {
 
     public static String getIamServerUrl() throws ApplicationSettingsException {
         return getSetting(ServerSettings.IAM_SERVER_URL);
-    }
-
-    public static boolean isThriftClientPoolAbandonedRemovalEnabled() {
-        return Boolean.parseBoolean(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED, "false"));
-    }
-
-    public static boolean isThriftClientPoolAbandonedRemovalLogged() {
-        return Boolean.parseBoolean(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED, "false"));
     }
 
     public static void mergeSettingsCommandLineArgs(String[] args) {

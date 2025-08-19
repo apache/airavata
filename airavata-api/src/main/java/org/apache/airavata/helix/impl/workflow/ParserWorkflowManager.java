@@ -91,13 +91,11 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     private boolean process(ProcessCompletionMessage completionMessage) {
-
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
-
+        RegistryService.Iface registry = getRegistry();
         try {
             try {
-              ProcessModel processModel = registryClient.getProcess(completionMessage.getProcessId());
-              ApplicationInterfaceDescription appDescription = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
+              ProcessModel processModel = registry.getProcess(completionMessage.getProcessId());
+              ApplicationInterfaceDescription appDescription = registry.getApplicationInterface(processModel.getApplicationInterfaceId());
               if (appDescription == null) {
                 logger.error("Application interface not found for process id " + completionMessage.getProcessId());
                 throw new Exception("Application interface not found for process id " + completionMessage.getProcessId());
@@ -115,7 +113,7 @@ public class ParserWorkflowManager extends WorkflowManager {
 
             // All the templates should be run
             // FIXME is it ApplicationInterfaceId or ApplicationName
-            List<ParsingTemplate> parsingTemplates = registryClient.getParsingTemplatesForExperiment(
+            List<ParsingTemplate> parsingTemplates = registry.getParsingTemplatesForExperiment(
                     completionMessage.getExperimentId(), completionMessage.getGatewayId());
 
             logger.info("Found " + parsingTemplates.size() + " parsing template for experiment "
@@ -149,7 +147,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             for (ParsingTemplate template : parsingTemplates) {
 
                 logger.info("Launching parsing template " + template.getId());
-                ParserInput parserInput = registryClient.getParserInput(
+                ParserInput parserInput = registry.getParserInput(
                         template.getInitialInputs().get(0).getTargetInputId(), template.getGatewayId());
                 String parentParserId = parserInput.getParserId();
 
@@ -179,10 +177,10 @@ public class ParserWorkflowManager extends WorkflowManager {
                     throw new Exception("Could not find a parent parser for template " + template.getId());
                 }
 
-                Parser parentParser = registryClient.getParser(parentParserId, completionMessage.getGatewayId());
+                Parser parentParser = registry.getParser(parentParserId, completionMessage.getGatewayId());
 
                 DataParsingTask parentParserTask =
-                        createParentTask(parentParser, completionMessage, template.getInitialInputs(), registryClient);
+                        createParentTask(parentParser, completionMessage, template.getInitialInputs(), registry);
 
                 List<AbstractTask> allTasks = new ArrayList<>();
                 allTasks.add(parentParserTask);
@@ -194,7 +192,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                             parentParserTask,
                             parentToChildParsers.get(template.getId()),
                             completionMessage,
-                            registryClient);
+                            registry);
                 }
                 String workflow = getWorkflowOperator()
                         .launchWorkflow(
@@ -209,13 +207,10 @@ public class ParserWorkflowManager extends WorkflowManager {
                 parserwfCounter.inc();
             }
 
-            getRegistryClientPool().returnResource(registryClient);
-
             return true;
 
         } catch (Exception e) {
             logger.error("Failed to create the DataParsing task DAG", e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -224,7 +219,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             Parser parserInfo,
             ProcessCompletionMessage completionMessage,
             List<ParsingTemplateInput> templateInputs,
-            RegistryService.Client registryClient)
+            RegistryService.Iface registry)
             throws Exception {
         DataParsingTask parsingTask = new DataParsingTask();
         parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-"
@@ -234,7 +229,7 @@ public class ParserWorkflowManager extends WorkflowManager {
         parsingTask.setLocalDataDir("/tmp");
         try {
             parsingTask.setGroupResourceProfileId(
-                    registryClient.getProcess(completionMessage.getProcessId()).getGroupResourceProfileId());
+                    registry.getProcess(completionMessage.getProcessId()).getGroupResourceProfileId());
         } catch (TException e) {
             logger.error("Failed while fetching process model for process id  " + completionMessage.getProcessId());
             throw new Exception(
@@ -262,7 +257,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             if (templateInput.getApplicationOutputName() != null) {
                 String applicationOutputName = templateInput.getApplicationOutputName();
                 try {
-                    ExperimentModel experiment = registryClient.getExperiment(completionMessage.getExperimentId());
+                    ExperimentModel experiment = registry.getExperiment(completionMessage.getExperimentId());
                     Optional<OutputDataObjectType> expOutputData;
                     if (applicationOutputName.contains("*")) {
                         expOutputData = experiment.getExperimentOutputs().stream()
@@ -336,8 +331,7 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     private String processExpression(String expression, ProcessCompletionMessage completionMessage) throws Exception {
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
-
+        RegistryService.Iface registry = getRegistry();
         try {
             if (expression != null) {
                 if (expression.startsWith("{{") && expression.endsWith("}}")) {
@@ -349,20 +343,18 @@ public class ParserWorkflowManager extends WorkflowManager {
                         case "{{gateway}}":
                             return completionMessage.getGatewayId();
                         case "{{user}}":
-                            return registryClient
+                            return registry
                                     .getProcess(completionMessage.getProcessId())
                                     .getUserName();
                         case "{{project}}":
-                            return registryClient
+                            return registry
                                     .getExperiment(completionMessage.getExperimentId())
                                     .getProjectId();
                     }
                 }
             }
-            getRegistryClientPool().returnResource(registryClient);
             return expression;
         } catch (Exception e) {
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception("Failed to resolve expression " + expression, e);
         }
     }
@@ -373,13 +365,13 @@ public class ParserWorkflowManager extends WorkflowManager {
             DataParsingTask parentTask,
             Map<String, Set<ParserConnector>> parentToChild,
             ProcessCompletionMessage completionMessage,
-            RegistryService.Client registryClient)
+            RegistryService.Iface registry)
             throws Exception {
         if (parentToChild.containsKey(parentParserInfo.getId())) {
 
             for (ParserConnector connector : parentToChild.get(parentParserInfo.getId())) {
                 Parser childParserInfo =
-                        registryClient.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
+                        registry.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
                 DataParsingTask parsingTask = new DataParsingTask();
                 parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-"
                         + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
@@ -387,7 +379,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                 parsingTask.setParserId(childParserInfo.getId());
                 parsingTask.setLocalDataDir("/tmp");
                 try {
-                    parsingTask.setGroupResourceProfileId(registryClient
+                    parsingTask.setGroupResourceProfileId(registry
                             .getProcess(completionMessage.getProcessId())
                             .getGroupResourceProfileId());
                 } catch (TException e) {
@@ -438,7 +430,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                 allTasks.add(parsingTask);
 
                 createParserDagRecursively(
-                        allTasks, childParserInfo, parsingTask, parentToChild, completionMessage, registryClient);
+                        allTasks, childParserInfo, parsingTask, parentToChild, completionMessage, registry);
             }
         }
     }

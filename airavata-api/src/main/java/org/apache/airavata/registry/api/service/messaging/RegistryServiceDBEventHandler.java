@@ -19,14 +19,12 @@
 */
 package org.apache.airavata.registry.api.service.messaging;
 
-import java.time.Duration;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
@@ -40,7 +38,6 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,27 +48,11 @@ import org.slf4j.LoggerFactory;
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
-    private final ThriftClientPool<RegistryService.Client> registryClientPool;
+    private final RegistryService.Iface registry;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.REGISTRY);
 
     public RegistryServiceDBEventHandler() throws ApplicationSettingsException, RegistryServiceException {
-
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(5);
-        poolConfig.setMinIdle(1);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-
-        registryClientPool = new ThriftClientPool<>(
-                tProtocol -> new RegistryService.Client(tProtocol),
-                poolConfig,
-                ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()));
+        registry = AiravataServiceFactory.getRegistry();
     }
 
     @Override
@@ -91,7 +72,6 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                     dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
             logger.info("RegistryService, Replicated Entity: " + publisherContext.getEntityType());
 
-            RegistryService.Client registryClient = registryClientPool.getResource();
             // this try-block is mainly for catching DuplicateEntryException
             try {
                 // check type of entity-type
@@ -106,24 +86,24 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         switch (publisherContext.getCrudType()) {
                             case CREATE: {
                                 logger.info("Replicating addGateway in Registry.");
-                                registryClient.addGateway(gateway);
+                                registry.addGateway(gateway);
                                 logger.info("addGateway Replication Success!");
                                 break;
                             }
                             case UPDATE: {
                                 logger.info("Replicating updateGateway in Registry.");
-                                if (!registryClient.isGatewayExist(gateway.getGatewayId())) {
+                                if (!registry.isGatewayExist(gateway.getGatewayId())) {
                                     logger.info("Gateway doesn't exist so adding instead of updating.");
-                                    registryClient.addGateway(gateway);
+                                    registry.addGateway(gateway);
                                 } else {
-                                    registryClient.updateGateway(gateway.getGatewayId(), gateway);
+                                    registry.updateGateway(gateway.getGatewayId(), gateway);
                                 }
                                 logger.info("updateGateway Replication Success!");
                                 break;
                             }
                             case DELETE: {
                                 logger.info("Replicating deleteGateway in Registry.");
-                                registryClient.deleteGateway(gateway.getGatewayId());
+                                registry.deleteGateway(gateway.getGatewayId());
                                 logger.info("deleteGateway Replication Success!");
                                 break;
                             }
@@ -147,10 +127,10 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         switch (publisherContext.getCrudType()) {
                             case CREATE: {
                                 logger.info("Replicating addUser in Registry.");
-                                if (!registryClient.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
-                                    registryClient.addUser(userProfile);
+                                if (!registry.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
+                                    registry.addUser(userProfile);
                                 }
-                                Project defaultProject = createDefaultProject(registryClient, userProfile);
+                                Project defaultProject = createDefaultProject(registry, userProfile);
                                 if (defaultProject != null) {
 
                                     // Publish new PROJECT event (sharing service will listen for it and register this
@@ -189,13 +169,11 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
                     }
                 }
-                registryClientPool.returnResource(registryClient);
             } catch (DuplicateEntryException ex) {
                 // log this exception and proceed (do nothing)
                 // this exception is thrown mostly when messages are re-consumed, hence ignore
                 logger.warn("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
             } catch (Exception ex) {
-                registryClientPool.returnBrokenResource(registryClient);
                 throw ex;
             }
             // send ack for received message
@@ -214,18 +192,18 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         }
     }
 
-    private Project createDefaultProject(RegistryService.Client registryClient, UserProfile userProfile)
+    private Project createDefaultProject(RegistryService.Iface registry, UserProfile userProfile)
             throws TException {
         // Just retrieve the first project to see if the user has any projects
         List<Project> projects =
-                registryClient.getUserProjects(userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
+                registry.getUserProjects(userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
         if (projects.isEmpty()) {
             Project defaultProject = new Project();
             defaultProject.setOwner(userProfile.getUserId());
             defaultProject.setName("Default Project");
             defaultProject.setGatewayId(userProfile.getGatewayId());
             defaultProject.setDescription("This is the default project for user " + userProfile.getUserId());
-            String defaultProjectId = registryClient.createProject(userProfile.getGatewayId(), defaultProject);
+            String defaultProjectId = registry.createProject(userProfile.getGatewayId(), defaultProject);
             logger.info("Default project created for user {}", userProfile.getUserId());
             defaultProject.setProjectID(defaultProjectId);
             return defaultProject;

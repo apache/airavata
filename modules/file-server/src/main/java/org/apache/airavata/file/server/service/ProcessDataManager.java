@@ -23,7 +23,6 @@ import java.util.UUID;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
@@ -54,27 +53,23 @@ public class ProcessDataManager extends OutputDataStagingTask {
     ExperimentModel experiment;
 
     public ProcessDataManager(
-            ThriftClientPool<RegistryService.Client> registryClientPool,
+            RegistryService.Iface registry,
             String processId,
             AdaptorSupport adaptorSupport)
             throws Exception {
 
         this.adaptorSupport = adaptorSupport;
-        RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            process = regClient.getProcess(processId);
-            experiment = regClient.getExperiment(process.getExperimentId());
+            process = registry.getProcess(processId);
+            experiment = registry.getExperiment(process.getExperimentId());
 
             setTaskId(UUID.randomUUID().toString());
             setProcessId(processId);
             setExperimentId(process.getExperimentId());
             setGatewayId(experiment.getGatewayId());
             loadContext();
-
-            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             logger.error("Failed to initialize the output data mover for process {}", processId, e);
-            registryClientPool.returnBrokenResource(regClient);
             throw e;
         }
         this.processId = processId;

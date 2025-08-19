@@ -69,22 +69,21 @@ public class RealtimeMonitor extends AbstractMonitor {
 
         while (true) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+            RegistryService.Iface registry = getRegistry();
             consumerRecords.forEach(record -> {
                 try {
-                    process(record.key(), record.value(), registryClient);
+                    process(record.key(), record.value(), registry);
                 } catch (Exception e) {
                     logger.error("Error while processing message {}", record.value(), e);
                 }
             });
-            getRegistryClientPool().returnResource(registryClient);
             consumer.commitAsync();
         }
     }
 
-    private void process(String key, String value, RegistryService.Client registryClient) throws MonitoringException {
+    private void process(String key, String value, RegistryService.Iface registry) throws MonitoringException {
         logger.info("received post from {} on {}: {}->{}", publisherId, brokerTopic, key, value);
-        JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
+        JobStatusResult statusResult = parser.parse(value, publisherId, registry);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);

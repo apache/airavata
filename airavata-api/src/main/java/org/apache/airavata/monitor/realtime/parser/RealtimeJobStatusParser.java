@@ -35,11 +35,11 @@ public class RealtimeJobStatusParser {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeJobStatusParser.class);
 
-    private String getJobIdIdByJobNameWithRetry(String jobName, String taskId, RegistryService.Client registryClient)
+    private String getJobIdIdByJobNameWithRetry(String jobName, String taskId, RegistryService.Iface registry)
             throws Exception {
         for (int i = 0; i < 3; i++) {
 
-            List<JobModel> jobsOfTask = registryClient.getJobs("taskId", taskId);
+            List<JobModel> jobsOfTask = registry.getJobs("taskId", taskId);
             if (jobsOfTask == null || jobsOfTask.isEmpty()) {
                 // Retry after 2s
                 logger.warn("No jobs for task {}. Retrying in 2 seconds", taskId);
@@ -59,7 +59,7 @@ public class RealtimeJobStatusParser {
         return null;
     }
 
-    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService.Client registryClient) {
+    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService.Iface registry) {
 
         try {
             Map asMap = new Gson().fromJson(rawMessage, Map.class);
@@ -71,7 +71,7 @@ public class RealtimeJobStatusParser {
                 if (jobName != null && status != null && taskId != null) {
 
                     try {
-                        String jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registryClient);
+                        String jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registry);
                         if (jobId == null) {
                             logger.error("No job id for job name {}", jobName);
                             return null;

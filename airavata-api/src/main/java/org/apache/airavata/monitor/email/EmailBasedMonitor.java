@@ -151,22 +151,14 @@ public class EmailBasedMonitor extends AbstractMonitor {
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
                     + " for email monitoring -->  " + addressStr);
         }
-        RegistryService.Client regClient = getRegistryClientPool().getResource();
-
-        try {
-            JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
-            jobStatusResult.setPublisherName(publisherId);
-            var jobId = jobStatusResult.getJobId();
-            var jobName = jobStatusResult.getJobName();
-            var jobStatus = jobStatusResult.getState().getValue();
-            log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
-            return jobStatusResult;
-        } catch (Exception e) {
-            getRegistryClientPool().returnBrokenResource(regClient);
-            throw e;
-        } finally {
-            getRegistryClientPool().returnResource(regClient);
-        }
+        RegistryService.Iface registry = getRegistry();
+        JobStatusResult jobStatusResult = emailParser.parseEmail(message, registry);
+        jobStatusResult.setPublisherName(publisherId);
+        var jobId = jobStatusResult.getJobId();
+        var jobName = jobStatusResult.getJobName();
+        var jobStatus = jobStatusResult.getState().getValue();
+        log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
+        return jobStatusResult;
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {

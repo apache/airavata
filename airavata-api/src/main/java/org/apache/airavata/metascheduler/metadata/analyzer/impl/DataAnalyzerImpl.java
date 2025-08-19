@@ -21,9 +21,8 @@ package org.apache.airavata.metascheduler.metadata.analyzer.impl;
 
 import java.util.Map;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.metascheduler.core.engine.DataAnalyzer;
-import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.api.RegistryService;
@@ -36,17 +35,12 @@ public class DataAnalyzerImpl implements DataAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAnalyzerImpl.class);
 
-    protected static ThriftClientPool<RegistryService.Client> registryClientPool = Utils.getRegistryServiceClientPool();
+    protected static RegistryService.Iface registry = AiravataServiceFactory.getRegistry();
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        RegistryService.Client client = null;
-
         try {
             LOGGER.debug("Executing Data Analyzer ....... ");
-            client = this.registryClientPool.getResource();
-
-            // TODO: handle multiple gateways
             String gateway = ServerSettings.getDataAnalyzingEnabledGateways();
 
             JobState state = JobState.SUBMITTED;
@@ -54,11 +48,11 @@ public class DataAnalyzerImpl implements DataAnalyzer {
             jobStatus.setJobState(state);
             double time = ServerSettings.getDataAnalyzerTimeStep();
 
-            int fiveMinuteCount = client.getJobCount(jobStatus, gateway, 5);
+            int fiveMinuteCount = registry.getJobCount(jobStatus, gateway, 5);
 
-            int tenMinuteCount = client.getJobCount(jobStatus, gateway, 10);
+            int tenMinuteCount = registry.getJobCount(jobStatus, gateway, 10);
 
-            int fifteenMinuteCount = client.getJobCount(jobStatus, gateway, 15);
+            int fifteenMinuteCount = registry.getJobCount(jobStatus, gateway, 15);
 
             double fiveMinuteAverage = fiveMinuteCount * time / (5 * 60);
 
@@ -69,7 +63,7 @@ public class DataAnalyzerImpl implements DataAnalyzer {
             LOGGER.info("service rate: 5 min avg " + fiveMinuteAverage + " 10 min avg " + tenMinuteAverage
                     + " 15 min avg " + fifteenMinuteAverage);
 
-            Map<String, Double> timeDistribution = client.getAVGTimeDistribution(gateway, 15);
+            Map<String, Double> timeDistribution = registry.getAVGTimeDistribution(gateway, 15);
 
             String msg = "";
             for (Map.Entry<String, Double> entry : timeDistribution.entrySet()) {
@@ -80,14 +74,6 @@ public class DataAnalyzerImpl implements DataAnalyzer {
         } catch (Exception ex) {
             String msg = "Error occurred while executing data analyzer" + ex.getMessage();
             LOGGER.error(msg, ex);
-            if (client != null) {
-                this.registryClientPool.returnBrokenResource(client);
-            }
-            client = null;
-        } finally {
-            if (client != null) {
-                this.registryClientPool.returnResource(client);
-            }
         }
     }
 }

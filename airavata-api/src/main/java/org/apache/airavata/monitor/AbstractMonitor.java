@@ -19,15 +19,12 @@
 */
 package org.apache.airavata.monitor;
 
-import java.time.Duration;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,39 +33,18 @@ public abstract class AbstractMonitor implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);
 
     private final MessageProducer messageProducer;
-    private ThriftClientPool<RegistryService.Client> registryClientPool;
+    private RegistryService.Iface registry;
 
     public AbstractMonitor() throws ApplicationSettingsException {
-        this.initRegistryClientPool();
+        registry = AiravataServiceFactory.getRegistry();
         messageProducer = new MessageProducer();
     }
 
-    private void initRegistryClientPool() throws ApplicationSettingsException {
-
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(100);
-        poolConfig.setMinIdle(5);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-
-        this.registryClientPool = new ThriftClientPool<>(
-                RegistryService.Client::new,
-                poolConfig,
-                ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()));
-    }
-
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
         boolean validated = true;
         try {
             log.info("Fetching matching jobs for job id {} from registry", jobStatusResult.getJobId());
-            List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
+            List<JobModel> jobs = registry.getJobs("jobId", jobStatusResult.getJobId());
 
             if (!jobs.isEmpty()) {
                 log.info("Filtering total {} with target job name {}", jobs.size(), jobStatusResult.getJobName());
@@ -89,7 +65,7 @@ public abstract class AbstractMonitor implements Runnable {
                 JobModel jobModel = jobs.get(0);
 
                 String processId = jobModel.getProcessId();
-                String experimentId = registryClient.getProcess(processId).getExperimentId();
+                String experimentId = registry.getProcess(processId).getExperimentId();
 
                 if (experimentId != null && processId != null) {
                     log.info(
@@ -103,12 +79,10 @@ public abstract class AbstractMonitor implements Runnable {
                     validated = false;
                 }
             }
-            getRegistryClientPool().returnResource(registryClient);
             return validated;
 
         } catch (Exception e) {
             log.error("Error at validating job status {}", jobStatusResult.getJobId(), e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -126,7 +100,7 @@ public abstract class AbstractMonitor implements Runnable {
         }
     }
 
-    public ThriftClientPool<RegistryService.Client> getRegistryClientPool() {
-        return registryClientPool;
+    public RegistryService.Iface getRegistry() {
+        return registry;
     }
 }

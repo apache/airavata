@@ -161,11 +161,6 @@ under the License.
             <!-- Apache Commons -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>2.12.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.18.0</version>
             </dependency>

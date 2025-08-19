@@ -93,16 +93,15 @@ public class PreWorkflowManager extends WorkflowManager {
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         prewfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Iface registry = getRegistry();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
         HelixTaskFactory taskFactory;
         try {
-            processModel = registryClient.getProcess(processId);
-            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            getRegistryClientPool().returnResource(registryClient);
-            ResourceType resourceType = registryClient
+            processModel = registry.getProcess(processId);
+            experimentModel = registry.getExperiment(processModel.getExperimentId());
+            ResourceType resourceType = registry
                     .getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
@@ -112,7 +111,6 @@ public class PreWorkflowManager extends WorkflowManager {
         } catch (Exception e) {
             logger.error(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
         }
@@ -205,20 +203,18 @@ public class PreWorkflowManager extends WorkflowManager {
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Iface registry = getRegistry();
 
         ProcessModel processModel;
         GroupComputeResourcePreference gcrPref;
 
         try {
-            processModel = registryClient.getProcess(processId);
-            getRegistryClientPool().returnResource(registryClient);
-            gcrPref = registryClient.getGroupComputeResourcePreference(
+            processModel = registry.getProcess(processId);
+            gcrPref = registry.getGroupComputeResourcePreference(
                     processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
 
         } catch (Exception e) {
             logger.error("Failed to fetch process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception("Failed to fetch process from registry associated with process id " + processId, e);
         }
 
