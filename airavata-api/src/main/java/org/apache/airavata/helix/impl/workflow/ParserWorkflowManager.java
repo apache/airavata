@@ -64,9 +64,10 @@ public class ParserWorkflowManager extends WorkflowManager {
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
-    public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("parser.workflow.manager.monitoring.enabled")) {
+    @Override
+    public void run() {
+        try {
+          if (ServerSettings.getBooleanSetting("parser.workflow.manager.monitoring.enabled")) {
             MonitoringServer monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("parser.workflow.manager.monitoring.host"),
                     ServerSettings.getIntSetting("parser.workflow.manager.monitoring.port"));
@@ -74,10 +75,15 @@ public class ParserWorkflowManager extends WorkflowManager {
 
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }
+        this.init();
+        this.runConsumer();
+        } catch (Exception e) {
+            logger.error("Error starting PreWorkflowManager", e);
+        }
+    }
 
-        ParserWorkflowManager manager = new ParserWorkflowManager();
-        manager.init();
-        manager.runConsumer();
+    public static void main(String[] args) throws Exception {
+        new ParserWorkflowManager().run();
     }
 
     private void init() throws Exception {
@@ -89,12 +95,13 @@ public class ParserWorkflowManager extends WorkflowManager {
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
         try {
-            ProcessModel processModel;
-            ApplicationInterfaceDescription appDescription;
             try {
-                processModel = registryClient.getProcess(completionMessage.getProcessId());
-                appDescription = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
-
+              ProcessModel processModel = registryClient.getProcess(completionMessage.getProcessId());
+              ApplicationInterfaceDescription appDescription = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
+              if (appDescription == null) {
+                logger.error("Application interface not found for process id " + completionMessage.getProcessId());
+                throw new Exception("Application interface not found for process id " + completionMessage.getProcessId());
+              }
             } catch (Exception e) {
                 logger.error(
                         "Failed to fetch process or application description from registry associated with process id "

@@ -93,7 +93,16 @@ public class RealtimeMonitor extends AbstractMonitor {
         }
     }
 
+    @Override
+    public void run() {
+        try {
+            runConsumer();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error while running consumer", e);
+        }
+    }
+
     public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().runConsumer();
+        new RealtimeMonitor().run();
     }
 }

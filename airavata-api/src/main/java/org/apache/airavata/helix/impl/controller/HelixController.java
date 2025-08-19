@@ -19,13 +19,10 @@
 */
 package org.apache.airavata.helix.impl.controller;
 
-import java.util.concurrent.CountDownLatch;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
-import org.apache.helix.manager.zk.ZNRecordSerializer;
-import org.apache.helix.manager.zk.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +41,6 @@ public class HelixController implements Runnable {
     private String zkAddress;
     private org.apache.helix.HelixManager zkHelixManager;
 
-    private CountDownLatch startLatch = new CountDownLatch(1);
-    private CountDownLatch stopLatch = new CountDownLatch(1);
-
     @SuppressWarnings("WeakerAccess")
     public HelixController() throws ApplicationSettingsException {
         this.clusterName = ServerSettings.getSetting("helix.cluster.name");
@@ -56,74 +50,39 @@ public class HelixController implements Runnable {
 
     public void run() {
         try {
-            ZkClient zkClient = new ZkClient(
-                    ServerSettings.getZookeeperConnection(),
-                    ZkClient.DEFAULT_SESSION_TIMEOUT,
-                    ZkClient.DEFAULT_CONNECTION_TIMEOUT,
-                    new ZNRecordSerializer());
-            ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
-
-            // Creates the zk cluster if not available
-            if (!zkHelixAdmin.getClusters().contains(clusterName)) {
-                zkHelixAdmin.addCluster(clusterName, true);
-            }
-
+            var zkHelixAdmin = new ZKHelixAdmin.Builder()
+              .setZkAddress(ServerSettings.getZookeeperConnection())
+              .build();
+            zkHelixAdmin.addCluster(clusterName, false);
             zkHelixAdmin.close();
-            zkClient.close();
 
-            logger.info("Connection to helix cluster : " + clusterName + " with name : " + controllerName);
-            logger.info("Zookeeper connection string " + zkAddress);
-
+            logger.info("Starting helix controller '{}' for cluster '{}' at address '{}'", controllerName, clusterName, zkAddress);
             zkHelixManager = HelixControllerMain.startHelixController(
                     zkAddress, clusterName, controllerName, HelixControllerMain.STANDALONE);
-            startLatch.countDown();
-            stopLatch.await();
+            logger.info("Controller '{}' started for cluster '{}'", controllerName, clusterName);
+            Thread.currentThread().join();
+        } catch (InterruptedException ie) {
+            logger.info("Helix controller interrupted, shutting down.");
         } catch (Exception ex) {
-            logger.error("Error in run() for Controller: " + controllerName + ", reason: " + ex, ex);
+            logger.error("Error in run() for controller '{}', reason: {}", controllerName, ex, ex);
         } finally {
-            disconnect();
-        }
-    }
-
-    public void startServer() throws Exception {
-
-        // WorkflowCleanupAgent cleanupAgent = new WorkflowCleanupAgent();
-        // cleanupAgent.init();
-        // ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        // executor.scheduleWithFixedDelay(cleanupAgent, 10, 120, TimeUnit.SECONDS);
-
-        new Thread(this).start();
-        try {
-            startLatch.await();
-            logger.info("Controller: " + controllerName + ", has connected to cluster: " + clusterName);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
-
-        } catch (InterruptedException ex) {
-            logger.error("Controller: " + controllerName + ", is interrupted! reason: " + ex, ex);
-        }
-    }
-
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    public void stop() {
-        stopLatch.countDown();
-    }
-
-    private void disconnect() {
-        if (zkHelixManager != null) {
-            logger.info("Controller: " + controllerName + ", has disconnected from cluster: " + clusterName);
+          if (zkHelixManager != null) {
+            logger.info("Controller '{}' has disconnected from cluster '{}'", controllerName, clusterName);
             zkHelixManager.disconnect();
+          }
         }
+    }
+
+    public void start() throws Exception {
+        Thread controllerThread = new Thread(this);
+        controllerThread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(controllerThread::interrupt));
     }
 
     public static void main(String args[]) {
         try {
-
             logger.info("Starting helix controller");
-
-            HelixController helixController = new HelixController();
-            helixController.startServer();
-
+            new HelixController().start();
         } catch (Exception e) {
             logger.error("Failed to start the helix controller", e);
         }

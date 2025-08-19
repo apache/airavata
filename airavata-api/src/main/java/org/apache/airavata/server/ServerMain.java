@@ -19,82 +19,67 @@
 */
 package org.apache.airavata.server;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.airavata.api.server.AiravataAPIServer;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
-import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
+import org.apache.airavata.credential.store.server.CredentialStoreServer;
+import org.apache.airavata.db.event.manager.DBEventManagerRunner;
+import org.apache.airavata.helix.impl.controller.HelixController;
+import org.apache.airavata.helix.impl.participant.GlobalParticipant;
+import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
+import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
+import org.apache.airavata.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.monitor.realtime.RealtimeMonitor;
+import org.apache.airavata.orchestrator.server.OrchestratorServer;
 import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.registry.api.service.RegistryAPIServer;
+import org.apache.airavata.service.profile.server.ProfileServiceServer;
+import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
 import org.apache.commons.cli.ParseException;
-import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ServerMain {
     private static List<IServer> servers;
-    private static final String SERVERS_KEY = "servers";
+    private static List<Class<?>> additionalServers;
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
     private static boolean serversLoaded = false;
-    private static final String stopFileNamePrefix = "server_stop";
-    private static long serverPID = -1;
-    private static final String serverStartedFileNamePrefix = "server_start";
     private static boolean systemShutDown = false;
-    private static String STOP_COMMAND_STR = "stop";
 
-    private static final String ALL_IN_ONE = "all";
-    private static final String API_ORCH = "api-orch";
-    private static final String EXECUTION = "execution";
-    // server names
-    private static final String API_SERVER = "apiserver.class";
-    private static final String CREDENTIAL_STORE = "credential.store.class";
-    private static final String REGISTRY_SERVER = "regserver";
-    private static final String SHARING_SERVER = "sharing_server";
-    private static final String GFAC_SERVER = "gfac";
-    private static final String ORCHESTRATOR = "orchestrator";
-    private static final String PROFILE_SERVICE = "profile_service.class";
-    private static final String DB_EVENT_MANAGER = "db_event_manager.class";
-
-    private static ServerCnxnFactory cnxnFactory;
-    //	private static boolean shutdownHookCalledBefore=false;
     static {
-        servers = new ArrayList<IServer>();
+        servers = new ArrayList<>();
+        additionalServers = new ArrayList<>();
     }
 
-    private static void loadServers(String serverNames) {
-        try {
-            if (serverNames != null) {
-                List<String> serversList = handleServerDependencies(serverNames);
-                for (String serverString : serversList) {
-                    serverString = serverString.trim();
-                    String serverClassName = ServerSettings.getSetting(serverString);
-                    Class<?> classInstance;
-                    try {
-                        classInstance = ServerMain.class.getClassLoader().loadClass(serverClassName);
-                        servers.add((IServer) classInstance.newInstance());
-                    } catch (ClassNotFoundException e) {
-                        logger.error("Error while locating server implementation \"" + serverString + "\"!!!", e);
-                    } catch (InstantiationException e) {
-                        logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
-                    } catch (IllegalAccessException e) {
-                        logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
-                    } catch (ClassCastException e) {
-                        logger.error("Invalid server \"" + serverString + "\"!!!", e);
-                    }
-                }
-            } else {
-                logger.warn("No server name specify to start, use -h command line option to view help menu ...");
-            }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while retrieving server list!!!", e);
-        }
+    private static void loadServers() {
+        servers.clear();
+        additionalServers.clear();
+
+        servers.addAll(Arrays.asList(
+          new DBEventManagerRunner(),
+          new RegistryAPIServer(),
+          new CredentialStoreServer(),
+          new SharingRegistryServer(),
+          new AiravataAPIServer(),
+          new OrchestratorServer(),
+          new ProfileServiceServer()
+        ));
+
+        additionalServers.addAll(Arrays.asList(
+        HelixController.class, 
+          GlobalParticipant.class,
+          EmailBasedMonitor.class,
+          RealtimeMonitor.class,
+          PreWorkflowManager.class,
+          PostWorkflowManager.class
+        ));
         serversLoaded = true;
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -103,65 +88,6 @@ public class ServerMain {
             }
         });
     }
-
-    private static List<String> handleServerDependencies(String serverNames) {
-        List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
-        if (serverList.indexOf(ALL_IN_ONE) > -1) {
-            serverList.clear();
-            serverList.add(DB_EVENT_MANAGER); // DB Event Manager should start before everything
-            serverList.add(REGISTRY_SERVER); // registry server should start before everything else
-            serverList.add(CREDENTIAL_STORE); // credential store should start before api server
-            serverList.add(SHARING_SERVER);
-            serverList.add(API_SERVER);
-            serverList.add(ORCHESTRATOR);
-            serverList.add(GFAC_SERVER);
-            serverList.add(PROFILE_SERVICE);
-        } else if (serverList.indexOf(API_ORCH) > -1) {
-            serverList.clear();
-            serverList.add(DB_EVENT_MANAGER); // DB Event Manager should start before everything
-            serverList.add(REGISTRY_SERVER); // registry server should start before everything else
-            serverList.add(CREDENTIAL_STORE); // credential store should start before api server
-            serverList.add(SHARING_SERVER);
-            serverList.add(API_SERVER);
-            serverList.add(ORCHESTRATOR);
-            serverList.add(PROFILE_SERVICE);
-        } else if (serverList.indexOf(EXECUTION) > -1) {
-            serverList.clear();
-            serverList.add(GFAC_SERVER);
-        } else {
-            // registry server should start before everything
-            int regPos = serverList.indexOf(REGISTRY_SERVER);
-            if (regPos > 0) {
-                String temp = serverList.get(0);
-                serverList.set(0, serverList.get(regPos));
-                serverList.set(regPos, temp);
-            }
-
-            // credential store should start before api server
-            int credPos = serverList.indexOf(CREDENTIAL_STORE);
-            int apiPos = serverList.indexOf(API_SERVER);
-            if (credPos >= 0 && apiPos >= 0 && (credPos > apiPos)) {
-                String temp = serverList.get(apiPos);
-                serverList.set(apiPos, serverList.get(credPos));
-                serverList.set(credPos, temp);
-            }
-        }
-        return serverList;
-    }
-
-    //	private static void addSecondaryShutdownHook(){
-    //		Runtime.getRuntime().addShutdownHook(new Thread(){
-    //			@Override
-    //			public void run() {
-    //				System.out.print("Graceful shutdown attempt is still active. Do you want to exit instead? (y/n)");
-    //				String command=System.console().readLine().trim().toLowerCase();
-    //				if (command.equals("yes") || command.equals("y")){
-    //					System.exit(1);
-    //				}
-
-    //			}
-    //		});
-    //	}
 
     public static void main(String[] args) throws IOException, AiravataException, ParseException {
         ServerSettings.mergeSettingsCommandLineArgs(args);
@@ -174,34 +100,20 @@ public class ServerMain {
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }
 
-        CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
-        if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)) {
-            performServerStopRequest(commandLineParameters);
-        } else {
-            performServerStart(args);
-        }
-    }
-
-    private static void performServerStart(String[] args) {
-        setServerStarted();
         logger.info("Airavata server instance starting...");
-        String serverNames = "all";
-        for (String string : args) {
-            logger.info("Server Arguments: " + string);
-            if (string.startsWith("--servers=")) {
-                serverNames = string.substring("--servers=".length());
-            }
-        }
-        serverNames = ApplicationSettings.getSetting(SERVERS_KEY, serverNames);
-        startAllServers(serverNames);
-        while (!hasStopRequested()) {
-            try {
+        startAllServers();
+
+        // Wait until SIGTERM or KeyboardInterrupt (Ctrl+C) triggers shutdown hook.
+        try {
+            while (!isSystemShutDown()) {
                 Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                stopAllServers();
             }
+        } catch (InterruptedException e) {
+            logger.info("Interrupted, shutting down servers...");
+            setSystemShutDown();
         }
-        if (hasStopRequested()) {
+
+        if (isSystemShutDown()) {
             ServerSettings.setStopAllThreads(true);
             stopAllServers();
             ShutdownStrategy shutdownStrategy;
@@ -222,111 +134,6 @@ public class ServerMain {
         }
     }
 
-    private static void performServerStopRequest(CommandLineParameters commandLineParameters) throws IOException {
-        //		deleteOldStartRecords();
-        String serverIndexOption = "serverIndex";
-        if (commandLineParameters.getParameters().containsKey(serverIndexOption)) {
-            serverPID = Integer.parseInt(commandLineParameters.getParameters().get(serverIndexOption));
-        }
-        if (isServerRunning()) {
-            logger.info("Requesting airavata server" + (serverPID == -1 ? "(s)" : " instance " + serverPID)
-                    + " to stop...");
-            requestStop();
-            while (isServerRunning()) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-            logger.info("Server" + (serverPID == -1 ? "(s)" : " instance " + serverPID) + " stopped!!!");
-        } else {
-            logger.error("Server" + (serverPID == -1 ? "" : " instance " + serverPID) + " is not running!!!");
-        }
-        if (ServerSettings.isEmbeddedZK()) {
-            cnxnFactory.shutdown();
-        }
-    }
-
-    @SuppressWarnings("resource")
-    private static void requestStop() throws IOException {
-        File file = new File(getServerStopFileName());
-        file.createNewFile();
-        new RandomAccessFile(file, "rw").getChannel().lock();
-        file.deleteOnExit();
-    }
-
-    private static boolean hasStopRequested() {
-        return isSystemShutDown()
-                || new File(getServerStopFileName()).exists()
-                || new File(stopFileNamePrefix).exists();
-    }
-
-    private static String getServerStopFileName() {
-        return stopFileNamePrefix;
-    }
-
-    private static void deleteOldStopRequests() {
-        File[] files = new File(".").listFiles();
-        for (File file : files) {
-            if (file.getName().contains(stopFileNamePrefix)) {
-                file.delete();
-            }
-        }
-    }
-
-    //	private static void deleteOldStartRecords(){
-    //		File[] files = new File(".").listFiles();
-    //		for (File file : files) {
-    //			if (file.getName().contains(serverStartedFileNamePrefix)){
-    //				try {
-    //					new FileOutputStream(file);
-    //					file.delete();
-    //				} catch (Exception e) {
-    //					//file is locked which means there's an active process using it
-    //				}
-    //			}
-    //		}
-    //	}
-
-    private static boolean isServerRunning() {
-        if (serverPID == -1) {
-            String[] files = new File(".").list();
-            for (String file : files) {
-                if (file.contains(serverStartedFileNamePrefix)) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return new File(getServerStartedFileName()).exists();
-        }
-    }
-
-    @SuppressWarnings({"resource"})
-    private static void setServerStarted() {
-        try {
-            serverPID = getPID();
-            deleteOldStopRequests();
-            File serverStartedFile = null;
-            serverStartedFile = new File(getServerStartedFileName());
-            serverStartedFile.createNewFile();
-            serverStartedFile.deleteOnExit();
-            new RandomAccessFile(serverStartedFile, "rw").getChannel().lock();
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    private static String getServerStartedFileName() {
-        return new File(
-                        new File(System.getenv("AIRAVATA_HOME"), "bin"),
-                        serverStartedFileNamePrefix + "_" + Long.toString(serverPID))
-                .toString();
-    }
-
     public static void stopAllServers() {
         // stopping should be done in reverse order of starting the servers
         for (int i = servers.size() - 1; i >= 0; i--) {
@@ -339,9 +146,9 @@ public class ServerMain {
         }
     }
 
-    public static void startAllServers(String serversNames) {
+    public static void startAllServers() {
         if (!serversLoaded) {
-            loadServers(serversNames);
+            loadServers();
         }
         for (IServer server : servers) {
             try {
@@ -358,9 +165,6 @@ public class ServerMain {
 
     private static void waitForServerToStart(IServer server, Integer maxWait) throws Exception {
         int count = 0;
-        //		if (server.getStatus()==ServerStatus.STARTING) {
-        //			logger.info("Waiting for " + server.getName() + " to start...");
-        //		}
         while (server.getStatus() == ServerStatus.STARTING && (maxWait == null || count < maxWait)) {
             Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
             count += SERVER_STATUS_CHANGE_WAIT_INTERVAL;
@@ -375,8 +179,6 @@ public class ServerMain {
         if (server.getStatus() == ServerStatus.STOPING) {
             logger.info("Waiting for " + server.getName() + " to stop...");
         }
-        // we are doing hasStopRequested() check because while we are stuck in the loop to stop there could be a
-        // forceStop request
         while (server.getStatus() == ServerStatus.STOPING && (maxWait == null || count < maxWait)) {
             Thread.sleep(SERVER_STATUS_CHANGE_WAIT_INTERVAL);
             count += SERVER_STATUS_CHANGE_WAIT_INTERVAL;
@@ -392,34 +194,5 @@ public class ServerMain {
 
     private static void setSystemShutDown() {
         ServerMain.systemShutDown = true;
-    }
-
-    //	private static int getPID(){
-    //		try {
-    //			java.lang.management.RuntimeMXBean runtime = java.lang.management.ManagementFactory
-    //					.getRuntimeMXBean();
-    //			java.lang.reflect.Field jvm = runtime.getClass()
-    //					.getDeclaredField("jvm");
-    //			jvm.setAccessible(true);
-    //			sun.management.VMManagement mgmt = (sun.management.VMManagement) jvm
-    //					.get(runtime);
-    //			java.lang.reflect.Method pid_method = mgmt.getClass()
-    //					.getDeclaredMethod("getProcessId");
-    //			pid_method.setAccessible(true);
-    //
-    //			int pid = (Integer) pid_method.invoke(mgmt);
-    //			return pid;
-    //		} catch (Exception e) {
-    //			return -1;
-    //		}
-    //	}
-
-    // getPID from ProcessHandle JDK 9 and onwards
-    private static long getPID() {
-        try {
-            return ProcessHandle.current().pid();
-        } catch (Exception e) {
-            return -1;
-        }
     }
 }

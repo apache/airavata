@@ -68,19 +68,25 @@ public class PostWorkflowManager extends WorkflowManager {
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public void run() {
+        try {
+          if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
+              MonitoringServer monitoringServer = new MonitoringServer(
+                      ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
+                      ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
+              monitoringServer.start();
 
-        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+              Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+          }
+          startServer();
+        } catch (Exception e) {
+            logger.error("Error starting PreWorkflowManager", e);
         }
+    }
 
-        PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.startServer();
+    public static void main(String[] args) throws Exception {
+        new PostWorkflowManager().run();
     }
 
     private void init() throws Exception {

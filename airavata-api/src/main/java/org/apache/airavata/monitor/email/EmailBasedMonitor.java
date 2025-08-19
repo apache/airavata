@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
+public class EmailBasedMonitor extends AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
@@ -301,14 +301,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         }
     }
 
-    public void startServer() throws InterruptedException {
-        Thread t = new Thread(this);
-        t.start();
-        t.join();
+    public static void main(String[] args) throws Exception {
+        new EmailBasedMonitor().run();
     }
 
-    public static void main(String[] args) throws Exception {
-        EmailBasedMonitor monitor = new EmailBasedMonitor();
-        monitor.startServer();
-    }
 }

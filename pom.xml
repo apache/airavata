@@ -75,7 +75,6 @@ under the License.
         <module>modules/restproxy</module>
         <module>modules/registry-db-migrator</module>
         <module>modules/registry-jpa-generator</module>
-        <module>modules/ide-integration</module>
     </modules>
 
     <properties>

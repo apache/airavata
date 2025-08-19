@@ -46,7 +46,7 @@ import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorkflowManager {
+public abstract class WorkflowManager implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowManager.class);
 

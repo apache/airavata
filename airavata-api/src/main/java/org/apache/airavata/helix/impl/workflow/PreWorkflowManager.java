@@ -287,6 +287,15 @@ public class PreWorkflowManager extends WorkflowManager {
         return workflow;
     }
 
+    @Override
+    public void run() {
+        try {
+            startServer();
+        } catch (Exception e) {
+            logger.error("Error starting PreWorkflowManager", e);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
 
         if (ServerSettings.getBooleanSetting("pre.workflow.manager.monitoring.enabled")) {
@@ -298,8 +307,7 @@ public class PreWorkflowManager extends WorkflowManager {
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }
 
-        PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.startServer();
+        new PreWorkflowManager().run();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

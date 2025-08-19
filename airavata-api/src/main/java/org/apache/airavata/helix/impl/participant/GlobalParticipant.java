@@ -55,10 +55,21 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         "org.apache.airavata.helix.impl.task.aws.AWSCompletingTask",
     };
 
+    public static List<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
+
+    static {
+      for (String taskClassName : TASK_CLASS_NAMES) {
+        try {
+          taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+        } catch (ClassNotFoundException e) {
+          logger.error("Failed to load task class: " + taskClassName, e);
+        }
+      }
+    }
+
     @SuppressWarnings("WeakerAccess")
-    public GlobalParticipant(List<Class<? extends AbstractTask>> taskClasses, String taskTypeName)
-            throws ApplicationSettingsException {
-        super(taskClasses, taskTypeName);
+    public GlobalParticipant() throws ApplicationSettingsException {
+        super(GlobalParticipant.taskClasses, null);
     }
 
     public void startServer() {
@@ -70,27 +81,16 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     public static void main(String args[]) {
         logger.info("Starting global participant");
-
         try {
-            ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
-
-            for (String taskClassName : TASK_CLASS_NAMES) {
-                logger.debug("Adding task class: " + taskClassName + " to the global participant");
-                taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
-            }
-
             if (ServerSettings.getBooleanSetting("participant.monitoring.enabled")) {
                 MonitoringServer monitoringServer = new MonitoringServer(
                         ServerSettings.getSetting("participant.monitoring.host"),
                         ServerSettings.getIntSetting("participant.monitoring.port"));
                 monitoringServer.start();
-
                 Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
             }
-
-            GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
+            GlobalParticipant participant = new GlobalParticipant();
             participant.startServer();
-
         } catch (Exception e) {
             logger.error("Failed to start global participant", e);
         }
